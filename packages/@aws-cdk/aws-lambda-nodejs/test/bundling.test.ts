@@ -1,9 +1,9 @@
 
-import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { AssetHashType } from '@aws-cdk/core';
-import { version as delayVersion } from 'delay/package.json';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Code, Runtime } from '@aws-cdk/aws-lambda';
+import { AssetHashType, BundlingDockerImage } from '@aws-cdk/core';
+import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
 import * as util from '../lib/util';
 
@@ -18,6 +18,7 @@ const findUpMock = jest.spyOn(util, 'findUp').mockImplementation((name: string, 
   }
   return originalFindUp(name, directory);
 });
+const fromAssetMock = jest.spyOn(BundlingDockerImage, 'fromAsset');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -44,7 +45,7 @@ test('Parcel bundling', () => {
       volumes: [{ containerPath: '/parcel-cache', hostPath: '/cache-dir' }],
       workingDirectory: '/asset-input/folder',
       command: [
-        'bash', '-c', 'parcel build /asset-input/folder/entry.ts --target cdk-lambda --cache-dir /parcel-cache',
+        'bash', '-c', 'parcel build /asset-input/folder/entry.ts --target cdk-lambda --no-scope-hoist --cache-dir /parcel-cache',
       ],
     }),
   });
@@ -105,7 +106,7 @@ test('Parcel bundling with externals and dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'parcel build /asset-input/folder/entry.ts --target cdk-lambda && mv /asset-input/.package.json /asset-output/package.json && cd /asset-output && npm install',
+        'parcel build /asset-input/folder/entry.ts --target cdk-lambda --no-scope-hoist && mv /asset-input/.package.json /asset-output/package.json && cd /asset-output && npm install',
       ],
     }),
   });
@@ -156,4 +157,21 @@ test('Detects yarn.lock', () => {
       ]),
     }),
   });
+});
+
+test('with build args', () => {
+  Bundling.parcel({
+    entry: '/project/folder/entry.ts',
+    runtime: Runtime.NODEJS_12_X,
+    projectRoot: '/project',
+    buildArgs: {
+      HELLO: 'WORLD',
+    },
+  });
+
+  expect(fromAssetMock).toHaveBeenCalledWith(expect.stringMatching(/parcel$/), expect.objectContaining({
+    buildArgs: expect.objectContaining({
+      HELLO: 'WORLD',
+    }),
+  }));
 });

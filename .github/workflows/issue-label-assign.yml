@@ -122,7 +122,7 @@ jobs:
            {"keywords":["[@aws-cdk/aws-pinpointemail]","[aws-pinpointemail]","[pinpointemail]","[pinpoint email]","[pinpoint-email]"],"labels":["@aws-cdk/aws-pinpointemail"],"assignees":["iliapolo"]},
            {"keywords":["[@aws-cdk/aws-qldb]","[aws-qldb]","[qldb]"],"labels":["@aws-cdk/aws-qldb"],"assignees":["shivlaks"]},
            {"keywords":["[@aws-cdk/aws-ram]","[aws-ram]","[ram]"],"labels":["@aws-cdk/aws-ram"],"assignees":["MrArnoldPalmer"]},
-           {"keywords":["[@aws-cdk/aws-rds]","[aws-rds]","[rds]"],"labels":["@aws-cdk/aws-rds"],"assignees":["nija-at"]},
+           {"keywords":["[@aws-cdk/aws-rds]","[aws-rds]","[rds]"],"labels":["@aws-cdk/aws-rds"],"assignees":["skinny85"]},
            {"keywords":["[@aws-cdk/aws-redshift]","[aws-redshift]","[redshift]","[red shift]","[red-shift]"],"labels":["@aws-cdk/aws-redshift"],"assignees":["nija-at"]},
            {"keywords":["[@aws-cdk/aws-resourcegroups]","[aws-resourcegroups]","[resourcegroups]","[resource groups]","[resource-groups]"],"labels":["@aws-cdk/aws-resourcegroups"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["[@aws-cdk/aws-robomaker]","[aws-robomaker]","[robomaker]","[robo maker]","[robo-maker]"],"labels":["@aws-cdk/aws-robomaker"],"assignees":["NetaNir"]},
@@ -164,6 +164,6 @@ jobs:
            {"keywords":["[@aws-cdk/cx-api]","[cx-api]","[cx api]"],"labels":["@aws-cdk/cx-api"],"assignees":["eladb"]},
            {"keywords":["[@aws-cdk/region-info]","[region-info]","[region info]"],"labels":["@aws-cdk/region-info"],"assignees":["RomainMuller"]},
            {"keywords":["[@aws-cdk/aws-macie]","[aws-macie]","[macie]"],"labels":["@aws-cdk/aws-macie"],"assignees":["ericzbeard"]},
-           {"keywords":["[@aws-cdk/pipelines]","[pipelines]","[cdk pipelines]","[cdk-pipelines]"],"labels":["@aws-cdk/pipelines"],"assignees":["NetaNir", "nija-at"]}
+           {"keywords":["[@aws-cdk/pipelines]","[pipelines]","[cdk pipelines]","[cdk-pipelines]"],"labels":["@aws-cdk/pipelines"],"assignees":["ericzbeard"]}
            ]
 
