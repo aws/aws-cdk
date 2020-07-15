@@ -26,7 +26,7 @@ The Hitchhikers Guide to the Galaxy
 
 ```
 
-The below code defines a canary that will hit the `books/topbook` endpoint every 5 minutes:
+The below code defines a canary with a script 'foo' that runs every 5 minutes. Eventually (with further implementation), this example will hit the `books/topbook` endpoint every 5 minutes:
 
 ```ts
 const canary = new Canary(this, 'MyCanary', {

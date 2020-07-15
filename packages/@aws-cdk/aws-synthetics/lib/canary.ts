@@ -97,10 +97,12 @@ export interface CanaryOptions extends cdk.ResourceProps {
 export interface CanaryProps extends CanaryOptions {
 
   /**
-   * The canary code. Currently only supported by inline code. In the future,
-   * it will be possible to specify an asset or an s3 bucket where the code is.
+   * Specify the endpoint that you want the canary code to hit. Alternatively, you can specify
+   * your own canary script to run.
+   *
+   * This is not yet implemented.
    */
-  // readonly test: Test;
+  //readonly test: Test;
 
   /**
    * The name of the canary. This constitutes the physical ID of the canary.
