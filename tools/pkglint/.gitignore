@@ -4,3 +4,4 @@
 dist
 lib/generated/resources.ts
 !jest.config.js
+!.eslintrc.js
