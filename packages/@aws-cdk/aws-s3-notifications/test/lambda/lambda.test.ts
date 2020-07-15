@@ -88,7 +88,7 @@ test('permissions are added as a dependency to the notifications resource when u
   bucket.addEventNotification(s3.EventType.OBJECT_CREATED, lambdaDestination, { prefix: 'v1/' });
 
   expect(stack).toHaveResource('Custom::S3BucketNotifications', {
-    DependsOn: [ 'SingletonLambdauuidAllowBucketNotificationsFromStackMyBucketE0D5A788C8D3DB22' ],
+    DependsOn: [ 'SingletonLambdauuidAllowBucketNotificationsFromMyBucket1464DCBA' ],
   }, ResourcePart.CompleteDefinition);
 });
 
