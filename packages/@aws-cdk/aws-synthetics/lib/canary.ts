@@ -1,10 +1,11 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { CfnCanary} from '../lib';
+import { CanaryBase } from './canary-base';
+import { CfnCanary } from './synthetics.generated';
 
 /**
- * Options for a canary
+ * Optional properties for a canary
  */
 export interface CanaryOptions extends cdk.ResourceProps {
   /**
@@ -47,20 +48,21 @@ export interface CanaryOptions extends cdk.ResourceProps {
   readonly memorySize?: number;
 
   /**
-   * How many seconds the canary will make regular runs according to the schedule in 'expression'.
+   * How long the canary will be in a 'RUNNING' state. For example, if you set `timeToLive` to be 1 hour and `frequency` to be 10 minutes,
+   * your canary will run at 10 minute intervals for an hour, for a total of 6 times.
    *
-   * The default of 0 seconds means that the canary will continue to make runs until you stop it.
+   * The default of 0 seconds means that the canary will continue to make runs at the specified frequency until you stop it.
    *
    * @default Duration.seconds(0)
    */
-  readonly lifetime?: cdk.Duration;
+  readonly timeToLive?: cdk.Duration;
 
   /**
    * How often the canary will run during its lifetime. The syntax for expression is 'rate(number unit)'
    * where unit can be 'minute', 'minutes', or 'hour'. You can specify a frequency between 'rate(1 minute)'
    * and 'rate(1 hour)'.
    *
-   * The default of 'rate(0 minute)' specifies that the canary will run only once when it is started.
+   * The special expression 'rate(0 minute)' specifies that the canary will run only once when it is started.
    *
    * @default 'rate(5 minutes)'
    */
@@ -101,27 +103,13 @@ export interface CanaryProps extends CanaryOptions {
   // readonly test: Test;
 
   /**
-   * The name of the canary.
+   * The name of the canary. This constitutes the physical ID of the canary.
    *
-   * @default - A unique physical ID will be generated for you and used as the canary's name.
+   * @default - A unique physical ID will be generated for you and used as the canary name.
    */
   readonly name: string;
 }
 
-export interface ICanary extends cdk.IResource {
-  // Should extend iam.IGrantable, ec2.IConnectable
-  // Should have all the properties and method signatures associated with a canary
-}
-
-/**
- * Base of a canary
- */
-export abstract class CanaryBase extends cdk.Resource implements ICanary {
-}
-
-/**
- * The canary.
- */
 export class Canary extends CanaryBase {
   /**
    * Execution role associated with this Canary.
@@ -173,9 +161,10 @@ export class Canary extends CanaryBase {
       inlinePolicies,
     });
 
-    const duration = props.lifetime ?? cdk.Duration.seconds(0);
+    const duration = props.timeToLive ?? cdk.Duration.seconds(0);
     const expression = props.frequency ?? cdk.Duration.minutes(5);
-    const timeout = props.timeout ?? cdk.Duration.seconds(Math.min(expression.toSeconds(), 900));
+    var timeout = props.timeout ?? cdk.Duration.seconds(Math.min(expression.toSeconds(), 900));
+    timeout = cdk.Duration.seconds(Math.min(timeout.toSeconds(), expression.toSeconds()));
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: s3Location,

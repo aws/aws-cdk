@@ -74,8 +74,7 @@
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "jest": "^26.1.0"
+    "@aws-cdk/core": "0.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
@@ -88,12 +87,13 @@
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/aws-synthetics.ICanary",
-      "props-physical-name:@aws-cdk/aws-synthetics.CanaryProps",
-      "docs-public-apis:@aws-cdk/aws-synthetics.ICanary"
+      "docs-public-apis:@aws-cdk/aws-synthetics.ICanary",
+      "docs-public-apis:@aws-cdk/aws-synthetics.Canary",
+      "props-physical-name:@aws-cdk/aws-synthetics.CanaryProps"
     ]
   },
   "stability": "experimental",
-  "maturity": "cfn-only",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   }
