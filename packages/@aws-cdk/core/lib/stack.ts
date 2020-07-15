@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, IConstruct } from 'constructs';
+import { Construct, IConstruct, Node } from 'constructs';
 import { App } from './app';
 import { Arn, ArnComponents } from './arn';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
@@ -309,14 +309,23 @@ export class Stack extends Construct implements ITaggable {
   public constructor(scope?: Construct, id?: string, props: StackProps = {}) {
     // For unit test scope and id are optional for stacks, but we still want an App
     // as the parent because apps implement much of the synthesis logic.
-    scope = scope ?? new App({
+    let relocateAsRoot = false;
+    if (!scope) {
+      scope = new App({
       autoSynth: false,
       outdir: FileSystem.mkdtemp('cdk-test-app-'),
     });
+      relocateAsRoot = true;
+    }
 
     id = id ?? 'Stack'; // this will also be the default stack name
 
     super(scope, id);
+
+    // relocate this stack as if it was the root (from a naming perspective).
+    if (relocateAsRoot) {
+      this.node.relocate('');
+    }
 
     this._missingContext = new Array<cxschema.MissingContext>();
     this._stackDependencies = { };
