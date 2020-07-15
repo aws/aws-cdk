@@ -115,7 +115,7 @@ describe('grant Permissions', () => {
 
   test('grant provides /* permissions when called with no arguments', () => {
     // WHEN
-    api.grant(role, [ appsync.IamResource.all() ], 'appsync:GraphQL');
+    api.grant(role, appsync.IamResource.all(), 'appsync:GraphQL');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {

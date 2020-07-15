@@ -250,8 +250,8 @@ export class IamResource {
    *
    * @param arns The custom arns that need to be permissioned
    */
-  public static custom(...arns: string[]): IamResource[] {
-    return arns.map((arn) => new IamResource(arn));
+  public static custom(...arns: string[]): IamResource {
+    return new IamResource(arns);
   }
 
   /**
@@ -260,25 +260,22 @@ export class IamResource {
    * @param type The type that needs to be allowed
    * @param fields The fields that need to be allowed, if empty then ARN set to `type/*`
    */
-  public static ofType(type: string, fields?: string[]): IamResource[] {
-    return fields ? fields.map((field) => new IamResource(this.parseArgs(type, field))) : [ new IamResource(this.parseArgs(type)) ];
+  public static ofType(type: string, fields?: string[]): IamResource {
+    const arns = fields ? fields.map((field) => `types/${type}/fields/${field}`) : [ `types/${type}/*` ];
+    return new IamResource(arns);
   }
 
   /**
    * Generate the resourceNames that accepts all, `*`
    */
   public static all(): IamResource {
-    return new IamResource('*');
+    return new IamResource(['*']);
   }
 
-  private static parseArgs (type: string, field?: string): string{
-    return field ? `types/${type}/fields/${field}` : `types/${type}/*`;
-  }
+  private arns: string[];
 
-  private arn: string;
-
-  private constructor(arn: string){
-    this.arn = arn;
+  private constructor(arns: string[]){
+    this.arns = arns;
   }
 
   /**
@@ -286,13 +283,13 @@ export class IamResource {
    *
    * @param api The GraphQL API to give permissions
    */
-  public name(api: GraphQLApi): string {
-    return Stack.of(api).formatArn({
+  public resourceArns(api: GraphQLApi): string[] {
+    return this.arns.map((arn) => Stack.of(api).formatArn({
       service: 'appsync',
       resource: `apis/${api.apiId}`,
       sep: '/',
-      resourceName: `${this.arn}`,
-    });
+      resourceName: `${arn}`,
+    }));
   }
 }
 
@@ -488,11 +485,11 @@ export class GraphQLApi extends Construct {
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
    */
-  public grant(grantee: IGrantable, resources: IamResource[], ...actions: string[]): Grant {
+  public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: resources.map((resource) => resource.name(this)),
+      resourceArns: resources.resourceArns(this),
       scope: this,
     });
 
@@ -508,7 +505,7 @@ export class GraphQLApi extends Construct {
     return Grant.addToPrincipal({
       grantee,
       actions: ['appsync:GraphQL'],
-      resourceArns: [ IamResource.all().name(this) ],
+      resourceArns: IamResource.all().resourceArns(this),
       scope: this,
     });
   }
@@ -553,11 +550,11 @@ export class GraphQLApi extends Construct {
    * @param grantee The principal
    * @param resources The resources to give permissions
    */
-  public grantType(grantee: IGrantable, resources: IamResource[]): Grant {
+  public grantType(grantee: IGrantable, resources: IamResource): Grant {
     return Grant.addToPrincipal({
       grantee,
       actions: ['appsync:GraphQL'],
-      resourceArns: resources.map((resource) => resource.name(this)),
+      resourceArns: resources.resourceArns(this),
       scope: this,
     });
   }
