@@ -125,7 +125,7 @@ const api = new appsync.GraphQLApi(stack, 'API', {
   definition
 });
 
-api.grant(role, appsync.IamResource.custom('types/Mutation/fields/updateExample'), 'appsync:graphql')
+api.grant(role, appsync.IamResource.custom('types/Mutation/fields/updateExample'), 'appsync:GraphQL')
 ```
 
 ### Generic Permissions
@@ -143,12 +143,8 @@ grantFullAccess
 
 ```ts
 // For generic types
-api.grantMutation(role, [
-  'updateExample',
-]);
+api.grantMutation(role, 'updateExample');
 
 // For custom types and granular design
-api.grantType(role, appsync.IamResource.ofType('Mutation', [
-  'updateExample',
-]));
+api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```
