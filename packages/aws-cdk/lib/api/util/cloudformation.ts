@@ -241,31 +241,61 @@ export function changeSetHasNoChanges(description: CloudFormation.DescribeChange
 }
 
 /**
- * Waits for a CloudFormation stack to stabilize in a complete/available state.
+ * Waits for a CloudFormation stack to stabilize in a complete/available state
+ * after a delete operation is issued.
  *
- * Fails if the stacks is not in a SUCCESSFUL state.
+ * Fails if the stack is in a FAILED state. Will not fail if the stack was
+ * already deleted.
  *
  * @param cfn        a CloudFormation client
- * @param stackName      the name of the stack to wait for
- * @param failOnDeletedStack whether to fail if the awaited stack is deleted.
+ * @param stackName      the name of the stack to wait for after a delete
  *
- * @returns     the CloudFormation description of the stabilized stack
+ * @returns     the CloudFormation description of the stabilized stack after the delete attempt
  */
-export async function waitForStack(
+export async function waitForStackAfterDelete(
   cfn: CloudFormation,
-  stackName: string,
-  failOnDeletedStack: boolean = true): Promise<CloudFormationStack | undefined> {
+  stackName: string): Promise<CloudFormationStack | undefined> {
 
   const stack = await stabilizeStack(cfn, stackName);
   if (!stack) { return undefined; }
 
   const status = stack.stackStatus;
   if (status.isFailure) {
-    throw new Error(`The stack named ${stackName} is in a failed state. You may need to "continue update rollback" or delete it from the AWS console : ${status}`);
+    throw new Error(`The stack named ${stackName} is in a failed state. You may need to delete it from the AWS console : ${status}`);
   } else if (status.isDeleted) {
-    if (failOnDeletedStack) { throw new Error(`The stack named ${stackName} was deleted`); }
     return undefined;
   }
+  return stack;
+}
+
+/**
+ * Waits for a CloudFormation stack to stabilize in a complete/available state
+ * after an update/create operation is issued.
+ *
+ * Fails if the stack is in a FAILED state, ROLLBACK state, or DELETED state.
+ *
+ * @param cfn        a CloudFormation client
+ * @param stackName      the name of the stack to wait for after an update
+ *
+ * @returns     the CloudFormation description of the stabilized stack after the update attempt
+ */
+export async function waitForStackAfterDeploy(
+  cfn: CloudFormation,
+  stackName: string): Promise<CloudFormationStack | undefined> {
+
+  const stack = await stabilizeStack(cfn, stackName);
+  if (!stack) { return undefined; }
+
+  const status = stack.stackStatus;
+
+  if (status.isCreationFailure) {
+    throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
+  } else if (status.isFailure) {
+    throw new Error(`The stack named ${stackName} is in a failed state. You may need to "continue update rollback" or delete it from the AWS console : ${status}`);
+  }else if (status.isDeleted) {
+    throw new Error(`The stack named ${stackName} was deleted`);
+  }
+
   return stack;
 }
 
