@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import { LambdaInvocationType, LambdaInvoke, LambdaResourceType } from '../../lib';
+import { LambdaInvocationType, LambdaInvoke } from '../../lib';
 
 /* eslint-disable quote-props */
 
@@ -223,18 +223,20 @@ describe('LambdaInvoke', () => {
     });
   });
 
-  test('fails when conflicting settings are used with payloadResponseOnly', () => {
+  test('fails when integrationPattern used with payloadResponseOnly', () => {
     expect(() => {
       new LambdaInvoke(stack, 'Task', {
         lambdaFunction,
         payloadResponseOnly: true,
+        integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
         payload: sfn.TaskInput.fromObject({
-          foo: 'bar',
+          token: sfn.JsonPath.taskToken,
         }),
-        integrationPattern: sfn.IntegrationPattern.RUN_JOB,
       });
     }).toThrow(/payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier./);
+  });
 
+  test('fails when invocationType used with payloadResponseOnly', () => {
     expect(() => {
       new LambdaInvoke(stack, 'Task', {
         lambdaFunction,
@@ -245,7 +247,9 @@ describe('LambdaInvoke', () => {
         invocationType: LambdaInvocationType.REQUEST_RESPONSE,
       });
     }).toThrow(/payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier./);
+  });
 
+  test('fails when clientContext used with payloadResponseOnly', () => {
     expect(() => {
       new LambdaInvoke(stack, 'Task', {
         lambdaFunction,
@@ -256,7 +260,9 @@ describe('LambdaInvoke', () => {
         clientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
       });
     }).toThrow(/payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier./);
+  });
 
+  test('fails when qualifier used with payloadResponseOnly', () => {
     expect(() => {
       new LambdaInvoke(stack, 'Task', {
         lambdaFunction,

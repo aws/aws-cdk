@@ -86,8 +86,8 @@ export class LambdaInvoke extends sfn.TaskStateBase {
       throw new Error('Task Token is required in `payload` for callback. Use JsonPath.taskToken to set the token.');
     }
 
-    if (this.props.payloadResponseOnly &&
-      (this.integrationPattern || this.props.invocationType || this.props.clientContext || this.props.qualifier)) {
+    if (props.payloadResponseOnly &&
+      (props.integrationPattern || props.invocationType || props.clientContext || props.qualifier)) {
       throw new Error(
         'payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier.',
       );
