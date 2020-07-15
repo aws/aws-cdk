@@ -75,7 +75,7 @@ export interface DistributionProps {
    * If you specify a price class other than PriceClass_All, CloudFront serves your objects from the CloudFront edge location
    * that has the lowest latency among the edge locations in your price class.
    *
-   * @default PRICE_CLASS_ALL
+   * @default PriceClass.PRICE_CLASS_ALL
    */
   readonly priceClass?: PriceClass;
 
@@ -126,7 +126,7 @@ export class Distribution extends Resource implements IDistribution {
     if (props.certificate) {
       const certificateRegion = Stack.of(this).parseArn(props.certificate.certificateArn).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
-        throw new Error('Distribution certificates must be in the us-east-1 region.');
+        throw new Error('Distribution certificates must be in the us-east-1 region and the certificate you provided is in $Region.');
       }
     }
 
@@ -266,7 +266,7 @@ export interface CustomErrorResponse {
    *
    * @default the default caching TTL behavior applies
    */
-  readonly errorCachingMinTtl?: Duration;
+  readonly ttl?: Duration;
   /**
    * The HTTP status code for which you want to specify a custom error page and/or a caching duration.
    */
@@ -276,7 +276,7 @@ export interface CustomErrorResponse {
    *
    * If you specify a value for `responseCode`, you must also specify a value for `responsePagePath`.
    *
-   * @default not set, the error code will be returned as the response code.
+   * @default - not set, the error code will be returned as the response code.
    */
   readonly responseCode?: number;
   /**
