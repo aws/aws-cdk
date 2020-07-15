@@ -238,6 +238,7 @@ export class CfnResource extends CfnRefElement {
 
   /**
    * Add a value to the CloudFormation Resource Metadata
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
    *
    * Note that this is a different set of metadata from CDK node metadata; this
    * metadata ends up in the stack template under the resource, whereas CDK
