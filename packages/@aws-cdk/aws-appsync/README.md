@@ -128,6 +128,16 @@ const api = new appsync.GraphQLApi(stack, 'API', {
 api.grant(role, appsync.IamResource.custom('types/Mutation/fields/updateExample'), 'appsync:GraphQL')
 ```
 
+### IamResource
+
+In order to use the `grant` functions, you need to use the class `IamResource`.
+
+- `IamResource.custom(...arns)` permits custom ARNs and requires an argument.
+
+- `IamResouce.ofType(type, ...fields)` permits ARNs for types and their fields.
+
+- `IamResource.all()` permits ALL resources.
+
 ### Generic Permissions
 
 Alternatively, you can use more generic `grant` functions to accomplish the same usage.
