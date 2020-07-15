@@ -33,6 +33,10 @@ export class StackStatus {
     return this.name === 'NOT_FOUND';
   }
 
+  get isDeploySuccess(): boolean {
+    return !this.isNotFound && (this.name === 'CREATE_COMPLETE' || this.name === 'UPDATE_COMPLETE');
+  }
+
   public toString(): string {
     return this.name + (this.reason ? ` (${this.reason})` : '');
   }

@@ -252,7 +252,7 @@ export function changeSetHasNoChanges(description: CloudFormation.DescribeChange
  *
  * @returns     the CloudFormation description of the stabilized stack after the delete attempt
  */
-export async function waitForStackAfterDelete(
+export async function waitForStackDelete(
   cfn: CloudFormation,
   stackName: string): Promise<CloudFormationStack | undefined> {
 
@@ -279,7 +279,7 @@ export async function waitForStackAfterDelete(
  *
  * @returns     the CloudFormation description of the stabilized stack after the update attempt
  */
-export async function waitForStackAfterDeploy(
+export async function waitForStackDeploy(
   cfn: CloudFormation,
   stackName: string): Promise<CloudFormationStack | undefined> {
 
@@ -290,9 +290,9 @@ export async function waitForStackAfterDeploy(
 
   if (status.isCreationFailure) {
     throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
-  } else if (status.isFailure) {
-    throw new Error(`The stack named ${stackName} is in a failed state. You may need to "continue update rollback" or delete it from the AWS console : ${status}`);
-  }else if (status.isDeleted) {
+  } else if (!status.isDeploySuccess) {
+    throw new Error(`The stack named ${stackName} failed to deploy: ${status}`);
+  } else if (status.isDeleted) {
     throw new Error(`The stack named ${stackName} was deleted`);
   }
 

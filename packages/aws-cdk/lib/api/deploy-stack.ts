@@ -10,7 +10,7 @@ import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { ToolkitInfo } from './toolkit-info';
-import { changeSetHasNoChanges, CloudFormationStack, StackParameters, TemplateParameters, waitForChangeSet, waitForStackAfterDeploy, waitForStackAfterDelete } from './util/cloudformation';
+import { changeSetHasNoChanges, CloudFormationStack, StackParameters, TemplateParameters, waitForChangeSet, waitForStackDeploy, waitForStackDelete } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 
 // We need to map regions to domain suffixes, and the SDK already has a function to do this.
@@ -175,7 +175,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (cloudFormationStack.stackStatus.isCreationFailure) {
     debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
     await cfn.deleteStack({ StackName: deployName }).promise();
-    const deletedStack = await waitForStackAfterDelete(cfn, deployName);
+    const deletedStack = await waitForStackDelete(cfn, deployName);
     if (deletedStack && deletedStack.stackStatus.name !== 'DELETE_COMPLETE') {
       throw new Error(`Failed deleting stack ${deployName} that had previously failed creation (current state: ${deletedStack.stackStatus})`);
     }
@@ -263,7 +263,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     }).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
     try {
-      const finalStack = await waitForStackAfterDeploy(cfn, deployName);
+      const finalStack = await waitForStackDeploy(cfn, deployName);
 
       // This shouldn't really happen, but catch it anyway. You never know.
       if (!finalStack) { throw new Error('Stack deploy failed (the stack disappeared while we were deploying it)'); }
@@ -361,7 +361,7 @@ export async function destroyStack(options: DestroyStackOptions) {
 
   try {
     await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise();
-    const destroyedStack = await waitForStackAfterDelete(cfn, deployName);
+    const destroyedStack = await waitForStackDelete(cfn, deployName);
     if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
       throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
     }

@@ -214,17 +214,18 @@ integTest('deploy with parameters', async () => {
 
 integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and create a new one', async () => {
   // GIVEN
-  const stackArn = await cdkDeploy('param-test-1', {
+  await expect(cdkDeploy('param-test-1', {
     options: [
       '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}@aww`,
     ],
     captureStderr: false,
+  })).rejects.toThrow('exited with error');
+
+  const response = await cloudFormation('describeStacks', {
+    StackName: fullStackName('param-test-1'),
   });
 
-  let response = await cloudFormation('describeStacks', {
-    StackName: stackArn,
-  });
-
+  const stackArn = response.Stacks?.[0].StackId;
   expect(response.Stacks?.[0].StackStatus).toEqual('ROLLBACK_COMPLETE');
 
   // WHEN
@@ -235,17 +236,12 @@ integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and crea
     captureStderr: false,
   });
 
-  response = await cloudFormation('describeStacks', {
-    StackName: stackArn,
-  });
-
   const newStackResponse = await cloudFormation('describeStacks', {
     StackName: newStackArn,
   });
 
   // THEN
-  expect(response.Stacks?.[0].StackStatus).toEqual('DELETE_COMPLETE'); // stack in ROLLBACK_COMPLETE should be deleted
-  expect(newStackArn).not.toEqual(stackArn);
+  expect (stackArn).not.toEqual(newStackArn); // new stack was created
   expect(newStackResponse.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
   expect(newStackResponse.Stacks?.[0].Parameters).toEqual([
     {
@@ -271,12 +267,12 @@ integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', async () => 
   expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
 
   // bad parameter name with @ will put stack into UPDATE_ROLLBACK_COMPLETE
-  await cdkDeploy('param-test-1', {
+  await expect(cdkDeploy('param-test-1', {
     options: [
       '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}@aww`,
     ],
     captureStderr: false,
-  });
+  })).rejects.toThrow('exited with error');;
 
   response = await cloudFormation('describeStacks', {
     StackName: stackArn,
