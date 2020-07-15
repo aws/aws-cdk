@@ -723,7 +723,7 @@ test('if an encryption key is included, encrypt/decrypt permissions are also add
             ],
             'Version': '2012-10-17',
           },
-          'Description': 'Customer-managed key auto-created for encrypting DynamoDB table at Stack/Table A',
+          'Description': 'Customer-managed key auto-created for encrypting DynamoDB table at Table A',
           'EnableKeyRotation': true,
         },
         'UpdateReplacePolicy': 'Retain',
@@ -1758,7 +1758,7 @@ describe('grants', () => {
     const user = new iam.User(stack, 'user');
 
     // WHEN
-    expect(() => table.grantTableListStreams(user)).toThrow(/DynamoDB Streams must be enabled on the table Stack\/my-table/);
+    expect(() => table.grantTableListStreams(user)).toThrow(/DynamoDB Streams must be enabled on the table my-table/);
   });
 
   test('"grantTableListStreams" allows principal to list all streams for this table', () => {
@@ -1804,7 +1804,7 @@ describe('grants', () => {
     const user = new iam.User(stack, 'user');
 
     // WHEN
-    expect(() => table.grantStreamRead(user)).toThrow(/DynamoDB Streams must be enabled on the table Stack\/my-table/);
+    expect(() => table.grantStreamRead(user)).toThrow(/DynamoDB Streams must be enabled on the table my-table/);
   });
 
   test('"grantStreamRead" allows principal to read and describe the table stream"', () => {
@@ -2268,7 +2268,7 @@ describe('global', () => {
         ServiceToken: {
           'Fn::GetAtt': [
             'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
-            'Outputs.StackawscdkawsdynamodbReplicaProviderframeworkonEvent27E7BDE8Arn',
+            'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn',
           ],
         },
         TableName: {
@@ -2284,7 +2284,7 @@ describe('global', () => {
         ServiceToken: {
           'Fn::GetAtt': [
             'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
-            'Outputs.StackawscdkawsdynamodbReplicaProviderframeworkonEvent27E7BDE8Arn',
+            'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn',
           ],
         },
         TableName: {

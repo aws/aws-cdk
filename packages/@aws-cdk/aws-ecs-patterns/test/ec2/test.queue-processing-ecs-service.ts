@@ -74,7 +74,7 @@ export = {
           Memory: 512,
         },
       ],
-      Family: 'StackServiceQueueProcessingTaskDef0CCF68C6',
+      Family: 'ServiceQueueProcessingTaskDef83DB34F1',
     }));
 
     test.done();
@@ -149,7 +149,7 @@ export = {
           Memory: 512,
         },
       ],
-      Family: 'StackServiceQueueProcessingTaskDef0CCF68C6',
+      Family: 'ServiceQueueProcessingTaskDef83DB34F1',
     }));
 
     test.done();

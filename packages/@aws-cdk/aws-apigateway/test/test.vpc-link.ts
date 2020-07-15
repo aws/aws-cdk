@@ -47,7 +47,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::ApiGateway::VpcLink', {
-      Name: 'StackVpcLink0E48D8A7',
+      Name: 'VpcLink',
       TargetArns: [
         { Ref: 'NLB03D178991' },
         { Ref: 'NLB13224D47C' },

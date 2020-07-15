@@ -26,7 +26,7 @@ export = {
         Tags: [
           {
             Key: 'Name',
-            Value: 'Stack/EcsCluster/Vpc',
+            Value: 'EcsCluster/Vpc',
           },
         ],
       }));
@@ -74,7 +74,7 @@ export = {
           {
             Key: 'Name',
             PropagateAtLaunch: true,
-            Value: 'Stack/EcsCluster/DefaultAutoScalingGroup',
+            Value: 'EcsCluster/DefaultAutoScalingGroup',
           },
         ],
         VPCZoneIdentifier: [
@@ -88,7 +88,7 @@ export = {
       }));
 
       expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'Stack/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
+        GroupDescription: 'EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
         SecurityGroupEgress: [
           {
             CidrIp: '0.0.0.0/0',
@@ -99,7 +99,7 @@ export = {
         Tags: [
           {
             Key: 'Name',
-            Value: 'Stack/EcsCluster/DefaultAutoScalingGroup',
+            Value: 'EcsCluster/DefaultAutoScalingGroup',
           },
         ],
         VpcId: {
@@ -171,7 +171,7 @@ export = {
         Tags: [
           {
             Key: 'Name',
-            Value: 'Stack/MyVpc',
+            Value: 'MyVpc',
           },
         ],
       }));
@@ -219,7 +219,7 @@ export = {
           {
             Key: 'Name',
             PropagateAtLaunch: true,
-            Value: 'Stack/EcsCluster/DefaultAutoScalingGroup',
+            Value: 'EcsCluster/DefaultAutoScalingGroup',
           },
         ],
         VPCZoneIdentifier: [
@@ -233,7 +233,7 @@ export = {
       }));
 
       expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'Stack/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
+        GroupDescription: 'EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
         SecurityGroupEgress: [
           {
             CidrIp: '0.0.0.0/0',
@@ -244,7 +244,7 @@ export = {
         Tags: [
           {
             Key: 'Name',
-            Value: 'Stack/EcsCluster/DefaultAutoScalingGroup',
+            Value: 'EcsCluster/DefaultAutoScalingGroup',
           },
         ],
         VpcId: {
@@ -471,7 +471,7 @@ export = {
         Tags: [
           {
             Key: 'Name',
-            Value: 'Stack/MyVpc',
+            Value: 'MyVpc',
           },
         ],
       }));
@@ -519,7 +519,7 @@ export = {
           {
             Key: 'Name',
             PropagateAtLaunch: true,
-            Value: 'Stack/EcsCluster/DefaultAutoScalingGroup',
+            Value: 'EcsCluster/DefaultAutoScalingGroup',
           },
         ],
         VPCZoneIdentifier: [
@@ -533,7 +533,7 @@ export = {
       }));
 
       expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'Stack/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
+        GroupDescription: 'EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
         SecurityGroupEgress: [
           {
             CidrIp: '0.0.0.0/0',
@@ -544,7 +544,7 @@ export = {
         Tags: [
           {
             Key: 'Name',
-            Value: 'Stack/EcsCluster/DefaultAutoScalingGroup',
+            Value: 'EcsCluster/DefaultAutoScalingGroup',
           },
         ],
         VpcId: {
@@ -1228,7 +1228,7 @@ export = {
       Tags: [
         {
           Key: 'Name',
-          Value: 'Stack/MyPublicVpc',
+          Value: 'MyPublicVpc',
         },
       ],
     }));
@@ -1277,7 +1277,7 @@ export = {
         {
           Key: 'Name',
           PropagateAtLaunch: true,
-          Value: 'Stack/EcsCluster/DefaultAutoScalingGroup',
+          Value: 'EcsCluster/DefaultAutoScalingGroup',
         },
       ],
       VPCZoneIdentifier: [
@@ -1291,7 +1291,7 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-      GroupDescription: 'Stack/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
+      GroupDescription: 'EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
       SecurityGroupEgress: [
         {
           CidrIp: '0.0.0.0/0',
@@ -1302,7 +1302,7 @@ export = {
       Tags: [
         {
           Key: 'Name',
-          Value: 'Stack/EcsCluster/DefaultAutoScalingGroup',
+          Value: 'EcsCluster/DefaultAutoScalingGroup',
         },
       ],
       VpcId: {

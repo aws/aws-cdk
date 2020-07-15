@@ -592,7 +592,7 @@ describe('DatabaseCluster', () => {
             ],
           ],
         },
-        functionName: 'StackDatabaseRotationSingleUserF00A3AD1',
+        functionName: 'DatabaseRotationSingleUser458A45BE',
         vpcSubnetIds: {
           'Fn::Join': [
             '',
@@ -710,7 +710,7 @@ describe('DatabaseCluster', () => {
             ],
           ],
         },
-        functionName: 'StackDatabaseRotation6713F62B',
+        functionName: 'DatabaseRotation0D47EBD2',
         vpcSubnetIds: {
           'Fn::Join': [
             '',

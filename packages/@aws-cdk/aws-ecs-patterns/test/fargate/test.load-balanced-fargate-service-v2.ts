@@ -71,7 +71,7 @@ export = {
             'Arn',
           ],
         },
-        Family: 'StackServiceTaskDef733E80F6',
+        Family: 'ServiceTaskDef79D79521',
         Memory: '512',
         NetworkMode: 'awsvpc',
         RequiresCompatibilities: [
@@ -370,7 +370,7 @@ export = {
             'Arn',
           ],
         },
-        Family: 'StackServiceTaskDef733E80F6',
+        Family: 'ServiceTaskDef79D79521',
         Memory: '512',
         NetworkMode: 'awsvpc',
         RequiresCompatibilities: [
@@ -402,7 +402,7 @@ export = {
           logDriver: new ecs.AwsLogDriver({
             streamPrefix: 'TestStream',
           }),
-          family: 'StackServiceTaskDef733E80F6',
+          family: 'Ec2TaskDef',
           executionRole: new Role(stack, 'ExecutionRole', {
             path: '/',
             assumedBy: new CompositePrincipal(
@@ -526,7 +526,7 @@ export = {
             'Arn',
           ],
         },
-        Family: 'StackServiceTaskDef733E80F6',
+        Family: 'Ec2TaskDef',
         Memory: '512',
         NetworkMode: 'awsvpc',
         RequiresCompatibilities: [

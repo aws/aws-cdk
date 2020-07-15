@@ -260,7 +260,7 @@ nodeunitShim({
       }));
 
       expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'Stack/VpcNetwork/EcrDocker/SecurityGroup',
+        GroupDescription: 'VpcNetwork/EcrDocker/SecurityGroup',
         VpcId: {
           Ref: 'VpcNetworkB258E83A',
         },

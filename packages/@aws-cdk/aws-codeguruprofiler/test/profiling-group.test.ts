@@ -190,14 +190,15 @@ describe('profiling group', () => {
 
   test('default profiling group without name', () => {
     const stack = new Stack();
-    new ProfilingGroup(stack, 'MyProfilingGroup');
+    new ProfilingGroup(stack, 'MyProfilingGroup', {
+    });
 
     expect(stack).toMatch({
       'Resources': {
         'MyProfilingGroup829F0507': {
           'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
           'Properties': {
-            'ProfilingGroupName': 'StackMyProfilingGroup664763A5',
+            'ProfilingGroupName': 'MyProfilingGroup',
           },
         },
       },
@@ -214,7 +215,7 @@ describe('profiling group', () => {
         'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMustBeGreaterThanTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConca4B39908C': {
           'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
           'Properties': {
-            'ProfilingGroupName': 'StackMyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMuserThanTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndB7D9636D',
+            'ProfilingGroupName': 'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMustBeGrnTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConca2FE009B0',
           },
         },
       },

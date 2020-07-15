@@ -37,7 +37,7 @@ export = {
           'Id',
         ],
       },
-      InstanceId: 'StackMyNamespaceMyServiceIpInstanceF1B9ABBE',
+      InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
     }));
 
     test.done();
@@ -75,7 +75,7 @@ export = {
           'Id',
         ],
       },
-      InstanceId: 'StackMyNamespaceMyServiceIpInstanceF1B9ABBE',
+      InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
     }));
 
     test.done();
@@ -115,7 +115,7 @@ export = {
           'Id',
         ],
       },
-      InstanceId: 'StackMyNamespaceMyServiceIpInstanceF1B9ABBE',
+      InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
     }));
 
     test.done();
@@ -273,7 +273,7 @@ export = {
           'Id',
         ],
       },
-      InstanceId: 'StackMyNamespaceMyServiceLoadbalancer228D42DF',
+      InstanceId: 'MyNamespaceMyServiceLoadbalancerD1112A76',
     }));
 
     test.done();
@@ -355,7 +355,7 @@ export = {
           'Id',
         ],
       },
-      InstanceId: 'StackMyNamespaceMyServiceCnameInstance24D3C50C',
+      InstanceId: 'MyNamespaceMyServiceCnameInstance0EB1C98D',
     }));
 
     test.done();
@@ -408,7 +408,7 @@ export = {
           'Id',
         ],
       },
-      InstanceId: 'StackMyNamespaceMyServiceNonIpInstance990D5FF0',
+      InstanceId: 'MyNamespaceMyServiceNonIpInstance7EFD703A',
     }));
 
     test.done();

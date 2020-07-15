@@ -16,7 +16,7 @@ test('create a vault', () => {
 
   // THEN
   expect(stack).toHaveResource('AWS::Backup::BackupVault', {
-    BackupVaultName: 'StackVault02F737C4',
+    BackupVaultName: 'Vault',
   });
 });
 

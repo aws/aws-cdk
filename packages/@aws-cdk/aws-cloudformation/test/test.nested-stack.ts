@@ -886,7 +886,7 @@ export = {
         },
       },
       Outputs: {
-        StacknestedresourceinnestedE8C78B2EConsumedAttribute: {
+        nestedresourceinnested59B1F01CConsumedAttribute: {
           Value: {
             'Fn::GetAtt': [
               'resourceinnested',
@@ -900,7 +900,7 @@ export = {
       ConsumedAttribute: {
         'Fn::GetAtt': [
           'nestedNestedStacknestedNestedStackResource3DD143BF',
-          'Outputs.StacknestedresourceinnestedE8C78B2EConsumedAttribute',
+          'Outputs.nestedresourceinnested59B1F01CConsumedAttribute',
         ],
       },
     }));

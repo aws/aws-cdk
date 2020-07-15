@@ -33,7 +33,7 @@ describe('User Pool', () => {
         SnsCallerArn: {
           'Fn::GetAtt': [ 'PoolsmsRoleC3352CE6', 'Arn' ],
         },
-        ExternalId: 'StackPool7DFA52F5',
+        ExternalId: 'Pool',
       },
       lambdaTriggers: ABSENT,
     });
@@ -45,7 +45,7 @@ describe('User Pool', () => {
             Action: 'sts:AssumeRole',
             Condition: {
               StringEquals: {
-                'sts:ExternalId': 'StackPool7DFA52F5',
+                'sts:ExternalId': 'Pool',
               },
             },
             Effect: 'Allow',

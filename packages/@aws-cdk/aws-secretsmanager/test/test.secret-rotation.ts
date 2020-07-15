@@ -26,7 +26,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
       IpProtocol: 'tcp',
-      Description: 'from StackSecretRotationSecurityGroup79E4F5FF:3306',
+      Description: 'from SecretRotationSecurityGroupAEC520AB:3306',
       FromPort: 3306,
       GroupId: {
         'Fn::GetAtt': [
@@ -59,7 +59,7 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-      GroupDescription: 'Stack/SecretRotation/SecurityGroup',
+      GroupDescription: 'SecretRotation/SecurityGroup',
     }));
 
     expect(stack).to(haveResource('AWS::Serverless::Application', {
@@ -83,7 +83,7 @@ export = {
             ],
           ],
         },
-        functionName: 'StackSecretRotation369145BF',
+        functionName: 'SecretRotation',
         vpcSecurityGroupIds: {
           'Fn::GetAtt': [
             'SecretRotationSecurityGroup9985012B',
@@ -182,7 +182,7 @@ export = {
             ],
           ],
         },
-        functionName: 'StackSecretRotation369145BF',
+        functionName: 'SecretRotation',
         vpcSecurityGroupIds: {
           'Fn::GetAtt': [
             'SecretRotationSecurityGroup9985012B',
@@ -329,7 +329,7 @@ export = {
             ],
           ],
         },
-        functionName: 'SecretRotationSecretRotationSecretRotationSecretRotationA7DEE631',
+        functionName: 'RotationSecretRotationSecretRotationSecretRotationSecretRotation',
         vpcSecurityGroupIds: {
           'Fn::GetAtt': [
             'SecretRotationSecretRotationSecretRotationSecretRotationSecretRotationSecurityGroupBFCB171A',

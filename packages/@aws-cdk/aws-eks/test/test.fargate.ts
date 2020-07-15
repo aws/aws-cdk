@@ -281,7 +281,7 @@ export = {
       Properties: {
         ServiceToken: { 'Fn::GetAtt': [
           'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
-          'Outputs.StackawscdkawseksClusterResourceProviderframeworkonEvent9D6CED48Arn',
+          'Outputs.awscdkawseksClusterResourceProviderframeworkonEventEA97AA31Arn',
         ]},
         AssumeRoleArn: { 'Fn::GetAtt': [ 'MyClusterCreationRoleB5FA4FF3', 'Arn' ] },
         Config: {
