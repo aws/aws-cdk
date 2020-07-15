@@ -19,7 +19,7 @@ describe('fromBucket', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
     const origin = Origin.fromBucket(bucket);
-    origin.bind(stack, { originIndex: 0 });
+    origin._bind(stack, { originIndex: 0 });
 
     expect(origin._renderOrigin()).toEqual({
       id: 'StackOrigin029E19582',
@@ -58,7 +58,7 @@ describe('fromBucket', () => {
     });
 
     const origin = Origin.fromBucket(bucket);
-    origin.bind(stack, { originIndex: 0 });
+    origin._bind(stack, { originIndex: 0 });
 
     expect(origin._renderOrigin()).toEqual({
       id: 'StackOrigin029E19582',

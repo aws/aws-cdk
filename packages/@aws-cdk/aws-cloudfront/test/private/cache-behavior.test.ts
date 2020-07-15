@@ -20,7 +20,7 @@ test('renders the minimum template with an origin and path specified', () => {
     origin,
     pathPattern: '*',
   });
-  origin.bind(stack, { originIndex: 0 });
+  origin._bind(stack, { originIndex: 0 });
 
   expect(behavior._renderBehavior()).toEqual({
     targetOriginId: behavior.origin.id,
@@ -39,7 +39,7 @@ test('renders with all properties specified', () => {
     forwardQueryString: true,
     forwardQueryStringCacheKeys: ['user_id', 'auth'],
   });
-  origin.bind(stack, { originIndex: 0 });
+  origin._bind(stack, { originIndex: 0 });
 
   expect(behavior._renderBehavior()).toEqual({
     targetOriginId: behavior.origin.id,

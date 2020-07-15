@@ -56,8 +56,6 @@ export interface IBucket extends IResource {
 
   /**
    * If this bucket has been configured for static website hosting.
-   *
-   * @default false
    */
   readonly isWebsite?: boolean;
 

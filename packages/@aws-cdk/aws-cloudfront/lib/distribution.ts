@@ -58,14 +58,14 @@ export interface DistributionProps {
   /**
    * Additional behaviors for the distribution, mapped by the pathPattern that specifies which requests to apply the behavior to.
    *
-   * @default no additional behaviors are added.
+   * @default - no additional behaviors are added.
    */
   readonly additionalBehaviors?: Record<string, BehaviorOptions>;
 
   /**
    * A certificate to associate with the distribution. The certificate must be located in N. Virginia (us-east-1).
    *
-   * @default the CloudFront wildcard certificate (*.cloudfront.net) will be used.
+   * @default - the CloudFront wildcard certificate (*.cloudfront.net) will be used.
    */
   readonly certificate?: acm.ICertificate;
 
@@ -82,9 +82,9 @@ export interface DistributionProps {
   /**
    * How CloudFront should handle requests that are not successful (e.g., PageNotFound).
    *
-   * @default - No custom error configuration.
+   * @default - No custom error responses.
    */
-  readonly errorConfigurations?: CustomErrorResponse[];
+  readonly errorResponses?: ErrorResponse[];
 }
 
 /**
@@ -117,7 +117,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly additionalBehaviors: CacheBehavior[] = [];
   private readonly origins: Set<Origin> = new Set<Origin>();
 
-  private readonly errorConfigurations: CustomErrorResponse[];
+  private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: acm.ICertificate;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
@@ -139,7 +139,7 @@ export class Distribution extends Resource implements IDistribution {
     }
 
     this.certificate = props.certificate;
-    this.errorConfigurations = props.errorConfigurations ?? [];
+    this.errorResponses = props.errorResponses ?? [];
 
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
       enabled: true,
@@ -147,7 +147,7 @@ export class Distribution extends Resource implements IDistribution {
       defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
       cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
       viewerCertificate: this.certificate ? { acmCertificateArn: this.certificate.certificateArn } : undefined,
-      customErrorResponses: this.renderCustomErrorResponses(),
+      customErrorResponses: this.renderErrorResponses(),
       priceClass: props.priceClass ?? undefined,
     } });
 
@@ -172,7 +172,7 @@ export class Distribution extends Resource implements IDistribution {
   private addOrigin(origin: Origin) {
     if (!this.origins.has(origin)) {
       this.origins.add(origin);
-      origin.bind(this, { originIndex: this.origins.size });
+      origin._bind(this, { originIndex: this.origins.size });
     }
   }
 
@@ -187,23 +187,23 @@ export class Distribution extends Resource implements IDistribution {
     return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
   }
 
-  private renderCustomErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
-    if (this.errorConfigurations.length === 0) { return undefined; }
-    function validateCustomErrorResponse(errorResponse: CustomErrorResponse) {
-      if (errorResponse.responsePagePath && !errorResponse.responseCode) {
+  private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
+    if (this.errorResponses.length === 0) { return undefined; }
+    function validateCustomErrorResponse(errorResponse: ErrorResponse) {
+      if (errorResponse.responsePagePath && !errorResponse.responseHttpStatus) {
         throw new Error('\'responseCode\' must be provided if \'responsePagePath\' is defined');
       }
-      if (!errorResponse.responseCode && !errorResponse.errorCachingMinTtl) {
+      if (!errorResponse.responseHttpStatus && !errorResponse.ttl) {
         throw new Error('A custom error response without either a \'responseCode\' or \'errorCachingMinTtl\' is not valid.');
       }
     }
-    this.errorConfigurations.forEach(e => validateCustomErrorResponse(e));
+    this.errorResponses.forEach(e => validateCustomErrorResponse(e));
 
-    return this.errorConfigurations.map(errorConfig => {
+    return this.errorResponses.map(errorConfig => {
       return {
-        errorCachingMinTtl: errorConfig.errorCachingMinTtl?.toSeconds(),
-        errorCode: errorConfig.errorCode,
-        responseCode: errorConfig.responseCode,
+        errorCachingMinTtl: errorConfig.ttl?.toSeconds(),
+        errorCode: errorConfig.httpStatus,
+        responseCode: errorConfig.responseHttpStatus,
         responsePagePath: errorConfig.responsePagePath,
       };
     });
@@ -213,10 +213,14 @@ export class Distribution extends Resource implements IDistribution {
 
 /**
  * The price class determines how many edge locations CloudFront will use for your distribution.
+ * See https://aws.amazon.com/cloudfront/pricing/ for full list of supported regions.
  */
 export enum PriceClass {
+  /** USA, Canada, Europe, & Israel */
   PRICE_CLASS_100 = 'PriceClass_100',
+  /** PRICE_CLASS_100 + South Africa, Kenya, Middle East, Japan, Singapore, South Korea, Taiwan, Hong Kong, & Philippines */
   PRICE_CLASS_200 = 'PriceClass_200',
+  /** All locations */
   PRICE_CLASS_ALL = 'PriceClass_All'
 }
 
@@ -224,8 +228,11 @@ export enum PriceClass {
  * How HTTPs should be handled with your distribution.
  */
 export enum ViewerProtocolPolicy {
+  /** HTTPS only */
   HTTPS_ONLY = 'https-only',
+  /** Will redirect HTTP requests to HTTPS */
   REDIRECT_TO_HTTPS = 'redirect-to-https',
+  /** Both HTTP and HTTPS supported */
   ALLOW_ALL = 'allow-all'
 }
 
@@ -233,8 +240,11 @@ export enum ViewerProtocolPolicy {
  * Defines what protocols CloudFront will use to connect to an origin.
  */
 export enum OriginProtocolPolicy {
+  /** Connect on HTTP only */
   HTTP_ONLY = 'http-only',
+  /** Connect with the same protocol as the viewer */
   MATCH_VIEWER = 'match-viewer',
+  /** Connect on HTTPS only */
   HTTPS_ONLY = 'https-only',
 }
 
@@ -260,30 +270,30 @@ export class AllowedMethods {
  *
  * @experimental
  */
-export interface CustomErrorResponse {
+export interface ErrorResponse {
   /**
    * The minimum amount of time, in seconds, that you want CloudFront to cache the HTTP status code specified in ErrorCode.
    *
-   * @default the default caching TTL behavior applies
+   * @default - the default caching TTL behavior applies
    */
   readonly ttl?: Duration;
   /**
    * The HTTP status code for which you want to specify a custom error page and/or a caching duration.
    */
-  readonly errorCode: number;
+  readonly httpStatus: number;
   /**
    * The HTTP status code that you want CloudFront to return to the viewer along with the custom error page.
    *
-   * If you specify a value for `responseCode`, you must also specify a value for `responsePagePath`.
+   * If you specify a value for `responseHttpStatus`, you must also specify a value for `responsePagePath`.
    *
    * @default - not set, the error code will be returned as the response code.
    */
-  readonly responseCode?: number;
+  readonly responseHttpStatus?: number;
   /**
    * The path to the custom error page that you want CloudFront to return to a viewer when your origin returns the
-   * `errorCode`, for example, /4xx-errors/403-forbidden.html
+   * `httpStatus`, for example, /4xx-errors/403-forbidden.html
    *
-   * @default the default CloudFront response is shown.
+   * @default - the default CloudFront response is shown.
    */
   readonly responsePagePath?: string;
 }
@@ -297,7 +307,7 @@ export interface AddBehaviorOptions {
   /**
    * HTTP methods to allow for this behavior.
    *
-   * @default GET and HEAD
+   * @default - GET and HEAD
    */
   readonly allowedMethods?: AllowedMethods;
 
@@ -314,7 +324,7 @@ export interface AddBehaviorOptions {
   /**
    * A set of query string parameter names to use for caching if `forwardQueryString` is set to true.
    *
-   * @default empty list
+   * @default []
    */
   readonly forwardQueryStringCacheKeys?: string[];
 }

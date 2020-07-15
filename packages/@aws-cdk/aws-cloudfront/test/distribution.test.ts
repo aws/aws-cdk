@@ -231,8 +231,8 @@ describe('custom error responses', () => {
     expect(() => {
       new Distribution(stack, 'Dist', {
         defaultBehavior: { origin },
-        errorConfigurations: [{
-          errorCode: 404,
+        errorResponses: [{
+          httpStatus: 404,
           responsePagePath: '/errors/404.html',
         }],
       });
@@ -245,7 +245,7 @@ describe('custom error responses', () => {
     expect(() => {
       new Distribution(stack, 'Dist', {
         defaultBehavior: { origin },
-        errorConfigurations: [{ errorCode: 404 }],
+        errorResponses: [{ httpStatus: 404 }],
       });
     }).toThrow(/A custom error response without either a \'responseCode\' or \'errorCachingMinTtl\' is not valid./);
   });
@@ -254,14 +254,14 @@ describe('custom error responses', () => {
     const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin },
-      errorConfigurations: [{
-        errorCode: 404,
-        responseCode: 404,
+      errorResponses: [{
+        httpStatus: 404,
+        responseHttpStatus: 404,
         responsePagePath: '/errors/404.html',
       },
       {
-        errorCode: 500,
-        errorCachingMinTtl: Duration.seconds(2),
+        httpStatus: 500,
+        ttl: Duration.seconds(2),
       }],
     });
 

@@ -20,7 +20,7 @@ export interface OriginProps {
 /**
  * Options passed to Origin.bind().
  */
-export interface OriginBindOptions {
+interface OriginBindOptions {
   /**
    * The positional index of this origin within the distribution. Used for ensuring unique IDs.
    */
@@ -66,15 +66,6 @@ export abstract class Origin {
   }
 
   /**
-   * Binds the origin to the associated Distribution. Can be used to grant permissions, create dependent resources, etc.
-   *
-   * @param scope the distribution to bind this Origin to.
-   */
-  public bind(scope: Construct, options: OriginBindOptions): void {
-    this.originId = new Construct(scope, `Origin${options.originIndex}`).node.uniqueId;
-  }
-
-  /**
    * The unique id for this origin.
    *
    * Cannot be accesed until bind() is called.
@@ -82,6 +73,15 @@ export abstract class Origin {
   public get id(): string {
     if (!this.originId) { throw new Error('Cannot access originId until `bind` is called.'); }
     return this.originId;
+  }
+
+  /**
+   * Binds the origin to the associated Distribution. Can be used to grant permissions, create dependent resources, etc.
+   *
+   * @internal
+   */
+  public _bind(scope: Construct, options: OriginBindOptions): void {
+    this.originId = new Construct(scope, `Origin${options.originIndex}`).node.uniqueId;
   }
 
   /**
@@ -145,8 +145,9 @@ export class S3Origin extends Origin {
     this.bucket = props.bucket;
   }
 
-  public bind(scope: Construct, options: OriginBindOptions) {
-    super.bind(scope, options);
+  /** @internal */
+  public _bind(scope: Construct, options: OriginBindOptions) {
+    super._bind(scope, options);
     if (!this.originAccessIdentity) {
       this.originAccessIdentity = new OriginAccessIdentity(scope, `S3Origin${options.originIndex}`);
       this.bucket.grantRead(this.originAccessIdentity);
