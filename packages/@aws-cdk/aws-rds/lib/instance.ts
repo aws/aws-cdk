@@ -686,7 +686,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       dbName: props.databaseName,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       engine: props.engine.engineType,
-      engineVersion: props.engine.engineVersion,
+      engineVersion: props.engine.engineVersion?.fullVersion,
       licenseModel: props.licenseModel,
       timezone: props.timezone,
     };
