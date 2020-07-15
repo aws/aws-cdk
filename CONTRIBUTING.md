@@ -142,6 +142,9 @@ Sometimes, the GitHub issue is sufficient for such discussions, and can be suffi
 clarity on what you plan to do. Sometimes, a design document would work better, so people can provide
 iterative feedback.
 
+Before starting on a design, read through the [design guidelines](DESIGN_GUIDELINES.md) for general
+patterns and tips.
+
 In such cases, use the GitHub issue description to collect **requirements** and
 **use cases** for your feature.
 
