@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, IConstruct, Node } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { App } from './app';
 import { Arn, ArnComponents } from './arn';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
@@ -312,9 +312,9 @@ export class Stack extends Construct implements ITaggable {
     let relocateAsRoot = false;
     if (!scope) {
       scope = new App({
-      autoSynth: false,
-      outdir: FileSystem.mkdtemp('cdk-test-app-'),
-    });
+        autoSynth: false,
+        outdir: FileSystem.mkdtemp('cdk-test-app-'),
+      });
       relocateAsRoot = true;
     }
 
