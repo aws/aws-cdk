@@ -5,7 +5,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceAddon, ServiceBuild, TaskDefinitionBuild } from './addon-interfaces';
-import { Application } from './app';
+import { Container } from './container';
 
 export interface MeshProps {
   readonly mesh: appmesh.Mesh;
@@ -29,9 +29,9 @@ export class AppMeshAddon extends ServiceAddon {
 
   public mutateTaskDefinitionProps(props: TaskDefinitionBuild) {
     // Find the app addon, to get its port
-    const appAddon = this.parentService.getAddon('app') as Application;
+    const containerAddon = this.parentService.getAddon('service-container') as Container;
 
-    if (!appAddon) {
+    if (!containerAddon) {
       throw new Error('Firelens addon requires an application addon');
     }
 
@@ -49,7 +49,7 @@ export class AppMeshAddon extends ServiceAddon {
       proxyConfiguration: new ecs.AppMeshProxyConfiguration({
         containerName: 'envoy',
         properties: {
-          appPorts: [appAddon.trafficPort],
+          appPorts: [containerAddon.trafficPort],
           proxyEgressPort: 15001,
           proxyIngressPort: 15000,
           ignoredUID: 1337,
@@ -127,9 +127,9 @@ export class AppMeshAddon extends ServiceAddon {
   // Now that the service is defined we can create the AppMesh virtual service
   // and virtual node for the real service
   public useService(service: ecs.Ec2Service) {
-    const appAddon = this.parentService.getAddon('app') as Application;
+    const containerAddon = this.parentService.getAddon('service-container') as Container;
 
-    if (!appAddon) {
+    if (!containerAddon) {
       throw new Error('Firelens addon requires an application addon');
     }
 
@@ -146,7 +146,7 @@ export class AppMeshAddon extends ServiceAddon {
       cloudMapService: service.cloudMapService,
       listener: {
         portMapping: {
-          port: appAddon.trafficPort,
+          port: containerAddon.trafficPort,
           protocol: appmesh.Protocol.HTTP,
         },
         // Virtual node health is disabled, as we already have a Cloudmap healthcheck
@@ -175,7 +175,7 @@ export class AppMeshAddon extends ServiceAddon {
   // addon on another service.
   public connectToService(otherService: Service) {
     const otherAppMesh = otherService.getAddon('appmesh') as AppMeshAddon;
-    const otherApplication = otherService.getAddon('app') as Application;
+    const otherContainer = otherService.getAddon('service-container') as Container;
 
     // Downstream services must have already been prepared otherwise they
     // can't be utilized for connections
@@ -188,7 +188,7 @@ export class AppMeshAddon extends ServiceAddon {
     // the security groups of these two services to each other
     this.parentService.service.connections.allowTo(
       otherService.service,
-      ec2.Port.tcp(otherApplication.trafficPort),
+      ec2.Port.tcp(otherContainer.trafficPort),
       `Accept inbound traffic from ${this.parentService.id}`,
     );
 

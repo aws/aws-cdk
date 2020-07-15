@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceAddon, TaskDefinitionBuild } from './addon-interfaces';
 
-export interface ApplicationAddonProps {
+export interface ContainerAddonProps {
   readonly cpu: number,
   readonly memoryMiB: number,
   readonly image: ecs.ContainerImage,
@@ -13,12 +13,17 @@ export interface ApplicationAddonProps {
   }
 }
 
-export class Application extends ServiceAddon {
+/**
+ * The main container of a service. This is generally the container
+ * which runs your application business logic. Other addons will attach
+ * sidecars alongside this main container.
+ */
+export class Container extends ServiceAddon {
   public readonly trafficPort: number;
-  private props: ApplicationAddonProps;
+  private props: ContainerAddonProps;
 
-  constructor(props: ApplicationAddonProps) {
-    super('app');
+  constructor(props: ContainerAddonProps) {
+    super('service-container');
     this.props = props;
     this.trafficPort = props.trafficPort;
   }
@@ -59,7 +64,6 @@ export class Application extends ServiceAddon {
     // Create a port mapping for the container
     this.container.addPortMappings({
       containerPort: this.trafficPort,
-      hostPort: this.trafficPort,
     });
 
     // Raise the ulimits for this main application container

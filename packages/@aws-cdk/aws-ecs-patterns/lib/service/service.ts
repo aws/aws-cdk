@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { ServiceAddon, TaskDefinitionBuild } from './addons/addon-interfaces';
+import { ServiceAddon, ServiceBuild, TaskDefinitionBuild } from './addons/addon-interfaces';
 
 /**
  * The settings for an ECS Service
@@ -116,13 +116,7 @@ export class Service extends cdk.Construct {
    * @param name
    */
   public getAddon(name: string) {
-    const addon = this.addons[name];
-
-    if (!addon) {
-      throw new Error(`The addon ${name} does not exist on service ${this.id}`);
-    }
-
-    return addon;
+    return this.addons[name];
   }
 
   /**
@@ -134,10 +128,12 @@ export class Service extends cdk.Construct {
       return; // Already prepared
     }
 
-    let taskDefProps = {
-      cpu: '256',
-      memory: '512',
-    } as TaskDefinitionBuild;
+    // Check to make sure that the user has actually added a container
+    const containerAddon = this.getAddon('service-container');
+
+    if (!containerAddon) {
+      throw new Error(`Service '${this.id}' must have a Container addon`);
+    }
 
     // At the point of preparation all addons have been defined on the service
     // so give each addon a chance to now add hooks to other addons if
@@ -149,6 +145,11 @@ export class Service extends cdk.Construct {
     }
 
     // Give each addon a chance to mutate the task def creation properties
+    let taskDefProps = {
+      cpu: '256',
+      memory: '512',
+    } as TaskDefinitionBuild;
+
     for (const addon in this.addons) {
       if (this.addons[addon]) {
         taskDefProps = this.addons[addon].mutateTaskDefinitionProps(taskDefProps);
@@ -173,13 +174,13 @@ export class Service extends cdk.Construct {
       }
     }
 
+    // Give each addon a chance to mutate the service props before
+    // service creation
     let serviceProps = {
       cluster: this.cluster,
       taskDefinition: this.taskDefinition,
-    };
+    } as ServiceBuild;
 
-    // Give each addon a chance to mutate the service props before
-    // service creation
     for (const addon in this.addons) {
       if (this.addons[addon]) {
         serviceProps = this.addons[addon].mutateServiceProps(serviceProps);

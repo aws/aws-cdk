@@ -3,6 +3,7 @@ import * as awslogs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ContainerMutatingHook, ServiceAddon } from './addon-interfaces';
+import { Container } from './container';
 
 export interface FirelensProps {
   readonly parentService: Service;
@@ -58,13 +59,13 @@ export class FireLensAddon extends ServiceAddon {
   // have logging properties that enable sending logs via the
   // Firelens log router container
   public addHooks() {
-    const appAddon = this.parentService.getAddon('app');
+    const container = this.parentService.getAddon('service-container') as Container;
 
-    if (!appAddon) {
+    if (!container) {
       throw new Error('Firelens addon requires an application addon');
     }
 
-    appAddon.addContainerMutatingHook(new FirelensMutatingHook({
+    container.addContainerMutatingHook(new FirelensMutatingHook({
       parentService: this.parentService,
       logGroup: this.logGroup,
     }));
