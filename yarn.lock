@@ -2875,10 +2875,10 @@ console-control-strings@^1.0.0, console-control-strings@~1.1.0:
   resolved "https://registry.yarnpkg.com/console-control-strings/-/console-control-strings-1.1.0.tgz#3d7cf4464db6446ea644bf4b39507f9851008e8e"
   integrity sha1-PXz0Rk22RG6mRL9LOVB/mFEAjo4=
 
-constructs@4.1.1-pre.4:
-  version "4.1.1-pre.4"
-  resolved "https://registry.yarnpkg.com/constructs/-/constructs-4.1.1-pre.4.tgz#0de956d23cd6a712946d206dc94f84a53376e16d"
-  integrity sha512-GxwtpnpmL6PYiXu4lg859uMZ5sNX4xBt8B6J8BXhCfvPM8R+0+5Zbb8y29WdECLXdr32sA6Bce1VjOJDGXm2JA==
+constructs@4.1.1-pre.6:
+  version "4.1.1-pre.6"
+  resolved "https://registry.yarnpkg.com/constructs/-/constructs-4.1.1-pre.6.tgz#4bc70e1fc68c3ca892a8ace5c809232321e81013"
+  integrity sha512-GIaL0I/5l4FYiIgzFQ+uU1kJ9J70pyYKLltoMeMYJpD1Nxx1at0pCaMPO+rKHPuHMBoPyyHPRpabSgs00ZusoA==
 
 contains-path@^0.1.0:
   version "0.1.0"

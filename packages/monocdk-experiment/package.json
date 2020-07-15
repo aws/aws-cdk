@@ -88,7 +88,7 @@
   ],
   "dependencies": {
     "case": "1.6.3",
-    "constructs": "4.1.1-pre.4",
+    "constructs": "4.1.1-pre.6",
     "fs-extra": "^9.0.1",
     "jsonschema": "^1.2.5",
     "minimatch": "^3.0.4",
@@ -255,7 +255,7 @@
     "typescript": "~3.8.3"
   },
   "peerDependencies": {
-    "constructs": "4.1.1-pre.4"
+    "constructs": "4.1.1-pre.6"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {

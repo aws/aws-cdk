@@ -73,13 +73,13 @@
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "4.1.1-pre.4"
+    "constructs": "4.1.1-pre.6"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "4.1.1-pre.4"
+    "constructs": "4.1.1-pre.6"
   },
   "awslint": {
     "exclude": [
