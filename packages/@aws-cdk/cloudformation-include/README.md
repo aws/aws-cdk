@@ -187,7 +187,7 @@ where the child template pointed to by `https://my-s3-template-source.s3.amazona
 }
 ```
 
-You can access the nested stack and perform all operations you would on any other CDK Stack if you include the parent stack as follows:
+You can include both the parent stack and the nested stack in your CDK Application as follows:
 
 ```typescript
 const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {

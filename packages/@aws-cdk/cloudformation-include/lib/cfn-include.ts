@@ -290,7 +290,7 @@ export class CfnInclude extends core.CfnElement {
   }
 
   private createNestedStack(nestedStackId: string, props?: CfnIncludeProps): void {
-    const resources = this.template.Resources;
+    const resources = this.template.Resources || {};
 
     if (!(nestedStackId in resources)) {
       throw new Error(`Nested Stack with logical ID '${nestedStackId}' was not found in the template`);
@@ -350,14 +350,14 @@ export class CfnInclude extends core.CfnElement {
     const propStack = props.nestedStacks[nestedStackId];
     const template = new CfnInclude(nestedStackScope, nestedStackId, {
       templateFile: propStack.templateFile,
-      nestedStacks: propStack?.nestedStacks,
+      nestedStacks: propStack.nestedStacks,
     });
 
     const includeStack: IncludedNestedStack = { stack: nestedStackScope, includedTemplate: template };
     this.nestedStacks[nestedStackId] = includeStack;
   }
 
-  private getOrCreateResource(logicalId: string): core.CfnResource {
+  private getOrCreateResource(logicalId: string, props?: CfnIncludeProps): core.CfnResource {
     const ret = this.resources[logicalId];
     if (ret) {
       return ret;
@@ -409,6 +409,11 @@ export class CfnInclude extends core.CfnElement {
     const options: core.FromCloudFormationOptions = {
       finder,
     };
+
+    //if (props?.nestedStacks && props.nestedStacks[logicalId]) {
+    //  this.createNestedStack(logicalId, props);
+    //}
+
     const l1Instance = jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
 
     if (this.preserveLogicalIds) {
