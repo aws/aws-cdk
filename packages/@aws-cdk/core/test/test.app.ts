@@ -360,8 +360,8 @@ export = {
       },
     });
 
-    test.assert(app.node.tryGetContext('isString') === 'string', 'expect string value.');
-    test.assert(app.node.tryGetContext('isNumber') === 10, 'expect number value.');
+    test.ok(app.node.tryGetContext('isString') === 'string');
+    test.ok(app.node.tryGetContext('isNumber') === 10);
     test.deepEqual(app.node.tryGetContext('isObject'), { isString: 'string', isNumber: 10 });
 
     test.done();
