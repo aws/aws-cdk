@@ -61,7 +61,7 @@
         "aws:cdk:path": "integtest-restapi-fromdefinition-inline-private/my-private-api/Resource"
       }
     },
-    "myprivateapiDeployment16B560CC34a8cf4247267d4e81e9f529716aa086": {
+    "myprivateapiDeployment16B560CC678219fa18beb0906b49cad02ed224e8": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -80,7 +80,7 @@
           "Ref": "myprivateapiD2D027EE"
         },
         "DeploymentId": {
-          "Ref": "myprivateapiDeployment16B560CC34a8cf4247267d4e81e9f529716aa086"
+          "Ref": "myprivateapiDeployment16B560CC678219fa18beb0906b49cad02ed224e8"
         },
         "StageName": "prod"
       },
