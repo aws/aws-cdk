@@ -233,7 +233,7 @@ describe('LambdaInvoke', () => {
           token: sfn.JsonPath.taskToken,
         }),
       });
-    }).toThrow(/payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier./);
+    }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
   });
 
   test('fails when invocationType used with payloadResponseOnly', () => {
@@ -246,7 +246,7 @@ describe('LambdaInvoke', () => {
         }),
         invocationType: LambdaInvocationType.REQUEST_RESPONSE,
       });
-    }).toThrow(/payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier./);
+    }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
   });
 
   test('fails when clientContext used with payloadResponseOnly', () => {
@@ -259,7 +259,7 @@ describe('LambdaInvoke', () => {
         }),
         clientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
       });
-    }).toThrow(/payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier./);
+    }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
   });
 
   test('fails when qualifier used with payloadResponseOnly', () => {
@@ -272,7 +272,7 @@ describe('LambdaInvoke', () => {
         }),
         qualifier: '1',
       });
-    }).toThrow(/payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier./);
+    }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
   });
 
   test('fails when WAIT_FOR_TASK_TOKEN integration pattern is used without supplying a task token in payload', () => {

@@ -50,7 +50,8 @@ export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
   /**
    * Invoke the Lambda in a way that only returns the payload response without additional metadata.
    *
-   * payloadResponseOnly does not support integrationPattern, invocationType, clientContext, and qualifier.
+   * The `payloadResponseOnly` property cannot be used if `integrationPattern`, `invocationType`,
+   * `clientContext`, or `qualifier` are specified.
    * It always uses the REQUEST_RESPONSE behavior.
    *
    * @default false
@@ -89,7 +90,7 @@ export class LambdaInvoke extends sfn.TaskStateBase {
     if (props.payloadResponseOnly &&
       (props.integrationPattern || props.invocationType || props.clientContext || props.qualifier)) {
       throw new Error(
-        'payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier.',
+        "The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified.",
       );
     }
 
