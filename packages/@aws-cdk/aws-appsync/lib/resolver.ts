@@ -4,14 +4,17 @@ import { BaseDataSource } from './data-source';
 import { GraphQLApi } from './graphqlapi';
 import { MappingTemplate } from './mapping-template';
 
+/**
+ * Types of Resolvers
+ */
 export enum ResolverType {
   /**
    * A UNIT resolver is the default resolver type.
-   * 
+   *
    * A UNIT resolver enables you to execute GraphQL queries against a single data source.
    */
   UNIT = 'UNIT',
-  
+
   /**
    * A PIPELINE resolver enables you to execute a series of Functions in a serial manner, multiple data sources.
    */
@@ -32,7 +35,7 @@ export interface BaseResolverProps {
   readonly fieldName: string;
   /**
    * type of resolver
-   * 
+   *
    * @default - UNIT resolver, single data source
    */
   readonly kind?: ResolverType;
