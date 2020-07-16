@@ -895,6 +895,8 @@ export = {
               { Ref: 'MyClusterDefaultVpcPrivateSubnet1SubnetE1D0DCDB' },
               { Ref: 'MyClusterDefaultVpcPrivateSubnet2Subnet11FEA8D0' },
             ],
+            endpointPrivateAccess: true,
+            endpointPublicAccess: true,
           },
         },
       }));
@@ -1378,5 +1380,59 @@ export = {
       }
       test.done();
     },
+
+    'can configure private endpoint access'(test: Test) {
+      // GIVEN
+      const { stack } = testFixture();
+      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.private() });
+
+      expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          roleArn: { 'Fn::GetAtt': ['Cluster1RoleE88C32AD', 'Arn'] },
+          version: '1.16',
+          resourcesVpcConfig: {
+            securityGroupIds: [{ 'Fn::GetAtt': ['Cluster1ControlPlaneSecurityGroupF9C67C32', 'GroupId'] }],
+            subnetIds: [
+              { Ref: 'Cluster1DefaultVpcPublicSubnet1SubnetBEABA6ED' },
+              { Ref: 'Cluster1DefaultVpcPublicSubnet2Subnet947A5158' },
+              { Ref: 'Cluster1DefaultVpcPrivateSubnet1Subnet4E30ECA1' },
+              { Ref: 'Cluster1DefaultVpcPrivateSubnet2Subnet707FCD37' },
+            ],
+            endpointPrivateAccess: true,
+            endpointPublicAccess: false,
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'can configure cidr blocks in public endpoint access'(test: Test) {
+      // GIVEN
+      const { stack } = testFixture();
+      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.public('1.2.3.4/5') });
+
+      expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          roleArn: { 'Fn::GetAtt': ['Cluster1RoleE88C32AD', 'Arn'] },
+          version: '1.16',
+          resourcesVpcConfig: {
+            securityGroupIds: [{ 'Fn::GetAtt': ['Cluster1ControlPlaneSecurityGroupF9C67C32', 'GroupId'] }],
+            subnetIds: [
+              { Ref: 'Cluster1DefaultVpcPublicSubnet1SubnetBEABA6ED' },
+              { Ref: 'Cluster1DefaultVpcPublicSubnet2Subnet947A5158' },
+              { Ref: 'Cluster1DefaultVpcPrivateSubnet1Subnet4E30ECA1' },
+              { Ref: 'Cluster1DefaultVpcPrivateSubnet2Subnet707FCD37' },
+            ],
+            endpointPrivateAccess: false,
+            endpointPublicAccess: true,
+            publicAccessCidrs: ['1.2.3.4/5'],
+          },
+        },
+      }));
+
+      test.done();
+    },
+
   },
 };
