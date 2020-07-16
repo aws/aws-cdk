@@ -252,13 +252,13 @@ import * as secrets from '@aws-cdk/aws-secretsmanager';
 
 const vpc: ec2.IVpc = ...;
 const securityGroup: ec2.ISecurityGroup = ...;
-const secret: secrets.ISecret = ...;
+const secrets: secrets.ISecret[] = [...];
 const dbInstance: rds.IDatabaseInstance = ...;
 
 const proxy = dbInstance.addProxy('proxy', {
     connectionBorrowTimeout: cdk.Duration.seconds(30),
     maxConnectionsPercent: 50,
-    secret,
+    secrets,
     vpc,
 });
 ```
