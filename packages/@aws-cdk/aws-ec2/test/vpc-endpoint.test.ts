@@ -3,7 +3,7 @@ import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetType, Vpc } from '../lib';
 
 nodeunitShim({
@@ -463,6 +463,49 @@ nodeunitShim({
           },
           {
             Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+          },
+          {
+            Ref: 'VPCPrivateSubnet3Subnet3EDCD457',
+          },
+        ],
+      }));
+
+      test.done();
+    },
+    'test endpoint service context with aws service'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+
+      // Setup context for stack AZs
+      stack.node.setContext(
+        ContextProvider.getKey(stack, {
+          provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
+        }).key,
+        ['us-east-1a', 'us-east-1b', 'us-east-1c']);
+      // Setup context for endpoint service AZs
+      stack.node.setContext(
+        ContextProvider.getKey(stack, {
+          provider: cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
+          props: {
+            serviceName: 'com.amazonaws.us-east-1.execute-api',
+          },
+        }).key,
+        ['us-east-1a', 'us-east-1c']);
+
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('API Gateway', {
+        service: InterfaceVpcEndpointAwsService.APIGATEWAY,
+        lookupSupportedAzs: true,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-east-1.execute-api',
+        SubnetIds: [
+          {
+            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
           },
           {
             Ref: 'VPCPrivateSubnet3Subnet3EDCD457',

@@ -55,6 +55,8 @@ new glue.Table(stack, 'MyTable', {
 });
 ```
 
+By default, an S3 bucket will be created to store the table's data and stored in the bucket root. You can also manually pass the `bucket` and `s3Prefix`:
+
 #### Partitions
 
 To improve query performance, a table can specify `partitionKeys` on which data is stored and queried separately. For example, you might partition a table by `year` and `month` to optimize queries based on a time window:

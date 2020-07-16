@@ -5,7 +5,7 @@ import { CfnParameter, Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as sqs from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default properties'(test: Test) {

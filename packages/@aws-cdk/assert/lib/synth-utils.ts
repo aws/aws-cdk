@@ -1,7 +1,7 @@
-import * as core from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as core from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 
 export class SynthUtils {
   public static synthesize(stack: core.Stack, options: core.SynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
