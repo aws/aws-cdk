@@ -284,7 +284,7 @@ const alias = new lambda.Alias(stack, 'Alias', {
 
 // Configure autoscaling to track utilization
 alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 50 }).scaleOnUtilization({
-  targetUtilizationPercent: 50,
+  targetUtilizationPercent: 0.5,
 });
 
 // or you can configure schedule scaling
