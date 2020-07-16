@@ -340,14 +340,14 @@ export class CfnInclude extends core.CfnElement {
       finder,
     };
 
-    if (props?.nestedStacks && props.nestedStacks[logicalId]) {
+    /*if (props?.nestedStacks && props.nestedStacks[logicalId]) {
       this.createNestedStack(logicalId, finder, props);
       return this.getNestedStack(logicalId).stack.nestedStackResource!;
-    }
+    }*/
 
-    const l1Instance = /*props?.nestedStacks && props.nestedStacks[logicalId]
+    const l1Instance = props?.nestedStacks && props.nestedStacks[logicalId]
       ? this.createNestedStack(logicalId, finder, props)
-      : */jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
+      : jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
 
     if (this.preserveLogicalIds) {
       // override the logical ID to match the original template
@@ -358,7 +358,7 @@ export class CfnInclude extends core.CfnElement {
     return l1Instance;
   }
 
-  private createNestedStack(nestedStackId: string, finder: core.ICfnFinder, props?: CfnIncludeProps): void {
+  private createNestedStack(nestedStackId: string, finder: core.ICfnFinder, props?: CfnIncludeProps): core.CfnStack {
     const templateResources = this.template.Resources || {};
 
     if (!(templateResources[nestedStackId].Type === 'AWS::CloudFormation::Stack' && props?.nestedStacks)) {
@@ -415,13 +415,14 @@ export class CfnInclude extends core.CfnElement {
       cfnOptions.condition = condition;
     }
 
-    if (this.preserveLogicalIds) {
+    /*if (this.preserveLogicalIds) {
       // override the logical ID to match the original template
       nestedStackResource.overrideLogicalId(nestedStackId);
     }
 
     // add this stack to our template's resources, so it doesn't get added again when creating resources
     this.resources[nestedStackId] = nestedStackResource;
+    */
 
     const propStack = props.nestedStacks[nestedStackId];
     const template = new CfnInclude(nestedStack, nestedStackId, {
@@ -431,5 +432,7 @@ export class CfnInclude extends core.CfnElement {
 
     const includedStack: IncludedNestedStack = { stack: nestedStack, includedTemplate: template };
     this.nestedStacks[nestedStackId] = includedStack;
+
+    return nestedStackResource as core.CfnStack;
   }
 }
