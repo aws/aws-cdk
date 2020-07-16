@@ -22,13 +22,18 @@ export class ClusterResourceHandler extends ResourceHandler {
   constructor(eks: EksClient, event: ResourceEvent) {
     super(eks, event);
 
-    function patchEndpointAccess(props: aws.EKS.CreateClusterRequest): aws.EKS.CreateClusterRequest {
+    function patchEndpointAccess(props: any) {
 
-      // this is weird but these boolean properties are passed here as a string, and need them to be booleanic for the SDK.
+      // this is weird but these boolean properties are passed by CFN as a string, and we need them to be booleanic for the SDK.
       // Otherwise it fails with 'Unexpected Parameter: params.resourcesVpcConfig.endpointPrivateAccess is expected to be a boolean'
 
-      Object.assign(props.resourcesVpcConfig, { endpointPrivateAccess: (props.resourcesVpcConfig.endpointPrivateAccess as any) === 'true' });
-      Object.assign(props.resourcesVpcConfig, { endpointPublicAccess: (props.resourcesVpcConfig.endpointPublicAccess as any) === 'true' });
+      if (typeof(props.resourcesVpcConfig?.endpointPrivateAccess) === 'string') {
+        Object.assign(props.resourcesVpcConfig, { endpointPrivateAccess: props.resourcesVpcConfig.endpointPrivateAccess === 'true' });
+      }
+
+      if (typeof(props.resourcesVpcConfig?.endpointPublicAccess) === 'string') {
+        Object.assign(props.resourcesVpcConfig, { endpointPublicAccess: props.resourcesVpcConfig.endpointPublicAccess === 'true' });
+      }
 
       return props;
     }
