@@ -18,7 +18,9 @@ class DatabaseInstanceStack extends cdk.Stack {
     /// !show
     // Set open cursors with parameter group
     const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
-      family: 'oracle-se1-11.2',
+      engine: rds.DatabaseInstanceEngine.oracleSe1({
+        version: '11.2',
+      }),
       parameters: {
         open_cursors: '2500',
       },
