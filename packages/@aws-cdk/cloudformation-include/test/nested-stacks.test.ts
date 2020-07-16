@@ -188,9 +188,9 @@ describe('CDK Include', () => {
       },
     });
 
-    const AlwaysFalseCondition = parent.getCondition('AlwaysFalseCond');
+    const alwaysFalseCondition = parent.getCondition('AlwaysFalseCond');
 
-    expect(parent.getResource('ChildStack').cfnOptions.condition).toBe(AlwaysFalseCondition);
+    expect(parent.getResource('ChildStack').cfnOptions.condition).toBe(alwaysFalseCondition);
   });
 
   test('asset parameters generated in parent and child are identical', () => {
@@ -291,8 +291,9 @@ describe('CDK Include', () => {
       },
     });
 
+    const childTemplate = parentTemplate.getNestedStack('ChildStack').includedTemplate;
+
     expect(() => {
-      const childTemplate = parentTemplate.getNestedStack('ChildStack').includedTemplate;
       childTemplate.getNestedStack('BucketImport');
     }).toThrow(/Resource with logical ID 'BucketImport' is not a CloudFormation Stack/);
   });
@@ -308,7 +309,7 @@ describe('CDK Include', () => {
     });
 
     expect(() => {
-      parentTemplate.getNestedStack('AnotherChildStack').includedTemplate.getNestedStack('BucketImport');
+      parentTemplate.getNestedStack('AnotherChildStack');
     }).toThrow(/Nested Stack 'AnotherChildStack' was not included in the nestedStacks property when including the parent template/);
   });
 
@@ -388,6 +389,33 @@ describe('CDK Include', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
+  test('stacks created by the finder are correctly nested', () => {
+    const cfnTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('parent-with-attributes.json'),
+      nestedStacks: {
+        'ChildStack': {
+          templateFile: testTemplateFilePath('child-import-stack.json'),
+        },
+        'AnotherChildStack': {
+          templateFile: testTemplateFilePath('child-import-stack.json'),
+        },
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFormation::Stack', {
+      "Metadata": {
+        "Property1": "Value1",
+      },
+      "DeletionPolicy": "Retain",
+      "DependsOn": [
+        "AnotherChildStack",
+      ],
+      "UpdateReplacePolicy": "Retain",
+    }, ResourcePart.CompleteDefinition);
+
+    cfnTemplate.getNestedStack('AnotherChildStack');
+  });
+
   test('correctly parses NotificationsARNs, Timeout', () => {
     new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-with-attributes.json'),
@@ -400,7 +428,7 @@ describe('CDK Include', () => {
     });
   });
 
-  describe('asset parameters are correctly passed from parent to grandchild', () => {
+  describe('for a parent stack with children and grandchildren', () => {
     let assetStack: core.Stack;
     let parentTemplate: inc.CfnInclude;
     let child: inc.IncludedNestedStack;

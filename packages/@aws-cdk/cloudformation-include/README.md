@@ -208,7 +208,7 @@ const childStack: core.NestedStack = includedChildStack.stack;
 const childStackTemplate: cfn_inc.CfnInclude = includedChildStack.includedTemplate;
 ```
 
-we can modify childStack:
+Now you can reference resources from `ChildStack` and modify them like any other included template:
 
 ```typescript
 const bucket = childStackTemplate.getResource('MyBucket') as s3.CfnBucket;
