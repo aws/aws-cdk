@@ -59,7 +59,7 @@ test('PutItem task', () => {
       ExpressionAttributeNames: { OTHER_KEY: '#OK' },
       ExpressionAttributeValues: {
         ':val': { 'N.$': '$.Item.TotalCount.N' },
-        ':bool': { 'BOOL.$': '$.Item.flag' }
+        ':bool': { 'BOOL.$': '$.Item.flag' },
       },
       ReturnConsumedCapacity: 'TOTAL',
       ReturnItemCollectionMetrics: 'SIZE',
