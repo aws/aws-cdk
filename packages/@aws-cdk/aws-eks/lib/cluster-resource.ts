@@ -1,8 +1,31 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnComponents, Construct, CustomResource, Lazy, Stack, Token } from '@aws-cdk/core';
+import { ArnComponents, Construct, CustomResource, Lazy, Stack, Token, IResolvable } from '@aws-cdk/core';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
-import { CfnClusterProps } from './eks.generated';
+import { CfnClusterProps, CfnCluster } from './eks.generated';
+
+interface ResourcesVpcConfig extends CfnCluster.ResourcesVpcConfigProperty {
+
+  /**
+   * Enable private endpoint access to the cluster.
+   */
+  readonly endpointPrivateAccess: boolean;
+
+  /**
+   * Enable public endpoint access to the cluster.
+   */
+  readonly endpointPublicAccess: boolean;
+
+  /**
+   * Limit public address with CIDR blocks.
+   */
+  readonly publicAccessCidrs?: string[];
+
+}
+interface ClusterResourceProps extends Omit<CfnClusterProps, 'resourcesVpcConfig'> {
+
+  readonly resourcesVpcConfig: ResourcesVpcConfig | IResolvable;
+}
 
 /**
  * A low-level CFN resource Amazon EKS cluster implemented through a custom
@@ -32,7 +55,7 @@ export class ClusterResource extends Construct {
 
   private readonly trustedPrincipals: string[] = [];
 
-  constructor(scope: Construct, id: string, props: CfnClusterProps) {
+  constructor(scope: Construct, id: string, props: ClusterResourceProps) {
     super(scope, id);
 
     const stack = Stack.of(this);

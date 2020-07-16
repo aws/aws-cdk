@@ -22,8 +22,16 @@ export class ClusterResourceHandler extends ResourceHandler {
   constructor(eks: EksClient, event: ResourceEvent) {
     super(eks, event);
 
-    this.newProps = parseProps(this.event.ResourceProperties);
-    this.oldProps = event.RequestType === 'Update' ? parseProps(event.OldResourceProperties) : { };
+    function patchEndpointAccess(props: aws.EKS.CreateClusterRequest): aws.EKS.CreateClusterRequest {
+
+      Object.assign(props.resourcesVpcConfig, { endpointPrivateAccess: (props.resourcesVpcConfig.endpointPrivateAccess as any) === 'true' });
+      Object.assign(props.resourcesVpcConfig, { endpointPublicAccess: (props.resourcesVpcConfig.endpointPublicAccess as any) === 'true' });
+
+      return props;
+    }
+
+    this.newProps = patchEndpointAccess(parseProps(this.event.ResourceProperties));
+    this.oldProps = event.RequestType === 'Update' ? patchEndpointAccess(parseProps(event.OldResourceProperties)) : { };
   }
 
   // ------
@@ -280,6 +288,9 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
   const newVpcProps = newProps.resourcesVpcConfig || { };
   const oldVpcProps = oldProps.resourcesVpcConfig || { };
 
+  const oldPublicAccessCidrs = new Set(oldVpcProps.publicAccessCidrs ?? []);
+  const newPublicAccessCidrs = new Set(newVpcProps.publicAccessCidrs ?? []);
+
   return {
     replaceName: newProps.name !== oldProps.name,
     replaceVpc:
@@ -287,9 +298,14 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
       JSON.stringify(newVpcProps.securityGroupIds) !== JSON.stringify(oldVpcProps.securityGroupIds),
     updateAccess:
       newVpcProps.endpointPrivateAccess !== oldVpcProps.endpointPrivateAccess ||
-      newVpcProps.endpointPublicAccess !== oldVpcProps.endpointPublicAccess,
+      newVpcProps.endpointPublicAccess !== oldVpcProps.endpointPublicAccess ||
+      !setsEqual(newPublicAccessCidrs, oldPublicAccessCidrs),
     replaceRole: newProps.roleArn !== oldProps.roleArn,
     updateVersion: newProps.version !== oldProps.version,
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
   };
+}
+
+function setsEqual(first: Set<string>, second: Set<string>) {
+  return first.size === second.size || [...first].every((e: string) => second.has(e));
 }
