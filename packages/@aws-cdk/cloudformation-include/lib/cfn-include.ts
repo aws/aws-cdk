@@ -343,7 +343,7 @@ export class CfnInclude extends core.CfnElement {
       finder,
     };
 
-    const l1Instance = this.nestedStacksToInclude && this.nestedStacksToInclude[logicalId]
+    const l1Instance = this.nestedStacksToInclude[logicalId]
       ? this.createNestedStack(logicalId, finder)
       : jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
 
@@ -356,19 +356,13 @@ export class CfnInclude extends core.CfnElement {
     return l1Instance;
   }
 
-  private createNestedStack(nestedStackId: string, finder: core.ICfnFinder): core.CfnStack {
+  private createNestedStack(nestedStackId: string, finder: core.ICfnFinder): core.CfnResource {
     const templateResources = this.template.Resources || {};
-
-    if (!(templateResources[nestedStackId].Type === 'AWS::CloudFormation::Stack' && this.nestedStacksToInclude)) {
+    const nestedStackAttributes = templateResources[nestedStackId] || {};
+    
+    if (nestedStackAttributes.Type !== 'AWS::CloudFormation::Stack') {
       throw new Error(`Nested Stack with logical ID '${nestedStackId}' is not an AWS::CloudFormation::Stack resource`);
     }
-
-    const cfnParser = new cfn_parse.CfnParser({
-      finder,
-    });
-
-    const nestedStackAttributes = templateResources[nestedStackId] || {};
-    const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);
 
     if (nestedStackAttributes.CreationPolicy) {
       throw new Error('CreationPolicy is not supported by the AWS::CloudFormation::Stack resource');
@@ -378,6 +372,10 @@ export class CfnInclude extends core.CfnElement {
       throw new Error('UpdatePolicy is not supported by the AWS::CloudFormation::Stack resource');
     }
 
+    const cfnParser = new cfn_parse.CfnParser({
+      finder,
+    });
+    const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);
     const nestedStack = new core.NestedStack(this, nestedStackId, {
       parameters: nestedStackProps.Parameters,
       notificationArns: nestedStackProps.NotificationArns,
@@ -386,12 +384,11 @@ export class CfnInclude extends core.CfnElement {
 
     // we know this is never undefined for nested stacks
     const nestedStackResource: core.CfnResource = nestedStack.nestedStackResource!;
-
+    // handle resource attributes
     const cfnOptions = nestedStackResource.cfnOptions;
     cfnOptions.metadata = cfnParser.parseValue(nestedStackAttributes.Metadata);
     cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(nestedStackAttributes.DeletionPolicy);
     cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(nestedStackAttributes.UpdateReplacePolicy);
-
     // handle DependsOn
     nestedStackAttributes.DependsOn = nestedStackAttributes.DependsOn ?? [];
     const dependencies: string[] = Array.isArray(nestedStackAttributes.DependsOn) ?
@@ -403,7 +400,6 @@ export class CfnInclude extends core.CfnElement {
       }
       nestedStackResource.node.addDependency(depResource);
     }
-
     // handle Condition
     if (nestedStackAttributes.Condition) {
       const condition = finder.findCondition(nestedStackAttributes.Condition);
@@ -418,10 +414,9 @@ export class CfnInclude extends core.CfnElement {
       templateFile: propStack.templateFile,
       nestedStacks: propStack.nestedStacks,
     });
-
     const includedStack: IncludedNestedStack = { stack: nestedStack, includedTemplate: template };
     this.nestedStacks[nestedStackId] = includedStack;
 
-    return nestedStackResource as core.CfnStack;
+    return nestedStackResource;
   }
 }
