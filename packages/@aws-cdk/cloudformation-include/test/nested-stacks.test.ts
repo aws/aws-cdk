@@ -95,7 +95,7 @@ describe('CDK Include', () => {
     }).toThrow(/Nested Stack with logical ID 'FakeStack' was not found in the template/);
   });
 
-  test('Throws an error when NestedStacks contains an ID that is not a CloudFormation::Stack in the template', () => {
+  test('throws an exception when NestedStacks contains an ID that is not a CloudFormation::Stack in the template', () => {
     expect(() => {
       new inc.CfnInclude(stack, 'ParentStack', {
         templateFile: testTemplateFilePath('child-import-stack.json'),
@@ -108,7 +108,7 @@ describe('CDK Include', () => {
     }).toThrow(/Nested Stack with logical ID 'BucketImport' is not an AWS::CloudFormation::Stack resource/);
   });
 
-  test('Throws an error when creationPolicy is defined', () => {
+  test('throws an exception when the nestedStack resource uses the CreationPolicy attribute', () => {
     expect(() => {
       new inc.CfnInclude(stack, 'ParentStack', {
         templateFile: testTemplateFilePath('parent-creation-policy.json'),
@@ -121,7 +121,7 @@ describe('CDK Include', () => {
     }).toThrow(/CreationPolicy is not supported by the AWS::CloudFormation::Stack resource/);
   });
 
-  test('Throws an error when updatePolicy is defined', () => {
+  test('throws an exception when the nested stack resource uses the UpdatePolicy attribute', () => {
     expect(() => {
       new inc.CfnInclude(stack, 'ParentStack', {
         templateFile: testTemplateFilePath('parent-update-policy.json'),
@@ -134,7 +134,7 @@ describe('CDK Include', () => {
     }).toThrow(/UpdatePolicy is not supported by the AWS::CloudFormation::Stack resource/);
   });
 
-  test('Throws an error when referring to an undefined condition', () => {
+  test('throws an exception when a nested stack refers to a Condition that does not exist in the template', () => {
     expect(() => {
       new inc.CfnInclude(stack, 'ParentStack', {
         templateFile: testTemplateFilePath('parent-invalid-condition.json'),
@@ -147,7 +147,7 @@ describe('CDK Include', () => {
     }).toThrow(/nested stack 'ChildStack' uses Condition 'FakeCondition' that doesn't exist/);
   });
 
-  test('Throws an error when a nested stacks depends on an undefined resource', () => {
+  test('throws an exception when a nested stacks depends on a resource that does not exist in the template', () => {
     expect(() => {
       new inc.CfnInclude(stack, 'ParentStack', {
         templateFile: testTemplateFilePath('parent-bad-depends-on.json'),
@@ -364,32 +364,7 @@ describe('CDK Include', () => {
     expect(childStack1).toBeInstanceOf(core.CfnStack);
   });
 
-  test('attributes are correctly parsed', () => {
-    new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-with-attributes.json'),
-      nestedStacks: {
-        'ChildStack': {
-          templateFile: testTemplateFilePath('child-import-stack.json'),
-        },
-        'AnotherChildStack': {
-          templateFile: testTemplateFilePath('child-import-stack.json'),
-        },
-      },
-    });
-
-    expect(stack).toHaveResourceLike('AWS::CloudFormation::Stack', {
-      "Metadata": {
-        "Property1": "Value1",
-      },
-      "DeletionPolicy": "Retain",
-      "DependsOn": [
-        "AnotherChildStack",
-      ],
-      "UpdateReplacePolicy": "Retain",
-    }, ResourcePart.CompleteDefinition);
-  });
-
-  test('stacks created by the finder are correctly nested', () => {
+  test("handles Metadata, DeletionPolicy, and UpdateReplacePolicy attributes of the nested stack's resource", () => {
     const cfnTemplate = new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-with-attributes.json'),
       nestedStacks: {
@@ -437,7 +412,7 @@ describe('CDK Include', () => {
     let parentBucketParam: string;
     let parentKeyParam: string;
     let grandChildBucketParam: string;
-    let parentKeyRef: string;
+    let grandChildKeyParam: string;
 
     let childBucketParam: string;
     let childKeyParam: string;
@@ -464,7 +439,7 @@ describe('CDK Include', () => {
       parentBucketParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C';
       parentKeyParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2';
       grandChildBucketParam = 'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0CRef';
-      parentKeyRef =  'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref';
+      grandChildKeyParam =  'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref';
 
       childBucketParam = 'AssetParameters891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5S3Bucket23278F13';
       childKeyParam = 'AssetParameters891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5S3VersionKey7316205A';
@@ -532,7 +507,7 @@ describe('CDK Include', () => {
                 [grandChildBucketParam]: {
                   "Ref": parentBucketParam,
                 },
-                [parentKeyRef]: {
+                [grandChildKeyParam]: {
                   "Ref": parentKeyParam,
                 },
               },
@@ -552,7 +527,7 @@ describe('CDK Include', () => {
           [grandChildBucketParam]: {
             "Type": "String",
           },
-          [parentKeyRef]: {
+          [grandChildKeyParam]: {
             "Type": "String",
           },
         },
@@ -573,7 +548,7 @@ describe('CDK Include', () => {
                     0,
                     { "Fn::Split": [
                       "||",
-                      { "Ref": parentKeyRef },
+                      { "Ref": grandChildKeyParam },
                     ]},
                   ]},
                   {
@@ -581,7 +556,7 @@ describe('CDK Include', () => {
                       1,
                       { "Fn::Split": [
                         "||",
-                        { "Ref": parentKeyRef },
+                        { "Ref": grandChildKeyParam },
                       ]},
                     ],
                   },
