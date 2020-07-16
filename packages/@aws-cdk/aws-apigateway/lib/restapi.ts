@@ -161,12 +161,12 @@ export interface RestApiOptions extends ResourceOptions {
   readonly endpointExportName?: string;
 
   /**
-   * The EndpointConfiguration property type specifies the endpoint types of a REST API
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
+   * A list of the endpoint types of the API. Use this property when creating
+   * an API.
    *
-   * @default - No endpoint configuration
+   * @default - No endpoint types that translates to a EndpointType.EDGE endpoint type.
    */
-  readonly endpointConfiguration?: EndpointConfiguration;
+  readonly endpointTypes?: EndpointType[];
 }
 
 /**
@@ -216,13 +216,12 @@ export interface RestApiProps extends RestApiOptions {
   readonly apiKeySourceType?: ApiKeySourceType;
 
   /**
-   * A list of the endpoint types of the API. Use this property when creating
-   * an API.
+   * The EndpointConfiguration property type specifies the endpoint types of a REST API
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
    *
-   * @default - No endpoint types.
-   * @deprecated this property is deprecated, use endpointConfiguration in the RestApiOptions instead
+   * @default - No endpoint configuration that translates to a EndpointType.EDGE endpoint type.
    */
-  readonly endpointTypes?: EndpointType[];
+  readonly endpointConfiguration?: EndpointConfiguration;
 }
 
 /**
@@ -417,6 +416,9 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     }
   }
 
+  /**
+   * @internal
+   */
   protected configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
     if (props.endpointTypes && props.endpointConfiguration) {
       throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
@@ -660,7 +662,7 @@ export interface EndpointConfiguration {
   /**
    * A list of endpoint types of an API or its custom domain name.
    *
-   * @default - no endpoint types.
+   * @default - no endpoint types that translates to a EndpointType.EDGE endpoint type.
    */
   readonly types: EndpointType[];
 

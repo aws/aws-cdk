@@ -1000,14 +1000,45 @@ It is possible to modify this by providing the endpointConfiguration as shown he
 ```ts
 const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
   apiDefinition: apigateway.ApiDefinition.fromInline(replacedSwagger),
-  endpointConfiguration: {
-    types: [apigateway.EndpointType.PRIVATE],
-  },
+  endpointTypes: [apigateway.EndpointType.PRIVATE]
 });
 ```
 
-**Note:** For private endpoints you will still need to provide the `x-amazon-apigateway-policy` in your openApi file.
+**Note:** For private endpoints you will still need to provide the `x-amazon-apigateway-policy` and `x-amazon-apigateway-endpoint-configuration` in your openApi file. 
 
+The following is an example with both settings:
+```json
+{
+    "openapi": "3.0.2",
+    "servers" : [
+        "x-amazon-apigateway-endpoint-configuration": {
+            "vpcEndpointIds": [
+                "vpce-00111a1111a1aa011"
+            ]
+        }
+    ],
+    "paths": { ... },
+    "x-amazon-apigateway-policy": {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": "*",
+                "Action": [
+                    "execute-api:Invoke",
+                    "execute-api:GET"
+                ],
+                "Resource": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*",
+                "Condition": {
+                    "StringEquals": {
+                      "aws:sourceVpce": "vpce-00111a1111a1aa011"
+                    }
+                }
+            }
+        ]
+    }
+}
+```
 
 ## APIGateway v2
 
