@@ -18,9 +18,7 @@ class DatabaseInstanceStack extends cdk.Stack {
     /// !show
     // Set open cursors with parameter group
     const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
-      engine: rds.DatabaseInstanceEngine.oracleSe1({
-        version: '11.2',
-      }),
+      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
       parameters: {
         open_cursors: '2500',
       },
@@ -28,9 +26,7 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     /// Add XMLDB and OEM with option group
     const optionGroup = new rds.OptionGroup(this, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.oracleSe1({
-        version: '11.2',
-      }),
+      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
       configurations: [
         {
           name: 'XMLDB',
