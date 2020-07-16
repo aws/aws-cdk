@@ -29,13 +29,13 @@ test('should not throw an Error', () => {
     authorizationConfig: {},
     name: 'api',
     schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
-  }); 
+  });
 
   const when = () => {
     new appsync.Resolver(stack, 'resolver', {
       api: api,
-      typeName: "test",
-      fieldName: "test2",
+      typeName: 'test',
+      fieldName: 'test2',
       kind: appsync.ResolverType.PIPELINE,
     });
   };
