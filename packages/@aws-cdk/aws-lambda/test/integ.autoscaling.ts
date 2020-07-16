@@ -2,11 +2,17 @@ import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
+/**
+ * Stack verification steps:
+ * aws application-autoscaling describe-scalable-targets --service-namespace lambda --resource-ids function:aws-lambda-autoscaling-<lambda name>:prod
+ * has a minCapacity of 3 and maxCapacity of 50
+ */
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-lambda-autoscaling');
 
 const fn = new lambda.Function(stack, 'MyLambda', {
-  code: new lambda.InlineCode('foo'),
+  code: new lambda.InlineCode('exports.handler = async () => {\nconsole.log(\'hello world\');\n};'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_10_X,
 });
@@ -18,10 +24,10 @@ const alias = new lambda.Alias(stack, 'Alias', {
   version,
 });
 
-const scalingTarget = alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 50 });
+const scalingTarget = alias.autoScaleProvisionedConcurrency({ minCapacity: 3, maxCapacity: 50 });
 
 scalingTarget.scaleOnUtilization({
-  targetUtilizationPercent: 50,
+  targetUtilizationPercent: 0.5,
 });
 
 scalingTarget.scaleOnSchedule('ScaleUpInTheMorning', {

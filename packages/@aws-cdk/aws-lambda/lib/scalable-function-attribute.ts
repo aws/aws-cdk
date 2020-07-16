@@ -1,5 +1,4 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
-import { IRole } from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 
 /**
@@ -30,64 +29,34 @@ export interface UtilizationScalingProps extends appscaling.BaseTargetTrackingPr
  * A scalable lambda function attribute
  */
 export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute {
-  constructor(scope: Construct, id: string, props: AttributeScalingProps) {
-    super(scope, id, {
-      serviceNamespace: appscaling.ServiceNamespace.LAMBDA,
-      ...props,
-    });
+  constructor(scope: Construct, id: string, props: appscaling.BaseScalableAttributeProps) {
+    super(scope, id, props);
   }
 
   /**
-   * Scale out or in to keep utilization at a given level. This uses the predefined metric
-   * LambdaProvisionedConcurrencyUtilization, which is a percentage.
+   * Scale out or in to keep utilization at a given level. The utilization is tracked by the
+   * LambdaProvisionedConcurrencyUtilization metric, emitted by lambda. See:
+   * https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
+   *
+   * Allowed values: 0.1 - 0.9.
    */
   public scaleOnUtilization(props: UtilizationScalingProps) {
-    if (props.targetUtilizationPercent < 10 || props.targetUtilizationPercent > 90) {
-      throw new Error('The tracked metric, LambdaProvisionedConcurrencyUtilization, must be between 10% and 90%.');
+    if (props.targetUtilizationPercent < 0.1 || props.targetUtilizationPercent > 0.9) {
+      throw new Error('TargetUtilizationPercent should be between 0.1 and 0.9.');
     }
     super.doScaleToTrackMetric('Tracking', {
-      targetValue: props.targetUtilizationPercent / 100,
+      targetValue: props.targetUtilizationPercent,
       predefinedMetric: appscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
       ...props,
     });
   }
 
   /**
-   * Scale out or in based on time
+   * Scale out or in based on time.
    */
   public scaleOnSchedule(id: string, action: appscaling.ScalingSchedule) {
     super.doScaleOnSchedule(id, action);
   }
-}
-
-/**
- * Properties for creating a scalable function attribute
- */
-export interface AttributeScalingProps {
-  /**
-   * Minimum capacity to scale to
-   */
-  readonly minCapacity: number;
-
-  /**
-   * Maximum capacity to scale to
-   */
-  readonly maxCapacity: number;
-
-  /**
-   * The id of the resource - should be 'function:<function_name>:<alias>'
-   */
-  readonly resourceId: string;
-
-  /**
-   * The iam role that executes autoscaling rules
-   */
-  readonly role: IRole;
-
-  /**
-   * The dimension - should always be 'lambda:function:ProvisionedConcurrency'
-   */
-  readonly dimension: string;
 }
 
 /**

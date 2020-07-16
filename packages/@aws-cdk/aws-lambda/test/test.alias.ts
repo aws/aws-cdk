@@ -565,8 +565,7 @@ export = {
     const target = alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 5 });
 
     // THEN
-    test.throws(() => target.scaleOnUtilization({targetUtilizationPercent: 150}), /The tracked metric, LambdaProvisionedConcurrencyUtilization, must be between 10% and 90%./);
-
+    test.throws(() => target.scaleOnUtilization({targetUtilizationPercent: 0.95}), /TargetUtilizationPercent should be between 0.1 and 0.9./);
     test.done();
   },
 

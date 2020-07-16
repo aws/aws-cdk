@@ -1,3 +1,4 @@
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Stack} from '@aws-cdk/core';
@@ -208,9 +209,9 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
   }
 
   /**
-   * Enable autoscaling for provisioned concurrency lambda functions. Tracks the predefined metric
-   * LambdaProvisionedConcurrencyUtilization. More information about lambda performance metrics here:
-   * https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
+   * Configure provisioned concurrency autoscaling on a function alias. Returns a scalable attribute that can call
+   * `scaleOnUtilization()` and `scaleOnSchedule()`.
+   *
    * @param props The properties for autoscaling
    */
   public autoScaleProvisionedConcurrency(props: EnableScalingProps): IScalableFunctionAttribute {
@@ -222,6 +223,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       maxCapacity: props.maxCapacity,
       resourceId: `function:${this.functionName}`,
       dimension: 'lambda:function:ProvisionedConcurrency',
+      serviceNamespace: appscaling.ServiceNamespace.LAMBDA,
       role: this.scalingRole,
     });
   }

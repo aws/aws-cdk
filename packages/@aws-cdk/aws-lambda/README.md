@@ -256,25 +256,26 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
 managing concurrency.
 
-### Lambda with Provisioned Concurrency AutoScaling
+### Configure Provisioned Concurrency AutoScaling
 
-Provisioned Concurrency AutoScaling can be added on to Lambda Aliases using the `alias.autoScaleProvisionedConcurrency()` API:
+You can configure provisioned concurrency autoscaling on a function alias using the `autoScaleProvisionedConcurrency()` method:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-
-const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_10_X,
-    handler: 'index.handler',
-    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
-});
-
 const alias = new lambda.Alias(stack, 'Alias', {
   aliasName: 'prod',
   version,
 });
 
-alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 50 });
+// Configure autoscaling to track utilization
+alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 50 }).scaleOnUtilization({
+  targetUtilizationPercent: 50,
+});
+
+// or you can configure schedule scaling
+alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 50}).scaleOnSchedule('ScaleUpInTheMorning', {
+  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0'}),
+  minCapacity: 20,
+});
 ```
 
 [Example of Lambda AutoScaling usage](test/integ.autoscaling.ts)

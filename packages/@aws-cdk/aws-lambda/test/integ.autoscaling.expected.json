@@ -35,7 +35,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "foo"
+          "ZipFile": "exports.handler = async () => {\nconsole.log('hello world');\n};"
         },
         "Handler": "index.handler",
         "Role": {
@@ -78,7 +78,7 @@
       "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
       "Properties": {
         "MaxCapacity": 50,
-        "MinCapacity": 1,
+        "MinCapacity": 3,
         "ResourceId": {
           "Fn::Join": [
             "",
