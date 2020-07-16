@@ -25,7 +25,7 @@ The following code sets up a lambda function with an SQS queue event source -
 const fn = new lambda.Function(this, 'MyFunction', { /* ... */ });
 
 const queue = new sqs.Queue(this, 'MyQueue');
-const eventSource = lambda.addEventSource(new SqsEventSource(queue);
+const eventSource = fn.addEventSource(new SqsEventSource(queue));
 
 const eventSourceId = eventSource.eventSourceId;
 ```
