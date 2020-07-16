@@ -56,6 +56,7 @@ export class CfnInclude extends core.CfnElement {
   private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
   private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
   private readonly nestedStacks: { [logicalId: string]: IncludedNestedStack } = {};
+  private readonly nestedStacksToInclude: { [name: string]: CfnIncludeProps };
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
@@ -78,9 +79,11 @@ export class CfnInclude extends core.CfnElement {
       this.createCondition(conditionName);
     }
 
+    this.nestedStacksToInclude = props.nestedStacks || {};
+
     // instantiate all resources as CDK L1 objects
     for (const logicalId of Object.keys(this.template.Resources || {})) {
-      this.getOrCreateResource(logicalId, props);
+      this.getOrCreateResource(logicalId);
     }
 
     // verify that all nestedStacks have been instantiated
@@ -287,7 +290,7 @@ export class CfnInclude extends core.CfnElement {
     this.conditions[conditionName] = cfnCondition;
   }
 
-  private getOrCreateResource(logicalId: string, props?: CfnIncludeProps): core.CfnResource {
+  private getOrCreateResource(logicalId: string): core.CfnResource {
     const ret = this.resources[logicalId];
     if (ret) {
       return ret;
@@ -325,7 +328,7 @@ export class CfnInclude extends core.CfnElement {
         if (!(lId in (self.template.Resources || {}))) {
           return undefined;
         }
-        return self.getOrCreateResource(lId, props);
+        return self.getOrCreateResource(lId);
       },
 
       findRefTarget(elementName: string): core.CfnElement | undefined {
@@ -340,13 +343,8 @@ export class CfnInclude extends core.CfnElement {
       finder,
     };
 
-    /*if (props?.nestedStacks && props.nestedStacks[logicalId]) {
-      this.createNestedStack(logicalId, finder, props);
-      return this.getNestedStack(logicalId).stack.nestedStackResource!;
-    }*/
-
-    const l1Instance = props?.nestedStacks && props.nestedStacks[logicalId]
-      ? this.createNestedStack(logicalId, finder, props)
+    const l1Instance = this.nestedStacksToInclude && this.nestedStacksToInclude[logicalId]
+      ? this.createNestedStack(logicalId, finder)
       : jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
 
     if (this.preserveLogicalIds) {
@@ -358,10 +356,10 @@ export class CfnInclude extends core.CfnElement {
     return l1Instance;
   }
 
-  private createNestedStack(nestedStackId: string, finder: core.ICfnFinder, props?: CfnIncludeProps): core.CfnStack {
+  private createNestedStack(nestedStackId: string, finder: core.ICfnFinder): core.CfnStack {
     const templateResources = this.template.Resources || {};
 
-    if (!(templateResources[nestedStackId].Type === 'AWS::CloudFormation::Stack' && props?.nestedStacks)) {
+    if (!(templateResources[nestedStackId].Type === 'AWS::CloudFormation::Stack' && this.nestedStacksToInclude)) {
       throw new Error(`Nested Stack with logical ID '${nestedStackId}' is not an AWS::CloudFormation::Stack resource`);
     }
 
@@ -415,16 +413,7 @@ export class CfnInclude extends core.CfnElement {
       cfnOptions.condition = condition;
     }
 
-    /*if (this.preserveLogicalIds) {
-      // override the logical ID to match the original template
-      nestedStackResource.overrideLogicalId(nestedStackId);
-    }
-
-    // add this stack to our template's resources, so it doesn't get added again when creating resources
-    this.resources[nestedStackId] = nestedStackResource;
-    */
-
-    const propStack = props.nestedStacks[nestedStackId];
+    const propStack = this.nestedStacksToInclude[nestedStackId];
     const template = new CfnInclude(nestedStack, nestedStackId, {
       templateFile: propStack.templateFile,
       nestedStacks: propStack.nestedStacks,
