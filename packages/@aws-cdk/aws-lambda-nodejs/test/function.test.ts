@@ -1,6 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ABSENT } from '@aws-cdk/assert';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { NodejsFunction } from '../lib';
@@ -35,11 +36,6 @@ test('NodejsFunction with .ts handler', () => {
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: 'index.handler',
-    Environment: {
-      Variables: {
-        AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-      },
-    },
   });
 });
 
@@ -111,4 +107,28 @@ test('resolves entry to an absolute path', () => {
   expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/@aws-cdk\/aws-lambda-nodejs\/lib\/index.ts$/),
   }));
+});
+
+test('configures connection reuse for aws sdk', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler1');
+
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Environment: {
+      Variables: {
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      },
+    },
+  });
+});
+
+test('can opt-out of connection reuse for aws sdk', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler1', {
+    awsSdkConnectionReuse: false,
+  });
+
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Environment: ABSENT,
+  });
 });
