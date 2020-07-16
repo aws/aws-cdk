@@ -231,8 +231,10 @@ export class DynamoAttributeValue {
   }
 
   /**
-   * maps a boolean from a string - can be a literal or a json path
-   * @param value the string to map
+   * Sets an attribute of type Boolean from state input through Json path.
+   * For example:  "BOOL": true
+   *
+   * @param value Json path that specifies state input to be used
    */
   public static booleanFromJsonPath(value: string) {
     validateJsonPath(value);
