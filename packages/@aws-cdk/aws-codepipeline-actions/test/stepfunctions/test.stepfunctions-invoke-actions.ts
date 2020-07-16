@@ -86,48 +86,6 @@ export = {
 
       test.done();
     },
-
-    'does not allow passing empty StateMachineInput when the StateMachineInputType is FilePath'(test: Test) {
-      const stack = new Stack();
-
-      const startState = new stepfunction.Pass(stack, 'StartState');
-
-      const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
-        definition: startState,
-      });
-
-      test.throws(() => {
-        new cpactions.StepFunctionsInvokeAction({
-          actionName: 'Invoke',
-          stateMachine: simpleStateMachine,
-          stateMachineInputType: cpactions.StateMachineInputType.FILEPATH,
-          stateMachineInput: '',
-        });
-      }, /File path must be specified in the StateMachineInput field when the InputType is FilePath/);
-
-      test.done();
-    },
-
-    'should throw an exception when the StateMachineInputType is FilePath and no input artifact is provided'(test: Test) {
-      const stack = new Stack();
-
-      const startState = new stepfunction.Pass(stack, 'StartState');
-
-      const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
-        definition: startState,
-      });
-
-      test.throws(() => {
-        new cpactions.StepFunctionsInvokeAction({
-          actionName: 'Invoke',
-          stateMachine: simpleStateMachine,
-          stateMachineInputType: cpactions.StateMachineInputType.FILEPATH,
-          stateMachineInput: 'assets/input.json',
-        });
-      }, /Input Artifact must be provided when the InputType is FilePath/);
-
-      test.done();
-    },
   },
 };
 
@@ -155,10 +113,8 @@ function minimalPipeline(stack: Stack): codepipeline.IStage {
     actions: [
       new cpactions.StepFunctionsInvokeAction({
         actionName: 'Invoke',
-        input: sourceOutput,
         stateMachine: simpleStateMachine,
-        stateMachineInputType: cpactions.StateMachineInputType.LITERAL,
-        stateMachineInput: {IsHelloWorldExample: true},
+        stateMachineInput: cpactions.StateMachineInput.literal({IsHelloWorldExample: true}),
       }),
     ],
   });

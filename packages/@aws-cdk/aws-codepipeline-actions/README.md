@@ -795,7 +795,7 @@ new codepipeline_actions.CodeBuildAction({
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
 on how to write a Lambda function invoked from CodePipeline.
 
-#### AWS Step Functions
+### AWS Step Functions
 
 This module contains an Action that allows you to invoke a Step Function in a Pipeline:
 
@@ -806,12 +806,11 @@ const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const startState = new stepfunction.Pass(stack, 'StartState');
 const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
     definition: startState,
-    });
+});
 const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
   actionName: 'Invoke',
   stateMachine: simpleStateMachine,
-  stateMachineInputType: codepipeline_actions.StateMachineInputType.LITERAL,
-  stateMachineInput: {IsHelloWorldExample: true},
+  stateMachineInput: codepipeline_actions.StateMachineInput.literal({IsHelloWorldExample: true}),
 });
 pipeline.addStage({
   stageName: 'StepFunctions',
@@ -831,13 +830,11 @@ const inputArtifact = new codepipeline.Artifact();
 const startState = new stepfunction.Pass(stack, 'StartState');
 const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
     definition: startState,
-    });
+});
 const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
   actionName: 'Invoke',
-  input: inputArtifact,
   stateMachine: simpleStateMachine,
-  stateMachineInputType: codepipeline_actions.StateMachineInputType.FILEPATH,
-  stateMachineInput: 'assets/input.json',
+  stateMachineInput: codepipeline_actions.StateMachineInput.filePath('assets/input.json', inputArtifact),
 });
 pipeline.addStage({
   stageName: 'StepFunctions',

@@ -1,41 +1,70 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as stepfunction from '@aws-cdk/aws-stepfunctions';
-import { Construct} from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
 
 /**
- * Represents the input type for the StateMachine.
+ * Represents the input for the StateMachine.
  */
-export enum StateMachineInputType {
+export class StateMachineInput {
   /**
-   * When specified, the value in the Input field is passed
-   * directly to the state machine input.
+   * When the input type is FilePath, input artifact and
+   * filepath must be specified.
    */
-  LITERAL = 'Literal',
+  public static filePath(filePath: string, inputArtifact: codepipeline.Artifact): StateMachineInput {
+    return new StateMachineInput(filePath, inputArtifact, 'FilePath');
+  }
 
   /**
-   * The contents of a file in the input artifact specified by the Input field
-   * is used as the input for the state machine execution.
-   * Input artifact and FilePath is required when InputType is set to FilePath.
+   * When the input type is Literal, input value is passed
+   * directly to the state machine input.
    */
-  FILEPATH = 'FilePath',
+  public static literal(object: object): StateMachineInput {
+    return new StateMachineInput(JSON.stringify(object), undefined, 'Literal');
+  }
+
+  /**
+   * The optional input Artifact of the Action.
+   * If InputType is set to FilePath, this artifact is required
+   * and is used to source the input for the state machine execution.
+   *
+   * @default - the Action will not have any inputs
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html#action-reference-StepFunctions-example
+   */
+  public readonly inputArtifact?: codepipeline.Artifact;
+
+  /**
+   * Optional StateMachine InputType
+   * InputType can be Literal or FilePath
+   *
+   * @default - Literal
+   */
+  public readonly inputType?: string;
+
+  /**
+   * When InputType is set to Literal (default), the Input field is used
+   * directly as the input for the state machine execution.
+   * Otherwise, the state machine is invoked with an empty JSON object {}.
+   *
+   * When InputType is set to FilePath, this field is required.
+   * An input artifact is also required when InputType is set to FilePath.
+   *
+   * @default - none
+   */
+  public readonly input: any;
+
+  private constructor(input: any, inputArtifact: codepipeline.Artifact | undefined, inputType: string) {
+    this.input = input;
+    this.inputArtifact = inputArtifact;
+    this.inputType = inputType;
+  }
 }
 
 /**
  * Construction properties of the {@link StepFunctionsInvokeAction StepFunction Invoke Action}.
  */
 export interface StepFunctionsInvokeActionProps extends codepipeline.CommonAwsActionProps {
-  /**
-   * The optional input Artifact of the Action.
-   * If InputType is set to FilePath, this artifact is required
-   * and is used to source the input for the state machine execution.
-   *
-   * @default the Action will not have any inputs
-   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html#action-reference-StepFunctions-example
-   */
-  readonly input?: codepipeline.Artifact;
-
   /**
    * The optional output Artifact of the Action.
    *
@@ -49,24 +78,12 @@ export interface StepFunctionsInvokeActionProps extends codepipeline.CommonAwsAc
   readonly stateMachine: stepfunction.IStateMachine;
 
   /**
-   * Optional StateMachine InputType
-   * InputType can be Literal or FilePath
-   *
-   * @default - Literal
-   */
-  readonly stateMachineInputType?: StateMachineInputType;
-
-  /**
-   * When InputType is set to Literal (default), this field is optional.
-   * If provided, the Input field is used directly as the input for the state machine execution.
-   * Otherwise, the state machine is invoked with an empty JSON object {}.
-   *
-   * When InputType is set to FilePath, this field is required.
-   * An input artifact is also required when InputType is set to FilePath.
+   * Represents the input to the StateMachine.
+   * This includes input artifact, input type and the statemachine input.
    *
    * @default - none
    */
-  readonly stateMachineInput?: string | object;
+  readonly stateMachineInput?: StateMachineInput;
 
   /**
    * Prefix (optional)
@@ -77,7 +94,7 @@ export interface StepFunctionsInvokeActionProps extends codepipeline.CommonAwsAc
    *
    * @default - action execution ID
    */
-  readonly executionPrefixName?: string;
+  readonly executionNamePrefix?: string;
 }
 
 /**
@@ -87,16 +104,6 @@ export class StepFunctionsInvokeAction extends Action {
   private readonly props: StepFunctionsInvokeActionProps;
 
   constructor(props: StepFunctionsInvokeActionProps) {
-    if (props.stateMachineInputType === StateMachineInputType.FILEPATH) {
-      // StateMachineInput is required when the StateMachineInputType is set as FilePath
-      if (!props.stateMachineInput) {
-        throw new Error('File path must be specified in the StateMachineInput field when the InputType is FilePath');
-      }
-      // Input Artifact is required when the StateMachineInputType is set as FilePath
-      if (props.input ?? []) {
-        throw new Error('Input Artifact must be provided when the InputType is FilePath');
-      }
-    }
     super({
       ...props,
       resource: props.stateMachine,
@@ -108,7 +115,7 @@ export class StepFunctionsInvokeAction extends Action {
         minOutputs: 0,
         maxOutputs: 1,
       },
-      inputs: (props.stateMachineInputType === StateMachineInputType.FILEPATH && props.input) ? [props.input] : [],
+      inputs: (props.stateMachineInput && props.stateMachineInput.inputArtifact) ? [props.stateMachineInput.inputArtifact] : [],
       outputs: (props.output) ? [props.output] : [],
     });
     this.props = props;
@@ -125,7 +132,7 @@ export class StepFunctionsInvokeAction extends Action {
     // allow state machine executions to be inspected
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['states:DescribeExecution'],
-      resources: [`arn:aws:states:*:*:execution:${this.props.stateMachine.stateMachineArn}:${this.props.executionPrefixName ?? ''}*`],
+      resources: [`arn:aws:states:*:*:execution:${this.props.stateMachine.stateMachineArn}:${this.props.executionNamePrefix ?? ''}*`],
     }));
 
     // allow the Role access to the Bucket, if there are any inputs/outputs
@@ -139,10 +146,9 @@ export class StepFunctionsInvokeAction extends Action {
     return {
       configuration: {
         StateMachineArn: this.props.stateMachine.stateMachineArn,
-        Input: (this.props.stateMachineInputType === StateMachineInputType.LITERAL) ?
-          JSON.stringify(this.props.stateMachineInput) : this.props.stateMachineInput,
-        InputType: this.props.stateMachineInputType,
-        ExecutionNamePrefix: this.props.executionPrefixName,
+        Input: (this.props.stateMachineInput) ? this.props.stateMachineInput.input : [],
+        InputType: (this.props.stateMachineInput) ? this.props.stateMachineInput.inputType : undefined,
+        ExecutionNamePrefix: this.props.executionNamePrefix,
       },
     };
   }

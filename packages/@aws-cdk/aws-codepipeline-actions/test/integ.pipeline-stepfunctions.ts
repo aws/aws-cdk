@@ -33,10 +33,8 @@ pipeline.addStage({
   actions: [
     new cpactions.StepFunctionsInvokeAction({
       actionName: 'Invoke',
-      input: sourceOutput,
       stateMachine: simpleStateMachine,
-      stateMachineInputType: cpactions.StateMachineInputType.LITERAL,
-      stateMachineInput: {IsHelloWorldExample: true},
+      stateMachineInput: cpactions.StateMachineInput.literal({IsHelloWorldExample: true}),
     }),
   ],
 });
