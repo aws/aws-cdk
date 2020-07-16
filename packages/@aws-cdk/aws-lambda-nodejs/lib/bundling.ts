@@ -154,9 +154,10 @@ export class Bundling {
     // Entry file path relative to container path
     const containerEntryPath = path.join(cdk.AssetStaging.BUNDLING_INPUT_DIR, path.relative(projectRoot, path.resolve(options.entry)));
     const parcelCommand = [
-      'parcel',
+      '$(node -p "require.resolve(\'parcel\')")', // Parcel is not globally installed, find its "bin"
       'build', containerEntryPath.replace(/\\/g, '/'), // Always use POSIX paths in the container
       '--target', 'cdk-lambda',
+      '--no-autoinstall',
       '--no-scope-hoist',
       ...options.cacheDir
         ? ['--cache-dir', '/parcel-cache']
