@@ -119,13 +119,10 @@ export class LambdaInvoke extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     if (this.props.payloadResponseOnly) {
-      const res: any = {
+      return {
         Resource: this.props.lambdaFunction.functionArn,
+        ...this.props.payload && { Parameters: sfn.FieldUtils.renderObject(this.props.payload.value) },
       };
-      if (this.props.payload) {
-        res.Parameters = sfn.FieldUtils.renderObject(this.props.payload.value);
-      }
-      return res;
     } else {
       return {
         Resource: integrationResourceArn('lambda', 'invoke', this.integrationPattern),
