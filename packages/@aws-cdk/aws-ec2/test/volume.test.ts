@@ -1251,47 +1251,6 @@ nodeunitShim({
     test.done();
   },
 
-  'validation availabilityZone'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const volume = new Volume(stack, 'ForToken', {
-      availabilityZone: 'us-east-1a',
-      size: cdk.Size.gibibytes(8),
-    });
-    let idx: number = 0;
-
-    // THEN
-    test.doesNotThrow(() => {
-      // Should not throw if we provide a token for the AZ
-      new Volume(stack, `Volume${idx++}`, {
-        availabilityZone: volume.volumeId,
-        size: cdk.Size.gibibytes(8),
-      });
-    });
-    test.throws(() => {
-      new Volume(stack, `Volume${idx++}`, {
-        availabilityZone: 'us-east-1',
-      });
-    }, '`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
-    test.throws(() => {
-      new Volume(stack, `Volume${idx++}`, {
-        availabilityZone: 'Virginia',
-      });
-    }, '`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
-    test.throws(() => {
-      new Volume(stack, `Volume${idx++}`, {
-        availabilityZone: ' us-east-1a', // leading character(s)
-      });
-    }, '`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
-    test.throws(() => {
-      new Volume(stack, `Volume${idx++}`, {
-        availabilityZone: 'us-east-1a ', // trailing character(s)
-      });
-    }, '`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
-
-    test.done();
-  },
-
   'validation snapshotId'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
