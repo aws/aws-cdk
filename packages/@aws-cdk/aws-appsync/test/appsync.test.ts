@@ -19,3 +19,27 @@ test('should not throw an Error', () => {
   // Then
   expect(when).not.toThrow();
 });
+
+test('should not throw an Error', () => {
+  // Given
+  const stack = new cdk.Stack();
+
+  // When
+  const api = new appsync.GraphQLApi(stack, 'api', {
+    authorizationConfig: {},
+    name: 'api',
+    schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
+  }); 
+
+  const when = () => {
+    new appsync.Resolver(stack, 'resolver', {
+      api: api,
+      typeName: "test",
+      fieldName: "test2",
+      kind: appsync.ResolverType.PIPELINE,
+    });
+  };
+
+  // Then
+  expect(when).not.toThrow();
+});
