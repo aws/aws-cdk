@@ -123,7 +123,11 @@ export class ParameterGroup extends Resource implements IParameterGroup {
   constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
 
-    this.family = props.engine.parameterGroupFamily;
+    const family = props.engine.parameterGroupFamily;
+    if (!family) {
+      throw new Error("ParameterGroup cannot be used with an engine that doesn't specify a version");
+    }
+    this.family = family;
     this.description = props.description;
     this.parameters = props.parameters ?? {};
   }

@@ -104,10 +104,9 @@ export class OptionGroup extends Resource implements IOptionGroup {
   constructor(scope: Construct, id: string, props: OptionGroupProps) {
     super(scope, id);
 
-    const majorEngineVersion = props.engine.engineVersion;
+    const majorEngineVersion = props.engine.engineVersion?.majorVersion;
     if (!majorEngineVersion) {
-      throw new Error('OptionGroup can only be used with an engine that has a specific version. ' +
-        `Use the withVersion method to specify the version for engine ${props.engine.engineType}`);
+      throw new Error("OptionGroup cannot be used with an engine that doesn't specify a version");
     }
     const optionGroup = new CfnOptionGroup(this, 'Resource', {
       engineName: props.engine.engineType,

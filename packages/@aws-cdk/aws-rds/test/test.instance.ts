@@ -195,9 +195,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.oracleSe1({
-        version: '11.2',
-      }),
+      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
       configurations: [
         {
           name: 'XMLDB',
@@ -206,7 +204,9 @@ export = {
     });
 
     const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
-      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      engine: rds.DatabaseInstanceEngine.sqlServerEe({
+        version: rds.SqlServerEngineVersion.VER_11,
+      }),
       description: 'desc',
       parameters: {
         key: 'value',

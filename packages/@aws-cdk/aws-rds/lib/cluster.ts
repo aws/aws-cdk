@@ -420,7 +420,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
       engine: props.engine.engineType,
-      engineVersion: props.engine.engineVersion,
+      engineVersion: props.engine.engineVersion?.fullVersion,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
@@ -497,7 +497,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
         engine: props.engine.engineType,
-        engineVersion: props.engine.engineVersion,
+        engineVersion: props.engine.engineVersion?.fullVersion,
         dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
