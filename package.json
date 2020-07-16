@@ -82,5 +82,8 @@
       "monocdk-experiment/yaml",
       "monocdk-experiment/yaml/**"
     ]
+  },
+  "dependencies": {
+    "yarn": "^1.22.4"
   }
 }
