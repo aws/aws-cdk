@@ -1,16 +1,12 @@
+import * as path from 'path';
 import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
-import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
-<<<<<<< HEAD
 /* eslint-disable quote-props */
-=======
-// tslint:disable:object-literal-key-quotes
->>>>>>> 3235f88955ea7456979e11dffdf7762881aa1505
 /* eslint-disable quotes */
 
 describe('CDK Include', () => {
@@ -489,7 +485,7 @@ describe('CDK Include', () => {
             "Type": "String",
             "Description": "Artifact hash for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\"",
           },
-          [childBucketParam] : {
+          [childBucketParam]: {
             "Type": "String",
             "Description": "S3 bucket for asset \"891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5\"",
           },
