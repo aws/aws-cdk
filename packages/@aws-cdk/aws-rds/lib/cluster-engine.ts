@@ -1,9 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as core from '@aws-cdk/core';
-import { ClusterParameterGroup, IParameterGroup, ParameterGroup } from './parameter-group';
-import { ParameterGroupFamilyMapping } from './private/parameter-group-family-mapping';
-import { compare } from './private/version';
+import { IEngine } from './engine';
+import { IParameterGroup, ParameterGroup } from './parameter-group';
+import { calculateParameterGroupFamily, ParameterGroupFamilyMapping } from './private/parameter-group-family-mapping';
 
 /**
  * The extra options passed to the {@link IClusterEngine.bindToCluster} method.
@@ -54,25 +54,7 @@ export interface ClusterEngineConfig {
 /**
  * The interface representing a database cluster (as opposed to instance) engine.
  */
-export interface IClusterEngine {
-  /** The type of the engine, for example "aurora-mysql". */
-  readonly engineType: string;
-
-  /**
-   * The exact version of a given engine.
-   *
-   * @default - default version for the given engine type
-   */
-  readonly engineVersion?: string;
-
-  /**
-   * The family to use for ParameterGroups using this engine.
-   * This is usually equal to "<engineType><engineMajorVersion>",
-   * but can sometimes be a variation of that.
-   * You can pass this property when creating new ClusterParameterGroup.
-   */
-  readonly parameterGroupFamily: string;
-
+export interface IClusterEngine extends IEngine {
   /** The application used by this engine to perform rotation for a single-user scenario. */
   readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
 
@@ -101,17 +83,19 @@ abstract class ClusterEngineBase implements IClusterEngine {
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  private readonly parameterGroupFamilies?: ParameterGroupFamilyMapping[];
   private readonly defaultPort?: number;
 
   constructor(props: ClusterEngineBaseProps) {
     this.engineType = props.engineType;
     this.singleUserRotationApplication = props.singleUserRotationApplication;
     this.multiUserRotationApplication = props.multiUserRotationApplication;
-    this.parameterGroupFamilies = props.parameterGroupFamilies;
     this.defaultPort = props.defaultPort;
     this.engineVersion = props.engineVersion;
-    this.parameterGroupFamily = this.establishParameterGroupFamily();
+    const parameterGroupFamily = calculateParameterGroupFamily(props.parameterGroupFamilies, props.engineVersion);
+    if (parameterGroupFamily === undefined) {
+      throw new Error(`No parameter group family found for database engine ${this.engineType} with version ${this.engineVersion}.`);
+    }
+    this.parameterGroupFamily = parameterGroupFamily;
   }
 
   public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
@@ -128,46 +112,14 @@ abstract class ClusterEngineBase implements IClusterEngine {
    * if one wasn't provided by the customer explicitly.
    */
   protected abstract defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined;
-
-  private establishParameterGroupFamily(): string {
-    const ret = this.calculateParameterGroupFamily();
-    if (ret === undefined) {
-      throw new Error(`No parameter group family found for database engine ${this.engineType} with version ${this.engineVersion}.`);
-    }
-    return ret;
-  }
-
-  /**
-   * Get the latest parameter group family for this engine. Latest is determined using semver on the engine major version.
-   * When `engineVersion` is specified, return the parameter group family corresponding to that engine version.
-   * Return undefined if no parameter group family is defined for this engine or for the requested `engineVersion`.
-   */
-  private calculateParameterGroupFamily(): string | undefined {
-    if (this.parameterGroupFamilies === undefined) {
-      return undefined;
-    }
-    const engineVersion = this.engineVersion;
-    if (engineVersion !== undefined) {
-      const family = this.parameterGroupFamilies.find(x => engineVersion.startsWith(x.engineMajorVersion));
-      if (family) {
-        return family.parameterGroupFamily;
-      }
-    } else if (this.parameterGroupFamilies.length > 0) {
-      const sorted = this.parameterGroupFamilies.slice().sort((a, b) => {
-        return compare(a.engineMajorVersion, b.engineMajorVersion);
-      }).reverse();
-      return sorted[0].parameterGroupFamily;
-    }
-    return undefined;
-  }
 }
 
 abstract class MySqlClusterEngineBase extends ClusterEngineBase {
   public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
     const parameterGroup = options.parameterGroup ?? (options.s3ImportRole || options.s3ExportRole
-      ? new ClusterParameterGroup(scope, 'ClusterParameterGroup', {
-        family: this.parameterGroupFamily,
+      ? new ParameterGroup(scope, 'ClusterParameterGroup', {
+        engine: this,
       })
       : config.parameterGroup);
     if (options.s3ImportRole) {
