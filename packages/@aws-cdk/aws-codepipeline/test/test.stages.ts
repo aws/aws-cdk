@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import * as codepipeline from '../lib';
 import { Stage } from '../lib/stage';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'Pipeline Stages': {
@@ -105,7 +105,6 @@ export = {
         });
       // incredibly, an arrow function below causes nodeunit to crap out with:
       // "TypeError: Function has non-object prototype 'undefined' in instanceof check"
-      // tslint:disable-next-line:only-arrow-functions
       }, function(e: any) {
         return /rightBefore/.test(e) && /justAfter/.test(e);
       });

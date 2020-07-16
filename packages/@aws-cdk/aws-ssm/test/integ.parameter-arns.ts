@@ -1,4 +1,4 @@
-// tslint:disable: max-line-length
+/* eslint-disable max-len */
 import { App, CfnOutput, CfnParameter, Stack } from '@aws-cdk/core';
 import * as ssm from '../lib';
 

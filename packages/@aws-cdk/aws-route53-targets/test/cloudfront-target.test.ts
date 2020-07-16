@@ -17,7 +17,7 @@ test('use CloudFront as record target', () => {
         s3OriginSource: {
           s3BucketSource: sourceBucket,
         },
-        behaviors : [ {isDefaultBehavior: true}],
+        behaviors: [ {isDefaultBehavior: true}],
       },
     ],
   });

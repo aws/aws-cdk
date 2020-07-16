@@ -3,7 +3,7 @@ import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ReceiptRule, ReceiptRuleSet, TlsPolicy } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'can create receipt rules with second after first'(test: Test) {

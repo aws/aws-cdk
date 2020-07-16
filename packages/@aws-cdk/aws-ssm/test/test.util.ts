@@ -1,4 +1,4 @@
-// tslint:disable: max-line-length
+/* eslint-disable max-len */
 
 import { Stack, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';

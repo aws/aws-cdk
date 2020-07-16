@@ -210,7 +210,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
         buildSpec: props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
         enableAutoBranchCreation: true,
         enableAutoBuild: props.autoBranchCreation.autoBuild === undefined ? true : props.autoBranchCreation.autoBuild,
-        environmentVariables: Lazy.anyValue({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables )}, { omitEmptyArray: true }), // tslint:disable-line max-line-length
+        environmentVariables: Lazy.anyValue({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables )}, { omitEmptyArray: true }), // eslint-disable-line max-len
         enablePullRequestPreview: props.autoBranchCreation.pullRequestPreview === undefined ? true : props.autoBranchCreation.pullRequestPreview,
         pullRequestEnvironmentName: props.autoBranchCreation.pullRequestEnvironmentName,
         stage: props.autoBranchCreation.stage,

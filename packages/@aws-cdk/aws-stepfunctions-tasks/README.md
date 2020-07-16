@@ -2,9 +2,7 @@
 <!--BEGIN STABILITY BANNER-->
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -622,6 +620,19 @@ new tasks.LambdaInvoke(this, 'Invoke and set function response as task output', 
   lambdaFunction: myLambda,
   payload: sfn.TaskInput.fromDataAt('$'),
   outputPath: '$.Payload',
+});
+```
+
+If you want to combine the input and the Lambda function response you can use
+the `payloadResponseOnly` property and specify the `resultPath`. This will put the
+Lambda function ARN directly in the "Resource" string, but it conflicts with the
+integrationPattern, invocationType, clientContext, and qualifier properties.
+
+```ts
+new tasks.LambdaInvoke(this, 'Invoke and combine function response with task input', {
+  lambdaFunction: myLambda,
+  payloadResponseOnly: true,
+  resultPath: '$.myLambda',
 });
 ```
 

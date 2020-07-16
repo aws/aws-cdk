@@ -5,7 +5,7 @@ import * as semver from 'semver';
 import * as tjs from 'typescript-json-schema';
 
 function log(message: string) {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.log(message);
 }
 

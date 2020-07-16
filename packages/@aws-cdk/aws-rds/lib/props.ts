@@ -3,99 +3,17 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Duration, SecretValue } from '@aws-cdk/core';
 import { IParameterGroup } from './parameter-group';
-import { compare } from './private/version';
-
-/**
- * Engine major version and parameter group family pairs.
- */
-export interface ParameterGroupFamily {
-  /**
-   * The engine major version name
-   */
-  readonly engineMajorVersion: string;
-
-  /**
-   * The parameter group family name
-   */
-  readonly parameterGroupFamily: string
-}
-
-/**
- * A database cluster engine. Provides mapping to the serverless application
- * used for secret rotation.
- */
-export class DatabaseClusterEngine {
-  /* tslint:disable max-line-length */
-  public static readonly AURORA = new DatabaseClusterEngine('aurora', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '5.6', parameterGroupFamily: 'aurora5.6' },
-  ]);
-
-  public static readonly AURORA_MYSQL = new DatabaseClusterEngine('aurora-mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '5.7', parameterGroupFamily: 'aurora-mysql5.7' },
-  ]);
-
-  public static readonly AURORA_POSTGRESQL = new DatabaseClusterEngine('aurora-postgresql', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '9.6', parameterGroupFamily: 'aurora-postgresql9.6'},
-    { engineMajorVersion: '10', parameterGroupFamily: 'aurora-postgresql10' },
-    { engineMajorVersion: '11', parameterGroupFamily: 'aurora-postgresql11'},
-  ]);
-  /* tslint:enable max-line-length */
-
-  /**
-   * The engine.
-   */
-  public readonly name: string;
-
-  /**
-   * The single user secret rotation application.
-   */
-  public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
-
-  /**
-   * The multi user secret rotation application.
-   */
-  public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
-
-  private readonly parameterGroupFamilies?: ParameterGroupFamily[];
-
-  // tslint:disable-next-line max-line-length
-  constructor(name: string, singleUserRotationApplication: secretsmanager.SecretRotationApplication, multiUserRotationApplication: secretsmanager.SecretRotationApplication, parameterGroupFamilies?: ParameterGroupFamily[]) {
-    this.name = name;
-    this.singleUserRotationApplication = singleUserRotationApplication;
-    this.multiUserRotationApplication = multiUserRotationApplication;
-    this.parameterGroupFamilies = parameterGroupFamilies;
-  }
-
-  /**
-   * Get the latest parameter group family for this engine. Latest is determined using semver on the engine major version.
-   * When `engineVersion` is specified, return the parameter group family corresponding to that engine version.
-   * Return undefined if no parameter group family is defined for this engine or for the requested `engineVersion`.
-   */
-  public parameterGroupFamily(engineVersion?: string): string | undefined {
-    if (this.parameterGroupFamilies === undefined) { return undefined; }
-    if (engineVersion) {
-      const family = this.parameterGroupFamilies.find(x => engineVersion.startsWith(x.engineMajorVersion));
-      if (family) {
-        return family.parameterGroupFamily;
-      }
-    } else if (this.parameterGroupFamilies.length > 0) {
-      const sorted = this.parameterGroupFamilies.slice().sort((a, b) => {
-        return compare(a.engineMajorVersion, b.engineMajorVersion);
-      }).reverse();
-      return sorted[0].parameterGroupFamily;
-    }
-    return undefined;
-  }
-}
 
 /**
  * Instance properties for database instances
  */
 export interface InstanceProps {
   /**
-   * What type of instance to start for the replicas
+   * What type of instance to start for the replicas.
+   *
+   * @default - t3.medium (or, more precisely, db.t3.medium)
    */
-  readonly instanceType: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * What subnets to run the RDS instances in.

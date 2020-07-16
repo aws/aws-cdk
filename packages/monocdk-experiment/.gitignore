@@ -15,3 +15,5 @@ dist
 
 # Ignore barrel import entry points
 /*.ts
+
+junit.xml

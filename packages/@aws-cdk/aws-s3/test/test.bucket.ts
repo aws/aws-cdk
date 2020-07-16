@@ -7,7 +7,7 @@ import { EOL } from 'os';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default bucket'(test: Test) {
@@ -127,7 +127,6 @@ export = {
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
       bucketName: bucket,
-      // tslint:disable-next-line:only-arrow-functions
     }), function(err: Error) {
       return expectedErrors === err.message;
     });
@@ -1797,6 +1796,59 @@ export = {
         });
       }, /The condition property cannot be an empty object/);
       test.done();
+    },
+    'isWebsite set properly with': {
+      'only index doc'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'Website', {
+          websiteIndexDocument: 'index2.html',
+        });
+        test.equal(bucket.isWebsite, true);
+        test.done();
+      },
+      'error and index docs'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'Website', {
+          websiteIndexDocument: 'index2.html',
+          websiteErrorDocument: 'error.html',
+        });
+        test.equal(bucket.isWebsite, true);
+        test.done();
+      },
+      'redirects'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'Website', {
+          websiteRedirect: {
+            hostName: 'www.example.com',
+            protocol: s3.RedirectProtocol.HTTPS,
+          },
+        });
+        test.equal(bucket.isWebsite, true);
+        test.done();
+      },
+      'no website properties set'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'Website');
+        test.equal(bucket.isWebsite, false);
+        test.done();
+      },
+      'imported website buckets'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = s3.Bucket.fromBucketAttributes(stack, 'Website', {
+          bucketArn: 'arn:aws:s3:::my-bucket',
+          isWebsite: true,
+        });
+        test.equal(bucket.isWebsite, true);
+        test.done();
+      },
+      'imported buckets'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = s3.Bucket.fromBucketAttributes(stack, 'NotWebsite', {
+          bucketArn: 'arn:aws:s3:::my-bucket',
+        });
+        test.equal(bucket.isWebsite, false);
+        test.done();
+      },
     },
   },
 

@@ -3,7 +3,7 @@ import { AccountRootPrincipal, Role } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { ProfilingGroup } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('profiling group', () => {
 

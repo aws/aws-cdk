@@ -47,7 +47,6 @@ export interface BitBucketSourceActionProps extends codepipeline.CommonAwsAction
   readonly branch?: string;
 
   // long URL in @see
-  // tslint:disable:max-line-length
   /**
    * Whether the output should be the contents of the repository
    * (which is the default),
@@ -60,7 +59,6 @@ export interface BitBucketSourceActionProps extends codepipeline.CommonAwsAction
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html#action-reference-CodestarConnectionSource-config
    */
   readonly codeBuildCloneOutput?: boolean;
-  // tslint:enable:max-line-length
 }
 
 /**

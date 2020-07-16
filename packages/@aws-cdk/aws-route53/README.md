@@ -83,7 +83,29 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
 
-### Adding records to existing hosted zones
+### Imports
+
+If you don't know the ID of the Hosted Zone to import, you can use the 
+`HostedZone.fromLookup`:
+
+```ts
+HostedZone.fromLookup(this, 'MyZone', {
+  domainName: 'example.com'
+});
+```
+
+`HostedZone.fromLookup` requires an environment to be configured. Check
+out the [documentation](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) for more documentation and examples. CDK 
+automatically looks into your `~/.aws/config` file for the `[default]` profile.
+If you want to specify a different account run `cdk deploy --profile [profile]`.
+
+```ts
+new MyDevStack(app, 'dev', { 
+  env: { 
+    account: process.env.CDK_DEFAULT_ACCOUNT, 
+    region: process.env.CDK_DEFAULT_REGION 
+}});
+```
 
 If you know the ID and Name of a Hosted Zone, you can import it directly:
 
@@ -94,11 +116,11 @@ const zone = HostedZone.fromHostedZoneAttributes(this, 'MyZone', {
 });
 ```
 
-If you don't know the ID of a Hosted Zone, you can use the `HostedZone.fromLookup`
-to discover and import it:
+Alternatively, use the `HostedZone.fromHostedZoneId` to import hosted zones if
+you know the ID and the retrieval for the `zoneName` is undesirable.
 
 ```ts
-HostedZone.fromLookup(this, 'MyZone', {
-  domainName: 'example.com'
+const zone = HostedZone.fromHostedZoneId(this, 'MyZone', {
+  hostedZoneId: 'ZOJJZC49E0EPZ',
 });
 ```

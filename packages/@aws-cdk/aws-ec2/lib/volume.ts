@@ -473,7 +473,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     const result = Grant.addToPrincipal({
       grantee,
       actions: [ 'ec2:AttachVolume' ],
-      resourceArns : this.collectGrantResourceArns(instances),
+      resourceArns: this.collectGrantResourceArns(instances),
     });
 
     if (this.encryptionKey) {
@@ -519,7 +519,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     const result = Grant.addToPrincipal({
       grantee,
       actions: [ 'ec2:DetachVolume' ],
-      resourceArns : this.collectGrantResourceArns(instances),
+      resourceArns: this.collectGrantResourceArns(instances),
     });
     // Note: No encryption key permissions are required to detach an encrypted volume.
     return result;
@@ -642,10 +642,6 @@ export class Volume extends VolumeBase {
   }
 
   protected validateProps(props: VolumeProps) {
-    if (!Token.isUnresolved(props.availabilityZone) && !/^[a-z]{2}-[a-z]+-[1-9]+[a-z]$/.test(props.availabilityZone)) {
-      throw new Error('`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
-    }
-
     if (!(props.size || props.snapshotId)) {
       throw new Error('Must provide at least one of `size` or `snapshotId`');
     }

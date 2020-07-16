@@ -1179,7 +1179,7 @@ nodeunitShim({
       const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
 
       // THEN
-      // tslint:disable-next-line: max-line-length
+      // eslint-disable-next-line max-len
       test.throws(() => subnet.availabilityZone, "You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
       test.done();
     },
@@ -1189,11 +1189,11 @@ nodeunitShim({
       const stack = getTestStack();
 
       // WHEN
-      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId : 'pub-1', availabilityZone: '' });
+      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId: 'pub-1', availabilityZone: '' });
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
-      // tslint:disable-next-line: max-line-length
+      // eslint-disable-next-line max-len
       test.throws(() => subnet.availabilityZone, "You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
       test.done();
     },
@@ -1203,7 +1203,7 @@ nodeunitShim({
       const stack = getTestStack();
 
       // WHEN
-      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId : 'pub-1', availabilityZone: 'az-1234' });
+      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId: 'pub-1', availabilityZone: 'az-1234' });
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
@@ -1305,11 +1305,11 @@ function hasTags(expectedTags: Array<{Key: string, Value: string}>): (props: any
       });
       return actualTags.length === expectedTags.length;
     } catch (e) {
-      // tslint:disable:no-console
+      /* eslint-disable no-console */
       console.error('Tags are incorrect');
       console.error('found tags ', props.Tags);
       console.error('expected tags ', expectedTags);
-      // tslint:enable:no-console
+      /* eslint-enable no-console */
       throw e;
     }
   };

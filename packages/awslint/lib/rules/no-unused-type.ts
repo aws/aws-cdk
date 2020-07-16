@@ -20,7 +20,7 @@ noUnusedTypeLinter.add({
     evaluation.assert(evaluation.ctx.usedTypes.has(evaluation.ctx.inspectedType.fqn),
       evaluation.ctx.inspectedType.fqn,
       _formatLocation(evaluation.ctx.inspectedType.locationInModule));
-  }
+  },
 });
 
 function _collectUsedTypes(assm: Assembly): Set<string> {

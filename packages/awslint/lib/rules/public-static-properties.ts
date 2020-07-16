@@ -7,9 +7,9 @@ export const publicStaticPropertiesLinter = new Linter(assembly => {
   const result = new Array<Property>();
   for (const c of assembly.classes) {
     for (const property of c.allProperties) {
-        if (property.const && property.static) {
-            result.push(property);
-        }
+      if (property.const && property.static) {
+        result.push(property);
+      }
     }
   }
   return result;
@@ -21,5 +21,5 @@ publicStaticPropertiesLinter.add({
   eval: e => {
     const name = e.ctx.name;
     e.assert(UPPER_SNAKE_CASE_ALLOWED_PATTERN.test(name), `${e.ctx.parentType.fqn}.${name}`);
-  }
+  },
 });

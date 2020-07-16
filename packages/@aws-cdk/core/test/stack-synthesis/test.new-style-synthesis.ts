@@ -1,6 +1,6 @@
+import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import { App, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
 import { evaluateCFN } from '../evaluate-cfn';

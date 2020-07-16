@@ -74,7 +74,7 @@ function listContext(context: any) {
 
   print(renderTable(data, process.stdout.columns));
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   print(`Run ${colors.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
 }
 

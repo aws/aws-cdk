@@ -77,26 +77,25 @@ you need to have the following SDKs and tools locally:
 - [Node.js >= 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
   - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
-- [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
-- [Java OpenJDK 8](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
-- [Apache Maven](http://maven.apache.org/install.html)
-- [.NET Core SDK 3.1](https://www.microsoft.com/net/download)
-- [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
-- [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+- [Yarn >= 1.19.1, < 1.3](https://yarnpkg.com/lang/en/docs/install)
+- [Java >= OpenJDK 8, 11, 14](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
+- [Apache Maven >= 3.6.0, < 4.0](http://maven.apache.org/install.html)
+- [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
+- [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
+- [Ruby >= 2.5.1, < 3.0](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+- [Docker 19.03](https://docs.docker.com/get-docker/)
 
 The basic commands to get the repository cloned and built locally follow:
 
 ```console
 $ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
-$ yarn install
 $ yarn build
 ```
 
-If you get compiler errors when building, a common cause is globally installed tools like tslint and typescript. Try uninstalling them.
+If you get compiler errors when building, a common cause is a globally installed typescript. Try uninstalling it.
 
 ```
-npm uninstall -g tslint
 npm uninstall -g typescript
 ```
 
@@ -142,6 +141,9 @@ when you plan a big change or feature, or you want advice on what would be the b
 Sometimes, the GitHub issue is sufficient for such discussions, and can be sufficient to get
 clarity on what you plan to do. Sometimes, a design document would work better, so people can provide
 iterative feedback.
+
+Before starting on a design, read through the [design guidelines](DESIGN_GUIDELINES.md) for general
+patterns and tips.
 
 In such cases, use the GitHub issue description to collect **requirements** and
 **use cases** for your feature.
@@ -277,7 +279,7 @@ However, in many cases, you can probably get away with just building a portion o
 want to work on.
 
 We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK. Be sure to install
-the [tslint extension](https://marketplace.visualstudio.com/items?itemName=eg2.tslint) for it as well, since we have
+the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for it as well, since we have
 strict linting rules that will prevent your code from compiling, but with VSCode and this extension can be automatically
 fixed for you by hitting `Ctrl-.` when your cursor is on a red underline.
 
@@ -331,9 +333,6 @@ The following linters are used -
 - [awslint](#awslint)
 
 #### eslint
-
-Historically, the CDK has used tslint for linting its typescript source code. With [tslint's deprecation in
-2019](https://medium.com/palantir/tslint-in-2019-1a144c2317a9), we are slowly moving over to using eslint.
 
 All packages in the repo use a standard base configuration found at [eslintrc.js](tools/cdk-build-tools/config/eslintrc.js).
 This can be customized for any package by modifying the `.eslintrc` file found at its root.

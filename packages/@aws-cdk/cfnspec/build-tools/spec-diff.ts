@@ -1,8 +1,7 @@
-import * as fs from 'fs-extra';
 import * as util from 'util';
+import * as fs from 'fs-extra';
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-// tslint:disable-next-line:no-var-requires
 const jsonDiff = require('json-diff').diff;
 /* eslint-enable */
 

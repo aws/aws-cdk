@@ -1,0 +1,1123 @@
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as core from '@aws-cdk/core';
+import { IEngine } from './engine';
+import { EngineVersion } from './engine-version';
+
+/**
+ * The options passed to {@link IInstanceEngine.bind}.
+ */
+export interface InstanceEngineBindOptions {
+  /**
+   * The timezone of the database, set by the customer.
+   *
+   * @default - none (it's an optional field)
+   */
+  readonly timezone?: string;
+}
+
+/**
+ * The type returned from the {@link IInstanceEngine.bind} method.
+ * Empty for now,
+ * but there might be fields added to it in the future.
+ */
+export interface InstanceEngineConfig {
+}
+
+/**
+ * Interface representing a database instance (as opposed to cluster) engine.
+ */
+export interface IInstanceEngine extends IEngine {
+  /** The application used by this engine to perform rotation for a single-user scenario. */
+  readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
+
+  /** The application used by this engine to perform rotation for a multi-user scenario. */
+  readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
+
+  /**
+   * Method called when the engine is used to create a new instance.
+   */
+  bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig;
+}
+
+interface InstanceEngineBaseProps {
+  readonly engineType: string;
+  readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
+  readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
+  readonly version?: EngineVersion;
+  readonly parameterGroupFamily?: string;
+}
+
+abstract class InstanceEngineBase implements IInstanceEngine {
+  public readonly engineType: string;
+  public readonly engineVersion?: EngineVersion;
+  public readonly parameterGroupFamily?: string;
+  public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
+  public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
+
+  constructor(props: InstanceEngineBaseProps) {
+    this.engineType = props.engineType;
+    this.singleUserRotationApplication = props.singleUserRotationApplication;
+    this.multiUserRotationApplication = props.multiUserRotationApplication;
+    this.engineVersion = props.version;
+    this.parameterGroupFamily = props.parameterGroupFamily ??
+      (this.engineVersion ? `${this.engineType}${this.engineVersion.majorVersion}` : undefined);
+  }
+
+  public bindToInstance(_scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+    if (options.timezone) {
+      throw new Error(`timezone property can be configured only for Microsoft SQL Server, not ${this.engineType}`);
+    }
+    return {
+    };
+  }
+}
+
+/**
+ * The versions for the MariaDB instance engines
+ * (those returned by {@link DatabaseInstanceEngine.mariaDb}).
+ */
+export class MariaDbEngineVersion {
+  /** Version "10.0" (only a major version, without a specific minor version). */
+  public static readonly VER_10_0 = MariaDbEngineVersion.of('10.0', '10.0');
+  /** Version "10.0.17". */
+  public static readonly VER_10_0_17 = MariaDbEngineVersion.of('10.0.17', '10.0');
+  /** Version "10.0.24". */
+  public static readonly VER_10_0_24 = MariaDbEngineVersion.of('10.0.24', '10.0');
+  /** Version "10.0.28". */
+  public static readonly VER_10_0_28 = MariaDbEngineVersion.of('10.0.28', '10.0');
+  /** Version "10.0.31". */
+  public static readonly VER_10_0_31 = MariaDbEngineVersion.of('10.0.31', '10.0');
+  /** Version "10.0.32". */
+  public static readonly VER_10_0_32 = MariaDbEngineVersion.of('10.0.32', '10.0');
+  /** Version "10.0.34". */
+  public static readonly VER_10_0_34 = MariaDbEngineVersion.of('10.0.34', '10.0');
+  /** Version "10.0.35". */
+  public static readonly VER_10_0_35 = MariaDbEngineVersion.of('10.0.35', '10.0');
+
+  /** Version "10.1" (only a major version, without a specific minor version). */
+  public static readonly VER_10_1 = MariaDbEngineVersion.of('10.1', '10.1');
+  /** Version "10.1.14". */
+  public static readonly VER_10_1_14 = MariaDbEngineVersion.of('10.1.14', '10.1');
+  /** Version "10.1.19". */
+  public static readonly VER_10_1_19 = MariaDbEngineVersion.of('10.1.19', '10.1');
+  /** Version "10.1.23". */
+  public static readonly VER_10_1_23 = MariaDbEngineVersion.of('10.1.23', '10.1');
+  /** Version "10.1.26". */
+  public static readonly VER_10_1_26 = MariaDbEngineVersion.of('10.1.26', '10.1');
+  /** Version "10.1.31". */
+  public static readonly VER_10_1_31 = MariaDbEngineVersion.of('10.1.31', '10.1');
+  /** Version "10.1.34". */
+  public static readonly VER_10_1_34 = MariaDbEngineVersion.of('10.1.34', '10.1');
+
+  /** Version "10.2" (only a major version, without a specific minor version). */
+  public static readonly VER_10_2 = MariaDbEngineVersion.of('10.2', '10.2');
+  /** Version "10.2.11". */
+  public static readonly VER_10_2_11 = MariaDbEngineVersion.of('10.2.11', '10.2');
+  /** Version "10.2.12". */
+  public static readonly VER_10_2_12 = MariaDbEngineVersion.of('10.2.12', '10.2');
+  /** Version "10.2.15". */
+  public static readonly VER_10_2_15 = MariaDbEngineVersion.of('10.2.15', '10.2');
+  /** Version "10.2.21". */
+  public static readonly VER_10_2_21 = MariaDbEngineVersion.of('10.2.21', '10.2');
+
+  /** Version "10.3" (only a major version, without a specific minor version). */
+  public static readonly VER_10_3 = MariaDbEngineVersion.of('10.3', '10.3');
+  /** Version "10.3.8". */
+  public static readonly VER_10_3_8 = MariaDbEngineVersion.of('10.3.8', '10.3');
+  /** Version "10.3.13". */
+  public static readonly VER_10_3_13 = MariaDbEngineVersion.of('10.3.13', '10.3');
+  /** Version "10.3.20". */
+  public static readonly VER_10_3_20 = MariaDbEngineVersion.of('10.3.20', '10.3');
+  /** Version "10.3.23". */
+  public static readonly VER_10_3_23 = MariaDbEngineVersion.of('10.3.23', '10.3');
+
+  /** Version "10.4" (only a major version, without a specific minor version). */
+  public static readonly VER_10_4 = MariaDbEngineVersion.of('10.4', '10.4');
+  /** Version "10.4.8". */
+  public static readonly VER_10_4_8 = MariaDbEngineVersion.of('10.4.8', '10.4');
+  /** Version "10.4.13". */
+  public static readonly VER_10_4_13 = MariaDbEngineVersion.of('10.4.13', '10.4');
+
+  /**
+   * Create a new MariaDbEngineVersion with an arbitrary version.
+   *
+   * @param mariaDbFullVersion the full version string,
+   *   for example "10.5.28"
+   * @param mariaDbMajorVersion the major version of the engine,
+   *   for example "10.5"
+   */
+  public static of(mariaDbFullVersion: string, mariaDbMajorVersion: string): MariaDbEngineVersion {
+    return new MariaDbEngineVersion(mariaDbFullVersion, mariaDbMajorVersion);
+  }
+
+  /** The full version string, for example, "10.5.28". */
+  public readonly mariaDbFullVersion: string;
+  /** The major version of the engine, for example, "10.5". */
+  public readonly mariaDbMajorVersion: string;
+
+  private constructor(mariaDbFullVersion: string, mariaDbMajorVersion: string) {
+    this.mariaDbFullVersion = mariaDbFullVersion;
+    this.mariaDbMajorVersion = mariaDbMajorVersion;
+  }
+}
+
+/**
+ * Properties for MariaDB instance engines.
+ * Used in {@link DatabaseInstanceEngine.mariaDb}.
+ */
+export interface MariaDbInstanceEngineProps {
+  /** The exact version of the engine to use. */
+  readonly version: MariaDbEngineVersion;
+}
+
+class MariaDbInstanceEngine extends InstanceEngineBase {
+  constructor(version?: MariaDbEngineVersion) {
+    super({
+      engineType: 'mariadb',
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER,
+      version: version
+        ? {
+          fullVersion: version.mariaDbFullVersion,
+          majorVersion: version.mariaDbMajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
+ * The versions for the MySQL instance engines
+ * (those returned by {@link DatabaseInstanceEngine.mysql}).
+ */
+export class MysqlEngineVersion {
+  /** Version "5.5" (only a major version, without a specific minor version). */
+  public static readonly VER_5_5 = MysqlEngineVersion.of('5.5', '5.5');
+  /** Version "5.5.46". */
+  public static readonly VER_5_5_46 = MysqlEngineVersion.of('5.5.46', '5.5');
+  /** Version "5.5.53". */
+  public static readonly VER_5_5_53 = MysqlEngineVersion.of('5.5.53', '5.5');
+  /** Version "5.5.57". */
+  public static readonly VER_5_5_57 = MysqlEngineVersion.of('5.5.57', '5.5');
+  /** Version "5.5.59". */
+  public static readonly VER_5_5_59 = MysqlEngineVersion.of('5.5.59', '5.5');
+  /** Version "5.5.61". */
+  public static readonly VER_5_5_61 = MysqlEngineVersion.of('5.5.61', '5.5');
+
+  /** Version "5.6" (only a major version, without a specific minor version). */
+  public static readonly VER_5_6 = MysqlEngineVersion.of('5.6', '5.6');
+  /** Version "5.6.34". */
+  public static readonly VER_5_6_34 = MysqlEngineVersion.of('5.6.34', '5.6');
+  /** Version "5.6.35". */
+  public static readonly VER_5_6_35 = MysqlEngineVersion.of('5.6.35', '5.6');
+  /** Version "5.6.37". */
+  public static readonly VER_5_6_37 = MysqlEngineVersion.of('5.6.37', '5.6');
+  /** Version "5.6.39". */
+  public static readonly VER_5_6_39 = MysqlEngineVersion.of('5.6.39', '5.6');
+  /** Version "5.6.40". */
+  public static readonly VER_5_6_40 = MysqlEngineVersion.of('5.6.40', '5.6');
+  /** Version "5.6.41". */
+  public static readonly VER_5_6_41 = MysqlEngineVersion.of('5.6.41', '5.6');
+  /** Version "5.6.43". */
+  public static readonly VER_5_6_43 = MysqlEngineVersion.of('5.6.43', '5.6');
+  /** Version "5.6.44". */
+  public static readonly VER_5_6_44 = MysqlEngineVersion.of('5.6.44', '5.6');
+  /** Version "5.6.46". */
+  public static readonly VER_5_6_46 = MysqlEngineVersion.of('5.6.46', '5.6');
+  /** Version "5.6.48". */
+  public static readonly VER_5_6_48 = MysqlEngineVersion.of('5.6.48', '5.6');
+
+  /** Version "5.7" (only a major version, without a specific minor version). */
+  public static readonly VER_5_7 = MysqlEngineVersion.of('5.7', '5.7');
+  /** Version "5.7.16". */
+  public static readonly VER_5_7_16 = MysqlEngineVersion.of('5.7.16', '5.7');
+  /** Version "5.7.17". */
+  public static readonly VER_5_7_17 = MysqlEngineVersion.of('5.7.17', '5.7');
+  /** Version "5.7.19". */
+  public static readonly VER_5_7_19 = MysqlEngineVersion.of('5.7.19', '5.7');
+  /** Version "5.7.21". */
+  public static readonly VER_5_7_21 = MysqlEngineVersion.of('5.7.21', '5.7');
+  /** Version "5.7.22". */
+  public static readonly VER_5_7_22 = MysqlEngineVersion.of('5.7.22', '5.7');
+  /** Version "5.7.23". */
+  public static readonly VER_5_7_23 = MysqlEngineVersion.of('5.7.23', '5.7');
+  /** Version "5.7.24". */
+  public static readonly VER_5_7_24 = MysqlEngineVersion.of('5.7.24', '5.7');
+  /** Version "5.7.25". */
+  public static readonly VER_5_7_25 = MysqlEngineVersion.of('5.7.25', '5.7');
+  /** Version "5.7.26". */
+  public static readonly VER_5_7_26 = MysqlEngineVersion.of('5.7.26', '5.7');
+  /** Version "5.7.28". */
+  public static readonly VER_5_7_28 = MysqlEngineVersion.of('5.7.28', '5.7');
+  /** Version "5.7.30". */
+  public static readonly VER_5_7_30 = MysqlEngineVersion.of('5.7.30', '5.7');
+
+  /** Version "8.0" (only a major version, without a specific minor version). */
+  public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
+  /** Version "8.0.11". */
+  public static readonly VER_8_0_11 = MysqlEngineVersion.of('8.0.11', '8.0');
+  /** Version "8.0.13". */
+  public static readonly VER_8_0_13 = MysqlEngineVersion.of('8.0.13', '8.0');
+  /** Version "8.0.15". */
+  public static readonly VER_8_0_15 = MysqlEngineVersion.of('8.0.15', '8.0');
+  /** Version "8.0.16". */
+  public static readonly VER_8_0_16 = MysqlEngineVersion.of('8.0.16', '8.0');
+  /** Version "8.0.17". */
+  public static readonly VER_8_0_17 = MysqlEngineVersion.of('8.0.17', '8.0');
+  /** Version "8.0.19". */
+  public static readonly VER_8_0_19 = MysqlEngineVersion.of('8.0.19', '8.0');
+
+  /**
+   * Create a new MysqlEngineVersion with an arbitrary version.
+   *
+   * @param mysqlFullVersion the full version string,
+   *   for example "8.1.43"
+   * @param mysqlMajorVersion the major version of the engine,
+   *   for example "8.1"
+   */
+  public static of(mysqlFullVersion: string, mysqlMajorVersion: string): MysqlEngineVersion {
+    return new MysqlEngineVersion(mysqlFullVersion, mysqlMajorVersion);
+  }
+
+  /** The full version string, for example, "10.5.28". */
+  public readonly mysqlFullVersion: string;
+  /** The major version of the engine, for example, "10.5". */
+  public readonly mysqlMajorVersion: string;
+
+  private constructor(mysqlFullVersion: string, mysqlMajorVersion: string) {
+    this.mysqlFullVersion = mysqlFullVersion;
+    this.mysqlMajorVersion = mysqlMajorVersion;
+  }
+}
+
+/**
+ * Properties for MySQL instance engines.
+ * Used in {@link DatabaseInstanceEngine.mysql}.
+ */
+export interface MySqlInstanceEngineProps {
+  /** The exact version of the engine to use. */
+  readonly version: MysqlEngineVersion;
+}
+
+class MySqlInstanceEngine extends InstanceEngineBase {
+  constructor(version?: MysqlEngineVersion) {
+    super({
+      engineType: 'mysql',
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
+      version: version
+        ? {
+          fullVersion: version.mysqlFullVersion,
+          majorVersion: version.mysqlMajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
+ * The versions for the PostgreSQL instance engines
+ * (those returned by {@link DatabaseInstanceEngine.postgres}).
+ */
+export class PostgresEngineVersion {
+  /** Version "9.5" (only a major version, without a specific minor version). */
+  public static readonly VER_9_5 = PostgresEngineVersion.of('9.5', '9.5');
+  /** Version "9.5.2". */
+  public static readonly VER_9_5_2 = PostgresEngineVersion.of('9.5.2', '9.5');
+  /** Version "9.5.4". */
+  public static readonly VER_9_5_4 = PostgresEngineVersion.of('9.5.4', '9.5');
+  /** Version "9.5.6". */
+  public static readonly VER_9_5_6 = PostgresEngineVersion.of('9.5.6', '9.5');
+  /** Version "9.5.7". */
+  public static readonly VER_9_5_7 = PostgresEngineVersion.of('9.5.7', '9.5');
+  /** Version "9.5.9". */
+  public static readonly VER_9_5_9 = PostgresEngineVersion.of('9.5.9', '9.5');
+  /** Version "9.5.10". */
+  public static readonly VER_9_5_10 = PostgresEngineVersion.of('9.5.10', '9.5');
+  /** Version "9.5.12". */
+  public static readonly VER_9_5_12 = PostgresEngineVersion.of('9.5.12', '9.5');
+  /** Version "9.5.13". */
+  public static readonly VER_9_5_13 = PostgresEngineVersion.of('9.5.13', '9.5');
+  /** Version "9.5.14". */
+  public static readonly VER_9_5_14 = PostgresEngineVersion.of('9.5.14', '9.5');
+  /** Version "9.5.15". */
+  public static readonly VER_9_5_15 = PostgresEngineVersion.of('9.5.15', '9.5');
+  /** Version "9.5.16". */
+  public static readonly VER_9_5_16 = PostgresEngineVersion.of('9.5.16', '9.5');
+  /** Version "9.5.18". */
+  public static readonly VER_9_5_18 = PostgresEngineVersion.of('9.5.18', '9.5');
+  /** Version "9.5.19". */
+  public static readonly VER_9_5_19 = PostgresEngineVersion.of('9.5.19', '9.5');
+  /** Version "9.5.20". */
+  public static readonly VER_9_5_20 = PostgresEngineVersion.of('9.5.20', '9.5');
+  /** Version "9.5.21". */
+  public static readonly VER_9_5_21 = PostgresEngineVersion.of('9.5.21', '9.5');
+  /** Version "9.5.22". */
+  public static readonly VER_9_5_22 = PostgresEngineVersion.of('9.5.22', '9.5');
+
+  /** Version "9.6" (only a major version, without a specific minor version). */
+  public static readonly VER_9_6 = PostgresEngineVersion.of('9.6', '9.6');
+  /** Version "9.6.1". */
+  public static readonly VER_9_6_1 = PostgresEngineVersion.of('9.6.1', '9.6');
+  /** Version "9.6.2". */
+  public static readonly VER_9_6_2 = PostgresEngineVersion.of('9.6.2', '9.6');
+  /** Version "9.6.3". */
+  public static readonly VER_9_6_3 = PostgresEngineVersion.of('9.6.3', '9.6');
+  /** Version "9.6.5". */
+  public static readonly VER_9_6_5 = PostgresEngineVersion.of('9.6.5', '9.6');
+  /** Version "9.6.6". */
+  public static readonly VER_9_6_6 = PostgresEngineVersion.of('9.6.6', '9.6');
+  /** Version "9.6.8". */
+  public static readonly VER_9_6_8 = PostgresEngineVersion.of('9.6.8', '9.6');
+  /** Version "9.6.9". */
+  public static readonly VER_9_6_9 = PostgresEngineVersion.of('9.6.9', '9.6');
+  /** Version "9.6.10". */
+  public static readonly VER_9_6_10 = PostgresEngineVersion.of('9.6.10', '9.6');
+  /** Version "9.6.11". */
+  public static readonly VER_9_6_11 = PostgresEngineVersion.of('9.6.11', '9.6');
+  /** Version "9.6.12". */
+  public static readonly VER_9_6_12 = PostgresEngineVersion.of('9.6.12', '9.6');
+  /** Version "9.6.14". */
+  public static readonly VER_9_6_14 = PostgresEngineVersion.of('9.6.14', '9.6');
+  /** Version "9.6.15". */
+  public static readonly VER_9_6_15 = PostgresEngineVersion.of('9.6.15', '9.6');
+  /** Version "9.6.16". */
+  public static readonly VER_9_6_16 = PostgresEngineVersion.of('9.6.16', '9.6');
+  /** Version "9.6.17". */
+  public static readonly VER_9_6_17 = PostgresEngineVersion.of('9.6.17', '9.6');
+  /** Version "9.6.18". */
+  public static readonly VER_9_6_18 = PostgresEngineVersion.of('9.6.18', '9.6');
+
+  /** Version "10" (only a major version, without a specific minor version). */
+  public static readonly VER_10 = PostgresEngineVersion.of('10', '10');
+  /** Version "10.1". */
+  public static readonly VER_10_1 = PostgresEngineVersion.of('10.1', '10');
+  /** Version "10.3". */
+  public static readonly VER_10_3 = PostgresEngineVersion.of('10.3', '10');
+  /** Version "10.4". */
+  public static readonly VER_10_4 = PostgresEngineVersion.of('10.4', '10');
+  /** Version "10.5". */
+  public static readonly VER_10_5 = PostgresEngineVersion.of('10.5', '10');
+  /** Version "10.6". */
+  public static readonly VER_10_6 = PostgresEngineVersion.of('10.6', '10');
+  /** Version "10.7". */
+  public static readonly VER_10_7 = PostgresEngineVersion.of('10.7', '10');
+  /** Version "10.9". */
+  public static readonly VER_10_9 = PostgresEngineVersion.of('10.9', '10');
+  /** Version "10.10". */
+  public static readonly VER_10_10 = PostgresEngineVersion.of('10.10', '10');
+  /** Version "10.11". */
+  public static readonly VER_10_11 = PostgresEngineVersion.of('10.11', '10');
+  /** Version "10.12". */
+  public static readonly VER_10_12 = PostgresEngineVersion.of('10.12', '10');
+  /** Version "10.13". */
+  public static readonly VER_10_13 = PostgresEngineVersion.of('10.13', '10');
+
+  /** Version "11" (only a major version, without a specific minor version). */
+  public static readonly VER_11 = PostgresEngineVersion.of('11', '11');
+  /** Version "11.1". */
+  public static readonly VER_11_1 = PostgresEngineVersion.of('11.1', '11');
+  /** Version "11.2". */
+  public static readonly VER_11_2 = PostgresEngineVersion.of('11.2', '11');
+  /** Version "11.4". */
+  public static readonly VER_11_4 = PostgresEngineVersion.of('11.4', '11');
+  /** Version "11.5". */
+  public static readonly VER_11_5 = PostgresEngineVersion.of('11.5', '11');
+  /** Version "11.6". */
+  public static readonly VER_11_6 = PostgresEngineVersion.of('11.6', '11');
+  /** Version "11.7". */
+  public static readonly VER_11_7 = PostgresEngineVersion.of('11.7', '11');
+  /** Version "11.8". */
+  public static readonly VER_11_8 = PostgresEngineVersion.of('11.8', '11');
+
+  /** Version "12" (only a major version, without a specific minor version). */
+  public static readonly VER_12 = PostgresEngineVersion.of('12', '12');
+  /** Version "12.2". */
+  public static readonly VER_12_2 = PostgresEngineVersion.of('12.2', '12');
+  /** Version "12.3". */
+  public static readonly VER_12_3 = PostgresEngineVersion.of('12.3', '12');
+
+  /**
+   * Create a new PostgresEngineVersion with an arbitrary version.
+   *
+   * @param postgresFullVersion the full version string,
+   *   for example "13.11"
+   * @param postgresMajorVersion the major version of the engine,
+   *   for example "13"
+   */
+  public static of(postgresFullVersion: string, postgresMajorVersion: string): PostgresEngineVersion {
+    return new PostgresEngineVersion(postgresFullVersion, postgresMajorVersion);
+  }
+
+  /** The full version string, for example, "13.11". */
+  public readonly postgresFullVersion: string;
+  /** The major version of the engine, for example, "13". */
+  public readonly postgresMajorVersion: string;
+
+  private constructor(postgresFullVersion: string, postgresMajorVersion: string) {
+    this.postgresFullVersion = postgresFullVersion;
+    this.postgresMajorVersion = postgresMajorVersion;
+  }
+}
+
+/**
+ * Properties for PostgreSQL instance engines.
+ * Used in {@link DatabaseInstanceEngine.postgres}.
+ */
+export interface PostgresInstanceEngineProps {
+  /** The exact version of the engine to use. */
+  readonly version: PostgresEngineVersion;
+}
+
+/**
+ * The instance engine for PostgreSQL.
+ */
+class PostgresInstanceEngine extends InstanceEngineBase {
+  constructor(version?: PostgresEngineVersion) {
+    super({
+      engineType: 'postgres',
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER,
+      version: version
+        ? {
+          fullVersion: version.postgresFullVersion,
+          majorVersion: version.postgresMajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
+ * The versions for the legacy Oracle instance engines
+ * (those returned by {@link DatabaseInstanceEngine.oracleSe}
+ * and {@link DatabaseInstanceEngine.oracleSe1}).
+ * Note: RDS will stop allowing creating new databases with this version in August 2020.
+ */
+export class OracleLegacyEngineVersion {
+  /** Version "11.2" (only a major version, without a specific minor version). */
+  public static readonly VER_11_2 = OracleLegacyEngineVersion.of('11.2', '11.2');
+  /** Version "11.2.0.2.v2". */
+  public static readonly VER_11_2_0_2_V2 = OracleLegacyEngineVersion.of('11.2.0.2.v2', '11.2');
+  /** Version "11.2.0.4.v1". */
+  public static readonly VER_11_2_0_4_V1 = OracleLegacyEngineVersion.of('11.2.0.4.v1', '11.2');
+  /** Version "11.2.0.4.v3". */
+  public static readonly VER_11_2_0_4_V3 = OracleLegacyEngineVersion.of('11.2.0.4.v3', '11.2');
+  /** Version "11.2.0.4.v4". */
+  public static readonly VER_11_2_0_4_V4 = OracleLegacyEngineVersion.of('11.2.0.4.v4', '11.2');
+  /** Version "11.2.0.4.v5". */
+  public static readonly VER_11_2_0_4_V5 = OracleLegacyEngineVersion.of('11.2.0.4.v5', '11.2');
+  /** Version "11.2.0.4.v6". */
+  public static readonly VER_11_2_0_4_V6 = OracleLegacyEngineVersion.of('11.2.0.4.v6', '11.2');
+  /** Version "11.2.0.4.v7". */
+  public static readonly VER_11_2_0_4_V7 = OracleLegacyEngineVersion.of('11.2.0.4.v7', '11.2');
+  /** Version "11.2.0.4.v8". */
+  public static readonly VER_11_2_0_4_V8 = OracleLegacyEngineVersion.of('11.2.0.4.v8', '11.2');
+  /** Version "11.2.0.4.v9". */
+  public static readonly VER_11_2_0_4_V9 = OracleLegacyEngineVersion.of('11.2.0.4.v9', '11.2');
+  /** Version "11.2.0.4.v10". */
+  public static readonly VER_11_2_0_4_V10 = OracleLegacyEngineVersion.of('11.2.0.4.v10', '11.2');
+  /** Version "11.2.0.4.v11". */
+  public static readonly VER_11_2_0_4_V11 = OracleLegacyEngineVersion.of('11.2.0.4.v11', '11.2');
+  /** Version "11.2.0.4.v12". */
+  public static readonly VER_11_2_0_4_V12 = OracleLegacyEngineVersion.of('11.2.0.4.v12', '11.2');
+  /** Version "11.2.0.4.v13". */
+  public static readonly VER_11_2_0_4_V13 = OracleLegacyEngineVersion.of('11.2.0.4.v13', '11.2');
+  /** Version "11.2.0.4.v14". */
+  public static readonly VER_11_2_0_4_V14 = OracleLegacyEngineVersion.of('11.2.0.4.v14', '11.2');
+  /** Version "11.2.0.4.v15". */
+  public static readonly VER_11_2_0_4_V15 = OracleLegacyEngineVersion.of('11.2.0.4.v15', '11.2');
+  /** Version "11.2.0.4.v16". */
+  public static readonly VER_11_2_0_4_V16 = OracleLegacyEngineVersion.of('11.2.0.4.v16', '11.2');
+  /** Version "11.2.0.4.v17". */
+  public static readonly VER_11_2_0_4_V17 = OracleLegacyEngineVersion.of('11.2.0.4.v17', '11.2');
+  /** Version "11.2.0.4.v18". */
+  public static readonly VER_11_2_0_4_V18 = OracleLegacyEngineVersion.of('11.2.0.4.v18', '11.2');
+  /** Version "11.2.0.4.v19". */
+  public static readonly VER_11_2_0_4_V19 = OracleLegacyEngineVersion.of('11.2.0.4.v19', '11.2');
+  /** Version "11.2.0.4.v20". */
+  public static readonly VER_11_2_0_4_V20 = OracleLegacyEngineVersion.of('11.2.0.4.v20', '11.2');
+  /** Version "11.2.0.4.v21". */
+  public static readonly VER_11_2_0_4_V21 = OracleLegacyEngineVersion.of('11.2.0.4.v21', '11.2');
+  /** Version "11.2.0.4.v22". */
+  public static readonly VER_11_2_0_4_V22 = OracleLegacyEngineVersion.of('11.2.0.4.v22', '11.2');
+  /** Version "11.2.0.4.v23". */
+  public static readonly VER_11_2_0_4_V23 = OracleLegacyEngineVersion.of('11.2.0.4.v23', '11.2');
+  /** Version "11.2.0.4.v24". */
+  public static readonly VER_11_2_0_4_V24 = OracleLegacyEngineVersion.of('11.2.0.4.v24', '11.2');
+
+  private static of(oracleLegacyFullVersion: string, oracleLegacyMajorVersion: string): OracleLegacyEngineVersion {
+    return new OracleLegacyEngineVersion(oracleLegacyFullVersion, oracleLegacyMajorVersion);
+  }
+
+  /** The full version string, for example, "11.2.0.4.v24". */
+  public readonly oracleLegacyFullVersion: string;
+  /** The major version of the engine, for example, "11.2". */
+  public readonly oracleLegacyMajorVersion: string;
+
+  private constructor(oracleLegacyFullVersion: string, oracleLegacyMajorVersion: string) {
+    this.oracleLegacyFullVersion = oracleLegacyFullVersion;
+    this.oracleLegacyMajorVersion = oracleLegacyMajorVersion;
+  }
+}
+
+/**
+ * The versions for the Oracle instance engines
+ * (those returned by {@link DatabaseInstanceEngine.oracleSe2} and
+ * {@link DatabaseInstanceEngine.oracleEe}).
+ */
+export class OracleEngineVersion {
+  /** Version "12.1" (only a major version, without a specific minor version). */
+  public static readonly VER_12_1 = OracleEngineVersion.of('12.1', '12.1');
+  /** Version "12.1.0.2.v1". */
+  public static readonly VER_12_1_0_2_V1 = OracleEngineVersion.of('12.1.0.2.v1', '12.1');
+  /** Version "12.1.0.2.v2". */
+  public static readonly VER_12_1_0_2_V2 = OracleEngineVersion.of('12.1.0.2.v2', '12.1');
+  /** Version "12.1.0.2.v3". */
+  public static readonly VER_12_1_0_2_V3 = OracleEngineVersion.of('12.1.0.2.v3', '12.1');
+  /** Version "12.1.0.2.v4". */
+  public static readonly VER_12_1_0_2_V4 = OracleEngineVersion.of('12.1.0.2.v4', '12.1');
+  /** Version "12.1.0.2.v5". */
+  public static readonly VER_12_1_0_2_V5 = OracleEngineVersion.of('12.1.0.2.v5', '12.1');
+  /** Version "12.1.0.2.v6". */
+  public static readonly VER_12_1_0_2_V6 = OracleEngineVersion.of('12.1.0.2.v6', '12.1');
+  /** Version "12.1.0.2.v7". */
+  public static readonly VER_12_1_0_2_V7 = OracleEngineVersion.of('12.1.0.2.v7', '12.1');
+  /** Version "12.1.0.2.v8". */
+  public static readonly VER_12_1_0_2_V8 = OracleEngineVersion.of('12.1.0.2.v8', '12.1');
+  /** Version "12.1.0.2.v9". */
+  public static readonly VER_12_1_0_2_V9 = OracleEngineVersion.of('12.1.0.2.v9', '12.1');
+  /** Version "12.1.0.2.v10". */
+  public static readonly VER_12_1_0_2_V10 = OracleEngineVersion.of('12.1.0.2.v10', '12.1');
+  /** Version "12.1.0.2.v11". */
+  public static readonly VER_12_1_0_2_V11 = OracleEngineVersion.of('12.1.0.2.v11', '12.1');
+  /** Version "12.1.0.2.v12". */
+  public static readonly VER_12_1_0_2_V12 = OracleEngineVersion.of('12.1.0.2.v12', '12.1');
+  /** Version "12.1.0.2.v13". */
+  public static readonly VER_12_1_0_2_V13 = OracleEngineVersion.of('12.1.0.2.v13', '12.1');
+  /** Version "12.1.0.2.v14". */
+  public static readonly VER_12_1_0_2_V14 = OracleEngineVersion.of('12.1.0.2.v14', '12.1');
+  /** Version "12.1.0.2.v15". */
+  public static readonly VER_12_1_0_2_V15 = OracleEngineVersion.of('12.1.0.2.v15', '12.1');
+  /** Version "12.1.0.2.v16". */
+  public static readonly VER_12_1_0_2_V16 = OracleEngineVersion.of('12.1.0.2.v16', '12.1');
+  /** Version "12.1.0.2.v17". */
+  public static readonly VER_12_1_0_2_V17 = OracleEngineVersion.of('12.1.0.2.v17', '12.1');
+  /** Version "12.1.0.2.v18". */
+  public static readonly VER_12_1_0_2_V18 = OracleEngineVersion.of('12.1.0.2.v18', '12.1');
+  /** Version "12.1.0.2.v19". */
+  public static readonly VER_12_1_0_2_V19 = OracleEngineVersion.of('12.1.0.2.v19', '12.1');
+  /** Version "12.1.0.2.v20". */
+  public static readonly VER_12_1_0_2_V20 = OracleEngineVersion.of('12.1.0.2.v20', '12.1');
+
+  /** Version "12.2" (only a major version, without a specific minor version). */
+  public static readonly VER_12_2 = OracleEngineVersion.of('12.2', '12.2');
+  /** Version "12.2.0.1.ru-2018-10.rur-2018-10.r1". */
+  public static readonly VER_12_2_0_1_2018_10_R1 = OracleEngineVersion.of('12.2.0.1.ru-2018-10.rur-2018-10.r1', '12.2');
+  /** Version "12.2.0.1.ru-2019-01.rur-2019-01.r1". */
+  public static readonly VER_12_2_0_1_2019_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2019-01.rur-2019-01.r1', '12.2');
+  /** Version "12.2.0.1.ru-2019-04.rur-2019-04.r1". */
+  public static readonly VER_12_2_0_1_2019_04_R1 = OracleEngineVersion.of('12.2.0.1.ru-2019-04.rur-2019-04.r1', '12.2');
+  /** Version "12.2.0.1.ru-2019-07.rur-2019-07.r1". */
+  public static readonly VER_12_2_0_1_2019_07_R1 = OracleEngineVersion.of('12.2.0.1.ru-2019-07.rur-2019-07.r1', '12.2');
+  /** Version "12.2.0.1.ru-2019-10.rur-2019-10.r1". */
+  public static readonly VER_12_2_0_1_2019_10_R1 = OracleEngineVersion.of('12.2.0.1.ru-2019-10.rur-2019-10.r1', '12.2');
+  /** Version "12.2.0.1.ru-2020-01.rur-2020-01.r1". */
+  public static readonly VER_12_2_0_1_2020_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-01.rur-2020-01.r1', '12.2');
+  /** Version "12.2.0.1.ru-2020-04.rur-2020-04.r1". */
+  public static readonly VER_12_2_0_1_2020_04_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-04.rur-2020-04.r1', '12.2');
+
+  /** Version "18" (only a major version, without a specific minor version). */
+  public static readonly VER_18 = OracleEngineVersion.of('18', '18');
+  /** Version "18.0.0.0.ru-2019-07.rur-2019-07.r1". */
+  public static readonly VER_18_0_0_0_2019_07_R1 = OracleEngineVersion.of('18.0.0.0.ru-2019-07.rur-2019-07.r1', '18');
+  /** Version "18.0.0.0.ru-2019-10.rur-2019-10.r1". */
+  public static readonly VER_18_0_0_0_2019_10_R1 = OracleEngineVersion.of('18.0.0.0.ru-2019-10.rur-2019-10.r1', '18');
+  /** Version "18.0.0.0.ru-2020-01.rur-2020-01.r1". */
+  public static readonly VER_18_0_0_0_2020_01_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-01.rur-2020-01.r1', '18');
+  /** Version "18.0.0.0.ru-2020-04.rur-2020-04.r1". */
+  public static readonly VER_18_0_0_0_2020_04_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-04.rur-2020-04.r1', '18');
+
+  /** Version "19" (only a major version, without a specific minor version). */
+  public static readonly VER_19 = OracleEngineVersion.of('19', '19');
+  /** Version "19.0.0.0.ru-2019-07.rur-2019-07.r1". */
+  public static readonly VER_19_0_0_0_2019_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2019-07.rur-2019-07.r1', '19');
+  /** Version "19.0.0.0.ru-2019-10.rur-2019-10.r1". */
+  public static readonly VER_19_0_0_0_2019_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2019-10.rur-2019-10.r1', '19');
+  /** Version "19.0.0.0.ru-2020-01.rur-2020-01.r1". */
+  public static readonly VER_19_0_0_0_2020_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2020-01.rur-2020-01.r1', '19');
+  /** Version "19.0.0.0.ru-2020-04.rur-2020-04.r1". */
+  public static readonly VER_19_0_0_0_2020_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2020-04.rur-2020-04.r1', '19');
+
+  /**
+   * Creates a new OracleEngineVersion with an arbitrary version.
+   *
+   * @param oracleFullVersion the full version string,
+   *   for example "19.0.0.0.ru-2019-10.rur-2019-10.r1"
+   * @param oracleMajorVersion the major version of the engine,
+   *   for example "19"
+   */
+  public static of(oracleFullVersion: string, oracleMajorVersion: string): OracleEngineVersion {
+    return new OracleEngineVersion(oracleFullVersion, oracleMajorVersion);
+  }
+
+  /** The full version string, for example, "19.0.0.0.ru-2019-10.rur-2019-10.r1". */
+  public readonly oracleFullVersion: string;
+  /** The major version of the engine, for example, "19". */
+  public readonly oracleMajorVersion: string;
+
+  private constructor(oracleFullVersion: string, oracleMajorVersion: string) {
+    this.oracleFullVersion = oracleFullVersion;
+    this.oracleMajorVersion = oracleMajorVersion;
+  }
+}
+
+interface OracleInstanceEngineBaseProps {
+  readonly engineType: string;
+  readonly version?: EngineVersion;
+}
+
+abstract class OracleInstanceEngineBase extends InstanceEngineBase {
+  constructor(props: OracleInstanceEngineBaseProps) {
+    super({
+      ...props,
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER,
+      parameterGroupFamily: props.version ? `${props.engineType}-${props.version.majorVersion}` : undefined,
+    });
+  }
+}
+
+interface OracleInstanceEngineProps {
+  /** The exact version of the engine to use. */
+  readonly version: OracleEngineVersion;
+}
+
+/**
+ * Properties for Oracle Standard Edition instance engines.
+ * Used in {@link DatabaseInstanceEngine.oracleSe}.
+ */
+export interface OracleSeInstanceEngineProps {
+  /** The exact version of the engine to use. */
+  readonly version: OracleLegacyEngineVersion;
+}
+
+class OracleSeInstanceEngine extends OracleInstanceEngineBase {
+  constructor(version?: OracleLegacyEngineVersion) {
+    super({
+      engineType: 'oracle-se',
+      version: version
+        ? {
+          fullVersion: version.oracleLegacyFullVersion,
+          majorVersion: version.oracleLegacyMajorVersion,
+        }
+        : {
+          majorVersion: '11.2',
+        },
+    });
+  }
+}
+
+/**
+ * Properties for Oracle Standard Edition 1 instance engines.
+ * Used in {@link DatabaseInstanceEngine.oracleSe1}.
+ */
+export interface OracleSe1InstanceEngineProps {
+  /** The exact version of the engine to use. */
+  readonly version: OracleLegacyEngineVersion;
+}
+
+class OracleSe1InstanceEngine extends OracleInstanceEngineBase {
+  constructor(version?: OracleLegacyEngineVersion) {
+    super({
+      engineType: 'oracle-se1',
+      version: version
+        ? {
+          fullVersion: version.oracleLegacyFullVersion,
+          majorVersion: version.oracleLegacyMajorVersion,
+        }
+        : {
+          majorVersion: '11.2',
+        },
+    });
+  }
+}
+
+/**
+ * Properties for Oracle Standard Edition 2 instance engines.
+ * Used in {@link DatabaseInstanceEngine.oracleSe2}.
+ */
+export interface OracleSe2InstanceEngineProps extends OracleInstanceEngineProps {
+}
+
+class OracleSe2InstanceEngine extends OracleInstanceEngineBase {
+  constructor(version?: OracleEngineVersion) {
+    super({
+      engineType: 'oracle-se2',
+      version: version
+        ? {
+          fullVersion: version.oracleFullVersion,
+          majorVersion: version.oracleMajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
+ * Properties for Oracle Enterprise Edition instance engines.
+ * Used in {@link DatabaseInstanceEngine.oracleEe}.
+ */
+export interface OracleEeInstanceEngineProps extends OracleInstanceEngineProps {
+}
+
+class OracleEeInstanceEngine extends OracleInstanceEngineBase {
+  constructor(version?: OracleEngineVersion) {
+    super({
+      engineType: 'oracle-ee',
+      version: version
+        ? {
+          fullVersion: version.oracleFullVersion,
+          majorVersion: version.oracleMajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
+ * The versions for the SQL Server instance engines
+ * (those returned by {@link DatabaseInstanceEngine.sqlServerSe},
+ * {@link DatabaseInstanceEngine.sqlServerEx}, {@link DatabaseInstanceEngine.sqlServerWeb}
+ * and {@link DatabaseInstanceEngine.sqlServerEe}).
+ */
+export class SqlServerEngineVersion {
+  /** Version "11.0" (only a major version, without a specific minor version). */
+  public static readonly VER_11 = SqlServerEngineVersion.of('11.0', '11.0');
+  /** Version "11.00.5058.0.v1". */
+  public static readonly VER_11_00_5058_0_V1 = SqlServerEngineVersion.of('11.00.5058.0.v1', '11.0');
+  /** Version "11.00.6020.0.v1". */
+  public static readonly VER_11_00_6020_0_V1 = SqlServerEngineVersion.of('11.00.6020.0.v1', '11.0');
+  /** Version "11.00.6594.0.v1". */
+  public static readonly VER_11_00_6594_0_V1 = SqlServerEngineVersion.of('11.00.6594.0.v1', '11.0');
+  /** Version "11.00.7462.6.v1". */
+  public static readonly VER_11_00_7462_6_V1 = SqlServerEngineVersion.of('11.00.7462.6.v1', '11.0');
+  /** Version "11.00.7493.4.v1". */
+  public static readonly VER_11_00_7493_4_V1 = SqlServerEngineVersion.of('11.00.7493.4.v1', '11.0');
+
+  /** Version "12.0" (only a major version, without a specific minor version). */
+  public static readonly VER_12 = SqlServerEngineVersion.of('12.0', '12.0');
+  /** Version "12.00.5000.0.v1". */
+  public static readonly VER_12_00_5000_0_V1 = SqlServerEngineVersion.of('12.00.5000.0.v1', '12.0');
+  /** Version "12.00.5546.0.v1". */
+  public static readonly VER_12_00_5546_0_V1 = SqlServerEngineVersion.of('12.00.5546.0.v1', '12.0');
+  /** Version "12.00.5571.0.v1". */
+  public static readonly VER_12_00_5571_0_V1 = SqlServerEngineVersion.of('12.00.5571.0.v1', '12.0');
+  /** Version "12.00.6293.0.v1". */
+  public static readonly VER_12_00_6293_0_V1 = SqlServerEngineVersion.of('12.00.6293.0.v1', '12.0');
+  /** Version "12.00.6329.1.v1". */
+  public static readonly VER_12_00_6329_1_V1 = SqlServerEngineVersion.of('12.00.6329.1.v1', '12.0');
+
+  /** Version "13.0" (only a major version, without a specific minor version). */
+  public static readonly VER_13 = SqlServerEngineVersion.of('13.0', '13.0');
+  /** Version "13.00.2164.0.v1". */
+  public static readonly VER_13_00_2164_0_V1 = SqlServerEngineVersion.of('13.00.2164.0.v1', '13.0');
+  /** Version "13.00.4422.0.v1". */
+  public static readonly VER_13_00_4422_0_V1 = SqlServerEngineVersion.of('13.00.4422.0.v1', '13.0');
+  /** Version "13.00.4451.0.v1". */
+  public static readonly VER_13_00_4451_0_V1 = SqlServerEngineVersion.of('13.00.4451.0.v1', '13.0');
+  /** Version "13.00.4466.4.v1". */
+  public static readonly VER_13_00_4466_4_V1 = SqlServerEngineVersion.of('13.00.4466.4.v1', '13.0');
+  /** Version "13.00.4522.0.v1". */
+  public static readonly VER_13_00_4522_0_V1 = SqlServerEngineVersion.of('13.00.4522.0.v1', '13.0');
+  /** Version "13.00.5216.0.v1". */
+  public static readonly VER_13_00_5216_0_V1 = SqlServerEngineVersion.of('13.00.5216.0.v1', '13.0');
+  /** Version "13.00.5292.0.v1". */
+  public static readonly VER_13_00_5292_0_V1 = SqlServerEngineVersion.of('13.00.5292.0.v1', '13.0');
+  /** Version "13.00.5366.0.v1". */
+  public static readonly VER_13_00_5366_0_V1 = SqlServerEngineVersion.of('13.00.5366.0.v1', '13.0');
+  /** Version "13.00.5426.0.v1". */
+  public static readonly VER_13_00_5426_0_V1 = SqlServerEngineVersion.of('13.00.5426.0.v1', '13.0');
+  /** Version "13.00.5598.27.v1". */
+  public static readonly VER_13_00_5598_27_V1 = SqlServerEngineVersion.of('13.00.5598.27.v1', '13.0');
+
+  /** Version "14.0" (only a major version, without a specific minor version). */
+  public static readonly VER_14 = SqlServerEngineVersion.of('14.0', '14.0');
+  /** Version "14.00.1000.169.v1". */
+  public static readonly VER_14_00_1000_169_V1 = SqlServerEngineVersion.of('14.00.1000.169.v1', '14.0');
+  /** Version "14.00.3015.40.v1". */
+  public static readonly VER_14_00_3015_40_V1 = SqlServerEngineVersion.of('14.00.3015.40.v1', '14.0');
+  /** Version "14.00.3035.2.v1". */
+  public static readonly VER_14_00_3035_2_V1 = SqlServerEngineVersion.of('14.00.3035.2.v1', '14.0');
+  /** Version "14.00.3049.1.v1". */
+  public static readonly VER_14_00_3049_1_V1 = SqlServerEngineVersion.of('14.00.3049.1.v1', '14.0');
+  /** Version "14.00.3192.2.v1". */
+  public static readonly VER_14_00_3192_2_V1 = SqlServerEngineVersion.of('14.00.3192.2.v1', '14.0');
+
+  /**
+   * Create a new SqlServerEngineVersion with an arbitrary version.
+   *
+   * @param sqlServerFullVersion the full version string,
+   *   for example "15.00.3049.1.v1"
+   * @param sqlServerMajorVersion the major version of the engine,
+   *   for example "15.0"
+   */
+  public static of(sqlServerFullVersion: string, sqlServerMajorVersion: string): SqlServerEngineVersion {
+    return new SqlServerEngineVersion(sqlServerFullVersion, sqlServerMajorVersion);
+  }
+
+  /** The full version string, for example, "15.00.3049.1.v1". */
+  public readonly sqlServerFullVersion: string;
+  /** The major version of the engine, for example, "15.0". */
+  public readonly sqlServerMajorVersion: string;
+
+  private constructor(sqlServerFullVersion: string, sqlServerMajorVersion: string) {
+    this.sqlServerFullVersion = sqlServerFullVersion;
+    this.sqlServerMajorVersion = sqlServerMajorVersion;
+  }
+}
+
+interface SqlServerInstanceEngineProps {
+  /** The exact version of the engine to use. */
+  readonly version: SqlServerEngineVersion;
+}
+
+interface SqlServerInstanceEngineBaseProps {
+  readonly engineType: string;
+  readonly version?: SqlServerEngineVersion;
+}
+
+abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
+  constructor(props: SqlServerInstanceEngineBaseProps) {
+    super({
+      ...props,
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER,
+      version: props.version
+        ? {
+          fullVersion: props.version.sqlServerFullVersion,
+          majorVersion: props.version.sqlServerMajorVersion,
+        }
+        : undefined,
+      parameterGroupFamily: props.version ? `${props.engineType}-${props.version.sqlServerMajorVersion}` : undefined,
+    });
+  }
+
+  public bindToInstance(_scope: core.Construct, _options: InstanceEngineBindOptions): InstanceEngineConfig {
+    return {
+    };
+  }
+}
+
+/**
+ * Properties for SQL Server Standard Edition instance engines.
+ * Used in {@link DatabaseInstanceEngine.sqlServerSe}.
+ */
+export interface SqlServerSeInstanceEngineProps extends SqlServerInstanceEngineProps {
+}
+
+class SqlServerSeInstanceEngine extends SqlServerInstanceEngineBase {
+  constructor(version?: SqlServerEngineVersion) {
+    super({
+      engineType: 'sqlserver-se',
+      version,
+    });
+  }
+}
+
+/**
+ * Properties for SQL Server Express Edition instance engines.
+ * Used in {@link DatabaseInstanceEngine.sqlServerEx}.
+ */
+export interface SqlServerExInstanceEngineProps extends SqlServerInstanceEngineProps {
+}
+
+class SqlServerExInstanceEngine extends SqlServerInstanceEngineBase {
+  constructor(version?: SqlServerEngineVersion) {
+    super({
+      engineType: 'sqlserver-ex',
+      version,
+    });
+  }
+}
+
+/**
+ * Properties for SQL Server Web Edition instance engines.
+ * Used in {@link DatabaseInstanceEngine.sqlServerWeb}.
+ */
+export interface SqlServerWebInstanceEngineProps extends SqlServerInstanceEngineProps {
+}
+
+class SqlServerWebInstanceEngine extends SqlServerInstanceEngineBase {
+  constructor(version?: SqlServerEngineVersion) {
+    super({
+      engineType: 'sqlserver-web',
+      version,
+    });
+  }
+}
+
+/**
+ * Properties for SQL Server Enterprise Edition instance engines.
+ * Used in {@link DatabaseInstanceEngine.sqlServerEe}.
+ */
+export interface SqlServerEeInstanceEngineProps extends SqlServerInstanceEngineProps {
+}
+
+class SqlServerEeInstanceEngine extends SqlServerInstanceEngineBase {
+  constructor(version?: SqlServerEngineVersion) {
+    super({
+      engineType: 'sqlserver-ee',
+      version,
+    });
+  }
+}
+
+/**
+ * A database instance engine. Provides mapping to DatabaseEngine used for
+ * secret rotation.
+ */
+export class DatabaseInstanceEngine {
+  /**
+   * The unversioned 'mariadb' instance engine.
+   *
+   * @deprecated using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link mariaDb()} method
+   */
+  public static readonly MARIADB: IInstanceEngine = new MariaDbInstanceEngine();
+
+  /**
+   * The unversioned 'mysql' instance engine.
+   *
+   * @deprecated using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link mysql()} method
+   */
+  public static readonly MYSQL: IInstanceEngine = new MySqlInstanceEngine();
+
+  /**
+   * The unversioned 'oracle-ee' instance engine.
+   *
+   * @deprecated using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link oracleEe()} method
+   */
+  public static readonly ORACLE_EE: IInstanceEngine = new OracleEeInstanceEngine();
+
+  /**
+   * The unversioned 'oracle-se2' instance engine.
+   *
+   * @deprecated using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link oracleSe2()} method
+   */
+  public static readonly ORACLE_SE2: IInstanceEngine = new OracleSe2InstanceEngine();
+
+  /**
+   * The unversioned 'oracle-se1' instance engine.
+   *
+   * @deprecated using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link oracleSe1()} method
+   */
+  public static readonly ORACLE_SE1: IInstanceEngine = new OracleSe1InstanceEngine();
+
+  /**
+   * The unversioned 'oracle-se' instance engine.
+   *
+   * @deprecated using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link oracleSe()} method
+   */
+  public static readonly ORACLE_SE: IInstanceEngine = new OracleSeInstanceEngine();
+
+  /**
+   * The unversioned 'postgres' instance engine.
+   *
+   * @deprecated using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link postgres()} method
+   */
+  public static readonly POSTGRES: IInstanceEngine = new PostgresInstanceEngine();
+
+  /**
+   * The unversioned 'sqlserver-ee' instance engine.
+   *
+   * @deprecated using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link sqlServerEe()} method
+   */
+  public static readonly SQL_SERVER_EE: IInstanceEngine = new SqlServerEeInstanceEngine();
+
+  /**
+   * The unversioned 'sqlserver-se' instance engine.
+   *
+   * @deprecated using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link sqlServerSe()} method
+   */
+  public static readonly SQL_SERVER_SE: IInstanceEngine = new SqlServerSeInstanceEngine();
+
+  /**
+   * The unversioned 'sqlserver-ex' instance engine.
+   *
+   * @deprecated using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link sqlServerEx()} method
+   */
+  public static readonly SQL_SERVER_EX: IInstanceEngine = new SqlServerExInstanceEngine();
+
+  /**
+   * The unversioned 'sqlserver-web' instance engine.
+   *
+   * @deprecated using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link sqlServerWeb()} method
+   */
+  public static readonly SQL_SERVER_WEB: IInstanceEngine = new SqlServerWebInstanceEngine();
+
+  /** Creates a new MariaDB instance engine. */
+  public static mariaDb(props: MariaDbInstanceEngineProps): IInstanceEngine {
+    return new MariaDbInstanceEngine(props.version);
+  }
+
+  /** Creates a new MySQL instance engine. */
+  public static mysql(props: MySqlInstanceEngineProps): IInstanceEngine {
+    return new MySqlInstanceEngine(props.version);
+  }
+
+  /** Creates a new PostgreSQL instance engine. */
+  public static postgres(props: PostgresInstanceEngineProps): IInstanceEngine {
+    return new PostgresInstanceEngine(props.version);
+  }
+
+  /** Creates a new Oracle Standard Edition instance engine. */
+  public static oracleSe(props: OracleSeInstanceEngineProps): IInstanceEngine {
+    return new OracleSeInstanceEngine(props.version);
+  }
+
+  /** Creates a new Oracle Standard Edition 1 instance engine. */
+  public static oracleSe1(props: OracleSe1InstanceEngineProps): IInstanceEngine {
+    return new OracleSe1InstanceEngine(props.version);
+  }
+
+  /** Creates a new Oracle Standard Edition 1 instance engine. */
+  public static oracleSe2(props: OracleSe2InstanceEngineProps): IInstanceEngine {
+    return new OracleSe2InstanceEngine(props.version);
+  }
+
+  /** Creates a new Oracle Enterprise Edition instance engine. */
+  public static oracleEe(props: OracleEeInstanceEngineProps): IInstanceEngine {
+    return new OracleEeInstanceEngine(props.version);
+  }
+
+  /** Creates a new SQL Server Standard Edition instance engine. */
+  public static sqlServerSe(props: SqlServerSeInstanceEngineProps): IInstanceEngine {
+    return new SqlServerSeInstanceEngine(props.version);
+  }
+
+  /** Creates a new SQL Server Express Edition instance engine. */
+  public static sqlServerEx(props: SqlServerExInstanceEngineProps): IInstanceEngine {
+    return new SqlServerExInstanceEngine(props.version);
+  }
+
+  /** Creates a new SQL Server Web Edition instance engine. */
+  public static sqlServerWeb(props: SqlServerWebInstanceEngineProps): IInstanceEngine {
+    return new SqlServerWebInstanceEngine(props.version);
+  }
+
+  /** Creates a new SQL Server Enterprise Edition instance engine. */
+  public static sqlServerEe(props: SqlServerEeInstanceEngineProps): IInstanceEngine {
+    return new SqlServerEeInstanceEngine(props.version);
+  }
+}

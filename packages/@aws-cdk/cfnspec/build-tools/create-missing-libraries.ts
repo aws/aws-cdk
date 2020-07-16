@@ -5,13 +5,13 @@
  * have an AWS construct library.
  */
 
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import * as cfnspec from '../lib';
 
 // don't be a prude:
-// tslint:disable:no-console
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable no-console */
+/* eslint-disable quote-props */
 
 async function main() {
   const root = path.join(__dirname, '..', '..');
@@ -192,7 +192,6 @@ async function main() {
       '*.js.map',
       '*.d.ts',
       'tsconfig.json',
-      'tslint.json',
       'node_modules',
       '*.generated.ts',
       'dist',
@@ -275,7 +274,7 @@ async function main() {
     ]);
 
     await write('jest.config.js', [
-      "const baseConfig = require('../../../tools/cdk-build-tools/config/jest.config');",
+      "const baseConfig = require('cdk-build-tools/config/jest.config');",
       'module.exports = baseConfig;',
     ]);
 

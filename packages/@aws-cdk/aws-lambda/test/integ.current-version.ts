@@ -1,5 +1,5 @@
-import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import * as path from 'path';
+import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import * as lambda from '../lib';
 
 class TestStack extends Stack {

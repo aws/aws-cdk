@@ -255,7 +255,7 @@ export class Grant implements cdk.IDependable {
    */
   public assertSuccess(): void {
     if (!this.success) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`${describeGrant(this.options)} could not be added on either identity or resource policy.`);
     }
   }

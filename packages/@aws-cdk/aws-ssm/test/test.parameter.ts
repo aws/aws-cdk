@@ -1,4 +1,4 @@
-// tslint:disable: max-line-length
+/* eslint-disable max-len */
 
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
@@ -540,7 +540,7 @@ export = {
     test.done();
   },
 
-  'valueForStringParameter': {
+  valueForStringParameter: {
 
     'returns a token that represents the SSM parameter value'(test: Test) {
       // GIVEN

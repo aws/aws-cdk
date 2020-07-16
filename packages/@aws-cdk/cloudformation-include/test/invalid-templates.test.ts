@@ -1,7 +1,7 @@
+import * as path from 'path';
 import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as core from '@aws-cdk/core';
-import * as path from 'path';
 import * as inc from '../lib';
 
 describe('CDK Include', () => {

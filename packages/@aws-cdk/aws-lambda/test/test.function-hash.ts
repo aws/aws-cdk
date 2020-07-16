@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { CfnOutput, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import * as lambda from '../lib';
 import { calculateFunctionHash, trimFromStart } from '../lib/function-hash';
 

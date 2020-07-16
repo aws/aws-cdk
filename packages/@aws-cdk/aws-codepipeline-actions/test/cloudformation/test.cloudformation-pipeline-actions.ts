@@ -8,7 +8,7 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'CreateChangeSetAction can be used to make a change set from a CodePipeline'(test: Test) {

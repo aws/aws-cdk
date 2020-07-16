@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 import { execSync } from 'child_process';
 import { AwsSdkCall } from '../aws-custom-resource';
 
@@ -53,6 +53,10 @@ function filterKeys(object: object, pred: (key: string) => boolean) {
 
 let latestSdkInstalled = false;
 
+export function forceSdkInstallation() {
+  latestSdkInstalled = false;
+}
+
 /**
  * Installs latest AWS SDK v2
  */
@@ -60,6 +64,7 @@ function installLatestSdk(): void {
   console.log('Installing latest AWS SDK v2');
   // Both HOME and --prefix are needed here because /tmp is the only writable location
   execSync('HOME=/tmp npm install aws-sdk@2 --production --no-package-lock --no-save --prefix /tmp');
+  execSync('tree /tmp/node_modules');
   latestSdkInstalled = true;
 }
 

@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
-import { DatabaseInstanceEngine } from './instance';
+import { IInstanceEngine } from './instance-engine';
 import { CfnOptionGroup } from './rds.generated';
 
 /**
@@ -62,13 +62,7 @@ export interface OptionGroupProps {
   /**
    * The database engine that this option group is associated with.
    */
-  readonly engine: DatabaseInstanceEngine;
-
-  /**
-   * The major version number of the database engine that this option group
-   * is associated with.
-   */
-  readonly majorEngineVersion: string;
+  readonly engine: IInstanceEngine;
 
   /**
    * A description of the option group.
@@ -110,10 +104,14 @@ export class OptionGroup extends Resource implements IOptionGroup {
   constructor(scope: Construct, id: string, props: OptionGroupProps) {
     super(scope, id);
 
+    const majorEngineVersion = props.engine.engineVersion?.majorVersion;
+    if (!majorEngineVersion) {
+      throw new Error("OptionGroup cannot be used with an engine that doesn't specify a version");
+    }
     const optionGroup = new CfnOptionGroup(this, 'Resource', {
-      engineName: props.engine.name,
-      majorEngineVersion: props.majorEngineVersion,
-      optionGroupDescription: props.description || `Option group for ${props.engine.name} ${props.majorEngineVersion}`,
+      engineName: props.engine.engineType,
+      majorEngineVersion,
+      optionGroupDescription: props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
       optionConfigurations: this.renderConfigurations(props.configurations),
     });
 

@@ -1,19 +1,18 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
+import * as path from 'path';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { error, print, warning } from './logging';
 import { cdkHomeDir } from './util/directories';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
-// tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
+/* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const camelCase = require('camelcase');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
-// tslint:enable:no-var-requires
 
 const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
 

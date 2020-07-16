@@ -462,17 +462,17 @@ export = {
     });
 
     // THEN - stack contains a load balancer, a service, and a certificate
-    expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
-      ServiceToken: {
-        'Fn::GetAtt': [
-          'ServiceCertificateCertificateRequestorFunctionB69CD117',
-          'Arn',
-        ],
-      },
+    expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
       DomainName: 'api.example.com',
-      HostedZoneId: {
-        Ref: 'HostedZoneDB99F866',
-      },
+      DomainValidationOptions: [
+        {
+          DomainName: 'api.example.com',
+          HostedZoneId: {
+            Ref: 'HostedZoneDB99F866',
+          },
+        },
+      ],
+      ValidationMethod: 'DNS',
     }));
 
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
@@ -481,10 +481,9 @@ export = {
       Port: 443,
       Protocol: 'HTTPS',
       Certificates: [{
-        CertificateArn: { 'Fn::GetAtt': [
-          'ServiceCertificateCertificateRequestorResource0FC297E9',
-          'Arn',
-        ]},
+        CertificateArn: {
+          Ref: 'ServiceCertificateA7C65FE6',
+        },
       }],
     }));
 
