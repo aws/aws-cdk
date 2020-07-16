@@ -1,0 +1,178 @@
+{
+  "Resources": {
+    "InventoryBucketA869B8CB": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "InventoryBucketPolicyEDF94353": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "InventoryBucketA869B8CB"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:PutObject",
+              "Condition": {
+                "ArnLike": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "MyBucketF68F3FF0",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "s3.amazonaws.com"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyBucketF68F3FF0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyBucketF68F3FF0": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "InventoryConfigurations": [
+          {
+            "Destination": {
+              "BucketArn": {
+                "Fn::GetAtt": [
+                  "InventoryBucketA869B8CB",
+                  "Arn"
+                ]
+              },
+              "Format": "Parquet"
+            },
+            "Enabled": true,
+            "Id": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "InventoryBucketA869B8CB"
+                  },
+                  "-Parquet-Daily"
+                ]
+              ]
+            },
+            "IncludedObjectVersions": "All",
+            "Prefix": "reports",
+            "ScheduleFrequency": "Daily"
+          },
+          {
+            "Destination": {
+              "BucketArn": {
+                "Fn::GetAtt": [
+                  "SecondBucketAC350874",
+                  "Arn"
+                ]
+              },
+              "Format": "CSV"
+            },
+            "Enabled": true,
+            "Id": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "SecondBucketAC350874"
+                  },
+                  "-CSV-Weekly"
+                ]
+              ]
+            },
+            "IncludedObjectVersions": "All",
+            "ScheduleFrequency": "Weekly"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "SecondBucketAC350874": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "SecondBucketPolicy844C4343": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "SecondBucketAC350874"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:PutObject",
+              "Condition": {
+                "ArnLike": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "MyBucketF68F3FF0",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "s3.amazonaws.com"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyBucketF68F3FF0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    }
+  }
+}

@@ -1,8 +1,8 @@
+import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
@@ -811,6 +811,115 @@ export interface RedirectTarget {
   readonly protocol?: RedirectProtocol;
 }
 
+/**
+ * All supported inventory list formats.
+ */
+export enum InventoryFormat {
+  /**
+   * Generate the inventory list as CSV.
+   */
+  CSV = 'CSV',
+  /**
+   * Generate the inventory list as Parquet.
+   */
+  PARQUET = 'Parquet',
+  /**
+   * Generate the inventory list as Parquet.
+   */
+  ORC = 'ORC',
+}
+
+/**
+ * All supported inventory frequencies.
+ */
+export enum InventoryFrequency {
+  /**
+   * A report is generated every day.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
+   */
+  DAILY = 'Daily',
+  /**
+   * A report is generated every Sunday (UTC timezone) after the initial report.
+   */
+  WEEKLY = 'Weekly'
+}
+
+/**
+ * Inventory version support.
+ */
+export enum InventoryObjectVersion {
+  /**
+   * Includes all versions of each object in the report.
+   */
+  ALL = 'All',
+  /**
+   * Includes only the current version of each object in the report.
+   */
+  CURRENT = 'Current',
+}
+
+/**
+ * Specifies the inventory configuration of an S3 Bucket.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
+ */
+export interface InventoryConfiguration {
+  /**
+   * Bucket where all inventories will be saved in.
+   */
+  readonly destination: IBucket;
+  /**
+   * The prefix to be used when saving the inventory.
+   * @default - No prefix.
+   */
+  readonly destinationPrefix?: string;
+  /**
+   * The account ID that owns the destination S3 bucket.
+   * If no account ID is provided, the owner is not validated before exporting data.
+   * It's recommended to set an account ID to prevent problems if the destination bucket ownership changes.
+   *
+   * @default - No account ID.
+   */
+  readonly destinationBucketOwner?: string;
+  /**
+   * The format of the inventory.
+   *
+   * @default - CSV
+   */
+  readonly format?: InventoryFormat;
+  /**
+   * Whether the inventory is enabled or disabled.
+   *
+   * @default - Enabled if specified a destination bucket.
+   */
+  readonly enabled?: boolean;
+  /**
+   * The inventory configuration ID.
+   *
+   * @default - generated ID.
+   */
+  readonly inventoryId?: string;
+  /**
+   * Frequency at which the inventory should be generated.
+   *
+   * @default - Weekly inventory.
+   */
+  readonly frequency?: InventoryFrequency;
+  /**
+   * If the inventory should contain all the object versions or only the current one.
+   *
+   * @default - All versions are included.
+   */
+  readonly includeObjectVersions?: InventoryObjectVersion;
+  /**
+   * A list of optional fields to be included in the inventory result.
+   *
+   * @default - No optional fields.
+   */
+  readonly optionalFields?: string[];
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -949,6 +1058,15 @@ export interface BucketProps {
    * @default - No log file prefix
    */
   readonly serverAccessLogsPrefix?: string;
+
+  /**
+   * The inventory configuration of the bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
+   *
+   * @default - No inventory configuration
+   */
+  readonly inventories?: InventoryConfiguration[];
 }
 
 /**
@@ -1036,6 +1154,7 @@ export class Bucket extends BucketBase {
   private readonly notifications: BucketNotifications;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
+  private readonly inventories: InventoryConfiguration[] = [];
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -1057,6 +1176,7 @@ export class Bucket extends BucketBase {
       corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
       accessControl: Lazy.stringValue({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
+      inventoryConfigurations: Lazy.anyValue({ produce: () => this.parseInventoryConfiguration() }),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -1084,6 +1204,8 @@ export class Bucket extends BucketBase {
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery();
     }
+
+    this.inventories.push(...(props.inventories || []));
 
     // Add all bucket metric configurations rules
     (props.metrics || []).forEach(this.addMetric.bind(this));
@@ -1180,6 +1302,15 @@ export class Bucket extends BucketBase {
    */
   public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
+  }
+
+  /**
+   * Add an inventory configuration.
+   *
+   * @param inventory configuration to add
+   */
+  public addInventoryConfiguration(inventory: InventoryConfiguration): void {
+    this.inventories.push(inventory);
   }
 
   private validateBucketName(physicalName: string): void {
@@ -1437,6 +1568,51 @@ export class Bucket extends BucketBase {
     }
 
     this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
+  }
+
+  private parseInventoryConfiguration(): CfnBucket.InventoryConfigurationProperty[] | undefined {
+    if (!this.inventories || this.inventories.length === 0) {
+      return undefined;
+    }
+
+    this.inventories.forEach(inventory =>
+      (inventory.destination.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['s3:PutObject'],
+        resources: [
+          this.bucketArn,
+          this.arnForObjects('*'),
+        ],
+        principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+        conditions: {
+          ArnLike: {
+            'aws:SourceArn': this.bucketArn,
+          },
+        },
+      }))),
+    );
+
+    const renderInventoryId = (bucketName: string, format: string, frequency: string) => (`${bucketName}-${format}-${frequency}`);
+
+    return this.inventories.map(inventory => {
+      const format = inventory.format ?? InventoryFormat.CSV;
+      const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
+      const id = inventory.inventoryId ?? renderInventoryId(inventory.destination.bucketName, format, frequency);
+
+      return {
+        id,
+        destination: {
+          bucketArn: inventory.destination.bucketArn,
+          bucketAccountId: inventory.destinationBucketOwner,
+          format,
+        },
+        enabled: inventory.enabled ?? true,
+        includedObjectVersions: inventory.includeObjectVersions ?? InventoryObjectVersion.ALL,
+        scheduleFrequency: frequency,
+        optionalFields: inventory.optionalFields,
+        prefix: inventory.destinationPrefix,
+      };
+    });
   }
 }
 
