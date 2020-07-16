@@ -89,6 +89,13 @@ export interface CanaryOptions extends cdk.ResourceProps {
    */
   readonly failureRetentionPeriod?: cdk.Duration;
 
+  /**
+   * The name of the canary. This constitutes the physical ID of the canary.
+   *
+   * @default - A unique physical ID will be generated for you and used as the canary name.
+   */
+  readonly name?: string;
+
 }
 
 /**
@@ -103,13 +110,6 @@ export interface CanaryProps extends CanaryOptions {
    * This is not yet implemented.
    */
   //readonly test: Test;
-
-  /**
-   * The name of the canary. This constitutes the physical ID of the canary.
-   *
-   * @default - A unique physical ID will be generated for you and used as the canary name.
-   */
-  readonly name: string;
 }
 
 export class Canary extends CanaryBase {
@@ -163,6 +163,7 @@ export class Canary extends CanaryBase {
       inlinePolicies,
     });
 
+    const name = props.name ?? this.generateName();
     const duration = props.timeToLive ?? cdk.Duration.seconds(0);
     const expression = props.frequency ?? cdk.Duration.minutes(5);
     var timeout = props.timeout ?? cdk.Duration.seconds(Math.min(expression.toSeconds(), 900));
@@ -173,7 +174,7 @@ export class Canary extends CanaryBase {
       executionRoleArn: this.role.roleArn,
       startCanaryAfterCreation: props.enableCanary ?? true,
       runtimeVersion: 'syn-1.0',
-      name: this.verifyName(props.name),
+      name: this.verifyName(name),
       runConfig: {
         // Will include MemorySize when generated code gets updated.
         timeoutInSeconds: timeout.toSeconds(),
@@ -252,4 +253,8 @@ export class Canary extends CanaryBase {
     }
     return name;
   }
+
+  // private generateName(): string {
+  //   name = cdk.Lazy.stringValue({ produce: () => this.node.uniqueId });
+  // }
 }
