@@ -319,7 +319,7 @@ test('system metadata is correctly transformed', () => {
     serverSideEncryptionCustomerAlgorithm: 'rot13',
     websiteRedirectLocation: 'example',
     cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
-    expires: s3deploy.Expires.after(cdk.Duration.hours(12)),
+    expires: cdk.Expires.after(cdk.Duration.hours(12)),
   });
 
   // THEN
@@ -332,7 +332,7 @@ test('system metadata is correctly transformed', () => {
       'sse': 'aws:kms',
       'sse-kms-key-id': 'mykey',
       'cache-control': 'public, max-age=3600',
-      'expires': s3deploy.Expires.after(cdk.Duration.hours(12)).value,
+      'expires': cdk.Expires.after(cdk.Duration.hours(12)).value,
       'sse-c-copy-source': 'rot13',
       'website-redirect': 'example',
     },
@@ -340,10 +340,10 @@ test('system metadata is correctly transformed', () => {
 });
 
 test('expires type has correct values', () => {
-  expect(s3deploy.Expires.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).value).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
-  expect(s3deploy.Expires.atTimestamp(1580000000000).value).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
-  expect(Math.abs(new Date(s3deploy.Expires.after(cdk.Duration.minutes(10)).value).getTime() - (Date.now() + 600000)) < 15000).toBeTruthy();
-  expect(s3deploy.Expires.fromString('Tue, 04 Feb 2020 08:45:33 GMT').value).toEqual('Tue, 04 Feb 2020 08:45:33 GMT');
+  expect(cdk.Expires.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).value).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+  expect(cdk.Expires.atTimestamp(1580000000000).value).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+  expect(Math.abs(new Date(cdk.Expires.after(cdk.Duration.minutes(10)).value).getTime() - (Date.now() + 600000)) < 15000).toBeTruthy();
+  expect(cdk.Expires.fromString('Tue, 04 Feb 2020 08:45:33 GMT').value).toEqual('Tue, 04 Feb 2020 08:45:33 GMT');
 
 });
 

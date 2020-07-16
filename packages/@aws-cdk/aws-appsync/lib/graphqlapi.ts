@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import {
@@ -6,8 +7,7 @@ import {
   ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResolvable } from '@aws-cdk/core';
-import { readFileSync } from 'fs';
+import { Construct, Duration, Expires, IResolvable, EpochFormat } from '@aws-cdk/core';
 import {
   CfnApiKey,
   CfnGraphQLApi,
@@ -118,12 +118,13 @@ export interface ApiKeyConfig {
   readonly description?: string;
 
   /**
-   * The time from creation time after which the API key expires, using RFC3339 representation.
+   * The time from creation time after which the API key expires.
    * It must be a minimum of 1 day and a maximum of 365 days from date of creation.
    * Rounded down to the nearest hour.
-   * @default - 7 days from creation time
+   *
+   * @default - 7 days rounded down to nearest hour
    */
-  readonly expires?: string;
+  readonly expires?: Expires;
 }
 
 /**
@@ -350,7 +351,7 @@ export class GraphQLApi extends Construct {
           name: 'DefaultAPIKey',
           description: 'Default API Key created by CDK',
         };
-      this.createAPIKey(apiKeyConfig);
+      this._apiKey = this.createAPIKey(apiKeyConfig);
     }
 
     let definition;
@@ -518,23 +519,18 @@ export class GraphQLApi extends Construct {
     };
   }
 
-  private createAPIKey(config: ApiKeyConfig) {
-    let expires: number | undefined;
-    if (config.expires) {
-      expires = new Date(config.expires).valueOf();
-      const days = (d: number) =>
-        Date.now() + Duration.days(d).toMilliseconds();
-      if (expires < days(1) || expires > days(365)) {
-        throw Error('API key expiration must be between 1 and 365 days.');
-      }
-      expires = Math.round(expires / 1000);
+  private createAPIKey(config: ApiKeyConfig): string {
+    if (config.expires &&
+      (config.expires?.date < Expires.after(Duration.days(1)).date || config.expires?.date > Expires.after(Duration.days(365)).date)) {
+      throw Error('API key expiration must be between 1 and 365 days.');
     }
+    const expires = config.expires ? config.expires.getEpoch(EpochFormat.HOUR) : undefined;
     const key = new CfnApiKey(this, `${config.name || 'DefaultAPIKey'}ApiKey`, {
       expires,
       description: config.description || 'Default API Key created by CDK',
       apiId: this.apiId,
     });
-    this._apiKey = key.attrApiKey;
+    return key.attrApiKey;
   }
 
   private formatAdditionalAuthorizationModes(

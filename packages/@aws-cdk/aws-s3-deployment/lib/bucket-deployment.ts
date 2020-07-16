@@ -129,7 +129,7 @@ export interface BucketDeploymentProps {
    * @default - The objects in the distribution will not expire.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly expires?: Expires;
+  readonly expires?: cdk.Expires;
   /**
    * System-defined x-amz-server-side-encryption metadata to be set on all objects in the deployment.
    * @default - Server side encryption is not used.
@@ -325,34 +325,6 @@ export enum StorageClass {
   INTELLIGENT_TIERING = 'INTELLIGENT_TIERING',
   GLACIER = 'GLACIER',
   DEEP_ARCHIVE = 'DEEP_ARCHIVE'
-}
-
-/**
- * Used for HTTP expires header, which influences downstream caches. Does NOT influence deletion of the object.
- * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
- */
-export class Expires {
-  /**
-   * Expire at the specified date
-   * @param d date to expire at
-   */
-  public static atDate(d: Date) { return new Expires(d.toUTCString()); }
-
-  /**
-   * Expire at the specified timestamp
-   * @param t timestamp in unix milliseconds
-   */
-  public static atTimestamp(t: number) { return Expires.atDate(new Date(t)); }
-
-  /**
-   * Expire once the specified duration has passed since deployment time
-   * @param t the duration to wait before expiring
-   */
-  public static after(t: cdk.Duration) { return Expires.atDate(new Date(now + t.toMilliseconds())); }
-
-  public static fromString(s: string) { return new Expires(s); }
-
-  private constructor(public readonly value: any) {}
 }
 
 export interface UserDefinedObjectMetadata {
