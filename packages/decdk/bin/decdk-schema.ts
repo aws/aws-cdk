@@ -1,7 +1,7 @@
 import { loadTypeSystem } from '../lib';
 import { renderFullSchema } from '../lib/cdk-schema';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 async function main() {
   const typeSystem = await loadTypeSystem();
