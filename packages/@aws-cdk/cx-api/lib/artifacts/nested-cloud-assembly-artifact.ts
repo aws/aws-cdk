@@ -1,5 +1,5 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
 import { CloudAssembly } from '../cloud-assembly';
 

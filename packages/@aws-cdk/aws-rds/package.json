@@ -104,7 +104,6 @@
   "awslint": {
     "exclude": [
       "props-physical-name:@aws-cdk/aws-rds.ParameterGroupProps",
-      "props-physical-name:@aws-cdk/aws-rds.ClusterParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshotProps",

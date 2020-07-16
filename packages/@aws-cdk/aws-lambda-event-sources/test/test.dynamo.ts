@@ -7,7 +7,7 @@ import { Test } from 'nodeunit';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'sufficiently complex example'(test: Test) {
@@ -66,7 +66,7 @@ export = {
           'StreamArn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'BatchSize': 100,
@@ -102,7 +102,7 @@ export = {
           'StreamArn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'BatchSize': 50,
@@ -200,7 +200,7 @@ export = {
           'StreamArn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'MaximumBatchingWindowInSeconds': 120,
@@ -300,7 +300,7 @@ export = {
           'StreamArn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'MaximumRetryAttempts': 10,
@@ -380,7 +380,7 @@ export = {
           'StreamArn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'BisectBatchOnFunctionError': true,
@@ -416,7 +416,7 @@ export = {
           'StreamArn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'ParallelizationFactor': 5,
@@ -496,7 +496,7 @@ export = {
           'StreamArn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'MaximumRecordAgeInSeconds': 100,
@@ -577,7 +577,7 @@ export = {
           'StreamArn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'DestinationConfig': {
