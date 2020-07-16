@@ -45,7 +45,8 @@ test('Parcel bundling', () => {
       volumes: [{ containerPath: '/parcel-cache', hostPath: '/cache-dir' }],
       workingDirectory: '/asset-input/folder',
       command: [
-        'bash', '-c', 'parcel build /asset-input/folder/entry.ts --target cdk-lambda --no-scope-hoist --cache-dir /parcel-cache',
+        'bash', '-c',
+        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --no-autoinstall --no-scope-hoist --cache-dir /parcel-cache',
       ],
     }),
   });
@@ -106,7 +107,7 @@ test('Parcel bundling with externals and dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'parcel build /asset-input/folder/entry.ts --target cdk-lambda --no-scope-hoist && mv /asset-input/.package.json /asset-output/package.json && cd /asset-output && npm install',
+        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --no-autoinstall --no-scope-hoist && mv /asset-input/.package.json /asset-output/package.json && cd /asset-output && npm install',
       ],
     }),
   });
