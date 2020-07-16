@@ -1957,10 +1957,10 @@ export = {
           Principal: { Service: 's3.amazonaws.com' },
           Resource: [
             {
-              'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
+              'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'],
             },
             {
-              'Fn::Join': ['', [{'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn']}, '/*']],
+              'Fn::Join': ['', [{'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn']}, '/*']],
             },
           ],
         })),

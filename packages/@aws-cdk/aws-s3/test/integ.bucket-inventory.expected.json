@@ -32,7 +32,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "MyBucketF68F3FF0",
+                    "InventoryBucketA869B8CB",
                     "Arn"
                   ]
                 },
@@ -42,7 +42,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "MyBucketF68F3FF0",
+                          "InventoryBucketA869B8CB",
                           "Arn"
                         ]
                       },
@@ -149,7 +149,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "MyBucketF68F3FF0",
+                    "SecondBucketAC350874",
                     "Arn"
                   ]
                 },
@@ -159,7 +159,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "MyBucketF68F3FF0",
+                          "SecondBucketAC350874",
                           "Arn"
                         ]
                       },

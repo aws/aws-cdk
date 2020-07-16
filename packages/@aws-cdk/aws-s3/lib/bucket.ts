@@ -1580,8 +1580,8 @@ export class Bucket extends BucketBase {
         effect: iam.Effect.ALLOW,
         actions: ['s3:PutObject'],
         resources: [
-          this.bucketArn,
-          this.arnForObjects('*'),
+          inventory.destination.bucketArn,
+          inventory.destination.arnForObjects('*'),
         ],
         principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
         conditions: {
