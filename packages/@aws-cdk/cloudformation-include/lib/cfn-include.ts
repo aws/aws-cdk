@@ -359,15 +359,13 @@ export class CfnInclude extends core.CfnElement {
   private createNestedStack(nestedStackId: string, finder: core.ICfnFinder): core.CfnResource {
     const templateResources = this.template.Resources || {};
     const nestedStackAttributes = templateResources[nestedStackId] || {};
-    
+
     if (nestedStackAttributes.Type !== 'AWS::CloudFormation::Stack') {
       throw new Error(`Nested Stack with logical ID '${nestedStackId}' is not an AWS::CloudFormation::Stack resource`);
     }
-
     if (nestedStackAttributes.CreationPolicy) {
       throw new Error('CreationPolicy is not supported by the AWS::CloudFormation::Stack resource');
     }
-
     if (nestedStackAttributes.UpdatePolicy) {
       throw new Error('UpdatePolicy is not supported by the AWS::CloudFormation::Stack resource');
     }
