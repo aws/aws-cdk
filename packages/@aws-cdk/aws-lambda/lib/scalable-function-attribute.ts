@@ -6,11 +6,15 @@ import { Construct } from '@aws-cdk/core';
  */
 export interface IScalableFunctionAttribute {
   /**
-   * Scale out or in to keep utilization at a given level
+   * Scale out or in to keep utilization at a given level. The utilization is tracked by the
+   * LambdaProvisionedConcurrencyUtilization metric, emitted by lambda. See:
+   * https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
+   *
+   * Allowed values: 0.1 - 0.9.
    */
   scaleOnUtilization(props: UtilizationScalingProps): void;
   /**
-   * Add scheduled scaling for this scaling attribute
+   * Scale out or in based on time.
    */
   scaleOnSchedule(id: string, actions: appscaling.ScalingSchedule): void;
 }
@@ -20,7 +24,7 @@ export interface IScalableFunctionAttribute {
  */
 export interface UtilizationScalingProps extends appscaling.BaseTargetTrackingProps {
   /**
-   * Target utilization percentage for the attribute
+   * Target utilization percent for the attribute
    */
   readonly targetUtilizationPercent: number;
 }
