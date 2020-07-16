@@ -206,7 +206,7 @@ export = {
     });
 
     const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
-      family: 'hello',
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
       description: 'desc',
       parameters: {
         key: 'value',
