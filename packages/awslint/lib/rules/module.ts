@@ -15,7 +15,7 @@ export const moduleLinter = new Linter<ModuleLinterContext>(assembly => {
 
   return [ {
     assembly,
-    namespace: cfnResources[0].namespace
+    namespace: cfnResources[0].namespace,
   } ];
 });
 
@@ -27,7 +27,7 @@ moduleLinter.add(  {
     if (!e.ctx.assembly) { return; }
     const namespace = overrideNamespace(e.ctx.namespace.toLocaleLowerCase().replace('::', '-'));
     e.assertEquals(e.ctx.assembly.name, `@aws-cdk/${namespace}`, e.ctx.assembly.name);
-  }
+  },
 });
 
 /**

@@ -34,7 +34,7 @@ automatically transpiled and bundled whether it's written in JavaScript or TypeS
 Alternatively, an entry file and handler can be specified:
 ```ts
 new lambda.NodejsFunction(this, 'MyFunction', {
-  entry: '/path/to/my/file.ts',
+  entry: '/path/to/my/file.ts', // accepts .js, .jsx, .ts and .tsx files
   handler: 'myExportedFunc'
 });
 ```
@@ -48,6 +48,15 @@ running Parcel:
 new lambda.NodejsFunction(this, 'my-handler', {
   containerEnvironment: {
     NODE_ENV: 'production',
+  },
+});
+```
+
+Use the `buildArgs` prop to pass build arguments when building the bundling image:
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  buildArgs: {
+    HTTPS_PROXY: 'https://127.0.0.1:3001',
   },
 });
 ```
