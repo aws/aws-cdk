@@ -32,11 +32,11 @@ describe('IAM policy', () => {
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
            Properties:
-          { Groups: [ { Ref: 'MyGroupCBA54B1B' } ],
+          { Groups: [{ Ref: 'MyGroupCBA54B1B' }],
             PolicyDocument:
            { Statement:
-            [ { Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-              { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' } ],
+            [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
+              { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
            Version: '2012-10-17' },
             PolicyName: 'MyPolicyName' } },
       MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' } } });
@@ -56,11 +56,11 @@ describe('IAM policy', () => {
            Properties:
           { PolicyDocument:
            { Statement:
-            [ { Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-              { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' } ],
+            [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
+              { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
            Version: '2012-10-17' },
           PolicyName: 'MyPolicy39D66CF6',
-          Users: [ { Ref: 'MyUserDC45028B' } ] } },
+          Users: [{ Ref: 'MyUserDC45028B' }] } },
       MyUserDC45028B: { Type: 'AWS::IAM::User' } } });
   });
 
@@ -73,10 +73,10 @@ describe('IAM policy', () => {
 
     new Policy(stack, 'MyTestPolicy', {
       policyName: 'Foo',
-      users: [ user1 ],
-      groups: [ group1 ],
-      roles: [ role1 ],
-      statements: [ new PolicyStatement({ resources: ['*'], actions: ['dynamodb:PutItem'] }) ],
+      users: [user1],
+      groups: [group1],
+      roles: [role1],
+      statements: [new PolicyStatement({ resources: ['*'], actions: ['dynamodb:PutItem'] })],
     });
 
     expect(stack).toMatchTemplate({ Resources:
@@ -87,21 +87,21 @@ describe('IAM policy', () => {
            Properties:
           { AssumeRolePolicyDocument:
            { Statement:
-            [ { Action: 'sts:AssumeRole',
+            [{ Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'test.service' } } ],
+              Principal: { Service: 'test.service' } }],
            Version: '2012-10-17' } } },
         MyTestPolicy316BDB50:
          { Type: 'AWS::IAM::Policy',
            Properties:
-          { Groups: [ { Ref: 'Group1BEBD4686' } ],
+          { Groups: [{ Ref: 'Group1BEBD4686' }],
             PolicyDocument:
            { Statement:
-            [ { Action: 'dynamodb:PutItem', Effect: 'Allow', Resource: '*' } ],
+            [{ Action: 'dynamodb:PutItem', Effect: 'Allow', Resource: '*' }],
            Version: '2012-10-17' },
             PolicyName: 'Foo',
-            Roles: [ { Ref: 'Role13A5C70C1' } ],
-            Users: [ { Ref: 'User1E278A736' } ] } } } });
+            Roles: [{ Ref: 'Role13A5C70C1' }],
+            Users: [{ Ref: 'User1E278A736' }] } } } });
   });
 
   test('idempotent if a principal (user/group/role) is attached twice', () => {
@@ -117,10 +117,10 @@ describe('IAM policy', () => {
          { Type: 'AWS::IAM::Policy',
            Properties:
           { PolicyDocument:
-           { Statement: [ { Action: '*', Effect: 'Allow', Resource: '*' } ],
+           { Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
              Version: '2012-10-17' },
           PolicyName: 'MyPolicy39D66CF6',
-          Users: [ { Ref: 'MyUserDC45028B' } ] } },
+          Users: [{ Ref: 'MyUserDC45028B' }] } },
       MyUserDC45028B: { Type: 'AWS::IAM::User' } } });
   });
 
@@ -139,14 +139,14 @@ describe('IAM policy', () => {
       { MyTestPolicy316BDB50:
          { Type: 'AWS::IAM::Policy',
            Properties:
-          { Groups: [ { Ref: 'Group1BEBD4686' } ],
+          { Groups: [{ Ref: 'Group1BEBD4686' }],
             PolicyDocument:
            { Statement:
-            [ { Action: 'dynamodb:GetItem', Effect: 'Allow', Resource: '*' } ],
+            [{ Action: 'dynamodb:GetItem', Effect: 'Allow', Resource: '*' }],
            Version: '2012-10-17' },
             PolicyName: 'Foo',
-            Roles: [ { Ref: 'Role13A5C70C1' } ],
-            Users: [ { Ref: 'User1E278A736' }, { Ref: 'User21F1486D1' } ] } },
+            Roles: [{ Ref: 'Role13A5C70C1' }],
+            Users: [{ Ref: 'User1E278A736' }, { Ref: 'User21F1486D1' }] } },
       User1E278A736: { Type: 'AWS::IAM::User' },
       User21F1486D1: { Type: 'AWS::IAM::User' },
       Group1BEBD4686: { Type: 'AWS::IAM::Group' },
@@ -155,9 +155,9 @@ describe('IAM policy', () => {
            Properties:
           { AssumeRolePolicyDocument:
            { Statement:
-            [ { Action: 'sts:AssumeRole',
+            [{ Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'test.service' } } ],
+              Principal: { Service: 'test.service' } }],
            Version: '2012-10-17' } } } } });
   });
 
@@ -177,13 +177,13 @@ describe('IAM policy', () => {
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
            Properties:
-          { Groups: [ { Ref: 'MyGroupCBA54B1B' } ],
+          { Groups: [{ Ref: 'MyGroupCBA54B1B' }],
             PolicyDocument:
-           { Statement: [ { Action: '*', Effect: 'Allow', Resource: '*' } ],
+           { Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
              Version: '2012-10-17' },
             PolicyName: 'MyPolicy39D66CF6',
-            Roles: [ { Ref: 'MyRoleF48FFE04' } ],
-            Users: [ { Ref: 'MyUserDC45028B' } ] } },
+            Roles: [{ Ref: 'MyRoleF48FFE04' }],
+            Users: [{ Ref: 'MyUserDC45028B' }] } },
       MyUserDC45028B: { Type: 'AWS::IAM::User' },
       MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
       MyRoleF48FFE04:
@@ -191,9 +191,9 @@ describe('IAM policy', () => {
            Properties:
           { AssumeRolePolicyDocument:
            { Statement:
-            [ { Action: 'sts:AssumeRole',
+            [{ Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'test.service' } } ],
+              Principal: { Service: 'test.service' } }],
            Version: '2012-10-17' } } } } });
   });
 
@@ -293,7 +293,7 @@ describe('IAM policy', () => {
     // THEN
     expect(stack).toHaveResource('Some::Resource', {
       Type: 'Some::Resource',
-      DependsOn: [ 'Pol0FE9AD5D' ],
+      DependsOn: ['Pol0FE9AD5D'],
     }, ResourcePart.CompleteDefinition);
   });
 

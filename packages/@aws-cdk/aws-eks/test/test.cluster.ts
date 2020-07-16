@@ -25,10 +25,10 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
       Config: {
-        roleArn: { 'Fn::GetAtt': [ 'ClusterRoleFA261979', 'Arn' ] },
+        roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
         version: '1.16',
         resourcesVpcConfig: {
-          securityGroupIds: [ { 'Fn::GetAtt': [ 'ClusterControlPlaneSecurityGroupD274242C', 'GroupId' ] } ],
+          securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
             { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
             { Ref: 'VPCPublicSubnet2Subnet74179F39' },
@@ -563,8 +563,8 @@ export = {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'ClusterMastersRole9AA35625', 'Arn' ] } ] ] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'ClusterMastersRole9AA35625', 'Arn' ] } ] ] } },
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['ClusterMastersRole9AA35625', 'Arn'] }]] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['ClusterMastersRole9AA35625', 'Arn'] }]] } },
       });
       test.done();
     },
@@ -1518,14 +1518,14 @@ export = {
       const subnetConfiguration: ec2.SubnetConfiguration[] = [];
 
       for (let i = 0; i < 20; i++) {
-        subnetConfiguration.push(        {
+        subnetConfiguration.push( {
           subnetType: ec2.SubnetType.PRIVATE,
           name: `Private${i}`,
         },
         );
       }
 
-      subnetConfiguration.push(          {
+      subnetConfiguration.push( {
         subnetType: ec2.SubnetType.PUBLIC,
         name: 'Public1',
       });
@@ -1566,14 +1566,14 @@ export = {
       const subnetConfiguration: ec2.SubnetConfiguration[] = [];
 
       for (let i = 0; i < 20; i++) {
-        subnetConfiguration.push(        {
+        subnetConfiguration.push( {
           subnetType: ec2.SubnetType.PRIVATE,
           name: `Private${i}`,
         },
         );
       }
 
-      subnetConfiguration.push(          {
+      subnetConfiguration.push( {
         subnetType: ec2.SubnetType.PUBLIC,
         name: 'Public1',
       });
@@ -1587,7 +1587,7 @@ export = {
       const cluster = new eks.Cluster(stack, 'Cluster1', {
         version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc: vpc2,
-        vpcSubnets: [{subnetGroupName: 'Private1'}, {subnetGroupName: 'Private2'}],
+        vpcSubnets: [{ subnetGroupName: 'Private1' }, { subnetGroupName: 'Private2' }],
       });
 
       cluster.addResource('resource', {

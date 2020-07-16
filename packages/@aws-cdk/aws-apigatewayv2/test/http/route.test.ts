@@ -79,7 +79,7 @@ describe('HttpRoute', () => {
 
 class DummyIntegration implements IHttpRouteIntegration {
   public bind(): HttpRouteIntegrationConfig {
-    return  {
+    return {
       type: HttpIntegrationType.HTTP_PROXY,
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
       uri: 'some-uri',

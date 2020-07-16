@@ -97,7 +97,7 @@ new Table(stack, 'PaymentTable', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
-const paymentTable =  Table.fromTableName(stack, 'ImportedPaymentTable', 'PaymentTable');
+const paymentTable = Table.fromTableName(stack, 'ImportedPaymentTable', 'PaymentTable');
 
 const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
 const orderDS = api.addDynamoDbDataSource('Order', 'The order data source', orderTable);
@@ -147,13 +147,13 @@ customerDS.createResolver({
 });
 
 const ops = [
-  { suffix: 'Eq', op: KeyCondition.eq},
-  { suffix: 'Lt', op: KeyCondition.lt},
-  { suffix: 'Le', op: KeyCondition.le},
-  { suffix: 'Gt', op: KeyCondition.gt},
-  { suffix: 'Ge', op: KeyCondition.ge},
+  { suffix: 'Eq', op: KeyCondition.eq },
+  { suffix: 'Lt', op: KeyCondition.lt },
+  { suffix: 'Le', op: KeyCondition.le },
+  { suffix: 'Gt', op: KeyCondition.gt },
+  { suffix: 'Ge', op: KeyCondition.ge },
 ];
-for (const {suffix, op} of ops) {
+for (const { suffix, op } of ops) {
   orderDS.createResolver({
     typeName: 'Query',
     fieldName: 'getCustomerOrders' + suffix,

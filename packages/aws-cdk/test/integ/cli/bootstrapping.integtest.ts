@@ -37,8 +37,8 @@ integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', 
 
   const legacyBootstrapBucketName = `aws-cdk-bootstrap-integ-test-legacy-bckt-${randomString()}`;
   const newBootstrapBucketName = `aws-cdk-bootstrap-integ-test-v2-bckt-${randomString()}`;
-  rememberToDeleteBucket(legacyBootstrapBucketName);  // This one will leak
-  rememberToDeleteBucket(newBootstrapBucketName);     // This one shouldn't leak if the test succeeds, but let's be safe in case it doesn't
+  rememberToDeleteBucket(legacyBootstrapBucketName); // This one will leak
+  rememberToDeleteBucket(newBootstrapBucketName); // This one shouldn't leak if the test succeeds, but let's be safe in case it doesn't
 
   // Legacy bootstrap
   await cdk(['bootstrap',

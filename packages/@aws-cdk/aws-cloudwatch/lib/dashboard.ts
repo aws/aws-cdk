@@ -82,7 +82,7 @@ export class Dashboard extends Resource {
     });
 
     {
-      const {dashboardName} = props;
+      const { dashboardName } = props;
       if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
         throw new Error([
           `The value ${dashboardName} for field dashboardName contains invalid characters.`,
@@ -102,7 +102,7 @@ export class Dashboard extends Resource {
           periodOverride: props.periodOverride,
           widgets: column.toJson(),
         });
-      }}),
+      } }),
     });
 
     (props.widgets || []).forEach(row => {

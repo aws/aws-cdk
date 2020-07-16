@@ -7,11 +7,11 @@ export = {
     const stack = new Stack();
     const mapping = new CfnMapping(stack, 'MyMapping', { mapping: {
       TopLevelKey1: {
-        SecondLevelKey1: [ 1, 2, 3 ],
+        SecondLevelKey1: [1, 2, 3],
         SecondLevelKey2: { Hello: 'World' },
       },
       TopLevelKey2: {
-        SecondLevelKey1: [ 99, 99, 99 ],
+        SecondLevelKey1: [99, 99, 99],
       },
     } });
 
@@ -27,20 +27,20 @@ export = {
 
     // set value can be used to set/modify a specific value
     mapping.setValue('TopLevelKey2', 'SecondLevelKey2', 'Hi');
-    mapping.setValue('TopLevelKey1', 'SecondLevelKey1', [ 1, 2, 3, 4 ]);
+    mapping.setValue('TopLevelKey1', 'SecondLevelKey1', [1, 2, 3, 4]);
 
     test.deepEqual(toCloudFormation(stack), { Mappings:
       { MyMapping:
          { TopLevelKey1:
-          { SecondLevelKey1: [ 1, 2, 3, 4 ],
+          { SecondLevelKey1: [1, 2, 3, 4],
             SecondLevelKey2: { Hello: 'World' } },
-         TopLevelKey2: { SecondLevelKey1: [ 99, 99, 99 ], SecondLevelKey2: 'Hi' } } },
+         TopLevelKey2: { SecondLevelKey1: [99, 99, 99], SecondLevelKey2: 'Hi' } } },
     Resources:
       { MyResource:
          { Type: 'R',
            Properties:
           { RefToValueInMap:
-           { 'Fn::FindInMap': [ 'MyMapping', 'TopLevelKey1', 'SecondLevelKey1' ] } } } } });
+           { 'Fn::FindInMap': ['MyMapping', 'TopLevelKey1', 'SecondLevelKey1'] } } } } });
 
     test.done();
   },
@@ -59,7 +59,7 @@ export = {
     const v1 = mapping.findInMap('instanceCount', Aws.REGION);
     const v2 = Fn.findInMap(mapping.logicalId, 'instanceCount', Aws.REGION);
 
-    const expected = { 'Fn::FindInMap': [ 'mapping', 'instanceCount', { Ref: 'AWS::Region' } ] };
+    const expected = { 'Fn::FindInMap': ['mapping', 'instanceCount', { Ref: 'AWS::Region' }] };
     test.deepEqual(stack.resolve(v1), expected);
     test.deepEqual(stack.resolve(v2), expected);
     test.done();
@@ -81,7 +81,7 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(v), {
-      'Fn::FindInMap': [ 'mapping', { Ref: 'AWS::Region' }, 'size' ],
+      'Fn::FindInMap': ['mapping', { Ref: 'AWS::Region' }, 'size'],
     });
     test.done();
   },
@@ -102,7 +102,7 @@ export = {
 
     // THEN
     test.throws(() => mapping.findInMap('not-found', Aws.REGION), /Mapping doesn't contain top-level key 'not-found'/);
-    test.deepEqual(stack.resolve(v), { 'Fn::FindInMap': [ 'mapping', 'size', { Ref: 'AWS::Region' } ] });
+    test.deepEqual(stack.resolve(v), { 'Fn::FindInMap': ['mapping', 'size', { Ref: 'AWS::Region' }] });
     test.done();
   },
 };

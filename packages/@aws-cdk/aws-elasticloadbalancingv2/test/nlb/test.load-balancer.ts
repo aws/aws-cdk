@@ -117,7 +117,7 @@ export = {
           },
           {
             Action: 's3:PutObject',
-            Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' }},
+            Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
             Effect: 'Allow',
             Principal: { Service: 'delivery.logs.amazonaws.com' },
             Resource: {
@@ -190,7 +190,7 @@ export = {
           },
           {
             Action: 's3:PutObject',
-            Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' }},
+            Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
             Effect: 'Allow',
             Principal: { Service: 'delivery.logs.amazonaws.com' },
             Resource: {
@@ -239,8 +239,8 @@ export = {
       loadBalancerArn: nlbArn,
     });
     // WHEN
-    const listener = nlb.addListener('Listener', {port: 80});
-    test.throws(() => listener.addTargets('targetgroup', {port: 8080}));
+    const listener = nlb.addListener('Listener', { port: 80 });
+    test.throws(() => listener.addTargets('targetgroup', { port: 8080 }));
 
     test.done();
   },
@@ -255,8 +255,8 @@ export = {
       vpc,
     });
     // WHEN
-    const listener = nlb.addListener('Listener', {port: 80});
-    test.doesNotThrow(() => listener.addTargets('targetgroup', {port: 8080}));
+    const listener = nlb.addListener('Listener', { port: 80 });
+    test.doesNotThrow(() => listener.addTargets('targetgroup', { port: 8080 }));
 
     test.done();
   },
@@ -375,7 +375,7 @@ export = {
     new elbv2.NetworkLoadBalancer(stack, 'LB', {
       vpc,
       internetFacing: false,
-      vpcSubnets: {subnetType: ec2.SubnetType.PUBLIC},
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
 
     // THEN
@@ -414,7 +414,7 @@ export = {
     new elbv2.NetworkLoadBalancer(stack, 'LB', {
       vpc,
       internetFacing: false,
-      vpcSubnets: {subnetType: ec2.SubnetType.ISOLATED},
+      vpcSubnets: { subnetType: ec2.SubnetType.ISOLATED },
     });
 
     // THEN

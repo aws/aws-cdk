@@ -1,4 +1,4 @@
-import { Construct, IResolveContext, Lazy, Resource, Stack} from '@aws-cdk/core';
+import { Construct, IResolveContext, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';

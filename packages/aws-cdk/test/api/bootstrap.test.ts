@@ -201,7 +201,7 @@ test('even if the bootstrap stack is in a rollback state, can still retry bootst
         StackStatusReason: 'It is magic',
         EnableTerminationProtection: false,
       },
-    ]}));
+    ] }));
 
   // WHEN
   const ret = await bootstrapEnvironment(env, sdk, { toolkitStackName: 'mockStack' });
@@ -247,7 +247,7 @@ test('even if the bootstrap stack failed to create, can still retry bootstrappin
         StackStatusReason: 'It is magic',
         EnableTerminationProtection: false,
       },
-    ]}));
+    ] }));
 
   // WHEN
   const ret = await bootstrapEnvironment(env, sdk, { toolkitStackName: 'mockStack' });

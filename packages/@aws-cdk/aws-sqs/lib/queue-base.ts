@@ -143,7 +143,7 @@ export abstract class QueueBase extends Resource implements IQueue {
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new QueuePolicy(this, 'Policy', { queues: [ this ] });
+      this.policy = new QueuePolicy(this, 'Policy', { queues: [this] });
     }
 
     if (this.policy) {

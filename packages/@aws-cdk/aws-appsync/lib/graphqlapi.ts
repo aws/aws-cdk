@@ -292,7 +292,7 @@ export class IamResource {
    * Example: ofType('Query', 'GetExample')
    */
   public static ofType(type: string, ...fields: string[]): IamResource {
-    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [ `types/${type}/*` ];
+    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
     return new IamResource(arns);
   }
 

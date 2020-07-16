@@ -8,7 +8,7 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
         'Fn::Equals': [
           params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
           'true',
-        ]},
+        ] },
     },
     Resources: {
       StagingBucket: {
@@ -34,7 +34,7 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
                 RestrictPublicBuckets: true,
               },
               { Ref: 'AWS::NoValue' },
-            ]},
+            ] },
         },
       },
       StagingBucketPolicy: {

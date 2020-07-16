@@ -49,7 +49,7 @@ test('when notification are added, you can tag the lambda', () => {
 
   expect(stack).toHaveResource('AWS::S3::Bucket');
   expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Tags: [{Key: 'Lambda', Value: 'AreTagged'}],
+    Tags: [{ Key: 'Lambda', Value: 'AreTagged' }],
     Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)' });
   expect(stack).toHaveResource('Custom::S3BucketNotifications');
 });
@@ -284,7 +284,7 @@ test('a notification destination can specify a set of dependencies that must be 
     bind: () => ({
       arn: 'arn',
       type: s3.BucketNotificationDestinationType.QUEUE,
-      dependencies: [ dependent ],
+      dependencies: [dependent],
     }),
   };
 
@@ -293,11 +293,11 @@ test('a notification destination can specify a set of dependencies that must be 
   expect(SynthUtils.synthesize(stack).template.Resources.BucketNotifications8F2E257D).toEqual({
     Type: 'Custom::S3BucketNotifications',
     Properties: {
-      ServiceToken: { 'Fn::GetAtt': [ 'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn' ] },
+      ServiceToken: { 'Fn::GetAtt': ['BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn'] },
       BucketName: { Ref: 'Bucket83908E77' },
-      NotificationConfiguration: { QueueConfigurations: [ { Events: [ 's3:ObjectCreated:*' ], QueueArn: 'arn' } ] },
+      NotificationConfiguration: { QueueConfigurations: [{ Events: ['s3:ObjectCreated:*'], QueueArn: 'arn' }] },
     },
-    DependsOn: [ 'Dependent' ],
+    DependsOn: ['Dependent'],
   });
 });
 

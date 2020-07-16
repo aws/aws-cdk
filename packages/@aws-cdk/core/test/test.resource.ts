@@ -86,9 +86,9 @@ export = {
         YourResource: {
           Type: 'Type',
           Properties: {
-            CounterName: { 'Fn::GetAtt': [ 'MyResource', 'Name' ] },
-            CounterArn: { 'Fn::GetAtt': [ 'MyResource', 'Arn' ] } ,
-            CounterURL: { 'Fn::GetAtt': [ 'MyResource', 'URL' ] },
+            CounterName: { 'Fn::GetAtt': ['MyResource', 'Name'] },
+            CounterArn: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
+            CounterURL: { 'Fn::GetAtt': ['MyResource', 'URL'] },
           },
         },
       },
@@ -114,7 +114,7 @@ export = {
           Type: 'Type',
           Properties: {
             Perm: {
-              'Fn::GetAtt': [ 'MyResource', 'Arn' ],
+              'Fn::GetAtt': ['MyResource', 'Arn'],
             },
           },
         },
@@ -196,7 +196,7 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: { Resource: { Type: 'Type', Condition: 'MyCondition' } },
-      Conditions: { MyCondition: { 'Fn::Not': [ { 'Fn::Equals': [ 'a', 'b' ] } ] } },
+      Conditions: { MyCondition: { 'Fn::Not': [{ 'Fn::Equals': ['a', 'b'] }] } },
     });
 
     test.done();
@@ -308,7 +308,7 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
-        Retain: { Type: 'T1', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain'  },
+        Retain: { Type: 'T1', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' },
         Destroy: { Type: 'T3', DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' },
         Default1: { Type: 'T4', DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' }, // explicit default
         Default2: { Type: 'T4', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' }, // implicit default
@@ -370,10 +370,10 @@ export = {
         MyResource:
         { Type: 'R',
           DependsOn:
-          [ 'MyC1R1FB2A562F',
+          ['MyC1R1FB2A562F',
             'MyC1R2AE2B5066',
             'MyC2R3809EEAD6',
-            'MyC3C2R38CE6F9F7' ] } } });
+            'MyC3C2R38CE6F9F7'] } } });
     test.done();
   },
 
@@ -492,7 +492,7 @@ export = {
             World: {
               Value1: 'Hello',
               Value2: 129,
-              Value3: [ 'foo', 'bar' ],
+              Value3: ['foo', 'bar'],
             },
           },
         },
@@ -524,8 +524,8 @@ export = {
       });
 
       // WHEN
-      r.addOverride('Properties.Override1', [ 'Hello', 123 ]);
-      r.addOverride('Properties.Override1.Override2', { Heyy: [ 1 ] });
+      r.addOverride('Properties.Override1', ['Hello', 123]);
+      r.addOverride('Properties.Override1.Override2', { Heyy: [1] });
       r.addOverride('Properties.Hello.World.Foo.Bar', 42);
 
       // THEN
@@ -535,7 +535,7 @@ export = {
             Properties:
             { Hello: { World: { Foo: { Bar: 42 } } },
               Override1: {
-                Override2: { Heyy: [ 1] },
+                Override2: { Heyy: [1] },
               } } } } });
       test.done();
     },
@@ -731,7 +731,7 @@ class Counter extends CfnResource {
   }
 
   protected get cfnProperties(): { [key: string]: any } {
-    return {Count: this.count};
+    return { Count: this.count };
   }
 }
 

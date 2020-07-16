@@ -62,7 +62,7 @@ test('Running a Fargate Task', () => {
       {
         containerDefinition,
         environment: [
-          {name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey')},
+          { name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') },
         ],
       },
     ],
@@ -173,7 +173,7 @@ test('Running an EC2 Task with bridge network', () => {
       {
         containerDefinition,
         environment: [
-          {name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey')},
+          { name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') },
         ],
       },
     ],

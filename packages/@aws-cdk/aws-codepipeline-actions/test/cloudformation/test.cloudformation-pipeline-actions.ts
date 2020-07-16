@@ -171,7 +171,7 @@ export = {
               'TemplatePath': 'OutputYo::template.yaml',
               'TemplateConfiguration': 'OutputYo::templateConfig.json',
             },
-            'InputArtifacts': [{'Name': 'OutputYo'}],
+            'InputArtifacts': [{ 'Name': 'OutputYo' }],
             'Name': 'BuildChangeSetProd',
             'RunOrder': 1,
           },
@@ -223,12 +223,12 @@ export = {
             {
               'Configuration': {
                 'Capabilities': 'CAPABILITY_NAMED_IAM',
-                'RoleArn': { 'Fn::GetAtt': [ roleId, 'Arn' ] },
+                'RoleArn': { 'Fn::GetAtt': [roleId, 'Arn'] },
                 'ActionMode': 'CREATE_UPDATE',
                 'StackName': 'MyStack',
                 'TemplatePath': 'SourceArtifact::template.yaml',
               },
-              'InputArtifacts': [{'Name': 'SourceArtifact'}],
+              'InputArtifacts': [{ 'Name': 'SourceArtifact' }],
               'Name': 'CreateUpdate',
             },
           ],
@@ -290,7 +290,7 @@ export = {
           'Name': 'Deploy',
           'Actions': [
             {
-              'OutputArtifacts': [{'Name': 'CreateUpdate_MyStack_Artifact'}],
+              'OutputArtifacts': [{ 'Name': 'CreateUpdate_MyStack_Artifact' }],
               'Name': 'CreateUpdate',
             },
           ],
@@ -359,11 +359,11 @@ export = {
           'Actions': [
             {
               'Configuration': {
-                'ParameterOverrides': { 'Fn::Join': [ '', [
+                'ParameterOverrides': { 'Fn::Join': ['', [
                   '{"RepoName":"',
-                  { 'Fn::GetAtt': [ 'MyVeryImportantRepo11BC3EBD', 'Name' ] },
+                  { 'Fn::GetAtt': ['MyVeryImportantRepo11BC3EBD', 'Name'] },
                   '"}',
-                ]]},
+                ]] },
               },
               'Name': 'CreateUpdate',
             },
@@ -453,12 +453,12 @@ export = {
             {
               'Configuration': {
                 'Capabilities': 'CAPABILITY_NAMED_IAM',
-                'RoleArn': { 'Fn::GetAtt': [ roleId, 'Arn' ] },
+                'RoleArn': { 'Fn::GetAtt': [roleId, 'Arn'] },
                 'ActionMode': 'CREATE_UPDATE',
                 'StackName': 'MyStack',
                 'TemplatePath': 'SourceArtifact::template.yaml',
               },
-              'InputArtifacts': [{'Name': 'SourceArtifact'}],
+              'InputArtifacts': [{ 'Name': 'SourceArtifact' }],
               'Name': 'CreateUpdate',
             },
           ],
@@ -497,12 +497,12 @@ export = {
             {
               'Configuration': {
                 'Capabilities': 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
-                'RoleArn': { 'Fn::GetAtt': [ roleId, 'Arn' ] },
+                'RoleArn': { 'Fn::GetAtt': [roleId, 'Arn'] },
                 'ActionMode': 'CREATE_UPDATE',
                 'StackName': 'MyStack',
                 'TemplatePath': 'SourceArtifact::template.yaml',
               },
-              'InputArtifacts': [{'Name': 'SourceArtifact'}],
+              'InputArtifacts': [{ 'Name': 'SourceArtifact' }],
               'Name': 'CreateUpdate',
             },
           ],
@@ -539,12 +539,12 @@ export = {
           'Actions': [
             {
               'Configuration': {
-                'RoleArn': { 'Fn::GetAtt': [ roleId, 'Arn' ] },
+                'RoleArn': { 'Fn::GetAtt': [roleId, 'Arn'] },
                 'ActionMode': 'CREATE_UPDATE',
                 'StackName': 'MyStack',
                 'TemplatePath': 'SourceArtifact::template.yaml',
               },
-              'InputArtifacts': [{'Name': 'SourceArtifact'}],
+              'InputArtifacts': [{ 'Name': 'SourceArtifact' }],
               'Name': 'CreateUpdate',
             },
           ],

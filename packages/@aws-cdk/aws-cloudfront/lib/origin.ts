@@ -140,7 +140,7 @@ export abstract class OriginBase implements IOrigin {
       originCustomHeaders: this.renderCustomHeaders(),
       s3OriginConfig,
       customOriginConfig,
-    }};
+    } };
   }
 
   // Overridden by sub-classes to provide S3 origin config.

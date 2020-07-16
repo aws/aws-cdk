@@ -113,7 +113,7 @@ describe('State Machine Resources', () => {
                'stringArgument': 'inital-task',
                'numberArgument': 123,
                'booleanArgument': true,
-               'arrayArgument': [ 'a', 'b', 'c' ] },
+               'arrayArgument': ['a', 'b', 'c'] },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -281,7 +281,7 @@ describe('State Machine Resources', () => {
             Resource: '*',
           },
         ],
-      }},
+      } },
     );
 
   }),
@@ -519,7 +519,7 @@ describe('State Machine Resources', () => {
             Resource: '*',
           },
         ],
-      }},
+      } },
     );
   }),
 
@@ -606,7 +606,7 @@ describe('State Machine Resources', () => {
                'stringArgument': 'inital-task',
                'numberArgument': 123,
                'booleanArgument': true,
-               'arrayArgument': [ 'a', 'b', 'c' ] },
+               'arrayArgument': ['a', 'b', 'c'] },
       Type: 'Pass',
       Comment: undefined,
       Result: undefined,
@@ -629,7 +629,7 @@ describe('State Machine Resources', () => {
     // THEN
     expect(taskState).toEqual({ End: true,
       Parameters:
-      { 'input.$': '$.myField'},
+      { 'input.$': '$.myField' },
       Type: 'Pass',
     });
   }),

@@ -35,8 +35,8 @@ export class PolicyStatement {
       effect: obj.Effect,
       notActions: ensureArrayOrUndefined(obj.NotAction),
       notResources: ensureArrayOrUndefined(obj.NotResource),
-      principals: obj.Principal ? [ new JsonPrincipal(obj.Principal) ] : undefined,
-      notPrincipals: obj.NotPrincipal ? [ new JsonPrincipal(obj.NotPrincipal) ] : undefined,
+      principals: obj.Principal ? [new JsonPrincipal(obj.Principal)] : undefined,
+      notPrincipals: obj.NotPrincipal ? [new JsonPrincipal(obj.NotPrincipal)] : undefined,
     });
   }
 

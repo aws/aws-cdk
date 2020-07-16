@@ -146,7 +146,7 @@ export = {
   },
 
   'Stacks can have a description given to them'(test: Test) {
-    const stack = new Stack(new App(), 'MyStack', { description: 'My stack, hands off!'});
+    const stack = new Stack(new App(), 'MyStack', { description: 'My stack, hands off!' });
     const output = toCloudFormation(stack);
     test.equal(output.Description, 'My stack, hands off!');
     test.done();
@@ -165,7 +165,7 @@ export = {
      morbi. Malesuada nunc vel risus commodo viverra maecenas accumsan lacus. Vulputate sapien nec sagittis
      aliquam malesuada bibendum arcu vitae. Augue neque gravida in fermentum et sollicitudin ac orci phasellus.
      Ultrices tincidunt arcu non sodales neque sodales.`;
-    test.throws(() => new Stack(new App(), 'MyStack', { description: desc}));
+    test.throws(() => new Stack(new App(), 'MyStack', { description: desc }));
     test.done();
   },
 
@@ -230,7 +230,7 @@ export = {
     // WHEN - used in another resource
     new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
       someProperty: new Intrinsic(resource1.ref),
-    }});
+    } });
 
     // THEN
     const assembly = app.synth();
@@ -331,7 +331,7 @@ export = {
       Parameters: {
         SomeParameter: {
           Type: 'String',
-          Default: { 'Fn::Join': [ '', [ 'TheAccountIs', { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' } ]] },
+          Default: { 'Fn::Join': ['', ['TheAccountIs', { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' }]] },
         },
       },
     });
@@ -366,7 +366,7 @@ export = {
     test.deepEqual(parentTemplate, {});
     test.deepEqual(child1Template, {
       Resources: {
-        ResourceA: { Type: 'RA' } ,
+        ResourceA: { Type: 'RA' },
         ResourceB: { Type: 'RB' },
       },
       Outputs: {
@@ -388,7 +388,7 @@ export = {
     });
 
     test.deepEqual(assembly.getStackArtifact(child1.artifactId).dependencies.map(x => x.id), []);
-    test.deepEqual(assembly.getStackArtifact(child2.artifactId).dependencies.map(x => x.id), [ 'ParentChild18FAEF419' ]);
+    test.deepEqual(assembly.getStackArtifact(child2.artifactId).dependencies.map(x => x.id), ['ParentChild18FAEF419']);
     test.done();
   },
 
@@ -453,7 +453,7 @@ export = {
     test.deepEqual(assembly.getStackByName(parentStack.stackName).template, {
       Resources: { MyParentResource: { Type: 'Resource::Parent' } },
       Outputs: { ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E: {
-        Value: { 'Fn::GetAtt': [ 'MyParentResource', 'AttOfParentResource' ] },
+        Value: { 'Fn::GetAtt': ['MyParentResource', 'AttOfParentResource'] },
         Export: { Name: 'parent:ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E' } },
       },
     });
@@ -505,7 +505,7 @@ export = {
         MyChildResource: { Type: 'Resource::Child' } },
       Outputs: {
         ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264: {
-          Value: { 'Fn::GetAtt': [ 'MyChildResource', 'AttributeOfChildResource' ] },
+          Value: { 'Fn::GetAtt': ['MyChildResource', 'AttributeOfChildResource'] },
           Export: { Name: 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' },
         },
       },
@@ -554,9 +554,9 @@ export = {
   'cannot create references to stacks in other regions/accounts'(test: Test) {
     // GIVEN
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' }});
+    const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
     const account1 = new ScopedAws(stack1).accountId;
-    const stack2 = new Stack(app, 'Stack2', { env: { account: '123456789012', region: 'es-norst-2' }});
+    const stack2 = new Stack(app, 'Stack2', { env: { account: '123456789012', region: 'es-norst-2' } });
 
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
@@ -590,7 +590,7 @@ export = {
   'stack with region supplied via props returns literal value'(test: Test) {
     // GIVEN
     const app = new App();
-    const stack = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' }});
+    const stack = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
 
     // THEN
     test.equal(stack.resolve(stack.region), 'es-norst-1');
@@ -607,7 +607,7 @@ export = {
     new CfnResource(stack, 'RefToBonjour', { type: 'Other::Resource', properties: {
       RefToBonjour: bonjour.ref,
       GetAttBonjour: bonjour.getAtt('TheAtt').toString(),
-    }});
+    } });
 
     bonjour.overrideLogicalId('BOOM');
 
@@ -618,7 +618,7 @@ export = {
          { Type: 'Other::Resource',
            Properties:
             { RefToBonjour: { Ref: 'BOOM' },
-              GetAttBonjour: { 'Fn::GetAtt': [ 'BOOM', 'TheAtt' ] } } } } });
+              GetAttBonjour: { 'Fn::GetAtt': ['BOOM', 'TheAtt'] } } } } });
     test.done();
   },
 
@@ -717,8 +717,8 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(azs), [
-      { 'Fn::Select': [ 0, { 'Fn::GetAZs': '' } ] },
-      { 'Fn::Select': [ 1, { 'Fn::GetAZs': '' } ] },
+      { 'Fn::Select': [0, { 'Fn::GetAZs': '' }] },
+      { 'Fn::Select': [1, { 'Fn::GetAZs': '' }] },
     ]);
     test.done();
   },
@@ -847,7 +847,7 @@ export = {
     const expected = [
       {
         type: 'aws:cdk:stack-tags',
-        data: [ { key: 'foo', value: 'bar' } ],
+        data: [{ key: 'foo', value: 'bar' }],
       },
     ];
 

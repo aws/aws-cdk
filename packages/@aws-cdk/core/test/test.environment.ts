@@ -51,7 +51,7 @@ export = {
       const app = new App();
 
       // WHEN
-      const stack = new Stack(app, 'stack', { env: { region: 'explicit-region' }});
+      const stack = new Stack(app, 'stack', { env: { region: 'explicit-region' } });
 
       // THEN
       test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
@@ -73,7 +73,7 @@ export = {
       const stack = new Stack(app, 'stack', { env: {
         account: 'explicit-account',
         region: 'explicit-region',
-      }});
+      } });
 
       // THEN
       test.deepEqual(stack.resolve(stack.account), 'explicit-account');

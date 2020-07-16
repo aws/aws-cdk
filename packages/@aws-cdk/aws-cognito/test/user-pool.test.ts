@@ -30,7 +30,7 @@ describe('User Pool', () => {
       },
       SmsConfiguration: {
         SnsCallerArn: {
-          'Fn::GetAtt': [ 'PoolsmsRoleC3352CE6', 'Arn' ],
+          'Fn::GetAtt': ['PoolsmsRoleC3352CE6', 'Arn'],
         },
         ExternalId: 'Pool',
       },
@@ -247,7 +247,7 @@ describe('User Pool', () => {
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
     expect(stack.resolve(pool.userPoolArn)).toEqual({
-      'Fn::Join': [ '', [
+      'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':cognito-idp:',
@@ -255,7 +255,7 @@ describe('User Pool', () => {
         ':',
         { Ref: 'AWS::AccountId' },
         ':userpool/test-user-pool',
-      ] ],
+      ]],
     });
   });
 
@@ -347,9 +347,9 @@ describe('User Pool', () => {
       },
     });
 
-    [ createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
+    [createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
       postConfirmation, preAuthentication, preSignUp, preTokenGeneration, userMigration,
-      verifyAuthChallengeResponse ].forEach((fn) => {
+      verifyAuthChallengeResponse].forEach((fn) => {
       expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: stack.resolve(fn.functionArn),
@@ -412,7 +412,7 @@ describe('User Pool', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UsernameAttributes: ABSENT,
-      AliasAttributes: [ 'email' ],
+      AliasAttributes: ['email'],
     });
   });
 
@@ -427,7 +427,7 @@ describe('User Pool', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      UsernameAttributes: [ 'email', 'phone_number' ],
+      UsernameAttributes: ['email', 'phone_number'],
       AliasAttributes: ABSENT,
     });
   });
@@ -449,11 +449,11 @@ describe('User Pool', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
-      AutoVerifiedAttributes: [ 'email' ],
+      AutoVerifiedAttributes: ['email'],
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
-      AutoVerifiedAttributes: [ 'email', 'phone_number' ],
+      AutoVerifiedAttributes: ['email', 'phone_number'],
     });
   });
 
@@ -469,7 +469,7 @@ describe('User Pool', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      AutoVerifiedAttributes: [ 'email', 'phone_number' ],
+      AutoVerifiedAttributes: ['email', 'phone_number'],
     });
   });
 
@@ -760,12 +760,12 @@ describe('User Pool', () => {
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
       MfaConfiguration: 'OPTIONAL',
-      EnabledMfas: [ 'SMS_MFA' ],
+      EnabledMfas: ['SMS_MFA'],
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
       MfaConfiguration: 'ON',
-      EnabledMfas: [ 'SMS_MFA' ],
+      EnabledMfas: ['SMS_MFA'],
     });
   });
 
@@ -784,7 +784,7 @@ describe('User Pool', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      EnabledMfas: [ 'SMS_MFA', 'SOFTWARE_TOKEN_MFA' ],
+      EnabledMfas: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA'],
     });
   });
 

@@ -16,9 +16,9 @@ describe('IAM role', () => {
            Properties:
           { AssumeRolePolicyDocument:
            { Statement:
-            [ { Action: 'sts:AssumeRole',
+            [{ Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' } } ],
+              Principal: { Service: 'sns.amazonaws.com' } }],
            Version: '2012-10-17' } } } } });
   });
 
@@ -38,7 +38,7 @@ describe('IAM role', () => {
           {
             Action: 'iam:PassRole',
             Effect: 'Allow',
-            Resource: { 'Fn::GetAtt': [ 'Role1ABCC5F0', 'Arn' ] },
+            Resource: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
           },
         ],
         Version: '2012-10-17',
@@ -166,7 +166,7 @@ describe('IAM role', () => {
 
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('test.service'),
-      managedPolicies: [ { managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' } ],
+      managedPolicies: [{ managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' }],
     });
 
     role.addManagedPolicy({ managedPolicyArn: 'managed3' });
@@ -176,11 +176,11 @@ describe('IAM role', () => {
            Properties:
           { AssumeRolePolicyDocument:
            { Statement:
-            [ { Action: 'sts:AssumeRole',
+            [{ Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'test.service' } } ],
+              Principal: { Service: 'test.service' } }],
            Version: '2012-10-17' },
-          ManagedPolicyArns: [ 'managed1', 'managed2', 'managed3' ] } } } });
+          ManagedPolicyArns: ['managed1', 'managed2', 'managed3'] } } } });
 
   });
 
@@ -360,9 +360,9 @@ describe('IAM role', () => {
            Properties:
           { AssumeRolePolicyDocument:
            { Statement:
-            [ { Action: 'sts:AssumeRole',
+            [{ Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' } } ],
+              Principal: { Service: 'sns.amazonaws.com' } }],
            Version: '2012-10-17' },
           Description: 'This is a role description.' } } } });
   });
@@ -381,10 +381,10 @@ describe('IAM role', () => {
            Properties:
           { AssumeRolePolicyDocument:
            { Statement:
-            [ { Action: 'sts:AssumeRole',
+            [{ Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' } } ],
-           Version: '2012-10-17' }} } } });
+              Principal: { Service: 'sns.amazonaws.com' } }],
+           Version: '2012-10-17' } } } } });
   });
 
   test('description can only be 1000 characters long', () => {

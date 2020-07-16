@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import { debug } from '../logging';
 import { ISDK } from './aws-auth';
-import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap';
+import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT } from './bootstrap';
 import { stabilizeStack } from './util/cloudformation';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
@@ -99,7 +99,7 @@ export class ToolkitInfo {
     // create the repo (tag it so it will be easier to garbage collect in the future)
     debug(`${repositoryName}: creating ECR repository`);
     const assetTag = { Key: 'awscdk:asset', Value: 'true' };
-    const response = await ecr.createRepository({ repositoryName, tags: [ assetTag ] }).promise();
+    const response = await ecr.createRepository({ repositoryName, tags: [assetTag] }).promise();
     const repositoryUri = response.repository?.repositoryUri;
     if (!repositoryUri) {
       throw new Error(`CreateRepository did not return a repository URI for ${repositoryUri}`);

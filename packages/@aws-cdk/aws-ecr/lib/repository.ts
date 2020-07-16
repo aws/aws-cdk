@@ -381,7 +381,7 @@ export class Repository extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
 
-      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult  {
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
         return { statementAdded: false };
       }
@@ -460,7 +460,7 @@ export class Repository extends RepositoryBase {
           },
           physicalResourceId: cr.PhysicalResourceId.of(this.repositoryArn),
         },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [ this.repositoryArn ] }),
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [this.repositoryArn] }),
       });
     }
   }

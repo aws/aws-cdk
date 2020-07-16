@@ -172,9 +172,9 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
 
   function isSplicableFnJoinIntrinsic(obj: any): boolean {
     if (!isIntrinsic(obj)) { return false; }
-    if (Object.keys(obj)[0] !== 'Fn::Join') { return false;  }
+    if (Object.keys(obj)[0] !== 'Fn::Join') { return false; }
 
-    const [ delim, list ] = obj['Fn::Join'];
+    const [delim, list] = obj['Fn::Join'];
     if (delim !== delimiter) { return false; }
 
     if (Token.isUnresolved(list)) { return false; }

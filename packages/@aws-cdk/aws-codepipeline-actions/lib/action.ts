@@ -36,7 +36,7 @@ export abstract class Action implements codepipeline.IAction {
         throw new Error(`Cannot reference variables of action '${this.actionProperties.actionName}', ` +
           'as that action was never added to a pipeline');
       }
-    }});
+    } });
     this.actionProperties = {
       ...actionProperties,
       variablesNamespace: this.namespaceOrToken,
@@ -61,12 +61,12 @@ export abstract class Action implements codepipeline.IAction {
     const rule = new events.Rule(this.scope, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
-      detailType: [ 'CodePipeline Action Execution State Change' ],
-      source: [ 'aws.codepipeline' ],
-      resources: [ this.pipeline.pipelineArn ],
+      detailType: ['CodePipeline Action Execution State Change'],
+      source: ['aws.codepipeline'],
+      resources: [this.pipeline.pipelineArn],
       detail: {
-        stage: [ this.stage.stageName ],
-        action: [ this.actionProperties.actionName ],
+        stage: [this.stage.stageName],
+        action: [this.actionProperties.actionName],
       },
     });
     return rule;

@@ -342,7 +342,7 @@ export class Function extends FunctionBase {
       const hash = calculateFunctionHash(this);
       const logicalId = trimFromStart(originalLogicalId, 255 - 32);
       return `${logicalId}${hash}`;
-    }}));
+    } }));
 
     return this._currentVersion;
   }

@@ -81,7 +81,7 @@ class S3FileProvider extends Construct {
         handler: 'index.onEvent',
         initialPolicy: [
           new iam.PolicyStatement({
-            resources: [ '*' ],
+            resources: ['*'],
             actions: [
               's3:GetObject*',
               's3:GetBucket*',

@@ -472,7 +472,7 @@ abstract class VolumeBase extends Resource implements IVolume {
   public grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
-      actions: [ 'ec2:AttachVolume' ],
+      actions: ['ec2:AttachVolume'],
       resourceArns: this.collectGrantResourceArns(instances),
     });
 
@@ -518,7 +518,7 @@ abstract class VolumeBase extends Resource implements IVolume {
   public grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
-      actions: [ 'ec2:DetachVolume' ],
+      actions: ['ec2:DetachVolume'],
       resourceArns: this.collectGrantResourceArns(instances),
     });
     // Note: No encryption key permissions are required to detach an encrypted volume.
@@ -612,7 +612,7 @@ export class Volume extends VolumeBase {
       kmsKeyId: props.encryptionKey?.keyArn,
       iops: props.iops,
       multiAttachEnabled: props.enableMultiAttach ?? false,
-      size: props.size?.toGibibytes({rounding: SizeRoundingBehavior.FAIL}),
+      size: props.size?.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }),
       snapshotId: props.snapshotId,
       volumeType: props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
     });
@@ -663,7 +663,7 @@ export class Volume extends VolumeBase {
         throw new Error('`iops` must be in the range 100 to 64,000, inclusive.');
       }
 
-      if (props.size && (props.iops > 50 * props.size.toGibibytes({rounding: SizeRoundingBehavior.FAIL}))) {
+      if (props.size && (props.iops > 50 * props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }))) {
         throw new Error('`iops` has a maximum ratio of 50 IOPS/GiB.');
       }
     }
@@ -673,7 +673,7 @@ export class Volume extends VolumeBase {
     }
 
     if (props.size) {
-      const size = props.size.toGibibytes({rounding: SizeRoundingBehavior.FAIL});
+      const size = props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL });
       // Enforce maximum volume size:
       // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html#ebs-volume-characteristics
       const sizeRanges: { [key: string]: { Min: number, Max: number } } = {};

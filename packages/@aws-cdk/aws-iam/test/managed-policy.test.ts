@@ -8,7 +8,7 @@ describe('managed policy', () => {
 
   beforeEach(() => {
     app = new cdk.App();
-    stack = new cdk.Stack(app, 'MyStack', { env: { account: '1234', region: 'us-east-1' }});
+    stack = new cdk.Stack(app, 'MyStack', { env: { account: '1234', region: 'us-east-1' } });
   });
 
   test('simple AWS managed policy', () => {
@@ -184,12 +184,12 @@ describe('managed policy', () => {
 
     new ManagedPolicy(stack, 'MyTestManagedPolicy', {
       managedPolicyName: 'Foo',
-      users: [ user1 ],
-      groups: [ group1 ],
-      roles: [ role1 ],
+      users: [user1],
+      groups: [group1],
+      roles: [role1],
       description: 'My Policy Description',
       path: 'tahiti/is/a/magical/place',
-      statements: [ new PolicyStatement({ resources: ['*'], actions: ['dynamodb:PutItem'] }) ],
+      statements: [new PolicyStatement({ resources: ['*'], actions: ['dynamodb:PutItem'] })],
     });
 
     expect(stack).toMatchTemplate({
@@ -539,11 +539,11 @@ describe('managed policy', () => {
     }));
 
     expect(stack.resolve(mp.managedPolicyName)).toEqual({
-      'Fn::Select': [ 1,
-        { 'Fn::Split': [ '/',
-          { 'Fn::Select': [ 5,
-            { 'Fn::Split': [ ':',
-              { Ref: 'Policy23B91518' }] } ] } ] } ],
+      'Fn::Select': [1,
+        { 'Fn::Split': ['/',
+          { 'Fn::Select': [5,
+            { 'Fn::Split': [':',
+              { Ref: 'Policy23B91518' }] }] }] }],
     });
   });
 
@@ -555,7 +555,7 @@ describe('managed policy', () => {
       actions: ['a:abc'],
     }));
 
-    const stack2 = new cdk.Stack(app, 'Stack2', { env: { account: '5678', region: 'us-east-1' }});
+    const stack2 = new cdk.Stack(app, 'Stack2', { env: { account: '5678', region: 'us-east-1' } });
     new cdk.CfnOutput(stack2, 'Output', {
       value: mp.managedPolicyArn,
     });

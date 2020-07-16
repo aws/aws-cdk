@@ -335,10 +335,10 @@ test('uses multiple security groups', () => {
             AwsVpcConfiguration: {
               AssignPublicIp: 'DISABLED',
               SecurityGroups: [
-                { 'Fn::GetAtt': ['SecurityGroupAED40ADC5', 'GroupId']},
-                {'Fn::GetAtt': ['SecurityGroupB04591F90', 'GroupId']},
+                { 'Fn::GetAtt': ['SecurityGroupAED40ADC5', 'GroupId'] },
+                { 'Fn::GetAtt': ['SecurityGroupB04591F90', 'GroupId'] },
               ],
-              Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A'}],
+              Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }],
             },
           },
           TaskCount: 1,

@@ -66,7 +66,7 @@ export class AssetManifest {
 
     for (const assetType of ASSET_TYPES) {
       for (const [assetId, asset] of Object.entries(this.manifest[assetType] || {})) {
-        const filteredDestinations =  filterDict(
+        const filteredDestinations = filterDict(
           asset.destinations,
           (_, destId) => selection.some(sel => sel.matches(new DestinationIdentifier(assetId, destId))));
 

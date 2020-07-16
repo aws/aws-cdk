@@ -184,9 +184,9 @@ describe('asset roles and policies', () => {
           Effect: 'Allow',
           Principal: {
             Service: 'codebuild.amazonaws.com',
-            AWS: { 'Fn::Join': [ '', [
+            AWS: { 'Fn::Join': ['', [
               'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-            ] ] },
+            ]] },
           },
         }],
       },
@@ -205,9 +205,9 @@ describe('asset roles and policies', () => {
           Effect: 'Allow',
           Principal: {
             Service: 'codebuild.amazonaws.com',
-            AWS: { 'Fn::Join': [ '', [
+            AWS: { 'Fn::Join': ['', [
               'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-            ] ] },
+            ]] },
           },
         }],
       },
@@ -276,7 +276,7 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
         Resource: {
           'Fn::Join': ['', [
             'arn:',
-            {Ref: 'AWS::Partition'},
+            { Ref: 'AWS::Partition' },
             `:logs:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:log-group:/aws/codebuild/*`,
           ]],
         },
@@ -287,7 +287,7 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
         Resource: {
           'Fn::Join': ['', [
             'arn:',
-            {Ref: 'AWS::Partition'},
+            { Ref: 'AWS::Partition' },
             `:codebuild:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:report-group/*`,
           ]],
         },
@@ -306,16 +306,16 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
         Effect: 'Allow',
         Resource: [
-          { 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn' ] },
-          { 'Fn::Join': ['', [{'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn']}, '/*']] },
+          { 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] },
+          { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] }, '/*']] },
         ],
       },
       {
         Action: ['kms:Decrypt', 'kms:DescribeKey'],
         Effect: 'Allow',
-        Resource: { 'Fn::GetAtt': [ 'CdkPipelineArtifactsBucketEncryptionKeyDDD3258C', 'Arn' ]},
+        Resource: { 'Fn::GetAtt': ['CdkPipelineArtifactsBucketEncryptionKeyDDD3258C', 'Arn'] },
       }],
     },
-    Roles: [ {Ref: attachedRole} ],
+    Roles: [{ Ref: attachedRole }],
   };
 }

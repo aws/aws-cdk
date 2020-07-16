@@ -22,14 +22,14 @@ afterEach(async () => {
 
 integTest('VPC Lookup', async () => {
   log('Making sure we are clean before starting.');
-  await cdkDestroy('define-vpc', { modEnv: { ENABLE_VPC_TESTING: 'DEFINE' }});
+  await cdkDestroy('define-vpc', { modEnv: { ENABLE_VPC_TESTING: 'DEFINE' } });
 
   log('Setting up: creating a VPC with known tags');
-  await cdkDeploy('define-vpc', { modEnv: { ENABLE_VPC_TESTING: 'DEFINE' }});
+  await cdkDeploy('define-vpc', { modEnv: { ENABLE_VPC_TESTING: 'DEFINE' } });
   log('Setup complete!');
 
   log('Verifying we can now import that VPC');
-  await cdkDeploy('import-vpc', { modEnv: { ENABLE_VPC_TESTING: 'IMPORT' }});
+  await cdkDeploy('import-vpc', { modEnv: { ENABLE_VPC_TESTING: 'IMPORT' } });
 });
 
 integTest('Two ways of shoing the version', async () => {
@@ -532,7 +532,7 @@ integTest('cdk ls', async () => {
 
 integTest('deploy stack without resource', async () => {
   // Deploy the stack without resources
-  await cdkDeploy('conditional-resource', { modEnv: { NO_RESOURCE: 'TRUE' }});
+  await cdkDeploy('conditional-resource', { modEnv: { NO_RESOURCE: 'TRUE' } });
 
   // This should have succeeded but not deployed the stack.
   await expect(cloudFormation('describeStacks', { StackName: fullStackName('conditional-resource') }))
@@ -601,7 +601,7 @@ integTest('failed deploy does not hang', async () => {
 });
 
 integTest('can still load old assemblies', async () => {
-  const cxAsmDir =  path.join(os.tmpdir(), 'cdk-integ-cx');
+  const cxAsmDir = path.join(os.tmpdir(), 'cdk-integ-cx');
 
   const testAssembliesDirectory = path.join(__dirname, 'cloud-assemblies');
   for (const asmdir of await listChildDirs(testAssembliesDirectory)) {

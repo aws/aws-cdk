@@ -82,11 +82,11 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {
-      DashboardBody: { 'Fn::Join': [ '', [
+      DashboardBody: { 'Fn::Join': ['', [
         '{"widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
         { Ref: 'AWS::Region' },
         '","yAxis":{}}}]}',
-      ]]},
+      ]] },
     }));
 
     test.done();
@@ -109,12 +109,12 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {
-      DashboardBody: { 'Fn::Join': [ '', [
+      DashboardBody: { 'Fn::Join': ['', [
         '{"start":"-9H","end":"2018-12-17T06:00:00.000Z","periodOverride":"inherit",\
 "widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
         { Ref: 'AWS::Region' },
         '","yAxis":{}}}]}',
-      ]]},
+      ]] },
     }));
 
     test.done();

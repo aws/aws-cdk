@@ -52,9 +52,9 @@ describe('DatabaseInstance', () => {
         'Fn::Join': [
           '',
           [
-            { 'Fn::GetAtt': [ 'InstanceC1063A87', 'Endpoint' ] },
+            { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint'] },
             ':',
-            { 'Fn::GetAtt': [ 'InstanceC1063A87', 'Port' ] },
+            { 'Fn::GetAtt': ['InstanceC1063A87', 'Port'] },
           ],
         ],
       },

@@ -177,7 +177,7 @@ class LinuxUserData extends UserData {
 
   private renderOnExitLines(): string[] {
     if ( this.onExitLines.length > 0 ) {
-      return [ 'function exitTrap(){', 'exitCode=$?', ...this.onExitLines, '}', 'trap exitTrap EXIT' ];
+      return ['function exitTrap(){', 'exitCode=$?', ...this.onExitLines, '}', 'trap exitTrap EXIT'];
     }
     return [];
   }

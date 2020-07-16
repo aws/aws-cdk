@@ -87,7 +87,7 @@ export class AwsIntegration extends Integration {
           sep: '/',
           resourceName: apiValue,
         });
-      }}),
+      } }),
       options: props.options,
     });
   }

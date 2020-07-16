@@ -7,7 +7,7 @@ export function undefinedIfEmpty(f: () => string[]): string[] {
   return Lazy.listValue({ produce: () => {
     const array = f();
     return (array && array.length > 0) ? array : undefined;
-  }});
+  } });
 }
 
 /**
@@ -71,7 +71,7 @@ export function mergePrincipal(target: { [key: string]: string[] }, source: { [k
 
     let value = source[key];
     if (!Array.isArray(value)) {
-      value = [ value ];
+      value = [value];
     }
 
     target[key].push(...value);

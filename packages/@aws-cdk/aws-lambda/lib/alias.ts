@@ -243,7 +243,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
     }
 
-    return {provisionedConcurrentExecutions: props.provisionedConcurrentExecutions};
+    return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };
   }
 }
 

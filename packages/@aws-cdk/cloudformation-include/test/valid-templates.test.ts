@@ -434,7 +434,7 @@ describe('CDK Include', () => {
           ...originalTemplate.Parameters.BucketName,
           "Default": "MyDefault",
           "AllowedPattern": "[0-9]*$",
-          "AllowedValues": [ "123123", "456789" ],
+          "AllowedValues": ["123123", "456789"],
           "ConstraintDescription": "MyNewConstraint",
           "Description": "a string of numeric characters",
           "MaxLength": 6,

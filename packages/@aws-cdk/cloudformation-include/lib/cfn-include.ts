@@ -359,7 +359,7 @@ export class CfnInclude extends core.CfnElement {
           finder,
         };
         const [moduleName, ...className] = l1ClassFqn.split('.');
-        const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
+        const module = require(moduleName); // eslint-disable-line @typescript-eslint/no-require-imports
         const jsClassFromModule = module[className.join('.')];
         l1Instance = jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
       } else {
