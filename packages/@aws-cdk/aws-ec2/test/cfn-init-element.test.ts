@@ -38,7 +38,7 @@ describe('InitCommand', () => {
 
     // THEN
     expect(rendered).toEqual({
-      '000': { command: '/bin/sh' },
+      '000': { command: ['/bin/sh'] },
     });
   });
 
@@ -50,7 +50,7 @@ describe('InitCommand', () => {
       cwd: '/home/myUser',
       test: 'test -d /home/myUser',
       ignoreErrors: false,
-      waitAfterCompletion: Duration.hours(2),
+      waitAfterCompletion: ec2.InitCommandWaitDuration.of(Duration.hours(2)),
     });
 
     // WHEN
@@ -59,7 +59,7 @@ describe('InitCommand', () => {
     // THEN
     expect(rendered).toEqual({
       command_0: {
-        command: '/bin/sh',
+        command: ['/bin/sh'],
         env: { SECRETS_FILE: '/tmp/secrets' },
         cwd: '/home/myUser',
         test: 'test -d /home/myUser',
@@ -77,7 +77,7 @@ describe('InitCommand', () => {
       cwd: '/home/myUser',
       test: 'test -d /home/myUser',
       ignoreErrors: false,
-      waitAfterCompletion: Duration.hours(2),
+      waitAfterCompletion: ec2.InitCommandWaitDuration.of(Duration.hours(2)),
     });
 
     // WHEN
@@ -104,12 +104,12 @@ describe('InitCommand', () => {
       cwd: '/home/myUser',
       test: 'test -d /home/myUser',
       ignoreErrors: false,
-      waitAfterCompletion: Duration.hours(2),
+      waitAfterCompletion: ec2.InitCommandWaitDuration.of(Duration.hours(2)),
     });
 
     // THEN
     expect(() => {
-      command.bind(defaultOptions(ec2.InitPlatform.LINUX));
+      command._bind(defaultOptions(ec2.InitPlatform.LINUX));
     }).toThrow(/'waitAfterCompletion' is only valid for Windows/);
   });
 
@@ -125,7 +125,7 @@ describe('InitService', () => {
     const service = ec2.InitService.enable('httpd');
 
     // WHEN
-    const rendered = service.bind(defaultOptions(platform)).config;
+    const rendered = service._bind(defaultOptions(platform)).config;
 
     // THEN
     expect(rendered[key]).toBeDefined();
@@ -145,7 +145,7 @@ describe('InitService', () => {
     const service = ec2.InitService.disable('httpd');
 
     // WHEN
-    const rendered = service.bind(defaultOptions(platform)).config;
+    const rendered = service._bind(defaultOptions(platform)).config;
 
     // THEN
     expect(rendered[key]).toBeDefined();
@@ -163,10 +163,10 @@ describe('InitService', () => {
   ])('fromOptions renders all options for %s', (_platform, key, platform) => {
     // GIVEN
     const restartHandle = new ec2.InitServiceRestartHandle();
-    restartHandle.addFile('/etc/my.cnf');
-    restartHandle.addSource('/tmp/foo');
-    restartHandle.addPackage('yum', 'httpd');
-    restartHandle.addCommand('cmd_000');
+    restartHandle._addFile('/etc/my.cnf');
+    restartHandle._addSource('/tmp/foo');
+    restartHandle._addPackage('yum', 'httpd');
+    restartHandle._addCommand('cmd_000');
 
     const service = ec2.InitService.fromOptions('httpd', {
       enabled: true,
@@ -175,7 +175,7 @@ describe('InitService', () => {
     });
 
     // WHEN
-    const rendered = service.bind(defaultOptions(platform)).config;
+    const rendered = service._bind(defaultOptions(platform)).config;
 
     // THEN
     expect(rendered[key]).toBeDefined();
@@ -194,7 +194,7 @@ describe('InitService', () => {
 });
 
 function getElementConfig(element: ec2.InitElement, platform: ec2.InitPlatform) {
-  return element.bind(defaultOptions(platform)).config;
+  return element._bind(defaultOptions(platform)).config;
 }
 
 function defaultOptions(platform: ec2.InitPlatform) {

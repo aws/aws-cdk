@@ -1,8 +1,8 @@
-import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Duration } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
+import { InitBindOptions, InitElementConfig } from './private/cfn-init-elements-internal';
 
 /**
- * Defines whether this Init template will is being rendered for Windows or Linux-based systems.
+ * The platform to which the init template applies.
  */
 export enum InitPlatform {
   /**
@@ -71,29 +71,33 @@ export class InitServiceRestartHandle {
 
   /**
    * Add a command key to the restart set
+   * @internal
    */
-  public addCommand(key: string) {
+  public _addCommand(key: string) {
     return this.commands.push(key);
   }
 
   /**
    * Add a file key to the restart set
+   * @internal
    */
-  public addFile(key: string) {
+  public _addFile(key: string) {
     return this.files.push(key);
   }
 
   /**
    * Add a source key to the restart set
+   * @internal
    */
-  public addSource(key: string) {
+  public _addSource(key: string) {
     return this.sources.push(key);
   }
 
   /**
    * Add a package key to the restart set
+   * @internal
    */
-  public addPackage(packageType: string, key: string) {
+  public _addPackage(packageType: string, key: string) {
     if (!this.packages[packageType]) {
       this.packages[packageType] = [];
     }
@@ -102,8 +106,9 @@ export class InitServiceRestartHandle {
 
   /**
    * Render the restart handles for use in an InitService declaration
+   * @internal
    */
-  public renderRestartHandles(): any {
+  public _renderRestartHandles(): any {
     const nonEmpty = <A>(x: A[]) => x.length > 0 ? x : undefined;
 
     return {
@@ -113,51 +118,6 @@ export class InitServiceRestartHandle {
       sources: nonEmpty(this.sources),
     };
   }
-}
-
-/**
- * Context information passed when an InitElement is being consumed
- */
-export interface InitBindOptions {
-  /**
-   * Scope in which to define any resources, if necessary.
-   */
-  readonly scope: Construct;
-
-  /**
-   * Which OS platform (Linux, Windows) the init block will be for.
-   * Impacts which config types are available and how they are created.
-   */
-  readonly platform: InitPlatform;
-
-  /**
-   * Ordered index of current element type. Primarily used to auto-generate
-   * command keys and retain ordering.
-   */
-  readonly index: number;
-
-  /**
-   * Instance role of the consuming instance or fleet
-   */
-  readonly instanceRole: iam.IRole;
-}
-
-/**
- * A return type for a configured InitElement. Both its CloudFormation representation, and any
- * additional metadata needed to create the CloudFormation:Init.
- */
-export interface InitElementConfig {
-  /**
-   * The CloudFormation representation of the configuration of an InitElement.
-   */
-  readonly config: Record<string, any>;
-
-  /**
-   * Optional authentication blocks to be associated with the Init Config
-   *
-   * @default - No authentication associated with the config
-   */
-  readonly authentication?: Record<string, any>;
 }
 
 /**
@@ -176,8 +136,9 @@ export abstract class InitElement {
    * properties needed, if any.
    *
    * @param options bind options for the element.
+   * @internal
    */
-  public abstract bind(options: InitBindOptions): InitElementConfig;
+  public abstract _bind(options: InitBindOptions): InitElementConfig;
 
 }
 
@@ -188,7 +149,7 @@ export interface InitCommandOptions {
   /**
    * Identifier key for this command
    *
-   * You can use this to order commands.
+   * Commands are executed in lexicographical order of their key names.
    *
    * @default - Automatically generated
    */
@@ -227,17 +188,16 @@ export interface InitCommandOptions {
   readonly ignoreErrors?: boolean;
 
   /**
-   * Specifies how long to wait (in seconds) after a command has finished in case the command causes a reboot.
+   * The duration to wait after a command has finished in case the command causes a reboot.
    *
-   * A value of "forever" directs cfn-init to exit and resume only after the
-   * reboot is complete. Set this value to 0 if you do not want to wait for
-   * every command.
+   * Set this value to `InitCommandWaitDuration.none()` if you do not want to wait for every command;
+   * `InitCommandWaitDuration.forever()` directs cfn-init to exit and resume only after the reboot is complete.
    *
    * For Windows systems only.
    *
-   * @default Duration.seconds(60)
+   * @default - 60 seconds
    */
-  readonly waitAfterCompletion?: Duration;
+  readonly waitAfterCompletion?: InitCommandWaitDuration;
 
   /**
    * Restart the given service(s) after this command has run
@@ -245,6 +205,38 @@ export interface InitCommandOptions {
    * @default - Do not restart any service
    */
   readonly serviceRestartHandles?: InitServiceRestartHandle[];
+}
+
+/**
+ * Represents a duration to wait after a command has finished, in case of a reboot (Windows only).
+ */
+export abstract class InitCommandWaitDuration {
+  /** Wait for a specified duration after a command. */
+  public static of(duration: Duration): InitCommandWaitDuration {
+    return new class extends InitCommandWaitDuration {
+      /** @internal */
+      public _render() { return duration.toSeconds(); }
+    }();
+  }
+
+  /** Do not wait for this command. */
+  public static none(): InitCommandWaitDuration {
+    return InitCommandWaitDuration.of(Duration.seconds(0));
+  }
+
+  /** cfn-init will exit and resume only after a reboot. */
+  public static forever(): InitCommandWaitDuration {
+    return new class extends InitCommandWaitDuration {
+      /** @internal */
+      public _render() { return 'forever'; }
+    }();
+  }
+
+  /**
+   * Render to a CloudFormation value.
+   * @internal
+   */
+  public abstract _render(): any;
 }
 
 /**
@@ -257,7 +249,7 @@ export class InitCommand extends InitElement {
    * You must escape the string appropriately.
    */
   public static shellCommand(shellCommand: string, options: InitCommandOptions = {}): InitCommand {
-    return new InitCommand(shellCommand, options);
+    return new InitCommand([shellCommand], options);
   }
 
   /**
@@ -274,15 +266,12 @@ export class InitCommand extends InitElement {
 
   public readonly elementType = InitElementType.COMMAND;
 
-  protected constructor(private readonly command: any, private readonly options: InitCommandOptions) {
+  private constructor(private readonly command: string[], private readonly options: InitCommandOptions) {
     super();
-
-    if (typeof this.command !== 'string' && !(Array.isArray(command) && command.every(s => typeof s === 'string'))) {
-      throw new Error('\'command\' must be either a string or an array of strings');
-    }
   }
 
-  public bind(options: InitBindOptions): InitElementConfig {
+  /** @internal */
+  public _bind(options: InitBindOptions): InitElementConfig {
     const commandKey = this.options.key || `${options.index}`.padStart(3, '0'); // 001, 005, etc.
 
     if (options.platform !== InitPlatform.WINDOWS && this.options.waitAfterCompletion !== undefined) {
@@ -290,7 +279,7 @@ export class InitCommand extends InitElement {
     }
 
     for (const handle of this.options.serviceRestartHandles ?? []) {
-      handle.addCommand(commandKey);
+      handle._addCommand(commandKey);
     }
 
     return {
@@ -301,7 +290,7 @@ export class InitCommand extends InitElement {
           cwd: this.options.cwd,
           test: this.options.test,
           ignoreErrors: this.options.ignoreErrors,
-          waitAfterCompletion: this.options.waitAfterCompletion?.toSeconds(),
+          waitAfterCompletion: this.options.waitAfterCompletion?._render(),
         },
       },
     };
@@ -382,11 +371,12 @@ export class InitService extends InitElement {
 
   public readonly elementType = InitElementType.SERVICE;
 
-  protected constructor(private readonly serviceName: string, private readonly serviceOptions: InitServiceOptions) {
+  private constructor(private readonly serviceName: string, private readonly serviceOptions: InitServiceOptions) {
     super();
   }
 
-  public bind(options: InitBindOptions): InitElementConfig {
+  /** @internal */
+  public _bind(options: InitBindOptions): InitElementConfig {
     const serviceManager = options.platform === InitPlatform.LINUX ? 'sysvinit' : 'windows';
 
     return {
@@ -395,7 +385,7 @@ export class InitService extends InitElement {
           [this.serviceName]: {
             enabled: this.serviceOptions.enabled,
             ensureRunning: this.serviceOptions.ensureRunning,
-            ...this.serviceOptions.serviceRestartHandle?.renderRestartHandles(),
+            ...this.serviceOptions.serviceRestartHandle?._renderRestartHandles(),
           },
         },
       },

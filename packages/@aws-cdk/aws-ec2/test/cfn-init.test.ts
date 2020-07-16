@@ -33,7 +33,7 @@ test('whole config with restart handles', () => {
   ]);
 
   // THEN
-  expect(config.bind(stack, linuxOptions()).config).toEqual(expect.objectContaining({
+  expect(config._bind(stack, linuxOptions()).config).toEqual(expect.objectContaining({
     services: {
       sysvinit: {
         httpd: {

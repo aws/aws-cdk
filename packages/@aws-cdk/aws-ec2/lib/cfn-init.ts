@@ -1,7 +1,8 @@
+import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnResource, Construct } from '@aws-cdk/core';
-import * as crypto from 'crypto';
-import { InitBindOptions, InitElement, InitElementConfig, InitElementType, InitPlatform } from './cfn-init-elements';
+import { InitElement, InitElementType, InitPlatform } from './cfn-init-elements';
+import { InitBindOptions, InitElementConfig } from './private/cfn-init-elements-internal';
 import { UserData } from './user-data';
 
 /**
@@ -137,7 +138,7 @@ export class CloudFormationInit {
   private bind(scope: Construct, options: AttachInitOptions): { configData: any, authData: any } {
     const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty ? undefined : c);
 
-    const configNameToBindResult = mapValues(nonEmptyConfigs, c => c.bind(scope, options));
+    const configNameToBindResult = mapValues(nonEmptyConfigs, c => c._bind(scope, options));
 
     return {
       configData: {
@@ -243,8 +244,9 @@ export class InitConfig {
   /**
    * Called when the config is applied to an instance.
    * Creates the CloudFormation representation of the Init config and handles any permissions and assets.
+   * @internal
    */
-  public bind(scope: Construct, options: AttachInitOptions): InitElementConfig {
+  public _bind(scope: Construct, options: AttachInitOptions): InitElementConfig {
     const bindOptions = {
       instanceRole: options.instanceRole,
       platform: options.platform,
@@ -282,7 +284,7 @@ export class InitConfig {
     const elements = this.elements.filter(elem => elem.elementType === elementType);
     if (elements.length === 0) { return undefined; }
 
-    const bindResults = elements.map((e, index) => e.bind({ index, ...renderOptions }));
+    const bindResults = elements.map((e, index) => e._bind({ index, ...renderOptions }));
 
     return {
       config: bindResults.map(r => r.config).reduce(deepMerge, undefined) ?? {},
