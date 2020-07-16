@@ -1,9 +1,9 @@
+import * as path from 'path';
 import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
-import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
