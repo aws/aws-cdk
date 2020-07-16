@@ -37,8 +37,8 @@ const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
 
 const myProvider = new cr.Provider(this, 'MyProvider', {
   onEventHandler: onEvent,
-  isCompleteHandler: isComplete, // optional async "waiter"
-  logRetention: RetentionDays.ONE_DAY
+  isCompleteHandler: isComplete,        // optional async "waiter"
+  logRetention: RetentionDays.ONE_DAY   // default is INFINITE
 });
 
 new CustomResource(this, 'Resource1', { serviceToken: myProvider.serviceToken });
