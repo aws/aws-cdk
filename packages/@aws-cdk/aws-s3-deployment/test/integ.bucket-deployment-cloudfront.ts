@@ -1,7 +1,7 @@
+import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import * as s3deploy from '../lib';
 
 class TestBucketDeployment extends cdk.Stack {
@@ -17,7 +17,7 @@ class TestBucketDeployment extends cdk.Stack {
           s3OriginSource: {
             s3BucketSource: bucket,
           },
-          behaviors : [ {isDefaultBehavior: true}],
+          behaviors: [ {isDefaultBehavior: true}],
         },
       ],
     });

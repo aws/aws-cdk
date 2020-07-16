@@ -1,5 +1,5 @@
-import * as colors from 'colors/safe';
 import { format } from 'util';
+import * as colors from 'colors/safe';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
@@ -11,7 +11,6 @@ import { SecurityGroupChanges } from './network/security-group-changes';
 const PATH_METADATA_KEY = 'aws:cdk:path';
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-// tslint:disable-next-line:no-var-requires
 const { structuredPatch } = require('diff');
 /* eslint-enable */
 
@@ -159,7 +158,7 @@ class Formatter {
 
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, colors.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
     if (diff.isUpdate) {

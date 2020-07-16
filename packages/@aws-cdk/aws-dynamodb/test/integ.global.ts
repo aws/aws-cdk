@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import { App, Construct, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import * as dynamodb from '../lib';
 
