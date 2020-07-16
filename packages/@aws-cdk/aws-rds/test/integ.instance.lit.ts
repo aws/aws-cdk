@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
@@ -17,7 +18,9 @@ class DatabaseInstanceStack extends cdk.Stack {
     /// !show
     // Set open cursors with parameter group
     const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
-      family: 'oracle-se1-11.2',
+      engine: rds.DatabaseInstanceEngine.oracleSe1({
+        version: '11.2',
+      }),
       parameters: {
         open_cursors: '2500',
       },
@@ -25,8 +28,9 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     /// Add XMLDB and OEM with option group
     const optionGroup = new rds.OptionGroup(this, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: rds.DatabaseInstanceEngine.oracleSe1({
+        version: '11.2',
+      }),
       configurations: [
         {
           name: 'XMLDB',

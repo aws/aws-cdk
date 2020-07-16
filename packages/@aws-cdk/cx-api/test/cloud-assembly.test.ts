@@ -118,6 +118,7 @@ test('stack artifacts can specify an explicit stack name that is different from 
 
 test('getStackByName fails if there are multiple stacks with the same name', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'multiple-stacks-same-name'));
+  // eslint-disable-next-line max-len
   expect(() => assembly.getStackByName('the-physical-name-of-the-stack')).toThrow(/There are multiple stacks with the stack name \"the-physical-name-of-the-stack\" \(stack1\,stack2\)\. Use \"getStackArtifact\(id\)\" instead/);
 });
 

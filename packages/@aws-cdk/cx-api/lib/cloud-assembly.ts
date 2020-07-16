@@ -1,7 +1,7 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
 import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
 import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
@@ -85,6 +85,7 @@ export class CloudAssembly {
     }
 
     if (artifacts.length > 1) {
+      // eslint-disable-next-line max-len
       throw new Error(`There are multiple stacks with the stack name "${stackName}" (${artifacts.map(a => a.id).join(',')}). Use "getStackArtifact(id)" instead`);
     }
 

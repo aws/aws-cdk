@@ -1,5 +1,5 @@
-import { CfnResource, Stack } from '@aws-cdk/core';
 import * as crypto from 'crypto';
+import { CfnResource, Stack } from '@aws-cdk/core';
 import { Function as LambdaFunction } from './function';
 
 export function calculateFunctionHash(fn: LambdaFunction) {
