@@ -223,6 +223,7 @@ export interface ClusterOptions {
 
   /**
    * Configure access to the Kubernetes API server endpoint.
+   * This feature is only available for kubectl enabled clusters, i.e `kubectlEnabled: true`.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
    *
@@ -238,14 +239,6 @@ export interface ClusterOptions {
 export class EndpointAccess {
 
   /**
-   * The cluster endpoint is only accessible through your VPC.
-   * Worker node traffic to the endpoint will stay within your VPC.
-   */
-  public static private() {
-    return new EndpointAccess(true, false, []);
-  }
-
-  /**
    * The cluster endpoint is accessible from outside of your VPC.
    * Worker node traffic will leave your VPC to connect to the endpoint.
    *
@@ -257,7 +250,15 @@ export class EndpointAccess {
    * @param cidr The CIDR blocks.
    */
   public static public(...cidr: string[]) {
-    return new EndpointAccess(false, true, cidr.length > 0 ? cidr : undefined);
+    return new EndpointAccess(false, true, cidr);
+  }
+
+  /**
+   * The cluster endpoint is only accessible through your VPC.
+   * Worker node traffic to the endpoint will stay within your VPC.
+   */
+  public static private() {
+    return new EndpointAccess(true, false, undefined);
   }
 
   /**
@@ -272,7 +273,7 @@ export class EndpointAccess {
    * @param cidr The CIDR blocks.
    */
   public static publicAndPrivate(...cidr: string[]) {
-    return new EndpointAccess(true, true, cidr.length > 0 ? cidr : undefined);
+    return new EndpointAccess(true, true, cidr);
   }
 
   private constructor(
@@ -290,7 +291,13 @@ export class EndpointAccess {
     /**
      * Enable public endpoint access to the cluster.
      */
-    public readonly publicAccessCidrs?: string[]) {}
+    public readonly publicAccessCidrs?: string[]) {
+
+    if (this.publicAccessCidrs && this.publicAccessCidrs.length === 0) {
+      // an empty array is an illegal value, set to undefined so it won't be specified at all.
+      this.publicAccessCidrs = undefined;
+    }
+  }
 
 }
 
@@ -308,16 +315,19 @@ export interface ClusterProps extends ClusterOptions {
    * - `addRoleMapping`
    * - `addUserMapping`
    * - `addMastersRole` and `props.mastersRole`
+   * - `endpointAccess`
    *
    * If this is disabled, the cluster can only be managed by issuing `kubectl`
    * commands from a session that uses the IAM role/user that created the
    * account.
    *
-   * _NOTE_: changing this value will destoy the cluster. This is because a
+   * _NOTE_: changing this value will destroy the cluster. This is because a
    * managable cluster must be created using an AWS CloudFormation custom
    * resource which executes with an IAM role owned by the CDK app.
    *
+   *
    * @default true The cluster can be managed by the AWS CDK application.
+   * @deprecated Omit this property as it wil be removed in future releases and enabled to all clusters.
    */
   readonly kubectlEnabled?: boolean;
 
@@ -459,6 +469,8 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * Indicates if `kubectl` related operations can be performed on this cluster.
+   *
+   * @deprecated Will always be true in future releases.
    */
   public readonly kubectlEnabled: boolean;
 
@@ -500,7 +512,7 @@ export class Cluster extends Resource implements ICluster {
 
   private _neuronDevicePlugin?: KubernetesResource;
 
-  private readonly endpointAccess: EndpointAccess;
+  private readonly endpointAccess?: EndpointAccess;
 
   private readonly controlPlaneSecurityGroup: ec2.ISecurityGroup;
 
@@ -552,14 +564,16 @@ export class Cluster extends Resource implements ICluster {
       description: 'EKS Control Plane Security Group',
     });
 
+    const connectionPort = ec2.Port.tcp(443); // Control Plane has an HTTPS API
+
     this.connections = new ec2.Connections({
       securityGroups: [this.controlPlaneSecurityGroup],
-      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
+      defaultPort: connectionPort,
     });
 
     // allow resources with the same security group to connect to the control plane.
     // needed for private access from the KubeCtlProvider, and in general doesn't hurt.
-    this.connections.allowFrom(this.controlPlaneSecurityGroup, ec2.Port.tcp(443));
+    this.connections.allowFrom(this.controlPlaneSecurityGroup, connectionPort);
 
     // Get subnetIds for all selected subnets
     const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
@@ -575,15 +589,15 @@ export class Cluster extends Resource implements ICluster {
       },
     };
 
-    this.endpointAccess = props.endpointAccess ?? EndpointAccess.publicAndPrivate();
-
     let resource;
     this.kubectlEnabled = props.kubectlEnabled === undefined ? true : props.kubectlEnabled;
     if (this.kubectlEnabled) {
+
+      this.endpointAccess = props.endpointAccess ?? EndpointAccess.publicAndPrivate();
+
       resource = new ClusterResource(this, 'Resource', {
         ...clusterProps,
-        resourcesVpcConfig: {
-          ...clusterProps.resourcesVpcConfig,
+        endpointAccessConfig: {
           endpointPrivateAccess: this.endpointAccess.endpointPrivateAccess,
           endpointPublicAccess: this.endpointAccess.endpointPublicAccess,
           publicAccessCidrs: this.endpointAccess.publicAccessCidrs,
@@ -613,8 +627,19 @@ export class Cluster extends Resource implements ICluster {
       // add the cluster resource itself as a dependency of the barrier
       this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
     } else {
+
+      const depractionNotice = 'Basic EKS clusters are depracated. Please consider omiting the property, as it will be removed in future releases.';
+      if (props.endpointAccess) {
+        throw new Error(`'endpointAccess' is not supported for basic clusters. ${depractionNotice}`);
+      }
+
       resource = new CfnCluster(this, 'Resource', clusterProps);
+      resource.node.addWarning(depractionNotice);
     }
+
+    // for kubectl enabled clusters, this is required so that manifests can be applied to the cluster.
+    // for other clusters, it doesnt hurt.
+    resource.node.addDependency(this.controlPlaneSecurityGroup, this.vpc);
 
     this.clusterName = this.getResourceNameAttribute(resource.ref);
     this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
@@ -1001,7 +1026,7 @@ export class Cluster extends Resource implements ICluster {
 
       let providerProps: KubectlProviderProps = {};
 
-      if (!this.endpointAccess.endpointPublicAccess) {
+      if (!this.endpointAccess!.endpointPublicAccess) {
         // endpoint access is private only, we need to attach the
         // provider to the VPC so that it can access the cluster.
         providerProps = {
