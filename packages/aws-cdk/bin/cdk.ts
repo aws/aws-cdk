@@ -47,6 +47,7 @@ async function parseCommandLineArguments() {
     .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
     .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
     .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML when templates are printed to STDOUT', default: false })
+    .option('offline', { type: 'boolean', default: false, desc: 'Initialise the AWS SDK with local endpoints.'})
     .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs (specify multiple times to increase verbosity)', default: false })
     .count('verbose')
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
@@ -141,6 +142,7 @@ async function initCommandLine() {
       proxyAddress: argv.proxy,
       caBundlePath: argv['ca-bundle-path'],
     },
+    offline: argv.offline,
   });
 
   const cloudFormation = new CloudFormationDeployments({ sdkProvider });
