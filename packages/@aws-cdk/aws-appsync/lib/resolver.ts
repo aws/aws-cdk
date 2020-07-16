@@ -3,6 +3,21 @@ import { CfnResolver } from './appsync.generated';
 import { BaseDataSource } from './data-source';
 import { GraphQLApi } from './graphqlapi';
 import { MappingTemplate } from './mapping-template';
+
+export enum ResolverType {
+  /**
+   * A UNIT resolver is the default resolver type.
+   * 
+   * A UNIT resolver enables you to execute GraphQL queries against a single data source.
+   */
+  UNIT = 'UNIT',
+  
+  /**
+   * A PIPELINE resolver enables you to execute a series of Functions in a serial manner, multiple data sources.
+   */
+  PIPELINE = 'PIPELINE'
+}
+
 /**
  * Basic properties for an AppSync resolver
  */
@@ -16,9 +31,15 @@ export interface BaseResolverProps {
    */
   readonly fieldName: string;
   /**
+   * type of resolver
+   * 
+   * @default - UNIT resolver, single data source
+   */
+  readonly kind?: ResolverType;
+  /**
    * configuration of the pipeline resolver
    *
-   * @default - create a UNIT resolver
+   * @default - No pipelineConfig
    */
   readonly pipelineConfig?: CfnResolver.PipelineConfigProperty | IResolvable;
   /**
@@ -70,7 +91,8 @@ export class Resolver extends Construct {
       typeName: props.typeName,
       fieldName: props.fieldName,
       dataSourceName: props.dataSource ? props.dataSource.name : undefined,
-      kind: props.pipelineConfig ? 'PIPELINE' : 'UNIT',
+      kind: props.kind ?? ResolverType.UNIT,
+      pipelineConfig: props.pipelineConfig,
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
     });
