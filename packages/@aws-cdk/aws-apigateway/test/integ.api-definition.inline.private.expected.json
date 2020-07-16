@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "myapi4C7BF186": {
+    "myprivateapiD2D027EE": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
         "Body": {
@@ -55,31 +55,40 @@
             "PRIVATE"
           ]
         },
-        "Name": "my-api"
+        "Name": "my-private-api"
+      },
+      "Metadata": {
+        "aws:cdk:path": "integtest-restapi-fromdefinition-inline-private/my-private-api/Resource"
       }
     },
-    "myapiDeployment92F2CB49a59bca458e4fac1fcd742212ded42a65": {
+    "myprivateapiDeployment16B560CC34a8cf4247267d4e81e9f529716aa086": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
-          "Ref": "myapi4C7BF186"
+          "Ref": "myprivateapiD2D027EE"
         },
         "Description": "Automatically created by the RestApi construct"
+      },
+      "Metadata": {
+        "aws:cdk:path": "integtest-restapi-fromdefinition-inline-private/my-private-api/Deployment/Resource"
       }
     },
-    "myapiDeploymentStageprod298F01AF": {
+    "myprivateapiDeploymentStageprodC271AE68": {
       "Type": "AWS::ApiGateway::Stage",
       "Properties": {
         "RestApiId": {
-          "Ref": "myapi4C7BF186"
+          "Ref": "myprivateapiD2D027EE"
         },
         "DeploymentId": {
-          "Ref": "myapiDeployment92F2CB49a59bca458e4fac1fcd742212ded42a65"
+          "Ref": "myprivateapiDeployment16B560CC34a8cf4247267d4e81e9f529716aa086"
         },
         "StageName": "prod"
+      },
+      "Metadata": {
+        "aws:cdk:path": "integtest-restapi-fromdefinition-inline-private/my-private-api/DeploymentStage.prod/Resource"
       }
     },
-    "myapiCloudWatchRole095452E5": {
+    "myprivateapiCloudWatchRole82F3E469": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -108,32 +117,38 @@
             ]
           }
         ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "integtest-restapi-fromdefinition-inline-private/my-private-api/CloudWatchRole/Resource"
       }
     },
-    "myapiAccountEC421A0A": {
+    "myprivateapiAccount8564096B": {
       "Type": "AWS::ApiGateway::Account",
       "Properties": {
         "CloudWatchRoleArn": {
           "Fn::GetAtt": [
-            "myapiCloudWatchRole095452E5",
+            "myprivateapiCloudWatchRole82F3E469",
             "Arn"
           ]
         }
       },
       "DependsOn": [
-        "myapi4C7BF186"
-      ]
+        "myprivateapiD2D027EE"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "integtest-restapi-fromdefinition-inline-private/my-private-api/Account"
+      }
     }
   },
   "Outputs": {
-    "myapiEndpoint3628AFE3": {
+    "myprivateapiEndpoint40EE1421": {
       "Value": {
         "Fn::Join": [
           "",
           [
             "https://",
             {
-              "Ref": "myapi4C7BF186"
+              "Ref": "myprivateapiD2D027EE"
             },
             ".execute-api.",
             {
@@ -145,7 +160,7 @@
             },
             "/",
             {
-              "Ref": "myapiDeploymentStageprod298F01AF"
+              "Ref": "myprivateapiDeploymentStageprodC271AE68"
             },
             "/"
           ]
@@ -159,7 +174,7 @@
           [
             "https://",
             {
-              "Ref": "myapi4C7BF186"
+              "Ref": "myprivateapiD2D027EE"
             },
             ".execute-api.",
             {
@@ -171,7 +186,7 @@
             },
             "/",
             {
-              "Ref": "myapiDeploymentStageprod298F01AF"
+              "Ref": "myprivateapiDeploymentStageprodC271AE68"
             },
             "/pets"
           ]
