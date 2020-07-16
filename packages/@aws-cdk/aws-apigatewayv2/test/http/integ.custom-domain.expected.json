@@ -46,7 +46,7 @@
         "echohandlerServiceRole833A8F7A"
       ]
     },
-    "echohandlerinteghttpproxyHttpProxyProdApiDefaultRoute20082F68PermissionBE86C6B3": {
+    "HttpProxyProdApiDefaultRouteinteghttpproxyHttpProxyProdApiDefaultRoute20082F68PermissionB29E0EB7": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -83,7 +83,7 @@
         }
       }
     },
-    "echohandlerinteghttpproxyHttpProxyBetaApiDefaultRouteC328B302Permission40FB964B": {
+    "HttpProxyBetaApiDefaultRouteinteghttpproxyHttpProxyBetaApiDefaultRouteC328B302Permission15D75C7F": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
