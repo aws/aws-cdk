@@ -419,7 +419,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   /**
    * @internal
    */
-  protected configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
+  protected _configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
     if (props.endpointTypes && props.endpointConfiguration) {
       throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
     }
@@ -474,7 +474,7 @@ export class SpecRestApi extends RestApiBase {
       failOnWarnings: props.failOnWarnings,
       body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
-      endpointConfiguration: this.configureEndpoints(props),
+      endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
     });
     this.node.defaultChild = resource;
@@ -572,7 +572,7 @@ export class RestApi extends RestApiBase {
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
-      endpointConfiguration: this.configureEndpoints(props),
+      endpointConfiguration: this._configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters,
