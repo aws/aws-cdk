@@ -1,10 +1,13 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnComponents, Construct, CustomResource, Lazy, Stack, Token, IResolvable } from '@aws-cdk/core';
+import { ArnComponents, Construct, CustomResource, Lazy, Stack, Token } from '@aws-cdk/core';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnClusterProps, CfnCluster } from './eks.generated';
 
-interface ResourcesVpcConfig extends CfnCluster.ResourcesVpcConfigProperty {
+/**
+ * Cluster Endpoint access configuration.
+ */
+export interface EndpointAccessConfig {
 
   /**
    * Enable private endpoint access to the cluster.
@@ -22,9 +25,13 @@ interface ResourcesVpcConfig extends CfnCluster.ResourcesVpcConfigProperty {
   readonly publicAccessCidrs?: string[];
 
 }
-interface ClusterResourceProps extends Omit<CfnClusterProps, 'resourcesVpcConfig'> {
+export interface ClusterResourceProps extends CfnClusterProps {
 
-  readonly resourcesVpcConfig: ResourcesVpcConfig | IResolvable;
+  /**
+   * Endpoint access configuration.
+   */
+  readonly endpointAccessConfig: EndpointAccessConfig
+
 }
 
 /**
@@ -140,7 +147,21 @@ export class ClusterResource extends Construct {
       resourceType: CLUSTER_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
-        Config: props,
+        // the structure of config needs to be that of 'aws.EKS.CreateClusterRequest' since its passed as is
+        // to the eks.createCluster sdk invocation.
+        Config: {
+          name: props.name,
+          version: props.version,
+          roleArn: props.roleArn,
+          encryptionConfig: props.encryptionConfig,
+          resourcesVpcConfig: {
+            subnetIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).subnetIds,
+            securityGroupIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).securityGroupIds,
+            endpointPublicAccess: props.endpointAccessConfig.endpointPublicAccess,
+            endpointPrivateAccess: props.endpointAccessConfig.endpointPrivateAccess,
+            publicAccessCidrs: props.endpointAccessConfig.publicAccessCidrs,
+          },
+        },
         AssumeRoleArn: this.creationRole.roleArn,
 
         // IMPORTANT: increment this number when you add new attributes to the
