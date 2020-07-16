@@ -1019,7 +1019,6 @@ export = {
       test.done();
     },
 
-
     '"endpointTypes" can be used to specify endpoint configuration for SpecRestApi'(test: Test) {
       // GIVEN
       const stack = new Stack();

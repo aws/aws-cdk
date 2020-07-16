@@ -57,7 +57,7 @@ const api = new apigateway.SpecRestApi(stack, 'my-private-api', {
       },
     },
   }),
-  endpointTypes: [apigateway.EndpointType.PRIVATE]
+  endpointTypes: [apigateway.EndpointType.PRIVATE],
 });
 
 new cdk.CfnOutput(stack, 'PetsURL', {
