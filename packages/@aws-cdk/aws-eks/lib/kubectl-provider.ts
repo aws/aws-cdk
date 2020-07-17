@@ -8,11 +8,26 @@ import { KubectlLayer } from './kubectl-layer';
 
 export interface KubectlProviderProps {
 
+  /**
+   * Connect the provider to a VPC.
+   *
+   * @default - no vpc attachement.
+   */
   readonly vpc?: IVpc;
 
-  readonly securityGroups?: ISecurityGroup[];
-
+  /**
+   * Select the Vpc subnets to attach to the provider.
+   *
+   * @default - no subnets.
+   */
   readonly vpcSubnets?: SubnetSelection;
+
+  /**
+   * Attach security groups to the provider.
+   *
+   * @default - no security groups.
+   */
+  readonly securityGroups?: ISecurityGroup[];
 
 }
 
