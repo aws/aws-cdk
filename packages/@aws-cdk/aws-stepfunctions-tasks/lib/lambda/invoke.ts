@@ -46,6 +46,17 @@ export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
    * @default - Version or alias inherent to the `lambdaFunction` object.
    */
   readonly qualifier?: string;
+
+  /**
+   * Invoke the Lambda in a way that only returns the payload response without additional metadata.
+   *
+   * The `payloadResponseOnly` property cannot be used if `integrationPattern`, `invocationType`,
+   * `clientContext`, or `qualifier` are specified.
+   * It always uses the REQUEST_RESPONSE behavior.
+   *
+   * @default false
+   */
+  readonly payloadResponseOnly?: boolean;
 }
 
 /**
@@ -76,6 +87,13 @@ export class LambdaInvoke extends sfn.TaskStateBase {
       throw new Error('Task Token is required in `payload` for callback. Use JsonPath.taskToken to set the token.');
     }
 
+    if (props.payloadResponseOnly &&
+      (props.integrationPattern || props.invocationType || props.clientContext || props.qualifier)) {
+      throw new Error(
+        "The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified.",
+      );
+    }
+
     this.taskMetrics = {
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',
@@ -100,16 +118,23 @@ export class LambdaInvoke extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    return {
-      Resource: integrationResourceArn('lambda', 'invoke', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
-        FunctionName: this.props.lambdaFunction.functionArn,
-        Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromDataAt('$').value,
-        InvocationType: this.props.invocationType,
-        ClientContext: this.props.clientContext,
-        Qualifier: this.props.qualifier,
-      }),
-    };
+    if (this.props.payloadResponseOnly) {
+      return {
+        Resource: this.props.lambdaFunction.functionArn,
+        ...this.props.payload && { Parameters: sfn.FieldUtils.renderObject(this.props.payload.value) },
+      };
+    } else {
+      return {
+        Resource: integrationResourceArn('lambda', 'invoke', this.integrationPattern),
+        Parameters: sfn.FieldUtils.renderObject({
+          FunctionName: this.props.lambdaFunction.functionArn,
+          Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromDataAt('$').value,
+          InvocationType: this.props.invocationType,
+          ClientContext: this.props.clientContext,
+          Qualifier: this.props.qualifier,
+        }),
+      };
+    }
   }
 }
 
