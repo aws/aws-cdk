@@ -64,9 +64,8 @@ export abstract class BaseScalableAttribute extends cdk.Construct {
    * or investigating a configuration issue and you want to retain your scheduled actions.
    * Scheduled actions can be resumed by removing this method.
    */
-  public turnOffScheduledScaling(){
+  protected turnOffScheduledScaling(){
     this.target.suspendSchedules();
-    console.log('hereeeee');
   }
 
   /**
@@ -78,7 +77,7 @@ export abstract class BaseScalableAttribute extends cdk.Construct {
    *
    * @default - scaling is suspended in both directions
    */
-  public turnOffDynamicScaling(direction?: Scale){
+  protected turnOffDynamicScaling(direction?: Scale){
     this.target.suspendDynamic(direction);
   }
 
