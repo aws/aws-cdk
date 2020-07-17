@@ -1039,7 +1039,6 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       );
     }
     if (originConfig.customOriginSource && originConfig.s3OriginSource) {
-      // TODO deal with all the different potential combinations and ensure there is just one config
       throw new Error(
         'There cannot be both an s3OriginSource and a customOriginSource in the same SourceConfiguration.',
       );
