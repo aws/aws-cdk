@@ -55,6 +55,11 @@ export interface IBucket extends IResource {
   readonly bucketRegionalDomainName: string;
 
   /**
+   * If this bucket has been configured for static website hosting.
+   */
+  readonly isWebsite?: boolean;
+
+  /**
    * Optional KMS encryption key associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
@@ -279,6 +284,13 @@ export interface BucketAttributes {
   readonly bucketWebsiteNewUrlFormat?: boolean;
 
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * If this bucket has been configured for static website hosting.
+   *
+   * @default false
+   */
+  readonly isWebsite?: boolean;
 }
 
 /**
@@ -311,6 +323,11 @@ abstract class BucketBase extends Resource implements IBucket {
    * Optional KMS encryption key associated with this bucket.
    */
   public abstract readonly encryptionKey?: kms.IKey;
+
+  /**
+   * If this bucket has been configured for static website hosting.
+   */
+  public abstract readonly isWebsite?: boolean;
 
   /**
    * The resource policy associated with this bucket.
@@ -1003,6 +1020,7 @@ export class Bucket extends BucketBase {
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
       public readonly encryptionKey = attrs.encryptionKey;
+      public readonly isWebsite = attrs.isWebsite ?? false;
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
@@ -1027,6 +1045,7 @@ export class Bucket extends BucketBase {
   public readonly bucketRegionalDomainName: string;
 
   public readonly encryptionKey?: kms.IKey;
+  public readonly isWebsite?: boolean;
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
@@ -1046,12 +1065,15 @@ export class Bucket extends BucketBase {
 
     this.validateBucketName(this.physicalName);
 
+    const websiteConfiguration = this.renderWebsiteConfiguration(props);
+    this.isWebsite = (websiteConfiguration !== undefined);
+
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
-      websiteConfiguration: this.renderWebsiteConfiguration(props),
+      websiteConfiguration,
       publicAccessBlockConfiguration: props.blockPublicAccess,
       metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
       corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
