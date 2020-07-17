@@ -1,0 +1,15 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::If": ["AlwaysFalse",
+            "ThenName",
+            "ElseName"
+          ]
+        }
+      }
+    }
+  }
+}

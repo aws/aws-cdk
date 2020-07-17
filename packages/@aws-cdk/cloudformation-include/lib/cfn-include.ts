@@ -52,6 +52,7 @@ export interface IncludedNestedStack {
  */
 export class CfnInclude extends core.CfnElement {
   private readonly conditions: { [conditionName: string]: core.CfnCondition } = {};
+  private readonly conditionsScope: core.Construct;
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
   private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
   private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
@@ -75,8 +76,9 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the conditions
+    this.conditionsScope = new core.Construct(this, '$Conditions');
     for (const conditionName of Object.keys(this.template.Conditions || {})) {
-      this.createCondition(conditionName);
+      this.getOrCreateCondition(conditionName);
     }
 
     this.nestedStacksToInclude = props.nestedStacks || {};
@@ -262,8 +264,8 @@ export class CfnInclude extends core.CfnElement {
           return self.getCondition(outputAttributes.Condition);
         }
 
-        throw new Error(`Output with name '${logicalId}' refers to a Condition with name\
- '${outputAttributes.Condition}' which was not found in this template`);
+        throw new Error(`Output with name '${logicalId}' refers to a Condition with name ` +
+          `'${outputAttributes.Condition}' which was not found in this template`);
       })(),
     });
 
@@ -271,23 +273,35 @@ export class CfnInclude extends core.CfnElement {
     this.outputs[logicalId] = cfnOutput;
   }
 
-  private createCondition(conditionName: string): void {
-    // ToDo condition expressions can refer to other conditions -
-    // will be important when implementing preserveLogicalIds=false
-    const expression = new cfn_parse.CfnParser({
+  private getOrCreateCondition(conditionName: string): core.CfnCondition {
+    if (conditionName in this.conditions) {
+      return this.conditions[conditionName];
+    }
+
+    const self = this;
+    const cfnParser = new cfn_parse.CfnParser({
       finder: {
         findResource() { throw new Error('Using GetAtt in Condition definitions is not allowed'); },
-        findRefTarget() { throw new Error('Using Ref expressions in Condition definitions is not allowed'); },
-        // ToDo handle one Condition referencing another using the { Condition: "ConditionName" } syntax
-        findCondition() { return undefined; },
+        findRefTarget(elementName: string): core.CfnElement | undefined {
+          // only Parameters can be referenced in the 'Conditions' section
+          return self.parameters[elementName];
+        },
+        findCondition(cName: string): core.CfnCondition | undefined {
+          return cName in (self.template.Conditions || {})
+            ? self.getOrCreateCondition(cName)
+            : undefined;
+        },
       },
-    }).parseValue(this.template.Conditions[conditionName]);
-    const cfnCondition = new core.CfnCondition(this, conditionName, {
-      expression,
+      context: cfn_parse.CfnParsingContext.CONDITIONS,
     });
+    const cfnCondition = new core.CfnCondition(this.conditionsScope, conditionName, {
+      expression: cfnParser.parseValue(this.template.Conditions[conditionName]),
+    });
+
     // ToDo handle renaming of the logical IDs of the conditions
     cfnCondition.overrideLogicalId(conditionName);
     this.conditions[conditionName] = cfnCondition;
+    return cfnCondition;
   }
 
   private getOrCreateResource(logicalId: string): core.CfnResource {
