@@ -59,6 +59,17 @@ CloudFront's redirect and error handling will be used. In the latter case, the O
 underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
 URLs and not S3 URLs directly.
 
+#### From an HTTP endpoint
+
+Origins can also be created from other resources (e.g., load balancers, API gateways), or from any accessible HTTP server, given the domain name.
+
+```ts
+// Creates a distribution for an HTTP server.
+new cloudfront.Distribution(this, 'myDist', {
+defaultBehavior: { origin: cloudfront.Origin.fromHttpServer({ domainName: 'www.example.com' }) },
+});
+```
+
 ### Domain Names and Certificates
 
 When you create a distribution, CloudFront assigns a domain name for the distribution, for example: `d111111abcdef8.cloudfront.net`; this value can
