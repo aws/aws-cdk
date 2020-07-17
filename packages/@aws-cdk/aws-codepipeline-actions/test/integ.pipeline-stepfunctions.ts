@@ -31,10 +31,10 @@ pipeline.addStage({
 pipeline.addStage({
   stageName: 'Invoke',
   actions: [
-    new cpactions.StepFunctionsInvokeAction({
+    new cpactions.StepFunctionInvokeAction({
       actionName: 'Invoke',
       stateMachine: simpleStateMachine,
-      stateMachineInput: cpactions.StateMachineInput.literal({IsHelloWorldExample: true}),
+      stateMachineInput: cpactions.StateMachineInput.literal({ IsHelloWorldExample: true }),
     }),
   ],
 });

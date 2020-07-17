@@ -1,7 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as stepfunction from '@aws-cdk/aws-stepfunctions';
-import { Construct } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { Action } from '../action';
 
 /**
@@ -12,8 +12,8 @@ export class StateMachineInput {
    * When the input type is FilePath, input artifact and
    * filepath must be specified.
    */
-  public static filePath(filePath: string, inputArtifact: codepipeline.Artifact): StateMachineInput {
-    return new StateMachineInput(filePath, inputArtifact, 'FilePath');
+  public static filePath(inputFile: codepipeline.ArtifactPath): StateMachineInput {
+    return new StateMachineInput(inputFile.location, inputFile.artifact, 'FilePath');
   }
 
   /**
@@ -98,9 +98,9 @@ export interface StepFunctionsInvokeActionProps extends codepipeline.CommonAwsAc
 }
 
 /**
- * StepFunction invoke Action that is provided by an AWS CodePipeline.
+ * StepFunctionInvokeAction that is provided by an AWS CodePipeline.
  */
-export class StepFunctionsInvokeAction extends Action {
+export class StepFunctionInvokeAction extends Action {
   private readonly props: StepFunctionsInvokeActionProps;
 
   constructor(props: StepFunctionsInvokeActionProps) {
@@ -121,7 +121,7 @@ export class StepFunctionsInvokeAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // allow pipeline to invoke this step function
     options.role.addToPolicy(new iam.PolicyStatement({
@@ -131,8 +131,12 @@ export class StepFunctionsInvokeAction extends Action {
 
     // allow state machine executions to be inspected
     options.role.addToPolicy(new iam.PolicyStatement({
-      actions: ['states:DescribeExecution'],
-      resources: [`arn:aws:states:*:*:execution:${this.props.stateMachine.stateMachineArn}:${this.props.executionNamePrefix ?? ''}*`],
+      resources: [cdk.Stack.of(this.props.stateMachine).formatArn({
+        service: 'states',
+        resource: 'execution',
+        resourceName: `${this.props.stateMachine.stateMachineArn}:${this.props.executionNamePrefix ?? ''}*`,
+        sep: ':',
+      })],
     }));
 
     // allow the Role access to the Bucket, if there are any inputs/outputs

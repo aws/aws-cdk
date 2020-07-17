@@ -805,12 +805,12 @@ import * as stepfunction from '@aws-cdk/aws-stepfunctions';
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const startState = new stepfunction.Pass(stack, 'StartState');
 const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
-    definition: startState,
+  definition: startState,
 });
 const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
   actionName: 'Invoke',
   stateMachine: simpleStateMachine,
-  stateMachineInput: codepipeline_actions.StateMachineInput.literal({IsHelloWorldExample: true}),
+  stateMachineInput: codepipeline_actions.StateMachineInput.literal({ IsHelloWorldExample: true }),
 });
 pipeline.addStage({
   stageName: 'StepFunctions',
@@ -818,9 +818,8 @@ pipeline.addStage({
 });
 ```
 
-The StateMachineInputType can be a Literal or FilePath.
-Input artifact and StateMachineInputField are required when
-the StateMachineInputType is set as FilePath.
+The `StateMachineInput` can be created with one of 2 static factory methods:
+`literal`, which takes an arbitrary map as its only argument, or `filePath`:
 
 ```ts
 import * as stepfunction from '@aws-cdk/aws-stepfunctions';
@@ -829,12 +828,12 @@ const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const inputArtifact = new codepipeline.Artifact();
 const startState = new stepfunction.Pass(stack, 'StartState');
 const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
-    definition: startState,
+  definition: startState,
 });
 const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
   actionName: 'Invoke',
   stateMachine: simpleStateMachine,
-  stateMachineInput: codepipeline_actions.StateMachineInput.filePath('assets/input.json', inputArtifact),
+  stateMachineInput: codepipeline_actions.StateMachineInput.filePath(inputArtifact.atPath('assets/input.json')),
 });
 pipeline.addStage({
   stageName: 'StepFunctions',

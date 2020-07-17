@@ -111,12 +111,14 @@ function minimalPipeline(stack: Stack): codepipeline.IStage {
   pipeline.addStage({
     stageName: 'Invoke',
     actions: [
-      new cpactions.StepFunctionsInvokeAction({
+      new cpactions.StepFunctionInvokeAction({
         actionName: 'Invoke',
         stateMachine: simpleStateMachine,
         stateMachineInput: cpactions.StateMachineInput.literal({IsHelloWorldExample: true}),
       }),
     ],
   });
+
+  cpactions.StateMachineInput.filePath(sourceOutput.atPath('path/to/my/file.json'));
   return sourceStage;
 }
