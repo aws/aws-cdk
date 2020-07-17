@@ -993,7 +993,7 @@ of these properties and potential confusion.
 
 ### Endpoint configuration
 
-By default, SpecRestApi will create an endpoint with a edge optimized endpoint configuration.
+By default, `SpecRestApi` will create an edge optimized endpoint.
 
 It is possible to modify this by providing the endpointConfiguration as shown here:
 
@@ -1004,41 +1004,7 @@ const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
 });
 ```
 
-**Note:** For private endpoints you will still need to provide the `x-amazon-apigateway-policy` and `x-amazon-apigateway-endpoint-configuration` in your openApi file. 
-
-The following is an example with both settings:
-```json
-{
-    "openapi": "3.0.2",
-    "servers" : [
-        "x-amazon-apigateway-endpoint-configuration": {
-            "vpcEndpointIds": [
-                "vpce-00111a1111a1aa011"
-            ]
-        }
-    ],
-    "paths": { ... },
-    "x-amazon-apigateway-policy": {
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Effect": "Allow",
-                "Principal": "*",
-                "Action": [
-                    "execute-api:Invoke",
-                    "execute-api:GET"
-                ],
-                "Resource": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*",
-                "Condition": {
-                    "StringEquals": {
-                      "aws:sourceVpce": "vpce-00111a1111a1aa011"
-                    }
-                }
-            }
-        ]
-    }
-}
-```
+**Note:** For private endpoints you will still need to provide the [`x-amazon-apigateway-policy`](https://docs.aws.amazon.com/apigateway/latest/developerguide/openapi-extensions-policy.html) and [`x-amazon-apigateway-endpoint-configuration`](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-endpoint-configuration.html) in your openApi file. 
 
 ## APIGateway v2
 

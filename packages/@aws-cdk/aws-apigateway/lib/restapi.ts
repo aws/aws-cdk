@@ -164,7 +164,7 @@ export interface RestApiBaseProps {
    * A list of the endpoint types of the API. Use this property when creating
    * an API.
    *
-   * @default - No endpoint types that translates to a EndpointType.EDGE endpoint type.
+   * @default - EndpointType.EDGE.
    */
   readonly endpointTypes?: EndpointType[];
 }
@@ -226,7 +226,7 @@ export interface RestApiProps extends RestApiOptions {
    * The EndpointConfiguration property type specifies the endpoint types of a REST API
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
    *
-   * @default - No endpoint configuration that translates to a EndpointType.EDGE endpoint type.
+   * @default - EndpointType.EDGE.
    */
   readonly endpointConfiguration?: EndpointConfiguration;
 }
@@ -669,7 +669,7 @@ export interface EndpointConfiguration {
   /**
    * A list of endpoint types of an API or its custom domain name.
    *
-   * @default - no endpoint types that translates to a EndpointType.EDGE endpoint type.
+   * @default - EndpointType.EDGE.
    */
   readonly types: EndpointType[];
 

@@ -3,7 +3,10 @@ import * as apigateway from '../lib';
 
 /*
  * Stack verification steps:
- * * `curl -i <CFN output PetsURL>` should return HTTP code 200
+ * * `curl -i <CFN output PetsURL>` should return HTTP code 200 if private DNS is been enable.
+ * * You will need access to the configured VPC. There are multiple ways to invoke the API.
+ * * Find more information in the API Gateway documentation page in the following section:
+ * * https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-api-test-invoke-url.html
  */
 
 const app = new cdk.App();
@@ -16,6 +19,15 @@ const api = new apigateway.SpecRestApi(stack, 'my-private-api', {
       version: '1.0.0',
       title: 'Test API for CDK',
     },
+    "servers" : [
+      { 
+        "x-amazon-apigateway-endpoint-configuration": {
+          "vpcEndpointIds": [
+              "vpce-00111a1111a1aa011"
+          ]
+        }
+      }
+    ],
     paths: {
       '/pets': {
         get: {
@@ -47,6 +59,25 @@ const api = new apigateway.SpecRestApi(stack, 'my-private-api', {
           },
         },
       },
+    },
+    "x-amazon-apigateway-policy": {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": [
+                  "execute-api:Invoke",
+                  "execute-api:GET"
+              ],
+              "Resource": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*",
+              "Condition": {
+                  "StringEquals": {
+                    "aws:sourceVpce": "vpce-00111a1111a1aa011"
+                  }
+              }
+          }
+      ]
     },
     components: {
       schemas: {
