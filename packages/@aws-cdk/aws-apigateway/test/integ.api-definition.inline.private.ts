@@ -22,11 +22,11 @@ const api = new apigateway.SpecRestApi(stack, 'my-private-api', {
     servers: [
       { 
         'x-amazon-apigateway-endpoint-configuration': {
-          'vpcEndpointIds': [
-              'vpce-00111a1111a1aa011'
-          ]
-        }
-      }
+          vpcEndpointIds: [
+            'vpce-00111a1111a1aa011',
+          ],
+        },
+      },
     ],
     paths: {
       '/pets': {
@@ -61,23 +61,23 @@ const api = new apigateway.SpecRestApi(stack, 'my-private-api', {
       },
     },
     'x-amazon-apigateway-policy': {
-      'Version': '2012-10-17',
-      'Statement': [
+      Version: '2012-10-17',
+      Statement: [
         {
-          'Effect': 'Allow',
-          'Principal': '*',
-          'Action': [
+          Effect: 'Allow',
+          Principal: '*',
+          Action: [
             'execute-api:Invoke',
-            'execute-api:GET'
+            'execute-api:GET',
           ],
-          'Resource': 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*',
-          'Condition': {
-            'StringEquals': {
-              'aws:sourceVpce': 'vpce-00111a1111a1aa011'
-            }
-          }
-        }
-      ]
+          Resource: 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*',
+          Condition: {
+            StringEquals: {
+              'aws:sourceVpce': 'vpce-00111a1111a1aa011',
+            },
+          },
+        },
+      ],
     },
     components: {
       schemas: {
