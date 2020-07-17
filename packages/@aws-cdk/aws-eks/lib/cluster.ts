@@ -564,11 +564,9 @@ export class Cluster extends Resource implements ICluster {
       description: 'EKS Control Plane Security Group',
     });
 
-    const connectionPort = ec2.Port.tcp(443); // Control Plane has an HTTPS API
-
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
-      defaultPort: connectionPort,
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API,
     });
 
     // Get subnetIds for all selected subnets
@@ -596,7 +594,7 @@ export class Cluster extends Resource implements ICluster {
       });
 
       // grant the kubectl provider access to the cluster control plane.
-      this.connections.allowFrom(this.kubctlProviderSecurityGroup, connectionPort);
+      this.connections.allowFrom(this.kubctlProviderSecurityGroup, this.connections.defaultPort!);
 
       resource = new ClusterResource(this, 'Resource', {
         ...clusterProps,
