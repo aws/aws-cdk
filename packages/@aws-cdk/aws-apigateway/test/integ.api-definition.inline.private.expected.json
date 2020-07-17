@@ -86,7 +86,7 @@
         "Name": "my-private-api"
       }
     },
-    "myprivateapiDeployment16B560CC678219fa18beb0906b49cad02ed224e8": {
+    "myprivateapiDeployment16B560CC44aa0b876b038e08c0189e947e922b78": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -102,7 +102,7 @@
           "Ref": "myprivateapiD2D027EE"
         },
         "DeploymentId": {
-          "Ref": "myprivateapiDeployment16B560CC678219fa18beb0906b49cad02ed224e8"
+          "Ref": "myprivateapiDeployment16B560CC44aa0b876b038e08c0189e947e922b78"
         },
         "StageName": "prod"
       }
