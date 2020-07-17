@@ -63,20 +63,20 @@ const api = new apigateway.SpecRestApi(stack, 'my-private-api', {
     "x-amazon-apigateway-policy": {
       "Version": "2012-10-17",
       "Statement": [
-          {
-              "Effect": "Allow",
-              "Principal": "*",
-              "Action": [
-                  "execute-api:Invoke",
-                  "execute-api:GET"
-              ],
-              "Resource": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*",
-              "Condition": {
-                  "StringEquals": {
-                    "aws:sourceVpce": "vpce-00111a1111a1aa011"
-                  }
-              }
+        {
+          "Effect": "Allow",
+          "Principal": "*",
+          "Action": [
+            "execute-api:Invoke",
+            "execute-api:GET"
+          ],
+          "Resource": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*",
+          "Condition": {
+            "StringEquals": {
+              "aws:sourceVpce": "vpce-00111a1111a1aa011"
+            }
           }
+        }
       ]
     },
     components: {
