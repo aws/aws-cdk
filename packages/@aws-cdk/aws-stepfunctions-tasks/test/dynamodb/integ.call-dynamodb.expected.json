@@ -193,7 +193,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"MessageId\":{\"S\":\"1234\"},\"Text\":{\"S.$\":\"$.bar\"},\"TotalCount\":{\"N\":\"18\"}},\"TableName\":\"",
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"MessageId\":{\"S\":\"1234\"},\"Text\":{\"S.$\":\"$.bar\"},\"TotalCount\":{\"N\":\"18\"},\"Activated\":{\"BOOL.$\":\"$.foo\"}},\"TableName\":\"",
               {
                 "Ref": "Messages804FA4EB"
               },
