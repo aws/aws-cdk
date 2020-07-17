@@ -514,6 +514,8 @@ export class Cluster extends Resource implements ICluster {
 
   private readonly endpointAccess?: EndpointAccess;
 
+  private readonly kubctlProviderSecurityGroup?: ec2.ISecurityGroup;
+
   private readonly controlPlaneSecurityGroup: ec2.ISecurityGroup;
 
   private readonly version: KubernetesVersion;
@@ -561,7 +563,7 @@ export class Cluster extends Resource implements ICluster {
 
     this.controlPlaneSecurityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
       vpc: this.vpc,
-      description: 'EKS Control Plane Security Group',
+      description: 'Communication between EKS nodes and EKS Control Plane',
     });
 
     const connectionPort = ec2.Port.tcp(443); // Control Plane has an HTTPS API
@@ -570,10 +572,6 @@ export class Cluster extends Resource implements ICluster {
       securityGroups: [this.controlPlaneSecurityGroup],
       defaultPort: connectionPort,
     });
-
-    // allow resources with the same security group to connect to the control plane.
-    // needed for private access from the KubeCtlProvider, and in general doesn't hurt.
-    this.connections.allowFrom(this.controlPlaneSecurityGroup, connectionPort);
 
     // Get subnetIds for all selected subnets
     const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
@@ -584,7 +582,9 @@ export class Cluster extends Resource implements ICluster {
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
-        securityGroupIds: [this.controlPlaneSecurityGroup.securityGroupId],
+        securityGroupIds: [
+          this.controlPlaneSecurityGroup.securityGroupId,
+        ],
         subnetIds,
       },
     };
@@ -594,6 +594,13 @@ export class Cluster extends Resource implements ICluster {
     if (this.kubectlEnabled) {
 
       this.endpointAccess = props.endpointAccess ?? EndpointAccess.publicAndPrivate();
+      this.kubctlProviderSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
+        vpc: this.vpc,
+        description: 'Comminication between KubectlProvider and EKS Control Plane',
+      });
+
+      // grant the kubectl provider access to the cluster control plane.
+      this.connections.allowFrom(this.kubctlProviderSecurityGroup, connectionPort);
 
       resource = new ClusterResource(this, 'Resource', {
         ...clusterProps,
@@ -604,6 +611,10 @@ export class Cluster extends Resource implements ICluster {
         },
       });
       this._clusterResource = resource;
+
+      // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
+      // this ensures that.
+      this._clusterResource.node.addDependency(this.kubctlProviderSecurityGroup, this.vpc);
 
       // see https://github.com/aws/aws-cdk/issues/9027
       this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
@@ -636,10 +647,6 @@ export class Cluster extends Resource implements ICluster {
       resource = new CfnCluster(this, 'Resource', clusterProps);
       resource.node.addWarning(depractionNotice);
     }
-
-    // for kubectl enabled clusters, this is required so that manifests can be applied to the cluster.
-    // for other clusters, it doesnt hurt.
-    resource.node.addDependency(this.controlPlaneSecurityGroup, this.vpc);
 
     this.clusterName = this.getResourceNameAttribute(resource.ref);
     this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
@@ -1033,7 +1040,7 @@ export class Cluster extends Resource implements ICluster {
           ...providerProps,
           vpc: this.vpc,
           vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
-          securityGroups: [this.controlPlaneSecurityGroup],
+          securityGroups: [this.kubctlProviderSecurityGroup!],
         };
       }
 
