@@ -14,13 +14,13 @@ const stack = new cdk.Stack(app, 'integtest-restapi-fromdefinition-inline-privat
 
 const api = new apigateway.SpecRestApi(stack, 'my-private-api', {
   apiDefinition: apigateway.ApiDefinition.fromInline({
-    openapi: '3.0.2',
-    info: {
+    'openapi': '3.0.2',
+    'info': {
       version: '1.0.0',
       title: 'Test API for CDK',
     },
-    servers: [
-      { 
+    'servers': [
+      {
         'x-amazon-apigateway-endpoint-configuration': {
           vpcEndpointIds: [
             'vpce-00111a1111a1aa011',
@@ -28,7 +28,7 @@ const api = new apigateway.SpecRestApi(stack, 'my-private-api', {
         },
       },
     ],
-    paths: {
+    'paths': {
       '/pets': {
         get: {
           'summary': 'Test Method',
@@ -79,7 +79,7 @@ const api = new apigateway.SpecRestApi(stack, 'my-private-api', {
         },
       ],
     },
-    components: {
+    'components': {
       schemas: {
         Empty: {
           title: 'Empty Schema',
