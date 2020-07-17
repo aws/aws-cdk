@@ -19,11 +19,11 @@ const api = new apigateway.SpecRestApi(stack, 'my-private-api', {
       version: '1.0.0',
       title: 'Test API for CDK',
     },
-    "servers" : [
+    servers: [
       { 
-        "x-amazon-apigateway-endpoint-configuration": {
-          "vpcEndpointIds": [
-              "vpce-00111a1111a1aa011"
+        'x-amazon-apigateway-endpoint-configuration': {
+          'vpcEndpointIds': [
+              'vpce-00111a1111a1aa011'
           ]
         }
       }
@@ -60,20 +60,20 @@ const api = new apigateway.SpecRestApi(stack, 'my-private-api', {
         },
       },
     },
-    "x-amazon-apigateway-policy": {
-      "Version": "2012-10-17",
-      "Statement": [
+    'x-amazon-apigateway-policy': {
+      'Version': '2012-10-17',
+      'Statement': [
         {
-          "Effect": "Allow",
-          "Principal": "*",
-          "Action": [
-            "execute-api:Invoke",
-            "execute-api:GET"
+          'Effect': 'Allow',
+          'Principal': '*',
+          'Action': [
+            'execute-api:Invoke',
+            'execute-api:GET'
           ],
-          "Resource": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*",
-          "Condition": {
-            "StringEquals": {
-              "aws:sourceVpce": "vpce-00111a1111a1aa011"
+          'Resource': 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*',
+          'Condition': {
+            'StringEquals': {
+              'aws:sourceVpce': 'vpce-00111a1111a1aa011'
             }
           }
         }
