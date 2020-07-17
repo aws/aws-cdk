@@ -8,7 +8,6 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { ISource, SourceConfig } from './source';
 
-const now = Date.now();
 const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
 const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
 
