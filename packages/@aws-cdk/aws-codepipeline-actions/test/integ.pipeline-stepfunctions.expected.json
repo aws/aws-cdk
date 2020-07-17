@@ -537,6 +537,7 @@
               }
             },
             {
+              "Action": "states:DescribeExecution",
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [

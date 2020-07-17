@@ -131,6 +131,7 @@ export class StepFunctionInvokeAction extends Action {
 
     // allow state machine executions to be inspected
     options.role.addToPolicy(new iam.PolicyStatement({
+      actions: ['states:DescribeExecution'],
       resources: [cdk.Stack.of(this.props.stateMachine).formatArn({
         service: 'states',
         resource: 'execution',
@@ -150,8 +151,8 @@ export class StepFunctionInvokeAction extends Action {
     return {
       configuration: {
         StateMachineArn: this.props.stateMachine.stateMachineArn,
-        Input: (this.props.stateMachineInput) ? this.props.stateMachineInput.input : [],
-        InputType: (this.props.stateMachineInput) ? this.props.stateMachineInput.inputType : undefined,
+        Input: this.props.stateMachineInput?.input,
+        InputType: this.props.stateMachineInput?.inputType,
         ExecutionNamePrefix: this.props.executionNamePrefix,
       },
     };
