@@ -13,6 +13,10 @@ export interface IScalableTableAttribute {
    * Scale out or in to keep utilization at a given level
    */
   scaleOnUtilization(props: UtilizationScalingProps): void;
+
+  turnOffScheduledScaling(): void;
+
+  turnOffDynamicScaling(direction?: appscaling.Scale): void;
 }
 
 /**
