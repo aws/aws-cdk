@@ -30,7 +30,7 @@ the actual handler.
 
 ```ts
 import { CustomResource } from '@aws-cdk/core';
-import * as longs from '@aws-cdk/aws-logs';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cr from '@aws-cdk/custom-resources';
 
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
