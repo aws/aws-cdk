@@ -64,6 +64,26 @@ describe('ApiMapping', () => {
     });
   });
 
+  // test('apiMappingKey validation', () => {
+
+  //   const stack = new Stack();
+  //   const api = new HttpApi(stack, 'Api');
+
+  //   const dn = new DomainName(stack, 'DomainName', {
+  //     domainName,
+  //     certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+  //   });
+
+  //   new HttpApiMapping(stack, 'Mapping', {
+  //     api,
+  //     domainName: dn,
+  //     apiMappingKey: '/',
+  //   });
+
+  //   expect(stack).toThrow(/An ApiMapping key may contain only letters, numbers and one of $-_.+!*'(),/)
+
+  // });
+
   test('import mapping', () => {
 
     const stack = new Stack();

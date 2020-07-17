@@ -45,10 +45,11 @@ export interface DefaultDomainMappingOptions {
   readonly domainName: IDomainName;
 
   /**
-   * The API mapping key. Specify '/' for the root path mapping.
+   * The API mapping key. Leave it undefined for the root path mapping.
    *
    */
-  readonly mappingKey: string;
+  readonly mappingKey?: string;
+  // readonly apiMapping?: HttpApiMapping;
 
 }
 
@@ -103,6 +104,8 @@ export class HttpStage extends Resource implements IStage {
         stage: this,
         apiMappingKey: props.domainMapping.mappingKey,
       });
+      // ensure the dependency
+      this.node.addDependency(props.domainMapping.domainName);
     }
 
   }
