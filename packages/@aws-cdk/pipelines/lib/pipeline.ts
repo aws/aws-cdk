@@ -1,6 +1,6 @@
+import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { App, CfnOutput, Construct, Stack, Stage } from '@aws-cdk/core';
-import * as path from 'path';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';

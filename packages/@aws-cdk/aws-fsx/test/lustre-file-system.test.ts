@@ -1,8 +1,8 @@
+import {strictEqual} from 'assert';
 import {expect as expectCDK, haveResource} from '@aws-cdk/assert';
 import {ISubnet, Port, SecurityGroup, Subnet, Vpc} from '@aws-cdk/aws-ec2';
 import {Key} from '@aws-cdk/aws-kms';
 import {Aws, Stack, Token} from '@aws-cdk/core';
-import {strictEqual} from 'assert';
 import {LustreConfiguration, LustreDeploymentType, LustreFileSystem, LustreMaintenanceTime, Weekday} from '../lib';
 
 describe('FSx for Lustre File System', () => {

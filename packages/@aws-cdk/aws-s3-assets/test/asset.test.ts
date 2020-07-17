@@ -1,12 +1,12 @@
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { arrayWith, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
 import { Asset } from '../lib/asset';
 
 const SAMPLE_ASSET_DIR = path.join(__dirname, 'sample-asset-directory');

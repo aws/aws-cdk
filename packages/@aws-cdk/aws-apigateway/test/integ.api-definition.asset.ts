@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
 import * as path from 'path';
+import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
 
 /*

@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
-import * as core from '@aws-cdk/core';
 import * as path from 'path';
+import * as core from '@aws-cdk/core';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 

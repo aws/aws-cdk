@@ -70,6 +70,7 @@ export interface ContainerImageConfig {
   readonly repositoryCredentials?: CfnTaskDefinition.RepositoryCredentialsProperty;
 }
 
+// eslint-disable-next-line import/order
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 import { AssetImage, AssetImageProps } from './images/asset-image';
 import { EcrImage } from './images/ecr';

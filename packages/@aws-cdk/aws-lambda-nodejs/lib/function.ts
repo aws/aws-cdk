@@ -1,7 +1,7 @@
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Bundling, ParcelBaseOptions } from './bundling';
 import { PackageJsonManager } from './package-json-manager';
 import { nodeMajorVersion, parseStackTrace } from './util';

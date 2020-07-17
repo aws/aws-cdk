@@ -1,10 +1,10 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as hooks from '@aws-cdk/aws-autoscaling-hooktargets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as fs from 'fs';
-import * as path from 'path';
 import { ICluster } from '../cluster';
 
 // Reference for the source in this package:

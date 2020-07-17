@@ -1,9 +1,9 @@
+import { EOL } from 'os';
 import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { EOL } from 'os';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:

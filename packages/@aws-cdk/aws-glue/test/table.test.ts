@@ -1,10 +1,10 @@
+import { deepEqual, doesNotThrow, equal, notEqual, ok } from 'assert';
 import { expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { deepEqual, doesNotThrow, equal, notEqual, ok } from 'assert';
 import * as glue from '../lib';
 
 test('unpartitioned JSON table', () => {

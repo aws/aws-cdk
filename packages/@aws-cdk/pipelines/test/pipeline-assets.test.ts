@@ -1,9 +1,9 @@
+import * as path from 'path';
 import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
-import * as path from 'path';
 import * as cdkp from '../lib';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
