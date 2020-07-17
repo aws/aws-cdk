@@ -571,6 +571,7 @@ export = {
             resourcesVpcConfig: {
               endpointPrivateAccess: true,
               endpointPublicAccess: true,
+              publicAccessCidrs: [ '0.0.0.0/0' ],
             },
           }, {
             logging: undefined,
@@ -592,7 +593,7 @@ export = {
             resourcesVpcConfig: {
               endpointPrivateAccess: true,
               endpointPublicAccess: true,
-              publicAccessCidrs: undefined,
+              publicAccessCidrs: [ '0.0.0.0/0' ],
             },
           });
           test.equal(mocks.actualRequest.createClusterRequest, undefined);
