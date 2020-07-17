@@ -401,6 +401,29 @@ test('deploy not skipped if template did not change but one tag removed', async 
   expect(cfnMocks.getTemplate).toHaveBeenCalledWith({ StackName: 'withouterrors', TemplateStage: 'Original' });
 });
 
+test('existing stack in UPDATE_ROLLBACK_COMPLETE state can be updated', async () => {
+  // GIVEN
+  givenStackExists(
+    { StackStatus: 'UPDATE_ROLLBACK_COMPLETE' },    // This is for the initial check
+    { StackStatus: 'UPDATE_COMPLETE' },      // Poll the update
+  );
+  givenTemplateIs({ changed: 123 });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.deleteStack).not.toHaveBeenCalled();
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    ChangeSetType: 'UPDATE',
+  }));
+});
+
 test('deploy not skipped if template changed', async () => {
   // GIVEN
   givenStackExists();
