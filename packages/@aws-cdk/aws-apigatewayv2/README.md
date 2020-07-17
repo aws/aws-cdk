@@ -192,7 +192,7 @@ const apiDemo = new HttpApi(stack, 'DemoApi', {
 ```
 
 The `mappingKey` determines the base path of the URL with the custom domain. Each custom domain is only allowed
-to have one API mapping with undefined `mappingKey`. If more than one API mappings are specified, `mappingKey` will be required for all API mappings. In the sample above, the custom domain is associated
+to have one API mapping with undefined `mappingKey`. If more than one API mappings are specified, `mappingKey` will be required for all of them. In the sample above, the custom domain is associated
 with 3 API mapping resources across different APIs and Stages.
 
 |        API     |     Stage   |   URL  |
