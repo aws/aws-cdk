@@ -13,15 +13,6 @@ export enum HttpVersion {
 }
 
 /**
- * How HTTPs should be handled with your distribution.
- */
-export enum ViewerProtocolPolicy {
-  HTTPS_ONLY = 'https-only',
-  REDIRECT_TO_HTTPS = 'redirect-to-https',
-  ALLOW_ALL = 'allow-all'
-}
-
-/**
  * HTTP status code to failover to second origin
  */
 export enum FailoverStatusCode {
