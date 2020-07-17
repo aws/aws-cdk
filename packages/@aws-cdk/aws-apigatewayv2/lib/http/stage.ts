@@ -46,11 +46,9 @@ export interface DefaultDomainMappingOptions {
 
   /**
    * The API mapping key. Leave it undefined for the root path mapping.
-   *
+   * @default - empty key for the root path mapping
    */
   readonly mappingKey?: string;
-  // readonly apiMapping?: HttpApiMapping;
-
 }
 
 /**

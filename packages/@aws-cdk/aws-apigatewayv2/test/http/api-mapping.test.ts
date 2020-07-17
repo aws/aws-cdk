@@ -64,25 +64,24 @@ describe('ApiMapping', () => {
     });
   });
 
-  // test('apiMappingKey validation', () => {
+  test('apiMappingKey validation', () => {
 
-  //   const stack = new Stack();
-  //   const api = new HttpApi(stack, 'Api');
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api');
 
-  //   const dn = new DomainName(stack, 'DomainName', {
-  //     domainName,
-  //     certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-  //   });
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
 
-  //   new HttpApiMapping(stack, 'Mapping', {
-  //     api,
-  //     domainName: dn,
-  //     apiMappingKey: '/',
-  //   });
-
-  //   expect(stack).toThrow(/An ApiMapping key may contain only letters, numbers and one of $-_.+!*'(),/)
-
-  // });
+    expect(() => {
+      new HttpApiMapping(stack, 'Mapping', {
+        api,
+        domainName: dn,
+        apiMappingKey: '/',
+      });
+    }).toThrow(/An ApiMapping key may contain only letters, numbers and one of/);
+  });
 
   test('import mapping', () => {
 
@@ -97,7 +96,6 @@ describe('ApiMapping', () => {
     const mapping = new HttpApiMapping(stack, 'Mapping', {
       api,
       domainName: dn,
-      apiMappingKey: '/',
     });
 
     const imported = HttpApiMapping.fromHttpApiMappingAttributes(stack, 'ImportedMapping', {

@@ -13,8 +13,8 @@ const handler = new lambda.Function(stack, 'echohandler', {
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, headers: { "content-type": "application/json"  }, body: JSON.stringify(event) }; };'),
 });
 
-const certArn = 'arn:aws:acm:ap-northeast-1:903779448426:certificate/93b6c17e-0558-4bda-b831-a50821b75d03';
-const domainName = 'demo.pahud.net';
+const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
+const domainName = 'apigv2.demo.com';
 
 const dn = new DomainName(stack, 'DN', {
   domainName,
