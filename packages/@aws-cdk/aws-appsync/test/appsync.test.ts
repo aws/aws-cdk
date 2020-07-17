@@ -4,10 +4,10 @@ import * as path from 'path';
 import * as appsync from '../lib';
 
 test('should not throw an Error', () => {
-  // Given
+  // GIVEN
   const stack = new cdk.Stack();
 
-  // When
+  // WHEN
   const when = () => {
     new appsync.GraphQLApi(stack, 'api', {
       authorizationConfig: {},
@@ -16,30 +16,78 @@ test('should not throw an Error', () => {
     });
   };
 
-  // Then
+  // THEN
   expect(when).not.toThrow();
 });
 
-test('should not throw an Error', () => {
-  // Given
+test('appsync should configure pipeline when pipelineConfig has contents', () => {
+  // GIVEN
   const stack = new cdk.Stack();
 
-  // When
+  // WHEN
   const api = new appsync.GraphQLApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
     schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
   });
 
-  const when = () => {
-    new appsync.Resolver(stack, 'resolver', {
-      api: api,
-      typeName: 'test',
-      fieldName: 'test2',
-      kind: appsync.ResolverType.PIPELINE,
-    });
-  };
+  new appsync.Resolver(stack, 'resolver', {
+    api: api,
+    typeName: 'test',
+    fieldName: 'test2',
+    pipelineConfig: ['test', 'test'],
+  });
 
-  // Then
-  expect(when).not.toThrow();
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
+    Kind: 'PIPELINE',
+    PipelineConfig: { Functions: [ 'test', 'test' ] },
+  });
+});
+
+test('appsync should configure resolver as unit when pipelineConfig is empty', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const api = new appsync.GraphQLApi(stack, 'api', {
+    authorizationConfig: {},
+    name: 'api',
+    schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
+  });
+
+  new appsync.Resolver(stack, 'resolver', {
+    api: api,
+    typeName: 'test',
+    fieldName: 'test2',
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
+    Kind: 'UNIT',
+  });
+});
+
+test('appsync should configure resolver as unit when pipelineConfig is empty array', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const api = new appsync.GraphQLApi(stack, 'api', {
+    authorizationConfig: {},
+    name: 'api',
+    schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
+  });
+
+  new appsync.Resolver(stack, 'resolver', {
+    api: api,
+    typeName: 'test',
+    fieldName: 'test2',
+    pipelineConfig: [],
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
+    Kind: 'UNIT',
+  });
 });

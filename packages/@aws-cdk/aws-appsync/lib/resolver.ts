@@ -1,25 +1,8 @@
-import { Construct, IResolvable } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/core';
 import { CfnResolver } from './appsync.generated';
 import { BaseDataSource } from './data-source';
 import { GraphQLApi } from './graphqlapi';
 import { MappingTemplate } from './mapping-template';
-
-/**
- * Types of Resolvers
- */
-export enum ResolverType {
-  /**
-   * A UNIT resolver is the default resolver type.
-   *
-   * A UNIT resolver enables you to execute GraphQL queries against a single data source.
-   */
-  UNIT = 'UNIT',
-
-  /**
-   * A PIPELINE resolver enables you to execute a series of Functions in a serial manner, multiple data sources.
-   */
-  PIPELINE = 'PIPELINE'
-}
 
 /**
  * Basic properties for an AppSync resolver
@@ -34,17 +17,12 @@ export interface BaseResolverProps {
    */
   readonly fieldName: string;
   /**
-   * type of resolver
-   *
-   * @default - UNIT resolver, single data source
-   */
-  readonly kind?: ResolverType;
-  /**
    * configuration of the pipeline resolver
    *
-   * @default - No pipelineConfig
+   * @default - no pipeline resolver configuration
+   * An empty array | undefined sets resolver to be of kind, unit
    */
-  readonly pipelineConfig?: CfnResolver.PipelineConfigProperty | IResolvable;
+  readonly pipelineConfig?: string[];
   /**
    * The request mapping template for this resolver
    *
@@ -89,13 +67,15 @@ export class Resolver extends Construct {
   constructor(scope: Construct, id: string, props: ResolverProps) {
     super(scope, id);
 
+    const pipelineConfig = props.pipelineConfig && props.pipelineConfig.length ? { functions: props.pipelineConfig } : undefined;
+
     this.resolver = new CfnResolver(this, 'Resource', {
       apiId: props.api.apiId,
       typeName: props.typeName,
       fieldName: props.fieldName,
       dataSourceName: props.dataSource ? props.dataSource.name : undefined,
-      kind: props.kind ?? ResolverType.UNIT,
-      pipelineConfig: props.pipelineConfig,
+      kind: pipelineConfig ? 'PIPELINE' : 'UNIT',
+      pipelineConfig: pipelineConfig,
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
     });
