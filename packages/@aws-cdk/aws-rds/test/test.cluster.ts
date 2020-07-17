@@ -5,7 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
+import { AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
 export = {
   'creating a Cluster also creates 2 DB Instances'(test: Test) {
@@ -120,8 +120,8 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    const group = new ClusterParameterGroup(stack, 'Params', {
-      family: 'hello',
+    const group = new ParameterGroup(stack, 'Params', {
+      engine: DatabaseClusterEngine.AURORA,
       description: 'bye',
       parameters: {
         param: 'value',
@@ -263,7 +263,7 @@ export = {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
-      family: 'hello',
+      engine: DatabaseClusterEngine.AURORA,
       parameters: {
         key: 'value',
       },
@@ -299,8 +299,9 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      engineVersion: '5.7.mysql_aurora.2.04.4',
+      engine: DatabaseClusterEngine.auroraMysql({
+        version: AuroraMysqlEngineVersion.VER_2_04_4,
+      }),
       masterUser: {
         username: 'admin',
       },
@@ -326,8 +327,9 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
-      engineVersion: '10.7',
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_10_7,
+      }),
       masterUser: {
         username: 'admin',
       },
@@ -886,8 +888,8 @@ export = {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
-    const parameterGroup = new ClusterParameterGroup(stack, 'ParameterGroup', {
-      family: 'family',
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      engine: DatabaseClusterEngine.AURORA,
       parameters: {
         key: 'value',
       },
@@ -933,7 +935,7 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::RDS::DBClusterParameterGroup', {
-      Family: 'family',
+      Family: 'aurora5.6',
       Parameters: {
         key: 'value',
         aurora_load_from_s3_role: {
@@ -954,7 +956,7 @@ export = {
     test.done();
   },
 
-  'PostgreSQL cluster with s3 export buckets does not generate custom parameter group'(test: Test) {
+  'PostgreSQL cluster with s3 export buckets does not generate custom parameter group and specifies the correct port'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -963,7 +965,9 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_11_4,
+      }),
       instances: 1,
       masterUser: {
         username: 'admin',
@@ -976,7 +980,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
       AssociatedRoles: [{
         RoleArn: {
           'Fn::GetAtt': [
@@ -985,6 +989,36 @@ export = {
           ],
         },
       }],
+      DBClusterParameterGroupName: 'default.aurora-postgresql11',
+      Port: 5432,
+    }));
+
+    expect(stack).notTo(haveResource('AWS::RDS::DBClusterParameterGroup'));
+
+    test.done();
+  },
+
+  'MySQL cluster without S3 exports or imports references the correct default ParameterGroup'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: 'default.aurora-mysql5.7',
     }));
 
     expect(stack).notTo(haveResource('AWS::RDS::DBClusterParameterGroup'));

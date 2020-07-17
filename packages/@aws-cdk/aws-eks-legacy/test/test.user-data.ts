@@ -4,7 +4,7 @@ import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { renderUserData } from '../lib/user-data';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'default user data'(test: Test) {

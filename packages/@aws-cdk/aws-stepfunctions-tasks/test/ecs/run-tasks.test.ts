@@ -9,7 +9,7 @@ let stack: Stack;
 let vpc: ec2.Vpc;
 let cluster: ecs.Cluster;
 
-// tslint:disable: object-literal-key-quotes
+/* eslint-disable quote-props */
 
 beforeEach(() => {
   // GIVEN
