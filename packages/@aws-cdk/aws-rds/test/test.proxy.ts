@@ -80,7 +80,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.auroraPostgres({
-        version: '10.7',
+        version: rds.AuroraPostgresEngineVersion.VER_10_7,
       }),
       masterUser: {
         username: 'admin',
@@ -155,7 +155,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.auroraPostgres({
-        version: '10.7',
+        version: rds.AuroraPostgresEngineVersion.VER_10_7,
       }),
       masterUser: {
         username: 'admin',
@@ -187,7 +187,7 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
-      engine: rds.DatabaseClusterEngine.auroraPostgres({ version: '10.7' }),
+      engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_10_7 }),
       masterUser: { username: 'admin' },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
