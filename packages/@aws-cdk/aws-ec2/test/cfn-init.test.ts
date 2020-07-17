@@ -3,6 +3,7 @@ import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Aws, CfnResource, Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
+import { InitPlatform } from '../lib/private/cfn-init-internal';
 
 let app: App;
 let stack: Stack;
@@ -53,7 +54,7 @@ test('CloudFormationInit can be added to after instantiation', () => {
 
   // WHEN
   config.add(ec2.InitCommand.argvCommand(['/bin/true']));
-  init.attach(resource, linuxOptions());
+  init._attach(resource, linuxOptions());
 
   // THEN
   expectMetadataLike({
@@ -79,7 +80,7 @@ test('empty configs are not rendered', () => {
     configSets: { default: ['config2', 'config1'] },
     configs: { config1, config2 },
   });
-  init.attach(resource, linuxOptions());
+  init._attach(resource, linuxOptions());
 
   // THEN
   expectMetadataLike({
@@ -106,7 +107,7 @@ describe('userdata', () => {
 
   test('linux userdata contains right commands', () => {
     // WHEN
-    simpleInit.attach(resource, linuxOptions());
+    simpleInit._attach(resource, linuxOptions());
 
     // THEN
     const lines = linuxUserData.render().split('\n');
@@ -126,8 +127,8 @@ describe('userdata', () => {
     // WHEN
     const windowsUserData = ec2.UserData.forWindows();
 
-    simpleInit.attach(resource, {
-      platform: ec2.InitPlatform.WINDOWS,
+    simpleInit._attach(resource, {
+      platform: InitPlatform.WINDOWS,
       instanceRole,
       userData: windowsUserData,
     });
@@ -148,7 +149,7 @@ describe('userdata', () => {
 
   test('ignoreFailures disables result code reporting', () => {
     // WHEN
-    simpleInit.attach(resource, {
+    simpleInit._attach(resource, {
       ...linuxOptions(),
       ignoreFailures: true,
     });
@@ -161,7 +162,7 @@ describe('userdata', () => {
 
   test('can disable log printing', () => {
     // WHEN
-    simpleInit.attach(resource, {
+    simpleInit._attach(resource, {
       ...linuxOptions(),
       printLog: false,
     });
@@ -173,7 +174,7 @@ describe('userdata', () => {
 
   test('can disable fingerprinting', () => {
     // WHEN
-    simpleInit.attach(resource, {
+    simpleInit._attach(resource, {
       ...linuxOptions(),
       embedFingerprint: false,
     });
@@ -185,7 +186,7 @@ describe('userdata', () => {
 
   test('can request multiple different configsets to be used', () => {
     // WHEN
-    simpleInit.attach(resource, {
+    simpleInit._attach(resource, {
       ...linuxOptions(),
       configSets: ['banana', 'peach'],
     });
@@ -198,7 +199,7 @@ describe('userdata', () => {
 
 function linuxOptions() {
   return {
-    platform: ec2.InitPlatform.LINUX,
+    platform: InitPlatform.LINUX,
     instanceRole,
     userData: linuxUserData,
   };

@@ -1,13 +1,13 @@
-import * as iam from '@aws-cdk/aws-iam';
 import * as crypto from 'crypto';
+import * as iam from '@aws-cdk/aws-iam';
 
 import { Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
 import { CloudFormationInit } from './cfn-init';
-import { InitPlatform } from './cfn-init-elements';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IMachineImage, OperatingSystemType } from './machine-image';
+import { InitPlatform } from './private/cfn-init-internal';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
 import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
@@ -423,7 +423,7 @@ export class Instance extends Resource implements IInstance {
    */
   private applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
     const platform = this.osType === OperatingSystemType.WINDOWS ? InitPlatform.WINDOWS : InitPlatform.LINUX;
-    init.attach(this.instance, {
+    init._attach(this.instance, {
       platform,
       instanceRole: this.role,
       userData: this.userData,

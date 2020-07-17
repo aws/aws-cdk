@@ -1,9 +1,8 @@
 import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnResource, Construct } from '@aws-cdk/core';
-import { InitElement, InitElementType, InitPlatform } from './cfn-init-elements';
-import { InitBindOptions, InitElementConfig } from './private/cfn-init-elements-internal';
-import { UserData } from './user-data';
+import { InitElement } from './cfn-init-elements';
+import { AttachInitOptions, InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
 
 /**
  * A CloudFormation-init configuration
@@ -38,7 +37,7 @@ export class CloudFormationInit {
   private readonly _configSets: Record<string, string[]> = {};
   private readonly _configs: Record<string, InitConfig> = {};
 
-  protected constructor(configSets: Record<string, string[]>, configs: Record<string, InitConfig>) {
+  private constructor(configSets: Record<string, string[]>, configs: Record<string, InitConfig>) {
     Object.assign(this._configSets, configSets);
     Object.assign(this._configs, configs);
   }
@@ -84,11 +83,12 @@ export class CloudFormationInit {
    *   referenced asset and bucket resources.
    * - Updates the given UserData with commands to execute the `cfn-init` script.
    *
-   * As an app builder, you shouldn't need to use this API directly. Instead,
-   * use `instance.applyCloudFormationInit()` or
-   * `autoScalingGroup.applyCloudFormationInit()`.
+   * As an app builder, use `instance.applyCloudFormationInit()` or
+   * `autoScalingGroup.applyCloudFormationInit()` to trigger this method.
+   *
+   * @internal
    */
-  public attach(attachedResource: CfnResource, attachOptions: AttachInitOptions) {
+  public _attach(attachedResource: CfnResource, attachOptions: AttachInitOptions) {
     // Note: This will not reflect mutations made after attaching.
     const bindResult = this.bind(attachedResource.stack, attachOptions);
     attachedResource.addMetadata('AWS::CloudFormation::Init', bindResult.configData);
@@ -136,7 +136,7 @@ export class CloudFormationInit {
   }
 
   private bind(scope: Construct, options: AttachInitOptions): { configData: any, authData: any } {
-    const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty ? undefined : c);
+    const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty() ? undefined : c);
 
     const configNameToBindResult = mapValues(nonEmptyConfigs, c => c._bind(scope, options));
 
@@ -152,72 +152,6 @@ export class CloudFormationInit {
 }
 
 /**
- * Options for attach a CloudFormationInit to a resource
- */
-export interface AttachInitOptions {
-  /**
-   * Instance role of the consuming instance or fleet
-   */
-  readonly instanceRole: iam.IRole;
-
-  /**
-   * OS Platfrom the init config will be used for
-   */
-  readonly platform: InitPlatform;
-
-  /**
-   * UserData to add commands to
-   */
-  readonly userData: UserData;
-
-  /**
-   * ConfigSet to activate
-   *
-   * @default ['default']
-   */
-  readonly configSets?: string[];
-
-  /**
-   * Whether to embed a hash into the userData
-   *
-   * If `true` (the default), a hash of the config will be embedded into the
-   * UserData, so that if the config changes, the UserData changes and
-   * the instance will be replaced.
-   *
-   * If `false`, no such hash will be embedded, and if the CloudFormation Init
-   * config changes nothing will happen to the running instance.
-   *
-   * @default true
-   */
-  readonly embedFingerprint?: boolean;
-
-  /**
-   * Print the results of running cfn-init to the Instance System Log
-   *
-   * By default, the output of running cfn-init is written to a log file
-   * on the instance. Set this to `true` to print it to the System Log
-   * (visible from the EC2 Console), `false` to not print it.
-   *
-   * (Be aware that the system log is refreshed at certain points in
-   * time of the instance life cycle, and successful execution may
-   * not always show up).
-   *
-   * @default true
-   */
-  readonly printLog?: boolean;
-
-  /**
-   * Don't fail the instance creation when cfn-init fails
-   *
-   * You can use this to prevent CloudFormation from rolling back when
-   * instances fail to start up, to help in debugging.
-   *
-   * @default false
-   */
-  readonly ignoreFailures?: boolean;
-}
-
-/**
  * A collection of configuration elements
  */
 export class InitConfig {
@@ -230,7 +164,7 @@ export class InitConfig {
   /**
    * Whether this configset has elements or not
    */
-  public get isEmpty() {
+  public isEmpty() {
     return this.elements.length === 0;
   }
 

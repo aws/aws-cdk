@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
+import { InitPlatform } from '../lib/private/cfn-init-internal';
 
 let app: App;
 let stack: Stack;
@@ -23,7 +24,7 @@ describe('InitCommand', () => {
     const command = ec2.InitCommand.shellCommand('/bin/sh');
 
     // WHEN
-    const rendered = getElementConfig(command, ec2.InitPlatform.LINUX);
+    const rendered = getElementConfig(command, InitPlatform.LINUX);
 
     // THEN
     expect(rendered['000']).toBeDefined();
@@ -34,7 +35,7 @@ describe('InitCommand', () => {
     const command = ec2.InitCommand.shellCommand('/bin/sh');
 
     // WHEN
-    const rendered = getElementConfig(command, ec2.InitPlatform.LINUX);
+    const rendered = getElementConfig(command, InitPlatform.LINUX);
 
     // THEN
     expect(rendered).toEqual({
@@ -54,7 +55,7 @@ describe('InitCommand', () => {
     });
 
     // WHEN
-    const rendered = getElementConfig(command, ec2.InitPlatform.WINDOWS);
+    const rendered = getElementConfig(command, InitPlatform.WINDOWS);
 
     // THEN
     expect(rendered).toEqual({
@@ -81,7 +82,7 @@ describe('InitCommand', () => {
     });
 
     // WHEN
-    const rendered = getElementConfig(command, ec2.InitPlatform.WINDOWS);
+    const rendered = getElementConfig(command, InitPlatform.WINDOWS);
 
     // THEN
     expect(rendered).toEqual({
@@ -109,7 +110,7 @@ describe('InitCommand', () => {
 
     // THEN
     expect(() => {
-      command._bind(defaultOptions(ec2.InitPlatform.LINUX));
+      command._bind(defaultOptions(InitPlatform.LINUX));
     }).toThrow(/'waitAfterCompletion' is only valid for Windows/);
   });
 
@@ -118,8 +119,8 @@ describe('InitCommand', () => {
 describe('InitService', () => {
 
   test.each([
-    ['Linux', 'sysvinit', ec2.InitPlatform.LINUX],
-    ['Windows', 'windows', ec2.InitPlatform.WINDOWS],
+    ['Linux', 'sysvinit', InitPlatform.LINUX],
+    ['Windows', 'windows', InitPlatform.WINDOWS],
   ])('enable always sets enabled and running to true for %s', (_platform, key, platform) => {
     // GIVEN
     const service = ec2.InitService.enable('httpd');
@@ -138,8 +139,8 @@ describe('InitService', () => {
   });
 
   test.each([
-    ['Linux', 'sysvinit', ec2.InitPlatform.LINUX],
-    ['Windows', 'windows', ec2.InitPlatform.WINDOWS],
+    ['Linux', 'sysvinit', InitPlatform.LINUX],
+    ['Windows', 'windows', InitPlatform.WINDOWS],
   ])('disable returns a minimalist disabled service for %s', (_platform, key, platform) => {
     // GIVEN
     const service = ec2.InitService.disable('httpd');
@@ -157,47 +158,13 @@ describe('InitService', () => {
     });
   });
 
-  test.each([
-    ['Linux', 'sysvinit', ec2.InitPlatform.LINUX],
-    ['Windows', 'windows', ec2.InitPlatform.WINDOWS],
-  ])('fromOptions renders all options for %s', (_platform, key, platform) => {
-    // GIVEN
-    const restartHandle = new ec2.InitServiceRestartHandle();
-    restartHandle._addFile('/etc/my.cnf');
-    restartHandle._addSource('/tmp/foo');
-    restartHandle._addPackage('yum', 'httpd');
-    restartHandle._addCommand('cmd_000');
-
-    const service = ec2.InitService.fromOptions('httpd', {
-      enabled: true,
-      ensureRunning: true,
-      serviceRestartHandle: restartHandle,
-    });
-
-    // WHEN
-    const rendered = service._bind(defaultOptions(platform)).config;
-
-    // THEN
-    expect(rendered[key]).toBeDefined();
-    expect(rendered[key]).toEqual({
-      httpd: {
-        enabled: true,
-        ensureRunning: true,
-        files: ['/etc/my.cnf'],
-        sources: ['/tmp/foo'],
-        packages: { yum: ['httpd'] },
-        commands: ['cmd_000'],
-      },
-    });
-  });
-
 });
 
-function getElementConfig(element: ec2.InitElement, platform: ec2.InitPlatform) {
+function getElementConfig(element: ec2.InitElement, platform: InitPlatform) {
   return element._bind(defaultOptions(platform)).config;
 }
 
-function defaultOptions(platform: ec2.InitPlatform) {
+function defaultOptions(platform: InitPlatform) {
   return {
     scope: stack,
     index: 0,

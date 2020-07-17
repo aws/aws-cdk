@@ -1,60 +1,5 @@
 import { Duration } from '@aws-cdk/core';
-import { InitBindOptions, InitElementConfig } from './private/cfn-init-elements-internal';
-
-/**
- * The platform to which the init template applies.
- */
-export enum InitPlatform {
-  /**
-   * Render the config for a Windows platform
-   */
-  WINDOWS = 'WINDOWS',
-
-  /**
-   * Render the config for a Linux platform
-   */
-  LINUX = 'LINUX',
-}
-
-/**
- * The type of the init element.
- */
-export enum InitElementType {
-  /**
-   * A package
-   */
-  PACKAGE = 'PACKAGE',
-
-  /**
-   * A group
-   */
-  GROUP = 'GROUP',
-
-  /**
-   * A user
-   */
-  USER = 'USER',
-
-  /**
-   * A source
-   */
-  SOURCE = 'SOURCE',
-
-  /**
-   * A file
-   */
-  FILE = 'FILE',
-
-  /**
-   * A command
-   */
-  COMMAND = 'COMMAND',
-
-  /**
-   * A service
-   */
-  SERVICE = 'SERVICE',
-}
+import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
 
 /**
  * An object that represents reasons to restart an InitService
@@ -128,7 +73,7 @@ export abstract class InitElement {
   /**
    * Returns the init element type for this element.
    */
-  public abstract readonly elementType: InitElementType;
+  public abstract readonly elementType: string;
 
   /**
    * Called when the Init config is being consumed. Renders the CloudFormation
@@ -264,7 +209,7 @@ export class InitCommand extends InitElement {
     return new InitCommand(argv, options);
   }
 
-  public readonly elementType = InitElementType.COMMAND;
+  public readonly elementType = InitElementType.COMMAND.toString();
 
   private constructor(private readonly command: string[], private readonly options: InitCommandOptions) {
     super();
@@ -359,17 +304,7 @@ export class InitService extends InitElement {
     return new InitService(serviceName, { enabled: false, ensureRunning: false });
   }
 
-  /**
-   * Create a service restart definition from the given options, not imposing any defaults.
-   *
-   * @param serviceName the name of the service to restart
-   * @param options service options
-   */
-  public static fromOptions(serviceName: string, options: InitServiceOptions = {}): InitService {
-    return new InitService(serviceName, options);
-  }
-
-  public readonly elementType = InitElementType.SERVICE;
+  public readonly elementType = InitElementType.SERVICE.toString();
 
   private constructor(private readonly serviceName: string, private readonly serviceOptions: InitServiceOptions) {
     super();
