@@ -516,8 +516,6 @@ export class Cluster extends Resource implements ICluster {
 
   private readonly kubctlProviderSecurityGroup?: ec2.ISecurityGroup;
 
-  private readonly controlPlaneSecurityGroup: ec2.ISecurityGroup;
-
   private readonly version: KubernetesVersion;
 
   /**
@@ -561,15 +559,15 @@ export class Cluster extends Resource implements ICluster {
       ],
     });
 
-    this.controlPlaneSecurityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
+    const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
       vpc: this.vpc,
-      description: 'Communication between EKS nodes and EKS Control Plane',
+      description: 'EKS Control Plane Security Group',
     });
 
     const connectionPort = ec2.Port.tcp(443); // Control Plane has an HTTPS API
 
     this.connections = new ec2.Connections({
-      securityGroups: [this.controlPlaneSecurityGroup],
+      securityGroups: [securityGroup],
       defaultPort: connectionPort,
     });
 
@@ -582,9 +580,7 @@ export class Cluster extends Resource implements ICluster {
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
-        securityGroupIds: [
-          this.controlPlaneSecurityGroup.securityGroupId,
-        ],
+        securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
       },
     };
