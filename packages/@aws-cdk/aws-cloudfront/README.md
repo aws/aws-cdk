@@ -103,7 +103,6 @@ const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
     ]
 });
 ```
-```
 
 #### Origin Fallback
 
