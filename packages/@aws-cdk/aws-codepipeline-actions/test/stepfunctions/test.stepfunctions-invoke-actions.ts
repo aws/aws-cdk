@@ -119,6 +119,5 @@ function minimalPipeline(stack: Stack): codepipeline.IStage {
     ],
   });
 
-  cpactions.StateMachineInput.filePath(sourceOutput.atPath('path/to/my/file.json'));
   return sourceStage;
 }
