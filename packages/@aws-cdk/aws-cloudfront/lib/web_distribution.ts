@@ -219,7 +219,7 @@ export interface SourceConfiguration {
   readonly failoverS3OriginSource?: S3OriginConfig;
 
   /**
-   * An s3 origin source for failover in case the s3OriginSource returns invalid status code
+   * A custom origin source for failover in case the s3OriginSource returns invalid status code
    *
    * @default - no failover configuration
    */
