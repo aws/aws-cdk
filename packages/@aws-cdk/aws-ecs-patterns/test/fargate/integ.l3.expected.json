@@ -356,7 +356,15 @@
       }
     },
     "FargateCluster7CCD5F93": {
-      "Type": "AWS::ECS::Cluster"
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "disabled"
+          }
+        ]
+      }
     },
     "L3LB212FC0E0": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",

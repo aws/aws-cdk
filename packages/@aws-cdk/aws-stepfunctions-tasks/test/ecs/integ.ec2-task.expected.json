@@ -1,7 +1,15 @@
 {
   "Resources": {
     "FargateCluster7CCD5F93": {
-      "Type": "AWS::ECS::Cluster"
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "disabled"
+          }
+        ]
+      }
     },
     "FargateClusterDefaultAutoScalingGroupInstanceSecurityGroup42AF8A40": {
       "Type": "AWS::EC2::SecurityGroup",

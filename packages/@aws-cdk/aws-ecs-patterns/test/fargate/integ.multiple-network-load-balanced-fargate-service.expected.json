@@ -356,7 +356,15 @@
       }
     },
     "ClusterEB0386A7": {
-      "Type": "AWS::ECS::Cluster"
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "disabled"
+          }
+        ]
+      }
     },
     "myServicelb1FA8CBE12": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",

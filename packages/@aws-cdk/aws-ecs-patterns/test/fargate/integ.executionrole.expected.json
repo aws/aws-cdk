@@ -356,7 +356,15 @@
       }
     },
     "FargateCluster7CCD5F93": {
-      "Type": "AWS::ECS::Cluster"
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "disabled"
+          }
+        ]
+      }
     },
     "ExecutionRole605A040B": {
       "Type": "AWS::IAM::Role",

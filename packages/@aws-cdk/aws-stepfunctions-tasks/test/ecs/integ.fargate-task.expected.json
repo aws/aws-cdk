@@ -1,7 +1,15 @@
 {
   "Resources": {
     "FargateCluster7CCD5F93": {
-      "Type": "AWS::ECS::Cluster"
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "disabled"
+          }
+        ]
+      }
     },
     "TaskDefTaskRole1EDB4A67": {
       "Type": "AWS::IAM::Role",

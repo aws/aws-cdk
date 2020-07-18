@@ -658,7 +658,15 @@
       }
     },
     "EcsDefaultClusterMnL3mNNYNVpc18E0451A": {
-      "Type": "AWS::ECS::Cluster"
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "disabled"
+          }
+        ]
+      }
     },
     "Vpc299FDBC5F": {
       "Type": "AWS::EC2::VPC",
@@ -1318,7 +1326,15 @@
       }
     },
     "EcsDefaultClusterMnL3mNNYNVpc2B5DB011D": {
-      "Type": "AWS::ECS::Cluster"
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "disabled"
+          }
+        ]
+      }
     },
     "L3cLB041B1E8C": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",

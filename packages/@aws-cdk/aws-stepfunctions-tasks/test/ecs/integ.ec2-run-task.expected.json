@@ -1,7 +1,15 @@
 {
   "Resources": {
     "Ec2ClusterEE43E89D": {
-      "Type": "AWS::ECS::Cluster"
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "disabled"
+          }
+        ]
+      }
     },
     "Ec2ClusterDefaultAutoScalingGroupInstanceSecurityGroup149B0A9E": {
       "Type": "AWS::EC2::SecurityGroup",

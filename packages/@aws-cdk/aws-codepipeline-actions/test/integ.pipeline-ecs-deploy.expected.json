@@ -197,7 +197,15 @@
       }
     },
     "EcsCluster97242B84": {
-      "Type": "AWS::ECS::Cluster"
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "disabled"
+          }
+        ]
+      }
     },
     "EcrRepoBB83A592": {
       "Type": "AWS::ECR::Repository",
