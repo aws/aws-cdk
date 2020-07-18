@@ -1166,10 +1166,10 @@ nodeunitShim({
       MetricsCollection: [
         {
           Granularity: '1Minute',
-          Metrics : [ 'GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances' ],
+          Metrics: [ 'GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances' ],
         }, {
           Granularity: '1Minute',
-          Metrics : [ 'GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances' ],
+          Metrics: [ 'GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances' ],
         },
       ],
     }));
@@ -1186,9 +1186,10 @@ nodeunitShim({
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       groupMetrics: [new autoscaling.GroupMetrics(autoscaling.GroupMetric.MIN_SIZE,
-         autoscaling.GroupMetric.MAX_SIZE,
-         autoscaling.GroupMetric.DESIRED_CAPACITY ,
-         autoscaling.GroupMetric.IN_SERVICE_INSTANCES)]
+        autoscaling.GroupMetric.MAX_SIZE,
+        autoscaling.GroupMetric.DESIRED_CAPACITY ,
+        autoscaling.GroupMetric.IN_SERVICE_INSTANCES),
+      ],
     });
     asg.emitGroupMetrics(
       autoscaling.GroupMetric.PENDING_INSTANCES,
@@ -1201,10 +1202,10 @@ nodeunitShim({
       MetricsCollection: [
         {
           Granularity: '1Minute',
-          Metrics : [ 'GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances' ],
+          Metrics: [ 'GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances' ],
         }, {
           Granularity: '1Minute',
-          Metrics : [ 'GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances' ],
+          Metrics: [ 'GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances' ],
         },
       ],
     }));
@@ -1223,7 +1224,7 @@ nodeunitShim({
         autoscaling.GroupMetric.MAX_SIZE,
         autoscaling.GroupMetric.MAX_SIZE,
         autoscaling.GroupMetric.MIN_SIZE,
-        )]
+      )],
     });
 
     // When
@@ -1239,10 +1240,10 @@ nodeunitShim({
       MetricsCollection: [
         {
           Granularity: '1Minute',
-          Metrics : [ 'GroupMinSize', 'GroupMaxSize']
+          Metrics: [ 'GroupMinSize', 'GroupMaxSize' ],
         }, {
           Granularity: '1Minute',
-          Metrics : [ 'GroupMinSize', 'GroupMaxSize' ],
+          Metrics: [ 'GroupMinSize', 'GroupMaxSize' ],
         },
       ],
     }));

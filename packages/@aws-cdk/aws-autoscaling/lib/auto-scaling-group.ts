@@ -240,6 +240,7 @@ export interface CommonAutoScalingGroupProps {
    * Group metrics are reported in a granularity of 1 minute at no additional charge.
    *
    * You can also use the `emitAllGroupMetrics` and `emitGroupMetrics` methods
+   * @default - no group metrics will be reported
    *
    */
   readonly groupMetrics?: GroupMetrics[];
@@ -313,7 +314,7 @@ export class GroupMetrics {
    * @internal
    */
   public _metrics = new Set<GroupMetric>();
-  
+
   constructor(...metrics: GroupMetric[]) {
     metrics?.forEach(metric => this._metrics.add(metric));
   }
@@ -868,10 +869,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (this.groupMetrics.length === 0) {
       return undefined;
     }
- 
+
     return this.groupMetrics.map(group => ({
       granularity: '1Minute',
-      metrics: group._metrics?.size !== 0 ? [...group._metrics].map(m => m.name) : undefined
+      metrics: group._metrics?.size !== 0 ? [...group._metrics].map(m => m.name) : undefined,
     }));
   }
 }
