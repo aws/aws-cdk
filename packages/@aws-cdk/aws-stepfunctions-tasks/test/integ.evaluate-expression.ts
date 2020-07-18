@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../lib';

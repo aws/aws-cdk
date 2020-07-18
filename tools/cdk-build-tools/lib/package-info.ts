@@ -76,7 +76,6 @@ export interface CompilerOverrides {
   eslint?: string;
   jsii?: string;
   tsc?: string;
-  tslint?: string;
 }
 
 /**
@@ -104,10 +103,6 @@ export interface CDKBuildOptions {
      * Disable linting
      * @default false
      */
-    disable?: boolean;
-  };
-
-  tslint?: {
     disable?: boolean;
   };
 

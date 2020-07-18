@@ -1,8 +1,8 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as sinon from 'sinon';
 import { setTimeout as _setTimeout } from 'timers';
 import { promisify } from 'util';
+import * as fs from 'fs-extra';
+import * as sinon from 'sinon';
 import { latestVersionIfHigher, VersionCheckTTL } from '../lib/version';
 
 const setTimeout = promisify(_setTimeout);

@@ -1,7 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import * as route53 from '@aws-cdk/aws-route53';
 import { Lazy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Certificate, ValidationMethod } from '../lib';
+import { Certificate, CertificateValidation, ValidationMethod } from '../lib';
 
 export = {
   'apex domain selection by default'(test: Test) {
@@ -100,6 +101,131 @@ export = {
         DomainName: 'my.example.com',
         ValidationDomain: 'example.com',
       }],
+    }));
+
+    test.done();
+  },
+
+  'CertificateValidation.fromEmail'(test: Test) {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      subjectAlternativeNames: ['extra.example.com'],
+      validation: CertificateValidation.fromEmail({
+        'test.example.com': 'example.com',
+      }),
+    });
+
+    expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      SubjectAlternativeNames: ['extra.example.com'],
+      DomainValidationOptions: [
+        {
+          DomainName: 'test.example.com',
+          ValidationDomain: 'example.com',
+        },
+        {
+          DomainName: 'extra.example.com',
+          ValidationDomain: 'example.com',
+        },
+      ],
+      ValidationMethod: 'EMAIL',
+    }));
+
+    test.done();
+  },
+
+  'CertificateValidation.fromDns'(test: Test) {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      subjectAlternativeNames: ['extra.example.com'],
+      validation: CertificateValidation.fromDns(),
+    });
+
+    expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      SubjectAlternativeNames: ['extra.example.com'],
+      ValidationMethod: 'DNS',
+    }));
+
+    test.done();
+  },
+
+  'CertificateValidation.fromDns with hosted zone'(test: Test) {
+    const stack = new Stack();
+
+    const exampleCom = new route53.HostedZone(stack, 'ExampleCom', {
+      zoneName: 'example.com',
+    });
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      validation: CertificateValidation.fromDns(exampleCom),
+    });
+
+    expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      DomainValidationOptions: [
+        {
+          DomainName: 'test.example.com',
+          HostedZoneId: {
+            Ref: 'ExampleCom20E1324B',
+          },
+        },
+      ],
+      ValidationMethod: 'DNS',
+    }));
+
+    test.done();
+  },
+
+  'CertificateValidation.fromDnsMultiZone'(test: Test) {
+    const stack = new Stack();
+
+    const exampleCom = new route53.HostedZone(stack, 'ExampleCom', {
+      zoneName: 'example.com',
+    });
+
+    const exampleNet = new route53.HostedZone(stack, 'ExampleNet', {
+      zoneName: 'example.com',
+    });
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      subjectAlternativeNames: ['cool.example.com', 'test.example.net'],
+      validation: CertificateValidation.fromDnsMultiZone({
+        'test.example.com': exampleCom,
+        'cool.example.com': exampleCom,
+        'test.example.net': exampleNet,
+      }),
+    });
+
+    expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      DomainValidationOptions: [
+        {
+          DomainName: 'test.example.com',
+          HostedZoneId: {
+            Ref: 'ExampleCom20E1324B',
+          },
+        },
+        {
+          DomainName: 'cool.example.com',
+          HostedZoneId: {
+            Ref: 'ExampleCom20E1324B',
+          },
+        },
+        {
+          DomainName: 'test.example.net',
+          HostedZoneId: {
+            Ref: 'ExampleNetF7CA40C9',
+          },
+        },
+      ],
+      ValidationMethod: 'DNS',
     }));
 
     test.done();

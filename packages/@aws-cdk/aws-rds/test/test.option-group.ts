@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { DatabaseInstanceEngine, OptionGroup } from '../lib';
+import { DatabaseInstanceEngine, OptionGroup, OracleEngineVersion, OracleLegacyEngineVersion } from '../lib';
 
 export = {
   'create an option group'(test: Test) {
@@ -11,8 +11,9 @@ export = {
 
     // WHEN
     new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: DatabaseInstanceEngine.oracleSe1({
+        version: OracleLegacyEngineVersion.VER_11_2,
+      }),
       configurations: [
         {
           name: 'XMLDB',
@@ -42,8 +43,9 @@ export = {
 
     // WHEN
     const optionGroup = new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: DatabaseInstanceEngine.oracleSe({
+        version: OracleLegacyEngineVersion.VER_11_2,
+      }),
       configurations: [
         {
           name: 'OEM',
@@ -56,9 +58,9 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::OptionGroup', {
-      EngineName: 'oracle-se1',
+      EngineName: 'oracle-se',
       MajorEngineVersion: '11.2',
-      OptionGroupDescription: 'Option group for oracle-se1 11.2',
+      OptionGroupDescription: 'Option group for oracle-se 11.2',
       OptionConfigurations: [
         {
           OptionName: 'OEM',
@@ -100,8 +102,9 @@ export = {
 
     // THEN
     test.throws(() => new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: DatabaseInstanceEngine.oracleSe2({
+        version: OracleEngineVersion.VER_12_1,
+      }),
       configurations: [
         {
           name: 'OEM',

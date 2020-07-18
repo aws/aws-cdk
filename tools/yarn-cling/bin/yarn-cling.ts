@@ -7,12 +7,12 @@ async function main() {
     outputFile: 'npm-shrinkwrap.json',
   });
 
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.error('Generated npm-shrinkwrap.json');
 }
 
 main().catch(e => {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });

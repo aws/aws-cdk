@@ -50,7 +50,7 @@ new SnsToLambda(app, 'aws-cdk-sns-lambda');
 app.synth();
 
 function handler(event: any, _context: any, callback: any) {
-  // tslint:disable:no-console
+  /* eslint-disable no-console */
   console.log('====================================================');
   console.log(JSON.stringify(event, undefined, 2));
   console.log('====================================================');

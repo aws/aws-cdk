@@ -4,7 +4,7 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ecr from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'construct repository'(test: Test) {
@@ -51,7 +51,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
       },
     }));
@@ -72,7 +72,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePushed","countNumber":5,"countUnit":"days"},"action":{"type":"expire"}}]}',
       },
     }));
@@ -93,7 +93,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
     }));
@@ -113,7 +113,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["b"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}},{"rulePriority":11,"selection":{"tagStatus":"tagged","tagPrefixList":["a"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
     }));
@@ -133,7 +133,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["important"],"countType":"imageCountMoreThan","countNumber":999},"action":{"type":"expire"}},{"rulePriority":2,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
     }));
@@ -155,7 +155,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       'LifecyclePolicy': {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         'LifecyclePolicyText': '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":3},"action":{"type":"expire"}}]}',
       },
     }));

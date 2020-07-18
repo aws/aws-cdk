@@ -152,13 +152,18 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error('maxRecordAge must be between 60 seconds and 7 days inclusive');
     }
 
-    if (props.retryAttempts && (props.retryAttempts < 0 || props.retryAttempts > 10000)) {
-      throw new Error(`retryAttempts must be between 0 and 10000 inclusive, got ${props.retryAttempts}`);
-    }
+    props.retryAttempts !== undefined && cdk.withResolved(props.retryAttempts, (attempts) => {
+      if (attempts < 0 || attempts > 10000) {
+        throw new Error(`retryAttempts must be between 0 and 10000 inclusive, got ${attempts}`);
+      }
+    });
 
-    if ((props.parallelizationFactor || props.parallelizationFactor === 0) && (props.parallelizationFactor < 1 || props.parallelizationFactor > 10)) {
-      throw new Error(`parallelizationFactor must be between 1 and 10 inclusive, got ${props.parallelizationFactor}`);
-    }
+    props.parallelizationFactor !== undefined && cdk.withResolved(props.parallelizationFactor, (factor) => {
+      if (factor < 1 || factor > 10) {
+        throw new Error(`parallelizationFactor must be between 1 and 10 inclusive, got ${factor}`);
+      }
+    });
+
 
     let destinationConfig;
 

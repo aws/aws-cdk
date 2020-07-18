@@ -25,7 +25,10 @@ describe('Map State', () => {
         'Map State': {
           Type: 'Map',
           End: true,
-          Parameters: { foo: 'foo', bar: '$.bar' },
+          Parameters: {
+            'foo': 'foo',
+            'bar.$': '$.bar',
+          },
           Iterator: {
             StartAt: 'Pass State',
             States: {

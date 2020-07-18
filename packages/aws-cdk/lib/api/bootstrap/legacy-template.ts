@@ -5,7 +5,7 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
     Description: 'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.',
     Conditions: {
       UsePublicAccessBlockConfiguration: {
-        'Fn::Equals' : [
+        'Fn::Equals': [
           params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
           'true',
         ]},
@@ -25,7 +25,7 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
             }],
           },
           PublicAccessBlockConfiguration: {
-            'Fn::If' : [
+            'Fn::If': [
               'UsePublicAccessBlockConfiguration',
               {
                 BlockPublicAcls: true,

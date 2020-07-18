@@ -1,4 +1,4 @@
-// tslint:disable: no-console
+/* eslint-disable no-console */
 import * as AWS from 'aws-sdk';
 import * as api from './api';
 

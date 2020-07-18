@@ -1,11 +1,11 @@
+import * as path from 'path';
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import * as lambda from '../lib';
 
-// tslint:disable:no-string-literal
+/* eslint-disable dot-notation */
 
 export = {
   'lambda.Code.fromInline': {

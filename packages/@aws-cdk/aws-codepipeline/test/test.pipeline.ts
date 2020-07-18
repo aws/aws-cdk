@@ -9,7 +9,7 @@ import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'Pipeline': {
@@ -305,7 +305,7 @@ export = {
         app.node.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, true);
 
         const pipelineStack = new cdk.Stack(app, 'PipelineStack', {
-          env: { region: 'us-west-2', account:  '123456789012' },
+          env: { region: 'us-west-2', account: '123456789012' },
         });
         const sourceOutput = new codepipeline.Artifact();
         new codepipeline.Pipeline(pipelineStack, 'Pipeline', {

@@ -1,5 +1,6 @@
 import * as os from 'os';
-import { AssetManifest, AssetPublishing, ClientOptions, DestinationPattern, EventType, IAws, IPublishProgress, IPublishProgressListener } from '../lib';
+import { AssetManifest, AssetPublishing, ClientOptions, DestinationPattern, EventType, IAws,
+  IPublishProgress, IPublishProgressListener } from '../lib';
 import { Account } from '../lib/aws';
 import { log, LogLevel, VERSION } from './logging';
 
@@ -28,7 +29,7 @@ export async function publish(args: {
 
   if (pub.hasFailures) {
     for (const failure of pub.failures) {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.error('Failure:', failure.error.stack);
     }
 

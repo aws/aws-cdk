@@ -30,13 +30,15 @@ the actual handler.
 
 ```ts
 import { CustomResource } from '@aws-cdk/core';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cr from '@aws-cdk/custom-resources';
 
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
 
 const myProvider = new cr.Provider(this, 'MyProvider', {
   onEventHandler: onEvent,
-  isCompleteHandler: isComplete // optional async "waiter"
+  isCompleteHandler: isComplete,        // optional async "waiter"
+  logRetention: logs.RetentionDays.ONE_DAY   // default is INFINITE
 });
 
 new CustomResource(this, 'Resource1', { serviceToken: myProvider.serviceToken });

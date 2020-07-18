@@ -1,9 +1,9 @@
-import * as AWS from 'aws-sdk';
 import * as child_process from 'child_process';
-import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import * as util from 'util';
+import * as AWS from 'aws-sdk';
+import * as fs from 'fs-extra';
 import { debug } from '../../logging';
 import { SharedIniFile } from './sdk_ini_file';
 

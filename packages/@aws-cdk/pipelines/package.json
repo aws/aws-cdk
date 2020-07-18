@@ -81,6 +81,9 @@
   "license": "Apache-2.0",
   "stability": "experimental",
   "maturity": "developer-preview",
+  "cdk-build": {
+    "jest": true
+  },
   "jsii": {
     "outdir": "dist",
     "targets": {

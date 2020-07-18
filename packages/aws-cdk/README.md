@@ -250,6 +250,9 @@ $ # Deploys only to environments foo and bar
 $ cdk bootstrap --app='node bin/main.js' foo bar
 ```
 
+By default, bootstrap stack will be protected from stack termination. This can be disabled using 
+`--termination-protection` argument.
+
 #### `cdk doctor`
 Inspect the current command-line environment and configurations, and collect information that can be useful for
 troubleshooting problems. It is usually a good idea to include the information provided by this command when submitting

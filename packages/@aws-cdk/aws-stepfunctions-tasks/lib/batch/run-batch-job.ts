@@ -214,7 +214,6 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     });
 
     // validate timeout
-    // tslint:disable-next-line:no-unused-expression
     props.timeout !== undefined && withResolved(props.timeout.toSeconds(), (timeout) => {
       if (timeout < 60) {
         throw new Error(`timeout must be greater than 60 seconds. Received ${timeout} seconds.`);

@@ -1,6 +1,6 @@
-import * as colors from 'colors/safe';
 import { Writable } from 'stream';
 import * as util from 'util';
+import * as colors from 'colors/safe';
 
 type StyleFn = (str: string) => string;
 const { stdout, stderr } = process;

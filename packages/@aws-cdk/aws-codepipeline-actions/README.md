@@ -801,3 +801,52 @@ new codepipeline_actions.CodeBuildAction({
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
 on how to write a Lambda function invoked from CodePipeline.
+
+### AWS Step Functions
+
+This module contains an Action that allows you to invoke a Step Function in a Pipeline:
+
+```ts
+import * as stepfunction from '@aws-cdk/aws-stepfunctions';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const startState = new stepfunction.Pass(stack, 'StartState');
+const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+  definition: startState,
+});
+const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
+  actionName: 'Invoke',
+  stateMachine: simpleStateMachine,
+  stateMachineInput: codepipeline_actions.StateMachineInput.literal({ IsHelloWorldExample: true }),
+});
+pipeline.addStage({
+  stageName: 'StepFunctions',
+  actions: [stepFunctionAction],
+});
+```
+
+The `StateMachineInput` can be created with one of 2 static factory methods:
+`literal`, which takes an arbitrary map as its only argument, or `filePath`:
+
+```ts
+import * as stepfunction from '@aws-cdk/aws-stepfunctions';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const inputArtifact = new codepipeline.Artifact();
+const startState = new stepfunction.Pass(stack, 'StartState');
+const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+  definition: startState,
+});
+const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
+  actionName: 'Invoke',
+  stateMachine: simpleStateMachine,
+  stateMachineInput: codepipeline_actions.StateMachineInput.filePath(inputArtifact.atPath('assets/input.json')),
+});
+pipeline.addStage({
+  stageName: 'StepFunctions',
+  actions: [stepFunctionAction],
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html)
+for information on Action structure reference.

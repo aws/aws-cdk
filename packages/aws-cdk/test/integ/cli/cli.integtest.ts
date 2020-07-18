@@ -212,6 +212,96 @@ integTest('deploy with parameters', async () => {
   ]);
 });
 
+integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and create a new one', async () => {
+  // GIVEN
+  await expect(cdkDeploy('param-test-1', {
+    options: [
+      '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}@aww`,
+    ],
+    captureStderr: false,
+  })).rejects.toThrow('exited with error');
+
+  const response = await cloudFormation('describeStacks', {
+    StackName: fullStackName('param-test-1'),
+  });
+
+  const stackArn = response.Stacks?.[0].StackId;
+  expect(response.Stacks?.[0].StackStatus).toEqual('ROLLBACK_COMPLETE');
+
+  // WHEN
+  const newStackArn = await cdkDeploy('param-test-1', {
+    options: [
+      '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}allgood`,
+    ],
+    captureStderr: false,
+  });
+
+  const newStackResponse = await cloudFormation('describeStacks', {
+    StackName: newStackArn,
+  });
+
+  // THEN
+  expect (stackArn).not.toEqual(newStackArn); // new stack was created
+  expect(newStackResponse.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+  expect(newStackResponse.Stacks?.[0].Parameters).toEqual([
+    {
+      ParameterKey: 'TopicNameParam',
+      ParameterValue: `${STACK_NAME_PREFIX}allgood`,
+    },
+  ]);
+});
+
+integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', async () => {
+  // GIVEN
+  const stackArn = await cdkDeploy('param-test-1', {
+    options: [
+      '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}nice`,
+    ],
+    captureStderr: false,
+  });
+
+  let response = await cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+
+  expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+
+  // bad parameter name with @ will put stack into UPDATE_ROLLBACK_COMPLETE
+  await expect(cdkDeploy('param-test-1', {
+    options: [
+      '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}@aww`,
+    ],
+    captureStderr: false,
+  })).rejects.toThrow('exited with error');;
+
+  response = await cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+
+  expect(response.Stacks?.[0].StackStatus).toEqual('UPDATE_ROLLBACK_COMPLETE');
+
+  // WHEN
+  await cdkDeploy('param-test-1', {
+    options: [
+      '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}allgood`,
+    ],
+    captureStderr: false,
+  });
+
+  response = await cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+
+  // THEN
+  expect(response.Stacks?.[0].StackStatus).toEqual('UPDATE_COMPLETE');
+  expect(response.Stacks?.[0].Parameters).toEqual([
+    {
+      ParameterKey: 'TopicNameParam',
+      ParameterValue: `${STACK_NAME_PREFIX}allgood`,
+    },
+  ]);
+});
+
 integTest('deploy with wildcard and parameters', async () => {
   await cdkDeploy('param-test-*', {
     options: [
@@ -336,7 +426,6 @@ integTest('deploy with role', async () => {
 
   async function deleteRole() {
     try {
-      // tslint:disable-next-line: forin
       for (const policyName of (await iam('listRolePolicies', { RoleName: roleName })).PolicyNames) {
         await iam('deleteRolePolicy', {
           RoleName: roleName,
@@ -361,6 +450,32 @@ integTest('cdk diff', async () => {
   // We can make it fail by passing --fail
   await expect(cdk(['diff', '--fail', fullStackName('test-1')]))
     .rejects.toThrow('exited with error');
+});
+
+integTest('cdk diff --fail on multiple stacks exits with error if any of the stacks contains a diff', async () => {
+  // GIVEN
+  const diff1 = await cdk(['diff', fullStackName('test-1')]);
+  expect(diff1).toContain('AWS::SNS::Topic');
+
+  await cdkDeploy('test-2');
+  const diff2 = await cdk(['diff', fullStackName('test-2')]);
+  expect(diff2).toContain('There were no differences');
+
+  // WHEN / THEN
+  await expect(cdk(['diff', '--fail', fullStackName('test-1'), fullStackName('test-2')])).rejects.toThrow('exited with error');
+});
+
+integTest('cdk diff --fail with multiple stack exits with if any of the stacks contains a diff', async () => {
+  // GIVEN
+  await cdkDeploy('test-1');
+  const diff1 = await cdk(['diff', fullStackName('test-1')]);
+  expect(diff1).toContain('There were no differences');
+
+  const diff2 = await cdk(['diff', fullStackName('test-2')]);
+  expect(diff2).toContain('AWS::SNS::Topic');
+
+  // WHEN / THEN
+  await expect(cdk(['diff', '--fail', fullStackName('test-1'), fullStackName('test-2')])).rejects.toThrow('exited with error');
 });
 
 integTest('deploy stack with docker asset', async () => {

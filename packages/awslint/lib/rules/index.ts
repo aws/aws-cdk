@@ -28,5 +28,5 @@ export const ALL_RULES_LINTER = new AggregateLinter(
   noUnusedTypeLinter,
   durationsLinter,
   publicStaticPropertiesLinter,
-  docsLinter
+  docsLinter,
 );

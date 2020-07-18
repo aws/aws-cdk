@@ -4,30 +4,12 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
-import { IDistribution } from './distribution';
+import { IDistribution, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy } from './distribution';
 import { IOriginAccessIdentity } from './origin_access_identity';
 
 export enum HttpVersion {
   HTTP1_1 = 'http1.1',
   HTTP2 = 'http2'
-}
-
-/**
- * The price class determines how many edge locations CloudFront will use for your distribution.
- */
-export enum PriceClass {
-  PRICE_CLASS_100 = 'PriceClass_100',
-  PRICE_CLASS_200 = 'PriceClass_200',
-  PRICE_CLASS_ALL = 'PriceClass_All'
-}
-
-/**
- * How HTTPs should be handled with your distribution.
- */
-export enum ViewerProtocolPolicy {
-  HTTPS_ONLY = 'https-only',
-  REDIRECT_TO_HTTPS = 'redirect-to-https',
-  ALLOW_ALL = 'allow-all'
 }
 
 /**
@@ -245,12 +227,6 @@ export enum OriginSslPolicy {
   TLS_V1 = 'TLSv1',
   TLS_V1_1 = 'TLSv1.1',
   TLS_V1_2 = 'TLSv1.2',
-}
-
-export enum OriginProtocolPolicy {
-  HTTP_ONLY = 'http-only',
-  MATCH_VIEWER = 'match-viewer',
-  HTTPS_ONLY = 'https-only',
 }
 
 /**
@@ -533,6 +509,7 @@ export class GeoRestriction {
     }
     locations.forEach(location => {
       if (!GeoRestriction.LOCATION_REGEX.test(location)) {
+        // eslint-disable-next-line max-len
         throw new Error(`Invalid location format for location: ${location}, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
       }
     });
@@ -688,9 +665,9 @@ interface BehaviorWithOrigin extends Behavior {
  *
  * You can customize the distribution using additional properties from the CloudFrontWebDistributionProps interface.
  *
- *
+ * @resource AWS::CloudFront::Distribution
  */
-export class CloudFrontWebDistribution extends cdk.Construct implements IDistribution {
+export class CloudFrontWebDistribution extends cdk.Resource implements IDistribution {
   /**
    * The logging bucket for this CloudFront distribution.
    * If logging is not enabled for this distribution - this property will be undefined.
@@ -700,9 +677,18 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
   /**
    * The domain name created by CloudFront for this distribution.
    * If you are using aliases for your distribution, this is the domainName your DNS records should point to.
-   * (In Route53, you could create an ALIAS record to this value, for example. )
+   * (In Route53, you could create an ALIAS record to this value, for example.)
+   *
+   * @deprecated - Use `distributionDomainName` instead.
    */
   public readonly domainName: string;
+
+  /**
+   * The domain name created by CloudFront for this distribution.
+   * If you are using aliases for your distribution, this is the domainName your DNS records should point to.
+   * (In Route53, you could create an ALIAS record to this value, for example.)
+   */
+  public readonly distributionDomainName: string;
 
   /**
    * The distribution ID for this distribution.
@@ -739,7 +725,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
       ipv6Enabled: (props.enableIpV6 !== undefined) ? props.enableIpV6 : true,
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
       webAclId: props.webACLId,
     };
@@ -883,7 +869,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         const validProtocols = this.VALID_SSL_PROTOCOLS[sslSupportMethod as SSLMethod];
 
         if (validProtocols.indexOf(minimumProtocolVersion.toString()) === -1) {
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           throw new Error(`${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(', ')}`);
         }
       }
@@ -920,6 +906,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
     this.node.defaultChild = distribution;
     this.domainName = distribution.attrDomainName;
+    this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
   }
 

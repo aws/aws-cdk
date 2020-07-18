@@ -275,7 +275,7 @@ const integration = new LambdaIntegration(hello, {
       // We will set the response status code to 200
       statusCode: "200",
       responseTemplates: {
-        // This template takes the "message" result from the Lambda function, adn embeds it in a JSON response
+        // This template takes the "message" result from the Lambda function, and embeds it in a JSON response
         // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
         'application/json': JSON.stringify({ state: 'ok', greeting: '$util.escapeJavaScript($input.body)' })
       },

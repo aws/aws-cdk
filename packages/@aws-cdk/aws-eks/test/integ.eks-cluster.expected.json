@@ -769,6 +769,25 @@
               "Resource": "*"
             },
             {
+              "Action": "ec2:DescribeVpcs",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ec2:test-region:12345678:vpc/",
+                    {
+                      "Ref": "Vpc8378EB38"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
               "Action": "iam:PassRole",
               "Effect": "Allow",
               "Resource": {

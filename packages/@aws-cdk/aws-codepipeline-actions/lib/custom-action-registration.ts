@@ -19,9 +19,6 @@ export interface CustomActionProperty {
    */
   description?: string;
 
-  // because of @see URLs
-  // tslint:disable:max-line-length
-
   /**
    * Whether this property is a key.
    *
@@ -38,8 +35,6 @@ export interface CustomActionProperty {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codepipeline-customactiontype-configurationproperties.html#cfn-codepipeline-customactiontype-configurationproperties-queryable
    */
   queryable?: boolean;
-
-  // tslint:enable:max-line-length
 
   /**
    * Whether this property is required.

@@ -23,10 +23,10 @@ class IntegrationReflection {
 
 integrationLinter.add({
   code: 'integ-return-type',
-  message: `'bind(...)' should return a type named 'XxxConfig'`,
+  message: '\'bind(...)\' should return a type named \'XxxConfig\'',
   eval: e => {
     const returnsFqn = e.ctx.bindMethod.returns.type.fqn;
 
     e.assert(returnsFqn && returnsFqn.endsWith('Config'), memberFqn(e.ctx.bindMethod));
-  }
+  },
 });

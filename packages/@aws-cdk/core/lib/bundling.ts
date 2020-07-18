@@ -1,4 +1,4 @@
-import { spawnSync } from 'child_process';
+import { spawnSync, SpawnSyncOptions } from 'child_process';
 
 /**
  * Bundling options
@@ -121,7 +121,7 @@ export class BundlingDockerImage {
       ...command,
     ];
 
-    dockerExec(dockerArgs);
+    dockerExec(dockerArgs, { stdio: 'inherit' }); // show Docker output in console
   }
 }
 
@@ -222,16 +222,19 @@ function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
 }
 
-function dockerExec(args: string[]) {
+function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
-  const proc = spawnSync(prog, args);
+  const proc = spawnSync(prog, args, options);
 
   if (proc.error) {
     throw proc.error;
   }
 
   if (proc.status !== 0) {
-    throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+    if (proc.stdout || proc.stderr) {
+      throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+    }
+    throw new Error(`${prog} exited with status ${proc.status}`);
   }
 
   return proc;

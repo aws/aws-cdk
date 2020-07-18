@@ -12,6 +12,20 @@ import {
   Values,
 } from '../lib';
 
+/*
+ * Creates an Appsync GraphQL API and with multiple tables.
+ * Testing for importing, querying, and mutability.
+ *
+ * Stack verification steps:
+ * Add to a table through appsync GraphQL API.
+ * Read from a table through appsync API.
+ *
+ * -- aws appsync list-graphql-apis                 -- obtain apiId               --
+ * -- aws appsync get-graphql-api --api-id [apiId]  -- obtain GraphQL endpoint    --
+ * -- aws appsync list-api-keys --api-id [apiId]    -- obtain api key             --
+ * -- bash verify.integ.graphql.sh [apiKey] [url]   -- shows query and mutation   --
+ */
+
 const app = new App();
 const stack = new Stack(app, 'aws-appsync-integ');
 
@@ -71,7 +85,17 @@ const orderTable = new Table(stack, 'OrderTable', {
   },
   removalPolicy: RemovalPolicy.DESTROY,
 });
-const paymentTable =  Table.fromTableName(stack, 'PaymentTable', 'PaymentTable');
+
+new Table(stack, 'PaymentTable', {
+  billingMode: BillingMode.PAY_PER_REQUEST,
+  partitionKey: {
+    name: 'id',
+    type: AttributeType.STRING,
+  },
+  removalPolicy: RemovalPolicy.DESTROY,
+});
+
+const paymentTable =  Table.fromTableName(stack, 'ImportedPaymentTable', 'PaymentTable');
 
 const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
 const orderDS = api.addDynamoDbDataSource('Order', 'The order data source', orderTable);
@@ -159,7 +183,7 @@ paymentDS.createResolver({
 paymentDS.createResolver({
   typeName: 'Mutation',
   fieldName: 'savePayment',
-  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').is('id'), Values.projecting('payment')),
+  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('payment')),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 

@@ -1,16 +1,16 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { countResources, expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
 import { KubectlLayer } from '../lib/kubectl-layer';
 import { testFixture, testFixtureNoVpc } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
@@ -1040,6 +1040,29 @@ export = {
               Effect: 'Allow',
               Resource: '*',
             },
+            {
+              Action: 'ec2:DescribeVpcs',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':ec2:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':vpc/',
+                    {
+                      Ref: 'MyClusterDefaultVpc76C24A38',
+                    },
+                  ],
+                ],
+              },
+            },
           ],
           Version: '2012-10-17',
         },
@@ -1108,6 +1131,29 @@ export = {
               Action: 'iam:CreateServiceLinkedRole',
               Effect: 'Allow',
               Resource: '*',
+            },
+            {
+              Action: 'ec2:DescribeVpcs',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':ec2:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':vpc/',
+                    {
+                      Ref: 'MyClusterDefaultVpc76C24A38',
+                    },
+                  ],
+                ],
+              },
             },
           ],
           Version: '2012-10-17',

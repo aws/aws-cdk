@@ -1,7 +1,7 @@
-import { AssetManifest as AssetManifestSchema, DockerImageDestination, DockerImageSource,
-  FileDestination, FileSource, Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as path from 'path';
+import { AssetManifest as AssetManifestSchema, DockerImageDestination, DockerImageSource,
+  FileDestination, FileSource, Manifest } from '@aws-cdk/cloud-assembly-schema';
 
 /**
  * A manifest of assets

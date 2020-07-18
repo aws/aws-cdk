@@ -19,7 +19,7 @@ export = {
     // WHEN
     new rds.DatabaseProxy(stack, 'Proxy', {
       proxyTarget: rds.ProxyTarget.fromInstance(instance),
-      secret: instance.secret!,
+      secrets: [instance.secret!],
       vpc,
     });
 
@@ -79,8 +79,9 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
-      engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
-      engineVersion: '10.7',
+      engine: rds.DatabaseClusterEngine.auroraPostgres({
+        version: rds.AuroraPostgresEngineVersion.VER_10_7,
+      }),
       masterUser: {
         username: 'admin',
       },
@@ -93,7 +94,7 @@ export = {
     // WHEN
     new rds.DatabaseProxy(stack, 'Proxy', {
       proxyTarget: rds.ProxyTarget.fromCluster(cluster),
-      secret: cluster.secret!,
+      secrets: [cluster.secret!],
       vpc,
     });
 
@@ -153,8 +154,9 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
-      engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
-      engineVersion: '10.7',
+      engine: rds.DatabaseClusterEngine.auroraPostgres({
+        version: rds.AuroraPostgresEngineVersion.VER_10_7,
+      }),
       masterUser: {
         username: 'admin',
       },
@@ -168,7 +170,7 @@ export = {
     test.doesNotThrow(() => {
       new rds.DatabaseProxy(stack, 'Proxy', {
         proxyTarget: rds.ProxyTarget.fromCluster(cluster),
-        secret: cluster.secret!,
+        secrets: [cluster.secret!],
         vpc,
       });
     }, /Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers/);
@@ -176,6 +178,31 @@ export = {
     expect(stack).to(haveResource('AWS::RDS::DBProxyTargetGroup', {
       DBInstanceIdentifiers: ABSENT,
     }, ResourcePart.Properties));
+
+    test.done();
+  },
+
+  'One or more secrets are required.'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_10_7 }),
+      masterUser: { username: 'admin' },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+
+    // WHEN
+    test.throws(() => {
+      new rds.DatabaseProxy(stack, 'Proxy', {
+        proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+        secrets: [], // No secret
+        vpc,
+      });
+    }, 'One or more secrets are required.');
 
     test.done();
   },

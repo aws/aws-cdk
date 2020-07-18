@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as yargs from 'yargs';
 import { findPackageJsons, ValidationRule } from '../lib';
 
-// tslint:disable:no-shadowed-variable
+/* eslint-disable no-shadow */
 const argv = yargs
   .usage('$0 [directory]')
   .option('fix', { type: 'boolean', alias: 'f', desc: 'Fix package.json in addition to reporting mistakes'})
@@ -15,7 +15,7 @@ const directory = argv._[0] || '.';
 argv.directory = path.resolve(directory, process.cwd());
 
 async function main(): Promise<void> {
-  const ruleClasses = require('../lib/rules');
+  const ruleClasses = require('../lib/rules'); // eslint-disable-line @typescript-eslint/no-require-imports
   const rules: ValidationRule[] = Object.keys(ruleClasses).map(key => new ruleClasses[key]()).filter(obj => obj instanceof ValidationRule);
 
   const pkgs = findPackageJsons(directory);
@@ -35,7 +35,7 @@ async function main(): Promise<void> {
 }
 
 main().catch((e) => {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.error(e);
   process.exit(1);
 });

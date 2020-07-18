@@ -15,3 +15,5 @@ nyc.config.js
 !lib/images/adopt-repository/*
 *.snk
 !.eslintrc.js
+
+junit.xml

@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { debug } from '../../logging';
 import { cdkCacheDir } from '../../util/directories';
 import { Account } from './sdk-provider';
