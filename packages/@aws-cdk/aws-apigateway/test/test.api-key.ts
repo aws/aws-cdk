@@ -52,7 +52,7 @@ export = {
     // WHEN
     const importedKey = apigateway.ApiKey.fromApiKeyId(stack, 'imported', 'KeyIdabc');
     api.addUsagePlan('plan', {
-      apiKey: importedKey
+      apiKey: importedKey,
     });
 
     // THEN
@@ -60,8 +60,8 @@ export = {
       KeyId: 'KeyIdabc',
       KeyType: 'API_KEY',
       UsagePlanId: {
-         Ref: "testapiplan1B111AFF"
-      }
+        Ref: 'testapiplan1B111AFF',
+      },
     }));
     test.done();
   },
