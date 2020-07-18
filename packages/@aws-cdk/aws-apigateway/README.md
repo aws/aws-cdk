@@ -200,6 +200,24 @@ const key = api.addApiKey('ApiKey', {
 });
 ```
 
+You can also import an API Key by it's Id to use with a usage plan.
+
+```ts
+const api = new apigateway.RestApi(this, 'hello-api', { });
+api.root.addMethod('GET'); // api must have atleast one method.
+
+const importedKey = apigateway.ApiKey.fromApiKeyId(this, 'imported-key', '<api-key-id>');
+
+const plan = api.addUsagePlan('UsagePlan', {
+  name: 'Easy',
+  apiKey: importedKey,
+  throttle: {
+    rateLimit: 10,
+    burstLimit: 2
+  }
+});
+```
+
 In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
 This construct lets you specify rate limiting properties which should be applied only to the api key being created.
 The API key created has the specified rate limits, such as quota and throttles, applied.
