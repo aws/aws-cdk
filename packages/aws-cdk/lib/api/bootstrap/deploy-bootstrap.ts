@@ -1,8 +1,8 @@
+import * as os from 'os';
+import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import * as os from 'os';
-import * as path from 'path';
 import { Mode, SdkProvider } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
@@ -39,6 +39,7 @@ export async function deployBootstrapStack(
     environment: cxapi.EnvironmentUtils.format(environment.account, environment.region),
     properties: {
       templateFile,
+      terminationProtection: options.parameters?.terminationProtection ?? false,
     },
   });
 

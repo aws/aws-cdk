@@ -130,7 +130,7 @@ export class EndpointConfiguration extends cdk.Construct {
     return {
       clientIpPreservationEnabled: this.props.clientIpReservation,
       endpointId: this.props.endpointId,
-      weight:  this.props.weight,
+      weight: this.props.weight,
     };
   }
 }

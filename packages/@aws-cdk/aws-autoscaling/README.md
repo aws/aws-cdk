@@ -253,24 +253,15 @@ To enable group metrics monitoring using the `groupMetricsCollections` property:
 ```ts
 // Enable monitoring of all group metrics
 new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  groupMetricsCollections: [
-    {
-      metrics: GroupMetric.ALL,
-    }
-  ]
+  groupMetrics: [new autoscaling.GroupMetrics()],
   // ...
 });
 
 // Enable monitoring for a subset of group metrics
 new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  groupMetricsCollections: [
-    {
-      metrics: [
-        autoscaling.GroupMetric.MIN_SIZE,
-        autoscaling.GroupMetric.MAX_SIZE,
-      ]
-    }
-  ],
+  groupMetrics: [new autoscaling.GroupMetrics(GroupMetric.MIN_SIZE, GroupMetric.MAX_SIZE)],
+  // ...
+});
 ```
 
 Or using the emitXxx methods:
@@ -279,7 +270,7 @@ Or using the emitXxx methods:
 // Enable monitoring for all group metrics
 asg.emitAllGroupMetrics();
 
-// Enable monitoring for a subset of metrics 
+// Enable monitoring for a subset of metrics
 asg.emitGroupMetrics(
   autoscaling.GroupMetric.MIN_SIZE,
   autoscaling.GroupMetric.MAX_SIZE,

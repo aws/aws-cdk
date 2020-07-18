@@ -47,7 +47,7 @@ export class NodejsFunction extends lambda.Function {
     }
 
     // Entry and defaults
-    const entry = findEntry(id, props.entry);
+    const entry = path.resolve(findEntry(id, props.entry));
     const handler = props.handler ?? 'handler';
     const defaultRunTime = nodeMajorVersion() >= 12
       ? lambda.Runtime.NODEJS_12_X
@@ -63,9 +63,9 @@ export class NodejsFunction extends lambda.Function {
         ...props,
         runtime,
         code: Bundling.parcel({
+          ...props,
           entry,
           runtime,
-          ...props,
         }),
         handler: `index.${handler}`,
       });
@@ -84,7 +84,7 @@ export class NodejsFunction extends lambda.Function {
  */
 function findEntry(id: string, entry?: string): string {
   if (entry) {
-    if (!/\.(js|ts)$/.test(entry)) {
+    if (!/\.(jsx?|tsx?)$/.test(entry)) {
       throw new Error('Only JavaScript or TypeScript entry files are supported.');
     }
     if (!fs.existsSync(entry)) {

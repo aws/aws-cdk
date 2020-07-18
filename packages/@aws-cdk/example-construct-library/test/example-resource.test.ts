@@ -19,7 +19,7 @@ import * as core from '@aws-cdk/core';
 import * as er from '../lib';
 
 /* We allow quotes in the object keys used for CloudFormation template assertions */
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('Example Resource', () => {
   let stack: core.Stack;

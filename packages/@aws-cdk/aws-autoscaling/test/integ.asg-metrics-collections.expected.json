@@ -622,8 +622,7 @@
             "Metrics": [
               "GroupPendingInstances",
               "GroupStandbyInstances",
-              "GroupTotalInstances",
-              "GroupTerminatingInstances"
+              "GroupTotalInstances"
             ]
           }
         ],
