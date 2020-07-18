@@ -116,6 +116,30 @@ describe('Bootstrapping v2', () => {
     ]);
   });
 
+  test('stack is not termination protected by default', async () => {
+    await bootstrapEnvironment2(env, sdk);
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      stack: expect.objectContaining({
+        terminationProtection: false,
+      }),
+    }));
+  });
+
+  test('stack is termination protected when option is set', async () => {
+    await bootstrapEnvironment2(env, sdk, {
+      parameters: {
+        terminationProtection: true,
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      stack: expect.objectContaining({
+        terminationProtection: true,
+      }),
+    }));
+  });
+
   afterEach(() => {
     mockDeployStack.mockClear();
   });

@@ -12,7 +12,7 @@ import { KinesisEventSource, SqsDlq } from '../lib';
  */
 
 async function handler(event: any) {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.log('event:', JSON.stringify(event, undefined, 2));
   throw new Error();
 }
