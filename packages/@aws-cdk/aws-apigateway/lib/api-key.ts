@@ -85,9 +85,9 @@ export class ApiKey extends Resource implements IApiKey {
   /**
    * Import an ApiKey by it's Id
    */
-  public static fromApiKeyId(scope: Construct, id: string, keyId: string): IApiKey {
+  public static fromApiKeyId(scope: Construct, id: string, apiKeyId: string): IApiKey {
     class Import extends Resource implements IApiKey {
-      public keyId = keyId;
+      public keyId = apiKeyId;
     }
 
     return new Import(scope, id);
