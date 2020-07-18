@@ -1334,7 +1334,27 @@ export = {
     test.done();
   },
 
-  'default container insights undefined'(test: Test) {
+  'disable container insights'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: false });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      ClusterSettings: [
+        {
+          Name: 'containerInsights',
+          Value: 'disabled',
+        },
+      ],
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+
+  'default container insights is disabled'(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1342,16 +1362,14 @@ export = {
     new ecs.Cluster(stack, 'EcsCluster');
 
     // THEN
-    const assembly = app.synth();
-    const stackAssembly = assembly.getStackByName(stack.stackName);
-    const template = stackAssembly.template;
-
-    test.equal(
-      template.Resources.EcsCluster97242B84.Properties === undefined ||
-      template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined,
-      true,
-      'ClusterSettings should not be defined',
-    );
+    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      ClusterSettings: [
+        {
+          Name: 'containerInsights',
+          Value: 'disabled',
+        },
+      ],
+    }, ResourcePart.Properties));
 
     test.done();
   },
