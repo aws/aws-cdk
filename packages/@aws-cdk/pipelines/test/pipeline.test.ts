@@ -1,8 +1,7 @@
-import { arrayWith, deepObjectLike, objectLike } from '@aws-cdk/assert';
+import { anything, arrayWith, deepObjectLike, encodedJson, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
 import * as cdkp from '../lib';
-import { anything, encodedJson, stringLike } from './testmatchers';
 import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;
@@ -41,7 +40,6 @@ test('references stack template in subassembly', () => {
   });
 });
 
-// tslint:disable: max-line-length
 test('action has right settings for same-env deployment', () => {
   // WHEN
   pipeline.addApplicationStage(new OneStackApp(app, 'Same'));
@@ -161,8 +159,6 @@ test('action has right settings for cross-account/cross-region deployment', () =
     }),
   });
 });
-
-// tslint:enable: max-line-length
 
 test('pipeline has self-mutation stage', () => {
   // THEN

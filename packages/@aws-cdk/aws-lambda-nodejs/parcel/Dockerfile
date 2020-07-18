@@ -13,7 +13,8 @@ RUN mkdir /npm-cache && \
 RUN npm install --global yarn
 
 # Install parcel 2 (fix the version since it's still in beta)
+# install at "/" so that node_modules will be in the path for /asset-input
 ARG PARCEL_VERSION=2.0.0-beta.1
-RUN yarn global add parcel@$PARCEL_VERSION
+RUN cd / && npm install parcel@$PARCEL_VERSION
 
 CMD [ "parcel" ]
