@@ -4,26 +4,22 @@ import * as semver from 'semver';
 import * as assets from './assets';
 import * as assembly from './cloud-assembly';
 
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 // this prefix is used by the CLI to identify this specific error.
 // in which case we want to instruct the user to upgrade his CLI.
 // see exec.ts#createAssembly
 export const VERSION_MISMATCH: string = 'Cloud assembly schema version mismatch';
 
-// tslint:disable: no-var-requires
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ASSETS_SCHEMA = require('../schema/assets.schema.json');
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ASSEMBLY_SCHEMA = require('../schema/cloud-assembly.schema.json');
 
 /**
  * Version is shared for both manifests
  */
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const SCHEMA_VERSION = require('../schema/cloud-assembly.version.json').version;
-
-// tslint:enable: no-var-requires
 
 /**
  * Protocol utility class.

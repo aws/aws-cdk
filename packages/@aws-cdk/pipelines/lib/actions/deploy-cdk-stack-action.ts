@@ -141,7 +141,6 @@ export class DeployCdkStackAction implements codepipeline.IAction {
    */
   public static fromStackArtifact(scope: Construct, artifact: cxapi.CloudFormationStackArtifact, options: CdkStackActionFromArtifactOptions) {
     if (!artifact.assumeRoleArn) {
-      // tslint:disable-next-line:max-line-length
       throw new Error(`Stack '${artifact.stackName}' does not have deployment role information; use the 'DefaultStackSynthesizer' synthesizer, or set the '@aws-cdk/core:newStyleStackSynthesis' context key.`);
     }
 

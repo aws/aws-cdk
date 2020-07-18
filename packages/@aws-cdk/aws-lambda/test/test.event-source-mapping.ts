@@ -103,6 +103,22 @@ export = {
 
     test.done();
   },
+  'accepts if retryAttempts is a token'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      retryAttempts: cdk.Lazy.numberValue({ produce: () => 100 }),
+    });
+
+    test.done();
+  },
   'throws if parallelizationFactor is below 1'(test: Test) {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
@@ -140,6 +156,23 @@ export = {
           eventSourceArn: '',
           parallelizationFactor: 11,
         }), /parallelizationFactor must be between 1 and 10 inclusive, got 11/);
+
+    test.done();
+  },
+
+  'accepts if parallelizationFactor is a token'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      parallelizationFactor: cdk.Lazy.numberValue({ produce: () => 20 }),
+    });
 
     test.done();
   },
