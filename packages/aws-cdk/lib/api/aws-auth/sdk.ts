@@ -94,6 +94,13 @@ export class SDK implements ISDK {
 
   public async currentAccount(): Promise<Account> {
     return cached(this, CURRENT_ACCOUNT_KEY, () => SDK.accountCache.fetch(this.credentials.accessKeyId, async () => {
+      const { httpOptions } = this.config;
+      if (httpOptions?.endpoint) {
+        // offline mode is set, generate dummy accountId and partition;
+        debug('Looking up default account for offline');
+        return { accountId: '0000000000', partition: 'aws' };
+      }
+
       // if we don't have one, resolve from STS and store in cache.
       debug('Looking up default account ID from STS');
       const result = await new AWS.STS(this.config).getCallerIdentity().promise();
