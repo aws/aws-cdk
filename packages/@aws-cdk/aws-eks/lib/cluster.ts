@@ -566,7 +566,7 @@ export class Cluster extends Resource implements ICluster {
 
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
-      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API,
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
     // Get subnetIds for all selected subnets
