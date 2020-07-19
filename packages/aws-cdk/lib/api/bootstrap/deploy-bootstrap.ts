@@ -39,7 +39,7 @@ export async function deployBootstrapStack(
     environment: cxapi.EnvironmentUtils.format(environment.account, environment.region),
     properties: {
       templateFile,
-      terminationProtection: options.parameters?.terminationProtection ?? false,
+      terminationProtection: options.parameters?.offline ? undefined : (options.parameters?.terminationProtection ?? false),
     },
   });
 

@@ -9,6 +9,18 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
           params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
           'true',
         ]},
+      UseBucketServerSideEncryption: {
+        'Fn::Equals': [
+          params.offline || params.offline === undefined ? 'true' : 'false',
+          'true',
+        ],
+      },
+      UseRegionalDomainName: {
+        'Fn::Equals': [
+          params.offline || params.offline === undefined ? 'true' : 'false',
+          'true',
+        ],
+      },
     },
     Resources: {
       StagingBucket: {
@@ -17,13 +29,18 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
           BucketName: params.bucketName,
           AccessControl: 'Private',
           BucketEncryption: {
-            ServerSideEncryptionConfiguration: [{
-              ServerSideEncryptionByDefault: {
-                SSEAlgorithm: 'aws:kms',
-                KMSMasterKeyID: params.kmsKeyId,
+            'Fn::If': [
+              'UseBucketServerSideEncryption',
+              {
+                ServerSideEncryptionConfiguration: [{
+                  ServerSideEncryptionByDefault: {
+                    SSEAlgorithm: 'aws:kms',
+                    KMSMasterKeyID: params.kmsKeyId,
+                  },
+                }],
               },
-            }],
-          },
+              { Ref: 'AWS::NoValue' },
+            ]},
           PublicAccessBlockConfiguration: {
             'Fn::If': [
               'UsePublicAccessBlockConfiguration',
@@ -70,7 +87,12 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
       },
       [BUCKET_DOMAIN_NAME_OUTPUT]: {
         Description: 'The domain name of the S3 bucket owned by the CDK toolkit stack',
-        Value: { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] },
+        Value: {
+          'Fn::If': [
+            'UseRegionalDomainName',
+            { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] },
+            { 'Fn::GetAtt': ['StagingBucket', 'DomainName'] },
+          ]},
       },
     },
   };

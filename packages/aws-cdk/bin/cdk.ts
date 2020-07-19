@@ -257,6 +257,7 @@ async function initCommandLine() {
             trustedAccounts: args.trust,
             cloudFormationExecutionPolicies: args.cloudformationExecutionPolicies,
             terminationProtection: args.terminationProtection,
+            offline: argv.offline,
           });
 
       case 'deploy':

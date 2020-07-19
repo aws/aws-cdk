@@ -51,7 +51,8 @@ export async function bootstrapEnvironment2(
     throw new Error('--cloudformation-execution-policies are required if --trust has been passed!');
   }
 
-  const bootstrapTemplatePath = path.join(__dirname, 'bootstrap-template.yaml');
+  const filename = params.offline ? 'bootstrap-template-offline.yaml' : 'bootstrap-template.yaml';
+  const bootstrapTemplatePath = path.join(__dirname, filename);
   const bootstrapTemplate = await loadStructuredFile(bootstrapTemplatePath);
 
   return deployBootstrapStack(
