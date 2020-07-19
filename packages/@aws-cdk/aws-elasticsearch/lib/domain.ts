@@ -325,6 +325,35 @@ export interface IDomain extends cdk.IResource {
   readonly domainEndpoint: string;
 
   /**
+   * Adds an IAM policy statement associated with this domain to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "es:HttpGet", "es:HttpPut", ...)
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Adds an IAM policy statement associated with an index in this domain to an IAM
+   * principal's policy.
+   *
+   * @param index The index to grant permissions for
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "es:HttpGet", "es:HttpPut", ...)
+   */
+  grantIndex(index: string, grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Adds an IAM policy statement associated with a path in this domain to an IAM
+   * principal's policy.
+   *
+   * @param path The path to grant permissions for
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "es:HttpGet", "es:HttpPut", ...)
+   */
+  grantPath(path: string, grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
    * Return the given named metric for this Domain.
    */
   metric(metricName: string, clientId: string, props?: MetricOptions): Metric;
@@ -590,6 +619,62 @@ export class Domain extends cdk.Resource implements IDomain {
     });
 
     this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this domain to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "es:HttpGet", "es:HttpPut", ...)
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [
+        this.domainArn,
+        `${this.domainArn}/*`,
+      ],
+      scope: this,
+    });
+  }
+
+  /**
+   * Adds an IAM policy statement associated with an index in this domain to an IAM
+   * principal's policy.
+   *
+   * @param index   The index to grant permissions for
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "es:HttpGet", "es:HttpPut", ...)
+   */
+  public grantIndex(index: string, grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [
+        `${this.domainArn}/${index}`,
+        `${this.domainArn}/${index}/*`,
+      ],
+      scope: this,
+    });
+  }
+
+  /**
+   * Adds an IAM policy statement associated with a path in this domain to an IAM
+   * principal's policy.
+   *
+   * @param path   The path to grant permissions for
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "es:HttpGet", "es:HttpPut", ...)
+   */
+  public grantPath(path: string, grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [`${this.domainArn}/${path}`],
+      scope: this,
+    });
   }
 
   /**

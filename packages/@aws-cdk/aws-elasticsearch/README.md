@@ -41,8 +41,8 @@ Helper methods also exist for managing access to the domain.
 
 ```ts
 const lambda = new lambda.Function(this, 'Lambda', { /* ... */ });
-// Grant the lambda functiomn read and write access to app-search index
-domain.grantReadWriteForIndex(lambda, 'app-search');
+// Grant the lambda functiomn read access to app-search index
+domain.grantIndex(lambda, 'app-search', 'es:HttpGet');
 ```
 
 ### Encryption
