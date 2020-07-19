@@ -118,6 +118,6 @@ test('resolves entry to an absolute path', () => {
   });
 
   expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/@aws-cdk\/aws-lambda-nodejs\/lib\/index.ts$/),
+    entry: path.resolve(__dirname, '..', 'lib', 'index.ts'),
   }));
 });

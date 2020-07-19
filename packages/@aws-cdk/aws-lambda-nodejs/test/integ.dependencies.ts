@@ -7,8 +7,13 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    const projectRoot = process.env.NZL_PACKAGE_SOURCE
+      ? path.join(process.env.NZL_PACKAGE_SOURCE, '..', '..', '..')
+      : undefined;
+
     // This function uses aws-sdk but it will not be included
     new lambda.NodejsFunction(this, 'external', {
+      projectRoot,
       entry: path.join(__dirname, 'integ-handlers/dependencies.ts'),
       runtime: Runtime.NODEJS_12_X,
       minify: true,
