@@ -234,6 +234,33 @@ describe('DynamoAttributeValue', () => {
     });
   });
 
+
+  test('from invalid boolean with json path', () => {
+    // GIVEN
+    const m = 'invalid';
+
+    // WHEN / THEN
+    expect(() => {
+      tasks.DynamoAttributeValue.booleanFromJsonPath(m);
+    }).toThrow("Data JSON path values must either be exactly equal to '$' or start with '$.'");
+
+  });
+
+
+  test('from boolean with json path', () => {
+    // GIVEN
+    const m = '$.path';
+    // WHEN
+    const attribute = tasks.DynamoAttributeValue.booleanFromJsonPath(sfn.JsonPath.stringAt(m));
+
+    // THEN
+    expect(sfn.FieldUtils.renderObject(attribute)).toEqual({
+      attributeValue: {
+        'BOOL.$': m,
+      },
+    });
+  });
+
   test('from boolean', () => {
     // WHEN
     const attribute = tasks.DynamoAttributeValue.fromBoolean(true);
