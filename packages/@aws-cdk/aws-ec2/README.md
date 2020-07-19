@@ -257,15 +257,45 @@ DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 If you need access to the internet gateway, you can get it's ID like so:
 
 ```ts
-const igw_id = vpc.internetGatewayId;
+const igwId = vpc.internetGatewayId;
 ```
 
+For a VPC with only `ISOLATED` subnets, this value will be undefined.
+
 This is only supported for VPC's created in the stack - currently you're 
-unable to get the ID for imported VPC's. To do that you'd have to use the
-[Escape Hatches](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html).
+unable to get the ID for imported VPC's. To do that you'd have to specifically
+look up the Internet Gateway by name, which would require knowing the name 
+beforehand.
 
 This can be useful for configuring routing using a combination of gateways:
-for more information see [Routing](#routing).
+for more information see [Routing](#routing) below.
+
+#### Routing
+
+It's possible to add routes to any subnets using the `addRoute()` method. If for
+example you want an isolated subnet to have a static route via the default
+Internet Gateway created for the public subnet - perhaps for routing a VPN
+connection - you can do so like this:
+
+```ts
+const vpc = ec2.Vpc(this, "VPC", {
+  subnetConfiguration: [{
+      subnetType: SubnetType.PUBLIC,
+      name: 'Public',
+    },{
+      subnetType: SubnetType.ISOLATED,
+      name: 'Isolated',
+    }]
+})
+(vpc.isolatedSubnets[0] as Subnet).addRoute("StaticRoute", {
+    routerId: vpc.internetGatewayId,
+    routerType: RouterType.GATEWAY,
+    destinationCidrBlock: "8.8.8.8/32",
+})
+```
+
+*Note that we cast to `Subnet` here because the list of subnets only returns an
+`ISubnet`.*
 
 ### Reserving subnet IP space
 
@@ -432,29 +462,6 @@ listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
 
 // Port implicit in peer
 appFleet.connections.allowDefaultPortTo(rdsDatabase, 'Fleet can access database');
-```
-
-## Routing
-
-It's possible to add routes to any subnets using the `addRoute()` method. If for example you want an
-isolated subnet to have a static route via the default Internet Gateway created for the public 
-subnet - perhaps for routing a VPN connection - you can do so like this:
-
-```ts
-const vpc = ec2.Vpc(this, "VPC", {
-  subnetConfiguration: [{
-      subnetType: SubnetType.PUBLIC,
-      name: 'Public',
-    },{
-      subnetType: SubnetType.ISOLATED,
-      name: 'Isolated',
-    }]
-})
-(vpc.isolatedSubnets[0] as Subnet).addRoute("StaticRoute", {
-    routerId: vpc.internetGatewayId,
-    routerType: RouterType.GATEWAY,
-    destinationCidrBlock: "8.8.8.8/32",
-})
 ```
 
 ## Machine Images (AMIs)

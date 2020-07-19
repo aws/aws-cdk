@@ -1100,9 +1100,10 @@ export class Vpc extends VpcBase {
   public readonly availabilityZones: string[];
 
   /**
-   * Internet Gateway for the VPC
+   * Internet Gateway for the VPC. Note that in case the VPC is configured only
+   * with ISOLATED subnets, this attribute will be `undefined`.
    */
-  public readonly internetGatewayId: string = '';
+  public readonly internetGatewayId?: string;
 
   public readonly internetConnectivityEstablished: IDependable;
 

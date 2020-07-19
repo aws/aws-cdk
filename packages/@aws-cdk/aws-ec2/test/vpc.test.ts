@@ -181,7 +181,7 @@ nodeunitShim({
         ],
       });
       (vpc.isolatedSubnets[0] as Subnet).addRoute('TheRoute', {
-        routerId: vpc.internetGatewayId,
+        routerId: vpc.internetGatewayId!,
         routerType: RouterType.GATEWAY,
         destinationCidrBlock: '8.8.8.8/32',
       });
@@ -190,6 +190,21 @@ nodeunitShim({
         DestinationCidrBlock: '8.8.8.8/32',
         GatewayId: { },
       }));
+      test.done();
+    },
+
+    'with only isolated subnets the internet gateway should be undefined'(test: Test) {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.ISOLATED,
+            name: 'isolated',
+          },
+        ],
+      });
+      test.equal(vpc.internetGatewayId, undefined);
+      expect(stack).notTo(haveResource('AWS::EC2::InternetGateway'));
       test.done();
     },
 
