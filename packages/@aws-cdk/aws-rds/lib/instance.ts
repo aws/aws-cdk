@@ -8,9 +8,11 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CfnDeletionPolicy, Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
+import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { DatabaseClusterEngine, RotationMultiUserOptions } from './props';
+import { RotationMultiUserOptions } from './props';
+import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
 
 /**
@@ -45,6 +47,11 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
    * The instance endpoint.
    */
   readonly instanceEndpoint: Endpoint;
+
+  /**
+   * Add a new db proxy to this instance.
+   */
+  addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy;
 
   /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
@@ -112,6 +119,16 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public abstract readonly connections: ec2.Connections;
 
   /**
+   * Add a new db proxy to this instance.
+   */
+  public addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy {
+    return new DatabaseProxy(this, id, {
+      proxyTarget: ProxyTarget.fromInstance(this),
+      ...options,
+    });
+  }
+
+  /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
@@ -146,90 +163,6 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       targetType: secretsmanager.AttachmentTargetType.RDS_DB_INSTANCE,
     };
   }
-}
-
-/**
- * A database instance engine. Provides mapping to DatabaseEngine used for
- * secret rotation.
- */
-export class DatabaseInstanceEngine extends DatabaseClusterEngine {
-  /* tslint:disable max-line-length */
-  public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '10.0', parameterGroupFamily: 'mariadb10.0' },
-    { engineMajorVersion: '10.1', parameterGroupFamily: 'mariadb10.1' },
-    { engineMajorVersion: '10.2', parameterGroupFamily: 'mariadb10.2' },
-    { engineMajorVersion: '10.3', parameterGroupFamily: 'mariadb10.3' },
-  ]);
-
-  public static readonly MYSQL = new DatabaseInstanceEngine('mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '5.6', parameterGroupFamily: 'mysql5.6' },
-    { engineMajorVersion: '5.7', parameterGroupFamily: 'mysql5.7' },
-    { engineMajorVersion: '8.0', parameterGroupFamily: 'mysql8.0' },
-  ]);
-
-  public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-ee-11.2' },
-    { engineMajorVersion: '12.1', parameterGroupFamily: 'oracle-ee-12.1' },
-    { engineMajorVersion: '12.2', parameterGroupFamily: 'oracle-ee-12.2' },
-    { engineMajorVersion: '18', parameterGroupFamily: 'oracle-ee-18' },
-    { engineMajorVersion: '19', parameterGroupFamily: 'oracle-ee-19' },
-  ]);
-
-  public static readonly ORACLE_SE2 = new DatabaseInstanceEngine('oracle-se2', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '12.1', parameterGroupFamily: 'oracle-se2-12.1' },
-    { engineMajorVersion: '12.2', parameterGroupFamily: 'oracle-se2-12.2' },
-    { engineMajorVersion: '18', parameterGroupFamily: 'oracle-se2-18' },
-    { engineMajorVersion: '19', parameterGroupFamily: 'oracle-se2-19' },
-  ]);
-
-  public static readonly ORACLE_SE1 = new DatabaseInstanceEngine('oracle-se1', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se1-11.2' },
-  ]);
-
-  public static readonly ORACLE_SE = new DatabaseInstanceEngine('oracle-se', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se-11.2' },
-  ]);
-
-  public static readonly POSTGRES = new DatabaseInstanceEngine('postgres', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '9.3', parameterGroupFamily: 'postgres9.3' },
-    { engineMajorVersion: '9.4', parameterGroupFamily: 'postgres9.4' },
-    { engineMajorVersion: '9.5', parameterGroupFamily: 'postgres9.5' },
-    { engineMajorVersion: '9.6', parameterGroupFamily: 'postgres9.6' },
-    { engineMajorVersion: '10', parameterGroupFamily: 'postgres10' },
-    { engineMajorVersion: '11', parameterGroupFamily: 'postgres11' },
-  ]);
-
-  public static readonly SQL_SERVER_EE = new DatabaseInstanceEngine('sqlserver-ee', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-ee-11.0' },
-    { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-ee-12.0' },
-    { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-ee-13.0' },
-    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ee-14.0' },
-  ]);
-
-  public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-se-11.0' },
-    { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-se-12.0' },
-    { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-se-13.0' },
-    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-se-14.0' },
-  ]);
-
-  public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-ex-11.0' },
-    { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-ex-12.0' },
-    { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-ex-13.0' },
-    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ex-14.0' },
-  ]);
-
-  public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-web-11.0' },
-    { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-web-12.0' },
-    { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-web-13.0' },
-    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-web-14.0' },
-  ]);
-  /* tslint:enable max-line-length */
-
-  /** To make it a compile-time error to pass a DatabaseClusterEngine where a DatabaseInstanceEngine is expected. */
-  public readonly isDatabaseInstanceEngine = true;
 }
 
 /**
@@ -310,11 +243,6 @@ export enum PerformanceInsightRetention {
  * Construction properties for a DatabaseInstanceNew
  */
 export interface DatabaseInstanceNewProps {
-  /**
-   * The name of the compute and memory capacity classes.
-   */
-  readonly instanceType: ec2.InstanceType;
-
   /**
    * Specifies if the database instance is a multiple Availability Zone deployment.
    *
@@ -511,7 +439,6 @@ export interface DatabaseInstanceNewProps {
    */
   readonly autoMinorVersionUpgrade?: boolean;
 
-  // tslint:disable:max-line-length
   /**
    * The weekly time range (in UTC) during which system maintenance can occur.
    *
@@ -522,7 +449,6 @@ export interface DatabaseInstanceNewProps {
    * time for each AWS Region, occurring on a random day of the week. To see
    * the time blocks available, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
    */
-  // tslint:enable:max-line-length
   readonly preferredMaintenanceWindow?: string;
 
   /**
@@ -558,6 +484,8 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   public readonly vpc: ec2.IVpc;
 
   public readonly connections: ec2.Connections;
+
+  protected abstract readonly instanceType: ec2.InstanceType;
 
   protected readonly vpcPlacement?: ec2.SubnetSelection;
   protected readonly newCfnProps: CfnDBInstanceProps;
@@ -610,7 +538,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
       backupRetentionPeriod: props.backupRetention ? props.backupRetention.toDays() : undefined,
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
-      dbInstanceClass: `db.${props.instanceType}`,
+      dbInstanceClass: Lazy.stringValue({ produce: () => `db.${this.instanceType}` }),
       dbInstanceIdentifier: props.instanceIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
@@ -660,7 +588,14 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   /**
    * The database engine.
    */
-  readonly engine: DatabaseInstanceEngine;
+  readonly engine: IInstanceEngine;
+
+  /**
+   * The name of the compute and memory capacity for the instance.
+   *
+   * @default - m5.large (or, more specifically, db.m5.large)
+   */
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * The license model.
@@ -668,14 +603,6 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
    * @default - RDS default license model
    */
   readonly licenseModel?: LicenseModel;
-
-  /**
-   * The engine version. To prevent automatic upgrades, be sure to specify the
-   * full version number.
-   *
-   * @default - RDS default engine version
-   */
-  readonly engineVersion?: string;
 
   /**
    * Whether to allow major version upgrades.
@@ -737,6 +664,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   public abstract readonly secret?: secretsmanager.ISecret;
 
   protected readonly sourceCfnProps: CfnDBInstanceProps;
+  protected readonly instanceType: ec2.InstanceType;
 
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
@@ -747,20 +675,18 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    const timezoneSupport = [ DatabaseInstanceEngine.SQL_SERVER_EE, DatabaseInstanceEngine.SQL_SERVER_EX,
-      DatabaseInstanceEngine.SQL_SERVER_SE, DatabaseInstanceEngine.SQL_SERVER_WEB ];
-    if (props.timezone && !timezoneSupport.includes(props.engine)) {
-      throw new Error(`timezone property can be configured only for Microsoft SQL Server, not ${props.engine.name}`);
-    }
+    props.engine.bindToInstance(this, props);
+    this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
+    const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
     this.sourceCfnProps = {
       ...this.newCfnProps,
       allocatedStorage: props.allocatedStorage ? props.allocatedStorage.toString() : '100',
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
-      dbParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
-      engine: props.engine.name,
-      engineVersion: props.engineVersion,
+      dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
+      engine: props.engine.engineType,
+      engineVersion: props.engine.engineVersion?.fullVersion,
       licenseModel: props.licenseModel,
       timezone: props.timezone,
     };
@@ -997,6 +923,11 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
  */
 export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewProps {
   /**
+   * The name of the compute and memory capacity classes.
+   */
+  readonly instanceType: ec2.InstanceType;
+
+  /**
    * The source database instance.
    *
    * Each DB instance can have a limited number of read replicas. For more
@@ -1030,6 +961,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
+  protected readonly instanceType: ec2.InstanceType;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
@@ -1042,6 +974,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
+    this.instanceType = props.instanceType;
     this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;

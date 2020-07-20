@@ -10,29 +10,6 @@ function fixture(name: string) {
   return path.join(FIXTURES, name, 'manifest.json');
 }
 
-function clone(obj: any) {
-  return JSON.parse(JSON.stringify(obj));
-}
-
-function removeStringKeys(obj: any, keys: string[]) {
-
-  function _recurse(o: any) {
-    for (const prop in o) {
-      if (keys.includes(prop) && typeof o[prop] === 'string') {
-        delete o[prop];
-      } else if (typeof o[prop] === 'object') {
-        _recurse(o[prop]);
-      }
-    }
-  }
-
-  const cloned = clone(obj);
-  _recurse(cloned);
-
-  return cloned;
-
-}
-
 test('manifest save', () => {
 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'schema-tests'));
@@ -40,57 +17,36 @@ test('manifest save', () => {
 
   const assemblyManifest: AssemblyManifest = {
     version: 'version',
+    runtime: {
+      libraries: { lib1: '1.2.3' },
+    },
   };
 
-  Manifest.save(assemblyManifest, manifestFile);
+  Manifest.saveAssemblyManifest(assemblyManifest, manifestFile);
 
   const saved = JSON.parse(fs.readFileSync(manifestFile, { encoding: 'utf-8' }));
 
-  expect(saved).toEqual(assemblyManifest);
-
-});
-
-test('if this test fails, run "yarn update-schema"', () => {
-
-  // when we compare schemas we ignore changes the
-  // description that is generated from the ts docstrings.
-  const docStringFields = [
-    'description',
-  ];
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const schema = require('../scripts/update-schema.js');
-
-  const expected = removeStringKeys(schema.generate(), docStringFields);
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const actual = removeStringKeys(require('../schema/cloud-assembly.schema.json'), docStringFields);
-
-  try {
-    expect(actual).toEqual(expected);
-  } catch (err) {
-    // I couldn't for the life of me figure out how to provide additional error message
-    // to jest...any ideas?
-    err.message = `Whoops, Looks like the schema has changed. Did you forget to run 'yarn update-schema'?\n\n${err.message}`;
-    throw err;
-  }
+  expect(saved).toEqual({
+    ...assemblyManifest,
+    version: Manifest.version(), // version is forced
+  });
 });
 
 test('manifest load', () => {
-  const loaded = Manifest.load(fixture('only-version'));
+  const loaded = Manifest.loadAssemblyManifest(fixture('only-version'));
   expect(loaded).toMatchSnapshot();
 });
 
 test('manifest load fails for invalid nested property', () => {
-  expect(() => Manifest.load(fixture('invalid-nested-property'))).toThrow(/Invalid assembly manifest/);
+  expect(() => Manifest.loadAssemblyManifest(fixture('invalid-nested-property'))).toThrow(/Invalid assembly manifest/);
 });
 
 test('manifest load fails for invalid artifact type', () => {
-  expect(() => Manifest.load(fixture('invalid-artifact-type'))).toThrow(/Invalid assembly manifest/);
+  expect(() => Manifest.loadAssemblyManifest(fixture('invalid-artifact-type'))).toThrow(/Invalid assembly manifest/);
 });
 
 test('manifest load fails on higher major version', () => {
-  expect(() => Manifest.load(fixture('high-version'))).toThrow(/Cloud assembly schema version mismatch/);
+  expect(() => Manifest.loadAssemblyManifest(fixture('high-version'))).toThrow(/Cloud assembly schema version mismatch/);
 });
 
 // once we start introducing minor version bumps that are considered
@@ -108,9 +64,10 @@ test('manifest load fails on higher minor version', () => {
       version: newVersion,
     };
 
-    Manifest.save(assemblyManifest, manifestFile);
+    // can't use saveAssemblyManifest because it will force the correct version
+    fs.writeFileSync(manifestFile, JSON.stringify(assemblyManifest));
 
-    expect(() => Manifest.load(manifestFile)).toThrow(/Cloud assembly schema version mismatch/);
+    expect(() => Manifest.loadAssemblyManifest(manifestFile)).toThrow(/Cloud assembly schema version mismatch/);
   }
 });
 
@@ -129,24 +86,25 @@ test('manifest load fails on higher patch version', () => {
       version: newVersion,
     };
 
-    Manifest.save(assemblyManifest, manifestFile);
+    // can't use saveAssemblyManifest because it will force the correct version
+    fs.writeFileSync(manifestFile, JSON.stringify(assemblyManifest));
 
-    expect(() => Manifest.load(manifestFile)).toThrow(/Cloud assembly schema version mismatch/);
+    expect(() => Manifest.loadAssemblyManifest(manifestFile)).toThrow(/Cloud assembly schema version mismatch/);
   }
 });
 
 test('manifest load fails on invalid version', () => {
-  expect(() => Manifest.load(fixture('invalid-version'))).toThrow(/Invalid semver string/);
+  expect(() => Manifest.loadAssemblyManifest(fixture('invalid-version'))).toThrow(/Invalid semver string/);
 });
 
 test('manifest load succeeds on unknown properties', () => {
-  const manifest = Manifest.load(fixture('unknown-property'));
+  const manifest = Manifest.loadAssemblyManifest(fixture('unknown-property'));
   expect(manifest.version).toEqual('0.0.0');
 });
 
 test('stack-tags are deserialized properly', () => {
 
-  const m: AssemblyManifest = Manifest.load(fixture('with-stack-tags'));
+  const m: AssemblyManifest = Manifest.loadAssemblyManifest(fixture('with-stack-tags'));
 
   if (m.artifacts?.stack?.metadata?.AwsCdkPlaygroundBatch[0].data) {
     const entry = m.artifacts.stack.metadata.AwsCdkPlaygroundBatch[0].data as StackTagsMetadataEntry;
@@ -159,7 +117,7 @@ test('stack-tags are deserialized properly', () => {
 
 test('can access random metadata', () => {
 
-  const loaded = Manifest.load(fixture('random-metadata'));
+  const loaded = Manifest.loadAssemblyManifest(fixture('random-metadata'));
   const randomArray = loaded.artifacts?.stack.metadata?.AwsCdkPlaygroundBatch[0].data;
   const randomNumber = loaded.artifacts?.stack.metadata?.AwsCdkPlaygroundBatch[1].data;
   const randomMap = loaded.artifacts?.stack.metadata?.AwsCdkPlaygroundBatch[2].data;

@@ -1,0 +1,25 @@
+{
+  "name": "nodeunit-shim",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A helper package to migrate tests from nodeunit to Jest",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "echo No tests",
+    "build+test+package": "npm run build+test",
+    "build+test": "npm run build && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^10.17.27",
+    "typescript": "~3.9.6",
+    "@types/jest": "^26.0.4"
+  },
+  "dependencies": {
+    "jest": "^25.5.4"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

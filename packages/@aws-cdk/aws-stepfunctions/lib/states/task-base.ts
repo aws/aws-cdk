@@ -21,7 +21,7 @@ export interface TaskStateBaseProps {
   /**
    * JSONPath expression to select part of the state to be the input to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * input to be the empty object {}.
    *
    * @default - The entire task input (JSON path '$')
@@ -32,7 +32,7 @@ export interface TaskStateBaseProps {
    * JSONPath expression to select select a portion of the state output to pass
    * to the next state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * output to be the empty object {}.
    *
    * @default - The entire JSON node determined by the state input, the task result,
@@ -43,7 +43,7 @@ export interface TaskStateBaseProps {
   /**
    * JSONPath expression to indicate where to inject the state's output
    *
-   * May also be the special value DISCARD, which will cause the state's
+   * May also be the special value JsonPath.DISCARD, which will cause the state's
    * input to become its output.
    *
    * @default - Replaces the entire input with the result (JSON path '$')
@@ -140,7 +140,7 @@ export abstract class TaskStateBase extends State implements INextable {
       ...this.renderNextEnd(),
       ...this.renderRetryCatch(),
       ...this.renderTaskBase(),
-      ...this.renderTask(),
+      ...this._renderTask(),
     };
   }
 
@@ -247,7 +247,10 @@ export abstract class TaskStateBase extends State implements INextable {
     }
   }
 
-  protected abstract renderTask(): any;
+  /**
+   * @internal
+   */
+  protected abstract _renderTask(): any;
 
   private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (prefix === undefined) {

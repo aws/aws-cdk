@@ -293,7 +293,6 @@ export = {
     test.deepEqual(libs, {
       '@aws-cdk/core': version,
       '@aws-cdk/cx-api': version,
-      '@aws-cdk/cdk-assets-schema': version,
       '@aws-cdk/cloud-assembly-schema': version,
       'jsii-runtime': `node.js/${process.version}`,
     });
@@ -348,6 +347,22 @@ export = {
     test.ok(artifactsIds.indexOf('StackA') < artifactsIds.indexOf('StackC'));
     test.ok(artifactsIds.indexOf('StackB') < artifactsIds.indexOf('StackC'));
     test.ok(artifactsIds.indexOf('StackC') < artifactsIds.indexOf('StackD'));
+
+    test.done();
+  },
+
+  'application support any type in context'(test: Test) {
+    const app = new App({
+      context: {
+        isString: 'string',
+        isNumber: 10,
+        isObject: { isString: 'string', isNumber: 10 },
+      },
+    });
+
+    test.ok(app.node.tryGetContext('isString') === 'string');
+    test.ok(app.node.tryGetContext('isNumber') === 10);
+    test.deepEqual(app.node.tryGetContext('isObject'), { isString: 'string', isNumber: 10 });
 
     test.done();
   },

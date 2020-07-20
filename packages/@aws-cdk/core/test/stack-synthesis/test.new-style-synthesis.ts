@@ -1,6 +1,6 @@
-import * as asset_schema from '@aws-cdk/cdk-assets-schema';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { App, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
 import { evaluateCFN } from '../evaluate-cfn';
@@ -40,7 +40,7 @@ export = {
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
     test.ok(manifestArtifact);
-    const manifest: asset_schema.ManifestFile = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+    const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
 
     const firstFile = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
 
@@ -190,7 +190,7 @@ function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifa
   return x instanceof cxapi.AssetManifestArtifact;
 }
 
-function readAssetManifest(asm: cxapi.CloudAssembly): asset_schema.ManifestFile {
+function readAssetManifest(asm: cxapi.CloudAssembly): cxschema.AssetManifest {
   const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
   if (!manifestArtifact) { throw new Error('no asset manifest in assembly'); }
 

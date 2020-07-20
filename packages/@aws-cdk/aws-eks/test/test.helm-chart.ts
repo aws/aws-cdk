@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { testFixtureCluster } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'add Helm chart': {
@@ -52,6 +52,39 @@ export = {
       expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Values: '{\"foo\":123}' }));
       test.done();
     },
+    'should support create namespaces by default'(test: Test) {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
+
+      // THEN
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: true }));
+      test.done();
+    },
+    'should support create namespaces when explicitly specified'(test: Test) {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: true });
+
+      // THEN
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: true }));
+      test.done();
+    },
+    'should not create namespaces when disabled'(test: Test) {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: false  });
+
+      // THEN
+      expect(stack).notTo(haveResource(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: true }));
+      test.done();
+    },
     'should support waiting until everything is completed before marking release as successful'(test: Test) {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -71,9 +104,32 @@ export = {
       new eks.HelmChart(stack, 'MyWaitingChart', { cluster, chart: 'chart' });
 
       // THEN
-      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Wait: false }));
+      expect(stack).notTo(haveResource(eks.HelmChart.RESOURCE_TYPE, { Wait: true }));
       test.done();
     },
+    'should enable waiting when specified'(test: Test) {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyWaitingChart', { cluster, chart: 'chart', wait: true });
+
+      // THEN
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Wait: true }));
+      test.done();
+    },
+    'should disable waiting when specified as false'(test: Test) {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyWaitingChart', { cluster, chart: 'chart', wait: false });
+
+      // THEN
+      expect(stack).notTo(haveResource(eks.HelmChart.RESOURCE_TYPE, { Wait: true }));
+      test.done();
+    },
+
     'should timeout only after 10 minutes'(test: Test) {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -82,7 +138,7 @@ export = {
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', timeout: Duration.minutes(10) });
 
       // THEN
-      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Timeout: 600 }));
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Timeout: '600s' }));
       test.done();
     },
   },

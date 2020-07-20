@@ -99,7 +99,8 @@
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.color",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.label",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.stat",
-      "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricExpressionConfig.period"
+      "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricExpressionConfig.period",
+      "resource-attribute:@aws-cdk/aws-cloudwatch.CompositeAlarm.compositeAlarmArn"
     ]
   },
   "engines": {

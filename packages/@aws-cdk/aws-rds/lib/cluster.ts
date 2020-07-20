@@ -4,11 +4,13 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CfnDeletionPolicy, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { ClusterParameterGroup, IParameterGroup } from './parameter-group';
-import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, RotationMultiUserOptions } from './props';
+import { IParameterGroup } from './parameter-group';
+import { BackupProps, InstanceProps, Login, RotationMultiUserOptions } from './props';
+import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
 /**
@@ -18,14 +20,7 @@ export interface DatabaseClusterProps {
   /**
    * What kind of database to start
    */
-  readonly engine: DatabaseClusterEngine;
-
-  /**
-   * What version of the database to start
-   *
-   * @default - The default for the engine is used.
-   */
-  readonly engineVersion?: string;
+  readonly engine: IClusterEngine;
 
   /**
    * How many replicas/instances to create
@@ -240,6 +235,16 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
   public abstract readonly connections: ec2.Connections;
 
   /**
+   * Add a new db proxy to this cluster.
+   */
+  public addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy {
+    return new DatabaseProxy(this, id, {
+      proxyTarget: ProxyTarget.fromCluster(this),
+      ...options,
+    });
+  }
+
+  /**
    * Renders the secret attachment target specifications.
    */
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
@@ -393,7 +398,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
       }
     }
 
-    let clusterParameterGroup = props.parameterGroup;
     const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
     if (s3ImportRole || s3ExportRole) {
       if (s3ImportRole) {
@@ -402,40 +406,26 @@ export class DatabaseCluster extends DatabaseClusterBase {
       if (s3ExportRole) {
         clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn });
       }
-
-      // MySQL requires the associated roles to be specified as cluster parameters as well, PostgreSQL does not
-      if (props.engine === DatabaseClusterEngine.AURORA || props.engine === DatabaseClusterEngine.AURORA_MYSQL) {
-        if (!clusterParameterGroup) {
-          const parameterGroupFamily = props.engine.parameterGroupFamily(props.engineVersion);
-          if (!parameterGroupFamily) {
-            throw new Error(`No parameter group family found for database engine ${props.engine.name} with version ${props.engineVersion}.` +
-              'Failed to set the correct cluster parameters for s3 import and export roles.');
-          }
-          clusterParameterGroup = new ClusterParameterGroup(this, 'ClusterParameterGroup', {
-            family: parameterGroupFamily,
-          });
-        }
-
-        if (clusterParameterGroup instanceof ClusterParameterGroup) { // ignore imported ClusterParameterGroup
-          if (s3ImportRole) {
-            clusterParameterGroup.addParameter('aurora_load_from_s3_role', s3ImportRole.roleArn);
-          }
-          if (s3ExportRole) {
-            clusterParameterGroup.addParameter('aurora_select_into_s3_role', s3ExportRole.roleArn);
-          }
-        }
-      }
     }
+
+    // bind the engine to the Cluster
+    const clusterEngineBindConfig = props.engine.bindToCluster(this, {
+      s3ImportRole,
+      s3ExportRole,
+      parameterGroup: props.parameterGroup,
+    });
+    const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
+    const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
-      engine: props.engine.name,
-      engineVersion: props.engineVersion,
+      engine: props.engine.engineType,
+      engineVersion: props.engine.engineVersion?.fullVersion,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
-      port: props.port,
-      dbClusterParameterGroupName: clusterParameterGroup && clusterParameterGroup.parameterGroupName,
+      port: props.port ?? clusterEngineBindConfig.port,
+      dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
@@ -493,6 +483,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       });
     }
 
+    const instanceType = props.instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
+    const instanceParameterGroupConfig = props.instanceProps.parameterGroup?.bindToInstance({});
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -504,16 +496,16 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
-        engine: props.engine.name,
-        engineVersion: props.engineVersion,
+        engine: props.engine.engineType,
+        engineVersion: props.engine.engineVersion?.fullVersion,
         dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
-        dbInstanceClass: databaseInstanceType(props.instanceProps.instanceType),
+        dbInstanceClass: databaseInstanceType(instanceType),
         publiclyAccessible,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
-        dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
+        dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
         monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
         monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
       });

@@ -55,7 +55,7 @@ export default class CodeGenerator {
     this.code.line('// See: docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html');
     this.code.line(`// @cfn2ts:meta@ ${JSON.stringify(meta)}`);
     this.code.line();
-    this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
+    this.code.line('/* eslint-disable max-len */ // This is generated code - line lengths are difficult to control');
     this.code.line();
     this.code.line(`import * as ${CORE} from '${coreImport}';`);
     // explicitly import the cfn-parse.ts file from @core, which is not part of the public API of the module
@@ -232,12 +232,16 @@ export default class CodeGenerator {
     this.code.line(' *');
     this.code.line(' * @experimental');
     this.code.line(' */');
+    // eslint-disable-next-line max-len
     this.code.openBlock(`public static fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CORE}.FromCloudFormationOptions): ` +
       `${resourceName.className}`);
     this.code.line('resourceAttributes = resourceAttributes || {};');
+    this.code.indent('const cfnParser = new cfn_parse.CfnParser({');
+    this.code.line('finder: options.finder,');
+    this.code.unindent('});');
     if (propsType) {
       // translate the template properties to CDK objects
-      this.code.line(`const resourceProperties = ${CFN_PARSE}.FromCloudFormation.parseValue(resourceAttributes.Properties);`);
+      this.code.line('const resourceProperties = cfnParser.parseValue(resourceAttributes.Properties);');
       // translate to props, using a (module-private) factory function
       this.code.line(`const props = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
       // finally, instantiate the resource class
@@ -249,16 +253,17 @@ export default class CodeGenerator {
     // handle all non-property attributes
     // (retention policies, conditions, metadata, etc.)
     this.code.line('const cfnOptions = ret.cfnOptions;');
-    this.code.line(`cfnOptions.creationPolicy = ${CFN_PARSE}.FromCloudFormation.parseCreationPolicy(resourceAttributes.CreationPolicy);`);
-    this.code.line(`cfnOptions.updatePolicy = ${CFN_PARSE}.FromCloudFormation.parseUpdatePolicy(resourceAttributes.UpdatePolicy);`);
-    this.code.line(`cfnOptions.deletionPolicy = ${CFN_PARSE}.FromCloudFormation.parseDeletionPolicy(resourceAttributes.DeletionPolicy);`);
-    this.code.line(`cfnOptions.updateReplacePolicy = ${CFN_PARSE}.FromCloudFormation.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);`);
-    this.code.line(`cfnOptions.metadata = ${CFN_PARSE}.FromCloudFormation.parseValue(resourceAttributes.Metadata);`);
+    this.code.line('cfnOptions.creationPolicy = cfnParser.parseCreationPolicy(resourceAttributes.CreationPolicy);');
+    this.code.line('cfnOptions.updatePolicy = cfnParser.parseUpdatePolicy(resourceAttributes.UpdatePolicy);');
+    this.code.line('cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(resourceAttributes.DeletionPolicy);');
+    this.code.line('cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);');
+    this.code.line('cfnOptions.metadata = cfnParser.parseValue(resourceAttributes.Metadata);');
 
     // handle DependsOn
     this.code.line('// handle DependsOn');
     // DependsOn can be either a single string, or an array of strings
     this.code.line('resourceAttributes.DependsOn = resourceAttributes.DependsOn ?? [];');
+    // eslint-disable-next-line max-len
     this.code.line('const dependencies: string[] = Array.isArray(resourceAttributes.DependsOn) ? resourceAttributes.DependsOn : [resourceAttributes.DependsOn];');
     this.code.openBlock('for (const dep of dependencies)');
     this.code.line('const depResource = options.finder.findResource(dep);');
@@ -277,10 +282,6 @@ export default class CodeGenerator {
     this.code.closeBlock();
     this.code.line('cfnOptions.condition = condition;');
     this.code.closeBlock();
-
-    // ToDo handle:
-    // 1. CreationPolicy
-    // 2. UpdatePolicy
 
     this.code.line('return ret;');
     this.code.closeBlock();
@@ -520,7 +521,7 @@ export default class CodeGenerator {
           const scalarValidator = `${CORE}.unionValidator(${validatorNames})`;
           const listValidator = `${CORE}.listValidator(${CORE}.unionValidator(${itemValidatorNames}))`;
           const scalarMapper = `${CORE}.unionMapper([${validatorNames}], [${types.map(type => this.visitAtom(type)).join(', ')}])`;
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           const listMapper = `${CORE}.listMapper(${CORE}.unionMapper([${itemValidatorNames}], [${itemTypes.map(type => this.visitAtom(type)).join(', ')}]))`;
 
           return `${CORE}.unionMapper([${scalarValidator}, ${listValidator}], [${scalarMapper}, ${listMapper}])`;
@@ -790,9 +791,11 @@ export default class CodeGenerator {
     this.beginNamespace(typeName);
 
     this.docLink(propTypeSpec.Documentation, '@stability external');
+    /*
     if (!propTypeSpec.Properties || Object.keys(propTypeSpec.Properties).length === 0) {
-      this.code.line('// tslint:disable-next-line:no-empty-interface | A genuine empty-object type');
+      this.code.line('// eslint-disable-next-line somethingsomething | A genuine empty-object type');
     }
+    */
     this.code.openBlock(`export interface ${typeName.className}`);
     const conversionTable: Dictionary<string> = {};
     if (propTypeSpec.Properties) {

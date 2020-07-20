@@ -1,7 +1,7 @@
 import * as fs from 'fs';
-import { Test } from 'nodeunit';
 import * as os from 'os';
 import * as path from 'path';
+import { Test } from 'nodeunit';
 import { collectRuntimeInformation } from '../lib/private/runtime-info';
 
 export = {
@@ -26,7 +26,6 @@ export = {
       '@aws-cdk/core': version,
       '@aws-cdk/cx-api': version,
       '@aws-cdk/cloud-assembly-schema': version,
-      '@aws-cdk/cdk-assets-schema': version,
       '@aws-solutions-konstruk/foo': mockVersion,
       'jsii-runtime': `node.js/${process.version}`,
     });
