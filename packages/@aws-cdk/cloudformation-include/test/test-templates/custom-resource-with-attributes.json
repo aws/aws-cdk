@@ -1,0 +1,27 @@
+{
+  "Resources": {
+    "CustomBucket": {
+      "Type": "AWS::MyService::Custom",
+      "Metadata": {
+        "Object1": "Value1",
+        "Object2": "Value2"
+      },
+      "CreationPolicy": {
+        "AutoScalingCreationPolicy": {
+          "MinSuccessfulInstancesPercent" : 90
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "DependsOn": [ "CustomResource" ]
+    },
+    "CustomResource": {
+      "Type": "AWS::MyService::AnotherCustom",
+      "UpdatePolicy": {
+        "AutoScalingReplacingUpdate": {
+          "WillReplace" : "false"
+        }
+      },
+      "UpdateReplacePolicy": "Retain"
+    }
+  }
+}

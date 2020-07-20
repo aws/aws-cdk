@@ -456,6 +456,41 @@ describe('CDK Include', () => {
     });
   });
 
+  test('can include a template with a custom resource that uses cloudformation functions', () => {
+    includeTestTemplate(stack, 'custom-resource-with-functions.json');
+    expect(stack).toHaveResourceLike('AWS::MyService::Custom', {
+      "CustomStringProp": {
+        "Ref": "AWS::NoValue"
+      }
+    });
+  });
+
+  test('can include a template with a custom resource that uses attributes', () => {
+    includeTestTemplate(stack, 'custom-resource-with-attributes.json');
+    expect(stack).toHaveResourceLike('AWS::MyService::Custom', {
+      "Metadata": {
+        "Object1": "Value1",
+        "Object2": "Value2"
+      },
+      "CreationPolicy": {
+        "AutoScalingCreationPolicy": {
+          "MinSuccessfulInstancesPercent" : 90
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "DependsOn": [ "CustomResource" ]
+    }, ResourcePart.CompleteDefinition);
+
+    expect(stack).toHaveResourceLike('AWS::MyService::AnotherCustom', {
+      "UpdatePolicy": {
+        "AutoScalingReplacingUpdate": {
+          "WillReplace" : "false"
+        }
+      },
+      "UpdateReplacePolicy": "Retain"
+    }, ResourcePart.CompleteDefinition);
+  });
+
   test('can ingest a template that contains outputs and modify them', () => {
     const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
 
