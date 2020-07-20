@@ -309,23 +309,15 @@ export class Stack extends Construct implements ITaggable {
   public constructor(scope?: Construct, id?: string, props: StackProps = {}) {
     // For unit test scope and id are optional for stacks, but we still want an App
     // as the parent because apps implement much of the synthesis logic.
-    let relocateAsRoot = false;
-    if (!scope) {
-      scope = new App({
-        autoSynth: false,
-        outdir: FileSystem.mkdtemp('cdk-test-app-'),
-      });
-      relocateAsRoot = true;
-    }
+    scope = scope ?? new App({
+      autoSynth: false,
+      outdir: FileSystem.mkdtemp('cdk-test-app-'),
+    });
 
-    id = id ?? 'Stack'; // this will also be the default stack name
+    // "Default" is a "hidden id" from a `node.uniqueId` perspective
+    id = id ?? 'Default';
 
     super(scope, id);
-
-    // relocate this stack as if it was the root (from a naming perspective).
-    if (relocateAsRoot) {
-      this.node.relocate('');
-    }
 
     this._missingContext = new Array<cxschema.MissingContext>();
     this._stackDependencies = { };
