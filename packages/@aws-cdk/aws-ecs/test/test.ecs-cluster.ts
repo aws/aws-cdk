@@ -1228,7 +1228,7 @@ export = {
       Tags: [
         {
           Key: 'Name',
-          Value: 'Stack/MyPublicVpc',
+          Value: 'Default/MyPublicVpc',
         },
       ],
     }));
