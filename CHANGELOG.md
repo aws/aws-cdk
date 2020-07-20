@@ -2,6 +2,70 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.52.0](https://github.com/aws/aws-cdk/compare/v1.51.0...v1.52.0) (2020-07-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* **rds:** the property 'version' has been changed from string to an engine-specific
+  version class; use VersionClass.of() if you need to create a specific version of an engine from a string
+* **rds**: the property ParameterGroupProps.family has been renamed to engine, and its type changed from string to IEngine
+* **rds**: the property engineVersion in IClusterEngine changed from a string to EngineVersion
+* **rds**: the property engineVersion in IInstanceEngine changed from a string to EngineVersion
+* **rds**: the property parameterGroupFamily in IClusterEngine changed from required to optional
+* **rds**: the property parameterGroupFamily in IInstanceEngine changed from required to optional
+* **rds:** the class ClusterParameterGroup has been removed -
+  use ParameterGroup instead
+* **rds:** `DatabaseProxyProps.secret` => `DatabaseProxyProps.secrets[]`
+* **apigateway:** `defaultMethodOptions`, `defaultCorsPreflightOptions`
+and `defaultIntegration` have been removed from `SpecRestApiProps`.
+These can be specifed directly in the OpenAPI spec or via `addMethod()`
+ and `addResource()` APIs.
+* **glue:** The default location of glue data will be the root of an s3 bucket, instead of `/data`
+* **rds:** the class `DatabaseClusterEngine` has been replaced with the interface `IClusterEngine` in the type of `DatabaseClusterProps.engine`
+* **rds**: the class `DatabaseInstanceEngine` has been replaced with the interface `IInstanceEngine` in the type of `DatabaseInstanceSourceProps.engine`
+* **rds**: `DatabaseClusterProps.engineVersion` has been removed; instead, create an `IClusterEngine` with a specific version using the static factory methods in `DatabaseClusterEngine`
+* **rds**: `DatabaseInstanceSourceProps.engineVersion` has been removed; instead, create an `IInstanceEngine` with a specific version using the static factory methods in `DatabaseInstanceEngine`
+* **rds**: the property `majorEngineVersion` can no longer be passed when creating an `OptionGroup`; instead, create an `IInstanceEngine` with a specific version using the static factory methods in `DatabaseInstanceEngine`
+
+### Features
+
+* **aws-stepfunctions-tasks:** allow lambda invocations to combine input and function results ([#9022](https://github.com/aws/aws-cdk/issues/9022)) ([846a222](https://github.com/aws/aws-cdk/commit/846a222140984d0aaed948d5bb1f3127a2cc6eb1)), closes [#8943](https://github.com/aws/aws-cdk/issues/8943)
+* **certificatemanager:** native CloudFormation DNS validated certificate ([#8552](https://github.com/aws/aws-cdk/issues/8552)) ([337279f](https://github.com/aws/aws-cdk/commit/337279fcce009badc1bb878bdfbcf51ecbef0a38)), closes [#5831](https://github.com/aws/aws-cdk/issues/5831) [#5835](https://github.com/aws/aws-cdk/issues/5835) [#6081](https://github.com/aws/aws-cdk/issues/6081) [#6516](https://github.com/aws/aws-cdk/issues/6516) [#7150](https://github.com/aws/aws-cdk/issues/7150) [#7941](https://github.com/aws/aws-cdk/issues/7941) [#7995](https://github.com/aws/aws-cdk/issues/7995) [#7996](https://github.com/aws/aws-cdk/issues/7996) [#8282](https://github.com/aws/aws-cdk/issues/8282) [#8659](https://github.com/aws/aws-cdk/issues/8659) [#8783](https://github.com/aws/aws-cdk/issues/8783)
+* **cfn-include:** add support for nested stacks ([#8980](https://github.com/aws/aws-cdk/issues/8980)) ([bf12456](https://github.com/aws/aws-cdk/commit/bf12456671e171eab16690fc8b54fae6841cf711)), closes [#8978](https://github.com/aws/aws-cdk/issues/8978)
+* **cloudfront:** Initial CloudFront redesign ([#8982](https://github.com/aws/aws-cdk/issues/8982)) ([d30fa9d](https://github.com/aws/aws-cdk/commit/d30fa9dda0726230f077c181833fddd40450d6ae))
+* **codepipeline:** add support for a StepFunctions invoke action ([#8931](https://github.com/aws/aws-cdk/issues/8931)) ([499776d](https://github.com/aws/aws-cdk/commit/499776de6000b7a18b021b5e17d22078e55f66d9))
+* **core:** cloudformation resource metadata ([#9063](https://github.com/aws/aws-cdk/issues/9063)) ([b0f8729](https://github.com/aws/aws-cdk/commit/b0f8729002b90c1c90ca46a4db9e297a69fef174)), closes [#8788](https://github.com/aws/aws-cdk/issues/8788)
+* **core:** Duration.plus for adding durations ([a127048](https://github.com/aws/aws-cdk/commit/a127048bb3d18b3edb9094130022b8030b817fab))
+* **custom-resources:** custom resource provider log retention ([#9024](https://github.com/aws/aws-cdk/issues/9024)) ([18c024c](https://github.com/aws/aws-cdk/commit/18c024c7b1f07bc0d8baff047d09605579f3c02f))
+* **glue:** default data location for tables is the root of the bucket ([#8999](https://github.com/aws/aws-cdk/issues/8999)) ([28949bd](https://github.com/aws/aws-cdk/commit/28949bdada49231dbe844097e0076e34ef41f60b)), closes [#8472](https://github.com/aws/aws-cdk/issues/8472)
+* **lambda:** codeguru profiling groups ([#8852](https://github.com/aws/aws-cdk/issues/8852)) ([8c01420](https://github.com/aws/aws-cdk/commit/8c0142030dce359591aa76fe314f19fce9eddbe6))
+* **lambda-nodejs:** support build args ([#9035](https://github.com/aws/aws-cdk/issues/9035)) ([e27658e](https://github.com/aws/aws-cdk/commit/e27658e0f3a8d6e82d7d73dfcb49ce9491a3cf64)), closes [#8117](https://github.com/aws/aws-cdk/issues/8117)
+* **rds:** Allow multiple secrets to be passed to an RDS Proxy ([#9103](https://github.com/aws/aws-cdk/issues/9103)) ([2ab329f](https://github.com/aws/aws-cdk/commit/2ab329f56d06c376f1fa7c23246ce74958a08bac)), closes [#9098](https://github.com/aws/aws-cdk/issues/9098)
+* **rds:** introduce type-safe engine versions ([#9016](https://github.com/aws/aws-cdk/issues/9016)) ([fab7e28](https://github.com/aws/aws-cdk/commit/fab7e28f1cdae2eb65dddd32142fe64dc6955d63)), closes [#6532](https://github.com/aws/aws-cdk/issues/6532)
+* **rds:** the RDS Construct Library is now in Developer Preview ([#9119](https://github.com/aws/aws-cdk/issues/9119)) ([92e620c](https://github.com/aws/aws-cdk/commit/92e620c5ee4262736d5fa576193793d7771ec47c))
+* **rds:** unify ParameterGroup and ClusterParameterGroup ([#8959](https://github.com/aws/aws-cdk/issues/8959)) ([17b690b](https://github.com/aws/aws-cdk/commit/17b690bc4573a9b57de7a0aa6591c4e2f98a3f2e)), closes [#8932](https://github.com/aws/aws-cdk/issues/8932)
+* **stepfunctions-tasks:** assign boolean value in DynamoDB from state input (Json path) ([#9088](https://github.com/aws/aws-cdk/issues/9088)) ([7b8ef5b](https://github.com/aws/aws-cdk/commit/7b8ef5b1d61912f33bde11aad626621ce6336d0e)), closes [#9007](https://github.com/aws/aws-cdk/issues/9007)
+
+
+### Bug Fixes
+
+* **appsync:** erroneous api key created when additional authorization is not configured ([#9057](https://github.com/aws/aws-cdk/issues/9057)) ([6f934e9](https://github.com/aws/aws-cdk/commit/6f934e979e9e4b5535738f84d867ef539c994363)), closes [#9054](https://github.com/aws/aws-cdk/issues/9054)
+* **cfn-include:** fix issues in Conditions handling ([#9142](https://github.com/aws/aws-cdk/issues/9142)) ([e8d0776](https://github.com/aws/aws-cdk/commit/e8d077628e28ee055ac222d54c5cb4546ab82be3))
+* **cli:** diff against multiple stacks do not always fail if any have a diff ([#7690](https://github.com/aws/aws-cdk/issues/7690)) ([85f4a83](https://github.com/aws/aws-cdk/commit/85f4a83c8fcf4033e29823c27b038d0aae5eda34)), closes [#7492](https://github.com/aws/aws-cdk/issues/7492)
+* **cli:** unable to update stacks in UPDATE_ROLLBACK_COMPLETE ([#8948](https://github.com/aws/aws-cdk/issues/8948)) ([72ec59b](https://github.com/aws/aws-cdk/commit/72ec59b2108fabea4b52f32dbb0184b12d591aff)), closes [#8779](https://github.com/aws/aws-cdk/issues/8779) [/github.com/aws/aws-cdk/pull/8779#issuecomment-655258569](https://github.com/aws//github.com/aws/aws-cdk/pull/8779/issues/issuecomment-655258569) [#8126](https://github.com/aws/aws-cdk/issues/8126) [#5151](https://github.com/aws/aws-cdk/issues/5151)
+* **core:** fix Duration.toIsoString() for millseconds ([#9042](https://github.com/aws/aws-cdk/issues/9042)) ([8559117](https://github.com/aws/aws-cdk/commit/8559117006f23155b90642a204792953b3d15a72))
+* **core:** use any type for context ([#9014](https://github.com/aws/aws-cdk/issues/9014)) ([375335e](https://github.com/aws/aws-cdk/commit/375335eb4ce69c0306cd2cb2b26f466e17aa39bb)), closes [#8865](https://github.com/aws/aws-cdk/issues/8865)
+* **custom-resources:** Fix typo in README ([#9126](https://github.com/aws/aws-cdk/issues/9126)) ([1e16a7f](https://github.com/aws/aws-cdk/commit/1e16a7f0d6922d1ebb50fde4afd0affd60790b24)), closes [#9024](https://github.com/aws/aws-cdk/issues/9024)
+* **ec2:** Remove validation of availabilityZone from Volume ([#9082](https://github.com/aws/aws-cdk/issues/9082)) ([8d470b2](https://github.com/aws/aws-cdk/commit/8d470b2e7f9883ff0d16a76193d719de31241ea0))
+* **eks:** cluster creation fails due to missing `ec2:DescribeVpcs` permission ([#9029](https://github.com/aws/aws-cdk/issues/9029)) ([4a714ee](https://github.com/aws/aws-cdk/commit/4a714eea4becfee45c71fb6c68144dc6d8275082))
+* **lambda-event-sources:** use of CfnParameter for maxBatchSize, retryAttempts & parallelizationFactor fails ([#9064](https://github.com/aws/aws-cdk/issues/9064)) ([4470e89](https://github.com/aws/aws-cdk/commit/4470e899ae52a8a7076fec9c00dfbdaad6e0b263)), closes [#9044](https://github.com/aws/aws-cdk/issues/9044)
+* **lambda-nodejs:** parcel tries to install @babel/core ([#9067](https://github.com/aws/aws-cdk/issues/9067)) ([8d4c635](https://github.com/aws/aws-cdk/commit/8d4c635b5707e0d7cb34a78aed873796a4df7656)), closes [#9032](https://github.com/aws/aws-cdk/issues/9032)
+* **stepfunctions:** Choice state does not allow state input as a condition ([#8991](https://github.com/aws/aws-cdk/issues/8991)) ([db9d29b](https://github.com/aws/aws-cdk/commit/db9d29b5ab881cd359764e9900c9c12801bee21d)), closes [#8990](https://github.com/aws/aws-cdk/issues/8990)
+* **stepfunctions:** Map state does not render JSON paths from state input ([#9008](https://github.com/aws/aws-cdk/issues/9008)) ([767da12](https://github.com/aws/aws-cdk/commit/767da12b466d8b9c733332dcaca051b4cff9de80)), closes [#8992](https://github.com/aws/aws-cdk/issues/8992)
+* **apigateway:** remove default properties from SpecRestApi ([#9099](https://github.com/aws/aws-cdk/issues/9099)) ([06842d6](https://github.com/aws/aws-cdk/commit/06842d6389c8216bbfd18a397ef3d6f3b15316fb)), closes [#8347](https://github.com/aws/aws-cdk/issues/8347) [/github.com/aws/aws-cdk/issues/8347#issuecomment-651900511](https://github.com/aws//github.com/aws/aws-cdk/issues/8347/issues/issuecomment-651900511) [/github.com/aws/aws-cdk/issues/8347#issuecomment-652779763](https://github.com/aws//github.com/aws/aws-cdk/issues/8347/issues/issuecomment-652779763)
+* **rds:** change the way Engines are modeled ([#8686](https://github.com/aws/aws-cdk/issues/8686)) ([63cc1b4](https://github.com/aws/aws-cdk/commit/63cc1b443b6a22a8190ae8a7905175614ba48324)), closes [#2213](https://github.com/aws/aws-cdk/issues/2213) [#2512](https://github.com/aws/aws-cdk/issues/2512) [#4150](https://github.com/aws/aws-cdk/issues/4150) [#5126](https://github.com/aws/aws-cdk/issues/5126) [#7072](https://github.com/aws/aws-cdk/issues/7072)
+
 ## [1.51.0](https://github.com/aws/aws-cdk/compare/v1.50.0...v1.51.0) (2020-07-09)
 
 
