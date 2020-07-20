@@ -1,7 +1,7 @@
 import { BootstrappingParameters, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT } from './bootstrap-props';
 
 export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
-  return {
+  const template = {
     Description: 'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.',
     Conditions: {
       UsePublicAccessBlockConfiguration: {
@@ -87,13 +87,15 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
       },
       [BUCKET_DOMAIN_NAME_OUTPUT]: {
         Description: 'The domain name of the S3 bucket owned by the CDK toolkit stack',
-        Value: {
-          'Fn::If': [
-            'UseRegionalDomainName',
-            { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] },
-            { 'Fn::GetAtt': ['StagingBucket', 'DomainName'] },
-          ]},
+        Value: { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] },
       },
     },
   };
+
+  if (params.offline) {
+    template.Resources.StagingBucket.Properties.BucketEncryption = { Ref: 'AWS::NoValue' };
+    template.Outputs[BUCKET_DOMAIN_NAME_OUTPUT].Value = {'Fn::Sub': 'https://${StagingBucket}.s3-${AWS::Region}.amazonaws.com' };
+  }
+
+  return template;
 }
