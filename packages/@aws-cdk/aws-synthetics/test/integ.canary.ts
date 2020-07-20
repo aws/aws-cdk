@@ -10,7 +10,6 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-canary');
 
 new synth.Canary(stack, 'mycanary', {
-  name: 'integ-canary',
 });
 
 app.synth();
