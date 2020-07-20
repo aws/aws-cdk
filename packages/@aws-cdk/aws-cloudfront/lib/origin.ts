@@ -1,5 +1,5 @@
 import { IBucket } from '@aws-cdk/aws-s3';
-import { Construct, Duration } from '@aws-cdk/core';
+import { Construct, Duration, Token } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
 import { OriginProtocolPolicy } from './distribution';
 import { OriginAccessIdentity } from './origin_access_identity';
@@ -180,6 +180,7 @@ export abstract class Origin {
    * This method takes in the originPath, and returns it back (if undefined) or adds/removes the '/' as appropriate.
    */
   private validateOriginPath(originPath?: string): string | undefined {
+    if (Token.isUnresolved(originPath)) { return originPath; }
     if (originPath === undefined) { return undefined; }
     let path = originPath;
     if (!path.startsWith('/')) { path = '/' + path; }
