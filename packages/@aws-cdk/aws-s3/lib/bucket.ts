@@ -852,8 +852,6 @@ export enum InventoryFormat {
 export enum InventoryFrequency {
   /**
    * A report is generated every day.
-   *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
    */
   DAILY = 'Daily',
   /**
@@ -881,16 +879,23 @@ export enum InventoryObjectVersion {
  *
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
  */
-export interface InventoryConfiguration {
+export interface Inventory {
   /**
    * Bucket where all inventories will be saved in.
    */
-  readonly destination: IBucket;
+  readonly bucket: IBucket;
   /**
    * The prefix to be used when saving the inventory.
+   *
    * @default - No prefix.
    */
-  readonly destinationPrefix?: string;
+  readonly prefix?: string;
+  /**
+   * The inventory will only include objects that meet the prefix filter criteria.
+   *
+   * @default - No filter prefix
+   */
+  readonly filterPrefix?: string;
   /**
    * The account ID that owns the destination S3 bucket.
    * If no account ID is provided, the owner is not validated before exporting data.
@@ -898,7 +903,7 @@ export interface InventoryConfiguration {
    *
    * @default - No account ID.
    */
-  readonly destinationBucketOwner?: string;
+  readonly bucketOwner?: string;
   /**
    * The format of the inventory.
    *
@@ -908,7 +913,7 @@ export interface InventoryConfiguration {
   /**
    * Whether the inventory is enabled or disabled.
    *
-   * @default - Enabled if specified a destination bucket.
+   * @default - true
    */
   readonly enabled?: boolean;
   /**
@@ -1083,7 +1088,7 @@ export interface BucketProps {
    *
    * @default - No inventory configuration
    */
-  readonly inventories?: InventoryConfiguration[];
+  readonly inventories?: Inventory[];
 }
 
 /**
@@ -1173,7 +1178,7 @@ export class Bucket extends BucketBase {
   private readonly notifications: BucketNotifications;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
-  private readonly inventories: InventoryConfiguration[] = [];
+  private readonly inventories: Inventory[] = [];
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -1227,7 +1232,9 @@ export class Bucket extends BucketBase {
       props.serverAccessLogsBucket.allowLogDelivery();
     }
 
-    this.inventories.push(...(props.inventories || []));
+    for (const inventory of props.inventories ?? []) {
+      this.addInventory(inventory);
+    }
 
     // Add all bucket metric configurations rules
     (props.metrics || []).forEach(this.addMetric.bind(this));
@@ -1331,7 +1338,7 @@ export class Bucket extends BucketBase {
    *
    * @param inventory configuration to add
    */
-  public addInventoryConfiguration(inventory: InventoryConfiguration): void {
+  public addInventory(inventory: Inventory): void {
     this.inventories.push(inventory);
   }
 
@@ -1597,13 +1604,13 @@ export class Bucket extends BucketBase {
       return undefined;
     }
 
-    this.inventories.forEach(inventory =>
-      (inventory.destination.addToResourcePolicy(new iam.PolicyStatement({
+    for(const inventory of this.inventories) {
+      inventory.bucket.addToResourcePolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['s3:PutObject'],
         resources: [
-          inventory.destination.bucketArn,
-          inventory.destination.arnForObjects('*'),
+          inventory.bucket.bucketArn,
+          inventory.bucket.arnForObjects('*'),
         ],
         principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
         conditions: {
@@ -1611,28 +1618,29 @@ export class Bucket extends BucketBase {
             'aws:SourceArn': this.bucketArn,
           },
         },
-      }))),
-    );
+      }));
+    }
 
     const renderInventoryId = (bucketName: string, format: string, frequency: string) => (`${bucketName}-${format}-${frequency}`);
 
     return this.inventories.map(inventory => {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
-      const id = inventory.inventoryId ?? renderInventoryId(inventory.destination.bucketName, format, frequency);
+      const id = inventory.inventoryId ?? renderInventoryId(inventory.bucket.bucketName, format, frequency);
 
       return {
         id,
         destination: {
-          bucketArn: inventory.destination.bucketArn,
-          bucketAccountId: inventory.destinationBucketOwner,
+          bucketArn: inventory.bucket.bucketArn,
+          bucketAccountId: inventory.bucketOwner,
+          prefix: inventory.prefix,
           format,
         },
         enabled: inventory.enabled ?? true,
         includedObjectVersions: inventory.includeObjectVersions ?? InventoryObjectVersion.ALL,
         scheduleFrequency: frequency,
         optionalFields: inventory.optionalFields,
-        prefix: inventory.destinationPrefix,
+        prefix: inventory.filterPrefix,
       };
     });
   }

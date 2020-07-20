@@ -1980,7 +1980,7 @@ export = {
     new s3.Bucket(stack, 'MyBucket', {
       inventories: [
         {
-          destination: inventoryBucket,
+          bucket: inventoryBucket,
         },
       ],
     });

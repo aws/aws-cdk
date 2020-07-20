@@ -13,10 +13,10 @@ const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket', {
 const myBucket = new s3.Bucket(stack, 'MyBucket', {
   inventories: [
     {
-      destination: inventoryBucket,
+      bucket: inventoryBucket,
       frequency: s3.InventoryFrequency.DAILY,
       format: s3.InventoryFormat.PARQUET,
-      destinationPrefix: 'reports',
+      prefix: 'reports',
     },
   ],
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -26,8 +26,8 @@ const secondInventoryBucket = new s3.Bucket(stack, 'SecondBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-myBucket.addInventoryConfiguration({
-  destination: secondInventoryBucket,
+myBucket.addInventory({
+  bucket: secondInventoryBucket,
 });
 
 app.synth();

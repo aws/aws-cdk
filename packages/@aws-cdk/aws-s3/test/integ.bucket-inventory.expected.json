@@ -69,7 +69,8 @@
                   "Arn"
                 ]
               },
-              "Format": "Parquet"
+              "Format": "Parquet",
+              "Prefix": "reports"
             },
             "Enabled": true,
             "Id": {
@@ -84,7 +85,6 @@
               ]
             },
             "IncludedObjectVersions": "All",
-            "Prefix": "reports",
             "ScheduleFrequency": "Daily"
           },
           {

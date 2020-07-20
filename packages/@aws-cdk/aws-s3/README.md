@@ -226,6 +226,8 @@ const bucket = new Bucket(this, 'MyBucket', {
 
 ### S3 Inventory
 
+An inventory list contains a list of the objects in the source bucket and metadata for each object. The inventory lists are stored in the destination bucket as a CSV file compressed with GZIP, as an Apache optimized row columnar (ORC) file compressed with ZLIB, or as an Apache Parquet (Parquet) file compressed with Snappy.
+
 You can configure multiple inventory lists for a bucket. You can configure what object metadata to include in the inventory, whether to list all object versions or only current versions, where to store the inventory list file output, and whether to generate the inventory on a daily or weekly basis.
 
 ```ts
@@ -234,19 +236,21 @@ const inventoryBucket = new s3.Bucket(this, 'InventoryBucket');
 const dataBucket = new s3.Bucket(this, 'DataBucket', {
   inventories: [
     {
-      destination: inventoryBucket,
+      bucket: inventoryBucket,
       frequency: s3.InventoryFrequency.DAILY,
       includeObjectVersions: s3.InventoryObjectVersion.CURRENT,
     },
     {
-      destination: inventoryBucket,
-      destinationPrefix: 'with-all-versions',
+      bucket: inventoryBucket,
+      prefix: 'with-all-versions',
       frequency: s3.InventoryFrequency.WEEKLY,
       includeObjectVersions: s3.InventoryObjectVersion.ALL,
     }
   ]
 });
 ```
+
+[S3 Inventory]: https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
 
 ### Website redirection
 
