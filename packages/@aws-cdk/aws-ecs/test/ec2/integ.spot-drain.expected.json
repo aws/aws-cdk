@@ -356,15 +356,7 @@
       }
     },
     "EcsCluster97242B84": {
-      "Type": "AWS::ECS::Cluster",
-      "Properties": {
-        "ClusterSettings": [
-          {
-            "Name": "containerInsights",
-            "Value": "disabled"
-          }
-        ]
-      }
+      "Type": "AWS::ECS::Cluster"
     },
     "EcsClusterasgSpotInstanceSecurityGroupEA17787D": {
       "Type": "AWS::EC2::SecurityGroup",
