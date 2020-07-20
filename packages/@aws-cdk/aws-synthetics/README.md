@@ -14,33 +14,32 @@
 ---
 <!--END STABILITY BANNER-->
 
-Amazon CloudWatch Synthetics allow you to monitor your application by generating **synthetic** traffic. The traffic is produced by a **canary**. A canary is a configurable script that runs on a schedule. You configure the canary script to follow the same routes and perform the same actions as a customer, which allows you to continually verify your customer experience even when you don't have any customer traffic on your applications.
+Amazon CloudWatch Synthetics allow you to monitor your application by generating **synthetic** traffic. The traffic is produced by a **canary**: a configurable script that runs on a schedule. You configure the canary script to follow the same routes and perform the same actions as a user, which allows you to continually verify your user experience even when you don't have any traffic on your applications.
 
 ## Canary
 
 To illustrate how to use a canary, assume your application defines the following endpoint:
 
 ```bash
-curl https://api.awsomesite.com/user/books/topbook/
+% curl "https://api.example.com/user/books/topbook/"
 The Hitchhikers Guide to the Galaxy
 
 ```
 
 The below code defines a canary that will hit the `books/topbook` endpoint every 5 minutes:
 
-> **Not Implemented:** the `test` property will be a part of Milestone 2.
-
 ```ts
-const canary = new Canary(this, 'MyCanary', {
-  name: 'mycanary'
+import * as synthetics from '@aws-cdk/aws-synthetics';
+
+const canary = new synthetics.Canary(this, 'MyCanary', {
   frequency: Duration.minutes(5),
-  test: synth.Test.custom({
-    code: synth.Code.fromInline(`const https = require('https');
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromInline(`const https = require('https');
       var synthetics = require('Synthetics');
       const log = require('SyntheticsLogger');
   
       exports.handler = async function () {
-        const requestOptions = {"hostname":"api.awsomesite.com","method":"","path":"/user/books/topbook/","port":443}
+        const requestOptions = {"hostname":"api.example.com","method":"","path":"/user/books/topbook/","port":443}
         let req = https.request(requestOptions);
         req.on('response', (res) => {
           log.info()
@@ -57,72 +56,25 @@ The canary will automatically produce a CloudWatch Dashboard:
 
 ### Canary Test Property
 
-The `test` property represents the test that the canary executes. It accepts a type `Test`, which has as parameters the properties required to generate the test script.
-
-> **Not Implemented:** `Test.heartBeat()` is a part of Milestone 3
-
-Testing URL heartbeat:
-
-```ts
-const canary = new Canary(this, 'MyCanary', {
-  test: Test.heartBeat('https://myawsomesite.com'),
-  // ...
-});
-```
-
-> **Not Implemented:** `Test.apiEndpoint()` is a part of Milestone 4
-
-Testing a specific API:
-
-```ts
-const canary = new Canary(this, 'MyCanary', {
-  test: Test.apiEndpoint('https://myawsomesite.com/endpoint', {
-    method: 'GET'|'POST',
-    headers: Map<headerName, headerValue>,
-    data: string,
-  }),
-  // ...
-});
-```
-
-> **Not Implemented:** `Test.brokenLink()` is a part of Milestone 4
-
-Testing broken links:
-
-```ts
-const canary = new Canary(this, 'MyCanary', {
-  test: Test.brokenLink('https://myawsomesite.com', {
-    maxLinks: number,
-  }),
-  // ...
-});
-```
-
-> **Not Implemented:** `Test.custom` is a part of Milestone 2
-
-Users will be able to supply their own code by using `Test.custom()`, which exposes the `code` property similarly to the lambda construct.
+The `test` property represents the test that the canary executes. You can call `Test.custom()` which will allow you to specify a custom script and handler for the canary. To specify the script in the `code` property, use the static method `code.fromInline()`.
 
 ```ts
 const canary = new Canary(this, 'MyCanary', {
   test: Test.custom({
-    code: Code.fromAsset()|Code.fromBucket()|Code.fromInline(),
-    handler: 'index.handler' // required by the resource 
+    code: Code.fromInline('exports.handler = async () => {\nconsole.log(\'hello world\');\n};'),
+    handler: 'index.handler',
   }),
-  // ...
 });
 ```
 
 ### Alarms
 
-> **Not Implemented:** metric APIs will be a part of Milestone 3
-
 You can configure a CloudWatch Alarm on canary metrics. Metrics are emitted by CloudWatch automatically and can be accessed by the following APIs:
-- `canary.metricSuccessPercent()`
-- `canary.metricDuration()`
-- `canary.metricFailed()`
+- `canary.metricSuccessPercent()` - percentage of successful canary runs over a given time
+- `canary.metricDuration()` - how much time each canary run takes
+- `canary.metricFailed()` - number of failed canary runs over a given time
 
 ```ts
-
 new cloudwatch.Alarm(this, 'CanaryAlarm', {
   metric: canary.metricSuccessPercent(),
   evaluationPeriods: 2,
@@ -130,77 +82,3 @@ new cloudwatch.Alarm(this, 'CanaryAlarm', {
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
 });
 ```
-
-### Appendix: Canary CFN Property Implementation 
-
-> **Implemented:** Milestone 1
-
-Below is a full list of the Canary CFN resource properties and their implementation in the L2 construct.
-
-`artifactS3Location`:
-
-  - **Description:** An s3 bucket url.
-
-  - **Proposed L2 property:** Optional. Accept `IBucket` ; Default, create a bucket.  
-
-`executionRoleArn`: 
-
-  - **Description:** The role the canary assumes to make a run.
-
-  - **Proposed L2 property:** Optional. Rebranded into `role?: iam.IRole` ; Default, create a role.
-
-`failureRetentionPeriod`:
-
-  - **Description:** How long the canary stores failed runs in the s3 bucket, defaults to 31 days.
-
-  - **Proposed L2 property:** Optional. Accept `Duration.Days()`
-
-`successRetentionPeriod`: 
-
-  - **Description:** How long the canary stores successful runs in the s3 bucket, defaults to 31 days.
-
-  - **Proposed L2 property:** Optional. Accept `Duration.Days()`
-
-`name`: 
-
-  - **Description:** The name of the canary. The canary resource physical name,  Cloudformation does not generate a name for the canary.
-
-  - **Proposed L2 property:** Optional. Default, generate a name.
-
-`runtimeVersion`: 
-
-  - **Description:** The runtime version, of which there is only one: syn-1.0.
-
-  - **Proposed L2 property:** Do not expose property, the L2 will always use syn-1.0.
-
-`runConfig`:
-
-  - **Description:** Contains information for each canary run.
-
-  - **Proposed L2 property:** Optional. Renamed as `timeout` and `memorySize`; Default, same as `frequency`.
-
-`startCanaryAfterCreation`:
-
-  - **Description:** Whether or not the canary should start running after creation.
-
-  - **Proposed L2 property:** Optional. Renamed enableCanary; Default, `true`.
-
-`vpcConfig`: 
-
-  - **Description:** If the canary tests an endpoint inside a VPC, the VPC configuration.
-
-  - **Proposed L2 property:** Optional. Accept: `IVpc`
-
-`schedule`:
-
-  - **Description** Contains timing information for the canary as a whole.
-
-  - **Proposed L2 property:** Optional. Renamed as `frequency` and `timeToLive`; Default, `frequency` is every 5 minutes, `timeToLive` is forever.
-
-`code`: discussed above in `Test`
-
-
-### Future Work + Notes
-
-- Deleting a canary does not actually delete the underlying resources, i.e. the lambda function/layers, s3 buckets where canary results are stored, etc.
-
