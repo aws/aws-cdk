@@ -125,7 +125,7 @@ export interface AwsSdkCall {
 }
 
 export type EncodedAwsSdkCall = Omit<AwsSdkCall, 'assumedRole'> & {
-  readonly assumedRoleArn?: string;
+  readonly assumedRole?: string;
 }
 
 /**
@@ -425,7 +425,7 @@ function encodeBooleans(object: object) {
 function encodeAwsSdkCall(call: AwsSdkCall): EncodedAwsSdkCall {
   const {assumedRole, ...rest} = call;
   return {
-    assumedRoleArn: assumedRole?.roleArn,
+    assumedRole: assumedRole?.roleArn,
     ...encodeBooleans(rest),
   };
 }

@@ -113,11 +113,11 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     if (call) {
 
       let awsService: any;
-      if(call.assumedRoleArn){
+      if(call.assumedRole){
         const sts = new AWS.STS();
         const { Credentials } = await sts
           .assumeRole({
-            RoleArn: call.assumedRoleArn,
+            RoleArn: call.assumedRole,
             RoleSessionName: `CustomResource_${call.service}_${call.action}`,
           })
           .promise();

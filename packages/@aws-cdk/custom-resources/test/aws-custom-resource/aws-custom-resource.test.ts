@@ -526,9 +526,12 @@ test('can specify assumed role', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
-  const role = new iam.Role(stack, 'Role', {
-    assumedBy: new iam.AnyPrincipal(),
-  });
+  const role = iam.Role.fromRoleArn(
+    stack,
+    'Role',
+    'arn:aws:iam::123456789012:role/CoolRole',
+  );
+
 
   // WHEN
   new AwsCustomResource(stack, 'AwsSdk', {
@@ -556,25 +559,9 @@ test('can specify assumed role', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::LogRetentionPolicy', {
+  expect(stack).toHaveResourceLike('Custom::LogRetentionPolicy', {
     Create: {
-      service: 'CloudWatchLogs',
-      action: 'putRetentionPolicy',
-      parameters: {
-        logGroupName: '/aws/lambda/loggroup',
-        retentionInDays: 90,
-      },
-      physicalResourceId: {
-        id: 'loggroup',
-      },
-      assumedRoleArn: role.roleArn,
-    },
-    Delete: {
-      service: 'CloudWatchLogs',
-      action: 'deleteRetentionPolicy',
-      parameters: {
-        logGroupName: '/aws/lambda/loggroup',
-      },
+      assumedRole: 'arn:aws:iam::123456789012:role/CoolRole',
     },
   });
 });
