@@ -90,7 +90,7 @@ export interface CanaryOptions extends cdk.ResourceProps {
    *
    * @default - A unique physical ID will be generated for you and used as the canary name.
    */
-  readonly name: string;
+  readonly name?: string;
 
 }
 
@@ -103,7 +103,7 @@ export interface CanaryProps extends CanaryOptions {
    * Specify the endpoint that you want the canary code to hit. Alternatively, you can specify
    * your own canary script to run.
    *
-   * This is not yet implemented.
+   * TODO: implement this
    */
   //readonly test: Test;
 }
@@ -159,7 +159,7 @@ export class Canary extends cdk.Resource {
       inlinePolicies,
     });
 
-    const name = props.name ?? this.generateName();
+    const name = props.name ? this.verifyName(props.name) : this.generateName();
     const duration = props.timeToLive ?? cdk.Duration.seconds(0);
     const frequency = props.frequency ?? cdk.Duration.minutes(5);
     var timeout = props.timeout ?? cdk.Duration.seconds(Math.min(frequency.toSeconds(), 900));
@@ -170,7 +170,7 @@ export class Canary extends cdk.Resource {
       executionRoleArn: this.role.roleArn,
       startCanaryAfterCreation: props.enable ?? true,
       runtimeVersion: 'syn-1.0',
-      name: this.verifyName(name),
+      name,
       runConfig: {
         // Will include MemorySize when generated code gets updated.
         timeoutInSeconds: timeout.toSeconds(),
@@ -254,6 +254,11 @@ export class Canary extends cdk.Resource {
    * Creates a unique name for the canary. The generated name becomes the physical ID of the canary.
    */
   private generateName(): string {
-    return cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }).toLowerCase();
+    // In progress
+    // This does not work because re-deploying a canary will result in a new physical ID getting created
+    // I think I am going to need to use this.node.uniqueId as a hash to make sure that this does not change or try something else.
+
+    // return cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }).toLowerCase();
+    return 'canary' + Math.random().toString(36).substring(7);
   }
 }
