@@ -1,5 +1,5 @@
 import { EOL } from 'os';
-import { expect, haveResource, haveResourceLike, SynthUtils, arrayWith, objectLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -2000,24 +2000,6 @@ export = {
           Id: 'MyBucketInventory0',
         },
       ],
-    }));
-
-    expect(stack).to(haveResourceLike('AWS::S3::BucketPolicy', {
-      Bucket: { Ref: 'InventoryBucketA869B8CB'},
-      PolicyDocument: {
-        Statement: arrayWith(objectLike({
-          Action: 's3:PutObject',
-          Principal: { Service: 's3.amazonaws.com' },
-          Resource: [
-            {
-              'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'],
-            },
-            {
-              'Fn::Join': ['', [{'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn']}, '/*']],
-            },
-          ],
-        })),
-      },
     }));
 
     test.done();

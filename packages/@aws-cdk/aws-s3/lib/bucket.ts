@@ -1614,23 +1614,6 @@ export class Bucket extends BucketBase {
       return undefined;
     }
 
-    for(const inventory of this.inventories) {
-      inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['s3:PutObject'],
-        resources: [
-          inventory.destination.bucket.bucketArn,
-          inventory.destination.bucket.arnForObjects('*'),
-        ],
-        principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
-        conditions: {
-          ArnLike: {
-            'aws:SourceArn': this.bucketArn,
-          },
-        },
-      }));
-    }
-
     return this.inventories.map((inventory, index) => {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
