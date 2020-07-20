@@ -12,9 +12,9 @@ export interface IScalableFunctionAttribute {
    *
    * Allowed values: 0.1 - 0.9.
    */
-  scaleOnUtilization(props: UtilizationScalingProps): void;
+  scaleOnUtilization(props: UtilizationScalingOptions): void;
   /**
-   * Scale out or in based on time.
+   * Scale out or in based on schedule.
    */
   scaleOnSchedule(id: string, actions: appscaling.ScalingSchedule): void;
 }
@@ -22,15 +22,17 @@ export interface IScalableFunctionAttribute {
 /**
  * Properties for enabling Lambda utilization tracking
  */
-export interface UtilizationScalingProps extends appscaling.BaseTargetTrackingProps {
+export interface UtilizationScalingOptions extends appscaling.BaseTargetTrackingProps {
   /**
-   * Target utilization percent for the attribute
+   * Target utilization percent for the attribute.
+   *
+   * Allowed values: 0.1 - 0.9.
    */
   readonly targetUtilizationPercent: number;
 }
 
 /**
- * A scalable lambda function attribute
+ * A scalable lambda alias attribute
  */
 export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute {
   constructor(scope: Construct, id: string, props: appscaling.BaseScalableAttributeProps) {
@@ -44,7 +46,7 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
    *
    * Allowed values: 0.1 - 0.9.
    */
-  public scaleOnUtilization(props: UtilizationScalingProps) {
+  public scaleOnUtilization(props: UtilizationScalingOptions) {
     if (props.targetUtilizationPercent < 0.1 || props.targetUtilizationPercent > 0.9) {
       throw new Error('TargetUtilizationPercent should be between 0.1 and 0.9.');
     }
@@ -56,7 +58,7 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
   }
 
   /**
-   * Scale out or in based on time.
+   * Scale out or in based on schedule.
    */
   public scaleOnSchedule(id: string, action: appscaling.ScalingSchedule) {
     super.doScaleOnSchedule(id, action);

@@ -272,9 +272,9 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
 managing concurrency.
 
-### Configure Provisioned Concurrency AutoScaling
+### Configuring AutoScaling
 
-You can configure provisioned concurrency autoscaling on a function alias using the `autoScaleProvisionedConcurrency()` method:
+You can configure autoscaling of provisioned concurrency on a function alias using the `autoScaleProvisionedConcurrency()` method:
 
 ```ts
 const alias = new lambda.Alias(stack, 'Alias', {
