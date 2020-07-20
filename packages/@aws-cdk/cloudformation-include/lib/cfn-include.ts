@@ -2,6 +2,7 @@ import * as core from '@aws-cdk/core';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
+import { CfnResource } from '@aws-cdk/core';
 
 /**
  * Construction properties of {@link CfnInclude}.
@@ -311,12 +312,7 @@ export class CfnInclude extends core.CfnElement {
     }
 
     const resourceAttributes: any = this.template.Resources[logicalId];
-    const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
-    if (!l1ClassFqn) {
-      // currently, we only handle types we know the L1 for -
-      // in the future, we might construct an instance of CfnResource instead
-      throw new Error(`Unrecognized CloudFormation resource type: '${resourceAttributes.Type}'`);
-    }
+
     // fail early for resource attributes we don't support yet
     const knownAttributes = [
       'Type', 'Properties', 'Condition', 'DependsOn', 'Metadata',
@@ -329,9 +325,6 @@ export class CfnInclude extends core.CfnElement {
       }
     }
 
-    const [moduleName, ...className] = l1ClassFqn.split('.');
-    const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
-    const jsClassFromModule = module[className.join('.')];
     const self = this;
     const finder: core.ICfnFinder = {
       findCondition(conditionName: string): core.CfnCondition | undefined {
@@ -356,6 +349,29 @@ export class CfnInclude extends core.CfnElement {
     const options: core.FromCloudFormationOptions = {
       finder,
     };
+    const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
+    if (!l1ClassFqn) {
+      // currently, we only handle types we know the L1 for -
+      // in the future, we might construct an instance of CfnResource instead
+      for (const prop in (resourceAttributes)) {
+        console.log(prop);
+      }
+
+      const cfnParser = new cfn_parse.CfnParser({
+        finder,
+      });
+
+      console.log(resourceAttributes);
+
+      return new CfnResource(this, logicalId, {
+        type: resourceAttributes.Type,
+        properties: cfnParser.parseValue(resourceAttributes.Properties),
+      });
+    }
+
+    const [moduleName, ...className] = l1ClassFqn.split('.');
+    const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
+    const jsClassFromModule = module[className.join('.')];
 
     const l1Instance = this.nestedStacksToInclude[logicalId]
       ? this.createNestedStack(logicalId, finder)
