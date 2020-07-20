@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
 import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as consts from './runtime/consts';
@@ -60,6 +61,15 @@ export interface ProviderProps {
    * @default Duration.minutes(30)
    */
   readonly totalTimeout?: Duration;
+
+  /**
+   * The number of days framework log events are kept in CloudWatch Logs. When
+   * updating this property, unsetting it doesn't remove the log retention policy.
+   * To remove the retention policy, set the value to `INFINITE`.
+   *
+   * @default logs.RetentionDays.INFINITE
+   */
+  readonly logRetention?: logs.RetentionDays;
 }
 
 /**
@@ -86,6 +96,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
   public readonly serviceToken: string;
 
   private readonly entrypoint: lambda.Function;
+  private readonly logRetention?: logs.RetentionDays;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
@@ -97,6 +108,8 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
 
     this.onEventHandler = props.onEventHandler;
     this.isCompleteHandler = props.isCompleteHandler;
+
+    this.logRetention = props.logRetention;
 
     const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME);
 
@@ -139,6 +152,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
+      logRetention: this.logRetention,
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);

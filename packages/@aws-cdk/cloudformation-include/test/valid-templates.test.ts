@@ -1,10 +1,10 @@
+import * as path from 'path';
 import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
@@ -250,6 +250,41 @@ describe('CDK Include', () => {
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('resource-attribute-condition.json'),
     );
+  });
+
+  test('correctly change references to Conditions when renaming them', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'condition-same-name-as-resource.json');
+    const alwaysFalse = cfnTemplate.getCondition('AlwaysFalse');
+    alwaysFalse.overrideLogicalId('TotallyFalse');
+
+    expect(stack).toMatchTemplate({
+      "Parameters": {
+        "Param": {
+          "Type": "String",
+        },
+      },
+      "Conditions": {
+        "AlwaysTrue": {
+          "Fn::Not": [{ "Condition": "TotallyFalse" }],
+        },
+        "TotallyFalse": {
+          "Fn::Equals": [{ "Ref": "Param" }, 2],
+        },
+      },
+      "Resources": {
+        "AlwaysTrue": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::If": ["TotallyFalse",
+                { "Ref": "Param" },
+                { "Ref": "AWS::NoValue" },
+              ],
+            },
+          },
+        },
+      },
+    });
   });
 
   test('correctly parses templates with parameters', () => {

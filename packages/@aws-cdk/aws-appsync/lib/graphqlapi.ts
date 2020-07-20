@@ -342,9 +342,9 @@ export class GraphQLApi extends Construct {
 
     if (
       defaultAuthorizationType === AuthorizationType.API_KEY ||
-      props.authorizationConfig?.additionalAuthorizationModes?.findIndex(
+      props.authorizationConfig?.additionalAuthorizationModes?.some(
         (authMode) => authMode.authorizationType === AuthorizationType.API_KEY
-      ) !== -1
+      )
     ) {
       const apiKeyConfig: ApiKeyConfig = props.authorizationConfig
         ?.defaultAuthorization?.apiKeyConfig || {

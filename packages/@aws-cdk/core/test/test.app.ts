@@ -354,6 +354,22 @@ export = {
 
     test.done();
   },
+
+  'application support any type in context'(test: Test) {
+    const app = new App({
+      context: {
+        isString: 'string',
+        isNumber: 10,
+        isObject: { isString: 'string', isNumber: 10 },
+      },
+    });
+
+    test.ok(app.node.tryGetContext('isString') === 'string');
+    test.ok(app.node.tryGetContext('isNumber') === 10);
+    test.deepEqual(app.node.tryGetContext('isObject'), { isString: 'string', isNumber: 10 });
+
+    test.done();
+  },
 };
 
 class MyConstruct extends Construct {

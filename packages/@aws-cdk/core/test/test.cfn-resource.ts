@@ -73,4 +73,28 @@ export = nodeunit.testCase({
 
     test.done();
   },
+
+  'can add metadata'(test: nodeunit.Test) {
+    // GIVEN
+    const app = new core.App();
+    const stack = new core.Stack(app, 'TestStack');
+    const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
+
+    // WHEN
+    resource.addMetadata('Beep', 'Boop');
+
+    // THEN
+    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
+      Resources: {
+        DefaultResource: {
+          Type: 'Test::Resource::Fake',
+          Metadata: {
+            Beep: 'Boop',
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
 });

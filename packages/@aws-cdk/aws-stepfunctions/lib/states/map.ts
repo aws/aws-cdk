@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { Chain } from '../chain';
+import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { StateType } from './private/state-type';
@@ -158,6 +159,7 @@ export class Map extends State implements INextable {
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderNextEnd(),
       ...this.renderInputOutput(),
+      ...this.renderParameters(),
       ...this.renderRetryCatch(),
       ...this.renderIterator(),
       ...this.renderItemsPath(),
@@ -186,5 +188,14 @@ export class Map extends State implements INextable {
     return {
       ItemsPath: renderJsonPath(this.itemsPath),
     };
+  }
+
+  /**
+   * Render Parameters in ASL JSON format
+   */
+  private renderParameters(): any {
+    return FieldUtils.renderObject({
+      Parameters: this.parameters,
+    });
   }
 }

@@ -236,10 +236,9 @@ export interface DatabaseProxyOptions {
   /**
    * The secret that the proxy uses to authenticate to the RDS DB instance or Aurora DB cluster.
    * These secrets are stored within Amazon Secrets Manager.
-   *
-   * @default - no secret
+   * One or more secrets are required.
    */
-  readonly secret: secretsmanager.ISecret;
+  readonly secrets: secretsmanager.ISecret[];
 
   /**
    * One or more VPC security groups to associate with the new proxy.
@@ -380,20 +379,26 @@ export class DatabaseProxy extends cdk.Resource
       assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
     });
 
-    props.secret.grantRead(role);
+    for (const secret of props.secrets) {
+      secret.grantRead(role);
+    }
 
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
 
     const bindResult = props.proxyTarget.bind(this);
 
+    if (props.secrets.length < 1) {
+      throw new Error('One or more secrets are required.');
+    }
+
     this.resource = new CfnDBProxy(this, 'Resource', {
-      auth: [
-        {
+      auth: props.secrets.map(_ => {
+        return {
           authScheme: 'SECRETS',
           iamAuth: props.iamAuth ? 'REQUIRED' : 'DISABLED',
-          secretArn: props.secret.secretArn,
-        },
-      ],
+          secretArn: _.secretArn,
+        };
+      }),
       dbProxyName: this.physicalName,
       debugLogging: props.debugLogging,
       engineFamily: bindResult.engineFamily,

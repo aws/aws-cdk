@@ -68,7 +68,7 @@ export interface IRestApi extends IResourceBase {
 /**
  * Represents the props that all Rest APIs share
  */
-export interface RestApiOptions extends ResourceOptions {
+export interface RestApiBaseProps {
   /**
    * Indicates if a Deployment should be automatically created for this API,
    * and recreated when the API model (resources, methods) changes.
@@ -163,6 +163,13 @@ export interface RestApiOptions extends ResourceOptions {
 }
 
 /**
+ * Represents the props that all Rest APIs share.
+ * @deprecated - superceded by `RestApiBaseProps`
+ */
+export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {
+}
+
+/**
  * Props to create a new instance of RestApi
  */
 export interface RestApiProps extends RestApiOptions {
@@ -230,7 +237,7 @@ export interface RestApiProps extends RestApiOptions {
  * Props to instantiate a new SpecRestApi
  * @experimental
  */
-export interface SpecRestApiProps extends RestApiOptions {
+export interface SpecRestApiProps extends RestApiBaseProps {
   /**
    * An OpenAPI definition compatible with API Gateway.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
@@ -297,7 +304,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
-  constructor(scope: Construct, id: string, props: RestApiOptions = { }) {
+  constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
     super(scope, id, {
       physicalName: props.restApiName || id,
     });
@@ -462,7 +469,7 @@ export class SpecRestApi extends RestApiBase {
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
     this.restApiRootResourceId = resource.attrRootResourceId;
-    this.root = new RootResource(this, props, this.restApiRootResourceId);
+    this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
     this.configureDeployment(props);
     if (props.domainName) {

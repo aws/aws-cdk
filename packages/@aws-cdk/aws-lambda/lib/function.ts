@@ -1,4 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { IProfilingGroup, ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -190,6 +191,22 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default Tracing.Disabled
    */
   readonly tracing?: Tracing;
+
+  /**
+   * Enable profiling.
+   * @see https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html
+   *
+   * @default - No profiling.
+   */
+  readonly profiling?: boolean;
+
+  /**
+   * Profiling Group.
+   * @see https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html
+   *
+   * @default - A new profiling group will be created if `profiling` is set.
+   */
+  readonly profilingGroup?: IProfilingGroup;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -497,8 +514,6 @@ export class Function extends FunctionBase {
       physicalName: props.functionName,
     });
 
-    this.environment = props.environment || {};
-
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -531,6 +546,30 @@ export class Function extends FunctionBase {
 
     const code = props.code.bind(this);
     verifyCodeConfig(code, props.runtime);
+
+    let profilingGroupEnvironmentVariables = {};
+    if (props.profilingGroup && props.profiling !== false) {
+      this.validateProfilingEnvironmentVariables(props);
+      props.profilingGroup.grantPublish(this.role);
+      profilingGroupEnvironmentVariables = {
+        AWS_CODEGURU_PROFILER_GROUP_ARN: Stack.of(scope).formatArn({
+          service: 'codeguru-profiler',
+          resource: 'profilingGroup',
+          resourceName: props.profilingGroup.profilingGroupName,
+        }),
+        AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+      };
+    } else if (props.profiling) {
+      this.validateProfilingEnvironmentVariables(props);
+      const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup');
+      profilingGroup.grantPublish(this.role);
+      profilingGroupEnvironmentVariables = {
+        AWS_CODEGURU_PROFILER_GROUP_ARN: profilingGroup.profilingGroupArn,
+        AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+      };
+    }
+
+    this.environment = { ...profilingGroupEnvironmentVariables, ...(props.environment || {}) };
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
 
@@ -846,6 +885,12 @@ export class Function extends FunctionBase {
     return {
       mode: props.tracing,
     };
+  }
+
+  private validateProfilingEnvironmentVariables(props: FunctionProps) {
+    if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
+      throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
+    }
   }
 }
 
