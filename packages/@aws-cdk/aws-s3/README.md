@@ -236,15 +236,19 @@ const inventoryBucket = new s3.Bucket(this, 'InventoryBucket');
 const dataBucket = new s3.Bucket(this, 'DataBucket', {
   inventories: [
     {
-      bucket: inventoryBucket,
       frequency: s3.InventoryFrequency.DAILY,
       includeObjectVersions: s3.InventoryObjectVersion.CURRENT,
+      destination: {
+        bucket: inventoryBucket,
+      },
     },
     {
-      bucket: inventoryBucket,
-      prefix: 'with-all-versions',
       frequency: s3.InventoryFrequency.WEEKLY,
       includeObjectVersions: s3.InventoryObjectVersion.ALL,
+      destination: {
+        bucket: inventoryBucket,
+        prefix: 'with-all-versions',
+      },
     }
   ]
 });

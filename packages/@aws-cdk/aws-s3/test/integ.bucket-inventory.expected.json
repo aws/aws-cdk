@@ -73,17 +73,7 @@
               "Prefix": "reports"
             },
             "Enabled": true,
-            "Id": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "InventoryBucketA869B8CB"
-                  },
-                  "-Parquet-Daily"
-                ]
-              ]
-            },
+            "Id": "MyBucketInventory0",
             "IncludedObjectVersions": "All",
             "ScheduleFrequency": "Daily"
           },
@@ -98,17 +88,7 @@
               "Format": "CSV"
             },
             "Enabled": true,
-            "Id": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "SecondBucketAC350874"
-                  },
-                  "-CSV-Weekly"
-                ]
-              ]
-            },
+            "Id": "MyBucketInventory1",
             "IncludedObjectVersions": "All",
             "ScheduleFrequency": "Weekly"
           }

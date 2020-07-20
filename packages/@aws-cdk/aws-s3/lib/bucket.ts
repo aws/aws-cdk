@@ -875,11 +875,9 @@ export enum InventoryObjectVersion {
 }
 
 /**
- * Specifies the inventory configuration of an S3 Bucket.
- *
- * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
+ * The destination of the inventory.
  */
-export interface Inventory {
+export interface InventoryDestination {
   /**
    * Bucket where all inventories will be saved in.
    */
@@ -890,12 +888,24 @@ export interface Inventory {
    * @default - No prefix.
    */
   readonly prefix?: string;
+}
+
+/**
+ * Specifies the inventory configuration of an S3 Bucket.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
+ */
+export interface Inventory {
+  /**
+   * The destination of the inventory.
+   */
+  readonly destination: InventoryDestination;
   /**
    * The inventory will only include objects that meet the prefix filter criteria.
    *
-   * @default - No filter prefix
+   * @default - No objects prefix
    */
-  readonly filterPrefix?: string;
+  readonly objectsPrefix?: string;
   /**
    * The account ID that owns the destination S3 bucket.
    * If no account ID is provided, the owner is not validated before exporting data.
@@ -1605,42 +1615,49 @@ export class Bucket extends BucketBase {
     }
 
     for(const inventory of this.inventories) {
-      inventory.bucket.addToResourcePolicy(new iam.PolicyStatement({
+      const conditions: Record<string, object> = {
+        ArnLike: {
+          'aws:SourceArn': this.bucketArn,
+        },
+      };
+
+      if (inventory.bucketOwner) {
+        conditions.StringEquals ={
+          'aws:SourceAccount': inventory.bucketOwner,
+          's3:x-amz-acl': 'bucket-owner-full-control',
+        };
+      }
+
+      inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['s3:PutObject'],
         resources: [
-          inventory.bucket.bucketArn,
-          inventory.bucket.arnForObjects('*'),
+          inventory.destination.bucket.bucketArn,
+          inventory.destination.bucket.arnForObjects('*'),
         ],
         principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
-        conditions: {
-          ArnLike: {
-            'aws:SourceArn': this.bucketArn,
-          },
-        },
+        conditions,
       }));
     }
 
-    const renderInventoryId = (bucketName: string, format: string, frequency: string) => (`${bucketName}-${format}-${frequency}`);
-
-    return this.inventories.map(inventory => {
+    return this.inventories.map((inventory, index) => {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
-      const id = inventory.inventoryId ?? renderInventoryId(inventory.bucket.bucketName, format, frequency);
+      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`;
 
       return {
         id,
         destination: {
-          bucketArn: inventory.bucket.bucketArn,
+          bucketArn: inventory.destination.bucket.bucketArn,
           bucketAccountId: inventory.bucketOwner,
-          prefix: inventory.prefix,
+          prefix: inventory.destination.prefix,
           format,
         },
         enabled: inventory.enabled ?? true,
         includedObjectVersions: inventory.includeObjectVersions ?? InventoryObjectVersion.ALL,
         scheduleFrequency: frequency,
         optionalFields: inventory.optionalFields,
-        prefix: inventory.filterPrefix,
+        prefix: inventory.objectsPrefix,
       };
     });
   }

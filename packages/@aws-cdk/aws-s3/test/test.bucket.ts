@@ -1980,7 +1980,9 @@ export = {
     new s3.Bucket(stack, 'MyBucket', {
       inventories: [
         {
-          bucket: inventoryBucket,
+          destination: {
+            bucket: inventoryBucket,
+          },
         },
       ],
     });
@@ -1995,9 +1997,7 @@ export = {
             Format: 'CSV',
             BucketArn: { 'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'] },
           },
-          Id: {
-            'Fn::Join': ['', [{ Ref: 'InventoryBucketA869B8CB' }, '-CSV-Weekly']],
-          },
+          Id: 'MyBucketInventory0',
         },
       ],
     }));
