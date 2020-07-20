@@ -654,7 +654,7 @@ export = {
     test.deepEqual(toCloudFormation(stack), { Resources:
       { ParentMyResource4B1FDBCC:
          { Type: 'MyResourceType',
-           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Parent/MyResource' } } } });
+           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Default/Parent/MyResource' } } } });
 
     test.done();
   },

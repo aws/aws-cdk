@@ -70,7 +70,7 @@ nodeunitShim({
               {
                 Key: 'Name',
                 PropagateAtLaunch: true,
-                Value: 'ASG',
+                Value: 'Default/ASG',
               },
             ],
             VPCZoneIdentifier: [
