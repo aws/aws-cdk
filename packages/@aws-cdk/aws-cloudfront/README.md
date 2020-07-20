@@ -66,7 +66,7 @@ Origins can also be created from other resources (e.g., load balancers, API gate
 ```ts
 // Creates a distribution for an HTTP server.
 new cloudfront.Distribution(this, 'myDist', {
-defaultBehavior: { origin: cloudfront.Origin.fromHttpServer({ domainName: 'www.example.com' }) },
+  defaultBehavior: { origin: cloudfront.Origin.fromHttpServer({ domainName: 'www.example.com' }) },
 });
 ```
 
