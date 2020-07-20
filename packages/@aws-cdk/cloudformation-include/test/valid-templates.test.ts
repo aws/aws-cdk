@@ -444,10 +444,16 @@ describe('CDK Include', () => {
     });
   });
 
-  test("throws an exception when encountering a Resource type it doesn't recognize", () => {
-    expect(() => {
-      includeTestTemplate(stack, 'non-existent-resource-type.json');
-    }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
+  test('can include a template with a custom resource that only defines a type', () => {
+    includeTestTemplate(stack, 'non-existent-resource-type.json');
+    expect(stack).toHaveResourceLike('AWS::MyService::Custom');
+  });
+
+  test('can include a template with a custom resource that has custom properties', () => {
+    includeTestTemplate(stack, 'custom-resource-properties.json');
+    expect(stack).toHaveResourceLike('AWS::MyService::Custom', {
+      "CustomProp": "CustomValue"
+    });
   });
 
   test('can ingest a template that contains outputs and modify them', () => {

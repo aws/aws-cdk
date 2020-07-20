@@ -1,0 +1,10 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::MyService::Custom",
+      "Properties": {
+        "CustomProp": "CustomValue"
+      }
+    }
+  }
+}
