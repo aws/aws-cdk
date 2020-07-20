@@ -186,10 +186,10 @@ capacity.scaleOnMetric('ScaleToCPU', {
 });
 
 // If you want to temporarily turn off your scheduled actions, you can add in this line.
-readScaling.suspendSchedules();
+capacity.suspendSchedules();
 
 // If you want to temporarily turn off scaling out only, you can add in this line.
-readScaling.suspendDynamic(appscaling.Scale.OUT);
+capacity.suspendDynamic(appscaling.Scale.OUT);
 
 ```
 
