@@ -303,15 +303,7 @@
       }
     },
     "EcsDefaultClusterMnL3mNNYN926A5246": {
-      "Type": "AWS::ECS::Cluster",
-      "Properties": {
-        "ClusterSettings": [
-          {
-            "Name": "containerInsights",
-            "Value": "disabled"
-          }
-        ]
-      }
+      "Type": "AWS::ECS::Cluster"
     },
     "EcsDefaultClusterMnL3mNNYNVpc7788A521": {
       "Type": "AWS::EC2::VPC",

@@ -197,15 +197,7 @@
       }
     },
     "EcsCluster97242B84": {
-      "Type": "AWS::ECS::Cluster",
-      "Properties": {
-        "ClusterSettings": [
-          {
-            "Name": "containerInsights",
-            "Value": "disabled"
-          }
-        ]
-      }
+      "Type": "AWS::ECS::Cluster"
     },
     "TaskDefTaskRole1EDB4A67": {
       "Type": "AWS::IAM::Role",
