@@ -1,0 +1,12 @@
+{
+  "Resources": {
+    "CustomResource": {
+      "Type": "AWS::MyService::Custom",
+      "Properties": {
+        "CustomStringProp": {
+          "Ref": "AWS::NoValue"
+        }
+      }
+    }
+  }
+}

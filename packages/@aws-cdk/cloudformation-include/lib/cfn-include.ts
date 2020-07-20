@@ -3,6 +3,7 @@ import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
 import { CfnResource } from '@aws-cdk/core';
+import { CfnBucket } from '@aws-cdk/aws-s3';
 
 /**
  * Construction properties of {@link CfnInclude}.
@@ -353,20 +354,56 @@ export class CfnInclude extends core.CfnElement {
     if (!l1ClassFqn) {
       // currently, we only handle types we know the L1 for -
       // in the future, we might construct an instance of CfnResource instead
-      for (const prop in (resourceAttributes)) {
-        console.log(prop);
-      }
-
       const cfnParser = new cfn_parse.CfnParser({
         finder,
       });
 
-      console.log(resourceAttributes);
+      //console.log(resourceAttributes);
 
-      return new CfnResource(this, logicalId, {
+      const customResource = new CfnResource(this, logicalId, {
         type: resourceAttributes.Type,
         properties: cfnParser.parseValue(resourceAttributes.Properties),
       });
+
+      const cfnOptions = customResource.cfnOptions;
+
+      // handle resource attributes
+      cfnOptions.creationPolicy = cfnParser.parseCreationPolicy(resourceAttributes.CreationPolicy);
+      cfnOptions.updatePolicy = cfnParser.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
+      cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
+      cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
+      cfnOptions.metadata = cfnParser.parseValue(resourceAttributes.Metadata)
+
+      //console.log(resourceAttributes.creationPolicy);
+      //console.log(cfnOptions.creationPolicy);
+      // handle DependsOn
+      resourceAttributes.DependsOn = resourceAttributes.DependsOn ?? [];
+      const dependencies: string[] = Array.isArray(resourceAttributes.DependsOn) ?
+        resourceAttributes.DependsOn : [resourceAttributes.DependsOn];
+      for (const dep of dependencies) {
+        const depResource = finder.findResource(dep);
+        if (!depResource) {
+          throw new Error(`nested ack '${logicalId}' depends on '${dep}' that doesn't exist`);
+        }
+        customResource.node.addDependency(depResource);
+      }
+      // handle Condition
+      if (resourceAttributes.Condition) {
+        const condition = finder.findCondition(resourceAttributes.Condition);
+        if (!condition) {
+          throw new Error(`nested stack '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
+        }
+        cfnOptions.condition = condition;
+      }
+
+      this.resources[logicalId] = customResource;
+
+      if (this.preserveLogicalIds) {
+        // override the logical ID to match the original template
+        customResource.overrideLogicalId(logicalId);
+      }
+
+      return customResource;
     }
 
     const [moduleName, ...className] = l1ClassFqn.split('.');
