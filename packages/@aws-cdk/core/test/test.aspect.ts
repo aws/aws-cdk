@@ -26,8 +26,8 @@ export = {
 
     // WHEN
     const asp1 = Aspects.of(c);
-    asp1.apply(visit1);
-    asp1.apply(visit2);
+    asp1.add(visit1);
+    asp1.add(visit2);
 
     // THEN
     test.equal(asp1.aspects.length, 2);
@@ -54,7 +54,7 @@ export = {
   'Aspects are invoked only once'(test: Test) {
     const app = new App();
     const root = new MyConstruct(app, 'MyConstruct');
-    Aspects.of(root).apply(new VisitOnce());
+    Aspects.of(root).add(new VisitOnce());
 
     app.synth();
     test.deepEqual(root.visitCounter, 1);

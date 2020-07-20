@@ -56,7 +56,7 @@ export class CdkStage extends Construct {
     this.cloudAssemblyArtifact = props.cloudAssemblyArtifact;
     this.host = props.host;
 
-    Aspects.of(this).apply({ visit: () => this.prepare() });
+    Aspects.of(this).add({ visit: () => this.prepare() });
   }
 
   /**

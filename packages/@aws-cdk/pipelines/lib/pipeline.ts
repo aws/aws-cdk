@@ -104,7 +104,7 @@ export class CdkPipeline extends Construct {
     });
 
     this.node.addValidation({ validate: () => this.validatePipeline() });
-    Aspects.of(this).apply({ visit: () => this._assets.removeAssetsStageIfEmpty() });
+    Aspects.of(this).add({ visit: () => this._assets.removeAssetsStageIfEmpty() });
   }
 
   /**

@@ -160,9 +160,9 @@ export = {
     p.addArnPrincipal('arn');
     key.addToResourcePolicy(p);
 
-    Aspects.of(key).apply(new Tag('tag1', 'value1'));
-    Aspects.of(key).apply(new Tag('tag2', 'value2'));
-    Aspects.of(key).apply(new Tag('tag3', ''));
+    Aspects.of(key).add(new Tag('tag1', 'value1'));
+    Aspects.of(key).add(new Tag('tag2', 'value2'));
+    Aspects.of(key).add(new Tag('tag3', ''));
 
     expect(stack).to(exactlyMatchTemplate({
       Resources: {

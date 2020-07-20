@@ -42,10 +42,10 @@ export class Aspects {
   private constructor(_construct: IConstruct) { }
 
   /**
-   * Apply an aspect on this scope.
+   * Adds an aspect to be applied on this scope before synthesis.
    * @param aspect The aspect to apply.
    */
-  public apply(aspect: IAspect) {
+  public add(aspect: IAspect) {
     this._aspects.push(aspect);
   }
 

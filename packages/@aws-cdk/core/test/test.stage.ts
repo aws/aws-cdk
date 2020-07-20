@@ -127,7 +127,7 @@ export = {
 
     // WHEN
     const aspect = new TouchingAspect();
-    Aspects.of(stack).apply(aspect);
+    Aspects.of(stack).add(aspect);
 
     // THEN
     app.synth();
@@ -147,7 +147,7 @@ export = {
 
     // WHEN
     const aspect = new TouchingAspect();
-    Aspects.of(app).apply(aspect);
+    Aspects.of(app).add(aspect);
 
     // THEN
     app.synth();

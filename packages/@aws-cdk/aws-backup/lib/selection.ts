@@ -128,7 +128,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
     }
 
     if (resource.construct) {
-      Aspects.of(resource.construct).apply(this.backupableResourcesCollector);
+      Aspects.of(resource.construct).add(this.backupableResourcesCollector);
       // Cannot push `this.backupableResourcesCollector.resources` to
       // `this.resources` here because it has not been evaluated yet.
       // Will be concatenated to `this.resources` in a `Lazy.listValue`

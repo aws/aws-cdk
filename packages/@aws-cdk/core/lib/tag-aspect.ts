@@ -89,14 +89,14 @@ export class Tag extends TagBase {
    * add tags to the node of a construct and all its the taggable children
    */
   public static add(scope: Construct, key: string, value: string, props: TagProps = {}) {
-    Aspects.of(scope).apply(new Tag(key, value, props));
+    Aspects.of(scope).add(new Tag(key, value, props));
   }
 
   /**
    * remove tags to the node of a construct and all its the taggable children
    */
   public static remove(scope: Construct, key: string, props: TagProps = {}) {
-    Aspects.of(scope).apply(new RemoveTag(key, props));
+    Aspects.of(scope).add(new RemoveTag(key, props));
   }
 
   /**
