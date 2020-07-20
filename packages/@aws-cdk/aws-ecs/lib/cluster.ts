@@ -103,8 +103,10 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
-    const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
-    const clusterSettings = [{name: 'containerInsights', value: containerInsights ? 'enabled' : 'disabled'}];
+    let clusterSettings = undefined;
+    if (props.containerInsights !== undefined) {
+      clusterSettings = [{ name: 'containerInsights', value: props.containerInsights ? 'enabled' : 'disabled' }];
+    }
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
