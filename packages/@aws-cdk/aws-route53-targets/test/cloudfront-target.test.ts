@@ -1,9 +1,32 @@
 import '@aws-cdk/assert/jest';
+import { SynthUtils } from '@aws-cdk/assert';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as targets from '../lib';
+
+test('use CloudFrontTarget partition hosted zone id mapping', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  targets.CloudFrontTarget.getHostedZoneId(stack);
+
+  // THEN
+  expect(SynthUtils.toCloudFormation(stack)).toEqual({
+    Mappings: {
+      CloudFrontPartitionHostedZoneIdMap: {
+        'aws': {
+          zoneId: 'Z2FDTNDATAQYW2',
+        },
+        'aws-cn': {
+          zoneId: 'Z3RFFRIM2A3IF5',
+        },
+      },
+    },
+  });
+});
 
 test('use CloudFront as record target', () => {
   // GIVEN
@@ -33,8 +56,16 @@ test('use CloudFront as record target', () => {
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
-      DNSName: { 'Fn::GetAtt': [ 'MyDistributionCFDistributionDE147309', 'DomainName' ] },
-      HostedZoneId: 'Z2FDTNDATAQYW2',
+      DNSName: { 'Fn::GetAtt': ['MyDistributionCFDistributionDE147309', 'DomainName'] },
+      HostedZoneId: {
+        'Fn::FindInMap': [
+          'CloudFrontPartitionHostedZoneIdMap',
+          {
+            Ref: 'AWS::Partition',
+          },
+          'zoneId',
+        ],
+      },
     },
   });
 });
