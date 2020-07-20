@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { CanaryBase } from './canary-base';
+//import { CanaryBase } from './canary-base';
 import { CfnCanary } from './synthetics.generated';
 
 /**
@@ -41,7 +41,7 @@ export interface CanaryOptions extends cdk.ResourceProps {
   readonly timeout?: cdk.Duration;
 
   /**
-   * The amount of memory, in MB, that is allocated to your Canary. Must be a multiple of 64 and inside the range 960 to 3008.
+   * The amount of memory, that is allocated to your Canary. Must be a multiple of 64 MiB and inside the range 960 MiB to 3008 MiB.
    *
    * @default - 960
    */
@@ -108,7 +108,7 @@ export interface CanaryProps extends CanaryOptions {
   //readonly test: Test;
 }
 
-export class Canary extends CanaryBase {
+export class Canary extends cdk.Resource {
   /**
    * Execution role associated with this Canary.
    */
