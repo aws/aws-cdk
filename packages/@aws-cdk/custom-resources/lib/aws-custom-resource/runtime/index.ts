@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
-import { AwsSdkCall } from '../aws-custom-resource';
+import { EncodedAwsSdkCall } from '../aws-custom-resource';
 
 /**
  * Flattens a nested object
@@ -108,13 +108,33 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
     let flatData: { [key: string]: string } = {};
     let data: { [key: string]: string } = {};
-    const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
+    const call: EncodedAwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
     if (call) {
-      const awsService = new (AWS as any)[call.service]({
-        apiVersion: call.apiVersion,
-        region: call.region,
-      });
+
+      let awsService: any;
+      if(call.assumedRoleArn){
+        const sts = new AWS.STS();
+        const { Credentials } = await sts
+          .assumeRole({
+            RoleArn: call.assumedRoleArn,
+            RoleSessionName: `CustomResource_${call.service}_${call.action}`,
+          })
+          .promise();
+
+        awsService = new AWS[call.service]({
+          apiVersion: call.apiVersion,
+          region: call.region,
+          accessKeyId: Credentials.AccessKeyId,
+          secretAccessKey: Credentials.SecretAccessKey,
+          sessionToken: Credentials.SessionToken,
+        });
+      } else {
+        awsService = new AWS[call.service]({
+          apiVersion: call.apiVersion,
+          region: call.region,
+        });
+      }
 
       try {
         const response = await awsService[call.action](call.parameters && decodeBooleans(call.parameters)).promise();

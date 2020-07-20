@@ -113,6 +113,19 @@ export interface AwsSdkCall {
    * @default - return all data
    */
   readonly outputPath?: string;
+
+  /**
+   * The role that should be assumed before executing the sdk call
+   * This role will apply only to this single call. The role must be assumable by the
+   * execution role of the lambda function.
+   *
+   * @default - no role to assume
+   */
+  readonly assumedRole?: iam.IRole;
+}
+
+export type EncodedAwsSdkCall = Omit<AwsSdkCall, 'assumedRole'> & {
+  readonly assumedRoleArn?: string;
 }
 
 /**
@@ -313,7 +326,14 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     } else {
       // Derive statements from AWS SDK calls
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
-        if (call) {
+        if (call?.assumedRole) {
+          provider.addToRolePolicy(
+            new iam.PolicyStatement({
+              actions: ['sts:AssumeRole'],
+              resources: [call.assumedRole.roleArn],
+            }),
+          );
+        }else if (call) {
           provider.addToRolePolicy(new iam.PolicyStatement({
             actions: [awsSdkToIamAction(call.service, call.action)],
             resources: props.policy.resources,
@@ -329,9 +349,9 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       serviceToken: provider.functionArn,
       pascalCaseProperties: true,
       properties: {
-        create: create && encodeBooleans(create),
-        update: props.onUpdate && encodeBooleans(props.onUpdate),
-        delete: props.onDelete && encodeBooleans(props.onDelete),
+        create: create && encodeAwsSdkCall(create),
+        update: props.onUpdate && encodeAwsSdkCall(props.onUpdate),
+        delete: props.onDelete && encodeAwsSdkCall(props.onDelete),
       },
     });
   }
@@ -400,4 +420,12 @@ function encodeBooleans(object: object) {
         return v;
     }
   });
+}
+
+function encodeAwsSdkCall(call: AwsSdkCall): EncodedAwsSdkCall {
+  const {assumedRole, ...rest} = call;
+  return {
+    assumedRoleArn: assumedRole?.roleArn,
+    ...encodeBooleans(rest),
+  };
 }

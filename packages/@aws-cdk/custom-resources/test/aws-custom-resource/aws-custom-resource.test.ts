@@ -521,3 +521,60 @@ test('can specify log retention', () => {
     RetentionInDays: 7,
   });
 });
+
+test('can specify assumed role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AnyPrincipal(),
+  });
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    resourceType: 'Custom::LogRetentionPolicy',
+    onCreate: {
+      service: 'CloudWatchLogs',
+      action: 'putRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+        retentionInDays: 90,
+      },
+      physicalResourceId: PhysicalResourceId.of('loggroup'),
+      assumedRole: role,
+    },
+    onDelete: {
+      service: 'CloudWatchLogs',
+      action: 'deleteRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+      },
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({
+      resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+    }),
+  });
+
+  // THEN
+  expect(stack).toHaveResource('Custom::LogRetentionPolicy', {
+    Create: {
+      service: 'CloudWatchLogs',
+      action: 'putRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+        retentionInDays: 90,
+      },
+      physicalResourceId: {
+        id: 'loggroup',
+      },
+      assumedRoleArn: role.roleArn,
+    },
+    Delete: {
+      service: 'CloudWatchLogs',
+      action: 'deleteRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+      },
+    },
+  });
+});
