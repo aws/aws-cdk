@@ -243,17 +243,17 @@ will be enabled.
 
 ### Monitoring Group Metrics
 
-Group metrics are used to monitor group level properties; they describe the group rather than any of its instances (e.g GroupMaxSize, the group maximum size). To enable group metrics monitoring, use the `groupMetricsCollections` property, or the `emitAllGroupMetrics` and `emitGroupMetrics` methods.
-All Group metrics are reported in a granularity of 1 minute at no additional charge.
+Group metrics are used to monitor group level properties; they describe the group rather than any of its instances (e.g GroupMaxSize, the group maximum size). To enable group metrics monitoring, use the `groupMetrics` property.
+All group metrics are reported in a granularity of 1 minute at no additional charge.
 
 See [EC2 docs](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-monitoring.html#as-group-metrics) for a list of all available group metrics.
 
-To enable group metrics monitoring using the `groupMetricsCollections` property:
+To enable group metrics monitoring using the `groupMetrics` property:
 
 ```ts
 // Enable monitoring of all group metrics
 new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  groupMetrics: [new autoscaling.GroupMetrics()],
+  groupMetrics: [[GroupMetrics.all()],
   // ...
 });
 
@@ -262,19 +262,6 @@ new autoscaling.AutoScalingGroup(stack, 'ASG', {
   groupMetrics: [new autoscaling.GroupMetrics(GroupMetric.MIN_SIZE, GroupMetric.MAX_SIZE)],
   // ...
 });
-```
-
-Or using the emitXxx methods:
-
-```ts
-// Enable monitoring for all group metrics
-asg.emitAllGroupMetrics();
-
-// Enable monitoring for a subset of metrics
-asg.emitGroupMetrics(
-  autoscaling.GroupMetric.MIN_SIZE,
-  autoscaling.GroupMetric.MAX_SIZE,
-);
 ```
 
 ### Future work

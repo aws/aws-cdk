@@ -1088,32 +1088,7 @@ nodeunitShim({
     test.done();
   },
 
-  'test emitAllGroupMetrics adds a single MetricsCollection with no Metrics specified'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = mockVpc(stack);
-    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-      machineImage: new ec2.AmazonLinuxImage(),
-      vpc,
-    });
-
-    // When
-    asg.emitAllGroupMetrics();
-
-    // Then
-    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
-      MetricsCollection: [
-        {
-          'Granularity': '1Minute',
-          Metrics: ABSENT,
-        },
-      ],
-    }));
-    test.done();
-  },
-
-  'test creating GroupMetrics with no metrics, adds a single MetricsCollection with no Metrics specified'(test: Test) {
+  'test GroupMetrics.all(), adds a single MetricsCollection with no Metrics specified'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1122,7 +1097,7 @@ nodeunitShim({
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      groupMetrics: [new autoscaling.GroupMetrics()],
+      groupMetrics: [autoscaling.GroupMetrics.all()],
     });
 
     // Then
@@ -1137,66 +1112,29 @@ nodeunitShim({
     test.done();
   },
 
-  'test emitGroupMetrics adds MetricsCollection with a list of specified Metrics'(test: Test) {
+  'test can specify a subset of group metrics'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
-    const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
+      groupMetrics: [
+        new autoscaling.GroupMetrics(autoscaling.GroupMetric.MIN_SIZE,
+          autoscaling.GroupMetric.MAX_SIZE,
+          autoscaling.GroupMetric.DESIRED_CAPACITY,
+          autoscaling.GroupMetric.IN_SERVICE_INSTANCES),
+        new autoscaling.GroupMetrics(autoscaling.GroupMetric.PENDING_INSTANCES,
+          autoscaling.GroupMetric.STANDBY_INSTANCES,
+          autoscaling.GroupMetric.TOTAL_INSTANCES,
+          autoscaling.GroupMetric.TERMINATING_INSTANCES,
+        ),
+      ],
       vpc,
     });
 
-    // When
-    asg.emitGroupMetrics(
-      autoscaling.GroupMetric.MIN_SIZE,
-      autoscaling.GroupMetric.MAX_SIZE,
-      autoscaling.GroupMetric.DESIRED_CAPACITY,
-      autoscaling.GroupMetric.IN_SERVICE_INSTANCES,
-    );
-    asg.emitGroupMetrics(
-      autoscaling.GroupMetric.PENDING_INSTANCES,
-      autoscaling.GroupMetric.STANDBY_INSTANCES,
-      autoscaling.GroupMetric.TOTAL_INSTANCES,
-      autoscaling.GroupMetric.TERMINATING_INSTANCES,
-    );
-
-    // Then
-    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
-      MetricsCollection: [
-        {
-          Granularity: '1Minute',
-          Metrics: [ 'GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances' ],
-        }, {
-          Granularity: '1Minute',
-          Metrics: [ 'GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances' ],
-        },
-      ],
-    }));
-    test.done();
-  },
-
-  'can configure metricsCollection on the constructor and using emitGroupMetrics simultaneously'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = mockVpc(stack);
-    // When
-    const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-      machineImage: new ec2.AmazonLinuxImage(),
-      vpc,
-      groupMetrics: [new autoscaling.GroupMetrics(autoscaling.GroupMetric.MIN_SIZE,
-        autoscaling.GroupMetric.MAX_SIZE,
-        autoscaling.GroupMetric.DESIRED_CAPACITY ,
-        autoscaling.GroupMetric.IN_SERVICE_INSTANCES),
-      ],
-    });
-    asg.emitGroupMetrics(
-      autoscaling.GroupMetric.PENDING_INSTANCES,
-      autoscaling.GroupMetric.STANDBY_INSTANCES,
-      autoscaling.GroupMetric.TOTAL_INSTANCES,
-      autoscaling.GroupMetric.TERMINATING_INSTANCES,
-    );
     // Then
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       MetricsCollection: [
@@ -1216,7 +1154,7 @@ nodeunitShim({
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
-    const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
@@ -1227,21 +1165,10 @@ nodeunitShim({
       )],
     });
 
-    // When
-    asg.emitGroupMetrics(
-      autoscaling.GroupMetric.MIN_SIZE,
-      autoscaling.GroupMetric.MAX_SIZE,
-      autoscaling.GroupMetric.MAX_SIZE,
-      autoscaling.GroupMetric.MIN_SIZE,
-    );
-
     // Then
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       MetricsCollection: [
         {
-          Granularity: '1Minute',
-          Metrics: [ 'GroupMinSize', 'GroupMaxSize' ],
-        }, {
           Granularity: '1Minute',
           Metrics: [ 'GroupMinSize', 'GroupMaxSize' ],
         },

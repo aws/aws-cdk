@@ -237,9 +237,8 @@ export interface CommonAutoScalingGroupProps {
 
   /**
    * Enable monitoring for group metrics, these metrics describe the group rather than any of its instances.
+   * To report all group metrics use `GroupMetrics.all()`
    * Group metrics are reported in a granularity of 1 minute at no additional charge.
-   *
-   * You can also use the `emitAllGroupMetrics` and `emitGroupMetrics` methods
    * @default - no group metrics will be reported
    *
    */
@@ -306,9 +305,16 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
 }
 
 /**
- * A set of group metrics, if no metrics are provided, all metrics will be reported.
+ * A set of group metrics
  */
 export class GroupMetrics {
+
+  /**
+   * Report all group metrics.
+   */
+  public static all(): GroupMetrics {
+    return new GroupMetrics();
+  }
 
   /**
    * @internal
@@ -379,17 +385,6 @@ export class GroupMetric {
     this.name = name;
   }
 }
-
-// /**
-//  * A collection of group metrics
-//  */
-// export interface MetricsCollection {
-
-//   /**
-//    * The list of group metrics to monitor
-//    */
-//   readonly metrics: GroupMetric[];
-// }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
 
@@ -729,29 +724,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
     this.securityGroups.push(securityGroup);
-  }
-
-  /**
-   * Emit all group metrics, these metrics describe the group rather than any of its instances
-   * see all available types https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-monitoring.html#as-group-metrics
-   * all group metrics are reported in granularity of 1Minute
-   * @default - disabled
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-metricscollection.html
-   */
-  public emitAllGroupMetrics() {
-    this.emitGroupMetrics();
-  }
-
-  /**
-   * Emit a specific subset of group metrics, these metrics describe the group rather than a single instance
-   * see all available types https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-monitoring.html#as-group-metrics
-   * all group metrics are reported in granularity of 1Minute
-   * to emit all group metrics use \`emitAllGroupMetrics\`
-   * @param metrics which groups metrics to collect
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-metricscollection.html
-   */
-  public emitGroupMetrics(...metrics: GroupMetric[]) {
-    this.groupMetrics.push(new GroupMetrics(...metrics));
   }
 
   /**
