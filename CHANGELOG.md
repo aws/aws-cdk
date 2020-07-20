@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.53.0](https://github.com/aws/aws-cdk/compare/v1.52.0...v1.53.0) (2020-07-20)
+
+
+### Features
+
+* **ec2:** access a vpc's internet gateway ([#7939](https://github.com/aws/aws-cdk/issues/7939)) ([cb5dad8](https://github.com/aws/aws-cdk/commit/cb5dad8854b59bf89e41348a5e8010ff2e4612f3)), closes [#5327](https://github.com/aws/aws-cdk/issues/5327)
+* **lambda-nodejs:** connection reuse with aws-sdk ([#9083](https://github.com/aws/aws-cdk/issues/9083)) ([44c0400](https://github.com/aws/aws-cdk/commit/44c040072362456ebdd15799076a67bbb74e6668))
+
+
+### Bug Fixes
+
+* **cli:** cli integ tests do not have a unique stack prefix ([#9165](https://github.com/aws/aws-cdk/issues/9165)) ([968c460](https://github.com/aws/aws-cdk/commit/968c460849fdd3bd0ad116ed86de7be55659fbe9))
+
 ## [1.52.0](https://github.com/aws/aws-cdk/compare/v1.51.0...v1.52.0) (2020-07-18)
 
 
