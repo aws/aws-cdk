@@ -1362,14 +1362,16 @@ export = {
     new ecs.Cluster(stack, 'EcsCluster');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::Cluster', {
-      ClusterSettings: [
-        {
-          Name: 'containerInsights',
-          Value: 'disabled',
-        },
-      ],
-    }, ResourcePart.Properties));
+    const assembly = app.synth();
+    const stackAssembly = assembly.getStackByName(stack.stackName);
+    const template = stackAssembly.template;
+
+    test.equal(
+      template.Resources.EcsCluster97242B84.Properties === undefined ||
+      template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined,
+      true,
+      'ClusterSettings should not be defined',
+    );
 
     test.done();
   },
