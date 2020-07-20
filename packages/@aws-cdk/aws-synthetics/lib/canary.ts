@@ -34,7 +34,7 @@ export interface CanaryOptions extends cdk.ResourceProps {
   readonly role?: iam.IRole;
 
   /**
-   * How many seconds the canary should run before timing out.
+   * How many seconds the canary should run before timing out. Minimum time is 60 seconds and maximum is 900 seconds.
    *
    * @default - the smaller value between frequency and 900 seconds
    */
@@ -45,7 +45,7 @@ export interface CanaryOptions extends cdk.ResourceProps {
    *
    * @default - 960
    */
-  readonly memorySize?: number;
+  readonly memorySize?: cdk.Size;
 
   /**
    * How long the canary will be in a 'RUNNING' state. For example, if you set `timeToLive` to be 1 hour and `frequency` to be 10 minutes,
@@ -53,18 +53,14 @@ export interface CanaryOptions extends cdk.ResourceProps {
    *
    * The default of 0 seconds means that the canary will continue to make runs at the specified frequency until you stop it.
    *
-   * @default Duration.seconds(0)
+   * @default - no limit
    */
   readonly timeToLive?: cdk.Duration;
 
   /**
-   * How often the canary will run during its lifetime. The syntax for expression is 'rate(number unit)'
-   * where unit can be 'minute', 'minutes', or 'hour'. You can specify a frequency between 'rate(1 minute)'
-   * and 'rate(1 hour)'.
+   * How often the canary runs. For example, if you set `frequency` to 10 minutes, then the canary will run every 10 minutes.
    *
-   * The special expression 'rate(0 minute)' specifies that the canary will run only once when it is started.
-   *
-   * @default 'rate(5 minutes)'
+   * @default Duration.minutes(5)
    */
   readonly frequency?: cdk.Duration;
 
@@ -73,7 +69,7 @@ export interface CanaryOptions extends cdk.ResourceProps {
    *
    * @default true
    */
-  readonly enableCanary?: boolean;
+  readonly enable?: boolean;
 
   /**
    * How many days should successful runs be retained
@@ -94,7 +90,7 @@ export interface CanaryOptions extends cdk.ResourceProps {
    *
    * @default - A unique physical ID will be generated for you and used as the canary name.
    */
-  readonly name?: string;
+  readonly name: string;
 
 }
 
@@ -165,14 +161,14 @@ export class Canary extends CanaryBase {
 
     const name = props.name ?? this.generateName();
     const duration = props.timeToLive ?? cdk.Duration.seconds(0);
-    const expression = props.frequency ?? cdk.Duration.minutes(5);
-    var timeout = props.timeout ?? cdk.Duration.seconds(Math.min(expression.toSeconds(), 900));
-    timeout = cdk.Duration.seconds(Math.min(timeout.toSeconds(), expression.toSeconds()));
+    const frequency = props.frequency ?? cdk.Duration.minutes(5);
+    var timeout = props.timeout ?? cdk.Duration.seconds(Math.min(frequency.toSeconds(), 900));
+    timeout = cdk.Duration.seconds(Math.min(timeout.toSeconds(), frequency.toSeconds()));
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: s3Location,
       executionRoleArn: this.role.roleArn,
-      startCanaryAfterCreation: props.enableCanary ?? true,
+      startCanaryAfterCreation: props.enable ?? true,
       runtimeVersion: 'syn-1.0',
       name: this.verifyName(name),
       runConfig: {
@@ -181,7 +177,7 @@ export class Canary extends CanaryBase {
       },
       schedule: {
         durationInSeconds: String(duration.toSeconds()),
-        expression: this.createExpression(expression),
+        expression: this.createExpression(frequency),
       },
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
@@ -217,7 +213,7 @@ export class Canary extends CanaryBase {
    */
   private verifyExpression(frequency: cdk.Duration) {
     if (frequency.toMinutes() !== 0 && (frequency.toMinutes() < 1 || frequency.toMinutes() > 60)) {
-      throw new Error('Frequency must be between 1 minute and 1 hour');
+      throw new Error('Frequency must be either 0 (for a single run), or between 1 minute and 1 hour');
     }
   }
 
@@ -228,11 +224,11 @@ export class Canary extends CanaryBase {
    * @param handler - the handler given by the user
    */
   private verifyHandler(handler: string): string {
-    if (handler.split('.').length !== 2 || handler.split('.')[1] !== 'handler') {
+    if (!handler.endsWith('.handler')) {
       throw new Error('Canary Handler must end in \'.handler\'');
     }
     if (handler.length > 21) {
-      throw new Error('Canary Handler must be less than 21 characters.');
+      throw new Error('Canary Handler must be less than 21 characters');
     }
     return handler;
   }
@@ -246,7 +242,7 @@ export class Canary extends CanaryBase {
   private verifyName(name: string): string {
     const regex = new RegExp('^[0-9a-z_\-]+$');
     if (!regex.test(name)) {
-      throw new Error('Canary Name must be lowercase, numbers, hyphens, or underscores (no spaces).');
+      throw new Error('Canary Name must be lowercase, numbers, hyphens, or underscores (no spaces)');
     }
     if (name.length > 21) {
       throw new Error('Canary Name must be less than 21 characters');
@@ -254,7 +250,10 @@ export class Canary extends CanaryBase {
     return name;
   }
 
-  // private generateName(): string {
-  //   name = cdk.Lazy.stringValue({ produce: () => this.node.uniqueId });
-  // }
+  /**
+   * Creates a unique name for the canary. The generated name becomes the physical ID of the canary.
+   */
+  private generateName(): string {
+    return cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }).toLowerCase();
+  }
 }

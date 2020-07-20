@@ -192,7 +192,7 @@ test('Canary can disable startCanaryAfterCreation', () => {
   // WHEN
   new synth.Canary(stack, 'Canary', {
     name: 'mycanary',
-    enableCanary: false,
+    enable: false,
   });
 
   // THEN
@@ -246,7 +246,7 @@ test('Canary can set failureRetentionPeriod', () => {
 });
 
 test('Canary returns error when name is specified incorrectly', () => {
-  expect(() => defineCanaryWithName('myCanary')).toThrowError('Canary Name must be lowercase, numbers, hyphens, or underscores (no spaces).');
+  expect(() => defineCanaryWithName('myCanary')).toThrowError('Canary Name must be lowercase, numbers, hyphens, or underscores (no spaces)');
 });
 
 test('Canary name must be less than 21 characters', () => {
