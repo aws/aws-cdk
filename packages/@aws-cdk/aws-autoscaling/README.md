@@ -253,7 +253,7 @@ To enable group metrics monitoring using the `groupMetrics` property:
 ```ts
 // Enable monitoring of all group metrics
 new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  groupMetrics: [[GroupMetrics.all()],
+  groupMetrics: [GroupMetrics.all()],
   // ...
 });
 
