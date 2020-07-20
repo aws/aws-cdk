@@ -1615,19 +1615,6 @@ export class Bucket extends BucketBase {
     }
 
     for(const inventory of this.inventories) {
-      const conditions: Record<string, object> = {
-        ArnLike: {
-          'aws:SourceArn': this.bucketArn,
-        },
-      };
-
-      if (inventory.bucketOwner) {
-        conditions.StringEquals ={
-          'aws:SourceAccount': inventory.bucketOwner,
-          's3:x-amz-acl': 'bucket-owner-full-control',
-        };
-      }
-
       inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['s3:PutObject'],
@@ -1636,7 +1623,11 @@ export class Bucket extends BucketBase {
           inventory.destination.bucket.arnForObjects('*'),
         ],
         principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
-        conditions,
+        conditions: {
+          ArnLike: {
+            'aws:SourceArn': this.bucketArn,
+          },
+        },
       }));
     }
 
