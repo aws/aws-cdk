@@ -361,14 +361,14 @@ $ lr pkglint
 
 **awslint** is a linter for the AWS Construct Library APIs. It is executed as a
 part of the build of all AWS modules in the project and enforces the [AWS
-Construct Library Design Guidelines](./design/aws-guidelines.md).
+Construct Library Design Guidelines](./DESIGN_GUIDELINES.md).
 
 For more information about this tool, see the [awslint
 README](./tools/awslint/README.md).
 
 Generally speaking, if you make any changes which violate an awslint rule, build
 will fail with appropriate messages. All rules are documented and explained in
-the [guidelines](./design/aws-guidelines.md).
+the [guidelines](./DESIGN_GUIDELINES.md).
 
 Here are a few useful commands:
 

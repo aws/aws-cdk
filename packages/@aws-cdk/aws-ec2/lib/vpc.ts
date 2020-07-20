@@ -94,6 +94,7 @@ export interface IVpc extends IResource {
    * Identifier for the VPN gateway
    */
   readonly vpnGatewayId?: string;
+
   /**
    * Dependable that can be depended upon to force internet connectivity established on the VPC
    */
@@ -1098,6 +1099,12 @@ export class Vpc extends VpcBase {
    */
   public readonly availabilityZones: string[];
 
+  /**
+   * Internet Gateway for the VPC. Note that in case the VPC is configured only
+   * with ISOLATED subnets, this attribute will be `undefined`.
+   */
+  public readonly internetGatewayId?: string;
+
   public readonly internetConnectivityEstablished: IDependable;
 
   /**
@@ -1184,6 +1191,9 @@ export class Vpc extends VpcBase {
     if (allowOutbound) {
       const igw = new CfnInternetGateway(this, 'IGW', {
       });
+
+      this.internetGatewayId = igw.ref;
+
       this._internetConnectivityEstablished.add(igw);
       const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
         internetGatewayId: igw.ref,

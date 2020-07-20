@@ -252,6 +252,51 @@ DatabaseSubnet1   |`ISOLATED`|`10.0.6.0/28` |#1|Only routes within the VPC
 DatabaseSubnet2   |`ISOLATED`|`10.0.6.16/28`|#2|Only routes within the VPC
 DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
+### Accessing the Internet Gateway
+
+If you need access to the internet gateway, you can get it's ID like so:
+
+```ts
+const igwId = vpc.internetGatewayId;
+```
+
+For a VPC with only `ISOLATED` subnets, this value will be undefined.
+
+This is only supported for VPC's created in the stack - currently you're 
+unable to get the ID for imported VPC's. To do that you'd have to specifically
+look up the Internet Gateway by name, which would require knowing the name 
+beforehand.
+
+This can be useful for configuring routing using a combination of gateways:
+for more information see [Routing](#routing) below.
+
+#### Routing
+
+It's possible to add routes to any subnets using the `addRoute()` method. If for
+example you want an isolated subnet to have a static route via the default
+Internet Gateway created for the public subnet - perhaps for routing a VPN
+connection - you can do so like this:
+
+```ts
+const vpc = ec2.Vpc(this, "VPC", {
+  subnetConfiguration: [{
+      subnetType: SubnetType.PUBLIC,
+      name: 'Public',
+    },{
+      subnetType: SubnetType.ISOLATED,
+      name: 'Isolated',
+    }]
+})
+(vpc.isolatedSubnets[0] as Subnet).addRoute("StaticRoute", {
+    routerId: vpc.internetGatewayId,
+    routerType: RouterType.GATEWAY,
+    destinationCidrBlock: "8.8.8.8/32",
+})
+```
+
+*Note that we cast to `Subnet` here because the list of subnets only returns an
+`ISubnet`.*
+
 ### Reserving subnet IP space
 
 There are situations where the IP space for a subnet or number of subnets
