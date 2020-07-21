@@ -48,7 +48,7 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
    */
   public scaleOnUtilization(props: UtilizationScalingOptions) {
     if (props.targetUtilizationValue < 0.1 || props.targetUtilizationValue > 0.9) {
-      throw new Error('TargetUtilizationPercent should be between 0.1 and 0.9.');
+      throw new Error('TargetUtilizationValue should be between 0.1 and 0.9.');
     }
     super.doScaleToTrackMetric('Tracking', {
       targetValue: props.targetUtilizationValue,
