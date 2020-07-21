@@ -3,7 +3,7 @@ module.exports = {
         "js",
     ],
     testMatch: [
-        "**/*.integtest.js",
+        "**/bootstrapping.integtest.js",
     ],
     testEnvironment: "node",
     bail: 1,

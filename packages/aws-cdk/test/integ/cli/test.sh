@@ -22,5 +22,4 @@ if ! npx --no-install jest --version; then
   echo 'Looks like we need to install jest first. Hold on.' >& 2
   npm install --prefix . jest jest-junit aws-sdk
 fi
-
-npx jest --runInBand --verbose "$@"
+npx jest --runInBand --debug --verbose "$@"
