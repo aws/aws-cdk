@@ -1,6 +1,6 @@
+import { Code } from './code';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Construct } from '@aws-cdk/core';
-import { Code } from './code';
 
 export class Test {
   /**
