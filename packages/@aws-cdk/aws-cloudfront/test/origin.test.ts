@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack, Duration } from '@aws-cdk/core';
-import { CfnDistribution, Distribution, Origin, OriginProps, HttpOrigin, OriginProtocolPolicy } from '../lib';
+import { CfnDistribution, Distribution, Origin, OriginProps, HttpOrigin, OriginProtocolPolicy, S3Origin } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -13,14 +13,14 @@ beforeEach(() => {
   });
 });
 
-describe('fromBucket', () => {
+describe('S3Origin', () => {
   test('as bucket, renders all required properties, including S3Origin config', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
-    const origin = Origin.fromBucket(bucket);
-    origin._bind(stack, { originIndex: 0 });
+    const origin = new S3Origin({ bucket, domainName: bucket.bucketRegionalDomainName });
+    origin.bind(stack, { originIndex: 0 });
 
-    expect(origin._renderOrigin()).toEqual({
+    expect(origin.renderOrigin()).toEqual({
       id: 'StackOrigin029E19582',
       domainName: bucket.bucketRegionalDomainName,
       s3OriginConfig: {
@@ -32,7 +32,7 @@ describe('fromBucket', () => {
   test('as bucket, creates an OriginAccessIdentity and grants read permissions on the bucket', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
-    const origin = Origin.fromBucket(bucket);
+    const origin = new S3Origin({ bucket, domainName: bucket.bucketRegionalDomainName });
     new Distribution(stack, 'Dist', { defaultBehavior: { origin } });
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
@@ -50,31 +50,14 @@ describe('fromBucket', () => {
       },
     });
   });
-
-  test('as website bucket, renders all required properties, including custom origin config', () => {
-    const bucket = new s3.Bucket(stack, 'Bucket', {
-      websiteIndexDocument: 'index.html',
-    });
-
-    const origin = Origin.fromBucket(bucket);
-    origin._bind(stack, { originIndex: 0 });
-
-    expect(origin._renderOrigin()).toEqual({
-      id: 'StackOrigin029E19582',
-      domainName: bucket.bucketWebsiteDomainName,
-      customOriginConfig: {
-        originProtocolPolicy: 'http-only',
-      },
-    });
-  });
 });
 
 describe('HttpOrigin', () => {
   test('renders a minimal example with required props', () => {
     const origin = new HttpOrigin({ domainName: 'www.example.com' });
-    origin._bind(stack, { originIndex: 0 });
+    origin.bind(stack, { originIndex: 0 });
 
-    expect(origin._renderOrigin()).toEqual({
+    expect(origin.renderOrigin()).toEqual({
       id: 'StackOrigin029E19582',
       domainName: 'www.example.com',
       customOriginConfig: {
@@ -96,9 +79,9 @@ describe('HttpOrigin', () => {
       readTimeout: Duration.seconds(45),
       keepaliveTimeout: Duration.seconds(3),
     });
-    origin._bind(stack, { originIndex: 0 });
+    origin.bind(stack, { originIndex: 0 });
 
-    expect(origin._renderOrigin()).toEqual({
+    expect(origin.renderOrigin()).toEqual({
       id: 'StackOrigin029E19582',
       domainName: 'www.example.com',
       originPath: '/app',
@@ -181,9 +164,9 @@ describe('Origin', () => {
       domainName: 'www.example.com',
       originPath,
     });
-    origin._bind(stack, { originIndex: 0 });
+    origin.bind(stack, { originIndex: 0 });
 
-    expect(origin._renderOrigin().originPath).toEqual('/api');
+    expect(origin.renderOrigin().originPath).toEqual('/api');
   });
 });
 
