@@ -5,11 +5,26 @@ import { Service } from '../service';
 import { ContainerMutatingHook, ServiceAddon } from './addon-interfaces';
 import { Container } from './container';
 
+/**
+ * Settings for the hook which mutates the application container
+ * to route logs through FireLens
+ */
 export interface FirelensProps {
+  /**
+   * The parent service that is being mutated
+   */
   readonly parentService: Service;
+
+  /**
+   * The log group into which logs should be routed
+   */
   readonly logGroup: awslogs.LogGroup;
 }
 
+/**
+ * This hook modifies the application container's settings so that
+ * it routes logs using FireLens
+ */
 export class FirelensMutatingHook extends ContainerMutatingHook {
   private parentService: Service;
   private logGroup: awslogs.LogGroup;
@@ -36,6 +51,11 @@ export class FirelensMutatingHook extends ContainerMutatingHook {
   }
 }
 
+/**
+ * This addon adds a FluentBit log router to the task definition
+ * and does all the configuration necessarily to enable log routing
+ * for the task using FireLens
+ */
 export class FireLensAddon extends ServiceAddon {
   private logGroup!: awslogs.LogGroup;
 

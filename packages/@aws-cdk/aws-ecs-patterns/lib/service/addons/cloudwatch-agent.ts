@@ -4,6 +4,10 @@ import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceAddon } from './addon-interfaces';
 
+/**
+ * This addon adds a CloudWatch agent to the task definition and
+ * configures the task to be able to publish metrics to CloudWatch
+ */
 export class CloudwatchAgentAddon extends ServiceAddon {
   private CW_CONFIG_CONTENT = {
     logs: {

@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import * as ecsPatterns from '../../lib';
+import { Container, Environment, EnvironmentCapacityType} from '../../lib';
 
 export = {
   'should be able to add a service to an environment'(test: Test) {
@@ -11,10 +11,10 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const environment = new ecsPatterns.Environment(stack, 'production');
+    const environment = new Environment(stack, 'production');
     const myService = environment.addService('my-service');
 
-    myService.add(new ecsPatterns.addons.Container({
+    myService.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
@@ -74,13 +74,13 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
-    const environment = new ecsPatterns.Environment(stack, 'production', {
+    const environment = new Environment(stack, 'production', {
       vpc,
       cluster,
     });
     const myService = environment.addService('my-service');
 
-    myService.add(new ecsPatterns.addons.Container({
+    myService.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
@@ -143,14 +143,14 @@ export = {
       instanceType: new ec2.InstanceType('t2.micro'),
     });
 
-    const environment = new ecsPatterns.Environment(stack, 'production', {
+    const environment = new Environment(stack, 'production', {
       vpc,
       cluster,
-      capacityType: ecsPatterns.EnvironmentCapacityType.EC2,
+      capacityType: EnvironmentCapacityType.EC2,
     });
     const myService = environment.addService('my-service');
 
-    myService.add(new ecsPatterns.addons.Container({
+    myService.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,

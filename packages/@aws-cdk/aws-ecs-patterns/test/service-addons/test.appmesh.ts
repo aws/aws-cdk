@@ -1,30 +1,21 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as appmesh from '@aws-cdk/aws-appmesh';
-import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 
 import { Test } from 'nodeunit';
-import * as ecsPatterns from '../../lib';
+import { AppMeshAddon, Container, Environment} from '../../lib';
 
 export = {
   'should be able to add AWS X-Ray to a service'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro'),
-    });
 
     // WHEN
-    const myService = new ecsPatterns.Service(stack, 'my-service', {
-      vpc,
-      cluster,
-      capacityType: ecsPatterns.EnvironmentCapacityType.EC2,
-    });
+    const environment = new Environment(stack, 'production');
+    const myService = environment.addService('my-service');
 
-    myService.add(new ecsPatterns.addons.Container({
+    myService.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
@@ -33,7 +24,7 @@ export = {
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
-    myService.add(new ecsPatterns.addons.AppMeshAddon({
+    myService.add(new AppMeshAddon({
       mesh,
     }));
 

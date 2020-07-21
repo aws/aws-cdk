@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import * as ecsPatterns from '../../lib';
+import { Container, EnvironmentCapacityType, Service } from '../../lib';
 
 export = {
   'should error if a service is prepared with no addons'(test: Test) {
@@ -13,10 +13,10 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecsPatterns.Service(stack, 'my-service', {
+    new Service(stack, 'my-service', {
       vpc,
       cluster,
-      capacityType: ecsPatterns.EnvironmentCapacityType.EC2,
+      capacityType: EnvironmentCapacityType.EC2,
     });
 
     // THEN
@@ -37,13 +37,13 @@ export = {
     });
 
     // WHEN
-    const myService = new ecsPatterns.Service(stack, 'my-service', {
+    const myService = new Service(stack, 'my-service', {
       vpc,
       cluster,
-      capacityType: ecsPatterns.EnvironmentCapacityType.EC2,
+      capacityType: EnvironmentCapacityType.EC2,
     });
 
-    myService.add(new ecsPatterns.addons.Container({
+    myService.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,

@@ -7,10 +7,21 @@ import { Service } from '../service';
 import { ServiceAddon, ServiceBuild, TaskDefinitionBuild } from './addon-interfaces';
 import { Container } from './container';
 
+/**
+ * The settings for the App Mesh addon
+ */
 export interface MeshProps {
+  /**
+   * The service mesh into which to register the service
+   */
   readonly mesh: appmesh.Mesh;
 }
 
+/**
+ * This addon adds an Envoy sidecar to the task definition and
+ * creates the App Mesh resources required to route network traffic
+ * to the container in a service mesh
+ */
 export class AppMeshAddon extends ServiceAddon {
   protected virtualNode!: appmesh.VirtualNode;
   protected virtualService!: appmesh.VirtualService;

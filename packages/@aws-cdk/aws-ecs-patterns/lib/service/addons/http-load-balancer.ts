@@ -4,6 +4,10 @@ import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceAddon } from './addon-interfaces';
 
+/**
+ * This addon add a public facing load balancer for sending traffic
+ * to one or more replicas of the application container
+ */
 export class HttpLoadBalancerAddon extends ServiceAddon {
   private loadBalancer!: alb.IApplicationLoadBalancer;
   private listener!: alb.IApplicationListener;

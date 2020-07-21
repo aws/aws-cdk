@@ -4,6 +4,11 @@ import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceAddon } from './addon-interfaces';
 
+/**
+ * This addon adds an X-Ray daemon inside the task definition, for
+ * capturing application trace spans and submitting them to the AWS
+ * X-Ray service.
+ */
 export class XRayAddon extends ServiceAddon {
   constructor() {
     super('xray');

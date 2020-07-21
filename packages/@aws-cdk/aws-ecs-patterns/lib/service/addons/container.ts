@@ -3,11 +3,34 @@ import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceAddon, TaskDefinitionBuild } from './addon-interfaces';
 
+/**
+ * Setting for the main application container of a service
+ */
 export interface ContainerAddonProps {
+  /**
+   * How much CPU the container requires
+   */
   readonly cpu: number,
+
+  /**
+   * How much memory in megabytes the container requires
+   */
   readonly memoryMiB: number,
+
+  /**
+   * The image to run
+   */
   readonly image: ecs.ContainerImage,
+
+  /**
+   * What port the image listen for traffic on
+   */
   readonly trafficPort: number,
+
+  /**
+   * Environment variables to pass into the container
+   * @default - No environment variables
+   */
   readonly environment?: {
     [key: string]: string,
   }
@@ -19,7 +42,14 @@ export interface ContainerAddonProps {
  * sidecars alongside this main container.
  */
 export class Container extends ServiceAddon {
+  /**
+   * The port on which the container expects to receive network traffic
+   */
   public readonly trafficPort: number;
+
+  /**
+   * The settings for the container
+   */
   private props: ContainerAddonProps;
 
   constructor(props: ContainerAddonProps) {
