@@ -156,10 +156,10 @@ const dn = new DomainName(stack, 'DN', {
 
 const api = new HttpApi(stack, 'HttpProxyProdApi', {
   defaultIntegration: new LambdaProxyIntegration({ handler }),
-  // https://${dn.domainName} goes to prodApi $default stage
+  // https://${dn.domainName}/foo goes to prodApi $default stage
   defaultDomainMapping: {
     domainName: dn,
-    mappingKey: '/',
+    mappingKey: 'foo',
   },
 });
 ```
@@ -170,10 +170,10 @@ To associate a specifc `Stage` to a custom domain mapping -
 api.addStage('beta', {
   stageName: 'beta',
   autoDeploy: true,
-  // https://${dn.domainName}/beta goes to the beta stage
+  // https://${dn.domainName}/bar goes to the beta stage
   domainMapping: {
     domainName: dn,
-    mappingKey: 'beta',
+    mappingKey: 'bar',
   },
 });
 ```
@@ -191,12 +191,12 @@ const apiDemo = new HttpApi(stack, 'DemoApi', {
 });
 ```
 
-The `mappingKey` determines the `path` of the URL with the custom domain. Each custom domain is only allowed
-to have one API mapping with the root(/) `mappingKey`. In the sample above, the custom domain is associated
+The `mappingKey` determines the base path of the URL with the custom domain. Each custom domain is only allowed
+to have one API mapping with undefined `mappingKey`. If more than one API mappings are specified, `mappingKey` will be required for all of them. In the sample above, the custom domain is associated
 with 3 API mapping resources across different APIs and Stages.
 
 |        API     |     Stage   |   URL  |
 | :------------: | :---------: | :----: |
-| api | $default  |   `https://${domainName}`  |
-| api | beta  |   `https://${domainName}/beta`  |
+| api | $default  |   `https://${domainName}/foo`  |
+| api | beta  |   `https://${domainName}/bar`  |
 | apiDemo | $default  |   `https://${domainName}/demo`  |
