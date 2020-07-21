@@ -3,6 +3,7 @@ import { Construct, IResource, Lazy, Resource, Stack, Token, Duration } from '@a
 import { CfnDistribution } from './cloudfront.generated';
 import { Origin } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
+import { SSLMethod, SecurityPolicyProtocol } from './web_distribution';
 
 /**
  * Interface for CloudFront distributions
@@ -157,7 +158,7 @@ export class Distribution extends Resource implements IDistribution {
       origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
       defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
       cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
-      viewerCertificate: this.certificate ? { acmCertificateArn: this.certificate.certificateArn } : undefined,
+      viewerCertificate: this.certificate ? this.addViewerCertificate(this.certificate) : undefined,
       customErrorResponses: this.renderErrorResponses(),
       priceClass: props.priceClass ?? undefined,
     } });
@@ -219,6 +220,14 @@ export class Distribution extends Resource implements IDistribution {
         responsePagePath: errorConfig.responsePagePath,
       };
     });
+  }
+
+  private addViewerCertificate(certificate: acm.ICertificate): CfnDistribution.ViewerCertificateProperty {
+    return {
+      acmCertificateArn: certificate.certificateArn,
+      sslSupportMethod: SSLMethod.SNI,
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1,
+    };
   }
 
 }
