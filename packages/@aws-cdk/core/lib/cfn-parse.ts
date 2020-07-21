@@ -9,6 +9,7 @@ import { ICfnFinder } from './from-cfn';
 import { CfnReference } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
 import { isResolvableObject, Token } from './token';
+import { CfnResource } from './';
 
 /**
  * This class contains static methods called when going from
@@ -431,4 +432,40 @@ function specialCaseRefs(value: any): any {
 
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
   return Object.values(object).some(v => v !== undefined) ? object : undefined;
+}
+
+export function handleAttributes(resource: CfnResource, resourceAttributes: any,
+  logicalId: string, finder: ICfnFinder): void {
+
+  const cfnParser = new CfnParser({
+    finder,
+  });
+
+  const cfnOptions = resource.cfnOptions;
+
+  cfnOptions.creationPolicy = cfnParser.parseCreationPolicy(resourceAttributes.CreationPolicy);
+  cfnOptions.updatePolicy = cfnParser.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
+  cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
+  cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
+  cfnOptions.metadata = cfnParser.parseValue(resourceAttributes.Metadata)
+
+  // handle DependsOn
+  resourceAttributes.DependsOn = resourceAttributes.DependsOn ?? [];
+  const dependencies: string[] = Array.isArray(resourceAttributes.DependsOn) ?
+    resourceAttributes.DependsOn : [resourceAttributes.DependsOn];
+  for (const dep of dependencies) {
+    const depResource = finder.findResource(dep);
+    if (!depResource) {
+      throw new Error(`Resource '${logicalId}' depends on '${dep}' that doesn't exist`);
+    }
+    resource.node.addDependency(depResource);
+  }
+  // handle Condition
+  if (resourceAttributes.Condition) {
+    const condition = finder.findCondition(resourceAttributes.Condition);
+    if (!condition) {
+      throw new Error(`Resource '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
+    }
+    cfnOptions.condition = condition;
+  }
 }

@@ -252,37 +252,8 @@ export default class CodeGenerator {
     }
     // handle all non-property attributes
     // (retention policies, conditions, metadata, etc.)
-    this.code.line('const cfnOptions = ret.cfnOptions;');
-    this.code.line('cfnOptions.creationPolicy = cfnParser.parseCreationPolicy(resourceAttributes.CreationPolicy);');
-    this.code.line('cfnOptions.updatePolicy = cfnParser.parseUpdatePolicy(resourceAttributes.UpdatePolicy);');
-    this.code.line('cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(resourceAttributes.DeletionPolicy);');
-    this.code.line('cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);');
-    this.code.line('cfnOptions.metadata = cfnParser.parseValue(resourceAttributes.Metadata);');
 
-    // handle DependsOn
-    this.code.line('// handle DependsOn');
-    // DependsOn can be either a single string, or an array of strings
-    this.code.line('resourceAttributes.DependsOn = resourceAttributes.DependsOn ?? [];');
-    // eslint-disable-next-line max-len
-    this.code.line('const dependencies: string[] = Array.isArray(resourceAttributes.DependsOn) ? resourceAttributes.DependsOn : [resourceAttributes.DependsOn];');
-    this.code.openBlock('for (const dep of dependencies)');
-    this.code.line('const depResource = options.finder.findResource(dep);');
-    this.code.openBlock('if (!depResource)');
-    this.code.line("throw new Error(`Resource '${id}' depends on '${dep}' that doesn't exist`);");
-    this.code.closeBlock();
-    this.code.line('ret.node.addDependency(depResource);');
-    this.code.closeBlock();
-
-    // handle Condition
-    this.code.line('// handle Condition');
-    this.code.openBlock('if (resourceAttributes.Condition)');
-    this.code.line('const condition = options.finder.findCondition(resourceAttributes.Condition);');
-    this.code.openBlock('if (!condition)');
-    this.code.line("throw new Error(`Resource '${id}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);");
-    this.code.closeBlock();
-    this.code.line('cfnOptions.condition = condition;');
-    this.code.closeBlock();
-
+    this.code.line(`${CORE}.handleAttributes(ret, resourceAttributes, id, options.finder);`);
     this.code.line('return ret;');
     this.code.closeBlock();
 
