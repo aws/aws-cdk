@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -19,7 +19,7 @@ export = {
     // WHEN
     new rds.DatabaseProxy(stack, 'Proxy', {
       proxyTarget: rds.ProxyTarget.fromInstance(instance),
-      secret: instance.secret!,
+      secrets: [instance.secret!],
       vpc,
     });
 
@@ -67,6 +67,7 @@ export = {
             Ref: 'InstanceC1063A87',
           },
         ],
+        TargetGroupName: 'default',
       },
     }, ResourcePart.CompleteDefinition));
 
@@ -78,8 +79,9 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
-      engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
-      engineVersion: '10.7',
+      engine: rds.DatabaseClusterEngine.auroraPostgres({
+        version: rds.AuroraPostgresEngineVersion.VER_10_7,
+      }),
       masterUser: {
         username: 'admin',
       },
@@ -92,7 +94,7 @@ export = {
     // WHEN
     new rds.DatabaseProxy(stack, 'Proxy', {
       proxyTarget: rds.ProxyTarget.fromCluster(cluster),
-      secret: cluster.secret!,
+      secrets: [cluster.secret!],
       vpc,
     });
 
@@ -140,16 +142,67 @@ export = {
             Ref: 'DatabaseB269D8BB',
           },
         ],
-        DBInstanceIdentifiers: [
-          {
-            Ref: 'DatabaseInstance1844F58FD',
-          },
-          {
-            Ref: 'DatabaseInstance2AA380DEE',
-          },
-        ],
+        TargetGroupName: 'default',
       },
     }, ResourcePart.CompleteDefinition));
+
+    test.done();
+  },
+
+  'Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.auroraPostgres({
+        version: rds.AuroraPostgresEngineVersion.VER_10_7,
+      }),
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+
+    // WHEN
+    test.doesNotThrow(() => {
+      new rds.DatabaseProxy(stack, 'Proxy', {
+        proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+        secrets: [cluster.secret!],
+        vpc,
+      });
+    }, /Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers/);
+
+    expect(stack).to(haveResource('AWS::RDS::DBProxyTargetGroup', {
+      DBInstanceIdentifiers: ABSENT,
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+
+  'One or more secrets are required.'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_10_7 }),
+      masterUser: { username: 'admin' },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+
+    // WHEN
+    test.throws(() => {
+      new rds.DatabaseProxy(stack, 'Proxy', {
+        proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+        secrets: [], // No secret
+        vpc,
+      });
+    }, 'One or more secrets are required.');
 
     test.done();
   },

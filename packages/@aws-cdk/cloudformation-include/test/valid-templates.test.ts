@@ -1,13 +1,13 @@
+import * as path from 'path';
 import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
-import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 /* eslint-disable quotes */
 
 describe('CDK Include', () => {
@@ -251,7 +251,42 @@ describe('CDK Include', () => {
     );
   });
 
-  test("correctly parses templates with parameters", () => {
+  test('correctly change references to Conditions when renaming them', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'condition-same-name-as-resource.json');
+    const alwaysFalse = cfnTemplate.getCondition('AlwaysFalse');
+    alwaysFalse.overrideLogicalId('TotallyFalse');
+
+    expect(stack).toMatchTemplate({
+      "Parameters": {
+        "Param": {
+          "Type": "String",
+        },
+      },
+      "Conditions": {
+        "AlwaysTrue": {
+          "Fn::Not": [{ "Condition": "TotallyFalse" }],
+        },
+        "TotallyFalse": {
+          "Fn::Equals": [{ "Ref": "Param" }, 2],
+        },
+      },
+      "Resources": {
+        "AlwaysTrue": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::If": ["TotallyFalse",
+                { "Ref": "Param" },
+                { "Ref": "AWS::NoValue" },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('correctly parses templates with parameters', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
     new s3.CfnBucket(stack, 'NewBucket', {
@@ -396,8 +431,8 @@ describe('CDK Include', () => {
               ],
             },
           },
-          "Metadata" : {
-            "Object1" : "Location1",
+          "Metadata": {
+            "Object1": "Location1",
             "KeyRef": { "Ref": "TotallyDifferentKey" },
             "KeyArn": { "Fn::GetAtt": ["TotallyDifferentKey", "Arn"] },
           },
@@ -413,6 +448,73 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-type.json');
     }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
+  });
+
+  test('can ingest a template that contains outputs and modify them', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
+
+    const output = cfnTemplate.getOutput('Output1');
+    output.value = 'a mutated value';
+    output.description = undefined;
+    output.exportName = 'an export';
+    output.condition = new core.CfnCondition(stack, 'MyCondition', {
+      expression: core.Fn.conditionIf('AlwaysFalseCond', core.Aws.NO_VALUE, true),
+    });
+
+    const originalTemplate = loadTestFileToJsObject('outputs-with-references.json');
+
+    expect(stack).toMatchTemplate({
+      "Conditions": {
+        ...originalTemplate.Conditions,
+        "MyCondition": {
+          "Fn::If": [
+            "AlwaysFalseCond",
+            { "Ref": "AWS::NoValue" },
+            true,
+          ],
+        },
+      },
+      "Parameters": {
+        ...originalTemplate.Parameters,
+      },
+      "Resources": {
+        ...originalTemplate.Resources,
+      },
+      "Outputs": {
+        "Output1": {
+          "Value": "a mutated value",
+          "Export": {
+            "Name": "an export",
+          },
+          "Condition": "MyCondition",
+        },
+        "OutputWithNoCondition": {
+          "Value": "some-value",
+        },
+      },
+    });
+  });
+
+  test('can ingest a template that contains outputs and get those outputs', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
+    const output = cfnTemplate.getOutput('Output1');
+
+    expect(output.condition).toBe(cfnTemplate.getCondition('AlwaysFalseCond'));
+    expect(output.description).toBeDefined();
+    expect(output.value).toBeDefined();
+    expect(output.exportName).toBeDefined();
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('outputs-with-references.json'),
+    );
+  });
+
+  test("throws an exception when attempting to retrieve an Output that doesn't exist", () => {
+    const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
+
+    expect(() => {
+      cfnTemplate.getOutput('FakeOutput');
+    }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);
   });
 });
 

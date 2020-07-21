@@ -2,7 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, SslPolicy } from '../shared/enums';
+import { ApplicationProtocol, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ListenerAction } from './application-listener-action';
@@ -185,6 +185,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     if (props.open !== false) {
       this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv4(), `Allow from anyone on port ${port}`);
+      if (this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK) {
+        this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv6(), `Allow from anyone on port ${port}`);
+      }
     }
   }
 
@@ -305,7 +308,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
     if (!this.loadBalancer.vpc) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error('Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup');
     }
 
@@ -591,7 +594,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
    * @returns The newly created target group
    */
   public addTargets(_id: string, _props: AddApplicationTargetsProps): ApplicationTargetGroup {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error('Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.');
   }
 
