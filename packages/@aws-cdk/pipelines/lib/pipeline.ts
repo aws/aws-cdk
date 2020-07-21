@@ -279,7 +279,7 @@ class AssetPublishing extends Construct {
       const id = command.assetType === AssetType.FILE ? `FileAsset${this._fileAssetCtr++}` : `DockerAsset${this._dockerAssetCtr++}`;
 
       action = this.publishers[command.assetId] = new PublishAssetsAction(this, id, {
-        actionName: command.assetId,
+        actionName: id,
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
