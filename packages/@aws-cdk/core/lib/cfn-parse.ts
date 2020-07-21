@@ -1,3 +1,4 @@
+import { CfnResource } from './';
 import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';
 import {
@@ -9,7 +10,6 @@ import { ICfnFinder } from './from-cfn';
 import { CfnReference } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
 import { isResolvableObject, Token } from './token';
-import { CfnResource } from './';
 
 /**
  * This class contains static methods called when going from
@@ -447,7 +447,7 @@ export function handleAttributes(resource: CfnResource, resourceAttributes: any,
   cfnOptions.updatePolicy = cfnParser.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
   cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
   cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
-  cfnOptions.metadata = cfnParser.parseValue(resourceAttributes.Metadata)
+  cfnOptions.metadata = cfnParser.parseValue(resourceAttributes.Metadata);
 
   // handle DependsOn
   resourceAttributes.DependsOn = resourceAttributes.DependsOn ?? [];
