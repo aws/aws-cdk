@@ -1,6 +1,6 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as route53 from '@aws-cdk/aws-route53';
-import { Aws, CfnMapping, Construct } from '@aws-cdk/core';
+import { Aws, CfnMapping, Stack } from '@aws-cdk/core';
 
 /**
  * Use a CloudFront Distribution as an alias record target
@@ -15,11 +15,11 @@ export class CloudFrontTarget implements route53.IAliasRecordTarget {
   /**
    * Get the hosted zone id for the current scope.
    *
-   * @param scope - scope in which this resource is defined
+   * @param stack - Stack in which the resource is defined
    */
-  public static getHostedZoneId(scope: Construct) {
-    if (!CloudFrontTarget.partitionHostedZoneMapping) {
-      CloudFrontTarget.partitionHostedZoneMapping = new CfnMapping(scope, 'CloudFrontPartitionHostedZoneIdMap', {
+  public static getHostedZoneId(stack: Stack) {
+    if (!CloudFrontTarget.stackPartitionHostedZoneMapping.hasOwnProperty(stack.stackId)) {
+      CloudFrontTarget.stackPartitionHostedZoneMapping[stack.stackId] = new CfnMapping(stack, 'AWSCloudFrontPartitionHostedZoneIdMap', {
         mapping: {
           ['aws']: {
             zoneId: 'Z2FDTNDATAQYW2', // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-aliastarget.html
@@ -31,17 +31,17 @@ export class CloudFrontTarget implements route53.IAliasRecordTarget {
       });
     }
 
-    return CloudFrontTarget.partitionHostedZoneMapping.findInMap(Aws.PARTITION, 'zoneId');
+    return CloudFrontTarget.stackPartitionHostedZoneMapping[stack.stackId].findInMap(Aws.PARTITION, 'zoneId');
   }
 
-  private static partitionHostedZoneMapping: CfnMapping;
+  private static stackPartitionHostedZoneMapping: { [stackId: string]: CfnMapping } = {};
 
   constructor(private readonly distribution: cloudfront.IDistribution) {
   }
 
   public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
     return {
-      hostedZoneId: CloudFrontTarget.getHostedZoneId(this.distribution),
+      hostedZoneId: CloudFrontTarget.getHostedZoneId(this.distribution.stack),
       dnsName: this.distribution.domainName,
     };
   }

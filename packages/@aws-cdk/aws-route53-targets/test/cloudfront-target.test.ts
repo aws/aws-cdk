@@ -3,7 +3,7 @@ import { SynthUtils } from '@aws-cdk/assert';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Stack } from '@aws-cdk/core';
+import { NestedStack, Stack } from '@aws-cdk/core';
 import * as targets from '../lib';
 
 test('use CloudFrontTarget partition hosted zone id mapping', () => {
@@ -16,7 +16,7 @@ test('use CloudFrontTarget partition hosted zone id mapping', () => {
   // THEN
   expect(SynthUtils.toCloudFormation(stack)).toEqual({
     Mappings: {
-      CloudFrontPartitionHostedZoneIdMap: {
+      AWSCloudFrontPartitionHostedZoneIdMap: {
         'aws': {
           zoneId: 'Z2FDTNDATAQYW2',
         },
@@ -26,6 +26,33 @@ test('use CloudFrontTarget partition hosted zone id mapping', () => {
       },
     },
   });
+});
+
+test('use CloudFrontTarget hosted zone id mappings in nested stacks', () => {
+  // GIVEN
+  const stack = new Stack();
+  const nestedStackA = new NestedStack(stack, 'nestedStackA');
+  const nestedStackB = new NestedStack(stack, 'nestedStackB');
+
+  // WHEN
+  targets.CloudFrontTarget.getHostedZoneId(nestedStackA);
+  targets.CloudFrontTarget.getHostedZoneId(nestedStackB);
+
+  // THEN
+  for (let nestedStack of [nestedStackA, nestedStackB]) {
+    expect(SynthUtils.toCloudFormation(nestedStack)).toEqual({
+      Mappings: {
+        AWSCloudFrontPartitionHostedZoneIdMap: {
+          'aws': {
+            zoneId: 'Z2FDTNDATAQYW2',
+          },
+          'aws-cn': {
+            zoneId: 'Z3RFFRIM2A3IF5',
+          },
+        },
+      },
+    });
+  }
 });
 
 test('use CloudFront as record target', () => {
@@ -59,7 +86,7 @@ test('use CloudFront as record target', () => {
       DNSName: { 'Fn::GetAtt': ['MyDistributionCFDistributionDE147309', 'DomainName'] },
       HostedZoneId: {
         'Fn::FindInMap': [
-          'CloudFrontPartitionHostedZoneIdMap',
+          'AWSCloudFrontPartitionHostedZoneIdMap',
           {
             Ref: 'AWS::Partition',
           },

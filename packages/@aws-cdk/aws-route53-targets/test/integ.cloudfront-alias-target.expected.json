@@ -20,7 +20,7 @@
           },
           "HostedZoneId": {
             "Fn::FindInMap": [
-              "MyDistributionCloudFrontPartitionHostedZoneIdMap90ACF5EF",
+              "AWSCloudFrontPartitionHostedZoneIdMap",
               {
                 "Ref": "AWS::Partition"
               },
@@ -88,7 +88,7 @@
     }
   },
   "Mappings": {
-    "MyDistributionCloudFrontPartitionHostedZoneIdMap90ACF5EF": {
+    "AWSCloudFrontPartitionHostedZoneIdMap": {
       "aws": {
         "zoneId": "Z2FDTNDATAQYW2"
       },

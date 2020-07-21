@@ -28,7 +28,7 @@ test('use user pool domain as record target', () => {
       },
       HostedZoneId: {
         'Fn::FindInMap': [
-          'UserPoolDomainCloudFrontPartitionHostedZoneIdMap22077F38',
+          'AWSCloudFrontPartitionHostedZoneIdMap',
           {
             Ref: 'AWS::Partition',
           },
