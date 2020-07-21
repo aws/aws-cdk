@@ -106,7 +106,6 @@ describe('DomainName', () => {
       createDefaultStage: true,
       defaultDomainMapping: {
         domainName: dn,
-        mappingKey: '/',
       },
     });
 
@@ -142,7 +141,6 @@ describe('DomainName', () => {
         createDefaultStage: false,
         defaultDomainMapping: {
           domainName: dn,
-          mappingKey: '/',
         },
       });
     };

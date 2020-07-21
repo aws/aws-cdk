@@ -83,7 +83,7 @@
         }
       }
     },
-    "echohandlerinteghttpproxyHttpProxyBetaApiDefaultRouteC328B302Permission40FB964B": {
+    "echohandlerinteghttpproxyDemoApiDefaultRoute050CFFE6PermissionD503E35E": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -112,7 +112,7 @@
               },
               ":",
               {
-                "Ref": "HttpProxyBetaApiBFB4DA5E"
+                "Ref": "DemoApiE67238F8"
               },
               "/*/*"
             ]
@@ -181,52 +181,66 @@
         },
         "StageName": "$default",
         "AutoDeploy": true
-      }
+      },
+      "DependsOn": [
+        "DNFDC76583"
+      ]
     },
-    "HttpProxyProdApiDefaultStageinteghttpproxyDN4CD83A2F": {
+    "HttpProxyProdApiDefaultStageinteghttpproxyDNfoo38514765": {
       "Type": "AWS::ApiGatewayV2::ApiMapping",
       "Properties": {
         "ApiId": {
           "Ref": "HttpProxyProdApi368B6161"
         },
-        "ApiMappingKey": "/",
         "DomainName": "apigv2.demo.com",
-        "Stage": "$default"
-      }
+        "Stage": "$default",
+        "ApiMappingKey": "foo"
+      },
+      "DependsOn": [
+        "DNFDC76583",
+        "HttpProxyProdApiDefaultStage0038B180"
+      ]
     },
-    "HttpProxyProdApitesting225373A0": {
+    "HttpProxyProdApiBetaStage7074CBDF": {
       "Type": "AWS::ApiGatewayV2::Stage",
       "Properties": {
         "ApiId": {
           "Ref": "HttpProxyProdApi368B6161"
         },
-        "StageName": "testing",
+        "StageName": "beta",
         "AutoDeploy": true
-      }
+      },
+      "DependsOn": [
+        "DNFDC76583"
+      ]
     },
-    "HttpProxyProdApitestinginteghttpproxyDNtestingBEBAEF7B": {
+    "HttpProxyProdApiBetaStageinteghttpproxyDNbarA0E8C5B4": {
       "Type": "AWS::ApiGatewayV2::ApiMapping",
       "Properties": {
         "ApiId": {
           "Ref": "HttpProxyProdApi368B6161"
         },
         "DomainName": "apigv2.demo.com",
-        "Stage": "testing",
-        "ApiMappingKey": "testing"
-      }
+        "Stage": "beta",
+        "ApiMappingKey": "bar"
+      },
+      "DependsOn": [
+        "DNFDC76583",
+        "HttpProxyProdApiBetaStage7074CBDF"
+      ]
     },
-    "HttpProxyBetaApiBFB4DA5E": {
+    "DemoApiE67238F8": {
       "Type": "AWS::ApiGatewayV2::Api",
       "Properties": {
-        "Name": "HttpProxyBetaApi",
+        "Name": "DemoApi",
         "ProtocolType": "HTTP"
       }
     },
-    "HttpProxyBetaApiDefaultRouteDefaultRouteIntegration24A25241": {
+    "DemoApiDefaultRouteDefaultRouteIntegration714B9B03": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
-          "Ref": "HttpProxyBetaApiBFB4DA5E"
+          "Ref": "DemoApiE67238F8"
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
@@ -238,11 +252,11 @@
         "PayloadFormatVersion": "2.0"
       }
     },
-    "HttpProxyBetaApiDefaultRoute12DC547F": {
+    "DemoApiDefaultRouteF8069A72": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
-          "Ref": "HttpProxyBetaApiBFB4DA5E"
+          "Ref": "DemoApiE67238F8"
         },
         "RouteKey": "$default",
         "Target": {
@@ -251,33 +265,40 @@
             [
               "integrations/",
               {
-                "Ref": "HttpProxyBetaApiDefaultRouteDefaultRouteIntegration24A25241"
+                "Ref": "DemoApiDefaultRouteDefaultRouteIntegration714B9B03"
               }
             ]
           ]
         }
       }
     },
-    "HttpProxyBetaApiDefaultStage4890F8A1": {
+    "DemoApiDefaultStage5FCE2787": {
       "Type": "AWS::ApiGatewayV2::Stage",
       "Properties": {
         "ApiId": {
-          "Ref": "HttpProxyBetaApiBFB4DA5E"
+          "Ref": "DemoApiE67238F8"
         },
         "StageName": "$default",
         "AutoDeploy": true
-      }
+      },
+      "DependsOn": [
+        "DNFDC76583"
+      ]
     },
-    "HttpProxyBetaApiDefaultStageinteghttpproxyDNbeta0904192E": {
+    "DemoApiDefaultStageinteghttpproxyDNdemo045504F3": {
       "Type": "AWS::ApiGatewayV2::ApiMapping",
       "Properties": {
         "ApiId": {
-          "Ref": "HttpProxyBetaApiBFB4DA5E"
+          "Ref": "DemoApiE67238F8"
         },
-        "ApiMappingKey": "beta",
         "DomainName": "apigv2.demo.com",
-        "Stage": "$default"
-      }
+        "Stage": "$default",
+        "ApiMappingKey": "demo"
+      },
+      "DependsOn": [
+        "DemoApiDefaultStage5FCE2787",
+        "DNFDC76583"
+      ]
     }
   },
   "Outputs": {
@@ -295,54 +316,14 @@
     "CustomUDomainURL": {
       "Value": "https://apigv2.demo.com"
     },
-    "ProdApiEndpoint": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://",
-            {
-              "Ref": "HttpProxyProdApi368B6161"
-            },
-            ".execute-api.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            },
-            "/"
-          ]
-        ]
-      }
+    "ProdApiDefaultStageURL": {
+      "Value": "https://apigv2.demo.com/foo"
     },
-    "BetaApiEndpoint": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://",
-            {
-              "Ref": "HttpProxyBetaApiBFB4DA5E"
-            },
-            ".execute-api.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            },
-            "/"
-          ]
-        ]
-      }
+    "ProdApiBetaStageURL": {
+      "Value": "https://apigv2.demo.com/bar"
     },
-    "Region": {
-      "Value": {
-        "Ref": "AWS::Region"
-      }
+    "DemoApiDefaultStageURL": {
+      "Value": "https://apigv2.demo.com/demo"
     }
   }
 }
