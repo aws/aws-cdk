@@ -589,3 +589,42 @@ taskDefinition.addContainer('TheContainer', {
   })
 });
 ```
+
+## Capacity Provider
+
+### Autoscaling Group Capacity Provider
+
+Amazon ECS capacity providers can use Auto Scaling groups to manage the Amazon EC2 instances registered to
+their clusters. You can use the managed scaling feature to have Amazon ECS manage the scale-in and scale-out
+actions of the Auto Scaling group or you can manage the scaling actions yourself. This enables you to effectively
+use cluster auto scaling.
+
+The following sample creates an Autoscaling Group Capacity Provider and register it to the cluster.
+
+```ts
+// create an auto scaling group
+const autoscalingGroup = new AutoScalingGroup(stack, 'ASG', {
+  vpc,
+  machineImage: new ecs.EcsOptimizedAmi(),
+  instanceType: new ec2.InstanceType('t3.large'),
+});
+
+// create a capacity provider with this auto scaling group
+const cp = new CapacityProvider (stack, 'CP', {
+  autoscalingGroup
+});
+
+// add this capacity provider to the cluster
+cluster.addCapacityProvider(cp);
+```
+
+
+### Using managed scaling 
+
+When creating a `CapacityProvider`, you can optionally enable `managedScaling`. When `managedScaling`
+is enabled, Amazon ECS manages the scale-in and scale-out actions of the Auto Scaling group used
+when creating the `CapacityProvider`.
+
+If `managedTerminationProtection` is enabled when you create a `CapacityProvider`, the Auto Scaling group and each Amazon EC2 instance as well as every new instance in the Auto Scaling group will have instance protection from scale in enabled.
+
+Please note when you delete the `CapacityProvider`, the scale in protection for each Amazon EC2 instance will be removed. This is required to terminate the Auto Scaling group as well as the instances.

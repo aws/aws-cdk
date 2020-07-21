@@ -4,7 +4,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Resource, Stack, Lazy } from '@aws-cdk/core';
+import { ICapacityProvider } from './capacity-provider';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -47,6 +48,13 @@ export interface ClusterProps {
    * @default - Container Insights will be disabled for this cluser.
    */
   readonly containerInsights?: boolean;
+
+  /**
+   * The capacity providers associated with the cluster
+   *
+   * @default - no capacity provider for this cluster
+   */
+  readonly capacityProviders?: ICapacityProvider[];
 }
 
 /**
@@ -96,6 +104,11 @@ export class Cluster extends Resource implements ICluster {
   private _autoscalingGroup?: autoscaling.IAutoScalingGroup;
 
   /**
+   * The capacity providers for this cluster
+   */
+  private _capacityProvider: ICapacityProvider[] = [];
+
+  /**
    * Constructs a new instance of the Cluster class.
    */
   constructor(scope: Construct, id: string, props: ClusterProps = {}) {
@@ -105,10 +118,15 @@ export class Cluster extends Resource implements ICluster {
 
     const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
     const clusterSettings = containerInsights ? [{name: 'containerInsights', value: 'enabled'}] : undefined;
+    if (props.capacityProviders) {
+      this._capacityProvider.push(...props.capacityProviders);
+    }
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
+      capacityProviders: Lazy.listValue({ produce: () => this._capacityProvider.map(cp => cp.capacityProviderName)},
+        { omitEmpty: true}),
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
@@ -127,6 +145,14 @@ export class Cluster extends Resource implements ICluster {
     this._autoscalingGroup = props.capacity !== undefined
       ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
       : undefined;
+  }
+
+  /**
+   * Add the CapacityProvider to the cluster
+   * @param provider the CapacityProvider
+   */
+  public addCapacityProvider(...provider: ICapacityProvider[]) {
+    this._capacityProvider.push(...provider);
   }
 
   /**
