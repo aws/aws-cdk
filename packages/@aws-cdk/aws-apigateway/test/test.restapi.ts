@@ -1022,10 +1022,9 @@ export = {
       // GIVEN
       const stack = new Stack();
 
-
       // WHEN
       const api = new apigw.SpecRestApi(stack, 'SpecRestApiEC', {
-        apiDefinition: apigw.ApiDefinitition.fromInline({ foo: 'bar' }),
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
         endpointConfiguration: {
           types: [ apigw.EndpointType.REGIONAL ],
         },

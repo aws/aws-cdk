@@ -159,6 +159,14 @@ export interface RestApiBaseProps {
    * @default - when no export name is given, output will be created without export
    */
   readonly endpointExportName?: string;
+
+  /**
+   * The EndpointConfiguration property type specifies the endpoint types of a REST API
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
+   *
+   * @default - No endpoint configuration
+   */
+  readonly endpointConfiguration?: EndpointConfiguration;
 }
 
 /**
@@ -213,14 +221,6 @@ export interface RestApiProps extends RestApiOptions {
    * @default - Metering is disabled.
    */
   readonly apiKeySourceType?: ApiKeySourceType;
-
-  /**
-   * The EndpointConfiguration property type specifies the endpoint types of a REST API
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
-   *
-   * @default - No endpoint configuration
-   */
-  readonly endpointConfiguration?: EndpointConfiguration;
 
   /**
    * A list of the endpoint types of the API. Use this property when creating
@@ -423,8 +423,8 @@ export abstract class RestApiBase extends Resource implements IRestApi {
       }
     }
   }
-  
-  private configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
+
+  protected configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
     if (props.endpointTypes && props.endpointConfiguration) {
       throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
     }
