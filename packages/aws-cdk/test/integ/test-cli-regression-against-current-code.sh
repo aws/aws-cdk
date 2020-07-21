@@ -13,7 +13,7 @@ integdir=$(cd $(dirname $0) && pwd)
 temp_dir=$(mktemp -d)
 
 function cleanup {
-    # keep junit files 
+    # keep junit file to allow report creation
     cp ${integ_under_test}/junit.xml .
     rm -rf ${temp_dir}
     rm -rf ${integ_under_test}
