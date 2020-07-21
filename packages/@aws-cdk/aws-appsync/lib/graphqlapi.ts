@@ -7,7 +7,7 @@ import {
   ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Expires, IResolvable, EpochFormat } from '@aws-cdk/core';
+import { Construct, Duration, Expires, IResolvable } from '@aws-cdk/core';
 import {
   CfnApiKey,
   CfnGraphQLApi,
@@ -524,7 +524,8 @@ export class GraphQLApi extends Construct {
       (config.expires?.date < Expires.after(Duration.days(1)).date || config.expires?.date > Expires.after(Duration.days(365)).date)) {
       throw Error('API key expiration must be between 1 and 365 days.');
     }
-    const expires = config.expires ? config.expires.getEpoch(EpochFormat.HOUR) : undefined;
+    const getEpoch = (d: Expires) => { return Math.floor( d.date.getTime() / 1000); };
+    const expires = config.expires ? getEpoch(config.expires) : undefined;
     const key = new CfnApiKey(this, `${config.name || 'DefaultAPIKey'}ApiKey`, {
       expires,
       description: config.description || 'Default API Key created by CDK',

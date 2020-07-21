@@ -8,7 +8,6 @@ import {
   PrimaryKey,
   Values,
 } from '../lib';
-
 /*
  * Creates an Appsync GraphQL API with API_KEY authorization.
  * Testing for API_KEY Authorization.

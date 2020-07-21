@@ -9,6 +9,8 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
+const getEpoch = (d: cdk.Expires) => { return Math.floor( d.date.getTime()/1000 ); };
+
 describe('AuthorizationType ApiKey', () => {
 
   test('apiKeyConfig creates default description and no expire field', () => {
@@ -31,7 +33,7 @@ describe('AuthorizationType ApiKey', () => {
   });
 
   test('apiKeyConfig creates default description and valid expiration date', () => {
-    const expirationDate: number = cdk.Expires.after(cdk.Duration.days(10)).getEpoch(cdk.EpochFormat.HOUR);
+    const expirationDate: number = getEpoch(cdk.Expires.after(cdk.Duration.days(10)));
 
     // WHEN
     new appsync.GraphQLApi(stack, 'API', {
