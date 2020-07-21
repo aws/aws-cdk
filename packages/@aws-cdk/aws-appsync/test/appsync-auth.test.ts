@@ -9,7 +9,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
-const getEpoch = (d: cdk.Expires) => { return Math.floor( d.date.getTime()/1000 ); };
+const getEpoch = (d: cdk.Expires) => { return Math.floor( d.date.getTime()/ 86400000) * 86400; };
 
 describe('AuthorizationType ApiKey', () => {
 

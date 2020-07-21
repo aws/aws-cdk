@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
-import { App, RemovalPolicy, Stack, Expires, Duration } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack, Expires } from '@aws-cdk/core';
 import {
   AuthorizationType,
   GraphQLApi,
@@ -33,7 +33,8 @@ const api = new GraphQLApi(stack, 'Api', {
     defaultAuthorization: {
       authorizationType: AuthorizationType.API_KEY,
       apiKeyConfig: {
-        expires: Expires.after(Duration.days(2)),
+        // Generate a timestamp that's 365 days ahead, use atTimestamp so integ test doesn't fail
+        expires: Expires.atTimestamp(1626609600000),
       },
     },
   },

@@ -521,10 +521,11 @@ export class GraphQLApi extends Construct {
 
   private createAPIKey(config: ApiKeyConfig): string {
     if (config.expires &&
-      (config.expires?.date < Expires.after(Duration.days(1)).date || config.expires?.date > Expires.after(Duration.days(365)).date)) {
+      (config.expires?.date < Expires.after(Duration.days(1)).date
+        || config.expires?.date > Expires.after(Duration.days(365)).date)) {
       throw Error('API key expiration must be between 1 and 365 days.');
     }
-    const getEpoch = (d: Expires) => { return Math.floor( d.date.getTime() / 1000); };
+    const getEpoch = (d: Expires) => { return Math.floor( d.date.getTime() / 86400000) * 86400; };
     const expires = config.expires ? getEpoch(config.expires) : undefined;
     const key = new CfnApiKey(this, `${config.name || 'DefaultAPIKey'}ApiKey`, {
       expires,
