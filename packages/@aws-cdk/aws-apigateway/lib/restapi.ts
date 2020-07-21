@@ -423,6 +423,22 @@ export abstract class RestApiBase extends Resource implements IRestApi {
       }
     }
   }
+  
+  private configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
+    if (props.endpointTypes && props.endpointConfiguration) {
+      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
+    }
+    if (props.endpointConfiguration) {
+      return {
+        types: props.endpointConfiguration.types,
+        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
+      };
+    }
+    if (props.endpointTypes) {
+      return { types: props.endpointTypes };
+    }
+    return undefined;
+  }
 }
 
 /**
@@ -461,6 +477,7 @@ export class SpecRestApi extends RestApiBase {
       name: this.physicalName,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
+      endpointConfiguration: this.configureEndpoints(props),
       body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       parameters: props.parameters,
@@ -638,22 +655,6 @@ export class RestApi extends RestApiBase {
     }
 
     return [];
-  }
-
-  private configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
-    if (props.endpointTypes && props.endpointConfiguration) {
-      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
-    }
-    if (props.endpointConfiguration) {
-      return {
-        types: props.endpointConfiguration.types,
-        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
-      };
-    }
-    if (props.endpointTypes) {
-      return { types: props.endpointTypes };
-    }
-    return undefined;
   }
 }
 
