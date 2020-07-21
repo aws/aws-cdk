@@ -3,6 +3,24 @@ import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 
 /**
+ * A list of the capacity types that are supported. These
+ * capacity types may change the behavior of an addon.
+ */
+export enum EnvironmentCapacityType {
+  /**
+   * Specify that the environment should use AWS Fargate for
+   * hosting containers
+   */
+  FARGATE = 'fargate',
+
+  /**
+   * Specify that the environment should launch containers onto
+   * EC2 instances
+   */
+  EC2 = 'ec2'
+}
+
+/**
  * A task definition that is in the process of being built
  * by a series of hooks. Eventually it will be assigned to
  * an ecs.TaskDefinitionProps
@@ -47,7 +65,7 @@ export interface ServiceBuild {
   /**
    * The task definition registered to this service
    */
-  readonly taskDefinition: ecs.Ec2TaskDefinition,
+  readonly taskDefinition: ecs.TaskDefinition,
 
   /**
    * Configuration for how to register the service in service discovery
@@ -136,7 +154,7 @@ export abstract class ServiceAddon {
    * change the task definition's role to add permissions, etc
    * @param taskDefinition - The created task definition to add containers to
    */
-  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
+  public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     taskDefinition = taskDefinition;
   }
 
@@ -168,7 +186,7 @@ export abstract class ServiceAddon {
    * create any final resources which might depend on the service itself
    * @param service - The generated service
    */
-  public useService(service: ecs.Ec2Service) {
+  public useService(service: ecs.Ec2Service | ecs.FargateService) {
     service = service;
   }
 

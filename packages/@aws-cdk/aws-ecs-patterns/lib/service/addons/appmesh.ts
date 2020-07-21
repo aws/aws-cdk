@@ -25,6 +25,14 @@ export class AppMeshAddon extends ServiceAddon {
   public prehook(service: Service, scope: cdk.Construct) {
     this.parentService = service;
     this.scope = scope;
+
+    // Make sure that the parent cluster for this service has
+    // a namespace attached.
+    if (!this.parentService.cluster.defaultCloudMapNamespace) {
+      this.parentService.cluster.addDefaultCloudMapNamespace({
+        name: 'internal',
+      });
+    }
   }
 
   public mutateTaskDefinitionProps(props: TaskDefinitionBuild) {
@@ -68,7 +76,7 @@ export class AppMeshAddon extends ServiceAddon {
     } as TaskDefinitionBuild;
   }
 
-  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
+  public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     const appMeshRepository = ecr.Repository.fromRepositoryArn(this.scope, 'app-mesh-envoy', 'arn:aws:ecr:us-east-1:840364872350:repository/aws-appmesh-envoy');
 
     this.container = taskDefinition.addContainer('envoy', {
@@ -126,7 +134,7 @@ export class AppMeshAddon extends ServiceAddon {
 
   // Now that the service is defined we can create the AppMesh virtual service
   // and virtual node for the real service
-  public useService(service: ecs.Ec2Service) {
+  public useService(service: ecs.Ec2Service | ecs.FargateService) {
     const containerAddon = this.parentService.getAddon('service-container') as Container;
 
     if (!containerAddon) {

@@ -16,6 +16,7 @@ export = {
     new ecsPatterns.Service(stack, 'my-service', {
       vpc,
       cluster,
+      capacityType: ecsPatterns.EnvironmentCapacityType.EC2,
     });
 
     // THEN
@@ -39,6 +40,7 @@ export = {
     const myService = new ecsPatterns.Service(stack, 'my-service', {
       vpc,
       cluster,
+      capacityType: ecsPatterns.EnvironmentCapacityType.EC2,
     });
 
     myService.add(new ecsPatterns.addons.Container({
@@ -62,7 +64,6 @@ export = {
           PortMappings: [
             {
               ContainerPort: 80,
-              HostPort: 0,
               Protocol: 'tcp',
             },
           ],
@@ -78,9 +79,10 @@ export = {
       Cpu: '256',
       Family: 'myservicetaskdefinition',
       Memory: '512',
-      NetworkMode: 'bridge',
+      NetworkMode: 'awsvpc',
       RequiresCompatibilities: [
         'EC2',
+        'FARGATE',
       ],
       TaskRoleArn: {
         'Fn::GetAtt': [

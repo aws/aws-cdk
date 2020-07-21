@@ -27,7 +27,7 @@ export class CloudwatchAgentAddon extends ServiceAddon {
     this.scope = scope;
   }
 
-  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
+  public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     // Add the CloudWatch Agent to this task
     this.container = taskDefinition.addContainer('cloudwatch-agent', {
       image: ecs.ContainerImage.fromRegistry('amazon/cloudwatch-agent:latest'),

@@ -44,7 +44,7 @@ export class Container extends ServiceAddon {
   }
 
   // This hook adds the application container to the task definition.
-  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
+  public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     let containerProps = {
       image: this.props.image,
       cpu: Number(this.props.cpu),
@@ -104,7 +104,7 @@ export class Container extends ServiceAddon {
       });
     }
 
-    const xrayAddon = this.parentService.getAddon('xrayAddon');
+    const xrayAddon = this.parentService.getAddon('xray');
     if (xrayAddon && xrayAddon.container) {
       this.container.addContainerDependencies({
         container: xrayAddon.container,

@@ -1,4 +1,4 @@
-import { Ec2Service } from '@aws-cdk/aws-ecs';
+import * as ecs from '@aws-cdk/aws-ecs';
 import * as alb from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
@@ -28,7 +28,7 @@ export class HttpLoadBalancerAddon extends ServiceAddon {
   }
 
   // After the service is created add the service to the load balancer's listener
-  public useService(service: Ec2Service) {
+  public useService(service: ecs.Ec2Service | ecs.FargateService) {
     this.listener.addTargets(this.parentService.id, {
       deregistrationDelay: cdk.Duration.seconds(10),
       port: 80,

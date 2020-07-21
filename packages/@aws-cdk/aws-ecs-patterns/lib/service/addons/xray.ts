@@ -14,7 +14,7 @@ export class XRayAddon extends ServiceAddon {
     this.parentService = service;
   }
 
-  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
+  public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     // Add the XRay Daemon to the task
     this.container = taskDefinition.addContainer('xray', {
       image: ecs.ContainerImage.fromRegistry('amazon/aws-xray-daemon'),

@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { ServiceAddon, ServiceBuild, TaskDefinitionBuild } from './addons/addon-interfaces';
+import { EnvironmentCapacityType, ServiceAddon, ServiceBuild, TaskDefinitionBuild } from './addons/addon-interfaces';
 
 /**
  * The settings for an ECS Service
@@ -14,9 +14,16 @@ export interface ServiceProps {
 
   /**
    * The ECS cluster which provides compute capacity to this service
+   * [disable-awslint:ref-via-interface]
    */
-  readonly cluster: ecs.ICluster
+  readonly cluster: ecs.Cluster,
+
+  /**
+   * The capacity type that this service is being placed onto
+   */
+  readonly capacityType: EnvironmentCapacityType
 }
+
 /**
  * A service builder class. This construct support various addons
  * which can construct an ECS service progressively.
@@ -25,7 +32,7 @@ export class Service extends cdk.Construct {
   /**
    * The underlying ECS service that was created
    */
-  public service!: ecs.Ec2Service;
+  public service!: ecs.Ec2Service | ecs.FargateService;
 
   /**
    * The name of this service
@@ -39,14 +46,20 @@ export class Service extends cdk.Construct {
 
   /**
    * The cluster that is providing capacity for this service
+   * [disable-awslint:ref-via-interface]
    */
-  public readonly cluster: ecs.ICluster;
+  public readonly cluster: ecs.Cluster;
+
+  /**
+   * The capacity type that this service will use
+   */
+  public readonly capacityType: EnvironmentCapacityType;
 
   /**
    * The generated task definition for this service, is only
    * generated once .prepare() has been executed
    */
-  protected taskDefinition!: ecs.Ec2TaskDefinition;
+  protected taskDefinition!: ecs.TaskDefinition;
 
   /**
    * The list of addons that have been registered to run when
@@ -73,6 +86,7 @@ export class Service extends cdk.Construct {
     this.id = id;
     this.vpc = props.vpc;
     this.cluster = props.cluster;
+    this.capacityType = props.capacityType;
     this.addons = {};
     this.downstreamServices = [];
     this._prepared = false;
@@ -157,7 +171,12 @@ export class Service extends cdk.Construct {
     }
 
     // Now that the task definition properties are assembled, create it
-    this.taskDefinition = new ecs.Ec2TaskDefinition(this.scope, `${this.id}-task-definition`, taskDefProps);
+    this.taskDefinition = new ecs.TaskDefinition(this.scope, `${this.id}-task-definition`, {
+      ...taskDefProps,
+
+      // Ensure that the task definition supports both EC2 and Fargate
+      compatibility: ecs.Compatibility.EC2_AND_FARGATE,
+    });
 
     // Now give each addon a chance to use the task definition
     for (const addon in this.addons) {
@@ -189,7 +208,13 @@ export class Service extends cdk.Construct {
 
     // Now that the service props are determined we can create
     // the service
-    this.service = new ecs.Ec2Service(this.scope, `${this.id}-service`, serviceProps);
+    if (this.capacityType === EnvironmentCapacityType.EC2) {
+      this.service = new ecs.Ec2Service(this.scope, `${this.id}-service`, serviceProps);
+    } else if (this.capacityType === EnvironmentCapacityType.FARGATE) {
+      this.service = new ecs.FargateService(this.scope, `${this.id}-service`, serviceProps);
+    } else {
+      throw new Error(`Unknown capacity type for service ${this.id}`);
+    }
 
     // Now give all addons a chance to use the service
     for (const addon in this.addons) {

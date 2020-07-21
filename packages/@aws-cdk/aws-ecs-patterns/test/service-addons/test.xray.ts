@@ -6,7 +6,7 @@ import { Test } from 'nodeunit';
 import * as ecsPatterns from '../../lib';
 
 export = {
-  'should be able to add an HTTP load balancer to a service'(test: Test) {
+  'should be able to add AWS X-Ray to a service'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -29,13 +29,22 @@ export = {
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
 
-    myService.add(new ecsPatterns.addons.HttpLoadBalancerAddon());
+    myService.add(new ecsPatterns.addons.XRayAddon());
 
     // THEN
+
+    // Ensure that task has a Firelens sidecar and a log configuration
+    // pointing at the sidecar
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
+          DependsOn: [
+            {
+              Condition: 'HEALTHY',
+              ContainerName: 'xray',
+            },
+          ],
           Essential: true,
           Image: 'nathanpeck/name',
           Memory: 512,
@@ -54,8 +63,51 @@ export = {
             },
           ],
         },
+        {
+          Environment: [
+            {
+              Name: 'AWS_REGION',
+              Value: {
+                Ref: 'AWS::Region',
+              },
+            },
+          ],
+          Essential: true,
+          HealthCheck: {
+            Command: [
+              'CMD-SHELL',
+              'curl -s http://localhost:2000',
+            ],
+            Interval: 5,
+            Retries: 3,
+            StartPeriod: 10,
+            Timeout: 2,
+          },
+          Image: 'amazon/aws-xray-daemon',
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': {
+                Ref: 'myservicetaskdefinitionxrayLogGroupC0252525',
+              },
+              'awslogs-stream-prefix': 'xray',
+              'awslogs-region': {
+                Ref: 'AWS::Region',
+              },
+            },
+          },
+          MemoryReservation: 256,
+          Name: 'xray',
+          User: '1337',
+        },
       ],
       Cpu: '256',
+      ExecutionRoleArn: {
+        'Fn::GetAtt': [
+          'myservicetaskdefinitionExecutionRole0CE74AD0',
+          'Arn',
+        ],
+      },
       Family: 'myservicetaskdefinition',
       Memory: '512',
       NetworkMode: 'awsvpc',
@@ -70,9 +122,6 @@ export = {
         ],
       },
     }));
-
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener'));
 
     test.done();
   },

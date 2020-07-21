@@ -71,7 +71,7 @@ export class FireLensAddon extends ServiceAddon {
     }));
   }
 
-  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
+  public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     // Manually add a firelens log router, so that we can manually manage the dependencies
     // to ensure that the Firelens log router depends on the Envoy proxy
     this.container = taskDefinition.addFirelensLogRouter('firelens', {
