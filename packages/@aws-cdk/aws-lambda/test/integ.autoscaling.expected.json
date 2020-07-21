@@ -134,12 +134,7 @@
             "Schedule": "cron(0 20 * * ? *)",
             "ScheduledActionName": "ScaleDownAtNight"
           }
-        ],
-        "SuspendedState": {
-          "DynamicScalingInSuspended": false,
-          "DynamicScalingOutSuspended": false,
-          "ScheduledScalingSuspended": false
-        }
+        ]
       }
     },
     "AliasAliasScalingTargetTrackingA7718D48": {
