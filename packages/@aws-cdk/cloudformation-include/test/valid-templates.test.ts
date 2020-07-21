@@ -452,7 +452,7 @@ describe('CDK Include', () => {
   test('can include a template with a custom resource that has custom properties', () => {
     includeTestTemplate(stack, 'custom-resource-properties.json');
     expect(stack).toHaveResourceLike('AWS::MyService::Custom', {
-      "CustomProp": "CustomValue"
+      "CustomProp": "CustomValue",
     });
   });
 
@@ -460,8 +460,8 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'custom-resource-with-functions.json');
     expect(stack).toHaveResourceLike('AWS::MyService::Custom', {
       "CustomStringProp": {
-        "Ref": "AWS::NoValue"
-      }
+        "Ref": "AWS::NoValue",
+      },
     });
   });
 
@@ -470,25 +470,32 @@ describe('CDK Include', () => {
     expect(stack).toHaveResourceLike('AWS::MyService::Custom', {
       "Metadata": {
         "Object1": "Value1",
-        "Object2": "Value2"
+        "Object2": "Value2",
       },
       "CreationPolicy": {
         "AutoScalingCreationPolicy": {
-          "MinSuccessfulInstancesPercent" : 90
-        }
+          "MinSuccessfulInstancesPercent": 90,
+        },
       },
       "DeletionPolicy": "Retain",
-      "DependsOn": [ "CustomResource" ]
+      "DependsOn": [ "CustomResource" ],
     }, ResourcePart.CompleteDefinition);
 
     expect(stack).toHaveResourceLike('AWS::MyService::AnotherCustom', {
       "UpdatePolicy": {
         "AutoScalingReplacingUpdate": {
-          "WillReplace" : "false"
-        }
+          "WillReplace": "false",
+        },
       },
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
     }, ResourcePart.CompleteDefinition);
+  });
+
+  test('can use conditions', () => {
+    const cfnTempalte = includeTestTemplate(stack, 'custom-resource-with-condition.json');
+    const alwaysFalseCondition = cfnTempalte.getCondition('AlwaysFalseCond');
+
+    expect(cfnTempalte.getResource('CustomResource').cfnOptions.condition).toBe(alwaysFalseCondition);
   });
 
   test('can ingest a template that contains outputs and modify them', () => {

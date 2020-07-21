@@ -144,7 +144,7 @@ describe('CDK Include', () => {
           },
         },
       });
-    }).toThrow(/nested stack 'ChildStack' uses Condition 'FakeCondition' that doesn't exist/);
+    }).toThrow(/resource 'ChildStack' uses Condition 'FakeCondition' that doesn't exist/);
   });
 
   test('throws an exception when a nested stacks depends on a resource that does not exist in the template', () => {
@@ -157,7 +157,7 @@ describe('CDK Include', () => {
           },
         },
       });
-    }).toThrow(/nested stack 'ChildStack' depends on 'AFakeResource' that doesn't exist/);
+    }).toThrow(/resource 'ChildStack' depends on 'AFakeResource' that doesn't exist/);
   });
 
   test('can modify resources in nested stacks', () => {
@@ -365,7 +365,7 @@ describe('CDK Include', () => {
   });
 
   test("handles Metadata, DeletionPolicy, and UpdateReplacePolicy attributes of the nested stack's resource", () => {
-    const cfnTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+    new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-with-attributes.json'),
       nestedStacks: {
         'ChildStack': {
@@ -387,8 +387,6 @@ describe('CDK Include', () => {
       ],
       "UpdateReplacePolicy": "Retain",
     }, ResourcePart.CompleteDefinition);
-
-    cfnTemplate.getNestedStack('AnotherChildStack');
   });
 
   test('correctly parses NotificationsARNs, Timeout', () => {
