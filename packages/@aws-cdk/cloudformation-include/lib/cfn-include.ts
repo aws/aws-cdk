@@ -362,7 +362,6 @@ export class CfnInclude extends core.CfnElement {
       });
 
       cfn_parse.handleAttributes(customResource, resourceAttributes, logicalId, finder);
-
       this.resources[logicalId] = customResource;
 
       if (this.preserveLogicalIds) {

@@ -65,7 +65,7 @@ preserving their original logical IDs from the template file.
 
 Any resource from the included template can be retrieved by referring to it by its logical ID from the template.
 If you know the class of the CDK object that corresponds to that resource,
-you can cast the returned object to the correct type:
+you can cast the returned object to the correct type (custom resources will be of type CfnResource, so you won't need to cast them):
 
 ```typescript
 import * as s3 from '@aws-cdk/aws-s3';
