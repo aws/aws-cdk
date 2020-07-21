@@ -78,7 +78,7 @@ export class HttpApiMapping extends Resource implements IApiMapping {
       throw new Error('An ApiMapping key may contain only letters, numbers and one of $-_.+!*\'(),');
     }
 
-    if (props.apiMappingKey && props.apiMappingKey === '') {
+    if (props.apiMappingKey === '') {
       throw new Error('empty string for api mapping key not allowed');
     }
 
