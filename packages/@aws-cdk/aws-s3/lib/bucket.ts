@@ -888,6 +888,14 @@ export interface InventoryDestination {
    * @default - No prefix.
    */
   readonly prefix?: string;
+  /**
+   * The account ID that owns the destination S3 bucket.
+   * If no account ID is provided, the owner is not validated before exporting data.
+   * It's recommended to set an account ID to prevent problems if the destination bucket ownership changes.
+   *
+   * @default - No account ID.
+   */
+  readonly bucketOwner?: string;
 }
 
 /**
@@ -906,14 +914,6 @@ export interface Inventory {
    * @default - No objects prefix
    */
   readonly objectsPrefix?: string;
-  /**
-   * The account ID that owns the destination S3 bucket.
-   * If no account ID is provided, the owner is not validated before exporting data.
-   * It's recommended to set an account ID to prevent problems if the destination bucket ownership changes.
-   *
-   * @default - No account ID.
-   */
-  readonly bucketOwner?: string;
   /**
    * The format of the inventory.
    *
@@ -1619,11 +1619,28 @@ export class Bucket extends BucketBase {
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
       const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`;
 
+      if (inventory.destination.bucket instanceof Bucket) {
+        inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['s3:PutObject'],
+          resources: [
+            inventory.destination.bucket.bucketArn,
+            inventory.destination.bucket.arnForObjects('*'),
+          ],
+          principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+          conditions: {
+            ArnLike: {
+              'aws:SourceArn': this.bucketArn,
+            },
+          },
+        }));
+      }
+
       return {
         id,
         destination: {
           bucketArn: inventory.destination.bucket.bucketArn,
-          bucketAccountId: inventory.bucketOwner,
+          bucketAccountId: inventory.destination.bucketOwner,
           prefix: inventory.destination.prefix,
           format,
         },
