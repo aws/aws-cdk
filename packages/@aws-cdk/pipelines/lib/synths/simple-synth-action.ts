@@ -153,7 +153,7 @@ export class SimpleSynthAction implements codepipeline.IAction {
   public static standardYarnSynth(options: StandardYarnSynthOptions) {
     return new SimpleSynthAction({
       ...options,
-      installCommand: options.synthCommand ?? 'yarn install --frozen-lockfile',
+      installCommand: options.installCommand ?? 'yarn install --frozen-lockfile',
       synthCommand: options.synthCommand ?? 'npx cdk synth',
     });
   }
