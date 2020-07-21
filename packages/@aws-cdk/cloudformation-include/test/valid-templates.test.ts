@@ -491,11 +491,17 @@ describe('CDK Include', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
-  test('can use conditions', () => {
+  test('can ingest a custom resource that uses conditions', () => {
     const cfnTempalte = includeTestTemplate(stack, 'custom-resource-with-condition.json');
     const alwaysFalseCondition = cfnTempalte.getCondition('AlwaysFalseCond');
 
     expect(cfnTempalte.getResource('CustomResource').cfnOptions.condition).toBe(alwaysFalseCondition);
+  });
+
+  test('throws an exception when an undefined condition is used', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'custom-resource-with-bad-condition.json');
+    }).toThrow(/Resource 'CustomResource' uses Condition 'AlwaysFalseCond' that doesn't exist/);
   });
 
   test('can ingest a template that contains outputs and modify them', () => {
