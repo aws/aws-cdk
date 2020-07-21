@@ -2,8 +2,8 @@ import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-//import { CanaryBase } from './canary-base';
 import { CfnCanary } from './synthetics.generated';
+import { Test, TestConfig } from './test-script';
 
 /**
  * Optional properties for a canary
@@ -103,10 +103,8 @@ export interface CanaryProps extends CanaryOptions {
   /**
    * Specify the endpoint that you want the canary code to hit. Alternatively, you can specify
    * your own canary script to run.
-   *
-   * TODO: implement this
    */
-  //readonly test: Test;
+  readonly test: Test;
 }
 
 export class Canary extends cdk.Resource {
@@ -172,6 +170,8 @@ export class Canary extends cdk.Resource {
     var timeout = props.timeout ?? cdk.Duration.seconds(Math.min(frequency.toSeconds(), 900));
     timeout = cdk.Duration.seconds(Math.min(timeout.toSeconds(), frequency.toSeconds()));
 
+    this.verifyTestConfig(props.test.config);
+
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: s3Location,
       executionRoleArn: this.role.roleArn,
@@ -189,8 +189,11 @@ export class Canary extends cdk.Resource {
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
       code: {
-        handler: this.verifyHandler('index.handler'),
-        script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
+        handler: this.verifyHandler(props.test.config.handler),
+        script: props.test.config.inlineCode, //'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
+        s3Bucket: props.test.config.s3Location?.bucketName,
+        s3Key: props.test.config.s3Location?.objectKey,
+        s3ObjectVersion: props.test.config.s3Location?.objectVersion,
       },
     });
     resource.node.addDependency(this.role);
@@ -306,5 +309,12 @@ export class Canary extends cdk.Resource {
     return cdk.Lazy.stringValue({
       produce: () => this.node.uniqueId.toLowerCase().replace('-', '').replace(' ', '').replace('_', '').substring(0,20),
     });
+  }
+
+  private verifyTestConfig(code: TestConfig) {
+    // mutually exclusive
+    if ((!code.inlineCode && !code.s3Location) || (code.inlineCode && code.s3Location)) {
+      throw new Error('synthetics.Code must specify one of "inlineCode" or "s3Location" but not both');
+    }
   }
 }
