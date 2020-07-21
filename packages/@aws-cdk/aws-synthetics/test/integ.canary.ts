@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import * as synth from '../lib';
+import * as synthetics from '../lib';
 
 /*
  * Stack verification steps:
@@ -9,7 +9,7 @@ import * as synth from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-canary');
 
-new synth.Canary(stack, 'mycanary', {
+new synthetics.Canary(stack, 'mycanary-123', {
 });
 
 app.synth();

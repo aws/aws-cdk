@@ -1,11 +1,11 @@
 {
   "Resources": {
-    "mycanaryServiceBucketF66DFA57": {
+    "mycanary123ServiceBucket6519A7C6": {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "mycanaryServiceRoleEE2F0C82": {
+    "mycanary123ServiceRoleD2369B8D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -45,7 +45,7 @@
         ]
       }
     },
-    "mycanaryDCC21B3D": {
+    "mycanary123735D52B3": {
       "Type": "AWS::Synthetics::Canary",
       "Properties": {
         "ArtifactS3Location": {
@@ -54,7 +54,7 @@
             [
               "s3://",
               {
-                "Ref": "mycanaryServiceBucketF66DFA57"
+                "Ref": "mycanary123ServiceBucket6519A7C6"
               }
             ]
           ]
@@ -65,11 +65,11 @@
         },
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
-            "mycanaryServiceRoleEE2F0C82",
+            "mycanary123ServiceRoleD2369B8D",
             "Arn"
           ]
         },
-        "Name": "integ-canary",
+        "Name": "awscanarymycanary123",
         "RunConfig": {
           "TimeoutInSeconds": 300
         },
@@ -81,7 +81,7 @@
         "StartCanaryAfterCreation": true
       },
       "DependsOn": [
-        "mycanaryServiceRoleEE2F0C82"
+        "mycanary123ServiceRoleD2369B8D"
       ]
     }
   }

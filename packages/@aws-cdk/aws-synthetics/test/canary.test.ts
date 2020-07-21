@@ -2,12 +2,12 @@ import '@aws-cdk/assert/jest';
 import { arrayWith, objectLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Duration, Stack } from '@aws-cdk/core';
+import { App, Duration, Stack } from '@aws-cdk/core';
 import * as synth from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
-  stack = new Stack();
+  stack = new Stack(new App(), 'canaries');
 });
 
 test('Create a basic canary', () => {
@@ -19,6 +19,22 @@ test('Create a basic canary', () => {
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
     Name: 'mycanary',
+    Code: {
+      Handler: 'index.handler',
+      Script: 'foo',
+    },
+    RuntimeVersion: 'syn-1.0',
+  });
+});
+
+test('Create a basic canary with no name', () => {
+  // WHEN
+  new synth.Canary(stack, 'Canary', {
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    Name: 'canariescanary8f7842',
     Code: {
       Handler: 'index.handler',
       Script: 'foo',
