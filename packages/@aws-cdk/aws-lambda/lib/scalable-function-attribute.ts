@@ -24,11 +24,11 @@ export interface IScalableFunctionAttribute {
  */
 export interface UtilizationScalingOptions extends appscaling.BaseTargetTrackingProps {
   /**
-   * Target utilization percent for the attribute.
+   * Target utilization value for the attribute. For example, .5 indicates that 50 percent of allocated provisioned concurrency is in use.
    *
    * Allowed values: 0.1 - 0.9.
    */
-  readonly targetUtilizationPercent: number;
+  readonly targetUtilizationValue: number;
 }
 
 /**
@@ -47,11 +47,11 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
    * Allowed values: 0.1 - 0.9.
    */
   public scaleOnUtilization(props: UtilizationScalingOptions) {
-    if (props.targetUtilizationPercent < 0.1 || props.targetUtilizationPercent > 0.9) {
+    if (props.targetUtilizationValue < 0.1 || props.targetUtilizationValue > 0.9) {
       throw new Error('TargetUtilizationPercent should be between 0.1 and 0.9.');
     }
     super.doScaleToTrackMetric('Tracking', {
-      targetValue: props.targetUtilizationPercent,
+      targetValue: props.targetUtilizationValue,
       predefinedMetric: appscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
       ...props,
     });
