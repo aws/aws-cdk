@@ -21,7 +21,7 @@ test('Create a basic canary', () => {
     Name: 'mycanary',
     Code: {
       Handler: 'index.handler',
-      Script: 'foo',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
     },
     RuntimeVersion: 'syn-1.0',
   });
@@ -37,7 +37,7 @@ test('Create a basic canary with no name', () => {
     Name: 'canariescanary8f7842',
     Code: {
       Handler: 'index.handler',
-      Script: 'foo',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
     },
     RuntimeVersion: 'syn-1.0',
   });
@@ -73,7 +73,7 @@ test('Canary can have specified IAM role', () => {
     Name: 'mycanary',
     Code: {
       Handler: 'index.handler',
-      Script: 'foo',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
     },
     RuntimeVersion: 'syn-1.0',
     ExecutionRoleArn: objectLike({
@@ -97,7 +97,7 @@ test('Canary can have specified s3 Bucket', () => {
     Name: 'mycanary',
     Code: {
       Handler: 'index.handler',
-      Script: 'foo',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
     },
     RuntimeVersion: 'syn-1.0',
     ArtifactS3Location: objectLike({
@@ -118,7 +118,7 @@ test('Canary can set frequency', () => {
     Name: 'mycanary',
     Code: {
       Handler: 'index.handler',
-      Script: 'foo',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
     },
     RuntimeVersion: 'syn-1.0',
     Schedule: objectLike({ Expression: 'rate(3 minutes)'}),
@@ -137,7 +137,7 @@ test('Canary can set timeToLive', () => {
     Name: 'mycanary',
     Code: {
       Handler: 'index.handler',
-      Script: 'foo',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
     },
     RuntimeVersion: 'syn-1.0',
     Schedule: objectLike({ DurationInSeconds: '1800'}),
@@ -156,7 +156,7 @@ test('Canary can set timeout', () => {
     Name: 'mycanary',
     Code: {
       Handler: 'index.handler',
-      Script: 'foo',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
     },
     RuntimeVersion: 'syn-1.0',
     RunConfig: objectLike({ TimeoutInSeconds: 60}),
@@ -176,7 +176,7 @@ test('Canary cannot set timeout value to be greater than frequency', () => {
     Name: 'mycanary',
     Code: {
       Handler: 'index.handler',
-      Script: 'foo',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
     },
     RuntimeVersion: 'syn-1.0',
     RunConfig: objectLike({ TimeoutInSeconds: 60}),
@@ -196,7 +196,7 @@ test('Timeout is set to frequency when unspecified', () => {
     Name: 'mycanary',
     Code: {
       Handler: 'index.handler',
-      Script: 'foo',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
     },
     RuntimeVersion: 'syn-1.0',
     RunConfig: objectLike({ TimeoutInSeconds: 300}),
@@ -216,7 +216,7 @@ test('Canary can disable startCanaryAfterCreation', () => {
     Name: 'mycanary',
     Code: {
       Handler: 'index.handler',
-      Script: 'foo',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
     },
     RuntimeVersion: 'syn-1.0',
     StartCanaryAfterCreation: false,
@@ -235,7 +235,7 @@ test('Canary can set successRetentionPeriod', () => {
     Name: 'mycanary',
     Code: {
       Handler: 'index.handler',
-      Script: 'foo',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
     },
     RuntimeVersion: 'syn-1.0',
     SuccessRetentionPeriod: 1,
@@ -254,7 +254,7 @@ test('Canary can set failureRetentionPeriod', () => {
     Name: 'mycanary',
     Code: {
       Handler: 'index.handler',
-      Script: 'foo',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
     },
     RuntimeVersion: 'syn-1.0',
     FailureRetentionPeriod: 1,

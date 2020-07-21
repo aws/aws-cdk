@@ -1,3 +1,4 @@
+import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -142,20 +143,26 @@ export class Canary extends cdk.Resource {
       statements: [new iam.PolicyStatement({
         resources: ['*'],
         actions: [
-          's3:PutObject',
-          's3:GetBucketLocation',
-          's3:ListAllMyBuckets',
+          // 's3:PutObject',
+          // 's3:GetBucketLocation',
+          // 's3:ListAllMyBuckets',
           'cloudwatch:PutMetricData',
-          'logs:CreateLogGroup',
-          'logs:CreateLogStream',
-          'logs:PutLogEvents',
+          // 'logs:CreateLogGroup',
+          // 'logs:CreateLogStream',
+          // 'logs:PutLogEvents',
         ],
       })],
     });
     const inlinePolicies = { canaryPolicy: policy };
 
+    const managedPolicies = new Array<iam.IManagedPolicy>();
+
+    // the arn is in the form of - arn:aws:iam::aws:policy/CloudWatchSyntheticsFullAccess
+    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchSyntheticsFullAccess'));
+
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies,
       inlinePolicies,
     });
 
@@ -183,7 +190,7 @@ export class Canary extends cdk.Resource {
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
       code: {
         handler: this.verifyHandler('index.handler'),
-        script: 'foo',
+        script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
       },
     });
     resource.node.addDependency(this.role);
@@ -191,6 +198,48 @@ export class Canary extends cdk.Resource {
     this.canaryId = resource.attrId;
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
+  }
+
+  /**
+   * Returns a new metric for the canary
+   *
+   * @default avg over 5 minutes
+   */
+  private metric(metricName: string, props?: MetricOptions): Metric {
+    return new Metric({
+      metricName,
+      namespace: 'CloudWatchSynthetics',
+      dimensions: { CanaryName: this.canaryName },
+      statistic: 'avg',
+      ...props,
+    }).attachTo(this);
+  }
+
+  /**
+   * Returns a Duration metric for the canary
+   *
+   * @default avg over 5 minutes
+   */
+  public metricDuration(props?: MetricOptions): Metric {
+    return this.metric('Duration', props);
+  }
+
+  /**
+   * Returns a Success Percent metric for the canary
+   *
+   * @default avg over 5 minutes
+   */
+  public metricSuccessPercent(props?: MetricOptions): Metric {
+    return this.metric('SuccessPercent', props);
+  }
+
+  /**
+   * Returns Failed metric for the canary
+   *
+   * @default avg over 5 minutes
+   */
+  public metricFailed(props?: MetricOptions): Metric {
+    return this.metric('Failed', props);
   }
 
   /**
@@ -255,7 +304,7 @@ export class Canary extends cdk.Resource {
    */
   private generateName(): string {
     return cdk.Lazy.stringValue({
-      produce: () => this.node.uniqueId.toLowerCase().replace('-', '').replace(' ', '').replace('_', '').substring(0,20), 
+      produce: () => this.node.uniqueId.toLowerCase().replace('-', '').replace(' ', '').replace('_', '').substring(0,20),
     });
   }
 }
