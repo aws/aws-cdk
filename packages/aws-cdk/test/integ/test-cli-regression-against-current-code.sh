@@ -14,7 +14,7 @@ temp_dir=$(mktemp -d)
 
 function cleanup {
     # keep junit files 
-    # cp ${integ_under_test}/junit.xml .
+    cp ${integ_under_test}/junit.xml .
     rm -rf ${temp_dir}
     rm -rf ${integ_under_test}
 }
@@ -78,10 +78,9 @@ integ_under_test=${integdir}/cli-backwards-tests-${sanitized_version}
 rm -rf ${integ_under_test}
 echo "Copying integration tests of version ${VERSION_UNDER_TEST} to ${integ_under_test} (dont worry, its gitignored)"
 cp -r ${temp_dir}/package/test/integ/cli ${integ_under_test}
-cp test/integ/cli/jest.config.js ${integ_under_test}
 patch_dir="${integdir}/cli-regression-patches/${VERSION_UNDER_TEST}"
 # delete possibly stale junit.xml file
-# rm -f ${integ_under_test}/junit.xml
+rm -f ${integ_under_test}/junit.xml
 if [[ -d "$patch_dir" ]]; then
     echo "Hotpatching the tests with files from $patch_dir" >&2
     cp -r "$patch_dir"/* ${integ_under_test}
