@@ -2,7 +2,7 @@
     "PropertyTypes": {
         "AWS::Athena::WorkGroup.Tags": {
             "patch": {
-                "description": "Sets AWS::Serverless::Function.S3Event.Events#UpdateType to Immutable",
+                "description": "Corrects tag specification for AWS::Athena::WorkGroup.Tags",
                 "operations": [
                     {
                         "op": "remove",
