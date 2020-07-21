@@ -356,8 +356,6 @@ export class CfnInclude extends core.CfnElement {
         finder,
       });
 
-      //console.log(resourceAttributes);
-
       const customResource = new core.CfnResource(this, logicalId, {
         type: resourceAttributes.Type,
         properties: cfnParser.parseValue(resourceAttributes.Properties),
@@ -419,33 +417,7 @@ export class CfnInclude extends core.CfnElement {
     // we know this is never undefined for nested stacks
     const nestedStackResource: core.CfnResource = nestedStack.nestedStackResource!;
 
-    // handle resource attributes
     core.handleAttributes(nestedStackResource, nestedStackAttributes, nestedStackId, finder);
-    /*
-    cfnOptions.metadata = cfnParser.parseValue(nestedStackAttributes.Metadata);
-    cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(nestedStackAttributes.DeletionPolicy);
-    cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(nestedStackAttributes.UpdateReplacePolicy);
-    // handle DependsOn
-    nestedStackAttributes.DependsOn = nestedStackAttributes.DependsOn ?? [];
-    const dependencies: string[] = Array.isArray(nestedStackAttributes.DependsOn) ?
-      nestedStackAttributes.DependsOn : [nestedStackAttributes.DependsOn];
-    for (const dep of dependencies) {
-      const depResource = finder.findResource(dep);
-      if (!depResource) {
-        throw new Error(`nested stack '${nestedStackId}' depends on '${dep}' that doesn't exist`);
-      }
-      nestedStackResource.node.addDependency(depResource);
-    }
-    // handle Condition
-    if (nestedStackAttributes.Condition) {
-      const condition = finder.findCondition(nestedStackAttributes.Condition);
-      if (!condition) {
-        throw new Error(`nested stack '${nestedStackId}' uses Condition '${nestedStackAttributes.Condition}' that doesn't exist`);
-      }
-      cfnOptions.condition = condition;
-    }
-    */
-
     const propStack = this.nestedStacksToInclude[nestedStackId];
     const template = new CfnInclude(nestedStack, nestedStackId, {
       templateFile: propStack.templateFile,
