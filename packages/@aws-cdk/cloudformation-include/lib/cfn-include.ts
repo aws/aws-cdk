@@ -361,7 +361,7 @@ export class CfnInclude extends core.CfnElement {
         properties: cfnParser.parseValue(resourceAttributes.Properties),
       });
 
-      core.handleAttributes(customResource, resourceAttributes, logicalId, finder);
+      cfn_parse.handleAttributes(customResource, resourceAttributes, logicalId, finder);
 
       this.resources[logicalId] = customResource;
 
@@ -417,7 +417,7 @@ export class CfnInclude extends core.CfnElement {
     // we know this is never undefined for nested stacks
     const nestedStackResource: core.CfnResource = nestedStack.nestedStackResource!;
 
-    core.handleAttributes(nestedStackResource, nestedStackAttributes, nestedStackId, finder);
+    cfn_parse.handleAttributes(nestedStackResource, nestedStackAttributes, nestedStackId, finder);
     const propStack = this.nestedStacksToInclude[nestedStackId];
     const template = new CfnInclude(nestedStack, nestedStackId, {
       templateFile: propStack.templateFile,

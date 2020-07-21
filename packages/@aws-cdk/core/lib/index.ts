@@ -17,7 +17,6 @@ export * from './cfn-include';
 export * from './cfn-mapping';
 export * from './cfn-output';
 export * from './cfn-parameter';
-export * from './cfn-parse'
 export * from './cfn-pseudo';
 export * from './cfn-resource';
 export * from './cfn-resource-policy';
