@@ -72,16 +72,6 @@ export interface SdkHttpOptions {
    * @default - <package-name>/<package-version>
    */
   readonly userAgent?: string;
-
-  /**
-   * Endpoint strinb value to override AWS SDK services endpoints.
-   */
-  endpoint?: string;
-
-  /**
-   * Initialise the AWS SDK with offline support.
-   */
-  readonly offline?: boolean;
 }
 
 const CACHED_ACCOUNT = Symbol('cached_account');
@@ -103,14 +93,13 @@ export class SdkProvider {
    * class `AwsCliCompatible` for the details.
    */
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
-    const httpOptions = options.httpOptions ?? {};
+    const sdkOptions = parseHttpOptions(options.httpOptions ?? {});
 
     if (options.offline) {
-      httpOptions.endpoint = 'http://localhost:4566';
+      sdkOptions.endpoint = 'http://localhost:4566';
+      sdkOptions.s3ForcePathStyle = true;
+      debug('Using endpoint: %s', sdkOptions.endpoint);
     }
-
-    const sdkOptions = parseHttpOptions(httpOptions);
-
 
     const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds, sdkOptions.httpOptions);
     const region = await AwsCliCompatible.region(options.profile);
@@ -304,7 +293,6 @@ function parseHttpOptions(options: SdkHttpOptions) {
 
   const proxyAddress = options.proxyAddress || httpsProxyFromEnvironment();
   const caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
-  const endpoint = options.endpoint ?? null;
 
   if (proxyAddress && caBundlePath) {
     throw new Error(`At the moment, cannot specify Proxy (${proxyAddress}) and CA Bundle (${caBundlePath}) at the same time. See https://github.com/aws/aws-cdk/issues/5804`);
@@ -326,11 +314,6 @@ function parseHttpOptions(options: SdkHttpOptions) {
     config.httpOptions.agent = new https.Agent({
       ca: readIfPossible(caBundlePath),
     });
-  }
-
-  if (endpoint) {
-    debug('Using endpoint: %s', endpoint);
-    config.endpoint = endpoint;
   }
 
   return config;
