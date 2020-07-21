@@ -77,6 +77,11 @@ export interface SdkHttpOptions {
    * Endpoint strinb value to override AWS SDK services endpoints.
    */
   endpoint?: string;
+
+  /**
+   * Initialise the AWS SDK with offline support.
+   */
+  readonly offline?: boolean;
 }
 
 const CACHED_ACCOUNT = Symbol('cached_account');
