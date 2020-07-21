@@ -99,11 +99,12 @@ export class SdkProvider {
    */
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
     const httpOptions = options.httpOptions ?? {};
-    if (httpOptions) {
+
+    if (options.offline) {
       httpOptions.endpoint = 'http://localhost:4566';
     }
 
-    const sdkOptions = parseHttpOptions(options.httpOptions ?? {});
+    const sdkOptions = parseHttpOptions(httpOptions);
 
 
     const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds, sdkOptions.httpOptions);
