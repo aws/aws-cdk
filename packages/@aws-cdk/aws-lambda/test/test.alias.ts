@@ -545,7 +545,7 @@ export = {
     test.done();
   },
 
-  'error when specifying invalid utilizationPercent when AutoScaling on utilization'(test: Test): void {
+  'error when specifying invalid utilization value when AutoScaling on utilization'(test: Test): void {
     // GIVEN
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
