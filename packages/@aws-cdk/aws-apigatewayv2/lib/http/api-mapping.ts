@@ -73,9 +73,13 @@ export class HttpApiMapping extends Resource implements IApiMapping {
       throw new Error('stage is required if default stage is not available');
     }
 
-    const paramRe = '^[a-zA-Z0-9]+[$-_.+!*\'\(\),]?$';
+    const paramRe = '^[a-zA-Z0-9]*[-_.+!,$]?[a-zA-Z0-9]*$';
     if (props.apiMappingKey && !new RegExp(paramRe).test(props.apiMappingKey)) {
       throw new Error('An ApiMapping key may contain only letters, numbers and one of $-_.+!*\'(),');
+    }
+
+    if (props.apiMappingKey && props.apiMappingKey === '') {
+      throw new Error('empty string for api mapping key not allowed');
     }
 
     const apiMappingProps: CfnApiMappingProps = {
