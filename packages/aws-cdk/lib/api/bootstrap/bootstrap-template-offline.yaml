@@ -272,7 +272,7 @@ Outputs:
   BucketDomainName:
     Description: The domain name of the S3 bucket owned by the CDK toolkit stack
     Value:
-      Fn::Sub: '${StagingBucket.Arn}'
+      Fn::Sub: 'https://${StagingBucket}.s3-${AWS::Region}.{AWS::URLSuffix}'
   BootstrapVersion:
     Description:
       The version of the bootstrap resources that are currently mastered

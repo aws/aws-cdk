@@ -1,7 +1,7 @@
 import { BootstrappingParameters, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT } from './bootstrap-props';
 
 export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
-  const template = {
+  return {
     Description: 'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.',
     Conditions: {
       UsePublicAccessBlockConfiguration: {
@@ -9,18 +9,6 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
           params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
           'true',
         ]},
-      UseBucketServerSideEncryption: {
-        'Fn::Equals': [
-          params.offline || params.offline === undefined ? 'true' : 'false',
-          'true',
-        ],
-      },
-      UseRegionalDomainName: {
-        'Fn::Equals': [
-          params.offline || params.offline === undefined ? 'true' : 'false',
-          'true',
-        ],
-      },
     },
     Resources: {
       StagingBucket: {
@@ -28,19 +16,16 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
         Properties: {
           BucketName: params.bucketName,
           AccessControl: 'Private',
-          BucketEncryption: {
-            'Fn::If': [
-              'UseBucketServerSideEncryption',
-              {
-                ServerSideEncryptionConfiguration: [{
-                  ServerSideEncryptionByDefault: {
-                    SSEAlgorithm: 'aws:kms',
-                    KMSMasterKeyID: params.kmsKeyId,
-                  },
-                }],
-              },
-              { Ref: 'AWS::NoValue' },
-            ]},
+          BucketEncryption: params.offline
+            ? { Ref: 'AWS::NoValue' }
+            : {
+              ServerSideEncryptionConfiguration: [{
+                ServerSideEncryptionByDefault: {
+                  SSEAlgorithm: 'aws:kms',
+                  KMSMasterKeyID: params.kmsKeyId,
+                },
+              }],
+            },
           PublicAccessBlockConfiguration: {
             'Fn::If': [
               'UsePublicAccessBlockConfiguration',
@@ -87,17 +72,8 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
       },
       [BUCKET_DOMAIN_NAME_OUTPUT]: {
         Description: 'The domain name of the S3 bucket owned by the CDK toolkit stack',
-        Value: { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] },
+        Value: params.offline ? {'Fn::Sub': 'https://${StagingBucket}.s3-${AWS::Region}.{AWS::URLSuffix}' } : { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] },
       },
     },
   };
-
-  if (params.offline) {
-    // @ts-ignore
-    template.Resources.StagingBucket.Properties.BucketEncryption = { Ref: 'AWS::NoValue' };
-    // @ts-ignore
-    template.Outputs[BUCKET_DOMAIN_NAME_OUTPUT].Value = {'Fn::Sub': 'https://${StagingBucket}.s3-${AWS::Region}.amazonaws.com' };
-  }
-
-  return template;
 }
