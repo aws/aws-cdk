@@ -78,6 +78,7 @@ integ_under_test=${integdir}/cli-backwards-tests-${sanitized_version}
 rm -rf ${integ_under_test}
 echo "Copying integration tests of version ${VERSION_UNDER_TEST} to ${integ_under_test} (dont worry, its gitignored)"
 cp -r ${temp_dir}/package/test/integ/cli ${integ_under_test}
+
 patch_dir="${integdir}/cli-regression-patches/${VERSION_UNDER_TEST}"
 # delete possibly stale junit.xml file
 rm -f ${integ_under_test}/junit.xml
