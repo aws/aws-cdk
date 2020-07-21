@@ -83,7 +83,7 @@ describe('ApiMapping', () => {
     }).toThrow(/An ApiMapping key may contain only letters, numbers and one of/);
   });
 
-  test('apiMappingKey validation - prefix slash not allowd ', () => {
+  test('apiMappingKey validation - prefix slash not allowd', () => {
 
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api');
@@ -102,7 +102,7 @@ describe('ApiMapping', () => {
     }).toThrow(/An ApiMapping key may contain only letters, numbers and one of/);
   });
 
-  test('apiMappingKey validation - slash in the middle not allowed ', () => {
+  test('apiMappingKey validation - slash in the middle not allowed', () => {
 
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api');
@@ -121,7 +121,7 @@ describe('ApiMapping', () => {
     }).toThrow(/An ApiMapping key may contain only letters, numbers and one of/);
   });
 
-  test('apiMappingKey validation - suffix slash not allowed ', () => {
+  test('apiMappingKey validation - suffix slash not allowed', () => {
 
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api');
@@ -140,7 +140,7 @@ describe('ApiMapping', () => {
     }).toThrow(/An ApiMapping key may contain only letters, numbers and one of/);
   });
 
-  test('apiMappingKey validation - special character in the prefix not allowed ', () => {
+  test('apiMappingKey validation - special character in the prefix not allowed', () => {
 
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api');
@@ -159,7 +159,7 @@ describe('ApiMapping', () => {
     }).toThrow(/An ApiMapping key may contain only letters, numbers and one of/);
   });
 
-  test('apiMappingKey validation - multiple special character not allowed ', () => {
+  test('apiMappingKey validation - multiple special character not allowed', () => {
 
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api');
