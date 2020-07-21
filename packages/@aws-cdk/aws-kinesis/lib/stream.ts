@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Aws, CfnCondition, Construct, Duration, Fn, IResolvable, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Aws, CfnCondition, Construct, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnStream } from './kinesis.generated';
 
 const READ_OPERATIONS = [
@@ -261,8 +261,10 @@ export class Stream extends StreamBase {
 
     const shardCount = props.shardCount || 1;
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
-    if (retentionPeriodHours < 24 || retentionPeriodHours > 168) {
-      throw new Error(`retentionPeriod must be between 24 and 168 hours. Received ${retentionPeriodHours}`);
+    if (!Token.isUnresolved(retentionPeriodHours)) {
+      if (retentionPeriodHours < 24 || retentionPeriodHours > 168) {
+        throw new Error(`retentionPeriod must be between 24 and 168 hours. Received ${retentionPeriodHours}`);
+      }
     }
 
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
