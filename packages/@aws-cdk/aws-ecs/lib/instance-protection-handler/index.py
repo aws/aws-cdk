@@ -10,7 +10,6 @@ def on_event(event, context):
   if request_type == 'Delete': return on_delete(event)
   raise Exception("Invalid request type: %s" % request_type)
 
-
 def on_create(event):
   asg_name = os.environ['autoscaling_group_name']
   client.update_auto_scaling_group(
@@ -39,8 +38,6 @@ def on_update(event):
 
 def on_delete(event):
   props = event['ResourceProperties']
-  # remove_scale_in_protection_on_delete = props['RemoveScaleInProtectionOnDelete'] is 'true'
-  # remote scal-in protection for new instances and existing ones
   asg_name = os.environ['autoscaling_group_name']
   client.update_auto_scaling_group(
     AutoScalingGroupName=asg_name,
