@@ -223,9 +223,13 @@ Example `outputs.json` after deployment of multiple stacks
   },
   "AnotherStack": {
     "VPCId": "vpc-z0mg270fee16693f"
-  }  
+  }
 }
 ```
+
+#### Offline mode
+
+Write the stack against your local aws environment emulated with [localstack](https://github.com/localstack/localstack) by setting the endpoint for all the sdk services to `http://localhost:4566`. By default, offline mode is disabled but can be enabled by using `--offline` argument.
 
 #### `cdk destroy`
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
@@ -250,8 +254,12 @@ $ # Deploys only to environments foo and bar
 $ cdk bootstrap --app='node bin/main.js' foo bar
 ```
 
-By default, bootstrap stack will be protected from stack termination. This can be disabled using 
+By default, bootstrap stack will be protected from stack termination. This can be disabled using
 `--termination-protection` argument.
+
+#### Offline mode
+
+Deploys a `CDKToolkit` against your local aws environment emulated with [localstack](https://github.com/localstack/localstack) by setting the endpoint for all the sdk services to `http://localhost:4566`. By default, offline mode is disabled but can be enabled by using `--offline` argument.
 
 #### `cdk doctor`
 Inspect the current command-line environment and configurations, and collect information that can be useful for
