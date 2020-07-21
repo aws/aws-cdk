@@ -1,9 +1,8 @@
-import { arrayWith, deepObjectLike } from '@aws-cdk/assert';
+import { arrayWith, deepObjectLike, encodedJson } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../lib';
-import { encodedJson } from './testmatchers';
 import { PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;
@@ -86,6 +85,32 @@ test.each([['npm'], ['yarn']])('%s assumes no build step by default', (npmYarn) 
         phases: {
           build: {
             commands: ['npx cdk synth'],
+          },
+        },
+      })),
+    },
+  });
+});
+
+test.each([['npm'], ['yarn']])('%s can have its install command overridden', (npmYarn) => {
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: npmYarnBuild(npmYarn)({
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      installCommand: '/bin/true',
+    }),
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Source: {
+      BuildSpec: encodedJson(deepObjectLike({
+        phases: {
+          pre_build: {
+            commands: ['/bin/true'],
           },
         },
       })),

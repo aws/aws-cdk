@@ -1,11 +1,10 @@
-import { arrayWith, deepObjectLike, objectLike } from '@aws-cdk/assert';
+import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
 import * as path from 'path';
 import * as cdkp from '../lib';
-import { encodedJson, notMatching, stringLike } from './testmatchers';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';
@@ -46,7 +45,6 @@ test('command line properly locates assets in subassembly', () => {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
           build: {
-            // tslint:disable-next-line: max-line-length
             commands: arrayWith(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`),
           },
         },
@@ -84,7 +82,7 @@ test('assets are also published when using the lower-level addStackArtifactDeplo
       Name: 'Assets',
       Actions: [
         objectLike({
-          Name: FILE_ASSET_SOURCE_HASH,
+          Name: 'FileAsset1',
           RunOrder: 1,
         }),
       ],

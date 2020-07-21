@@ -80,8 +80,8 @@ export = {
       {key: 'foo', value: 'bar', propagateAtLaunch: true},
     ]);
     test.deepEqual(keyValue.renderTags(), [
-      { Key: 'asg', Value : 'only' },
-      { Key: 'foo', Value : 'bar' },
+      { Key: 'asg', Value: 'only' },
+      { Key: 'foo', Value: 'bar' },
     ]);
     test.deepEqual(mapper.renderTags(), {
       foo: 'bar',
