@@ -2,8 +2,6 @@ import * as core from '@aws-cdk/core';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
-import { CfnResource } from '@aws-cdk/core';
-import { CfnBucket } from '@aws-cdk/aws-s3';
 
 /**
  * Construction properties of {@link CfnInclude}.
@@ -360,7 +358,7 @@ export class CfnInclude extends core.CfnElement {
 
       //console.log(resourceAttributes);
 
-      const customResource = new CfnResource(this, logicalId, {
+      const customResource = new core.CfnResource(this, logicalId, {
         type: resourceAttributes.Type,
         properties: cfnParser.parseValue(resourceAttributes.Properties),
       });
@@ -368,7 +366,7 @@ export class CfnInclude extends core.CfnElement {
       const cfnOptions = customResource.cfnOptions;
 
       // handle resource attributes
-      cfnOptions.creationPolicy = cfnParser.parseCreationPolicy(resourceAttributes.CreationPolicy);
+      /*cfnOptions.creationPolicy = cfnParser.parseCreationPolicy(resourceAttributes.CreationPolicy);
       cfnOptions.updatePolicy = cfnParser.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
       cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
       cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
@@ -383,7 +381,7 @@ export class CfnInclude extends core.CfnElement {
       for (const dep of dependencies) {
         const depResource = finder.findResource(dep);
         if (!depResource) {
-          throw new Error(`nested ack '${logicalId}' depends on '${dep}' that doesn't exist`);
+          throw new Error(`resource '${logicalId}' depends on '${dep}' that doesn't exist`);
         }
         customResource.node.addDependency(depResource);
       }
@@ -391,10 +389,12 @@ export class CfnInclude extends core.CfnElement {
       if (resourceAttributes.Condition) {
         const condition = finder.findCondition(resourceAttributes.Condition);
         if (!condition) {
-          throw new Error(`nested stack '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
+          throw new Error(`resource '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
         }
         cfnOptions.condition = condition;
-      }
+      }*/
+
+      core.Attributes.handleAttributes(customResource, cfnOptions, cfnParser, resourceAttributes, logicalId, finder);
 
       this.resources[logicalId] = customResource;
 
@@ -449,8 +449,11 @@ export class CfnInclude extends core.CfnElement {
 
     // we know this is never undefined for nested stacks
     const nestedStackResource: core.CfnResource = nestedStack.nestedStackResource!;
+
     // handle resource attributes
     const cfnOptions = nestedStackResource.cfnOptions;
+    core.Attributes.handleAttributes(nestedStackResource, cfnOptions, cfnParser, nestedStackAttributes, nestedStackId, finder);
+    /*
     cfnOptions.metadata = cfnParser.parseValue(nestedStackAttributes.Metadata);
     cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(nestedStackAttributes.DeletionPolicy);
     cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(nestedStackAttributes.UpdateReplacePolicy);
@@ -473,6 +476,7 @@ export class CfnInclude extends core.CfnElement {
       }
       cfnOptions.condition = condition;
     }
+    */
 
     const propStack = this.nestedStacksToInclude[nestedStackId];
     const template = new CfnInclude(nestedStack, nestedStackId, {

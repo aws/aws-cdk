@@ -57,6 +57,7 @@ export * from './custom-resource-provider';
 
 export * from './cfn-capabilities';
 export * from './cloudformation.generated';
+export * from './attributes'
 
 // WARNING: Should not be exported, but currently is because of a bug. See the
 // class description for more information.
