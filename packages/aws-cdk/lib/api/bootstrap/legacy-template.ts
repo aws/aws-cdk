@@ -93,7 +93,9 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
   };
 
   if (params.offline) {
+    // @ts-ignore
     template.Resources.StagingBucket.Properties.BucketEncryption = { Ref: 'AWS::NoValue' };
+    // @ts-ignore
     template.Outputs[BUCKET_DOMAIN_NAME_OUTPUT].Value = {'Fn::Sub': 'https://${StagingBucket}.s3-${AWS::Region}.amazonaws.com' };
   }
 
