@@ -1,0 +1,88 @@
+
+import * as fs from 'fs';
+import { Code, Runtime } from '@aws-cdk/aws-lambda';
+import { AssetHashType } from '@aws-cdk/core';
+import { Bundling } from '../lib/bundling';
+
+jest.mock('@aws-cdk/aws-lambda');
+const existsSyncOriginal = fs.existsSync;
+const existsSyncMock = jest.spyOn(fs, 'existsSync');
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+test('Bundling', () => {
+  Bundling.bundle({
+    entry: '/project/folder/entry.py',
+    runtime: Runtime.PYTHON_3_7,
+    projectRoot: '/project',
+  });
+
+  // Correctly bundles
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.BUNDLE,
+    bundling: expect.objectContaining({
+      workingDirectory: '/asset-input/folder',
+      command: [
+        'bash', '-c',
+        'rsync -r . /asset-output && mv /asset-output/entry.py /asset-output/lambda_function.py',
+      ],
+    }),
+  });
+
+  // Searches for requirements.txt and setup.py in the directory of the entry file
+  expect(existsSyncMock).toHaveBeenCalledWith('/project/folder/requirements.txt');
+});
+
+test('Bundling with requirements.txt installed', () => {
+  existsSyncMock.mockImplementation((p: fs.PathLike) => {
+    if (/requirements.txt/.test(p.toString())) {
+      return true;
+    }
+    return existsSyncOriginal(p);
+  });
+
+  Bundling.bundle({
+    entry: '/project/folder/entry.py',
+    runtime: Runtime.PYTHON_3_7,
+    projectRoot: '/project',
+  });
+
+  // Correctly bundles with requirements.txt pip installed
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.BUNDLE,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'pip3 install -r requirements.txt -t /asset-output && rsync -r . /asset-output && mv /asset-output/entry.py /asset-output/lambda_function.py',
+      ],
+    }),
+  });
+});
+
+test('Bundling Python 2.7 with requirements.txt installed', () => {
+  existsSyncMock.mockImplementation((p: fs.PathLike) => {
+    if (/requirements.txt/.test(p.toString())) {
+      return true;
+    }
+    return existsSyncOriginal(p);
+  });
+
+  Bundling.bundle({
+    entry: '/project/folder/entry.py',
+    runtime: Runtime.PYTHON_2_7,
+    projectRoot: '/project',
+  });
+
+  // Correctly bundles with requirements.txt pip installed
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.BUNDLE,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'pip install -r requirements.txt -t /asset-output && rsync -r . /asset-output && mv /asset-output/entry.py /asset-output/lambda_function.py',
+      ],
+    }),
+  });
+});
