@@ -254,11 +254,8 @@ export class Canary extends cdk.Resource {
    * Creates a unique name for the canary. The generated name becomes the physical ID of the canary.
    */
   private generateName(): string {
-    // In progress
-    // This does not work because re-deploying a canary will result in a new physical ID getting created
-    // I think I am going to need to use this.node.uniqueId as a hash to make sure that this does not change or try something else.
-
-    // return cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }).toLowerCase();
-    return 'canary' + Math.random().toString(36).substring(7);
+    return cdk.Lazy.stringValue({
+      produce: () => this.node.uniqueId.toLowerCase().replace('-', '').replace(' ', '').replace('_', '').substring(0,20), 
+    });
   }
 }
