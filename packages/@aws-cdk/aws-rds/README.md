@@ -7,9 +7,9 @@
 
 > All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they become stable. We will only make breaking changes to address unforeseen API issues. Therefore, these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes will be announced in release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -48,14 +48,14 @@ use the static factory methods on `DatabaseClusterEngine`:
 ```typescript
 new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.aurora({
-    version: '5.6.mysql_aurora.1.17.9',
+    version: rds.AuroraEngineVersion.VER_1_17_9, // different version class for each engine type
   },
   ...
 })
 ```
 
-See [the AWS documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-engineversion)
-for a list of the supported versions for each engine type.
+If there isn't a constant for the exact version you want to use,
+all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
 
 By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
 
@@ -86,12 +86,15 @@ use the static factory methods on `DatabaseInstanceEngine`:
 
 ```typescript
 const instance = new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.oracleSe1({
-    version: '19.0.0.0',
+  engine: rds.DatabaseInstanceEngine.oracleSe2({
+    version: rds.OracleEngineVersion.VER_19, // different version class for each engine type
   }),
   ...
 });
 ```
+
+If there isn't a constant for the exact version you want to use,
+all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
 
 To use the storage auto scaling option of RDS you can specify the maximum allocated storage.
 This is the upper limit to which RDS can automatically scale the storage. More info can be found
@@ -173,24 +176,27 @@ instance.addRotationSingleUser(); // Will rotate automatically after 30 days
 [example of setting up master password rotation for a cluster](test/integ.cluster-rotation.lit.ts)
 
 The multi user rotation scheme is also available:
+
 ```ts
 instance.addRotationMultiUser('MyUser', {
-  secret: myImportedSecret // This secret must have the `masterarn` key
+  secret: myImportedSecret, // This secret must have the `masterarn` key
 });
 ```
 
 It's also possible to create user credentials together with the instance/cluster and add rotation:
+
 ```ts
 const myUserSecret = new rds.DatabaseSecret(this, 'MyUserSecret', {
-  username: 'myuser'
-  masterSecret: instance.secret
+  username: 'myuser',
+  masterSecret: instance.secret,
 });
 const myUserSecretAttached = myUserSecret.attach(instance); // Adds DB connections information in the secret
 
 instance.addRotationMultiUser('MyUser', { // Add rotation using the multi user scheme
-  secret: myUserSecretAttached
+  secret: myUserSecretAttached,
 });
 ```
+
 **Note**: This user must be created manually in the database using the master credentials.
 The rotation will start as soon as this user exists.
 
