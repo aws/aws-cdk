@@ -1018,5 +1018,26 @@ export = {
       }));
       test.done();
     },
+    'supports endpointConfiguration option'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+
+      // WHEN
+      const api = new apigw.SpecRestApi(stack, 'SpecRestApiEC', {
+        apiDefinition: apigw.ApiDefinitition.fromInline({ foo: 'bar' }),
+        endpointConfiguration: {
+          types: [ apigw.EndpointType.REGIONAL ],
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+        EndpointConfiguration: {
+          Types: [ 'REGIONAL' ],
+        },
+      });
+      test.done();
+    },
   },
 };
