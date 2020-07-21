@@ -219,6 +219,20 @@ describe('CLI compatible credentials loading', () => {
   });
 });
 
+describe('Offline', () => {
+  test('endpoint option should be set to localhost', async () => {
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({
+      ...defaultCredOptions,
+      offline: true,
+    });
+
+    const defaultAccount = await provider.defaultAccount();
+    expect(defaultAccount).toHaveProperty('accountId', '0000000000');
+    // @ts-ignore
+    expect(provider.sdkOptions.httpOptions).toHaveProperty('endpoint', 'http://localhost:4566');
+  });
+});
+
 describe('Plugins', () => {
   test('does not use plugins if current credentials are for expected account', async () => {
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });

@@ -283,3 +283,20 @@ test('stack is termination protected when set', async () => {
   expect(executed).toBeTruthy();
   expect(protectedTermination).toBeTruthy();
 });
+
+test('do bootstrap with offline support', async () => {
+  // WHEN
+  await bootstrapEnvironment(env, sdk, {
+    parameters: {
+      offline: true,
+    },
+  });
+
+  // THEN
+  const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
+  const bucketDomainName = changeSetTemplate.Outputs.BucketDomainName;
+
+  expect(bucketProperties.BucketEncryption.Ref).toEqual('AWS::NoValue');
+  expect(bucketDomainName.Value).toEqual({'Fn::Sub': 'https://${StagingBucket}.s3-${AWS::Region}.{AWS::URLSuffix}' });
+  expect(executed).toBeTruthy();
+});
