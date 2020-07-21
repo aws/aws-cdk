@@ -144,7 +144,7 @@ describe('CDK Include', () => {
           },
         },
       });
-    }).toThrow(/resource 'ChildStack' uses Condition 'FakeCondition' that doesn't exist/);
+    }).toThrow(/Resource 'ChildStack' uses Condition 'FakeCondition' that doesn't exist/);
   });
 
   test('throws an exception when a nested stacks depends on a resource that does not exist in the template', () => {
@@ -157,7 +157,7 @@ describe('CDK Include', () => {
           },
         },
       });
-    }).toThrow(/resource 'ChildStack' depends on 'AFakeResource' that doesn't exist/);
+    }).toThrow(/Resource 'ChildStack' depends on 'AFakeResource' that doesn't exist/);
   });
 
   test('can modify resources in nested stacks', () => {
