@@ -1,4 +1,4 @@
-# Route53 Patterns for the CDK Route53 Library
+# CDK Construct library for higher-level Route 53 Constructs
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -9,12 +9,34 @@
 ---
 <!--END STABILITY BANNER-->
 
-This library contains commonly used patterns for Route53.
-
+This library provides higher-level Amazon Route 53 constructs which follow common
+architectural patterns.
 
 ## HTTPS Redirect
 
-This construct allows creating a simple domainA -> domainB redirect using CloudFront and S3. You can specify multiple domains to be redirected.
+If you want to speed up delivery of your web content, you can use Amazon CloudFront,
+the AWS content delivery network (CDN). CloudFront can deliver your entire website
+including dynamic, static, streaming, and interactive content—by using a global
+network of edge locations. Requests for your content are automatically routed to the
+edge location that gives your users the lowest latency.
+
+This construct allows creating a redirect from domainA to domainB using Amazon
+CloudFront and Amazon S3. You can specify multiple domains to be redirected.
+[Learn more](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-cloudfront-distribution.html) about routing traffic to a CloudFront web distribution.
+
+The `HttpsRedirect` constructs creates:
+
+* Amazon CloudFront distribution - makes website available from data centres
+  around the world
+* Amazon S3 bucket - used to store content that CloudFront will use as the origin
+* Amazon Route 53 Alias record - routes traffic to the CloudFront distribution
+* AWS Certificate Manager certificate - X.509 PEM format certificate used by
+  CloudFront for your domain
+
+⚠️ If you want to require HTTPS between viewers and CloudFront, you must change the AWS Region to US East (N. Virginia) in the AWS Certificate Manager console.
+
+The following example creates an HTTPS redirect from `foo.example.com` to `bar.example.com`
+It does not provide an ACM certificate, so one will be created in `us-east-1` by the CDK.
 
   ```ts
   new HttpsRedirect(stack, 'Redirect', {
@@ -27,4 +49,5 @@ This construct allows creating a simple domainA -> domainB redirect using CloudF
   });
   ```
 
-See the documentation of `@aws-cdk/aws-route53-patterns` for more information.
+The removal policy on the S3 bucket used to store your content is set to `RemovalPolicy.DESTROY`
+When your stack is deleted, the bucket will be physically destroyed.

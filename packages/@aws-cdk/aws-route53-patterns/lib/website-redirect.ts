@@ -11,23 +11,34 @@ import * as crypto from 'crypto';
  */
 export interface HttpsRedirectProps {
   /**
-   * HostedZone of the domain
+   * Hosted zone of the domain. Container for records which contain information
+   * about how you want to route traffic for a specific domain (example.com)
+   * and it's subdomains (acme.example.com, zenith.example.com). 
+   * 
+   * A hosted zone and the corresponding domain will have the same name.
    */
   readonly zone: IHostedZone;
+
   /**
-   * The redirect target domain
+   * The redirect target fully qualified domain name (FQDN). An alias record
+   * will be created that points to your CloudFront distribution. Root domain
+   * or sub-domain can be supplied.
    */
   readonly targetDomain: string;
+
   /**
-   * The domain names to create that will redirect to `targetDomain`
+   * The domain names that will redirect to `targetDomain`
    *
-   * @default - the domain name of the zone
+   * @default - the domain name of the hosted zone
    */
   readonly recordNames?: string[];
+
   /**
-   * The ACM certificate; Has to be in us-east-1
+   * The AWS Certificate Manager (ACM) certificate that will be associated with
+   * the CloudFront distribution that will be created. The certificate must be
+   * stored in us-east-1 (N. Virginia)
    *
-   * @default - create a new certificate in us-east-1
+   * @default - A new X509 certificate is created using AWS Certificate manager in us-east-1 (N. Virginia)
    */
   readonly certificate?: ICertificate;
 }
@@ -40,7 +51,7 @@ export class HttpsRedirect extends Construct {
   constructor(scope: Construct, id: string, props: HttpsRedirectProps) {
     super(scope, id);
 
-    const domainNames = props.recordNames || [props.zone.zoneName];
+    const domainNames = props.recordNames ?? [props.zone.zoneName];
 
     const redirectCertArn = props.certificate ? props.certificate.certificateArn : new DnsValidatedCertificate(this, 'RedirectCertificate', {
       domainName: domainNames[0],
@@ -82,6 +93,5 @@ export class HttpsRedirect extends Construct {
         target: RecordTarget.fromAlias(new CloudFrontTarget(redirectDist)),
       });
     });
-
   }
 }
