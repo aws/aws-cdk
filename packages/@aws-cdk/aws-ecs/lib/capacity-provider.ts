@@ -140,7 +140,7 @@ export class CapacityProvider extends cdk.Resource implements ICapacityProvider 
             ? 'DISABLED' : 'ENABLED',
           targetCapacity: props.targetCapacity ?? 100,
         },
-        managedTerminationProtection: props.managedTerminationProtection ? 'ENABLED' : 'DISABLED',
+        managedTerminationProtection: props.managedTerminationProtection === false ? 'DISABLED' : 'ENABLED',
       },
       name: props.capacityProviderName,
     });

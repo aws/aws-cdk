@@ -32,7 +32,7 @@ export = {
             Status: 'ENABLED',
             TargetCapacity: 100,
           },
-          ManagedTerminationProtection: 'DISABLED',
+          ManagedTerminationProtection: 'ENABLED',
         },
       }));
       test.done();
