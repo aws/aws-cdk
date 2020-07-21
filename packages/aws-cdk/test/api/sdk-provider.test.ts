@@ -229,7 +229,7 @@ describe('Offline', () => {
     const defaultAccount = await provider.defaultAccount();
     expect(defaultAccount).toHaveProperty('accountId', '0000000000');
     // @ts-ignore
-    expect(provider.sdkOptions.httpOptions).toHaveProperty('endpoint', 'http://localhost:4566');
+    expect(provider.sdkOptions).toHaveProperty('endpoint', 'http://localhost:4566');
   });
 });
 

@@ -330,7 +330,7 @@ function parseHttpOptions(options: SdkHttpOptions) {
 
   if (endpoint) {
     debug('Using endpoint: %s', endpoint);
-    config.httpOptions.endpoint = endpoint;
+    config.endpoint = endpoint;
   }
 
   return config;
