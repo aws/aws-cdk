@@ -212,6 +212,25 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
   });
 });
 
+test('selfmutation stage correctly uses alternate toolkit stack name if provided', () => {
+  const pipelineStage = new Stage(app, 'PipelineStage');
+  const nestedPipelineStack = new Stack(pipelineStage, 'PipelineStack', { env: PIPELINE_ENV });
+  new TestGitHubNpmPipeline(nestedPipelineStack, 'Cdk', { toolkitStackName: 'CdkBootstrapAltName' } );
+
+  // THEN
+  expect(stackTemplate(nestedPipelineStack)).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Source: {
+      BuildSpec: encodedJson(deepObjectLike({
+        phases: {
+          build: {
+            commands: arrayWith('cdk -a assembly-PipelineStage deploy PipelineStage-PipelineStack --require-approval=never --verbose --toolkit-stack-name=CdkBootstrapAltName'),
+          },
+        },
+      })),
+    },
+  });
+});
+
 test('overridden stack names are respected', () => {
   // WHEN
   pipeline.addApplicationStage(new OneStackAppWithCustomName(app, 'App1'));

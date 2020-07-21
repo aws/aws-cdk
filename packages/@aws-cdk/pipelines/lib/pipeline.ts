@@ -40,6 +40,13 @@ export interface CdkPipelineProps {
    * @default - Latest version
    */
   readonly cdkCliVersion?: string;
+
+  /**
+   * Name of the toolkit stack, if not the default name
+   *
+   * @default 'CDKToolkit'
+   */
+  readonly toolkitStackName?: string;
 }
 
 /**
@@ -89,6 +96,7 @@ export class CdkPipeline extends Construct {
             cloudAssemblyInput: this._cloudAssemblyArtifact,
             pipelineStackName: pipelineStack.stackName,
             cdkCliVersion: props.cdkCliVersion,
+            toolkitStackName: props.toolkitStackName,
             projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
           })],
         },

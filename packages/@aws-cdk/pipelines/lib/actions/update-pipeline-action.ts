@@ -33,6 +33,13 @@ export interface UpdatePipelineActionProps {
    * @default - Automatically generated
    */
   readonly projectName?: string;
+
+  /**
+   * Name of the toolkit stack, if not the default name
+   *
+   * @default 'CDKToolkit'
+   */
+  readonly toolkitStackName?: string;
 }
 
 /**
@@ -51,6 +58,10 @@ export class UpdatePipelineAction extends Construct implements codepipeline.IAct
     super(scope, id);
 
     const installSuffix = props.cdkCliVersion ? `@${props.cdkCliVersion}` : '';
+    let deployArguments = '--require-approval=never --verbose';
+    if (props.toolkitStackName) {
+      deployArguments += ` --toolkit-stack-name=${props.toolkitStackName}`;
+    }
 
     const selfMutationProject = new codebuild.PipelineProject(this, 'SelfMutation', {
       projectName: props.projectName,
@@ -63,7 +74,7 @@ export class UpdatePipelineAction extends Construct implements codepipeline.IAct
           build: {
             commands: [
               // Cloud Assembly is in *current* directory.
-              `cdk -a ${embeddedAsmPath(scope)} deploy ${props.pipelineStackName} --require-approval=never --verbose`,
+              `cdk -a ${embeddedAsmPath(scope)} deploy ${props.pipelineStackName} ${deployArguments}`,
             ],
           },
         },
