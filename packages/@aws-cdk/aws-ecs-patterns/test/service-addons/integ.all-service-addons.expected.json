@@ -1,0 +1,1360 @@
+{
+  "Resources": {
+    "productionenvironmentvpcAEB47DF7": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/Resource"
+      }
+    },
+    "productionenvironmentvpcPublicSubnet1Subnet8D92C089": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/18",
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PublicSubnet1/Subnet"
+      }
+    },
+    "productionenvironmentvpcPublicSubnet1RouteTable6E9ABC21": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PublicSubnet1/RouteTable"
+      }
+    },
+    "productionenvironmentvpcPublicSubnet1RouteTableAssociationA8117374": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1RouteTable6E9ABC21"
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1Subnet8D92C089"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PublicSubnet1/RouteTableAssociation"
+      }
+    },
+    "productionenvironmentvpcPublicSubnet1DefaultRoute524C894D": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1RouteTable6E9ABC21"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "productionenvironmentvpcIGWE7C39890"
+        }
+      },
+      "DependsOn": [
+        "productionenvironmentvpcVPCGW1B428D07"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PublicSubnet1/DefaultRoute"
+      }
+    },
+    "productionenvironmentvpcPublicSubnet1EIP54BA88DB": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PublicSubnet1/EIP"
+      }
+    },
+    "productionenvironmentvpcPublicSubnet1NATGateway6075E4CA": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "productionenvironmentvpcPublicSubnet1EIP54BA88DB",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1Subnet8D92C089"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PublicSubnet1/NATGateway"
+      }
+    },
+    "productionenvironmentvpcPublicSubnet2Subnet298E6C31": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.64.0/18",
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PublicSubnet2/Subnet"
+      }
+    },
+    "productionenvironmentvpcPublicSubnet2RouteTable842A68D7": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PublicSubnet2/RouteTable"
+      }
+    },
+    "productionenvironmentvpcPublicSubnet2RouteTableAssociation0A7549F3": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2RouteTable842A68D7"
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2Subnet298E6C31"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PublicSubnet2/RouteTableAssociation"
+      }
+    },
+    "productionenvironmentvpcPublicSubnet2DefaultRoute92CD697D": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2RouteTable842A68D7"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "productionenvironmentvpcIGWE7C39890"
+        }
+      },
+      "DependsOn": [
+        "productionenvironmentvpcVPCGW1B428D07"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PublicSubnet2/DefaultRoute"
+      }
+    },
+    "productionenvironmentvpcPublicSubnet2EIP14CA46AA": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PublicSubnet2/EIP"
+      }
+    },
+    "productionenvironmentvpcPublicSubnet2NATGatewayE1850FCC": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "productionenvironmentvpcPublicSubnet2EIP14CA46AA",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2Subnet298E6C31"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PublicSubnet2/NATGateway"
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet1Subnet53F632E6": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.128.0/18",
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PrivateSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PrivateSubnet1/Subnet"
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet1RouteTable2C6DFF0C": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PrivateSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PrivateSubnet1/RouteTable"
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet1RouteTableAssociation8BA32463": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet1RouteTable2C6DFF0C"
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet1Subnet53F632E6"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PrivateSubnet1/RouteTableAssociation"
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet1DefaultRouteFBB3DE6C": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet1RouteTable2C6DFF0C"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1NATGateway6075E4CA"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PrivateSubnet1/DefaultRoute"
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet2Subnet756FB93C": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.192.0/18",
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PrivateSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PrivateSubnet2/Subnet"
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet2RouteTable2F77D0D2": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PrivateSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PrivateSubnet2/RouteTable"
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet2RouteTableAssociation09188261": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet2RouteTable2F77D0D2"
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet2Subnet756FB93C"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PrivateSubnet2/RouteTableAssociation"
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet2DefaultRoute5F9AB6C1": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet2RouteTable2F77D0D2"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2NATGatewayE1850FCC"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/PrivateSubnet2/DefaultRoute"
+      }
+    },
+    "productionenvironmentvpcIGWE7C39890": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/IGW"
+      }
+    },
+    "productionenvironmentvpcVPCGW1B428D07": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "InternetGatewayId": {
+          "Ref": "productionenvironmentvpcIGWE7C39890"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-vpc/VPCGW"
+      }
+    },
+    "productionenvironmentclusterC6599D2D": {
+      "Type": "AWS::ECS::Cluster",
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-cluster/Resource"
+      }
+    },
+    "productionenvironmentclusterDefaultServiceDiscoveryNamespaceBE74D64D": {
+      "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+      "Properties": {
+        "Name": "internal",
+        "Vpc": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/production-environment-cluster/DefaultServiceDiscoveryNamespace/Resource"
+      }
+    },
+    "mymeshEA67EDEF": {
+      "Type": "AWS::AppMesh::Mesh",
+      "Properties": {
+        "MeshName": "awsecsintegmymeshFCC0D554",
+        "Spec": {}
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-mesh/Resource"
+      }
+    },
+    "myservicelogs176EE19F": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "my-service-logs",
+        "RetentionInDays": 7
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-logs/Resource"
+      }
+    },
+    "myserviceloadbalancer97422CAE": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "Scheme": "internet-facing",
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "myserviceloadbalancerSecurityGroupDA109921",
+              "GroupId"
+            ]
+          }
+        ],
+        "Subnets": [
+          {
+            "Ref": "productionenvironmentvpcPublicSubnet1Subnet8D92C089"
+          },
+          {
+            "Ref": "productionenvironmentvpcPublicSubnet2Subnet298E6C31"
+          }
+        ],
+        "Type": "application"
+      },
+      "DependsOn": [
+        "productionenvironmentvpcPublicSubnet1DefaultRoute524C894D",
+        "productionenvironmentvpcPublicSubnet2DefaultRoute92CD697D"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-load-balancer/Resource"
+      }
+    },
+    "myserviceloadbalancerSecurityGroupDA109921": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatically created Security Group for ELB awsecsintegmyserviceloadbalancer5F81EB3D",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 80",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80
+          }
+        ],
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-load-balancer/SecurityGroup/Resource"
+      }
+    },
+    "myserviceloadbalancerSecurityGrouptoawsecsintegmyserviceserviceSecurityGroup269308B380C127ABE4": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Fn::GetAtt": [
+            "myserviceloadbalancerSecurityGroupDA109921",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "myserviceserviceSecurityGroup3A44A969",
+            "GroupId"
+          ]
+        },
+        "FromPort": 80,
+        "ToPort": 80
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-load-balancer/SecurityGroup/to awsecsintegmyserviceserviceSecurityGroup269308B3:80"
+      }
+    },
+    "myserviceloadbalancermyservicelistener8E36ED7A": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "myserviceloadbalancermyservicelistenermyserviceGroup11F3D798"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "myserviceloadbalancer97422CAE"
+        },
+        "Port": 80,
+        "Protocol": "HTTP"
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-load-balancer/my-service-listener/Resource"
+      }
+    },
+    "myserviceloadbalancermyservicelistenermyserviceGroup11F3D798": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Port": 80,
+        "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "deregistration_delay.timeout_seconds",
+            "Value": "10"
+          }
+        ],
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-load-balancer/my-service-listener/my-serviceGroup/Resource"
+      }
+    },
+    "myservicetaskdefinitionTaskRole92ACD903": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AWSXRayDaemonWriteAccess"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-task-definition/TaskRole/Resource"
+      }
+    },
+    "myservicetaskdefinitionTaskRoleDefaultPolicyDF45C4EE": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "myservicetaskdefinitionTaskRoleDefaultPolicyDF45C4EE",
+        "Roles": [
+          {
+            "Ref": "myservicetaskdefinitionTaskRole92ACD903"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-task-definition/TaskRole/DefaultPolicy/Resource"
+      }
+    },
+    "myservicetaskdefinitionF3E2D86F": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Cpu": 256,
+            "DependsOn": [
+              {
+                "Condition": "START",
+                "ContainerName": "firelens"
+              },
+              {
+                "Condition": "HEALTHY",
+                "ContainerName": "envoy"
+              },
+              {
+                "Condition": "START",
+                "ContainerName": "cloudwatch-agent"
+              },
+              {
+                "Condition": "HEALTHY",
+                "ContainerName": "xray"
+              }
+            ],
+            "Essential": true,
+            "Image": "amazon/amazon-ecs-sample",
+            "LogConfiguration": {
+              "LogDriver": "awsfirelens",
+              "Options": {
+                "Name": "cloudwatch",
+                "region": {
+                  "Ref": "AWS::Region"
+                },
+                "log_group_name": {
+                  "Ref": "myservicelogs176EE19F"
+                },
+                "log_stream_prefix": "my-service/"
+              }
+            },
+            "Memory": 512,
+            "Name": "app",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 1024000,
+                "Name": "nofile",
+                "SoftLimit": 1024000
+              }
+            ]
+          },
+          {
+            "DependsOn": [
+              {
+                "Condition": "HEALTHY",
+                "ContainerName": "envoy"
+              }
+            ],
+            "Essential": true,
+            "FirelensConfiguration": {
+              "Type": "fluentbit"
+            },
+            "Image": {
+              "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "myservicetaskdefinitionfirelensLogGroup0D59B0EB"
+                },
+                "awslogs-stream-prefix": "firelens",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "MemoryReservation": 50,
+            "Name": "firelens",
+            "User": "0:1338"
+          },
+          {
+            "DependsOn": [
+              {
+                "Condition": "HEALTHY",
+                "ContainerName": "envoy"
+              }
+            ],
+            "Environment": [
+              {
+                "Name": "AWS_REGION",
+                "Value": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            ],
+            "Essential": true,
+            "HealthCheck": {
+              "Command": [
+                "CMD-SHELL",
+                "curl -s http://localhost:2000"
+              ],
+              "Interval": 5,
+              "Retries": 3,
+              "StartPeriod": 10,
+              "Timeout": 2
+            },
+            "Image": "amazon/aws-xray-daemon",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "myservicetaskdefinitionxrayLogGroupC0252525"
+                },
+                "awslogs-stream-prefix": "xray",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "MemoryReservation": 256,
+            "Name": "xray",
+            "User": "1337"
+          },
+          {
+            "DependsOn": [
+              {
+                "Condition": "HEALTHY",
+                "ContainerName": "envoy"
+              }
+            ],
+            "Environment": [
+              {
+                "Name": "CW_CONFIG_CONTENT",
+                "Value": "{\"logs\":{\"metrics_collected\":{\"emf\":{}}},\"metrics\":{\"metrics_collected\":{\"statsd\":{}}}}"
+              }
+            ],
+            "Essential": true,
+            "Image": "amazon/cloudwatch-agent:latest",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "myservicetaskdefinitioncloudwatchagentLogGroupDF0CD679"
+                },
+                "awslogs-stream-prefix": "cloudwatch-agent",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "MemoryReservation": 50,
+            "Name": "cloudwatch-agent",
+            "User": "0:1338"
+          },
+          {
+            "Environment": [
+              {
+                "Name": "APPMESH_VIRTUAL_NODE_NAME",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "mesh/",
+                      {
+                        "Fn::GetAtt": [
+                          "mymeshEA67EDEF",
+                          "MeshName"
+                        ]
+                      },
+                      "/virtualNode/my-service"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name": "AWS_REGION",
+                "Value": {
+                  "Ref": "AWS::Region"
+                }
+              },
+              {
+                "Name": "ENABLE_ENVOY_STATS_TAGS",
+                "Value": "1"
+              },
+              {
+                "Name": "ENABLE_ENVOY_DOG_STATSD",
+                "Value": "1"
+              }
+            ],
+            "Essential": true,
+            "HealthCheck": {
+              "Command": [
+                "CMD-SHELL",
+                "curl -s http://localhost:9901/server_info | grep state | grep -q LIVE"
+              ],
+              "Interval": 5,
+              "Retries": 3,
+              "StartPeriod": 10,
+              "Timeout": 2
+            },
+            "Image": {
+              "Fn::Join": [
+                "",
+                [
+                  "840364872350.dkr.ecr.us-east-1.",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/aws-appmesh-envoy:v1.13.1.1-prod"
+                ]
+              ]
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "myservicetaskdefinitionenvoyLogGroup0C27EBDB"
+                },
+                "awslogs-stream-prefix": "envoy",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "MemoryReservation": 128,
+            "Name": "envoy",
+            "Ulimits": [
+              {
+                "HardLimit": 1024000,
+                "Name": "nofile",
+                "SoftLimit": 1024000
+              }
+            ],
+            "User": "1337"
+          }
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "myservicetaskdefinitionExecutionRole0CE74AD0",
+            "Arn"
+          ]
+        },
+        "Family": "awsecsintegmyservicetaskdefinition1F0D3F06",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "ProxyConfiguration": {
+          "ContainerName": "envoy",
+          "ProxyConfigurationProperties": [
+            {
+              "Name": "AppPorts",
+              "Value": "80"
+            },
+            {
+              "Name": "ProxyEgressPort",
+              "Value": "15001"
+            },
+            {
+              "Name": "ProxyIngressPort",
+              "Value": "15000"
+            },
+            {
+              "Name": "IgnoredUID",
+              "Value": "1337"
+            },
+            {
+              "Name": "IgnoredGID",
+              "Value": "1338"
+            },
+            {
+              "Name": "EgressIgnoredIPs",
+              "Value": "169.254.170.2,169.254.169.254"
+            }
+          ],
+          "Type": "APPMESH"
+        },
+        "RequiresCompatibilities": [
+          "EC2",
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "myservicetaskdefinitionTaskRole92ACD903",
+            "Arn"
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-task-definition/Resource"
+      }
+    },
+    "myservicetaskdefinitionExecutionRole0CE74AD0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-task-definition/ExecutionRole/Resource"
+      }
+    },
+    "myservicetaskdefinitionExecutionRoleDefaultPolicy9533DCFA": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "myservicetaskdefinitionfirelensLogGroup0D59B0EB",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "myservicetaskdefinitionxrayLogGroupC0252525",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "myservicetaskdefinitioncloudwatchagentLogGroupDF0CD679",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:ecr:us-east-1:840364872350:repository/aws-appmesh-envoy"
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "myservicetaskdefinitionenvoyLogGroup0C27EBDB",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "myservicetaskdefinitionExecutionRoleDefaultPolicy9533DCFA",
+        "Roles": [
+          {
+            "Ref": "myservicetaskdefinitionExecutionRole0CE74AD0"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-task-definition/ExecutionRole/DefaultPolicy/Resource"
+      }
+    },
+    "myservicetaskdefinitionfirelensLogGroup0D59B0EB": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-task-definition/firelens/LogGroup/Resource"
+      }
+    },
+    "myservicetaskdefinitionxrayLogGroupC0252525": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-task-definition/xray/LogGroup/Resource"
+      }
+    },
+    "myservicetaskdefinitioncloudwatchagentLogGroupDF0CD679": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-task-definition/cloudwatch-agent/LogGroup/Resource"
+      }
+    },
+    "myservicetaskdefinitionenvoyLogGroup0C27EBDB": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-task-definition/envoy/LogGroup/Resource"
+      }
+    },
+    "myservicepublishmetrics498EF3DF": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cloudwatch:PutMetricData",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "myservicepublishmetrics498EF3DF",
+        "Roles": [
+          {
+            "Ref": "myservicetaskdefinitionTaskRole92ACD903"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-publish-metrics/Resource"
+      }
+    },
+    "myserviceserviceServiceE9A5732D": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "productionenvironmentclusterC6599D2D"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "DesiredCount": 1,
+        "EnableECSManagedTags": false,
+        "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "app",
+            "ContainerPort": 80,
+            "TargetGroupArn": {
+              "Ref": "myserviceloadbalancermyservicelistenermyserviceGroup11F3D798"
+            }
+          }
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "myserviceserviceSecurityGroup3A44A969",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Ref": "productionenvironmentvpcPrivateSubnet1Subnet53F632E6"
+              },
+              {
+                "Ref": "productionenvironmentvpcPrivateSubnet2Subnet756FB93C"
+              }
+            ]
+          }
+        },
+        "ServiceRegistries": [
+          {
+            "RegistryArn": {
+              "Fn::GetAtt": [
+                "myserviceserviceCloudmapService32F63163",
+                "Arn"
+              ]
+            }
+          }
+        ],
+        "TaskDefinition": {
+          "Ref": "myservicetaskdefinitionF3E2D86F"
+        }
+      },
+      "DependsOn": [
+        "myserviceloadbalancermyservicelistenermyserviceGroup11F3D798",
+        "myserviceloadbalancermyservicelistener8E36ED7A"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-service/Service"
+      }
+    },
+    "myserviceserviceCloudmapService32F63163": {
+      "Type": "AWS::ServiceDiscovery::Service",
+      "Properties": {
+        "DnsConfig": {
+          "DnsRecords": [
+            {
+              "TTL": 10,
+              "Type": "A"
+            }
+          ],
+          "NamespaceId": {
+            "Fn::GetAtt": [
+              "productionenvironmentclusterDefaultServiceDiscoveryNamespaceBE74D64D",
+              "Id"
+            ]
+          },
+          "RoutingPolicy": "MULTIVALUE"
+        },
+        "HealthCheckCustomConfig": {
+          "FailureThreshold": 2
+        },
+        "Name": "my-service",
+        "NamespaceId": {
+          "Fn::GetAtt": [
+            "productionenvironmentclusterDefaultServiceDiscoveryNamespaceBE74D64D",
+            "Id"
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-service/CloudmapService/Resource"
+      }
+    },
+    "myserviceserviceSecurityGroup3A44A969": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ/my-service-service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-service/SecurityGroup/Resource"
+      }
+    },
+    "myserviceserviceSecurityGroupfromawsecsintegmyserviceloadbalancerSecurityGroupA2A850C18098907B68": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "FromPort": 80,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "myserviceserviceSecurityGroup3A44A969",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "myserviceloadbalancerSecurityGroupDA109921",
+            "GroupId"
+          ]
+        },
+        "ToPort": 80
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-service/SecurityGroup/from awsecsintegmyserviceloadbalancerSecurityGroupA2A850C1:80"
+      }
+    },
+    "myservicevirtualnode82F14673": {
+      "Type": "AWS::AppMesh::VirtualNode",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "mymeshEA67EDEF",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Listeners": [
+            {
+              "PortMapping": {
+                "Port": 80,
+                "Protocol": "http"
+              }
+            }
+          ],
+          "Logging": {
+            "AccessLog": {
+              "File": {
+                "Path": "/dev/stdout"
+              }
+            }
+          },
+          "ServiceDiscovery": {
+            "AWSCloudMap": {
+              "NamespaceName": "internal",
+              "ServiceName": {
+                "Fn::GetAtt": [
+                  "myserviceserviceCloudmapService32F63163",
+                  "Name"
+                ]
+              }
+            }
+          }
+        },
+        "VirtualNodeName": "my-service"
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-virtual-node/Resource"
+      }
+    },
+    "myservicevirtualserviceF33F9B9B": {
+      "Type": "AWS::AppMesh::VirtualService",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "mymeshEA67EDEF",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Provider": {
+            "VirtualNode": {
+              "VirtualNodeName": {
+                "Fn::GetAtt": [
+                  "myservicevirtualnode82F14673",
+                  "VirtualNodeName"
+                ]
+              }
+            }
+          }
+        },
+        "VirtualServiceName": "my-service.internal"
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-ecs-integ/my-service-virtual-service/Resource"
+      }
+    }
+  },
+  "Parameters": {
+    "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/aws-for-fluent-bit/latest"
+    }
+  }
+}
