@@ -16,7 +16,7 @@ architectural patterns.
 
 If you want to speed up delivery of your web content, you can use Amazon CloudFront,
 the AWS content delivery network (CDN). CloudFront can deliver your entire website
-including dynamic, static, streaming, and interactive content—by using a global
+—including dynamic, static, streaming, and interactive content—by using a global
 network of edge locations. Requests for your content are automatically routed to the
 edge location that gives your users the lowest latency.
 
@@ -36,7 +36,7 @@ The `HttpsRedirect` constructs creates:
 ⚠️ If you want to require HTTPS between viewers and CloudFront, you must change the AWS Region to US East (N. Virginia) in the AWS Certificate Manager console.
 
 The following example creates an HTTPS redirect from `foo.example.com` to `bar.example.com`
-It does not provide an ACM certificate, so one will be created in `us-east-1` by the CDK.
+As an existing certificate is not provided, one will be created in `us-east-1` by the CDK.
 
   ```ts
   new HttpsRedirect(stack, 'Redirect', {
