@@ -33,11 +33,14 @@ The `HttpsRedirect` constructs creates:
 * AWS Certificate Manager certificate - SSL/TLS certificate used by
   CloudFront for your domain
 
-⚠️ The stack/construct for can be used in any region for an HTTPS redirect.
+⚠️ The stack/construct can be used in any region for configuring an HTTPS redirect.
 The certificate created in Amazon Certificate Manager (ACM) will be in US East (N. Virginia)
 region. If you use an existing certificate, the AWS region of the certificate
-must be in US East (N. Virginia). The region of an existing certificate can be
-changed through the console.
+must be in US East (N. Virginia).
+
+You cannot migrate an existing certificate in ACM from one AWS Region to another.
+To associate an ACM Certificate with a CloudFront distribution, you must create
+a certificate in the US East (N. Virginia)region. [Read more](https://aws.amazon.com/premiumsupport/knowledge-center/migrate-ssl-cert-us-east/) about how to create a certificate.
 
 The following example creates an HTTPS redirect from `foo.example.com` to `bar.example.com`
 As an existing certificate is not provided, one will be created in `us-east-1` by the CDK.

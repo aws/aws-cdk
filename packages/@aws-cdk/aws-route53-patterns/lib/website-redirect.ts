@@ -12,9 +12,12 @@ import { Construct, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
 export interface HttpsRedirectProps {
   /**
    * Hosted zone of the domain which will be used to create alias record(s) from
-   * domain names in the hosted zone to the target domain. Domain names in the
-   * hosted zone can include a specific domain (example.com) and/or it's subdomains
-   * (acme.example.com, zenith.example.com).
+   * domain names in the hosted zone to the target domain. The hosted zone must
+   * contain entries for the domain name(s) supplied through `recordNames` that
+   * will redirect to the target domain.
+   *
+   * Domain names in the hosted zone can include a specific domain (example.com)
+   * and its subdomains (acme.example.com, zenith.example.com).
    *
    */
   readonly zone: IHostedZone;
