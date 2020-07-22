@@ -101,8 +101,8 @@ export interface CanaryOptions extends cdk.ResourceProps {
 export interface CanaryProps extends CanaryOptions {
 
   /**
-   * Specify the endpoint that you want the canary code to hit. Alternatively, you can specify
-   * your own canary script to run.
+   * The type of test that you want your canary to run. Right now, you can only use `Test.custom()`.
+   * In the future, a more robust `Test` class will offer more options.
    */
   readonly test: Test;
 }
@@ -137,30 +137,29 @@ export class Canary extends cdk.Resource {
     const s3Location = props.artifactBucket?.s3UrlForObject() ?? new s3.Bucket(this, 'ServiceBucket').s3UrlForObject();
 
     // Created role will need these policies to run the Canary.
+    // These are the necessary permissions as listed here:
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html
     const policy = new iam.PolicyDocument({
-      statements: [new iam.PolicyStatement({
-        resources: ['*'],
-        actions: [
-          // 's3:PutObject',
-          // 's3:GetBucketLocation',
-          // 's3:ListAllMyBuckets',
-          'cloudwatch:PutMetricData',
-          // 'logs:CreateLogGroup',
-          // 'logs:CreateLogStream',
-          // 'logs:PutLogEvents',
-        ],
-      })],
+      statements: [
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['s3:ListAllMyBuckets', 's3:PutObject', 's3:GetBucketLocation'],
+        }),
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['cloudwatch:PutMetricData'],
+          conditions: {StringEquals: {'cloudwatch:namespace': 'CloudWatchSynthetics'}},
+        }),
+        new iam.PolicyStatement({
+          resources: ['arn:aws:logs:::*'],
+          actions: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
+        }),
+      ],
     });
     const inlinePolicies = { canaryPolicy: policy };
 
-    const managedPolicies = new Array<iam.IManagedPolicy>();
-
-    // the arn is in the form of - arn:aws:iam::aws:policy/CloudWatchSyntheticsFullAccess
-    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchSyntheticsFullAccess'));
-
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies,
       inlinePolicies,
     });
 

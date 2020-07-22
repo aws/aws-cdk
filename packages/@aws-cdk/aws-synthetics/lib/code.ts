@@ -18,11 +18,14 @@ export abstract class Code {
   // }
 
   /**
-   * TODO implement `fromBucket()`
+   * @returns `S3Code` associated with the specified S3 object.
+   * @param bucket The S3 bucket
+   * @param key The object key
+   * @param objectVersion Optional S3 object version
    */
-  // public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
-  //   return new S3Code(bucket, key, objectVersion);
-  // }
+  public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
+    return new S3Code(bucket, key, objectVersion);
+  }
 
   /**
    * Called when the canary is initialized to allow this object to bind
@@ -67,6 +70,34 @@ export class InlineCode extends Code {
   public bind(_scope: Construct): CodeConfig {
     return {
       inlineCode: this.code,
+    };
+  }
+}
+
+/**
+ * Canary code from an S3 archive.
+ */
+export class S3Code extends Code {
+  public readonly isInline = false;
+  private bucketName: string;
+
+  constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
+    super();
+
+    if (!bucket.bucketName) {
+      throw new Error('bucketName is undefined for the provided bucket');
+    }
+
+    this.bucketName = bucket.bucketName;
+  }
+
+  public bind(_scope: Construct): CodeConfig {
+    return {
+      s3Location: {
+        bucketName: this.bucketName,
+        objectKey: this.key,
+        objectVersion: this.objectVersion,
+      },
     };
   }
 }
