@@ -29,6 +29,11 @@ export class HttpLoadBalancerAddon extends ServiceAddon {
       port: 80,
       open: true,
     });
+
+    // Automatically create an output
+    new cdk.CfnOutput(scope, `${this.parentService.id}-load-balancer-dns-output`, {
+      value: this.loadBalancer.loadBalancerDnsName,
+    });
   }
 
   // After the service is created add the service to the load balancer's listener

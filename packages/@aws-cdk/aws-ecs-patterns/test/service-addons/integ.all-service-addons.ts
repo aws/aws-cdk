@@ -15,7 +15,10 @@ myService.add(new Container({
   cpu: 1024,
   memoryMiB: 2048,
   trafficPort: 80,
-  image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  image: ContainerImage.fromRegistry('nathanpeck/name'),
+  environment: {
+    PORT: '80',
+  },
 }));
 
 myService.add(new FireLensAddon());
