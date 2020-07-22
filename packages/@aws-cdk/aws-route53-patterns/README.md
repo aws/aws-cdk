@@ -38,10 +38,6 @@ The certificate created in Amazon Certificate Manager (ACM) will be in US East (
 region. If you use an existing certificate, the AWS region of the certificate
 must be in US East (N. Virginia).
 
-You cannot migrate an existing certificate in ACM from one AWS Region to another.
-To associate an ACM Certificate with a CloudFront distribution, you must create
-a certificate in the US East (N. Virginia)region. [Read more](https://aws.amazon.com/premiumsupport/knowledge-center/migrate-ssl-cert-us-east/) about how to create a certificate.
-
 The following example creates an HTTPS redirect from `foo.example.com` to `bar.example.com`
 As an existing certificate is not provided, one will be created in `us-east-1` by the CDK.
 
