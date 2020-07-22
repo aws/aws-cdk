@@ -60,16 +60,12 @@ export class PythonFunction extends lambda.Function {
 /**
  * Resolves the given entry file.
  */
-function resolveEntry(entry?: string): string {
-  if (entry) {
-    if (!/\.py$/.test(entry)) {
-      throw new Error('Only Python (.py) entry files are supported.');
-    }
-    if (!fs.existsSync(entry)) {
-      throw new Error(`Cannot find entry file at ${entry}`);
-    }
-    return path.resolve(entry);
+function resolveEntry(entry: string): string {
+  if (!/\.py$/.test(entry)) {
+    throw new Error('Only Python (.py) entry files are supported.');
   }
-
-  throw new Error('Cannot find entry file.');
+  if (!fs.existsSync(entry)) {
+    throw new Error(`Cannot find entry file at ${entry}`);
+  }
+  return path.resolve(entry);
 }
