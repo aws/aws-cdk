@@ -1,5 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { Role, PolicyStatement, ManagedPolicy } from '@aws-cdk/aws-iam';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
 
