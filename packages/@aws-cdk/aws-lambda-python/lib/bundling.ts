@@ -22,27 +22,28 @@ export interface BundlingOptions {
  * Bundling
  */
 export class Bundling {
-  /**
-   * Produce bundled Lambda asset code
-   */
-  public static bundle(options: BundlingOptions): lambda.AssetCode {
-    let installer = options.runtime === lambda.Runtime.PYTHON_2_7 ? Installer.PIP : Installer.PIP3;
+}
 
-    let entryDir = path.dirname(options.entry);
-    let hasRequirements = fs.existsSync(path.join(entryDir, 'requirements.txt'));
+/**
+ * Produce bundled Lambda asset code
+ */
+export function bundle(options: BundlingOptions): lambda.AssetCode {
+  let installer = options.runtime === lambda.Runtime.PYTHON_2_7 ? Installer.PIP : Installer.PIP3;
 
-    let depsCommand = chain([
-      hasRequirements ? `${installer} install -r requirements.txt -t ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}` : '',
-      `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}`,
-    ]);
+  let entryDir = path.dirname(options.entry);
+  let hasRequirements = fs.existsSync(path.join(entryDir, 'requirements.txt'));
 
-    return lambda.Code.fromAsset(entryDir, {
-      bundling: {
-        image: options.runtime.bundlingDockerImage,
-        command: ['bash', '-c', depsCommand],
-      },
-    });
-  }
+  let depsCommand = chain([
+    hasRequirements ? `${installer} install -r requirements.txt -t ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}` : '',
+    `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}`,
+  ]);
+
+  return lambda.Code.fromAsset(entryDir, {
+    bundling: {
+      image: options.runtime.bundlingDockerImage,
+      command: ['bash', '-c', depsCommand],
+    },
+  });
 }
 
 enum Installer {

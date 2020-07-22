@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { Bundling } from '../lib/bundling';
+import { bundle } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
 const existsSyncOriginal = fs.existsSync;
@@ -11,7 +11,7 @@ beforeEach(() => {
 });
 
 test('Bundling', () => {
-  Bundling.bundle({
+  bundle({
     entry: '/project/folder/entry.py',
     runtime: Runtime.PYTHON_3_7,
   });
@@ -38,7 +38,7 @@ test('Bundling with requirements.txt installed', () => {
     return existsSyncOriginal(p);
   });
 
-  Bundling.bundle({
+  bundle({
     entry: '/project/folder/entry.py',
     runtime: Runtime.PYTHON_3_7,
   });
@@ -62,7 +62,7 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
     return existsSyncOriginal(p);
   });
 
-  Bundling.bundle({
+  bundle({
     entry: '/project/folder/entry.py',
     runtime: Runtime.PYTHON_2_7,
   });
