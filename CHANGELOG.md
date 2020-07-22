@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.54.0](https://github.com/aws/aws-cdk/compare/v1.53.0...v1.54.0) (2020-07-22)
+
+
+### Features
+
+* **autoscaling:** enable group metrics collections ([#7432](https://github.com/aws/aws-cdk/issues/7432)) ([9867555](https://github.com/aws/aws-cdk/commit/9867555cbde59b6d7c51c302ac7ee8bf2a603f36))
+* **cloudfront:** Custom origins and more origin properties ([#9137](https://github.com/aws/aws-cdk/issues/9137)) ([c807ff2](https://github.com/aws/aws-cdk/commit/c807ff279cbc83f3241cba0c722f8397639615aa)), closes [#9106](https://github.com/aws/aws-cdk/issues/9106)
+* **cloudfront:** support origin groups for failover ([#8740](https://github.com/aws/aws-cdk/issues/8740)) ([345389f](https://github.com/aws/aws-cdk/commit/345389f9948846906ccc561070f3ec7973628277))
+
+
+### Bug Fixes
+
+* **apigatewayv2:** Invalid mapping key value ([#9141](https://github.com/aws/aws-cdk/issues/9141)) ([c88ad5f](https://github.com/aws/aws-cdk/commit/c88ad5f1726b814106b4c08bf521b1e6e4ccd15e))
+* **core:** bundling corrupts stdout ([#9202](https://github.com/aws/aws-cdk/issues/9202)) ([fadad22](https://github.com/aws/aws-cdk/commit/fadad22a0e4dd58bf22ebe157bb0ec8badb1b49f)), closes [#9186](https://github.com/aws/aws-cdk/issues/9186)
+* **kinesis:** unable to use CfnParameter valueAsNumber to specify retentionPeriod ([#9176](https://github.com/aws/aws-cdk/issues/9176)) ([3749c2a](https://github.com/aws/aws-cdk/commit/3749c2a54496f2ca7b297b745f9f8895d98e752c)), closes [#9038](https://github.com/aws/aws-cdk/issues/9038)
+* **lambda-nodejs:** permission denied on npm cache ([#9167](https://github.com/aws/aws-cdk/issues/9167)) ([4327843](https://github.com/aws/aws-cdk/commit/4327843e7f46ed822fa3039e34c59189749b081c))
+* **pipelines:** prevent self-mutation on asset updates ([#9183](https://github.com/aws/aws-cdk/issues/9183)) ([05fc934](https://github.com/aws/aws-cdk/commit/05fc934442d0710fa7187c2ca12cf43a29141fa5)), closes [#9080](https://github.com/aws/aws-cdk/issues/9080)
+* **pipelines:** standardYarnSynth cannot have custom install command ([#9180](https://github.com/aws/aws-cdk/issues/9180)) ([fdfed40](https://github.com/aws/aws-cdk/commit/fdfed409aecd111005797b4b9672d10f6930cb52)), closes [#9162](https://github.com/aws/aws-cdk/issues/9162)
+
 ## [1.53.0](https://github.com/aws/aws-cdk/compare/v1.52.0...v1.53.0) (2020-07-20)
 
 
