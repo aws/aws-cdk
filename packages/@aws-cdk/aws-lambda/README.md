@@ -274,7 +274,7 @@ managing concurrency.
 
 ### AutoScaling
 
-You can use Application AutoScaling to automatically configure the provisioned concurrency for your functions. AWS Lambda supports Target Tracking and Scheduled Scaling policies. Use the `addAutoScaling()` method to configure autoscaling on a function alias:
+You can use Application AutoScaling to automatically configure the provisioned concurrency for your functions. AutoScaling can be set to track utilization or be based on a schedule. To configure AutoScaling on a function alias:
 
 ```ts
 const alias = new lambda.Alias(stack, 'Alias', {
