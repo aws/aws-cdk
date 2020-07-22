@@ -14,10 +14,30 @@ class EksClusterStack extends TestStack {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
-    // just need one nat gateway to simplify the test
-    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
+    const vpc = new ec2.Vpc(this, 'Vpc', {
+      maxAzs: 2,
+      natGateways: 1, // just need one nat gateway to simplify the test
+      // so that we also validate it works with multiple private subnets per az.
+      subnetConfiguration: [
+        {
+          subnetType: ec2.SubnetType.PRIVATE,
+          name: 'Private1',
+        },
+        {
+          subnetType: ec2.SubnetType.PRIVATE,
+          name: 'Private2',
+        },
+        {
+          subnetType: ec2.SubnetType.PRIVATE,
+          name: 'Private3',
+        },
+        {
+          subnetType: ec2.SubnetType.PUBLIC,
+          name: 'Public1',
+        },
+      ],
+    });
 
-    // create the cluster with a default nodegroup capacity
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
       mastersRole,

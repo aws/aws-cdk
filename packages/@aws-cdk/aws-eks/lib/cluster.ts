@@ -1033,6 +1033,8 @@ export class Cluster extends Resource implements ICluster {
         providerProps = {
           ...providerProps,
           vpc: this.vpc,
+          // lambda functions can only bind to one subnet per az, also, only private subnets
+          // are allowed (and needed).
           vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
           securityGroups: [this.kubctlProviderSecurityGroup!],
         };
