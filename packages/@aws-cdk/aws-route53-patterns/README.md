@@ -30,7 +30,7 @@ The `HttpsRedirect` constructs creates:
   around the world
 * Amazon S3 bucket - used to store content that CloudFront will use as the origin
 * Amazon Route 53 Alias record - routes traffic to the CloudFront distribution
-* AWS Certificate Manager certificate - X.509 PEM format certificate used by
+* AWS Certificate Manager certificate - SSL/TLS certificate used by
   CloudFront for your domain
 
 ⚠️ If you want to require HTTPS between viewers and CloudFront, you must change the AWS Region to US East (N. Virginia) in the AWS Certificate Manager console.
