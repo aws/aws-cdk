@@ -49,7 +49,8 @@
     "aws",
     "cdk",
     "constructs",
-    "route53"
+    "route53",
+    "route53-patterns"
   ],
   "author": {
     "name": "Amazon Web Services",
