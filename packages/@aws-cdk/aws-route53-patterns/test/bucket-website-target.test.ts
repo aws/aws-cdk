@@ -127,6 +127,5 @@ test('throws when certificate in region other than us-east-1 is supplied', () =>
         zoneName: 'example.com',
       }),
     });
-  }).toThrow(/Distribution certificates must be in the us-east-1 region and the certificate you provided is in us-east-2./);
+  }).toThrow(/The certificate must be in the us-east-1 region and the certificate you provided is in us-east-2./);
 });
-

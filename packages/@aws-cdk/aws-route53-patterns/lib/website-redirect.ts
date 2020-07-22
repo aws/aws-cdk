@@ -59,7 +59,7 @@ export class HttpsRedirect extends Construct {
     if (props.certificate) {
       const certificateRegion = Stack.of(this).parseArn(props.certificate.certificateArn).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
-        throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
+        throw new Error(`The certificate must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
       }
     }
 
