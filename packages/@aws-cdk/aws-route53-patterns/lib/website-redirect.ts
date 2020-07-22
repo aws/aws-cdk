@@ -4,7 +4,7 @@ import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerProt
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
 import { Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
-import { Construct, RemovalPolicy } from '@aws-cdk/core';
+import { Construct, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
 
 /**
  * Properties to configure an HTTPS Redirect
@@ -52,6 +52,13 @@ export class HttpsRedirect extends Construct {
     super(scope, id);
 
     const domainNames = props.recordNames ?? [props.zone.zoneName];
+
+    if (props.certificate) {
+      const certificateRegion = Stack.of(this).parseArn(props.certificate.certificateArn).region;
+      if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
+        throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
+      }
+    }
 
     const redirectCertArn = props.certificate ? props.certificate.certificateArn : new DnsValidatedCertificate(this, 'RedirectCertificate', {
       domainName: domainNames[0],
