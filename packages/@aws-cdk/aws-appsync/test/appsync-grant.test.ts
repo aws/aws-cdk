@@ -33,7 +33,7 @@ describe('grant Permissions', () => {
     };
 
     //THEN
-    expect(when).toThrowError('Missing custom arn definition.');
+    expect(when).toThrowError('At least 1 custom ARN must be provided.');
   });
 
   test('grant provides custom permissions when called with `custom` argument', () => {
