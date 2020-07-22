@@ -207,7 +207,7 @@ export interface AmazonLinuxImageProps {
 
   /**
    * CPU Type
-   * 
+   *
    * @default X86_64
    */
   readonly cpuType?: AmazonLinuxCpuType;
