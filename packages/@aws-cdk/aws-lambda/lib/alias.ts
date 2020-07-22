@@ -216,7 +216,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    */
   public addAutoScaling(options: AutoScalingOptions): IScalableFunctionAttribute {
     if (this.scalableAlias) {
-      throw new Error('Autoscaling already enabled for this alias');
+      throw new Error('AutoScaling already enabled for this alias');
     }
     return this.scalableAlias = new ScalableFunctionAttribute(this, 'AliasScaling', {
       minCapacity: options.minCapacity ?? 1,

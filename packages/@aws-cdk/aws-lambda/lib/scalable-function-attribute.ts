@@ -20,7 +20,7 @@ export interface IScalableFunctionAttribute extends IConstruct {
 }
 
 /**
- * Properties for enabling Lambda utilization tracking
+ * Options for enabling Lambda utilization tracking
  */
 export interface UtilizationScalingOptions extends appscaling.BaseTargetTrackingProps {
   /**
