@@ -158,7 +158,7 @@ export class Distribution extends Resource implements IDistribution {
       origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
       defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
       cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
-      viewerCertificate: this.certificate ? this.addViewerCertificate(this.certificate) : undefined,
+      viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
       customErrorResponses: this.renderErrorResponses(),
       priceClass: props.priceClass ?? undefined,
     } });
@@ -222,7 +222,7 @@ export class Distribution extends Resource implements IDistribution {
     });
   }
 
-  private addViewerCertificate(certificate: acm.ICertificate): CfnDistribution.ViewerCertificateProperty {
+  private renderViewerCertificate(certificate: acm.ICertificate): CfnDistribution.ViewerCertificateProperty {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
