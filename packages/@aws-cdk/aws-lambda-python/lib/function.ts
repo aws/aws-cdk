@@ -9,7 +9,7 @@ import { bundle } from './bundling';
  */
 export interface PythonFunctionProps extends lambda.FunctionOptions {
   /**
-   * Relative path to the root directory of the function.
+   * The path to the root directory of the function.
    */
   readonly entry: string;
 
@@ -21,7 +21,7 @@ export interface PythonFunctionProps extends lambda.FunctionOptions {
   readonly index?: string;
 
   /**
-   * The name of the exported handler in the entry file.
+   * The name of the exported handler in the index file.
    *
    * @default handler
    */
