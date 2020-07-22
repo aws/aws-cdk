@@ -20,6 +20,7 @@ export interface ServiceCatalogDeployActionProps extends codepipeline.CommonAwsA
    * The name of the template file found in the artifact to install as a new version of the Service Catalog Product
    */
   readonly templateFile: string;
+  
   /**
    * The name of the VERSION of the Service Catalog product
    */
