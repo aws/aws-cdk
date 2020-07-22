@@ -76,7 +76,8 @@ When you create a distribution, CloudFront assigns a domain name for the distrib
 be retrieved from `distribution.distributionDomainName`. CloudFront distributions use a default certificate (`*.cloudfront.net`) to support HTTPS by
 default. If you want to use your own domain name, such as `www.example.com`, you must associate a certificate with your distribution that contains
 your domain name. The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate
-may either be created by ACM, or created elsewhere and imported into ACM.
+may either be created by ACM, or created elsewhere and imported into ACM. When a certificate is used, the distribution will support HTTPS connections
+from SNI only and a minimum protocol version of TLSv1.2_2018.
 
 ```ts
 const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
