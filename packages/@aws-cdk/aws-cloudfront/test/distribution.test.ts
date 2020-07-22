@@ -218,7 +218,7 @@ describe('certificates', () => {
         ViewerCertificate: {
           AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
           SslSupportMethod: 'sni-only',
-          MinimumProtocolVersion: 'TLSv1',
+          MinimumProtocolVersion: 'TLSv1.2_2018',
         },
       },
     });

@@ -226,7 +226,7 @@ export class Distribution extends Resource implements IDistribution {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
-      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1,
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2018,
     };
   }
 
