@@ -575,7 +575,7 @@ export = {
     alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    test.throws(() => alias.addAutoScaling({ maxCapacity: 8 }), /Autoscaling already enabled for this alias/);
+    test.throws(() => alias.addAutoScaling({ maxCapacity: 8 }), /AutoScaling already enabled for this alias/);
 
     test.done();
   },
