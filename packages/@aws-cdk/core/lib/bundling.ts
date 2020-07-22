@@ -123,7 +123,7 @@ export class BundlingDockerImage {
 
     dockerExec(dockerArgs, {
       stdio: [ // show Docker output
-        null, // no stdio
+        'ignore', // ignore stdio
         process.stderr, // redirect stdout to stderr
         'inherit', // inherit stderr
       ],
