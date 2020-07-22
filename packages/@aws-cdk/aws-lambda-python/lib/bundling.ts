@@ -29,13 +29,11 @@ export class Bundling {
     let installer = options.runtime === lambda.Runtime.PYTHON_2_7 ? Installer.PIP : Installer.PIP3;
 
     let entryDir = path.dirname(options.entry);
-    let entryFilename = path.basename(options.entry);
     let hasRequirements = fs.existsSync(path.join(entryDir, 'requirements.txt'));
 
     let depsCommand = chain([
       hasRequirements ? `${installer} install -r requirements.txt -t ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}` : '',
       `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}`,
-      `mv ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${entryFilename} ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/lambda_function.py`,
     ]);
 
     return lambda.Code.fromAsset(entryDir, {

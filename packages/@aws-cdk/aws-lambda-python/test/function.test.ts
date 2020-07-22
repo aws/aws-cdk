@@ -33,7 +33,7 @@ test('PythonFunction with .py handler', () => {
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Handler: 'lambda_function.handler',
+    Handler: 'index.handler',
   });
 });
 

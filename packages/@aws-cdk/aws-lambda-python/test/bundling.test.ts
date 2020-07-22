@@ -22,7 +22,7 @@ test('Bundling', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'rsync -r . /asset-output && mv /asset-output/entry.py /asset-output/lambda_function.py',
+        'rsync -r . /asset-output',
       ],
     }),
   });
@@ -49,7 +49,7 @@ test('Bundling with requirements.txt installed', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'pip3 install -r requirements.txt -t /asset-output && rsync -r . /asset-output && mv /asset-output/entry.py /asset-output/lambda_function.py',
+        'pip3 install -r requirements.txt -t /asset-output && rsync -r . /asset-output',
       ],
     }),
   });
@@ -73,7 +73,7 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'pip install -r requirements.txt -t /asset-output && rsync -r . /asset-output && mv /asset-output/entry.py /asset-output/lambda_function.py',
+        'pip install -r requirements.txt -t /asset-output && rsync -r . /asset-output',
       ],
     }),
   });

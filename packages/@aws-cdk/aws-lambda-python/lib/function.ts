@@ -42,6 +42,7 @@ export class PythonFunction extends lambda.Function {
     const entry = resolveEntry(props.entry);
     const handler = props.handler ?? 'handler';
     const runtime = props.runtime ?? lambda.Runtime.PYTHON_3_7;
+    const entryFilename = path.basename(props.entry, '.py');
 
     super(scope, id, {
       ...props,
@@ -51,7 +52,7 @@ export class PythonFunction extends lambda.Function {
         entry,
         runtime,
       }),
-      handler: `lambda_function.${handler}`,
+      handler: `${entryFilename}.${handler}`,
     });
   }
 }
