@@ -35,10 +35,10 @@ export interface HttpsRedirectProps {
 
   /**
    * The AWS Certificate Manager (ACM) certificate that will be associated with
-   * the CloudFront distribution that will be created. The certificate must be
+   * the CloudFront distribution that will be created. If provided, the certificate must be
    * stored in us-east-1 (N. Virginia)
    *
-   * @default - A new X509 certificate is created using AWS Certificate manager in us-east-1 (N. Virginia)
+   * @default - A new certificate is created in us-east-1 (N. Virginia)
    */
   readonly certificate?: ICertificate;
 }
