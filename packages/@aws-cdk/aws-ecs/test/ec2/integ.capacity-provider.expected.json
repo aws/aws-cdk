@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc"
+            "Value": "integ-capacity-provider2/Vpc"
           }
         ]
       }
@@ -35,7 +35,7 @@
           },
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PublicSubnet1"
+            "Value": "integ-capacity-provider2/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PublicSubnet1"
+            "Value": "integ-capacity-provider2/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -87,7 +87,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PublicSubnet1"
+            "Value": "integ-capacity-provider2/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -107,7 +107,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PublicSubnet1"
+            "Value": "integ-capacity-provider2/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -132,7 +132,7 @@
           },
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PublicSubnet2"
+            "Value": "integ-capacity-provider2/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -146,7 +146,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PublicSubnet2"
+            "Value": "integ-capacity-provider2/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -197,7 +197,7 @@
           },
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PublicSubnet3"
+            "Value": "integ-capacity-provider2/Vpc/PublicSubnet3"
           }
         ]
       }
@@ -211,7 +211,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PublicSubnet3"
+            "Value": "integ-capacity-provider2/Vpc/PublicSubnet3"
           }
         ]
       }
@@ -262,7 +262,7 @@
           },
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PrivateSubnet1"
+            "Value": "integ-capacity-provider2/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -276,7 +276,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PrivateSubnet1"
+            "Value": "integ-capacity-provider2/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -324,7 +324,7 @@
           },
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PrivateSubnet2"
+            "Value": "integ-capacity-provider2/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -338,7 +338,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PrivateSubnet2"
+            "Value": "integ-capacity-provider2/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -386,7 +386,7 @@
           },
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PrivateSubnet3"
+            "Value": "integ-capacity-provider2/Vpc/PrivateSubnet3"
           }
         ]
       }
@@ -400,7 +400,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc/PrivateSubnet3"
+            "Value": "integ-capacity-provider2/Vpc/PrivateSubnet3"
           }
         ]
       }
@@ -434,7 +434,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/Vpc"
+            "Value": "integ-capacity-provider2/Vpc"
           }
         ]
       }
@@ -453,7 +453,7 @@
     "ASGInstanceSecurityGroup0525485D": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "integ-capacity-provider/ASG/InstanceSecurityGroup",
+        "GroupDescription": "integ-capacity-provider2/ASG/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -464,7 +464,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/ASG"
+            "Value": "integ-capacity-provider2/ASG"
           }
         ],
         "VpcId": {
@@ -500,7 +500,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/ASG"
+            "Value": "integ-capacity-provider2/ASG"
           }
         ]
       }
@@ -553,7 +553,7 @@
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "integ-capacity-provider/ASG"
+            "Value": "integ-capacity-provider2/ASG"
           }
         ],
         "VPCZoneIdentifier": [
@@ -577,7 +577,7 @@
     "ASGSpotInstanceSecurityGroup2DA5313B": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "integ-capacity-provider/ASGSpot/InstanceSecurityGroup",
+        "GroupDescription": "integ-capacity-provider2/ASGSpot/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -588,7 +588,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/ASGSpot"
+            "Value": "integ-capacity-provider2/ASGSpot"
           }
         ],
         "VpcId": {
@@ -624,7 +624,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-capacity-provider/ASGSpot"
+            "Value": "integ-capacity-provider2/ASGSpot"
           }
         ]
       }
@@ -678,7 +678,7 @@
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "integ-capacity-provider/ASGSpot"
+            "Value": "integ-capacity-provider2/ASGSpot"
           }
         ],
         "VPCZoneIdentifier": [
@@ -786,7 +786,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameterscb636cb2ca4acf89581f3fd6db58f52b682a0dc5aa9057a556ad2da97da04cdaS3Bucket49FA06AD"
+            "Ref": "AssetParameters2aea9e0efba76804a5ca6c92c5575cc71d16c8f92e2416e912279926a5acba0aS3Bucket70A1D3C6"
           },
           "S3Key": {
             "Fn::Join": [
@@ -799,7 +799,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameterscb636cb2ca4acf89581f3fd6db58f52b682a0dc5aa9057a556ad2da97da04cdaS3VersionKeyCF0685A3"
+                          "Ref": "AssetParameters2aea9e0efba76804a5ca6c92c5575cc71d16c8f92e2416e912279926a5acba0aS3VersionKey71ED71C6"
                         }
                       ]
                     }
@@ -812,7 +812,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameterscb636cb2ca4acf89581f3fd6db58f52b682a0dc5aa9057a556ad2da97da04cdaS3VersionKeyCF0685A3"
+                          "Ref": "AssetParameters2aea9e0efba76804a5ca6c92c5575cc71d16c8f92e2416e912279926a5acba0aS3VersionKey71ED71C6"
                         }
                       ]
                     }
@@ -950,7 +950,7 @@
           ]
         },
         "Runtime": "nodejs10.x",
-        "Description": "AWS CDK resource provider framework - onEvent (integ-capacity-provider/CP/InstanceProtectionProvider)",
+        "Description": "AWS CDK resource provider framework - onEvent (integ-capacity-provider2/CP/InstanceProtectionProvider)",
         "Environment": {
           "Variables": {
             "USER_ON_EVENT_FUNCTION_ARN": {
@@ -976,7 +976,8 @@
             "CPInstanceProtectionProviderframeworkonEvent6FC99E69",
             "Arn"
           ]
-        }
+        },
+        "ManagedTerminationProtection": true
       },
       "DependsOn": [
         "ASG46ED3070",
@@ -1095,7 +1096,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameterscb636cb2ca4acf89581f3fd6db58f52b682a0dc5aa9057a556ad2da97da04cdaS3Bucket49FA06AD"
+            "Ref": "AssetParameters2aea9e0efba76804a5ca6c92c5575cc71d16c8f92e2416e912279926a5acba0aS3Bucket70A1D3C6"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1108,7 +1109,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameterscb636cb2ca4acf89581f3fd6db58f52b682a0dc5aa9057a556ad2da97da04cdaS3VersionKeyCF0685A3"
+                          "Ref": "AssetParameters2aea9e0efba76804a5ca6c92c5575cc71d16c8f92e2416e912279926a5acba0aS3VersionKey71ED71C6"
                         }
                       ]
                     }
@@ -1121,7 +1122,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameterscb636cb2ca4acf89581f3fd6db58f52b682a0dc5aa9057a556ad2da97da04cdaS3VersionKeyCF0685A3"
+                          "Ref": "AssetParameters2aea9e0efba76804a5ca6c92c5575cc71d16c8f92e2416e912279926a5acba0aS3VersionKey71ED71C6"
                         }
                       ]
                     }
@@ -1259,7 +1260,7 @@
           ]
         },
         "Runtime": "nodejs10.x",
-        "Description": "AWS CDK resource provider framework - onEvent (integ-capacity-provider/CPSpot/InstanceProtectionProvider)",
+        "Description": "AWS CDK resource provider framework - onEvent (integ-capacity-provider2/CPSpot/InstanceProtectionProvider)",
         "Environment": {
           "Variables": {
             "USER_ON_EVENT_FUNCTION_ARN": {
@@ -1285,7 +1286,8 @@
             "CPSpotInstanceProtectionProviderframeworkonEvent664766D1",
             "Arn"
           ]
-        }
+        },
+        "ManagedTerminationProtection": true
       },
       "DependsOn": [
         "ASGSpotASG6DF63CC8",
@@ -1336,17 +1338,17 @@
       "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
       "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     },
-    "AssetParameterscb636cb2ca4acf89581f3fd6db58f52b682a0dc5aa9057a556ad2da97da04cdaS3Bucket49FA06AD": {
+    "AssetParameters2aea9e0efba76804a5ca6c92c5575cc71d16c8f92e2416e912279926a5acba0aS3Bucket70A1D3C6": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"cb636cb2ca4acf89581f3fd6db58f52b682a0dc5aa9057a556ad2da97da04cda\""
+      "Description": "S3 bucket for asset \"2aea9e0efba76804a5ca6c92c5575cc71d16c8f92e2416e912279926a5acba0a\""
     },
-    "AssetParameterscb636cb2ca4acf89581f3fd6db58f52b682a0dc5aa9057a556ad2da97da04cdaS3VersionKeyCF0685A3": {
+    "AssetParameters2aea9e0efba76804a5ca6c92c5575cc71d16c8f92e2416e912279926a5acba0aS3VersionKey71ED71C6": {
       "Type": "String",
-      "Description": "S3 key for asset version \"cb636cb2ca4acf89581f3fd6db58f52b682a0dc5aa9057a556ad2da97da04cda\""
+      "Description": "S3 key for asset version \"2aea9e0efba76804a5ca6c92c5575cc71d16c8f92e2416e912279926a5acba0a\""
     },
-    "AssetParameterscb636cb2ca4acf89581f3fd6db58f52b682a0dc5aa9057a556ad2da97da04cdaArtifactHash84ED2C8A": {
+    "AssetParameters2aea9e0efba76804a5ca6c92c5575cc71d16c8f92e2416e912279926a5acba0aArtifactHash27D68A52": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"cb636cb2ca4acf89581f3fd6db58f52b682a0dc5aa9057a556ad2da97da04cda\""
+      "Description": "Artifact hash for asset \"2aea9e0efba76804a5ca6c92c5575cc71d16c8f92e2416e912279926a5acba0a\""
     },
     "AssetParameters974a6fb29abbd1d98fce56346da3743e79277f0f52e0e2cdf3f1867ac5b1e74cS3BucketF1BD2256": {
       "Type": "String",

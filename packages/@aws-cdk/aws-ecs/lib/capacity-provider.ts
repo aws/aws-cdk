@@ -92,8 +92,11 @@ export class CapacityProvider extends cdk.Resource implements ICapacityProvider 
    * The name of the CapacityProvider
    */
   public readonly capacityProviderName: string;
+  private _managedTerminationProtection: boolean
   constructor(scope: cdk.Construct, id: string, props: CapacityProviderProps) {
     super(scope, id);
+
+    this._managedTerminationProtection = props.managedTerminationProtection ?? true;
 
     const onEvent = new lambda.Function(this, 'InstanceProtectionHandler',  {
       runtime: lambda.Runtime.PYTHON_3_8,
@@ -126,6 +129,9 @@ export class CapacityProvider extends cdk.Resource implements ICapacityProvider 
 
     const instanceProtection= new cdk.CustomResource(this, 'EnforcedInstanceProtection', {
       serviceToken: instanceProtectionProvider.serviceToken,
+      properties: {
+        'ManagedTerminationProtection': this._managedTerminationProtection,
+      }
     });
 
     instanceProtection.node.addDependency(props.autoscalingGroup);
@@ -136,11 +142,11 @@ export class CapacityProvider extends cdk.Resource implements ICapacityProvider 
         managedScaling: {
           maximumScalingStepSize: props.maximumScalingStepSize ?? 10000,
           minimumScalingStepSize: props.minimumScalingStepSize ?? 1,
-          status: (props.managedTerminationProtection === false && props.managedScaling === false)
+          status: (this._managedTerminationProtection === false && props.managedScaling === false)
             ? 'DISABLED' : 'ENABLED',
           targetCapacity: props.targetCapacity ?? 100,
         },
-        managedTerminationProtection: props.managedTerminationProtection === false ? 'DISABLED' : 'ENABLED',
+        managedTerminationProtection: this._managedTerminationProtection ? 'ENABLED' :  'DISABLED',
       },
       name: props.capacityProviderName,
     });

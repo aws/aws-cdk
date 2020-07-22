@@ -6,7 +6,7 @@ import { CapacityProvider } from '../../lib/capacity-provider';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'integ-capacity-provider');
+const stack = new cdk.Stack(app, 'integ-capacity-provider2');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1});
 

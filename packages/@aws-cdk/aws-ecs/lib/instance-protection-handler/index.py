@@ -12,9 +12,12 @@ def on_event(event, context):
 
 def on_create(event):
   asg_name = os.environ['autoscaling_group_name']
+  props = event['ResourceProperties']
+  managed_termination_protection = props['ManagedTerminationProtection'] == 'true'
+  # update NewInstancesProtectedFromScaleIn for ASG depends on managed_termination_protection
   client.update_auto_scaling_group(
       AutoScalingGroupName=asg_name,
-      NewInstancesProtectedFromScaleIn=True 
+      NewInstancesProtectedFromScaleIn=managed_termination_protection 
   )
   response = client.describe_auto_scaling_groups(
       AutoScalingGroupNames=[
@@ -24,12 +27,13 @@ def on_create(event):
   )
   asg_arn = response['AutoScalingGroups'][0]['AutoScalingGroupARN']
   instances = response['AutoScalingGroups'][0]['Instances']
-  instanceIds = [ i['InstanceId'] for i in instances if 'InstanceId' in i and i['ProtectedFromScaleIn']==False ]
+  # update ProtectedFromScaleIn for instances depends on managed_termination_protection
+  instanceIds = [ i['InstanceId'] for i in instances if 'InstanceId' in i ]
   if len(instanceIds) > 0:
     client.set_instance_protection(
         AutoScalingGroupName=asg_name,
         InstanceIds=instanceIds,
-        ProtectedFromScaleIn=True,
+        ProtectedFromScaleIn=managed_termination_protection,
     )
   return { 'PhysicalResourceId': asg_name, 'Data': { 'AutoScalingGroupARN': asg_arn } }
 
@@ -38,11 +42,15 @@ def on_update(event):
 
 def on_delete(event):
   props = event['ResourceProperties']
+  managed_termination_protection = props['ManagedTerminationProtection'] == 'true'
   asg_name = os.environ['autoscaling_group_name']
-  client.update_auto_scaling_group(
-    AutoScalingGroupName=asg_name,
-    NewInstancesProtectedFromScaleIn=False 
-  )
+  # remove NewInstancesProtectedFromScaleIn for the ASG if managed_termination_protection
+  if managed_termination_protection:
+    client.update_auto_scaling_group(
+      AutoScalingGroupName=asg_name,
+      NewInstancesProtectedFromScaleIn=False 
+    )
+
   response = client.describe_auto_scaling_groups(
       AutoScalingGroupNames=[
           asg_name,
@@ -53,7 +61,8 @@ def on_delete(event):
   asg_arn = response['AutoScalingGroups'][0]['AutoScalingGroupARN']
   instances = response['AutoScalingGroups'][0]['Instances']
   instanceIds = [ i['InstanceId'] for i in instances if 'InstanceId' in i and i['ProtectedFromScaleIn']==True ]
-  if len(instanceIds) > 0:
+  # remove ProtectedFromScaleIn for the instances if managed_termination_protection
+  if managed_termination_protection and len(instanceIds) > 0:
     client.set_instance_protection(
       AutoScalingGroupName=asg_name,
       InstanceIds=instanceIds,
