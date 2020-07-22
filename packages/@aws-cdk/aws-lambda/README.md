@@ -371,7 +371,7 @@ new lambda.Function(this, 'Function', {
   handler: 'index.handler',
 });
 ```
-Runtimes expose a `bundlingDockerImage` property that points to the [lambci/lambda](https://hub.docker.com/r/lambci/lambda/) build image.
+Runtimes expose a `bundlingDockerImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
 
 Use `cdk.BundlingDockerImage.fromRegistry(image)` to use an existing image or
 `cdk.BundlingDockerImage.fromAsset(path)` to build a specific image:
