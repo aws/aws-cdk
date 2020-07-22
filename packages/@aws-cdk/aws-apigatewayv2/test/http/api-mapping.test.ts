@@ -64,6 +64,139 @@ describe('ApiMapping', () => {
     });
   });
 
+  test('apiMappingKey validation - empty string not allowed', () => {
+
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api');
+
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    expect(() => {
+      new HttpApiMapping(stack, 'Mapping', {
+        api,
+        domainName: dn,
+        apiMappingKey: '',
+      });
+    }).toThrow(/empty string for api mapping key not allowed/);
+  });
+
+  test('apiMappingKey validation - single slash not allowed', () => {
+
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api');
+
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    expect(() => {
+      new HttpApiMapping(stack, 'Mapping', {
+        api,
+        domainName: dn,
+        apiMappingKey: '/',
+      });
+    }).toThrow(/An ApiMapping key may contain only letters, numbers and one of/);
+  });
+
+  test('apiMappingKey validation - prefix slash not allowd', () => {
+
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api');
+
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    expect(() => {
+      new HttpApiMapping(stack, 'Mapping', {
+        api,
+        domainName: dn,
+        apiMappingKey: '/foo',
+      });
+    }).toThrow(/An ApiMapping key may contain only letters, numbers and one of/);
+  });
+
+  test('apiMappingKey validation - slash in the middle not allowed', () => {
+
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api');
+
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    expect(() => {
+      new HttpApiMapping(stack, 'Mapping', {
+        api,
+        domainName: dn,
+        apiMappingKey: 'foo/bar',
+      });
+    }).toThrow(/An ApiMapping key may contain only letters, numbers and one of/);
+  });
+
+  test('apiMappingKey validation - trailing slash not allowed', () => {
+
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api');
+
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    expect(() => {
+      new HttpApiMapping(stack, 'Mapping', {
+        api,
+        domainName: dn,
+        apiMappingKey: 'foo/',
+      });
+    }).toThrow(/An ApiMapping key may contain only letters, numbers and one of/);
+  });
+
+  test('apiMappingKey validation - special character in the prefix not allowed', () => {
+
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api');
+
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    expect(() => {
+      new HttpApiMapping(stack, 'Mapping', {
+        api,
+        domainName: dn,
+        apiMappingKey: '^foo',
+      });
+    }).toThrow(/An ApiMapping key may contain only letters, numbers and one of/);
+  });
+
+  test('apiMappingKey validation - multiple special character not allowed', () => {
+
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api');
+
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    expect(() => {
+      new HttpApiMapping(stack, 'Mapping', {
+        api,
+        domainName: dn,
+        apiMappingKey: 'foo.*$',
+      });
+    }).toThrow(/An ApiMapping key may contain only letters, numbers and one of/);
+  });
+
   test('import mapping', () => {
 
     const stack = new Stack();
@@ -77,7 +210,6 @@ describe('ApiMapping', () => {
     const mapping = new HttpApiMapping(stack, 'Mapping', {
       api,
       domainName: dn,
-      apiMappingKey: '/',
     });
 
     const imported = HttpApiMapping.fromHttpApiMappingAttributes(stack, 'ImportedMapping', {
