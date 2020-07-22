@@ -48,7 +48,7 @@ export interface AuthorizationMode {
   readonly userPoolConfig?: UserPoolConfig;
   /**
    * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
-   * @default - @see ApiKeyConfig
+   * @default - name: 'DefaultAPIKey' | description: 'Default API Key created by CDK'
    */
   readonly apiKeyConfig?: ApiKeyConfig;
   /**
@@ -242,26 +242,30 @@ export interface GraphQLApiProps {
 }
 
 /**
- * A IamResource Class for IAM Permissions
+ * A class used to generate resource arns for AppSync
  */
 export class IamResource {
   /**
-   * Generate the resourceNames given custom arns
+   * Generate the resource names given custom arns
    *
    * @param arns The custom arns that need to be permissioned
+   *
+   * Example: custom('/types/Query/fields/getExample')
    */
   public static custom(...arns: string[]): IamResource {
     if (arns.length === 0) {
-      throw new Error('Missing custom arn definition.');
+      throw new Error('At least 1 custom ARN must be provided.');
     }
     return new IamResource(arns);
   }
 
   /**
-   * Generate the resourceNames given a type and fields
+   * Generate the resource names given a type and fields
    *
    * @param type The type that needs to be allowed
    * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
+   *
+   * Example: ofType('Query', 'GetExample')
    */
   public static ofType(type: string, ...fields: string[]): IamResource {
     const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [ `types/${type}/*` ];
@@ -269,7 +273,7 @@ export class IamResource {
   }
 
   /**
-   * Generate the resourceNames that accepts all types, `*`
+   * Generate the resource names that accepts all types: `*`
    */
   public static all(): IamResource {
     return new IamResource(['*']);

@@ -18,6 +18,9 @@ APIs that use GraphQL.
 
 ### Example
 
+Example of a GraphQL API with `AWS_IAM` authorization resolving into a DynamoDb
+backend data source. 
+
 GraphQL schema file `schema.graphql`:
 
 ```gql
@@ -36,7 +39,7 @@ type Mutation {
 }
 ```
 
-Stack file `app-stack.ts` with auth `IAM`:
+CDK stack file `app-stack.ts`:
 
 ```ts
 import * as appsync from '@aws-cdk/aws-appsync';
@@ -61,6 +64,7 @@ const demoTable = new db.Table(stack, 'DemoTable', {
 
 const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos"', demoTable);
 
+// Resolver for the Query "getDemos" that scans the DyanmoDb table and returns the entire list.
 demoDS.createResolver({
   typeName: 'Query',
   fieldName: 'getDemos',
@@ -68,6 +72,7 @@ demoDS.createResolver({
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 
+// Resolver for the Mutation "addDemo" that puts the item into the DynamoDb table.
 demoDS.createResolver({
   typeName: 'Mutation',
   fieldName: 'addDemo',
@@ -113,7 +118,7 @@ In `IAM`:
 
 See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/security.html#aws-iam-authorization) for more details.
 
-To make this easier, CDK employees `grant` functions to 
+To make this easier, CDK provides `grant` API
 
 Use the `grant` function for more granular authorization.
 
@@ -143,13 +148,9 @@ In order to use the `grant` functions, you need to use the class `IamResource`.
 Alternatively, you can use more generic `grant` functions to accomplish the same usage.
 
 These include:
-```
-grantMutation
-grantQuery
-grantSubscription
-grantType
-grantFullAccess
-```
+- grantMutation (use to grant access to Mutation fields)
+- grantQuery (use to grant access to Query fields)
+- grantSubscription (use to grant access to Subscription fields)
 
 ```ts
 // For generic types
