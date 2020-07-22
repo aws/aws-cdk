@@ -130,8 +130,8 @@ export class CapacityProvider extends cdk.Resource implements ICapacityProvider 
     const instanceProtection= new cdk.CustomResource(this, 'EnforcedInstanceProtection', {
       serviceToken: instanceProtectionProvider.serviceToken,
       properties: {
-        'ManagedTerminationProtection': this._managedTerminationProtection,
-      }
+        ManagedTerminationProtection: this._managedTerminationProtection,
+      },
     });
 
     instanceProtection.node.addDependency(props.autoscalingGroup);
