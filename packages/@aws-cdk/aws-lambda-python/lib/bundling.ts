@@ -19,12 +19,6 @@ export interface BundlingOptions {
 }
 
 /**
- * Bundling
- */
-export class Bundling {
-}
-
-/**
  * Produce bundled Lambda asset code
  */
 export function bundle(options: BundlingOptions): lambda.AssetCode {
