@@ -17,23 +17,10 @@ To use this module, you will need to have Docker installed.
 Define a `PythonFunction`:
 
 ```ts
-new lambda.PythonFunction(this, 'my_handler');
-```
-
-By default, the construct will use the name of the defining file and the construct's id to look
-up the entry file:
-```
-.
-├── stack.ts # defines a 'PythonFunction' with 'my_handler' as id
-├── stack.my_handler.py # exports a function named 'lambda_handler'
-```
-
-Alternatively, an entry file and handler can be specified:
-```ts
 new lambda.PythonFunction(this, 'MyFunction', {
-  entry: '/path/to/my/file.py',
-  handler: 'my_exported_func',
-  runtime: lambda.Runtime.PYTHON_3_6
+  entry: '/path/to/my/file.py', // required
+  handler: 'my_exported_func', // optional, defaults to 'handler'
+  runtime: lambda.Runtime.PYTHON_3_6 // optional, defaults to lambda.Runtime.PYTHON_3_7
 });
 ```
 
@@ -43,9 +30,9 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 
 If `requirements.txt` exists at the same level as the entry file, the construct will handle installing
 all required modules in a [Lambda compatible Docker container](https://github.com/lambci/docker-lambda)
-according to the `runtime` (defaults to `PYTHON_3_7`).
+according to the `runtime`.
 ```
 .
-├── lambda_function.py # exports a function named 'lambda_handler'
+├── lambda_function.py # exports a function named 'handler'
 ├── requirements.txt # has to be in the same directory as the entry file
 ```

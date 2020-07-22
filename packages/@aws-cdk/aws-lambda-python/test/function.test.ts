@@ -24,15 +24,16 @@ beforeEach(() => {
 });
 
 test('PythonFunction with .py handler', () => {
-  // WHEN
-  new PythonFunction(stack, 'handler');
+  new PythonFunction(stack, 'handler', {
+    entry: 'test/lambda-handler/index.py',
+  });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringContaining('function.test.handler.py'), // Automatically finds .py handler file
+    entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler\/index.py$/),
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Handler: 'lambda_function.lambda_handler',
+    Handler: 'lambda_function.handler',
   });
 });
 
@@ -48,24 +49,9 @@ test('throws when entry does not exist', () => {
   })).toThrow(/Cannot find entry file at/);
 });
 
-test('throws when entry cannot be automatically found', () => {
-  expect(() => new PythonFunction(stack, 'Fn')).toThrow(/Cannot find entry file./);
-});
-
 test('throws with the wrong runtime family', () => {
   expect(() => new PythonFunction(stack, 'handler1', {
+    entry: 'function.test.handler.py',
     runtime: Runtime.NODEJS_12_X,
   })).toThrow(/Only `PYTHON` runtimes are supported/);
-});
-
-
-test('resolves entry to an absolute path', () => {
-  // WHEN
-  new PythonFunction(stack, 'fn', {
-    entry: 'test/function.test.handler.py',
-  });
-
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/function.test.handler.py$/),
-  }));
 });
