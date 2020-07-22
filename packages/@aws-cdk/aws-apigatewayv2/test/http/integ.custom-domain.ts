@@ -23,35 +23,37 @@ const dn = new DomainName(stack, 'DN', {
 
 const prodApi = new HttpApi(stack, 'HttpProxyProdApi', {
   defaultIntegration: new LambdaProxyIntegration({ handler }),
-  // https://${dn.domainName} goes to prodApi $default stage
+  // https://${dn.domainName}/foo goes to prodApi $default stage
   defaultDomainMapping: {
     domainName: dn,
-    mappingKey: '/',
+    mappingKey: 'foo',
   },
 });
 
-const betaApi = new HttpApi(stack, 'HttpProxyBetaApi', {
-  defaultIntegration: new LambdaProxyIntegration({ handler }),
-  // https://${dn.domainName}/beta goes to betaApi $default stage
-  defaultDomainMapping: {
-    domainName: dn,
-    mappingKey: 'beta',
-  },
-});
-
-prodApi.addStage('testing', {
-  stageName: 'testing',
+// beta stage
+prodApi.addStage('BetaStage', {
+  stageName: 'beta',
   autoDeploy: true,
-  // https://${dn.domainName}/testing goes to prodApi testing stage
+  // https://${dn.domainName}/bar goes to the beta stage
   domainMapping: {
     domainName: dn,
-    mappingKey: 'testing',
+    mappingKey: 'bar',
   },
-} );
+});
+
+// the Demo API
+new HttpApi(stack, 'DemoApi', {
+  defaultIntegration: new LambdaProxyIntegration({ handler }),
+  // https://${dn.domainName}/demo goes to apiDemo $default stage
+  defaultDomainMapping: {
+    domainName: dn,
+    mappingKey: 'demo',
+  },
+});
 
 new CfnOutput(stack, 'RegionalDomainName', { value: dn.regionalDomainName });
 new CfnOutput(stack, 'DomainName', { value: dn.domainName });
 new CfnOutput(stack, 'CustomUDomainURL', { value: `https://${dn.domainName}` });
-new CfnOutput(stack, 'ProdApiEndpoint', { value: prodApi.url! });
-new CfnOutput(stack, 'BetaApiEndpoint', { value: betaApi.url! });
-new CfnOutput(stack, 'Region', { value: Stack.of(stack).region});
+new CfnOutput(stack, 'ProdApiDefaultStageURL', { value: `https://${dn.domainName}/foo` });
+new CfnOutput(stack, 'ProdApiBetaStageURL', { value: `https://${dn.domainName}/bar` });
+new CfnOutput(stack, 'DemoApiDefaultStageURL', { value: `https://${dn.domainName}/demo` });

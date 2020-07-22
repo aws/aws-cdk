@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Stack } from '@aws-cdk/core';
-import { Distribution, Origin } from '../lib';
+import { App, Stack, Duration } from '@aws-cdk/core';
+import { CfnDistribution, Distribution, Origin, OriginProps, HttpOrigin, OriginProtocolPolicy } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -14,8 +14,7 @@ beforeEach(() => {
 });
 
 describe('fromBucket', () => {
-
-  test('as bucket, renders all properties, including S3Origin config', () => {
+  test('as bucket, renders all required properties, including S3Origin config', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
     const origin = Origin.fromBucket(bucket);
@@ -52,7 +51,7 @@ describe('fromBucket', () => {
     });
   });
 
-  test('as website buvcket, renders all properties, including custom origin config', () => {
+  test('as website bucket, renders all required properties, including custom origin config', () => {
     const bucket = new s3.Bucket(stack, 'Bucket', {
       websiteIndexDocument: 'index.html',
     });
@@ -68,6 +67,130 @@ describe('fromBucket', () => {
       },
     });
   });
-
 });
 
+describe('HttpOrigin', () => {
+  test('renders a minimal example with required props', () => {
+    const origin = new HttpOrigin({ domainName: 'www.example.com' });
+    origin._bind(stack, { originIndex: 0 });
+
+    expect(origin._renderOrigin()).toEqual({
+      id: 'StackOrigin029E19582',
+      domainName: 'www.example.com',
+      customOriginConfig: {
+        originProtocolPolicy: 'https-only',
+      },
+    });
+  });
+
+  test('renders an example with all available props', () => {
+    const origin = new HttpOrigin({
+      domainName: 'www.example.com',
+      originPath: '/app',
+      connectionTimeout: Duration.seconds(5),
+      connectionAttempts: 2,
+      customHeaders: { AUTH: 'NONE' },
+      protocolPolicy: OriginProtocolPolicy.MATCH_VIEWER,
+      httpPort: 8080,
+      httpsPort: 8443,
+      readTimeout: Duration.seconds(45),
+      keepaliveTimeout: Duration.seconds(3),
+    });
+    origin._bind(stack, { originIndex: 0 });
+
+    expect(origin._renderOrigin()).toEqual({
+      id: 'StackOrigin029E19582',
+      domainName: 'www.example.com',
+      originPath: '/app',
+      connectionTimeout: 5,
+      connectionAttempts: 2,
+      originCustomHeaders: [{
+        headerName: 'AUTH',
+        headerValue: 'NONE',
+      }],
+      customOriginConfig: {
+        originProtocolPolicy: 'match-viewer',
+        httpPort: 8080,
+        httpsPort: 8443,
+        originReadTimeout: 45,
+        originKeepaliveTimeout: 3,
+      },
+    });
+  });
+
+  test.each([
+    Duration.seconds(0),
+    Duration.seconds(0.5),
+    Duration.seconds(60.5),
+    Duration.seconds(61),
+    Duration.minutes(5),
+  ])('validates readTimeout is an integer between 1 and 60 seconds', (readTimeout) => {
+    expect(() => {
+      new HttpOrigin({
+        domainName: 'www.example.com',
+        readTimeout,
+      });
+    }).toThrow(`readTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${readTimeout.toSeconds()}.`);
+  });
+
+  test.each([
+    Duration.seconds(0),
+    Duration.seconds(0.5),
+    Duration.seconds(60.5),
+    Duration.seconds(61),
+    Duration.minutes(5),
+  ])('validates keepaliveTimeout is an integer between 1 and 60 seconds', (keepaliveTimeout) => {
+    expect(() => {
+      new HttpOrigin({
+        domainName: 'www.example.com',
+        keepaliveTimeout,
+      });
+    }).toThrow(`keepaliveTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${keepaliveTimeout.toSeconds()}.`);
+  });
+});;
+
+describe('Origin', () => {
+  test.each([
+    Duration.seconds(0),
+    Duration.seconds(0.5),
+    Duration.seconds(10.5),
+    Duration.seconds(11),
+    Duration.minutes(5),
+  ])('validates connectionTimeout is an int between 1 and 10 seconds', (connectionTimeout) => {
+    expect(() => {
+      new TestOrigin({
+        domainName: 'www.example.com',
+        connectionTimeout,
+      });
+    }).toThrow(`connectionTimeout: Must be an int between 1 and 10 seconds (inclusive); received ${connectionTimeout.toSeconds()}.`);
+  });
+
+  test.each([-0.5, 0.5, 1.5, 4])
+  ('validates connectionAttempts is an int between 1 and 3', (connectionAttempts) => {
+    expect(() => {
+      new TestOrigin({
+        domainName: 'www.example.com',
+        connectionAttempts,
+      });
+    }).toThrow(`connectionAttempts: Must be an int between 1 and 3 (inclusive); received ${connectionAttempts}.`);
+  });
+
+  test.each(['api', '/api', '/api/', 'api/'])
+  ('enforces that originPath starts but does not end, with a /', (originPath) => {
+    const origin = new TestOrigin({
+      domainName: 'www.example.com',
+      originPath,
+    });
+    origin._bind(stack, { originIndex: 0 });
+
+    expect(origin._renderOrigin().originPath).toEqual('/api');
+  });
+});
+
+/** Used for testing common Origin functionality */
+class TestOrigin extends Origin {
+  constructor(props: OriginProps) { super(props); }
+  protected renderS3OriginConfig(): CfnDistribution.S3OriginConfigProperty | undefined {
+    return { originAccessIdentity: 'origin-access-identity/cloudfront/MyOAIName' };
+  }
+}
