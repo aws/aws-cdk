@@ -166,6 +166,7 @@ export class Canary extends cdk.Resource {
     const name = props.name ? this.verifyName(props.name) : this.generateName();
     const duration = props.timeToLive ?? cdk.Duration.seconds(0);
     const frequency = props.frequency ?? cdk.Duration.minutes(5);
+    const memory = props.memorySize?.toMebibytes() ?? 960;
     var timeout = props.timeout ?? cdk.Duration.seconds(Math.min(frequency.toSeconds(), 900));
     timeout = cdk.Duration.seconds(Math.min(timeout.toSeconds(), frequency.toSeconds()));
 
@@ -178,7 +179,7 @@ export class Canary extends cdk.Resource {
       runtimeVersion: 'syn-1.0',
       name,
       runConfig: {
-        // Will include MemorySize when generated code gets updated.
+        memoryInMb: this.verifyMemorySize(memory),
         timeoutInSeconds: timeout.toSeconds(),
       },
       schedule: {
@@ -302,18 +303,38 @@ export class Canary extends cdk.Resource {
   }
 
   /**
+   * Verifies that the memory specified is a multiple of 64 and in between 960 - 3008.
+   *
+   * @param memory the amount of memory specified, in mebibytes
+   */
+  private verifyMemorySize(memory: number): number {
+    if(memory < 960 || memory > 3008) {
+      throw new Error('memory size must be greater than 960 mebibytes and less than 3008 mebibytes');
+    }
+    if(memory % 64 !== 0) {
+      throw new Error('memory size must be a multiple of 64 mebibytes');
+    }
+    return memory;
+  }
+
+  /**
+   * Verifies that the test configuration has either `inlineCode` or `s3Location`, but not both.
+   *
+   * @param config the code configuration returned by `Test`
+   */
+  private verifyTestConfig(config: TestConfig) {
+    // mutually exclusive
+    if ((!config.inlineCode && !config.s3Location) || (config.inlineCode && config.s3Location)) {
+      throw new Error('synthetics.Code must specify one of "inlineCode" or "s3Location" but not both');
+    }
+  }
+
+  /**
    * Creates a unique name for the canary. The generated name becomes the physical ID of the canary.
    */
   private generateName(): string {
     return cdk.Lazy.stringValue({
       produce: () => this.node.uniqueId.toLowerCase().replace('-', '').replace(' ', '').replace('_', '').substring(0,20),
     });
-  }
-
-  private verifyTestConfig(code: TestConfig) {
-    // mutually exclusive
-    if ((!code.inlineCode && !code.s3Location) || (code.inlineCode && code.s3Location)) {
-      throw new Error('synthetics.Code must specify one of "inlineCode" or "s3Location" but not both');
-    }
   }
 }

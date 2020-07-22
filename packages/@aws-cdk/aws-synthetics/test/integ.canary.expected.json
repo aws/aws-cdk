@@ -85,15 +85,16 @@
           ]
         },
         "Name": "myfirstcanary",
-        "RunConfig": {
-          "TimeoutInSeconds": 300
-        },
         "RuntimeVersion": "syn-1.0",
         "Schedule": {
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
         },
-        "StartCanaryAfterCreation": true
+        "StartCanaryAfterCreation": true,
+        "RunConfig": {
+          "MemoryInMB": 960,
+          "TimeoutInSeconds": 300
+        }
       },
       "DependsOn": [
         "mycanaryServiceRoleEE2F0C82"

@@ -2,8 +2,9 @@ import '@aws-cdk/assert/jest';
 import { arrayWith, objectLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Duration, Stack } from '@aws-cdk/core';
+import { App, Duration, Size, Stack } from '@aws-cdk/core';
 import * as synthetics from '../lib';
+import { createTokenDouble } from '@aws-cdk/core/lib/private/encoding';
 
 let stack: Stack;
 beforeEach(() => {
@@ -240,6 +241,37 @@ test('Timeout is set to frequency when unspecified', () => {
   });
 });
 
+test('Canary can set memorySize', () => {
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    name: 'mycanary',
+    test: synthetics.Test.custom(stack, {
+      code: synthetics.Code.fromInline('exports.handler = async () => {\nconsole.log(\'hello world\');\n};'),
+      handler: 'index.handler',
+    }),
+    memorySize: Size.mebibytes(3008),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+    Code: {
+      Handler: 'index.handler',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
+    },
+    RuntimeVersion: 'syn-1.0',
+    RunConfig: objectLike({ MemoryInMB: 3008}),
+  });
+});
+
+test('memorySize must be below 3008 MiB', () => {
+  expect(() => defineCanaryWithMemory(Size.mebibytes(3009))).toThrowError('memory size must be greater than 960 mebibytes and less than 3008 mebibytes');
+});
+
+test('memorySize must be a multiple of 64 MiB', () => {
+  expect(() => defineCanaryWithMemory(Size.mebibytes(1000))).toThrowError('memory size must be a multiple of 64 mebibytes');
+});
+
 test('Canary can disable startCanaryAfterCreation', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -327,3 +359,12 @@ function defineCanaryWithName(name: string) {
   });
 }
 
+function defineCanaryWithMemory(mem: Size) {
+  new synthetics.Canary(stack, 'Canary', {
+    memorySize: mem,
+    test: synthetics.Test.custom(stack, {
+      code: synthetics.Code.fromInline('exports.handler = async () => {\nconsole.log(\'hello world\');\n};'),
+      handler: 'index.handler',
+    }),
+  });
+}
