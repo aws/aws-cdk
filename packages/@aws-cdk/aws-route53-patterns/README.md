@@ -52,6 +52,3 @@ As an existing certificate is not provided, one will be created in `us-east-1` b
     })
   });
   ```
-
-The removal policy on the S3 bucket used to store your content is set to `RemovalPolicy.DESTROY`
-When your stack is deleted, the bucket will be physically destroyed.
