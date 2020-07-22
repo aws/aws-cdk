@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { AssetHashType } from '@aws-cdk/core';
 import { Bundling } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
