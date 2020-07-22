@@ -1,12 +1,12 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Stack} from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/core';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { extractQualifierFromArn, IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
-import { EnableScalingProps, IScalableFunctionAttribute, ScalableFunctionAttribute } from './scalable-function-attribute';
+import { AutoScalingOptions, IScalableFunctionAttribute, ScalableFunctionAttribute } from './scalable-function-attribute';
 
 export interface IAlias extends IFunction {
   /**
@@ -155,7 +155,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
     // Use a Service Linked Role
     // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
-    this.scalingRole = iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
+    this.scalingRole = iam.Role.fromRoleArn(this, 'ScalingRole', this.stack.formatArn({
       service: 'iam',
       region: '',
       resource: 'role/aws-service-role/lambda.application-autoscaling.amazonaws.com',
@@ -212,15 +212,15 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    * Configure provisioned concurrency autoscaling on a function alias. Returns a scalable attribute that can call
    * `scaleOnUtilization()` and `scaleOnSchedule()`.
    *
-   * @param props The properties for autoscaling
+   * @param options Autoscaling options
    */
-  public autoScaleProvisionedConcurrency(props: EnableScalingProps): IScalableFunctionAttribute {
+  public addAutoScaling(options: AutoScalingOptions): IScalableFunctionAttribute {
     if (this.scalableAlias) {
       throw new Error('Autoscaling already enabled for this alias');
     }
     return this.scalableAlias = new ScalableFunctionAttribute(this, 'AliasScaling', {
-      minCapacity: props.minCapacity,
-      maxCapacity: props.maxCapacity,
+      minCapacity: options.minCapacity ?? 1,
+      maxCapacity: options.maxCapacity,
       resourceId: `function:${this.functionName}`,
       dimension: 'lambda:function:ProvisionedConcurrency',
       serviceNamespace: appscaling.ServiceNamespace.LAMBDA,

@@ -1,7 +1,7 @@
 import { arrayWith, beASupersetOfTemplate, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Stack } from '@aws-cdk/core';
+import { Lazy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as lambda from '../lib';
 
@@ -449,7 +449,7 @@ export = {
     });
 
     // WHEN
-    alias.autoScaleProvisionedConcurrency({minCapacity: 1, maxCapacity: 5});
+    alias.addAutoScaling({ maxCapacity: 5});
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
@@ -491,7 +491,7 @@ export = {
     });
 
     // WHEN
-    alias.autoScaleProvisionedConcurrency({minCapacity: 1, maxCapacity: 5});
+    alias.addAutoScaling({ maxCapacity: 5});
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
@@ -520,6 +520,41 @@ export = {
     test.done();
   },
 
+  'validation for utilizationTarget does not fail when using Tokens'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version = fn.addVersion('1', undefined, 'testing');
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+      provisionedConcurrentExecutions: 10,
+    });
+
+    // WHEN
+    const target = alias.addAutoScaling({ maxCapacity: 5 });
+
+    target.scaleOnUtilization({utilizationTarget: Lazy.numberValue({ produce: () => 0.95 })});
+
+    // THEN: no exception
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        PredefinedMetricSpecification: { PredefinedMetricType: 'LambdaProvisionedConcurrencyUtilization' },
+        TargetValue: 0.95,
+      },
+
+    }));
+
+    test.done();
+  },
+
   'cannot enable AutoScaling twice on same property'(test: Test): void {
     // GIVEN
     const stack = new Stack();
@@ -537,10 +572,10 @@ export = {
     });
 
     // WHEN
-    alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 5 });
+    alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    test.throws(() => alias.autoScaleProvisionedConcurrency({ minCapacity: 3, maxCapacity: 8 }), /Autoscaling already enabled for this alias/);
+    test.throws(() => alias.addAutoScaling({ maxCapacity: 8 }), /Autoscaling already enabled for this alias/);
 
     test.done();
   },
@@ -562,10 +597,10 @@ export = {
     });
 
     // WHEN
-    const target = alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 5 });
+    const target = alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    test.throws(() => target.scaleOnUtilization({targetUtilizationValue: 0.95}), /TargetUtilizationValue should be between 0.1 and 0.9./);
+    test.throws(() => target.scaleOnUtilization({utilizationTarget: 0.95}), /Utilization Target should be between 0.1 and 0.9./);
     test.done();
   },
 
@@ -586,7 +621,7 @@ export = {
     });
 
     // WHEN
-    const target = alias.autoScaleProvisionedConcurrency({minCapacity: 1, maxCapacity: 5});
+    const target = alias.addAutoScaling({ maxCapacity: 5});
     target.scaleOnSchedule('Scheduling', {
       schedule: appscaling.Schedule.cron({}),
       maxCapacity: 10,

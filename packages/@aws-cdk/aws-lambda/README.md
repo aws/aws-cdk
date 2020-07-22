@@ -272,9 +272,9 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
 managing concurrency.
 
-### Configuring AutoScaling
+### AutoScaling
 
-You can configure autoscaling of provisioned concurrency on a function alias using the `autoScaleProvisionedConcurrency()` method:
+You can use Application AutoScaling to automatically configure the provisioned concurrency for your functions. AWS Lambda supports Target Tracking and Scheduled Scaling policies. Use the `addAutoScaling()` method to configure autoscaling on a function alias:
 
 ```ts
 const alias = new lambda.Alias(stack, 'Alias', {
@@ -282,13 +282,16 @@ const alias = new lambda.Alias(stack, 'Alias', {
   version,
 });
 
-// Configure autoscaling to track utilization
-alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 50 }).scaleOnUtilization({
-  targetUtilizationValue: 0.5,
+// Create AutoScaling target
+const as = alias.addAutoScaling({ maxCapacity: 50 })
+
+// Configure Target Tracking
+as.scaleOnUtilization({
+  utilizationTarget: 0.5,
 });
 
-// or you can configure schedule scaling
-alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 50}).scaleOnSchedule('ScaleUpInTheMorning', {
+// Configure Scheduled Scaling
+as.scaleOnSchedule('ScaleUpInTheMorning', {
   schedule: appscaling.Schedule.cron({ hour: '8', minute: '0'}),
   minCapacity: 20,
 });

@@ -1,10 +1,10 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
-import { Construct } from '@aws-cdk/core';
+import { IConstruct, Token } from '@aws-cdk/core';
 
 /**
  * Interface for scalable attributes
  */
-export interface IScalableFunctionAttribute {
+export interface IScalableFunctionAttribute extends IConstruct {
   /**
    * Scale out or in to keep utilization at a given level. The utilization is tracked by the
    * LambdaProvisionedConcurrencyUtilization metric, emitted by lambda. See:
@@ -12,7 +12,7 @@ export interface IScalableFunctionAttribute {
    *
    * Allowed values: 0.1 - 0.9.
    */
-  scaleOnUtilization(props: UtilizationScalingOptions): void;
+  scaleOnUtilization(options: UtilizationScalingOptions): void;
   /**
    * Scale out or in based on schedule.
    */
@@ -24,21 +24,17 @@ export interface IScalableFunctionAttribute {
  */
 export interface UtilizationScalingOptions extends appscaling.BaseTargetTrackingProps {
   /**
-   * Target utilization value for the attribute. For example, .5 indicates that 50 percent of allocated provisioned concurrency is in use.
+   * Utilization target for the attribute. For example, .5 indicates that 50 percent of allocated provisioned concurrency is in use.
    *
    * Allowed values: 0.1 - 0.9.
    */
-  readonly targetUtilizationValue: number;
+  readonly utilizationTarget: number;
 }
 
 /**
  * A scalable lambda alias attribute
  */
 export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute {
-  constructor(scope: Construct, id: string, props: appscaling.BaseScalableAttributeProps) {
-    super(scope, id, props);
-  }
-
   /**
    * Scale out or in to keep utilization at a given level. The utilization is tracked by the
    * LambdaProvisionedConcurrencyUtilization metric, emitted by lambda. See:
@@ -46,14 +42,14 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
    *
    * Allowed values: 0.1 - 0.9.
    */
-  public scaleOnUtilization(props: UtilizationScalingOptions) {
-    if (props.targetUtilizationValue < 0.1 || props.targetUtilizationValue > 0.9) {
-      throw new Error('TargetUtilizationValue should be between 0.1 and 0.9.');
+  public scaleOnUtilization(options: UtilizationScalingOptions) {
+    if ( !Token.isUnresolved(options.utilizationTarget) && (options.utilizationTarget < 0.1 || options.utilizationTarget > 0.9)) {
+      throw new Error('Utilization Target should be between 0.1 and 0.9.');
     }
     super.doScaleToTrackMetric('Tracking', {
-      targetValue: props.targetUtilizationValue,
+      targetValue: options.utilizationTarget,
       predefinedMetric: appscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
-      ...props,
+      ...options,
     });
   }
 
@@ -66,13 +62,15 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
 }
 
 /**
- * Properties for enabling Lambda capacity scaling
+ * Properties for enabling Lambda autoscaling
  */
-export interface EnableScalingProps {
+export interface AutoScalingOptions {
   /**
    * Minimum capacity to scale to
+   *
+   * @default 1
    */
-  readonly minCapacity: number;
+  readonly minCapacity?: number;
 
   /**
    * Maximum capacity to scale to

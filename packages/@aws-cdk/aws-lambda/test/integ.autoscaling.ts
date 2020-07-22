@@ -24,10 +24,10 @@ const alias = new lambda.Alias(stack, 'Alias', {
   version,
 });
 
-const scalingTarget = alias.autoScaleProvisionedConcurrency({ minCapacity: 3, maxCapacity: 50 });
+const scalingTarget = alias.addAutoScaling({ minCapacity: 3, maxCapacity: 50 });
 
 scalingTarget.scaleOnUtilization({
-  targetUtilizationValue: 0.5,
+  utilizationTarget: 0.5,
 });
 
 scalingTarget.scaleOnSchedule('ScaleUpInTheMorning', {
