@@ -3,7 +3,10 @@
     "Bucket": {
       "Type": "AWS::MyService::Custom",
       "Properties": {
-        "CustomProp": "CustomValue"
+        "CustomProp": "CustomValue",
+        "CustomFuncProp": {
+          "Ref": "AWS::NoValue"
+        }
       }
     }
   }

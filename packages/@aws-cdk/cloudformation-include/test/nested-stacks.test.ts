@@ -365,7 +365,7 @@ describe('CDK Include', () => {
   });
 
   test("handles Metadata, DeletionPolicy, and UpdateReplacePolicy attributes of the nested stack's resource", () => {
-    new inc.CfnInclude(stack, 'ParentStack', {
+    const cfnTemplate = new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-with-attributes.json'),
       nestedStacks: {
         'ChildStack': {
@@ -387,6 +387,8 @@ describe('CDK Include', () => {
       ],
       "UpdateReplacePolicy": "Retain",
     }, ResourcePart.CompleteDefinition);
+
+    cfnTemplate.getNestedStack('AnotherChildStack');
   });
 
   test('correctly parses NotificationsARNs, Timeout', () => {

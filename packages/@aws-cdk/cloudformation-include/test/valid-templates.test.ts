@@ -444,61 +444,25 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can include a template with a custom resource that only defines a type', () => {
-    includeTestTemplate(stack, 'non-existent-resource-type.json');
-    expect(stack).toHaveResourceLike('AWS::MyService::Custom');
-  });
-
   test('can include a template with a custom resource that has custom properties', () => {
     includeTestTemplate(stack, 'custom-resource-properties.json');
     expect(stack).toHaveResourceLike('AWS::MyService::Custom', {
       "CustomProp": "CustomValue",
-    });
-  });
-
-  test('can include a template with a custom resource that uses cloudformation functions', () => {
-    includeTestTemplate(stack, 'custom-resource-with-functions.json');
-    expect(stack).toHaveResourceLike('AWS::MyService::Custom', {
-      "CustomStringProp": {
+      "CustomFuncProp": {
         "Ref": "AWS::NoValue",
       },
     });
   });
 
   test('can include a template with a custom resource that uses attributes', () => {
-    includeTestTemplate(stack, 'custom-resource-with-attributes.json');
-    expect(stack).toHaveResourceLike('AWS::MyService::Custom', {
-      "Metadata": {
-        "Object1": "Value1",
-        "Object2": "Value2",
-      },
-      "CreationPolicy": {
-        "AutoScalingCreationPolicy": {
-          "MinSuccessfulInstancesPercent": 90,
-        },
-      },
-      "DeletionPolicy": "Retain",
-      "DependsOn": [ "CustomResource" ],
-    }, ResourcePart.CompleteDefinition);
+    const cfnTemplate = includeTestTemplate(stack, 'custom-resource-with-attributes.json');
+    expect(stack).toMatchTemplate(loadTestFileToJsObject('custom-resource-with-attributes.json'));
 
-    expect(stack).toHaveResourceLike('AWS::MyService::AnotherCustom', {
-      "UpdatePolicy": {
-        "AutoScalingReplacingUpdate": {
-          "WillReplace": "false",
-        },
-      },
-      "UpdateReplacePolicy": "Retain",
-    }, ResourcePart.CompleteDefinition);
+    const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');
+    expect(cfnTemplate.getResource('CustomBucket').cfnOptions.condition).toBe(alwaysFalseCondition);
   });
 
-  test('can ingest a custom resource that uses conditions', () => {
-    const cfnTempalte = includeTestTemplate(stack, 'custom-resource-with-condition.json');
-    const alwaysFalseCondition = cfnTempalte.getCondition('AlwaysFalseCond');
-
-    expect(cfnTempalte.getResource('CustomResource').cfnOptions.condition).toBe(alwaysFalseCondition);
-  });
-
-  test('throws an exception when an undefined condition is used', () => {
+  test("throws an exception when a custom resource uses a Condition attribute that doesn't exist in the template", () => {
     expect(() => {
       includeTestTemplate(stack, 'custom-resource-with-bad-condition.json');
     }).toThrow(/Resource 'CustomResource' uses Condition 'AlwaysFalseCond' that doesn't exist/);

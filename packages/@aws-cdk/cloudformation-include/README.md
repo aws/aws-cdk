@@ -65,7 +65,7 @@ preserving their original logical IDs from the template file.
 
 Any resource from the included template can be retrieved by referring to it by its logical ID from the template.
 If you know the class of the CDK object that corresponds to that resource,
-you can cast the returned object to the correct type (custom resources will be of type CfnResource, so you won't need to cast them):
+you can cast the returned object to the correct type:
 
 ```typescript
 import * as s3 from '@aws-cdk/aws-s3';
@@ -105,6 +105,9 @@ resource by importing it by its name:
 const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
+
+Note that [Custom Resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html) will be of type
+CfnResource, and hence won't need to be casted. This holds for any resource that isn't in the CloudFormation schema.
 
 ## Conditions
 

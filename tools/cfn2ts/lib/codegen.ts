@@ -236,10 +236,10 @@ export default class CodeGenerator {
     this.code.openBlock(`public static fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CORE}.FromCloudFormationOptions): ` +
       `${resourceName.className}`);
     this.code.line('resourceAttributes = resourceAttributes || {};');
+    this.code.indent('const cfnParser = new cfn_parse.CfnParser({');
+    this.code.line('finder: options.finder,');
+    this.code.unindent('});');
     if (propsType) {
-      this.code.indent('const cfnParser = new cfn_parse.CfnParser({');
-      this.code.line('finder: options.finder,');
-      this.code.unindent('});');
       // translate the template properties to CDK objects
       this.code.line('const resourceProperties = cfnParser.parseValue(resourceAttributes.Properties);');
       // translate to props, using a (module-private) factory function
@@ -252,8 +252,8 @@ export default class CodeGenerator {
     }
     // handle all non-property attributes
     // (retention policies, conditions, metadata, etc.)
+    this.code.line('cfnParser.handleAttributes(ret, resourceAttributes, id);');
 
-    this.code.line('cfn_parse.handleAttributes(ret, resourceAttributes, id, options.finder);');
     this.code.line('return ret;');
     this.code.closeBlock();
 

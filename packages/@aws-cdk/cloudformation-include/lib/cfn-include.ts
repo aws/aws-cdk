@@ -349,36 +349,31 @@ export class CfnInclude extends core.CfnElement {
       finder,
     };
     const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
-    if (!l1ClassFqn) {
-      // currently, we only handle types we know the L1 for -
-      // in the future, we might construct an instance of CfnResource instead
+    let l1Instance;
+
+    if (l1ClassFqn) {
+      const [moduleName, ...className] = l1ClassFqn.split('.');
+      const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
+      const jsClassFromModule = module[className.join('.')];
+
+      l1Instance = this.nestedStacksToInclude[logicalId]
+        ? this.createNestedStack(logicalId, finder)
+        : jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
+    }
+
+    else {
       const cfnParser = new cfn_parse.CfnParser({
         finder,
       });
 
-      const customResource = new core.CfnResource(this, logicalId, {
+      l1Instance = new core.CfnResource(this, logicalId, {
         type: resourceAttributes.Type,
         properties: cfnParser.parseValue(resourceAttributes.Properties),
       });
 
-      cfn_parse.handleAttributes(customResource, resourceAttributes, logicalId, finder);
-      this.resources[logicalId] = customResource;
-
-      if (this.preserveLogicalIds) {
-        // override the logical ID to match the original template
-        customResource.overrideLogicalId(logicalId);
-      }
-
-      return customResource;
+      cfnParser.handleAttributes(l1Instance, resourceAttributes, logicalId);
+      this.resources[logicalId] = l1Instance;
     }
-
-    const [moduleName, ...className] = l1ClassFqn.split('.');
-    const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
-    const jsClassFromModule = module[className.join('.')];
-
-    const l1Instance = this.nestedStacksToInclude[logicalId]
-      ? this.createNestedStack(logicalId, finder)
-      : jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
 
     if (this.preserveLogicalIds) {
       // override the logical ID to match the original template
@@ -415,8 +410,8 @@ export class CfnInclude extends core.CfnElement {
 
     // we know this is never undefined for nested stacks
     const nestedStackResource: core.CfnResource = nestedStack.nestedStackResource!;
+    cfnParser.handleAttributes(nestedStackResource, nestedStackAttributes, nestedStackId);
 
-    cfn_parse.handleAttributes(nestedStackResource, nestedStackAttributes, nestedStackId, finder);
     const propStack = this.nestedStacksToInclude[nestedStackId];
     const template = new CfnInclude(nestedStack, nestedStackId, {
       templateFile: propStack.templateFile,
