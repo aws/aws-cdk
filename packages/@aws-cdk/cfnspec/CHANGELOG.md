@@ -1,3 +1,26 @@
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.DestinationConfig (__added__)
+* AWS::Serverless::Function.OnFailure (__added__)
+* AWS::Serverless::Function.DynamoDBEvent BisectBatchOnFunctionError (__added__)
+* AWS::Serverless::Function.DynamoDBEvent DestinationConfig (__added__)
+* AWS::Serverless::Function.DynamoDBEvent MaximumBatchingWindowInSeconds (__added__)
+* AWS::Serverless::Function.DynamoDBEvent MaximumRecordAgeInSeconds (__added__)
+* AWS::Serverless::Function.DynamoDBEvent MaximumRetryAttempts (__added__)
+* AWS::Serverless::Function.DynamoDBEvent ParallelizationFactor (__added__)
+
 # CloudFormation Resource Specification v16.1.0
 
 ## New Resource Types
