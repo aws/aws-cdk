@@ -9,9 +9,16 @@ import { bundle } from './bundling';
  */
 export interface PythonFunctionProps extends lambda.FunctionOptions {
   /**
-   * Path to the (Python) entry file.
+   * Relative path to the root directory of the function.
    */
   readonly entry: string;
+
+  /**
+   * The path (relative to entry) to the index file containing the exported handler.
+   *
+   * @default index.py
+   */
+  readonly index?: string;
 
   /**
    * The name of the exported handler in the entry file.
@@ -37,12 +44,21 @@ export class PythonFunction extends lambda.Function {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.PYTHON) {
       throw new Error('Only `PYTHON` runtimes are supported.');
     }
+    if (props.index && !/\.py$/.test(props.index)) {
+      throw new Error('Only Python (.py) index files are supported.');
+    }
 
     // Entry and defaults
-    const entry = resolveEntry(props.entry);
+    const entry = path.resolve(props.entry);
+    const index = props.index ?? 'index.py';
+
+    const resolvedIndex = path.resolve(entry, index);
+    if (!fs.existsSync(resolvedIndex)) {
+      throw new Error(`Cannot find index file at ${resolvedIndex}`);
+    }
+
     const handler = props.handler ?? 'handler';
     const runtime = props.runtime ?? lambda.Runtime.PYTHON_3_7;
-    const entryFilename = path.basename(props.entry, '.py');
 
     super(scope, id, {
       ...props,
@@ -52,20 +68,7 @@ export class PythonFunction extends lambda.Function {
         entry,
         runtime,
       }),
-      handler: `${entryFilename}.${handler}`,
+      handler: `${index.slice(0, -3)}.${handler}`,
     });
   }
-}
-
-/**
- * Resolves the given entry file.
- */
-function resolveEntry(entry: string): string {
-  if (!/\.py$/.test(entry)) {
-    throw new Error('Only Python (.py) entry files are supported.');
-  }
-  if (!fs.existsSync(entry)) {
-    throw new Error(`Cannot find entry file at ${entry}`);
-  }
-  return path.resolve(entry);
 }

@@ -8,7 +8,7 @@ import * as cdk from '@aws-cdk/core';
  */
 export interface BundlingOptions {
   /**
-   * Entry file
+   * Entry path
    */
   readonly entry: string;
 
@@ -24,15 +24,14 @@ export interface BundlingOptions {
 export function bundle(options: BundlingOptions): lambda.AssetCode {
   let installer = options.runtime === lambda.Runtime.PYTHON_2_7 ? Installer.PIP : Installer.PIP3;
 
-  let entryDir = path.dirname(options.entry);
-  let hasRequirements = fs.existsSync(path.join(entryDir, 'requirements.txt'));
+  let hasRequirements = fs.existsSync(path.join(options.entry, 'requirements.txt'));
 
   let depsCommand = chain([
     hasRequirements ? `${installer} install -r requirements.txt -t ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}` : '',
     `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}`,
   ]);
 
-  return lambda.Code.fromAsset(entryDir, {
+  return lambda.Code.fromAsset(options.entry, {
     bundling: {
       image: options.runtime.bundlingDockerImage,
       command: ['bash', '-c', depsCommand],

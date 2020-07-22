@@ -18,7 +18,8 @@ Define a `PythonFunction`:
 
 ```ts
 new lambda.PythonFunction(this, 'MyFunction', {
-  entry: '/path/to/my/file.py', // required
+  entry: '/path/to/my/function', // required
+  index: 'my_index.py', // optional, defaults to 'index.py'
   handler: 'my_exported_func', // optional, defaults to 'handler'
   runtime: lambda.Runtime.PYTHON_3_6 // optional, defaults to lambda.Runtime.PYTHON_3_7
 });
@@ -28,11 +29,11 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 
 ### Module Dependencies
 
-If `requirements.txt` exists at the same level as the entry file, the construct will handle installing
+If `requirements.txt` exists at the entry path, the construct will handle installing
 all required modules in a [Lambda compatible Docker container](https://github.com/lambci/docker-lambda)
 according to the `runtime`.
 ```
 .
 ├── lambda_function.py # exports a function named 'handler'
-├── requirements.txt # has to be in the same directory as the entry file
+├── requirements.txt # has to be present at the entry path
 ```

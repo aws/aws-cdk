@@ -12,9 +12,8 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const assetPath = path.join(__dirname, 'lambda-handler/index.py');
     const fn = new lambda.PythonFunction(this, 'my_handler', {
-      entry: assetPath,
+      entry: path.join(__dirname, 'lambda-handler'),
       runtime: Runtime.PYTHON_3_6,
     });
 

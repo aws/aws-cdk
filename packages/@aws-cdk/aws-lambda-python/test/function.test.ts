@@ -21,13 +21,13 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-test('PythonFunction with .py handler', () => {
+test('PythonFunction with defaults', () => {
   new PythonFunction(stack, 'handler', {
-    entry: 'test/lambda-handler/index.py',
+    entry: 'test/lambda-handler',
   });
 
   expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler\/index.py$/),
+    entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler$/),
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
@@ -35,21 +35,38 @@ test('PythonFunction with .py handler', () => {
   });
 });
 
-test('throws when entry is not py', () => {
+test('PythonFunction with index in a subdirectory', () => {
+  new PythonFunction(stack, 'handler', {
+    entry: 'test/lambda-handler-sub',
+    index: 'inner/custom_index.py',
+    handler: 'custom_handler',
+  });
+
+  expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
+    entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler-sub$/),
+  }));
+
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Handler: 'inner/custom_index.custom_handler',
+  });
+});
+
+test('throws when index is not py', () => {
   expect(() => new PythonFunction(stack, 'Fn', {
-    entry: 'handler.js',
-  })).toThrow(/Only Python \(\.py\) entry files are supported/);
+    entry: 'test/lambda-handler',
+    index: 'index.js',
+  })).toThrow(/Only Python \(\.py\) index files are supported/);
 });
 
 test('throws when entry does not exist', () => {
   expect(() => new PythonFunction(stack, 'Fn', {
-    entry: 'notfound.py',
-  })).toThrow(/Cannot find entry file at/);
+    entry: 'notfound',
+  })).toThrow(/Cannot find index file at/);
 });
 
 test('throws with the wrong runtime family', () => {
   expect(() => new PythonFunction(stack, 'handler1', {
-    entry: 'function.test.handler.py',
+    entry: 'test/lambda-handler',
     runtime: Runtime.NODEJS_12_X,
   })).toThrow(/Only `PYTHON` runtimes are supported/);
 });

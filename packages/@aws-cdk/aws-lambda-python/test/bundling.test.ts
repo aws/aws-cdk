@@ -12,7 +12,7 @@ beforeEach(() => {
 
 test('Bundling', () => {
   bundle({
-    entry: '/project/folder/entry.py',
+    entry: '/project/folder',
     runtime: Runtime.PYTHON_3_7,
   });
 
@@ -26,7 +26,7 @@ test('Bundling', () => {
     }),
   });
 
-  // Searches for requirements.txt and setup.py in the directory of the entry file
+  // Searches for requirements.txt in entry
   expect(existsSyncMock).toHaveBeenCalledWith('/project/folder/requirements.txt');
 });
 
@@ -39,7 +39,7 @@ test('Bundling with requirements.txt installed', () => {
   });
 
   bundle({
-    entry: '/project/folder/entry.py',
+    entry: '/project/folder',
     runtime: Runtime.PYTHON_3_7,
   });
 
@@ -63,7 +63,7 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
   });
 
   bundle({
-    entry: '/project/folder/entry.py',
+    entry: '/project/folder',
     runtime: Runtime.PYTHON_2_7,
   });
 
