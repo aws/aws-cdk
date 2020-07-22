@@ -4,7 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
-import { IDistribution, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy } from './distribution';
+import { IDistribution, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
 import { IOriginAccessIdentity } from './origin_access_identity';
 
 export enum HttpVersion {
@@ -87,39 +87,6 @@ export interface AliasConfiguration {
    * @default - SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
    */
   readonly securityPolicy?: SecurityPolicyProtocol;
-}
-
-/**
- * The SSL method CloudFront will use for your distribution.
- *
- * Server Name Indication (SNI) - is an extension to the TLS computer networking protocol by which a client indicates
- *  which hostname it is attempting to connect to at the start of the handshaking process. This allows a server to present
- *  multiple certificates on the same IP address and TCP port number and hence allows multiple secure (HTTPS) websites
- * (or any other service over TLS) to be served by the same IP address without requiring all those sites to use the same certificate.
- *
- * CloudFront can use SNI to host multiple distributions on the same IP - which a large majority of clients will support.
- *
- * If your clients cannot support SNI however - CloudFront can use dedicated IPs for your distribution - but there is a prorated monthly charge for
- * using this feature. By default, we use SNI - but you can optionally enable dedicated IPs (VIP).
- *
- * See the CloudFront SSL for more details about pricing : https://aws.amazon.com/cloudfront/custom-ssl-domains/
- *
- */
-export enum SSLMethod {
-  SNI = 'sni-only',
-  VIP = 'vip'
-}
-
-/**
- * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
- * CloudFront serves your objects only to browsers or devices that support at least the SSL version that you specify.
- */
-export enum SecurityPolicyProtocol {
-  SSL_V3 = 'SSLv3',
-  TLS_V1 = 'TLSv1',
-  TLS_V1_2016 = 'TLSv1_2016',
-  TLS_V1_1_2016 = 'TLSv1.1_2016',
-  TLS_V1_2_2018 = 'TLSv1.2_2018'
 }
 
 /**
