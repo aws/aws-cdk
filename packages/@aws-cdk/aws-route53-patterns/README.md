@@ -28,12 +28,16 @@ The `HttpsRedirect` constructs creates:
 
 * Amazon CloudFront distribution - makes website available from data centres
   around the world
-* Amazon S3 bucket - used to store content that CloudFront will use as the origin
+* Amazon S3 bucket - empty bucket used for website hosting redirect (`websiteRedirect`) capabilities.
 * Amazon Route 53 Alias record - routes traffic to the CloudFront distribution
 * AWS Certificate Manager certificate - X.509 PEM format certificate used by
   CloudFront for your domain
 
-⚠️ If you want to require HTTPS between viewers and CloudFront, you must change the AWS Region to US East (N. Virginia) in the AWS Certificate Manager console.
+⚠️ The stack/construct for can be used in any region for an HTTPS redirect.
+The certificate created in Amazon Certificate Manager (ACM) will be in US East (N. Virginia)
+region. If you use an existing certificate, the AWS region of the certificate
+must be in US East (N. Virginia). The region of an existing certificate can be
+changed through the console.
 
 The following example creates an HTTPS redirect from `foo.example.com` to `bar.example.com`
 It does not provide an ACM certificate, so one will be created in `us-east-1` by the CDK.

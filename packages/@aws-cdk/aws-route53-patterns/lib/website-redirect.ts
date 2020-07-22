@@ -1,21 +1,21 @@
+import * as crypto from 'crypto';
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy } from '@aws-cdk/aws-cloudfront';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
 import { Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
 import { Construct, RemovalPolicy } from '@aws-cdk/core';
-import * as crypto from 'crypto';
 
 /**
  * Properties to configure an HTTPS Redirect
  */
 export interface HttpsRedirectProps {
   /**
-   * Hosted zone of the domain. Container for records which contain information
-   * about how you want to route traffic for a specific domain (example.com)
-   * and it's subdomains (acme.example.com, zenith.example.com). 
-   * 
-   * A hosted zone and the corresponding domain will have the same name.
+   * Hosted zone of the domain which will be used to create alias record(s) from
+   * domain names in the hosted zone to the target domain. Domain names in the
+   * hosted zone can include a specific domain (example.com) and/or it's subdomains
+   * (acme.example.com, zenith.example.com).
+   *
    */
   readonly zone: IHostedZone;
 
