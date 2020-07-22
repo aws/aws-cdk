@@ -121,7 +121,13 @@ export class BundlingDockerImage {
       ...command,
     ];
 
-    dockerExec(dockerArgs, { stdio: 'inherit' }); // show Docker output in console
+    dockerExec(dockerArgs, {
+      stdio: [ // show Docker output
+        'ignore', // ignore stdio
+        process.stderr, // redirect stdout to stderr
+        'inherit', // inherit stderr
+      ],
+    });
   }
 }
 
