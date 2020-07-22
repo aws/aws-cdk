@@ -111,7 +111,7 @@ export class FromCloudFormation {
 
   public static getCfnTag(tag: any): CfnTag {
     return tag == null
-      ? {} as any // break the type system - this should be detected at runtime by a tag validator
+      ? { } as any // break the type system - this should be detected at runtime by a tag validator
       : {
         key: tag.Key,
         value: tag.Value,
@@ -170,7 +170,7 @@ export class CfnParser {
     this.options = options;
   }
 
-  public parseCreationPolicy(policy: any): CfnCreationPolicy | undefined {
+  private parseCreationPolicy(policy: any): CfnCreationPolicy | undefined {
     if (typeof policy !== 'object') { return undefined; }
 
     // change simple JS values to their CDK equivalents
@@ -199,7 +199,7 @@ export class CfnParser {
     }
   }
 
-  public parseUpdatePolicy(policy: any): CfnUpdatePolicy | undefined {
+  private parseUpdatePolicy(policy: any): CfnUpdatePolicy | undefined {
     if (typeof policy !== 'object') { return undefined; }
 
     // change simple JS values to their CDK equivalents
@@ -255,7 +255,7 @@ export class CfnParser {
     }
   }
 
-  public parseDeletionPolicy(policy: any): CfnDeletionPolicy | undefined {
+  private parseDeletionPolicy(policy: any): CfnDeletionPolicy | undefined {
     switch (policy) {
       case null: return undefined;
       case undefined: return undefined;
@@ -296,19 +296,14 @@ export class CfnParser {
   }
 
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
-
     const finder = this.options.finder;
-    const cfnParser = new CfnParser({
-      finder,
-    });
-
     const cfnOptions = resource.cfnOptions;
 
-    cfnOptions.creationPolicy = cfnParser.parseCreationPolicy(resourceAttributes.CreationPolicy);
-    cfnOptions.updatePolicy = cfnParser.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
-    cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
-    cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
-    cfnOptions.metadata = cfnParser.parseValue(resourceAttributes.Metadata);
+    cfnOptions.creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy);
+    cfnOptions.updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
+    cfnOptions.deletionPolicy = this.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
+    cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
+    cfnOptions.metadata = this.parseValue(resourceAttributes.Metadata);
 
     // handle Condition
     if (resourceAttributes.Condition) {
@@ -446,8 +441,8 @@ export class CfnParser {
 
     const key = objectKeys[0];
     return key === 'Ref' || key.startsWith('Fn::') ||
-      // special intrinsic only available in the 'Conditions' section
-      (this.options.context === CfnParsingContext.CONDITIONS && key === 'Condition')
+    // special intrinsic only available in the 'Conditions' section
+    (this.options.context === CfnParsingContext.CONDITIONS && key === 'Condition')
       ? key
       : undefined;
   }
@@ -470,5 +465,4 @@ function specialCaseRefs(value: any): any {
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
   return Object.values(object).some(v => v !== undefined) ? object : undefined;
 }
-
 

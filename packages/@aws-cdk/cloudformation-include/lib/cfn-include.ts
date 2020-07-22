@@ -345,23 +345,18 @@ export class CfnInclude extends core.CfnElement {
         return this.findResource(elementName);
       },
     };
-    const options: core.FromCloudFormationOptions = {
-      finder,
-    };
     const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
-    let l1Instance;
 
-    if (l1ClassFqn) {
+    let l1Instance;
+    if (l1ClassFqn && !this.nestedStacksToInclude[logicalId]) {
+      const options: core.FromCloudFormationOptions = {
+        finder,
+      };
       const [moduleName, ...className] = l1ClassFqn.split('.');
       const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
       const jsClassFromModule = module[className.join('.')];
-
-      l1Instance = this.nestedStacksToInclude[logicalId]
-        ? this.createNestedStack(logicalId, finder)
-        : jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
-    }
-
-    else {
+      l1Instance = jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
+    } else if (!l1ClassFqn && !this.nestedStacksToInclude[logicalId]) {
       const cfnParser = new cfn_parse.CfnParser({
         finder,
       });
@@ -372,7 +367,8 @@ export class CfnInclude extends core.CfnElement {
       });
 
       cfnParser.handleAttributes(l1Instance, resourceAttributes, logicalId);
-      this.resources[logicalId] = l1Instance;
+    } else if (this.nestedStacksToInclude[logicalId]) {
+      l1Instance = this.createNestedStack(logicalId, finder);
     }
 
     if (this.preserveLogicalIds) {

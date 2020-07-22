@@ -444,19 +444,11 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can include a template with a custom resource that has custom properties', () => {
-    includeTestTemplate(stack, 'custom-resource-properties.json');
-    expect(stack).toHaveResourceLike('AWS::MyService::Custom', {
-      "CustomProp": "CustomValue",
-      "CustomFuncProp": {
-        "Ref": "AWS::NoValue",
-      },
-    });
-  });
-
   test('can include a template with a custom resource that uses attributes', () => {
     const cfnTemplate = includeTestTemplate(stack, 'custom-resource-with-attributes.json');
-    expect(stack).toMatchTemplate(loadTestFileToJsObject('custom-resource-with-attributes.json'));
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('custom-resource-with-attributes.json'),
+    );
 
     const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');
     expect(cfnTemplate.getResource('CustomBucket').cfnOptions.condition).toBe(alwaysFalseCondition);

@@ -160,6 +160,19 @@ describe('CDK Include', () => {
     }).toThrow(/Resource 'ChildStack' depends on 'AFakeResource' that doesn't exist/);
   });
 
+  test('throws an exception when an ID was passed in nestedStacks that is a resource type not in the CloudFormation schema', () => {
+    expect(() => {
+      new inc.CfnInclude(stack, 'Template', {
+        templateFile: testTemplateFilePath('custom-resource.json'),
+        nestedStacks: {
+          'CustomResource': {
+            templateFile: testTemplateFilePath('whatever.json'),
+          },
+        },
+      });
+    }).toThrow(/Nested Stack with logical ID 'CustomResource' is not an AWS::CloudFormation::Stack resource/);
+  });
+
   test('can modify resources in nested stacks', () => {
     const parent = new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('child-import-stack.json'),

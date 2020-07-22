@@ -106,8 +106,9 @@ const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
 
-Note that [Custom Resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html) will be of type
-CfnResource, and hence won't need to be casted. This holds for any resource that isn't in the CloudFormation schema.
+Note that [Custom Resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html)
+will be of type CfnResource, and hence won't need to be casted.
+This holds for any resource that isn't in the CloudFormation schema.
 
 ## Conditions
 

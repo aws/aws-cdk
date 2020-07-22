@@ -27,6 +27,12 @@
     },
     "CustomResource": {
       "Type": "AWS::MyService::AnotherCustom",
+      "Properties": {
+        "CustomProp": "CustomValue",
+        "CustomFuncProp": {
+          "Ref": "AWS::NoValue"
+        }
+      },
       "UpdatePolicy": {
         "AutoScalingReplacingUpdate": {
           "WillReplace" : "false"
