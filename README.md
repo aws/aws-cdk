@@ -28,10 +28,14 @@ The CDK is available in the following languages:
 
 \
 Jump To:
-* [Getting Started](#getting-started)
-* [Getting Help](#getting-help)
-* [Contributing](#contributing)
-* [More Resources](#more-resources)
+[Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide) |
+[API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) |
+[Getting Started](#getting-started) |
+[Getting Help](#getting-help) |
+[Contributing](#contributing) |
+[RFCs](https://github.com/aws/aws-cdk-rfcs) |
+[Roadmap](https://github.com/aws/aws-cdk/blob/master/ROADMAP.md) |
+[More Resources](#more-resources)
 
 -------
 
@@ -134,12 +138,8 @@ We welcome community contributions and pull requests. See
 environment and submit code.
 
 ## More Resources
-* [Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide)
-* [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html)
 * [CDK Workshop](https://cdkworkshop.com/)
 * [Examples](https://github.com/aws-samples/aws-cdk-examples)
-* [RFCs](https://github.com/aws/aws-cdk-rfcs)
-* [Roadmap](https://github.com/aws/aws-cdk/blob/master/ROADMAP.md)
 * [Changelog](./CHANGELOG.md)
 * [NOTICE](./NOTICE)
 * [License](./LICENSE) 
