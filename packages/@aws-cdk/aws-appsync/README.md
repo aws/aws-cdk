@@ -118,7 +118,7 @@ In `IAM`:
 
 See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/security.html#aws-iam-authorization) for more details.
 
-To make this easier, CDK provides `grant` API
+To make this easier, CDK provides `grant` API.
 
 Use the `grant` function for more granular authorization.
 
