@@ -415,16 +415,17 @@ export class DatabaseCluster extends DatabaseClusterBase {
       parameterGroup: props.parameterGroup,
     });
     const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
+    const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
       engine: props.engine.engineType,
-      engineVersion: props.engine.engineVersion,
+      engineVersion: props.engine.engineVersion?.fullVersion,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
       port: props.port ?? clusterEngineBindConfig.port,
-      dbClusterParameterGroupName: clusterParameterGroup && clusterParameterGroup.parameterGroupName,
+      dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
@@ -483,6 +484,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     const instanceType = props.instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
+    const instanceParameterGroupConfig = props.instanceProps.parameterGroup?.bindToInstance({});
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -495,7 +497,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
         engine: props.engine.engineType,
-        engineVersion: props.engine.engineVersion,
+        engineVersion: props.engine.engineVersion?.fullVersion,
         dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
@@ -503,7 +505,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         publiclyAccessible,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
-        dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
+        dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
         monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
         monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
       });

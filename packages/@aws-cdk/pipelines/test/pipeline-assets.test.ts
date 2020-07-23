@@ -45,7 +45,6 @@ test('command line properly locates assets in subassembly', () => {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
           build: {
-            // tslint:disable-next-line: max-line-length
             commands: arrayWith(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`),
           },
         },
@@ -83,7 +82,7 @@ test('assets are also published when using the lower-level addStackArtifactDeplo
       Name: 'Assets',
       Actions: [
         objectLike({
-          Name: FILE_ASSET_SOURCE_HASH,
+          Name: 'FileAsset1',
           RunOrder: 1,
         }),
       ],

@@ -278,8 +278,11 @@ class AssetPublishing extends Construct {
 
       const id = command.assetType === AssetType.FILE ? `FileAsset${this._fileAssetCtr++}` : `DockerAsset${this._dockerAssetCtr++}`;
 
+      // NOTE: It's important that asset changes don't force a pipeline self-mutation.
+      // This can cause an infinite loop of updates (see https://github.com/aws/aws-cdk/issues/9080).
+      // For that reason, we use the id as the actionName below, rather than the asset hash.
       action = this.publishers[command.assetId] = new PublishAssetsAction(this, id, {
-        actionName: command.assetId,
+        actionName: id,
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
