@@ -1,6 +1,6 @@
+import * as path from 'path';
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import * as appsync from '../lib';
 
 test('should not throw an Error', () => {
@@ -12,7 +12,7 @@ test('should not throw an Error', () => {
     new appsync.GraphQLApi(stack, 'api', {
       authorizationConfig: {},
       name: 'api',
-      schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
     });
   };
 
