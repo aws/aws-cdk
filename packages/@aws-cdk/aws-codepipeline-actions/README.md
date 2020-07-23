@@ -706,14 +706,14 @@ new codepipeline.Pipeline(this, 'Pipeline', {
             actions: [
             new codepipeline_actions.ServiceCatalogDeployAction({
                 actionName: 'ServiceCatalogDeploy',
-                input: cdkBuildOutput,
-                templateFile: "LambdaStack.template.json",
-                scProductVersionName: "Version - " + Date.now.toString,
-                scProductType: "CLOUD_FORMATION_TEMPLATE",
-                scProductVersionDescription: "This is a version from the pipeline with a new description.",
-                scProductId: "prod-XXXXXXXX",
+                templatePath: cdkBuildOutput.atPath("Sample.template.json"),
+                productVersionName: "Version - " + Date.now.toString,
+                productType: "CLOUD_FORMATION_TEMPLATE",
+                productVersionDescription: "This is a version from the pipeline with a new description.",
+                productId: "prod-XXXXXXXX",
             }),
-          }      
+          },
+        ],     
 });
 ```
 

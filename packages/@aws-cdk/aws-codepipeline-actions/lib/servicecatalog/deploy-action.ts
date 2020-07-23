@@ -17,40 +17,32 @@ import { Action } from '../action';
  */
 export interface ServiceCatalogDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
-   * The name of the template file found in the artifact to install as a new version of the Service Catalog Product
+   * The path to the cloudformation artifact.
    */
-  readonly templateFile: string;
-  
+  readonly templatePath: codepipeline.ArtifactPath;
+
   /**
-   * The name of the VERSION of the Service Catalog product
+   * The name of the version of the Service Catalog product to be deployed.
    */
-  readonly scProductVersionName: string;
+  readonly productVersionName: string;
+
   /**
-   * The name of the PRODUCT TYPE of the Service Catalog product (this should probably be an ENUM, or implicit)
-   * Valid types CLOUD_FORMATION_TEMPLATE
-   * Possibly we can support MARKETPLACE in a future release.
+   * The optional description of this version of the Service Catalog product.
    */
-  readonly scProductType: string;
+  readonly productVersionDescription?: string;
+
   /**
-   * The DESCRIPTION of the VERSION of the Service Catalog product
+   * The identifier of the product in the Service Catalog. This product must already exist.
    */
-  readonly scProductVersionDescription: string;
-  /**
-   * The PRODUCT ID  of the Service Catalog product. This product must already exist.
-   */
-  readonly scProductId: string;
-  /**
-   * The ARTIFACT that contains the cloudformation template used to update the service catalog product.
-   */
-  readonly input: codepipeline.Artifact;
+  readonly productId: string;
 }
 
 export class ServiceCatalogDeployAction extends Action {
-  private readonly template: string;
-  private readonly scProductVersionName: string;
-  private readonly scProductVersionDescription: string;
-  private readonly scProductId: string;
-  private readonly scProductType: string;
+  private readonly templatePath: string;
+  private readonly productVersionName: string;
+  private readonly productVersionDescription?: string;
+  private readonly productId: string;
+  private readonly productType: string;
 
   constructor(props: ServiceCatalogDeployActionProps) {
     super({
@@ -63,19 +55,19 @@ export class ServiceCatalogDeployAction extends Action {
         minOutputs: 0,
         maxOutputs: 0,
       },
-      inputs: [props.input],
+      inputs: [props.templatePath.artifact],
     });
-    this.template = props.templateFile;
-    this.scProductVersionName = props.scProductVersionName;
-    this.scProductVersionDescription = props.scProductVersionDescription;
-    this.scProductId = props.scProductId;
-    this.scProductType = props.scProductType;
+    this.templatePath = props.templatePath.location;
+    this.productVersionName = props.productVersionName;
+    this.productVersionDescription = props.productVersionDescription;
+    this.productId = props.productId;
+    this.productType = 'CLOUD_FORMATION_TEMPLATE';
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
 
-    options.role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSServiceCatalogAdminFullAccess'));
+    options.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSServiceCatalogAdminFullAccess'));
 
     // Attempt at least privilege; using this alone fails with "invalid template".
     // Should construct ARN: 'arn:aws:catalog:<region>:<accountID>:product/' + this.scProductId
@@ -89,11 +81,11 @@ export class ServiceCatalogDeployAction extends Action {
 
     return {
       configuration: {
-        TemplateFilePath: this.template,
-        ProductVersionName: this.scProductVersionName,
-        ProductVersionDescription: this.scProductVersionDescription,
-        ProductType: this.scProductType,
-        ProductId: this.scProductId,
+        TemplateFilePath: this.templatePath,
+        ProductVersionName: this.productVersionName,
+        ProductVersionDescription: this.productVersionDescription,
+        ProductType: this.productType,
+        ProductId: this.productId,
       },
     };
   }
