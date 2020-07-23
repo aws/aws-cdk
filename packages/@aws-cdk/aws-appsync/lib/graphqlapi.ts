@@ -1,19 +1,9 @@
-import { IUserPool } from '@aws-cdk/aws-cognito';
-import { ITable } from '@aws-cdk/aws-dynamodb';
-import {
-  ManagedPolicy,
-  Role,
-  ServicePrincipal,
-} from '@aws-cdk/aws-iam';
-import { IFunction } from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResolvable } from '@aws-cdk/core';
 import { readFileSync } from 'fs';
-import {
-  CfnApiKey,
-  CfnGraphQLApi,
-  CfnGraphQLSchema,
-} from './appsync.generated';
-import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
+import { IUserPool } from '@aws-cdk/aws-cognito';
+import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Construct, Duration, IResolvable } from '@aws-cdk/core';
+import { CfnApiKey,  CfnGraphQLApi,  CfnGraphQLSchema } from './appsync.generated';
+import { IGraphQLApi, GraphQLApiBase } from './graphqlapi-base';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -218,7 +208,7 @@ export interface GraphQLApiProps {
   /**
    * the name of the GraphQL API
    */
-  readonly name: string;
+  readonly apiName: string;
 
   /**
    * Optional authorization configuration
@@ -249,11 +239,26 @@ export interface GraphQLApiProps {
 
 }
 
+export interface GraphQLApiAttributes {
+  readonly arn: string,
+  readonly schema?: CfnGraphQLSchema,
+}
+
 /**
  * An AppSync GraphQL API
  */
-export class GraphQLApi extends Construct {
-
+export class GraphQLApi extends GraphQLApiBase {
+  public static fromArn(scope: Construct, id: string, attr: GraphQLApiAttributes): IGraphQLApi {
+    class Import extends GraphQLApiBase {
+      public readonly apiId = 'replace';
+      public readonly arn = attr.arn;
+      public readonly schema = attr.schema;
+      constructor (s: Construct, i: string){
+        super(s, i);
+      }
+    }
+    return new Import(scope, id);
+  }
   /**
    * the id of the GraphQL API
    */
@@ -264,12 +269,14 @@ export class GraphQLApi extends Construct {
   public readonly arn: string;
   /**
    * the URL of the endpoint created by AppSync
+   *
+   * @attribute
    */
   public readonly graphQlUrl: string;
   /**
    * the name of the API
    */
-  public name: string;
+  public readonly name: string;
   /**
    * underlying CFN schema resource
    */
@@ -285,7 +292,9 @@ export class GraphQLApi extends Construct {
   private _apiKey?: string;
 
   constructor(scope: Construct, id: string, props: GraphQLApiProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.apiName,
+    });
 
     this.validateAuthorizationProps(props);
     const defaultAuthorizationType =
@@ -305,7 +314,7 @@ export class GraphQLApi extends Construct {
     }
 
     this.api = new CfnGraphQLApi(this, 'Resource', {
-      name: props.name,
+      name: props.apiName,
       authenticationType: defaultAuthorizationType,
       ...(props.logConfig && {
         logConfig: {
@@ -337,7 +346,7 @@ export class GraphQLApi extends Construct {
     this.apiId = this.api.attrApiId;
     this.arn = this.api.attrArn;
     this.graphQlUrl = this.api.attrGraphQlUrl;
-    this.name = this.api.name;
+    this.name = this.api.name;=
 
     if (
       defaultAuthorizationType === AuthorizationType.API_KEY ||
@@ -364,72 +373,6 @@ export class GraphQLApi extends Construct {
     this.schema = new CfnGraphQLSchema(this, 'Schema', {
       apiId: this.apiId,
       definition,
-    });
-  }
-
-  /**
-   * add a new dummy data source to this API
-   * @param name The name of the data source
-   * @param description The description of the data source
-   */
-  public addNoneDataSource(name: string, description: string): NoneDataSource {
-    return new NoneDataSource(this, `${name}DS`, {
-      api: this,
-      description,
-      name,
-    });
-  }
-
-  /**
-   * add a new DynamoDB data source to this API
-   * @param name The name of the data source
-   * @param description The description of the data source
-   * @param table The DynamoDB table backing this data source [disable-awslint:ref-via-interface]
-   */
-  public addDynamoDbDataSource(
-    name: string,
-    description: string,
-    table: ITable,
-  ): DynamoDbDataSource {
-    return new DynamoDbDataSource(this, `${name}DS`, {
-      api: this,
-      description,
-      name,
-      table,
-    });
-  }
-
-  /**
-   * add a new http data source to this API
-   * @param name The name of the data source
-   * @param description The description of the data source
-   * @param endpoint The http endpoint
-   */
-  public addHttpDataSource(name: string, description: string, endpoint: string): HttpDataSource {
-    return new HttpDataSource(this, `${name}DS`, {
-      api: this,
-      description,
-      endpoint,
-      name,
-    });
-  }
-
-  /**
-   * add a new Lambda data source to this API
-   * @param name The name of the data source
-   * @param description The description of the data source
-   * @param lambdaFunction The Lambda function to call to interact with this data source
-   */
-  public addLambdaDataSource(
-    name: string,
-    description: string,
-    lambdaFunction: IFunction,
-  ): LambdaDataSource {
-    return new LambdaDataSource(this, `${name}DS`, {
-      api: this,
-      description,
-      name,
-      lambdaFunction,
     });
   }
 

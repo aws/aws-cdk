@@ -3,7 +3,7 @@ import { IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Construct, IResolvable } from '@aws-cdk/core';
 import { CfnDataSource } from './appsync.generated';
-import { GraphQLApi } from './graphqlapi';
+import { IGraphQLApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
 
 /**
@@ -13,7 +13,7 @@ export interface BaseDataSourceProps {
   /**
    * The API to attach this data source to
    */
-  readonly api: GraphQLApi;
+  readonly api: IGraphQLApi;
   /**
    * The name of the data source
    */
@@ -91,7 +91,7 @@ export abstract class BaseDataSource extends Construct {
    */
   public readonly ds: CfnDataSource;
 
-  protected api: GraphQLApi;
+  protected api: IGraphQLApi;
   protected serviceRole?: IRole;
 
   constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {

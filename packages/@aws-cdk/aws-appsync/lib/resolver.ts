@@ -1,7 +1,7 @@
 import { Construct, IResolvable } from '@aws-cdk/core';
 import { CfnResolver } from './appsync.generated';
 import { BaseDataSource } from './data-source';
-import { GraphQLApi } from './graphqlapi';
+import { IGraphQLApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 /**
  * Basic properties for an AppSync resolver
@@ -42,7 +42,7 @@ export interface ResolverProps extends BaseResolverProps {
   /**
    * The API this resolver is attached to
    */
-  readonly api: GraphQLApi;
+  readonly api: IGraphQLApi;
   /**
    * The data source this resolver is using
    *
@@ -74,7 +74,9 @@ export class Resolver extends Construct {
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
     });
-    this.resolver.addDependsOn(props.api.schema);
+    // if (props.api.schema) {
+    //   this.resolver.addDependsOn(props.api.schema);
+    // }
     if (props.dataSource) {
       this.resolver.addDependsOn(props.dataSource.ds);
     }
