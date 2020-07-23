@@ -28,6 +28,7 @@ export interface ServiceCatalogDeployActionProps extends codepipeline.CommonAwsA
 
   /**
    * The optional description of this version of the Service Catalog product.
+   * @default ''
    */
   readonly productVersionDescription?: string;
 
@@ -37,6 +38,9 @@ export interface ServiceCatalogDeployActionProps extends codepipeline.CommonAwsA
   readonly productId: string;
 }
 
+/**
+ * CodePipeline action to connect to an existing ServiceCatalog product
+ */
 export class ServiceCatalogDeployAction extends Action {
   private readonly templatePath: string;
   private readonly productVersionName: string;
