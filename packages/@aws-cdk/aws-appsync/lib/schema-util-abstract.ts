@@ -88,6 +88,9 @@ export enum SchemaType {
   object = 'OBJECT',
 }
 
+/**
+ * Properties of a GraphQL Schema Type
+ */
 export interface SchemaTypeProps {
   isList?: boolean;
   isRequired?: boolean;
@@ -95,6 +98,9 @@ export interface SchemaTypeProps {
   authorization?: AuthorizationType;
 }
 
+/**
+ * Abstract base class for Types in GraphQL Schema
+ */
 abstract class SchemaBaseType {
   public readonly type: SchemaType;
   public readonly name: string;
