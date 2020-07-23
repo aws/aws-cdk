@@ -102,6 +102,12 @@ export abstract class TopicBase extends Resource implements ITopic {
     return { statementAdded: false };
   }
 
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
+  }
+
   /**
    * Grant topic publishing permissions to the given identity
    */

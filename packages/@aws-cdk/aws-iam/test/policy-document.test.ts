@@ -725,4 +725,25 @@ describe('IAM policy document', () => {
       Condition: {StringEquals: {'kms:ViaService': 'service', 'sts:ExternalId': '12221121221'}},
     });
   });
+
+  test('validation error if policy statement has no actions', () => {
+    const policyStatement = new PolicyStatement({
+      principals: [new AnyPrincipal()],
+    });
+
+    // THEN
+    const validationErrorsForResourcePolicy: string[] = policyStatement.validateForResourcePolicy();
+    // const validationErrorsForIdentityPolicy: string[] = policyStatement.validateForIdentityPolicy();
+    expect(validationErrorsForResourcePolicy).toEqual(['A PolicyStatement must specify at least one allow or deny action.']);
+  });
+
+  test('validation error if policy statement for resource-based policy has no principals specified', () => {
+    const policyStatement = new PolicyStatement({
+      actions: ['*'],
+    });
+
+    // THEN
+    const validationErrors: string[] = policyStatement.validateForResourcePolicy();
+    expect(validationErrors).toEqual(['A PolicyStatement used in a resource-based policy must specify at least one IAM principal.']);
+  });
 });

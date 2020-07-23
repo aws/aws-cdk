@@ -165,8 +165,14 @@ export = {
 
     const topic = new sns.Topic(stack, 'MyTopic');
 
-    topic.addToResourcePolicy(new iam.PolicyStatement({ actions: ['service:statement0'] }));
-    topic.addToResourcePolicy(new iam.PolicyStatement({ actions: ['service:statement1'] }));
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['service:statement0'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['service:statement1'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
 
     expect(stack).toMatch({
       'Resources': {
@@ -181,11 +187,13 @@ export = {
                 {
                   'Action': 'service:statement0',
                   'Effect': 'Allow',
+                  'Principal': { 'AWS': 'arn' },
                   'Sid': '0',
                 },
                 {
                   'Action': 'service:statement1',
                   'Effect': 'Allow',
+                  'Principal': { 'AWS': 'arn' },
                   'Sid': '1',
                 },
               ],

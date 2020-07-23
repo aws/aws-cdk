@@ -154,6 +154,12 @@ export abstract class QueueBase extends Resource implements IQueue {
     return { statementAdded: false };
   }
 
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
+  }
+
   /**
    * Grant permissions to consume messages from a queue
    *

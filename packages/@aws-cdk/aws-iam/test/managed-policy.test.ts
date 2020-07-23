@@ -553,6 +553,7 @@ describe('managed policy', () => {
     });
     mp.addStatements(new PolicyStatement({
       actions: ['a:abc'],
+      resources: ['*'],
     }));
 
     const stack2 = new cdk.Stack(app, 'Stack2', { env: { account: '5678', region: 'us-east-1' }});

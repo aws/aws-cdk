@@ -284,7 +284,10 @@ export = {
     const repo = new ecr.Repository(stack, 'Repo');
 
     // WHEN
-    repo.addToResourcePolicy(new iam.PolicyStatement({ actions: ['*'] }));
+    repo.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['*'],
+      principals: [new iam.AnyPrincipal()],
+    }));
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
@@ -293,6 +296,7 @@ export = {
           {
             Action: '*',
             Effect: 'Allow',
+            Principal: '*',
           },
         ],
         Version: '2012-10-17',
