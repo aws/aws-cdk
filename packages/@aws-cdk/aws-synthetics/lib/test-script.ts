@@ -77,10 +77,10 @@ export interface CustomOptions {
   /**
    * The code of the canary script
    */
-  code: Code,
+  readonly code: Code,
 
   /**
    * The handler for the code
    */
-  handler: string,
+  readonly handler: string,
 }

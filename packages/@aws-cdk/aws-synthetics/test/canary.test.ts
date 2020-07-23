@@ -4,7 +4,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Size, Stack } from '@aws-cdk/core';
 import * as synthetics from '../lib';
-import { createTokenDouble } from '@aws-cdk/core/lib/private/encoding';
 
 let stack: Stack;
 beforeEach(() => {
