@@ -48,4 +48,4 @@ As an existing certificate is not provided, one will be created in `us-east-1` b
       zoneName: 'example.com',
     })
   });
-  ``` 
+  ```
