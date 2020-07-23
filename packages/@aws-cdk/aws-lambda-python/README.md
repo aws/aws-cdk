@@ -30,8 +30,7 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 ### Module Dependencies
 
 If `requirements.txt` exists at the entry path, the construct will handle installing
-all required modules in a [Lambda compatible Docker container](https://github.com/lambci/docker-lambda)
-according to the `runtime`.
+all required modules in a Lambda compatible Docker container according to the `runtime`.
 ```
 .
 ├── lambda_function.py # exports a function named 'handler'
