@@ -23,10 +23,11 @@ export interface CanaryProps {
    * be assumable by the 'lambda.amazonaws.com' service principal.
    *
    * The default Role automatically has permissions granted for Canary execution.
-   * If you provide a Role, you must add the relevant policies yourself.
+   * If you provide a Role, you must add the relevant policies.
    *
    * The relevant policies are "s3:PutObject", "s3:GetBucketLocation", "s3:ListAllMyBuckets",
    * "cloudwatch:PutMetricData", "logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents".
+   * @see required permissions: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html
    *
    * @default - A unique role will be generated for this canary.
    * Both supplied and generated roles can always be changed by calling 'addToRolePolicy'.
@@ -36,22 +37,20 @@ export interface CanaryProps {
   /**
    * How many seconds the canary should run before timing out. Minimum time is 60 seconds and maximum is 900 seconds.
    *
-   * @default - the smaller value between frequency and 900 seconds
+   * @default - the minimum between frequency and 900 seconds
    */
   readonly timeout?: cdk.Duration;
 
   /**
-   * The amount of memory, that is allocated to your Canary. Must be a multiple of 64 MiB and inside the range 960 MiB to 3008 MiB.
+   * The amount of memory that is allocated to your Canary. Must be a multiple of 64 MiB and inside the range 960 MiB to 3008 MiB.
    *
-   * @default - 960
+   * @default - 960 MiB
    */
   readonly memorySize?: cdk.Size;
 
   /**
    * How long the canary will be in a 'RUNNING' state. For example, if you set `timeToLive` to be 1 hour and `frequency` to be 10 minutes,
    * your canary will run at 10 minute intervals for an hour, for a total of 6 times.
-   *
-   * The default of 0 seconds means that the canary will continue to make runs at the specified frequency until you stop it.
    *
    * @default - no limit
    */
@@ -65,7 +64,7 @@ export interface CanaryProps {
   readonly frequency?: cdk.Duration;
 
   /**
-   * Whether or not the canary should start after creation.
+   * Whether or not the canary should start after creation. If set to false, then the canary will not start.
    *
    * @default true
    */
@@ -88,9 +87,9 @@ export interface CanaryProps {
   /**
    * The name of the canary. This constitutes the physical ID of the canary.
    *
-   * @default - A unique physical ID will be generated for you and used as the canary name.
+   * @default A unique physical ID will be generated for you and used as the canary name.
    */
-  readonly name?: string;
+  readonly canaryName?: string;
 
   /**
    * Specify the endpoint that you want the canary code to hit. Alternatively, you can specify
@@ -129,19 +128,19 @@ export class Canary extends cdk.Resource {
   /**
    * Bucket where data from each canary run is stored
    */
-  private readonly bucket: s3.IBucket;
+  private readonly artifactBucket: s3.IBucket;
 
   constructor(scope: cdk.Construct, id: string, props: CanaryProps) {
     super(scope, id, {
-      physicalName: props.name || cdk.Lazy.stringValue({
+      physicalName: props.canaryName || cdk.Lazy.stringValue({
         produce: () => this.generateName(this.node.uniqueId),
       }),
     });
 
-    if (props.name) {
-      this.validateName(props.name);
+    if (props.canaryName) {
+      this.validateName(props.canaryName);
     }
-    this.bucket = props.artifactBucket ?? new s3.Bucket(this, 'ServiceBucket');
+    this.artifactBucket = props.artifactBucket ?? new s3.Bucket(this, 'ServiceBucket');
 
     // Created role will need these policies to run the Canary.
     // These are the necessary permissions as listed here:
@@ -153,7 +152,7 @@ export class Canary extends cdk.Resource {
           actions: ['s3:ListAllMyBuckets'],
         }),
         new iam.PolicyStatement({
-          resources: [`${this.bucket.bucketArn}`],
+          resources: [`${this.artifactBucket.bucketArn}`],
           actions: ['s3:PutObject', 's3:GetBucketLocation'],
         }),
         new iam.PolicyStatement({
@@ -167,14 +166,14 @@ export class Canary extends cdk.Resource {
         }),
       ],
     });
-    const inlinePolicies = { canaryPolicy: policy };
 
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      inlinePolicies,
+      inlinePolicies: {
+        canaryPolicy: policy,
+      },
     });
 
-    const duration = props.timeToLive ?? cdk.Duration.seconds(0);
     const frequency = props.frequency ?? cdk.Duration.minutes(5);
     this.validateFrequency(frequency);
     const memory = props.memorySize?.toMebibytes() ?? 960;
@@ -184,7 +183,7 @@ export class Canary extends cdk.Resource {
     timeout = cdk.Duration.seconds(Math.min(timeout.toSeconds(), frequency.toSeconds()));
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
-      artifactS3Location: this.bucket.s3UrlForObject(),
+      artifactS3Location: this.artifactBucket.s3UrlForObject(),
       executionRoleArn: this.role.roleArn,
       startCanaryAfterCreation: props.enable ?? true,
       runtimeVersion: 'syn-1.0',
@@ -194,7 +193,7 @@ export class Canary extends cdk.Resource {
         timeoutInSeconds: timeout.toSeconds(),
       },
       schedule: {
-        durationInSeconds: String(duration.toSeconds()),
+        durationInSeconds: props.timeToLive ? String(props.timeToLive.toSeconds()) : '0' ,
         expression: this.createExpression(frequency),
       },
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
@@ -216,13 +215,13 @@ export class Canary extends cdk.Resource {
    *
    * @default avg over 5 minutes
    */
-  private metric(metricName: string, props?: MetricOptions): Metric {
+  private metric(metricName: string, options?: MetricOptions): Metric {
     return new Metric({
       metricName,
       namespace: 'CloudWatchSynthetics',
       dimensions: { CanaryName: this.canaryName },
       statistic: 'avg',
-      ...props,
+      ...options,
     }).attachTo(this);
   }
 
@@ -231,8 +230,8 @@ export class Canary extends cdk.Resource {
    *
    * @default avg over 5 minutes
    */
-  public metricDuration(props?: MetricOptions): Metric {
-    return this.metric('Duration', props);
+  public metricDuration(options?: MetricOptions): Metric {
+    return this.metric('Duration', options);
   }
 
   /**
@@ -240,8 +239,8 @@ export class Canary extends cdk.Resource {
    *
    * @default avg over 5 minutes
    */
-  public metricSuccessPercent(props?: MetricOptions): Metric {
-    return this.metric('SuccessPercent', props);
+  public metricSuccessPercent(options?: MetricOptions): Metric {
+    return this.metric('SuccessPercent', options);
   }
 
   /**
@@ -249,8 +248,8 @@ export class Canary extends cdk.Resource {
    *
    * @default avg over 5 minutes
    */
-  public metricFailed(props?: MetricOptions): Metric {
-    return this.metric('Failed', props);
+  public metricFailed(options?: MetricOptions): Metric {
+    return this.metric('Failed', options);
   }
 
   /**
@@ -282,7 +281,7 @@ export class Canary extends cdk.Resource {
    *
    * @param name - the given name of the canary
    */
-  private validateName(name: string): string {
+  private validateName(name: string) {
     const regex = new RegExp('^[0-9a-z_\-]+$');
     if (!regex.test(name)) {
       throw new Error('Canary Name must be lowercase, numbers, hyphens, or underscores (no spaces)');
@@ -290,7 +289,6 @@ export class Canary extends cdk.Resource {
     if (name.length > 21) {
       throw new Error('Canary Name must be less than 21 characters');
     }
-    return name;
   }
 
   /**
@@ -298,14 +296,13 @@ export class Canary extends cdk.Resource {
    *
    * @param memory the amount of memory specified, in mebibytes
    */
-  private validateMemory(memory: number): number {
+  private validateMemory(memory: number) {
     if(memory < 960 || memory > 3008) {
       throw new Error('memory size must be greater than 960 mebibytes and less than 3008 mebibytes');
     }
     if(memory % 64 !== 0) {
       throw new Error('memory size must be a multiple of 64 mebibytes');
     }
-    return memory;
   }
 
   /**

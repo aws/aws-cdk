@@ -13,7 +13,7 @@ beforeEach(() => {
 test('Create a basic canary', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    name: 'mycanary',
+    canaryName: 'mycanary',
   });
 
   // THEN
@@ -64,7 +64,7 @@ test('Canary can have specified IAM role', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    name: 'mycanary',
+    canaryName: 'mycanary',
     role,
   });
 
@@ -88,7 +88,7 @@ test('Canary can have specified s3 Bucket', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    name: 'mycanary',
+    canaryName: 'mycanary',
     artifactBucket: bucket,
   });
 
@@ -109,7 +109,7 @@ test('Canary can have specified s3 Bucket', () => {
 test('Canary can set frequency', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    name: 'mycanary',
+    canaryName: 'mycanary',
     frequency: Duration.minutes(3),
   });
 
@@ -128,7 +128,7 @@ test('Canary can set frequency', () => {
 test('Canary can set timeToLive', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    name: 'mycanary',
+    canaryName: 'mycanary',
     timeToLive: Duration.minutes(30),
   });
 
@@ -147,7 +147,7 @@ test('Canary can set timeToLive', () => {
 test('Canary can set timeout', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    name: 'mycanary',
+    canaryName: 'mycanary',
     timeout: Duration.seconds(60),
   });
 
@@ -166,7 +166,7 @@ test('Canary can set timeout', () => {
 test('Canary cannot set timeout value to be greater than frequency', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    name: 'mycanary',
+    canaryName: 'mycanary',
     timeout: Duration.seconds(120),
     frequency: Duration.seconds(60),
   });
@@ -187,7 +187,7 @@ test('Canary cannot set timeout value to be greater than frequency', () => {
 test('Timeout is set to frequency when unspecified', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    name: 'mycanary',
+    canaryName: 'mycanary',
     frequency: Duration.minutes(5),
   });
 
@@ -207,7 +207,7 @@ test('Timeout is set to frequency when unspecified', () => {
 test('Canary can set memorySize', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    name: 'mycanary',
+    canaryName: 'mycanary',
     memorySize: Size.mebibytes(3008),
   });
 
@@ -234,7 +234,7 @@ test('memorySize must be a multiple of 64 MiB', () => {
 test('Canary can disable startCanaryAfterCreation', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    name: 'mycanary',
+    canaryName: 'mycanary',
     enable: false,
   });
 
@@ -253,7 +253,7 @@ test('Canary can disable startCanaryAfterCreation', () => {
 test('Canary can set successRetentionPeriod', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    name: 'mycanary',
+    canaryName: 'mycanary',
     successRetentionPeriod: Duration.days(1),
   });
 
@@ -272,7 +272,7 @@ test('Canary can set successRetentionPeriod', () => {
 test('Canary can set failureRetentionPeriod', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    name: 'mycanary',
+    canaryName: 'mycanary',
     failureRetentionPeriod: Duration.days(1),
   });
 
@@ -296,9 +296,9 @@ test('Canary name must be less than 21 characters', () => {
   expect(() => defineCanaryWithName('canary-name-super-long')).toThrowError('Canary Name must be less than 21 characters');
 });
 
-function defineCanaryWithName(name: string) {
+function defineCanaryWithName(canaryName: string) {
   new synthetics.Canary(stack, 'Canary', {
-    name,
+    canaryName,
   });
 }
 

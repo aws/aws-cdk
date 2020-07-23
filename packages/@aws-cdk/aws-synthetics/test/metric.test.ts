@@ -10,7 +10,6 @@ beforeEach(() => {
 test('Add metric success percent', () => {
   // GIVEN
   const canary = new synthetics.Canary(stack, 'mycanary', {
-    name: 'mycanary',
   });
 
   // WHEN
@@ -29,7 +28,6 @@ test('Add metric success percent', () => {
 test('Add metric failed', () => {
   // GIVEN
   const canary = new synthetics.Canary(stack, 'mycanary', {
-    name: 'mycanary',
   });
 
   // WHEN
@@ -48,7 +46,6 @@ test('Add metric failed', () => {
 test('Add metric duration', () => {
   // GIVEN
   const canary = new synthetics.Canary(stack, 'mycanary', {
-    name: 'mycanary',
   });
 
   // WHEN
