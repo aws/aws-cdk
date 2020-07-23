@@ -1,6 +1,6 @@
-import { CfnResource } from './';
 import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';
+import { CfnResource } from './cfn-resource';
 import {
   CfnAutoScalingReplacingUpdate, CfnAutoScalingRollingUpdate, CfnAutoScalingScheduledAction, CfnCodeDeployLambdaAliasUpdate,
   CfnCreationPolicy, CfnDeletionPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
@@ -170,6 +170,38 @@ export class CfnParser {
     this.options = options;
   }
 
+  public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
+    const finder = this.options.finder;
+    const cfnOptions = resource.cfnOptions;
+
+    cfnOptions.creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy);
+    cfnOptions.updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
+    cfnOptions.deletionPolicy = this.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
+    cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
+    cfnOptions.metadata = this.parseValue(resourceAttributes.Metadata);
+
+    // handle Condition
+    if (resourceAttributes.Condition) {
+      const condition = finder.findCondition(resourceAttributes.Condition);
+      if (!condition) {
+        throw new Error(`Resource '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
+      }
+      cfnOptions.condition = condition;
+    }
+
+    // handle DependsOn
+    resourceAttributes.DependsOn = resourceAttributes.DependsOn ?? [];
+    const dependencies: string[] = Array.isArray(resourceAttributes.DependsOn) ?
+      resourceAttributes.DependsOn : [resourceAttributes.DependsOn];
+    for (const dep of dependencies) {
+      const depResource = finder.findResource(dep);
+      if (!depResource) {
+        throw new Error(`Resource '${logicalId}' depends on '${dep}' that doesn't exist`);
+      }
+      resource.node.addDependency(depResource);
+    }
+  }
+
   private parseCreationPolicy(policy: any): CfnCreationPolicy | undefined {
     if (typeof policy !== 'object') { return undefined; }
 
@@ -293,38 +325,6 @@ export class CfnParser {
     }
     // in all other cases, just return the input
     return cfnValue;
-  }
-
-  public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
-    const finder = this.options.finder;
-    const cfnOptions = resource.cfnOptions;
-
-    cfnOptions.creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy);
-    cfnOptions.updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
-    cfnOptions.deletionPolicy = this.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
-    cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
-    cfnOptions.metadata = this.parseValue(resourceAttributes.Metadata);
-
-    // handle Condition
-    if (resourceAttributes.Condition) {
-      const condition = finder.findCondition(resourceAttributes.Condition);
-      if (!condition) {
-        throw new Error(`Resource '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
-      }
-      cfnOptions.condition = condition;
-    }
-
-    // handle DependsOn
-    resourceAttributes.DependsOn = resourceAttributes.DependsOn ?? [];
-    const dependencies: string[] = Array.isArray(resourceAttributes.DependsOn) ?
-      resourceAttributes.DependsOn : [resourceAttributes.DependsOn];
-    for (const dep of dependencies) {
-      const depResource = finder.findResource(dep);
-      if (!depResource) {
-        throw new Error(`Resource '${logicalId}' depends on '${dep}' that doesn't exist`);
-      }
-      resource.node.addDependency(depResource);
-    }
   }
 
   private parseIfCfnIntrinsic(object: any): any {
@@ -465,4 +465,3 @@ function specialCaseRefs(value: any): any {
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
   return Object.values(object).some(v => v !== undefined) ? object : undefined;
 }
-
