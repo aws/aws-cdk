@@ -144,7 +144,7 @@ describe('CDK Include', () => {
           },
         },
       });
-    }).toThrow(/nested stack 'ChildStack' uses Condition 'FakeCondition' that doesn't exist/);
+    }).toThrow(/Resource 'ChildStack' uses Condition 'FakeCondition' that doesn't exist/);
   });
 
   test('throws an exception when a nested stacks depends on a resource that does not exist in the template', () => {
@@ -157,7 +157,20 @@ describe('CDK Include', () => {
           },
         },
       });
-    }).toThrow(/nested stack 'ChildStack' depends on 'AFakeResource' that doesn't exist/);
+    }).toThrow(/Resource 'ChildStack' depends on 'AFakeResource' that doesn't exist/);
+  });
+
+  test('throws an exception when an ID was passed in nestedStacks that is a resource type not in the CloudFormation schema', () => {
+    expect(() => {
+      new inc.CfnInclude(stack, 'Template', {
+        templateFile: testTemplateFilePath('custom-resource.json'),
+        nestedStacks: {
+          'CustomResource': {
+            templateFile: testTemplateFilePath('whatever.json'),
+          },
+        },
+      });
+    }).toThrow(/Nested Stack with logical ID 'CustomResource' is not an AWS::CloudFormation::Stack resource/);
   });
 
   test('can modify resources in nested stacks', () => {
