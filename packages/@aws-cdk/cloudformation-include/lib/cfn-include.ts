@@ -345,30 +345,30 @@ export class CfnInclude extends core.CfnElement {
         return this.findResource(elementName);
       },
     };
-    const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
+    const cfnParser = new cfn_parse.CfnParser({
+      finder,
+    });
 
-    let l1Instance;
-    if (l1ClassFqn && !this.nestedStacksToInclude[logicalId]) {
-      const options: core.FromCloudFormationOptions = {
-        finder,
-      };
-      const [moduleName, ...className] = l1ClassFqn.split('.');
-      const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
-      const jsClassFromModule = module[className.join('.')];
-      l1Instance = jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
-    } else if (!l1ClassFqn && !this.nestedStacksToInclude[logicalId]) {
-      const cfnParser = new cfn_parse.CfnParser({
-        finder,
-      });
-
-      l1Instance = new core.CfnResource(this, logicalId, {
-        type: resourceAttributes.Type,
-        properties: cfnParser.parseValue(resourceAttributes.Properties),
-      });
-
-      cfnParser.handleAttributes(l1Instance, resourceAttributes, logicalId);
-    } else if (this.nestedStacksToInclude[logicalId]) {
-      l1Instance = this.createNestedStack(logicalId, finder);
+    let l1Instance: core.CfnResource;
+    if (this.nestedStacksToInclude[logicalId]) {
+      l1Instance = this.createNestedStack(logicalId, cfnParser);
+    } else {
+      const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
+      if (l1ClassFqn) {
+        const options: core.FromCloudFormationOptions = {
+          finder,
+        };
+        const [moduleName, ...className] = l1ClassFqn.split('.');
+        const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
+        const jsClassFromModule = module[className.join('.')];
+        l1Instance = jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
+      } else {
+        l1Instance = new core.CfnResource(this, logicalId, {
+          type: resourceAttributes.Type,
+          properties: cfnParser.parseValue(resourceAttributes.Properties),
+        });
+        cfnParser.handleAttributes(l1Instance, resourceAttributes, logicalId);
+      }
     }
 
     if (this.preserveLogicalIds) {
@@ -380,7 +380,7 @@ export class CfnInclude extends core.CfnElement {
     return l1Instance;
   }
 
-  private createNestedStack(nestedStackId: string, finder: core.ICfnFinder): core.CfnResource {
+  private createNestedStack(nestedStackId: string, cfnParser: cfn_parse.CfnParser): core.CfnResource {
     const templateResources = this.template.Resources || {};
     const nestedStackAttributes = templateResources[nestedStackId] || {};
 
@@ -394,9 +394,6 @@ export class CfnInclude extends core.CfnElement {
       throw new Error('UpdatePolicy is not supported by the AWS::CloudFormation::Stack resource');
     }
 
-    const cfnParser = new cfn_parse.CfnParser({
-      finder,
-    });
     const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);
     const nestedStack = new core.NestedStack(this, nestedStackId, {
       parameters: nestedStackProps.Parameters,
