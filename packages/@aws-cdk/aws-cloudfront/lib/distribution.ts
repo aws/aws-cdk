@@ -137,7 +137,7 @@ export class Distribution extends Resource implements IDistribution {
     if (props.certificate) {
       const certificateRegion = Stack.of(this).parseArn(props.certificate.certificateArn).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
-        throw new Error('Distribution certificates must be in the us-east-1 region and the certificate you provided is in $Region.');
+        throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
       }
     }
 
