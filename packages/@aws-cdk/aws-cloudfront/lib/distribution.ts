@@ -184,13 +184,13 @@ export class Distribution extends Resource implements IDistribution {
   private addOrigin(origin: Origin) {
     if (!this.origins.has(origin)) {
       this.origins.add(origin);
-      origin._bind(this, { originIndex: this.origins.size });
+      origin.bind(this, { originIndex: this.origins.size });
     }
   }
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
     const renderedOrigins: CfnDistribution.OriginProperty[] = [];
-    this.origins.forEach(origin => renderedOrigins.push(origin._renderOrigin()));
+    this.origins.forEach(origin => renderedOrigins.push(origin.renderOrigin()));
     return renderedOrigins;
   }
 
