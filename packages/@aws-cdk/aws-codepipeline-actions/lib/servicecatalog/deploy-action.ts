@@ -13,7 +13,11 @@ import { Action } from '../action';
  */
 
 /**
- * Construction properties of the {@link ServiceCatalogDeployAction ServiceCatalog server deploy CodePipeline Action}.
+ * Construction properties of the {@link ServiceCatalogDeployAction ServiceCatalog deploy CodePipeline Action}.
+ *
+ * **Note**: this API is still experimental, and may have breaking changes in the future!
+ *
+ * @experimental
  */
 export interface ServiceCatalogDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
@@ -39,7 +43,11 @@ export interface ServiceCatalogDeployActionProps extends codepipeline.CommonAwsA
 }
 
 /**
- * CodePipeline action to connect to an existing ServiceCatalog product
+ * CodePipeline action to connect to an existing ServiceCatalog product.
+ *
+ * **Note**: this class is still experimental, and may have breaking changes in the future!
+ *
+ * @experimental
  */
 export class ServiceCatalogDeployAction extends Action {
   private readonly templatePath: string;
