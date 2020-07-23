@@ -444,9 +444,7 @@ export class CfnParser {
             if (!refElement) {
               throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
             }
-            //this.parseIfCfnIntrinsic(refTarget);
-            console.log('refTarget === ' + refTarget);
-            return "my-string" + CfnReference.for(refElement, 'Ref')
+            return Fn.sub( value.substring(0, value.indexOf('$')) + CfnReference.for(refElement, 'Sub'));
           }
         }
         return "my-other-string";

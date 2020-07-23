@@ -107,7 +107,7 @@ describe('CDK Include', () => {
     }).toThrow(/Element used in Ref expression with logical ID: 'FakeResource' not found/);
   });*/
 
-  /*test("throws a validation exception when Fn::Sub in string form uses a key that isn't in the template", () => {
+  test("throws a validation exception when Fn::Sub in string form uses a key that isn't in the template", () => {
     expect(() => {
       includeTestTemplate(stack, 'fn-sub-invalid-key-string.json');
     }).toThrow(/Element used in Ref expression with logical ID: 'AFakeResource' in Fn::Sub not found/);
@@ -117,7 +117,7 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'fn-sub-invalid-syntax.json');
     }).toThrow(/variable names in Fn::Sub syntax must contain only alphanumeric characters, underscores, periods, and colons/);
-  });*/
+  });
 });
 
 function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {
