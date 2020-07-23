@@ -1,36 +1,36 @@
 {
-  "name": "@aws-cdk/aws-route53-patterns",
+  "name": "@aws-cdk/aws-lambda-python",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS Route53 patterns",
+  "description": "CDK Constructs for AWS Lambda in Python",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.route53.patterns",
+        "package": "software.amazon.awscdk.services.lambda.python",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "route53-patterns"
+          "artifactId": "lambda-python"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Route53.Patterns",
-        "packageId": "Amazon.CDK.AWS.Route53.Patterns",
+        "namespace": "Amazon.CDK.AWS.Lambda.Python",
+        "packageId": "Amazon.CDK.AWS.Lambda.Python",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-route53-patterns",
-        "module": "aws_cdk.aws_route53_patterns"
+        "distName": "aws-cdk.aws-lambda-python",
+        "module": "aws_cdk.aws_lambda_python"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-route53-patterns"
+    "directory": "packages/@aws-cdk/aws-lambda-python"
   },
   "scripts": {
     "build": "cdk-build",
@@ -49,8 +49,7 @@
     "aws",
     "cdk",
     "constructs",
-    "route53",
-    "route53-patterns"
+    "lambda"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -62,38 +61,24 @@
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "jest": "^25.5.4",
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "0.0.0",
-    "@aws-cdk/aws-cloudfront": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-route53": "0.0.0",
-    "@aws-cdk/aws-route53-targets": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-certificatemanager": "0.0.0",
-    "@aws-cdk/aws-cloudfront": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-route53": "0.0.0",
-    "@aws-cdk/aws-route53-targets": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.2"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
-  "maturity": "developer-preview",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   },
