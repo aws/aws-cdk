@@ -107,3 +107,25 @@ test('create HTTPS redirect with existing cert', () => {
     },
   });
 });
+
+test('throws when certificate in region other than us-east-1 is supplied', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'test', { env: { region: 'us-east-1' } });
+  const certificate = Certificate.fromCertificateArn(
+    stack, 'Certificate', 'arn:aws:acm:us-east-2:123456789012:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
+  );
+
+  // WHEN / THEN
+  expect(() => {
+    new HttpsRedirect(stack, 'Redirect', {
+      recordNames: ['foo.example.com'],
+      certificate,
+      targetDomain: 'bar.example.com',
+      zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'ID',
+        zoneName: 'example.com',
+      }),
+    });
+  }).toThrow(/The certificate must be in the us-east-1 region and the certificate you provided is in us-east-2./);
+});
