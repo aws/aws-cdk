@@ -16,6 +16,9 @@
 
 Amazon CloudWatch Synthetics allow you to monitor your application by generating **synthetic** traffic. The traffic is produced by a **canary**: a configurable script that runs on a schedule. You configure the canary script to follow the same routes and perform the same actions as a user, which allows you to continually verify your user experience even when you don't have any traffic on your applications.
 
+# Note - Under construction 🚧
+Sections marked with 🚧 are not yet implemented and are mentioned here for the sake of completeness  
+
 ## Canary
 
 To illustrate how to use a canary, assume your application defines the following endpoint:
@@ -26,14 +29,15 @@ The Hitchhikers Guide to the Galaxy
 
 ```
 
-The below code defines a canary that will hit the `books/topbook` endpoint every 5 minutes:
+The below code defines a canary that will hit the `books/topbook` endpoint every 5 minutes: 
+> 🚧 Note the `Test` class is not yet implemented and is presented here to give reviewer context
 
 ```ts
 import * as synthetics from '@aws-cdk/aws-synthetics';
 
 const canary = new synthetics.Canary(this, 'MyCanary', {
   frequency: Duration.minutes(5),
-  test: synthetics.Test.custom({
+  test: synthetics.Test.custom({ // 🚧 Not yet implemented 
     code: synthetics.Code.fromInline(`const https = require('https');
       var synthetics = require('Synthetics');
       const log = require('SyntheticsLogger');
@@ -54,18 +58,26 @@ The canary will automatically produce a CloudWatch Dashboard:
 
 ![UI Screenshot](images/ui-screenshot.png)
 
-### Canary Test Property
+### Canary Test Property 🚧
 
-The `test` property represents the test that the canary executes. You can call `Test.custom()` which will allow you to specify a custom script and handler for the canary. To specify the script in the `code` property, use the static method `code.fromInline()`.
+The `test` property represents the test that the canary executes. You can supply you own code using the `Test.custom()` method, or you can use a blueprint e.g `Test.heartbeat()`.
+
+#### Custom 🚧
+
+which will allow you to specify a custom script and handler for the canary. To specify the script in the `code` property, use the static method `code.fromInline()`.
 
 ```ts
 const canary = new Canary(this, 'MyCanary', {
-  test: Test.custom({
+  test: Test.custom({ // 🚧 Not yet implemented 
     code: Code.fromInline('exports.handler = async () => {\nconsole.log(\'hello world\');\n};'),
     handler: 'index.handler',
   }),
 });
 ```
+
+#### Blueprint 🚧
+
+TODO add description
 
 ### Alarms
 
@@ -73,6 +85,8 @@ You can configure a CloudWatch Alarm on canary metrics. Metrics are emitted by C
 - `canary.metricSuccessPercent()` - percentage of successful canary runs over a given time
 - `canary.metricDuration()` - how much time each canary run takes
 - `canary.metricFailed()` - number of failed canary runs over a given time
+
+Create an alarm that tracks the canary metric:
 
 ```ts
 new cloudwatch.Alarm(this, 'CanaryAlarm', {
