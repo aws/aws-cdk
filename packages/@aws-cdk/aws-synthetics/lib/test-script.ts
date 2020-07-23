@@ -2,8 +2,13 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Construct } from '@aws-cdk/core';
 import { Code } from './code';
 
+/**
+ * Specify a test that the canary should run
+ */
 export class Test {
   /**
+   * Specify a custom test with your own code
+   *
    * @returns `Test` associated with the specified Code object
    * @param code The script you want the canary to run
    * @param handler The handler of the code
@@ -53,6 +58,9 @@ export class Test {
   private constructor(public readonly config: TestConfig){}
 }
 
+/**
+ * Configuration property of the test class
+ */
 export interface TestConfig {
   /**
    * The location of the code in S3 (mutually exclusive with `inlineCode`).

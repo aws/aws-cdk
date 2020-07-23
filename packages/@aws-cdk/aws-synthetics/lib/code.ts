@@ -1,9 +1,14 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import { Construct } from '@aws-cdk/core';
 
+/**
+ * The custom code the canary should run
+ */
 export abstract class Code {
 
   /**
+   * Specify code inline
+   *
    * @returns `InlineCode` with inline code.
    * @param code The actual handler code (limited to 4KiB)
    */
@@ -37,6 +42,9 @@ export abstract class Code {
   public abstract bind(scope: Construct): CodeConfig;
 }
 
+/**
+ * Configuration of the code class
+ */
 export interface CodeConfig {
   /**
    * The location of the code in S3 (mutually exclusive with `inlineCode`).
@@ -53,8 +61,6 @@ export interface CodeConfig {
  * Canary code from an inline string (limited to 4KiB).
  */
 export class InlineCode extends Code {
-  public readonly isInline = true;
-
   constructor(private code: string) {
     super();
 

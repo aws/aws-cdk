@@ -90,10 +90,13 @@
   },
   "awslint": {
     "exclude": [
-      "docs-public-apis:@aws-cdk/aws-synthetics.ICanary",
-      "docs-public-apis:@aws-cdk/aws-synthetics.ICanary",
       "docs-public-apis:@aws-cdk/aws-synthetics.Canary",
-      "props-physical-name:@aws-cdk/aws-synthetics.CanaryProps"
+      "docs-public-apis:@aws-cdk/aws-synthetics.Test.config",
+      "props-physical-name:@aws-cdk/aws-synthetics.CanaryProps",
+      "props-default-doc:@aws-cdk/aws-synthetics.CodeConfig.inlineCode",
+      "props-default-doc:@aws-cdk/aws-synthetics.CodeConfig.s3Location",
+      "props-default-doc:@aws-cdk/aws-synthetics.TestConfig.inlineCode",
+      "props-default-doc:@aws-cdk/aws-synthetics.TestConfig.s3Location"
     ]
   },
   "stability": "experimental",
