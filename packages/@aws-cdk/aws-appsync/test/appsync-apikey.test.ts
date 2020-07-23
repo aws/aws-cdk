@@ -11,7 +11,7 @@ describe('AppSync Authorization Config', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'api', {
       name: 'api',
-      schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
     });
 
     // THEN
@@ -25,7 +25,7 @@ describe('AppSync Authorization Config', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'api', {
       name: 'api',
-      schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.IAM,
@@ -47,7 +47,7 @@ describe('AppSync Authorization Config', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'api', {
       name: 'api',
-      schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.IAM,
@@ -66,7 +66,7 @@ describe('AppSync Authorization Config', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'api', {
       name: 'api',
-      schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.IAM,
