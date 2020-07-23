@@ -1,0 +1,16 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "some-bucket1231232343453452234"
+      }
+    },
+    "AnotherBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": { "Fn::Sub": "unusued-bucket-fn-sub-${Bucket}" }
+      }
+    }
+  }
+}

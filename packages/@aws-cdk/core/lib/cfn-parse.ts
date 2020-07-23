@@ -10,6 +10,7 @@ import { ICfnFinder } from './from-cfn';
 import { CfnReference } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
 import { isResolvableObject, Token } from './token';
+import { CfnRefElement } from './cfn-element';
 
 /**
  * This class contains static methods called when going from
@@ -111,7 +112,7 @@ export class FromCloudFormation {
 
   public static getCfnTag(tag: any): CfnTag {
     return tag == null
-      ? { } as any // break the type system - this should be detected at runtime by a tag validator
+      ? {} as any // break the type system - this should be detected at runtime by a tag validator
       : {
         key: tag.Key,
         value: tag.Value,
@@ -419,6 +420,37 @@ export class CfnParser {
         const value = this.parseValue(object[key]);
         return Fn.conditionOr(...value);
       }
+      case 'Fn::Sub': {
+        const value = this.parseValue(object[key]);
+        if (typeof value === 'object') {
+          console.log(value);
+        }
+        if (typeof value === 'string') {
+          if (value.indexOf('!') !== -1) {
+            // loop from the '{' to the '!', eg "${    !  ..."
+            for (let i = value.indexOf('${') + 2; i < value.indexOf('!'); i++) {
+              if (value[i] !== ' ') {
+                throw new Error('variable names in Fn::Sub syntax must contain only alphanumeric characters, underscores, periods, and colons');
+              }
+            }
+            break;
+          }
+          const refTarget = value.substring(value.indexOf('${') + 2, value.indexOf('}')).trim();
+          const specialRef = specialCaseRefs(refTarget);
+          if (specialRef) {
+            return specialRef;
+          } else {
+            const refElement = this.options.finder.findRefTarget(refTarget);
+            if (!refElement) {
+              throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
+            }
+            //this.parseIfCfnIntrinsic(refTarget);
+            console.log('refTarget === ' + refTarget);
+            return "my-string" + CfnReference.for(refElement, 'Ref')
+          }
+        }
+        return "my-other-string";
+      }
       case 'Condition': {
         // a reference to a Condition from another Condition
         const condition = this.options.finder.findCondition(object[key]);
@@ -441,8 +473,8 @@ export class CfnParser {
 
     const key = objectKeys[0];
     return key === 'Ref' || key.startsWith('Fn::') ||
-        // special intrinsic only available in the 'Conditions' section
-        (this.options.context === CfnParsingContext.CONDITIONS && key === 'Condition')
+      // special intrinsic only available in the 'Conditions' section
+      (this.options.context === CfnParsingContext.CONDITIONS && key === 'Condition')
       ? key
       : undefined;
   }

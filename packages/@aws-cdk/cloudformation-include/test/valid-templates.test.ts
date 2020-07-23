@@ -192,6 +192,22 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template with Fn::Sub in string form and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-valid-string.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-shadow.json'),
+    );
+  });
+
+  /*test('can ingest a template with Fn::Sub with a key that is a logicalID and a literal and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-shadow.json'),
+    );
+  });*/
+
   test('can ingest a template with a Ref expression for an array value, and output it unchanged', () => {
     includeTestTemplate(stack, 'ref-array-property.json');
 
