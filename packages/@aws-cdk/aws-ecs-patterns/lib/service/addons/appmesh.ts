@@ -25,7 +25,6 @@ export interface MeshProps {
 export class AppMeshAddon extends ServiceAddon {
   protected virtualNode!: appmesh.VirtualNode;
   protected virtualService!: appmesh.VirtualService;
-
   private mesh: appmesh.Mesh;
 
   constructor(props: MeshProps) {
@@ -88,10 +87,14 @@ export class AppMeshAddon extends ServiceAddon {
   }
 
   public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
-    const appMeshRepository = ecr.Repository.fromRepositoryArn(this.scope, 'app-mesh-envoy', 'arn:aws:ecr:us-east-1:840364872350:repository/aws-appmesh-envoy');
+    const appMeshRepo = ecr.Repository.fromRepositoryArn(
+      this.scope,
+      `${this.parentService.id}-envoy-repo`,
+      'arn:aws:ecr:us-east-1:840364872350:repository/aws-appmesh-envoy',
+    );
 
     this.container = taskDefinition.addContainer('envoy', {
-      image: ecs.ContainerImage.fromEcrRepository(appMeshRepository, 'v1.13.1.1-prod'),
+      image: ecs.ContainerImage.fromEcrRepository(appMeshRepo, 'v1.13.1.1-prod'),
       essential: true,
       environment: {
         APPMESH_VIRTUAL_NODE_NAME: `mesh/${this.mesh.meshName}/virtualNode/${this.parentService.id}`,

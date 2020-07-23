@@ -2,7 +2,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as alb from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ServiceAddon } from './addon-interfaces';
+import { ServiceAddon, ServiceBuild } from './addon-interfaces';
 
 /**
  * This addon add a public facing load balancer for sending traffic
@@ -34,6 +34,19 @@ export class HttpLoadBalancerAddon extends ServiceAddon {
     new cdk.CfnOutput(scope, `${this.parentService.id}-load-balancer-dns-output`, {
       value: this.loadBalancer.loadBalancerDnsName,
     });
+  }
+
+  // Minor service configuration tweaks to work better with a load balancer
+  public mutateServiceProps(props: ServiceBuild) {
+    return {
+      ...props,
+
+      // Give the task a little bit of grace time to start passing
+      // healthchecks. Without this it is possible for a slow starting task
+      // to cause the ALB to consider the task unhealthy, causing ECS to stop
+      // the task before it actually has a chance to finish starting up
+      healthCheckGracePeriod: cdk.Duration.minutes(1),
+    } as ServiceBuild;
   }
 
   // After the service is created add the service to the load balancer's listener

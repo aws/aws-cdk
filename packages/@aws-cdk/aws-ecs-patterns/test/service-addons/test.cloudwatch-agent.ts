@@ -24,8 +24,6 @@ export = {
 
     // THEN
 
-    // Ensure that task has a Firelens sidecar and a log configuration
-    // pointing at the sidecar
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {

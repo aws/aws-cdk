@@ -72,6 +72,14 @@ export interface ServiceBuild {
    * @default - No Cloud Map configured
    */
   readonly cloudMapOptions?: ecs.CloudMapOptions
+
+  /**
+   * During initial task startup how long the healthcheck can fail before
+   * the task is considered unhealthy. This is used to give the task more
+   * time to start passing healthchecks
+   * @default - No grace period
+   */
+  readonly healthCheckGracePeriod?: cdk.Duration
 }
 
 /**
