@@ -149,7 +149,7 @@ jobs:
            {"keywords":["[@aws-cdk/aws-ssm]","[aws-ssm]","[ssm]"],"labels":["@aws-cdk/aws-ssm"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["[@aws-cdk/aws-stepfunctions]","[aws-stepfunctions]","[stepfunctions]","[step functions]","[step-functions]"],"labels":["@aws-cdk/aws-stepfunctions"],"assignees":["shivlaks"]},
            {"keywords":["[@aws-cdk/aws-stepfunctions-tasks]","[aws-stepfunctions-tasks]","[stepfunctions-tasks]","[stepfunctions tasks]"],"labels":["@aws-cdk/aws-stepfunctions-tasks"],"assignees":["shivlaks"]},
-           {"keywords":["[@aws-cdk/aws-synthetics]","[aws-synthetics]","[synthetics]"],"labels":["@aws-cdk/aws-synthetics"],"assignees":["ericzbeard"]},
+           {"keywords":["[@aws-cdk/aws-synthetics]","[aws-synthetics]","[synthetics]"],"labels":["@aws-cdk/aws-synthetics"],"assignees":["NetaNir"]},
            {"keywords":["[@aws-cdk/aws-transfer]","[aws-transfer]","[transfer]"],"labels":["@aws-cdk/aws-transfer"],"assignees":["iliapolo"]},
            {"keywords":["[@aws-cdk/aws-waf]","[aws-waf]","[waf]"],"labels":["@aws-cdk/aws-waf"],"assignees":["ericzbeard"]},
            {"keywords":["[@aws-cdk/aws-wafregional]","[aws-wafregional]","[wafregional]","[waf regional]","[waf-regional]"],"labels":["@aws-cdk/aws-wafregional"],"assignees":["ericzbeard"]},
