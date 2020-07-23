@@ -204,7 +204,7 @@ describe('certificates', () => {
         defaultBehavior: { origin },
         certificate,
       });
-    }).toThrow(/Distribution certificates must be in the us-east-1 region/);
+    }).toThrow(/Distribution certificates must be in the us-east-1 region and the certificate you provided is in eu-west-1./);
   });
 
   test('adding a certificate renders the correct ViewerCertificate property', () => {
