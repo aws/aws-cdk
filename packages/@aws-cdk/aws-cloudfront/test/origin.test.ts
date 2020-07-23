@@ -17,7 +17,7 @@ describe('S3Origin', () => {
   test('as bucket, renders all required properties, including S3Origin config', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
-    const origin = new S3Origin({ bucket, domainName: bucket.bucketRegionalDomainName });
+    const origin = new S3Origin({ bucket });
     origin.bind(stack, { originIndex: 0 });
 
     expect(origin.renderOrigin()).toEqual({
@@ -32,7 +32,7 @@ describe('S3Origin', () => {
   test('as bucket, creates an OriginAccessIdentity and grants read permissions on the bucket', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
-    const origin = new S3Origin({ bucket, domainName: bucket.bucketRegionalDomainName });
+    const origin = new S3Origin({ bucket });
     new Distribution(stack, 'Dist', { defaultBehavior: { origin } });
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
@@ -54,7 +54,7 @@ describe('S3Origin', () => {
 
 describe('HttpOrigin', () => {
   test('renders a minimal example with required props', () => {
-    const origin = new HttpOrigin({ domainName: 'www.example.com' });
+    const origin = new HttpOrigin('www.example.com');
     origin.bind(stack, { originIndex: 0 });
 
     expect(origin.renderOrigin()).toEqual({
@@ -67,8 +67,7 @@ describe('HttpOrigin', () => {
   });
 
   test('renders an example with all available props', () => {
-    const origin = new HttpOrigin({
-      domainName: 'www.example.com',
+    const origin = new HttpOrigin('www.example.com', {
       originPath: '/app',
       connectionTimeout: Duration.seconds(5),
       connectionAttempts: 2,
@@ -109,8 +108,7 @@ describe('HttpOrigin', () => {
     Duration.minutes(5),
   ])('validates readTimeout is an integer between 1 and 60 seconds', (readTimeout) => {
     expect(() => {
-      new HttpOrigin({
-        domainName: 'www.example.com',
+      new HttpOrigin('www.example.com', {
         readTimeout,
       });
     }).toThrow(`readTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${readTimeout.toSeconds()}.`);
@@ -124,8 +122,7 @@ describe('HttpOrigin', () => {
     Duration.minutes(5),
   ])('validates keepaliveTimeout is an integer between 1 and 60 seconds', (keepaliveTimeout) => {
     expect(() => {
-      new HttpOrigin({
-        domainName: 'www.example.com',
+      new HttpOrigin('www.example.com', {
         keepaliveTimeout,
       });
     }).toThrow(`keepaliveTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${keepaliveTimeout.toSeconds()}.`);
@@ -141,8 +138,7 @@ describe('Origin', () => {
     Duration.minutes(5),
   ])('validates connectionTimeout is an int between 1 and 10 seconds', (connectionTimeout) => {
     expect(() => {
-      new TestOrigin({
-        domainName: 'www.example.com',
+      new TestOrigin('www.example.com', {
         connectionTimeout,
       });
     }).toThrow(`connectionTimeout: Must be an int between 1 and 10 seconds (inclusive); received ${connectionTimeout.toSeconds()}.`);
@@ -151,8 +147,7 @@ describe('Origin', () => {
   test.each([-0.5, 0.5, 1.5, 4])
   ('validates connectionAttempts is an int between 1 and 3', (connectionAttempts) => {
     expect(() => {
-      new TestOrigin({
-        domainName: 'www.example.com',
+      new TestOrigin('www.example.com', {
         connectionAttempts,
       });
     }).toThrow(`connectionAttempts: Must be an int between 1 and 3 (inclusive); received ${connectionAttempts}.`);
@@ -160,8 +155,7 @@ describe('Origin', () => {
 
   test.each(['api', '/api', '/api/', 'api/'])
   ('enforces that originPath starts but does not end, with a /', (originPath) => {
-    const origin = new TestOrigin({
-      domainName: 'www.example.com',
+    const origin = new TestOrigin('www.example.com', {
       originPath,
     });
     origin.bind(stack, { originIndex: 0 });
@@ -172,7 +166,7 @@ describe('Origin', () => {
 
 /** Used for testing common Origin functionality */
 class TestOrigin extends Origin {
-  constructor(props: OriginProps) { super(props); }
+  constructor(domainName: string, props: OriginProps = {}) { super(domainName, props); }
   protected renderS3OriginConfig(): CfnDistribution.S3OriginConfigProperty | undefined {
     return { originAccessIdentity: 'origin-access-identity/cloudfront/MyOAIName' };
   }

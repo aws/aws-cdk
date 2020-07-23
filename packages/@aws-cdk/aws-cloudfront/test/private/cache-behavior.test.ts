@@ -14,7 +14,7 @@ beforeEach(() => {
 });
 
 test('renders the minimum template with an origin and path specified', () => {
-  const origin = new HttpOrigin({ domainName: 'www.example.com' });
+  const origin = new HttpOrigin('www.example.com');
   const behavior = new CacheBehavior({
     origin,
     pathPattern: '*',
@@ -30,7 +30,7 @@ test('renders the minimum template with an origin and path specified', () => {
 });
 
 test('renders with all properties specified', () => {
-  const origin = new HttpOrigin({ domainName: 'www.example.com' });
+  const origin = new HttpOrigin('www.example.com');
   const behavior = new CacheBehavior({
     origin,
     pathPattern: '*',

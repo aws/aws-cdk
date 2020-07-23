@@ -20,11 +20,11 @@ documents.
 
 ```ts
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
-import * as cloudfront_origins from '@aws-cdk/aws-cloudfront-origins';
+import * as origins from '@aws-cdk/aws-cloudfront-origins';
 
 const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new cloudfront_origins.S3Origin(myBucket) },
+  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
 });
 ```
 
@@ -51,14 +51,14 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   internetFacing: true
 });
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new cloudfront_origins.LoadBalancerV2Origin(lb) },
+  defaultBehavior: { origin: new origins.LoadBalancerV2Origin(lb) },
 });
 ```
 
 The origin can also be customized to respond on different ports, have different connection properties, etc.
 
 ```ts
-const origin = new cloudfront_origins.LoadBalancerV2Origin(loadBalancer, {
+const origin = new origins.LoadBalancerV2Origin(loadBalancer, {
   connectionAttempts: 3,
   connectionTimeout: Duration.seconds(5),
   protocolPolicy: cloudfront.OriginProtocolPolicy.MATCH_VIEWER,
@@ -71,7 +71,7 @@ Origins can also be created from any other HTTP endpoint, given the domain name,
 
 ```ts
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new cloudfront_origins.HttpOrigin('www.example.com') },
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
 });
 ```
 

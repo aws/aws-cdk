@@ -5,7 +5,7 @@ import * as cloudfront from '@aws-cdk/aws-cloudfront';
  *
  * @experimental
  */
-export interface HttpOriginProps extends cloudfront.HttpOriginOptions { }
+export interface HttpOriginProps extends cloudfront.HttpOriginProps { }
 
 /**
  * An Origin for an HTTP server.
@@ -15,10 +15,7 @@ export interface HttpOriginProps extends cloudfront.HttpOriginOptions { }
 export class HttpOrigin extends cloudfront.HttpOrigin {
 
   constructor(domainName: string, props: HttpOriginProps = {}) {
-    super({
-      domainName,
-      ...props,
-    });
+    super(domainName, { ...props });
   }
 
 }

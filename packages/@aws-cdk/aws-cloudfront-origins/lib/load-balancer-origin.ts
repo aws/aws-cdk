@@ -6,7 +6,7 @@ import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
  *
  * @experimental
  */
-export interface LoadBalancerV2OriginProps extends cloudfront.HttpOriginOptions { }
+export interface LoadBalancerV2OriginProps extends cloudfront.HttpOriginProps { }
 
 /**
  * An Origin for a v2 load balancer.
@@ -16,10 +16,7 @@ export interface LoadBalancerV2OriginProps extends cloudfront.HttpOriginOptions 
 export class LoadBalancerV2Origin extends cloudfront.HttpOrigin {
 
   constructor(loadBalancer: elbv2.ILoadBalancerV2, props: LoadBalancerV2OriginProps = {}) {
-    super({
-      domainName: loadBalancer.loadBalancerDnsName,
-      ...props,
-    });
+    super(loadBalancer.loadBalancerDnsName, { ...props });
   }
 
 }

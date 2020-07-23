@@ -93,7 +93,7 @@ describe('multiple behaviors', () => {
   test('a second behavior can be added to a secondary origin', () => {
     const origin = defaultS3Origin();
     const bucket2 = new s3.Bucket(stack, 'Bucket2');
-    const origin2 = new S3Origin({bucket: bucket2, domainName: bucket2.bucketRegionalDomainName});
+    const origin2 = new S3Origin({ bucket: bucket2 });
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -140,7 +140,7 @@ describe('multiple behaviors', () => {
   test('behavior creation order is preserved', () => {
     const origin = defaultS3Origin();
     const bucket2 = new s3.Bucket(stack, 'Bucket2');
-    const origin2 = new S3Origin({bucket: bucket2, domainName: bucket2.bucketRegionalDomainName});
+    const origin2 = new S3Origin({ bucket: bucket2 });
     const dist = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -301,9 +301,5 @@ test('price class is included if provided', () => {
 });
 
 function defaultS3Origin(): Origin {
-  const bucket = new s3.Bucket(stack, 'Bucket');
-  return new S3Origin({
-    bucket,
-    domainName: bucket.bucketRegionalDomainName,
-  });
+  return new S3Origin({ bucket: new s3.Bucket(stack, 'Bucket') });
 }

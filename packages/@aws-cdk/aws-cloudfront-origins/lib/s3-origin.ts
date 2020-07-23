@@ -33,33 +33,31 @@ export class S3Origin extends cloudfront.Origin {
   constructor(bucket: s3.IBucket, props: S3OriginProps = {}) {
     let proxyOrigin;
     if (bucket.isWebsite) {
-      proxyOrigin = new cloudfront.HttpOrigin({
-        domainName: bucket.bucketWebsiteDomainName,
+      proxyOrigin = new cloudfront.HttpOrigin(bucket.bucketWebsiteDomainName, {
         protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY, // S3 only supports HTTP for website buckets
         ...props,
       });
     } else {
       proxyOrigin = new cloudfront.S3Origin({
-        domainName: bucket.bucketRegionalDomainName,
         bucket,
         ...props,
       });
     }
 
-    super({domainName: proxyOrigin.domainName});
+    super(proxyOrigin.domainName);
 
     this.origin = proxyOrigin;
   }
 
-  public get id(): string {
+  public get id() {
     return this.origin.id;
   }
 
-  public bind(scope: cdk.Construct, options: cloudfront.OriginBindOptions): void {
+  public bind(scope: cdk.Construct, options: cloudfront.OriginBindOptions) {
     this.origin.bind(scope, options);
   }
 
-  public renderOrigin(): cloudfront.CfnDistribution.OriginProperty {
+  public renderOrigin() {
     return this.origin.renderOrigin();
   }
 

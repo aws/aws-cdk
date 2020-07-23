@@ -45,12 +45,12 @@ documents.
 
 ```ts
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
-import * as cloudfront_origins from '@aws-cdk/aws-cloudfront-origins';
+import * as origins from '@aws-cdk/aws-cloudfront-origins';
 
 // Creates a distribution for a S3 bucket.
 const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new cloudfront_origins.S3Origin(myBucket) },
+  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
 });
 ```
 
@@ -77,7 +77,7 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   internetFacing: true
 });
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new cloudfront_origins.LoadBalancerV2Origin(lb) },
+  defaultBehavior: { origin: new origins.LoadBalancerV2Origin(lb) },
 });
 ```
 
@@ -87,7 +87,7 @@ Origins can also be created from any other HTTP endpoint, given the domain name,
 
 ```ts
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new cloudfront_origins.HttpOrigin('www.example.com') },
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
 });
 ```
 
@@ -105,7 +105,7 @@ const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
   hostedZone,
 });
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new cloudfront_origins.S3Origin(myBucket) },
+  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
   certificate: myCertificate,
 });
 ```
@@ -122,7 +122,7 @@ methods and viewer protocol policy of the cache.
 ```ts
 const myWebDistribution = new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
-    origin: new cloudfront_origins.S3Origin(myBucket),
+    origin: new origins.S3Origin(myBucket),
     allowedMethods: AllowedMethods.ALLOW_ALL,
     viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
   }
@@ -134,7 +134,7 @@ and enable customization for a specific set of resources based on a URL path pat
 override the default time-to-live (TTL) for all of the images.
 
 ```ts
-myWebDistribution.addBehavior('/images/*.jpg', new cloudfront_origins.S3Origin(myBucket), {
+myWebDistribution.addBehavior('/images/*.jpg', new origins.S3Origin(myBucket), {
   viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
   defaultTtl: cdk.Duration.days(7),
 });
@@ -143,7 +143,7 @@ myWebDistribution.addBehavior('/images/*.jpg', new cloudfront_origins.S3Origin(m
 These behaviors can also be specified at distribution creation time.
 
 ```ts
-const bucketOrigin = new cloudfront_origins.S3Origin(myBucket);
+const bucketOrigin = new origins.S3Origin(myBucket);
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
     origin: bucketOrigin,

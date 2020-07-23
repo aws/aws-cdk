@@ -5,11 +5,11 @@ import { OriginProtocolPolicy } from './distribution';
 import { OriginAccessIdentity } from './origin_access_identity';
 
 /**
- * Options to define an Origin.
+ * Properties to define an Origin.
  *
  * @experimental
  */
-export interface OriginOptions {
+export interface OriginProps {
   /**
    * An optional path that CloudFront appends to the origin domain name when CloudFront requests content from the origin.
    * Must begin, but not end, with '/' (e.g., '/production/images').
@@ -39,18 +39,6 @@ export interface OriginOptions {
    * @default {}
    */
   readonly customHeaders?: Record<string, string>;
-}
-
-/**
- * Properties to use when creating an Origin.
- *
- * @experimental
- */
-export interface OriginProps extends OriginOptions {
-  /**
-   * The domain name of the Amazon S3 bucket or HTTP server origin.
-   */
-  readonly domainName: string;
 }
 
 /**
@@ -85,11 +73,11 @@ export abstract class Origin {
 
   private originId?: string;
 
-  protected constructor(props: OriginProps) {
+  protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
     validateIntInRangeOrUndefined('connectionAttempts', 1, 3, props.connectionAttempts, false);
 
-    this.domainName = props.domainName;
+    this.domainName = domainName;
     this.originPath = this.validateOriginPath(props.originPath);
     this.connectionTimeout = props.connectionTimeout;
     this.connectionAttempts = props.connectionAttempts;
@@ -192,7 +180,7 @@ export class S3Origin extends Origin {
   private originAccessIdentity!: OriginAccessIdentity;
 
   constructor(props: S3OriginProps) {
-    super(props);
+    super(props.bucket.bucketRegionalDomainName, props);
     this.bucket = props.bucket;
   }
 
@@ -210,11 +198,11 @@ export class S3Origin extends Origin {
 }
 
 /**
- * Options for an Origin backed by an S3 website-configured bucket, load balancer, or custom HTTP server.
+ * Properties for an Origin backed by an S3 website-configured bucket, load balancer, or custom HTTP server.
  *
  * @experimental
  */
-export interface HttpOriginOptions extends OriginOptions {
+export interface HttpOriginProps extends OriginProps {
   /**
    * Specifies the protocol (HTTP or HTTPS) that CloudFront uses to connect to the origin.
    *
@@ -254,21 +242,14 @@ export interface HttpOriginOptions extends OriginOptions {
 }
 
 /**
- * Properties for an Origin backed by an S3 website-configured bucket, load balancer, or custom HTTP server.
- *
- * @experimental
- */
-export interface HttpOriginProps extends OriginProps, HttpOriginOptions { }
-
-/**
  * An Origin for an HTTP server or S3 bucket configured for website hosting.
  *
  * @experimental
  */
 export class HttpOrigin extends Origin {
 
-  constructor(private readonly props: HttpOriginProps) {
-    super(props);
+  constructor(domainName: string, private readonly props: HttpOriginProps = {}) {
+    super(domainName, props);
 
     validateIntInRangeOrUndefined('readTimeout', 1, 60, props.readTimeout?.toSeconds());
     validateIntInRangeOrUndefined('keepaliveTimeout', 1, 60, props.keepaliveTimeout?.toSeconds());
