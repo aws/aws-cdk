@@ -2,7 +2,6 @@ import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-//import { CanaryBase } from './canary-base';
 import { CfnCanary } from './synthetics.generated';
 
 /**
@@ -139,36 +138,36 @@ export class Canary extends cdk.Resource {
     const s3Location = props.artifactBucket?.s3UrlForObject() ?? new s3.Bucket(this, 'ServiceBucket').s3UrlForObject();
 
     // Created role will need these policies to run the Canary.
+    // These are the necessary permissions as listed here:
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html
     const policy = new iam.PolicyDocument({
-      statements: [new iam.PolicyStatement({
-        resources: ['*'],
-        actions: [
-          // 's3:PutObject',
-          // 's3:GetBucketLocation',
-          // 's3:ListAllMyBuckets',
-          'cloudwatch:PutMetricData',
-          // 'logs:CreateLogGroup',
-          // 'logs:CreateLogStream',
-          // 'logs:PutLogEvents',
-        ],
-      })],
+      statements: [
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['s3:ListAllMyBuckets', 's3:PutObject', 's3:GetBucketLocation'],
+        }),
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['cloudwatch:PutMetricData'],
+          conditions: {StringEquals: {'cloudwatch:namespace': 'CloudWatchSynthetics'}},
+        }),
+        new iam.PolicyStatement({
+          resources: ['arn:aws:logs:::*'],
+          actions: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
+        }),
+      ],
     });
     const inlinePolicies = { canaryPolicy: policy };
 
-    const managedPolicies = new Array<iam.IManagedPolicy>();
-
-    // the arn is in the form of - arn:aws:iam::aws:policy/CloudWatchSyntheticsFullAccess
-    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchSyntheticsFullAccess'));
-
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies,
       inlinePolicies,
     });
 
     const name = props.name ? this.verifyName(props.name) : this.generateName();
     const duration = props.timeToLive ?? cdk.Duration.seconds(0);
     const frequency = props.frequency ?? cdk.Duration.minutes(5);
+    const memory = props.memorySize?.toMebibytes() ?? 960;
     var timeout = props.timeout ?? cdk.Duration.seconds(Math.min(frequency.toSeconds(), 900));
     timeout = cdk.Duration.seconds(Math.min(timeout.toSeconds(), frequency.toSeconds()));
 
@@ -179,7 +178,7 @@ export class Canary extends cdk.Resource {
       runtimeVersion: 'syn-1.0',
       name,
       runConfig: {
-        // Will include MemorySize when generated code gets updated.
+        memoryInMb: this.verifyMemorySize(memory),
         timeoutInSeconds: timeout.toSeconds(),
       },
       schedule: {
@@ -297,6 +296,21 @@ export class Canary extends cdk.Resource {
       throw new Error('Canary Name must be less than 21 characters');
     }
     return name;
+  }
+
+  /**
+   * Verifies that the memory specified is a multiple of 64 and in between 960 - 3008.
+   *
+   * @param memory the amount of memory specified, in mebibytes
+   */
+  private verifyMemorySize(memory: number): number {
+    if(memory < 960 || memory > 3008) {
+      throw new Error('memory size must be greater than 960 mebibytes and less than 3008 mebibytes');
+    }
+    if(memory % 64 !== 0) {
+      throw new Error('memory size must be a multiple of 64 mebibytes');
+    }
+    return memory;
   }
 
   /**
