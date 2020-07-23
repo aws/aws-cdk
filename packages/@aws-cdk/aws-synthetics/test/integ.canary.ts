@@ -9,7 +9,7 @@ import * as synthetics from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-canary');
 
-new synthetics.Canary(stack, 'mycanary-124', {
+new synthetics.Canary(stack, 'mycanary-555', {
 });
 
 app.synth();
