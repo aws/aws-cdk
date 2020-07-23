@@ -179,6 +179,7 @@ export class Canary extends cdk.Resource {
     this.validateFrequency(frequency);
     const memory = props.memorySize?.toMebibytes() ?? 960;
     this.validateMemory(memory);
+    // Timeout defaults to the frequency or 900, whichever is smaller. It also may not be greater than the frequency.
     var timeout = props.timeout ?? cdk.Duration.seconds(Math.min(frequency.toSeconds(), 900));
     timeout = cdk.Duration.seconds(Math.min(timeout.toSeconds(), frequency.toSeconds()));
 
