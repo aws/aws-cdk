@@ -1,11 +1,11 @@
 {
   "Resources": {
-    "mycanary123ServiceBucket6519A7C6": {
+    "mycanary124ServiceBucket3820EF4B": {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "mycanary123ServiceRoleD2369B8D": {
+    "mycanary124ServiceRole638B4B63": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -26,16 +26,31 @@
               "Statement": [
                 {
                   "Action": [
-                    "s3:PutObject",
-                    "s3:GetBucketLocation",
                     "s3:ListAllMyBuckets",
-                    "cloudwatch:PutMetricData",
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents"
+                    "s3:PutObject",
+                    "s3:GetBucketLocation"
                   ],
                   "Effect": "Allow",
                   "Resource": "*"
+                },
+                {
+                  "Action": "cloudwatch:PutMetricData",
+                  "Condition": {
+                    "StringEquals": {
+                      "cloudwatch:namespace": "CloudWatchSynthetics"
+                    }
+                  },
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup",
+                    "logs:PutLogEvents"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:logs:::*"
                 }
               ],
               "Version": "2012-10-17"
@@ -45,7 +60,7 @@
         ]
       }
     },
-    "mycanary123735D52B3": {
+    "mycanary124D014EF2D": {
       "Type": "AWS::Synthetics::Canary",
       "Properties": {
         "ArtifactS3Location": {
@@ -54,34 +69,35 @@
             [
               "s3://",
               {
-                "Ref": "mycanary123ServiceBucket6519A7C6"
+                "Ref": "mycanary124ServiceBucket3820EF4B"
               }
             ]
           ]
         },
         "Code": {
           "Handler": "index.handler",
-          "Script": "foo"
+          "Script": "exports.handler = async () => {\nconsole.log('hello world');\n};"
         },
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
-            "mycanary123ServiceRoleD2369B8D",
+            "mycanary124ServiceRole638B4B63",
             "Arn"
           ]
         },
-        "Name": "awscanarymycanary123",
-        "RunConfig": {
-          "TimeoutInSeconds": 300
-        },
+        "Name": "awscanarymycanary124",
         "RuntimeVersion": "syn-1.0",
         "Schedule": {
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
         },
-        "StartCanaryAfterCreation": true
+        "StartCanaryAfterCreation": true,
+        "RunConfig": {
+          "MemoryInMB": 960,
+          "TimeoutInSeconds": 300
+        }
       },
       "DependsOn": [
-        "mycanary123ServiceRoleD2369B8D"
+        "mycanary124ServiceRole638B4B63"
       ]
     }
   }
