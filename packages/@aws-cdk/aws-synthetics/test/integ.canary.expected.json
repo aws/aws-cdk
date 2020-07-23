@@ -1,11 +1,11 @@
 {
   "Resources": {
-    "mycanary124ServiceBucket3820EF4B": {
+    "mycanary555ServiceBucket40CDD613": {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "mycanary124ServiceRole638B4B63": {
+    "mycanary555ServiceRoleF8E57AF2": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -25,13 +25,22 @@
             "PolicyDocument": {
               "Statement": [
                 {
+                  "Action": "s3:ListAllMyBuckets",
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
                   "Action": [
-                    "s3:ListAllMyBuckets",
                     "s3:PutObject",
                     "s3:GetBucketLocation"
                   ],
                   "Effect": "Allow",
-                  "Resource": "*"
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "mycanary555ServiceBucket40CDD613",
+                      "Arn"
+                    ]
+                  }
                 },
                 {
                   "Action": "cloudwatch:PutMetricData",
@@ -60,7 +69,7 @@
         ]
       }
     },
-    "mycanary124D014EF2D": {
+    "mycanary555DAA1D9EA": {
       "Type": "AWS::Synthetics::Canary",
       "Properties": {
         "ArtifactS3Location": {
@@ -69,7 +78,7 @@
             [
               "s3://",
               {
-                "Ref": "mycanary124ServiceBucket3820EF4B"
+                "Ref": "mycanary555ServiceBucket40CDD613"
               }
             ]
           ]
@@ -80,11 +89,11 @@
         },
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
-            "mycanary124ServiceRole638B4B63",
+            "mycanary555ServiceRoleF8E57AF2",
             "Arn"
           ]
         },
-        "Name": "awscanarymycanary124",
+        "Name": "awscanarymycanary555",
         "RuntimeVersion": "syn-1.0",
         "Schedule": {
           "DurationInSeconds": "0",
@@ -95,10 +104,7 @@
           "MemoryInMB": 960,
           "TimeoutInSeconds": 300
         }
-      },
-      "DependsOn": [
-        "mycanary124ServiceRole638B4B63"
-      ]
+      }
     }
   }
 }

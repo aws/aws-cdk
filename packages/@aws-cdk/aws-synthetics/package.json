@@ -91,7 +91,8 @@
       "docs-public-apis:@aws-cdk/aws-synthetics.ICanary",
       "docs-public-apis:@aws-cdk/aws-synthetics.ICanary",
       "docs-public-apis:@aws-cdk/aws-synthetics.Canary",
-      "props-physical-name:@aws-cdk/aws-synthetics.CanaryProps"
+      "props-physical-name:@aws-cdk/aws-synthetics.CanaryProps",
+      "construct-ctor-props-optional:@aws-cdk/aws-synthetics.Canary"
     ]
   },
   "stability": "experimental",

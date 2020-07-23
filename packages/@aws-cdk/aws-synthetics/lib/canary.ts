@@ -5,9 +5,9 @@ import * as cdk from '@aws-cdk/core';
 import { CfnCanary } from './synthetics.generated';
 
 /**
- * Optional properties for a canary
+ * Properties for a canary
  */
-export interface CanaryOptions extends cdk.ResourceProps {
+export interface CanaryProps {
   /**
    * The s3 location that stores the data of the canary runs.
    *
@@ -92,20 +92,14 @@ export interface CanaryOptions extends cdk.ResourceProps {
    */
   readonly name?: string;
 
-}
-
-/**
- * Properties of a canary
- */
-export interface CanaryProps extends CanaryOptions {
-
   /**
    * Specify the endpoint that you want the canary code to hit. Alternatively, you can specify
    * your own canary script to run.
    *
-   * TODO: implement this
+   * 🚧 TODO: implement
    */
   //readonly test: Test;
+
 }
 
 export class Canary extends cdk.Resource {
@@ -132,10 +126,22 @@ export class Canary extends cdk.Resource {
    */
   public readonly canaryName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: CanaryProps) {
-    super(scope, id);
+  /**
+   * Bucket where data from each canary run is stored
+   */
+  private readonly bucket: s3.IBucket;
 
-    const s3Location = props.artifactBucket?.s3UrlForObject() ?? new s3.Bucket(this, 'ServiceBucket').s3UrlForObject();
+  constructor(scope: cdk.Construct, id: string, props: CanaryProps) {
+    super(scope, id, {
+      physicalName: props.name || cdk.Lazy.stringValue({
+        produce: () => this.generateName(this.node.uniqueId),
+      }),
+    });
+
+    if (props.name) {
+      this.validateName(props.name);
+    }
+    this.bucket = props.artifactBucket ?? new s3.Bucket(this, 'ServiceBucket');
 
     // Created role will need these policies to run the Canary.
     // These are the necessary permissions as listed here:
@@ -144,7 +150,11 @@ export class Canary extends cdk.Resource {
       statements: [
         new iam.PolicyStatement({
           resources: ['*'],
-          actions: ['s3:ListAllMyBuckets', 's3:PutObject', 's3:GetBucketLocation'],
+          actions: ['s3:ListAllMyBuckets'],
+        }),
+        new iam.PolicyStatement({
+          resources: [`${this.bucket.bucketArn}`],
+          actions: ['s3:PutObject', 's3:GetBucketLocation'],
         }),
         new iam.PolicyStatement({
           resources: ['*'],
@@ -164,21 +174,22 @@ export class Canary extends cdk.Resource {
       inlinePolicies,
     });
 
-    const name = props.name ? this.verifyName(props.name) : this.generateName();
     const duration = props.timeToLive ?? cdk.Duration.seconds(0);
     const frequency = props.frequency ?? cdk.Duration.minutes(5);
+    this.validateFrequency(frequency);
     const memory = props.memorySize?.toMebibytes() ?? 960;
+    this.validateMemory(memory);
     var timeout = props.timeout ?? cdk.Duration.seconds(Math.min(frequency.toSeconds(), 900));
     timeout = cdk.Duration.seconds(Math.min(timeout.toSeconds(), frequency.toSeconds()));
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
-      artifactS3Location: s3Location,
+      artifactS3Location: this.bucket.s3UrlForObject(),
       executionRoleArn: this.role.roleArn,
       startCanaryAfterCreation: props.enable ?? true,
       runtimeVersion: 'syn-1.0',
-      name,
+      name: this.physicalName,
       runConfig: {
-        memoryInMb: this.verifyMemorySize(memory),
+        memoryInMb: memory,
         timeoutInSeconds: timeout.toSeconds(),
       },
       schedule: {
@@ -187,12 +198,12 @@ export class Canary extends cdk.Resource {
       },
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
+      // 🚧 TODO: implement
       code: {
-        handler: this.verifyHandler('index.handler'),
+        handler: 'index.handler',
         script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
       },
     });
-    resource.node.addDependency(this.role);
 
     this.canaryId = resource.attrId;
     this.canaryState = resource.attrState;
@@ -247,7 +258,6 @@ export class Canary extends cdk.Resource {
    * @param frequency - the provided frequency
    */
   private createExpression(frequency: cdk.Duration): string {
-    this.verifyExpression(frequency);
     if (frequency.toMinutes() === 1) {
       return 'rate(1 minute)';
     }
@@ -259,26 +269,10 @@ export class Canary extends cdk.Resource {
    *
    * @param frequency - the provided frequency
    */
-  private verifyExpression(frequency: cdk.Duration) {
+  private validateFrequency(frequency: cdk.Duration) {
     if (frequency.toMinutes() !== 0 && (frequency.toMinutes() < 1 || frequency.toMinutes() > 60)) {
       throw new Error('Frequency must be either 0 (for a single run), or between 1 minute and 1 hour');
     }
-  }
-
-  /**
-   * Verifies that the given handler ends in '.handler'. Returns the handler if successful and
-   * throws an error if not.
-   *
-   * @param handler - the handler given by the user
-   */
-  private verifyHandler(handler: string): string {
-    if (!handler.endsWith('.handler')) {
-      throw new Error('Canary Handler must end in \'.handler\'');
-    }
-    if (handler.length > 21) {
-      throw new Error('Canary Handler must be less than 21 characters');
-    }
-    return handler;
   }
 
   /**
@@ -287,7 +281,7 @@ export class Canary extends cdk.Resource {
    *
    * @param name - the given name of the canary
    */
-  private verifyName(name: string): string {
+  private validateName(name: string): string {
     const regex = new RegExp('^[0-9a-z_\-]+$');
     if (!regex.test(name)) {
       throw new Error('Canary Name must be lowercase, numbers, hyphens, or underscores (no spaces)');
@@ -303,7 +297,7 @@ export class Canary extends cdk.Resource {
    *
    * @param memory the amount of memory specified, in mebibytes
    */
-  private verifyMemorySize(memory: number): number {
+  private validateMemory(memory: number): number {
     if(memory < 960 || memory > 3008) {
       throw new Error('memory size must be greater than 960 mebibytes and less than 3008 mebibytes');
     }
@@ -316,9 +310,7 @@ export class Canary extends cdk.Resource {
   /**
    * Creates a unique name for the canary. The generated name becomes the physical ID of the canary.
    */
-  private generateName(): string {
-    return cdk.Lazy.stringValue({
-      produce: () => this.node.uniqueId.toLowerCase().replace('-', '').replace(' ', '').replace('_', '').substring(0,20),
-    });
+  private generateName(name: string): string {
+    return name.toLowerCase().replace('-', '').replace(' ', '').replace('_', '').substring(0,20);
   }
 }
