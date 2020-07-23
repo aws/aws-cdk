@@ -39,7 +39,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
       const log = require('SyntheticsLogger');
   
       exports.handler = async function () {
-        const requestOptions = {"hostname":"api.example.com","method":"","path":"/user/books/topbook/","port":443}
+        const requestOptions = {"hostname":"api.example.com","method":"GET","path":"/user/books/topbook/","port":443}
         let req = https.request(requestOptions);
         req.on('response', (res) => {
           log.info()
@@ -56,7 +56,7 @@ The canary will automatically produce a CloudWatch Dashboard:
 
 ### Canary Test Property
 
-The `test` property represents the test that the canary executes. You can call `Test.custom()` which will allow you to specify a custom script and handler for the canary. To specify the script in the `code` property, use the static method `code.fromInline()`.
+The `test` property represents the test that the canary executes. You can call `Test.custom()`, which will allow you to specify a custom script and handler for the canary. To specify the script in the `code` property, use the static method `code.fromInline()`.
 
 ```ts
 const canary = new Canary(this, 'MyCanary', {
@@ -82,3 +82,10 @@ new cloudwatch.Alarm(this, 'CanaryAlarm', {
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
 });
 ```
+
+### Future Work
+
+- Build `Code.fromAsset()` and `Code.fromBucket()`
+- Build `Test.apiEndpoint()` that will reference a code template that checks the health of an api endpoint.
+- Build `Test.heartBeat()` that will reference a code template that checks the availability of a website.
+- Build `Test.brokenLinks()` that will reference a code template that checks for broken links on a website.
