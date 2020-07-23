@@ -137,7 +137,7 @@ export class Distribution extends Resource implements IDistribution {
     if (props.certificate) {
       const certificateRegion = Stack.of(this).parseArn(props.certificate.certificateArn).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
-        throw new Error('Distribution certificates must be in the us-east-1 region and the certificate you provided is in $Region.');
+        throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
       }
     }
 
@@ -184,13 +184,13 @@ export class Distribution extends Resource implements IDistribution {
   private addOrigin(origin: Origin) {
     if (!this.origins.has(origin)) {
       this.origins.add(origin);
-      origin._bind(this, { originIndex: this.origins.size });
+      origin.bind(this, { originIndex: this.origins.size });
     }
   }
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
     const renderedOrigins: CfnDistribution.OriginProperty[] = [];
-    this.origins.forEach(origin => renderedOrigins.push(origin._renderOrigin()));
+    this.origins.forEach(origin => renderedOrigins.push(origin.renderOrigin()));
     return renderedOrigins;
   }
 

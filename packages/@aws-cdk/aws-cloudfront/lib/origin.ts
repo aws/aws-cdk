@@ -5,17 +5,11 @@ import { OriginProtocolPolicy } from './distribution';
 import { OriginAccessIdentity } from './origin_access_identity';
 
 /**
- * Properties to be used to create an Origin. Prefer to use one of the Origin.from* factory methods rather than
- * instantiating an Origin directly from these properties.
+ * Properties to define an Origin.
  *
  * @experimental
  */
 export interface OriginProps {
-  /**
-   * The domain name of the Amazon S3 bucket or HTTP server origin.
-   */
-  readonly domainName: string;
-
   /**
    * An optional path that CloudFront appends to the origin domain name when CloudFront requests content from the origin.
    * Must begin, but not end, with '/' (e.g., '/production/images').
@@ -49,8 +43,10 @@ export interface OriginProps {
 
 /**
  * Options passed to Origin.bind().
+ *
+ * @experimental
  */
-interface OriginBindOptions {
+export interface OriginBindOptions {
   /**
    * The positional index of this origin within the distribution. Used for ensuring unique IDs.
    */
@@ -66,32 +62,6 @@ interface OriginBindOptions {
 export abstract class Origin {
 
   /**
-   * Creates a pre-configured origin for a S3 bucket.
-   * If this bucket has been configured for static website hosting, then `fromWebsiteBucket` should be used instead.
-   *
-   * An Origin Access Identity will be created and granted read access to the bucket.
-   *
-   * @param bucket the bucket to act as an origin.
-   */
-  public static fromBucket(bucket: IBucket): Origin {
-    if (bucket.isWebsite) {
-      return new HttpOrigin({
-        domainName: bucket.bucketWebsiteDomainName,
-        protocolPolicy: OriginProtocolPolicy.HTTP_ONLY, // S3 only supports HTTP for website buckets
-      });
-    } else {
-      return new S3Origin({ domainName: bucket.bucketRegionalDomainName, bucket });
-    }
-  }
-
-  /**
-   * Creates an origin from an HTTP server.
-   */
-  public static fromHttpServer(props: HttpOriginProps): Origin {
-    return new HttpOrigin(props);
-  }
-
-  /**
    * The domain name of the origin.
    */
   public readonly domainName: string;
@@ -103,11 +73,11 @@ export abstract class Origin {
 
   private originId?: string;
 
-  protected constructor(props: OriginProps) {
+  protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
     validateIntInRangeOrUndefined('connectionAttempts', 1, 3, props.connectionAttempts, false);
 
-    this.domainName = props.domainName;
+    this.domainName = domainName;
     this.originPath = this.validateOriginPath(props.originPath);
     this.connectionTimeout = props.connectionTimeout;
     this.connectionAttempts = props.connectionAttempts;
@@ -126,19 +96,15 @@ export abstract class Origin {
 
   /**
    * Binds the origin to the associated Distribution. Can be used to grant permissions, create dependent resources, etc.
-   *
-   * @internal
    */
-  public _bind(scope: Construct, options: OriginBindOptions): void {
+  public bind(scope: Construct, options: OriginBindOptions): void {
     this.originId = new Construct(scope, `Origin${options.originIndex}`).node.uniqueId;
   }
 
   /**
    * Creates and returns the CloudFormation representation of this origin.
-   *
-   * @internal
    */
-  public _renderOrigin(): CfnDistribution.OriginProperty {
+  public renderOrigin(): CfnDistribution.OriginProperty {
     const s3OriginConfig = this.renderS3OriginConfig();
     const customOriginConfig = this.renderCustomOriginConfig();
 
@@ -214,13 +180,12 @@ export class S3Origin extends Origin {
   private originAccessIdentity!: OriginAccessIdentity;
 
   constructor(props: S3OriginProps) {
-    super(props);
+    super(props.bucket.bucketRegionalDomainName, props);
     this.bucket = props.bucket;
   }
 
-  /** @internal */
-  public _bind(scope: Construct, options: OriginBindOptions) {
-    super._bind(scope, options);
+  public bind(scope: Construct, options: OriginBindOptions) {
+    super.bind(scope, options);
     if (!this.originAccessIdentity) {
       this.originAccessIdentity = new OriginAccessIdentity(scope, `S3Origin${options.originIndex}`);
       this.bucket.grantRead(this.originAccessIdentity);
@@ -283,8 +248,8 @@ export interface HttpOriginProps extends OriginProps {
  */
 export class HttpOrigin extends Origin {
 
-  constructor(private readonly props: HttpOriginProps) {
-    super(props);
+  constructor(domainName: string, private readonly props: HttpOriginProps = {}) {
+    super(domainName, props);
 
     validateIntInRangeOrUndefined('readTimeout', 1, 60, props.readTimeout?.toSeconds());
     validateIntInRangeOrUndefined('keepaliveTimeout', 1, 60, props.keepaliveTimeout?.toSeconds());

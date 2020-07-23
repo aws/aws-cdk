@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { Distribution, Origin, PriceClass } from '../lib';
+import { Distribution, Origin, PriceClass, S3Origin } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -15,7 +15,7 @@ beforeEach(() => {
 });
 
 test('minimal example renders correctly', () => {
-  const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+  const origin = defaultS3Origin();
   new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
 
   expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
@@ -42,7 +42,7 @@ test('minimal example renders correctly', () => {
 describe('multiple behaviors', () => {
 
   test('a second behavior can\'t be specified with the catch-all path pattern', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin = defaultS3Origin();
 
     expect(() => {
       new Distribution(stack, 'MyDist', {
@@ -55,7 +55,7 @@ describe('multiple behaviors', () => {
   });
 
   test('a second behavior can be added to the original origin', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin = defaultS3Origin();
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -91,8 +91,9 @@ describe('multiple behaviors', () => {
   });
 
   test('a second behavior can be added to a secondary origin', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
-    const origin2 = Origin.fromBucket(new s3.Bucket(stack, 'Bucket2'));
+    const origin = defaultS3Origin();
+    const bucket2 = new s3.Bucket(stack, 'Bucket2');
+    const origin2 = new S3Origin({ bucket: bucket2 });
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -137,8 +138,9 @@ describe('multiple behaviors', () => {
   });
 
   test('behavior creation order is preserved', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
-    const origin2 = Origin.fromBucket(new s3.Bucket(stack, 'Bucket2'));
+    const origin = defaultS3Origin();
+    const bucket2 = new s3.Bucket(stack, 'Bucket2');
+    const origin2 = new S3Origin({ bucket: bucket2 });
     const dist = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -194,7 +196,7 @@ describe('multiple behaviors', () => {
 describe('certificates', () => {
 
   test('should fail if using an imported certificate from outside of us-east-1', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin = defaultS3Origin();
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:eu-west-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
     expect(() => {
@@ -202,14 +204,14 @@ describe('certificates', () => {
         defaultBehavior: { origin },
         certificate,
       });
-    }).toThrow(/Distribution certificates must be in the us-east-1 region/);
+    }).toThrow(/Distribution certificates must be in the us-east-1 region and the certificate you provided is in eu-west-1./);
   });
 
   test('adding a certificate renders the correct ViewerCertificate property', () => {
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
     new Distribution(stack, 'Dist', {
-      defaultBehavior: { origin: Origin.fromBucket(new s3.Bucket(stack, 'Bucket')) },
+      defaultBehavior: { origin: defaultS3Origin() },
       certificate,
     });
 
@@ -228,7 +230,7 @@ describe('certificates', () => {
 describe('custom error responses', () => {
 
   test('should fail if responsePagePath is defined but responseCode is not', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin = defaultS3Origin();
 
     expect(() => {
       new Distribution(stack, 'Dist', {
@@ -242,7 +244,7 @@ describe('custom error responses', () => {
   });
 
   test('should fail if only the error code is provided', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin = defaultS3Origin();
 
     expect(() => {
       new Distribution(stack, 'Dist', {
@@ -253,7 +255,7 @@ describe('custom error responses', () => {
   });
 
   test('should render the array of error configs if provided', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin = defaultS3Origin();
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin },
       errorResponses: [{
@@ -287,7 +289,7 @@ describe('custom error responses', () => {
 });
 
 test('price class is included if provided', () => {
-  const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+  const origin = defaultS3Origin();
   new Distribution(stack, 'Dist', {
     defaultBehavior: { origin },
     priceClass: PriceClass.PRICE_CLASS_200,
@@ -298,5 +300,8 @@ test('price class is included if provided', () => {
       PriceClass: 'PriceClass_200',
     },
   });
-
 });
+
+function defaultS3Origin(): Origin {
+  return new S3Origin({ bucket: new s3.Bucket(stack, 'Bucket') });
+}
