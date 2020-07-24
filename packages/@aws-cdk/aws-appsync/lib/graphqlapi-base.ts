@@ -1,7 +1,6 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { IResource, Resource } from '@aws-cdk/core';
-import { CfnGraphQLSchema } from './appsync.generated';
+import { CfnResource, IResource, Resource } from '@aws-cdk/core';
 import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
 /**
  * Interface for GraphQL
@@ -19,11 +18,6 @@ export interface IGraphQLApi extends IResource {
    * @attribute
    */
   readonly arn: string;
-  /**
-   * schema
-   */
-  readonly schema?: CfnGraphQLSchema;
-
   /**
    * add a new dummy data source to this API
    * @param name The name of the data source
@@ -54,6 +48,12 @@ export interface IGraphQLApi extends IResource {
    * @param lambdaFunction The Lambda function to call to interact with this data source
    */
   addLambdaDataSource( name: string, description: string, lambdaFunction: IFunction ): LambdaDataSource;
+
+  /**
+   * Add schema dependency if not imported
+   * @param construct the construct that has a dependency
+   */
+  addSchemaDependency( construct: CfnResource ): boolean;
 }
 
 /**
@@ -68,10 +68,6 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
    * the ARN of the API
    */
   public abstract readonly arn: string;
-  /**
-   * schema
-   */
-  public abstract readonly schema?: CfnGraphQLSchema;
 
   /**
    * add a new dummy data source to this API
@@ -126,16 +122,21 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
    * @param description The description of the data source
    * @param lambdaFunction The Lambda function to call to interact with this data source
    */
-  public addLambdaDataSource(
-    name: string,
-    description: string,
-    lambdaFunction: IFunction,
-  ): LambdaDataSource {
+  public addLambdaDataSource( name: string, description: string, lambdaFunction: IFunction ): LambdaDataSource {
     return new LambdaDataSource(this, `${name}DS`, {
       api: this,
       description,
       name,
       lambdaFunction,
     });
+  }
+
+  /**
+   * Add schema dependency if not imported
+   * @param construct the construct that has a dependency
+   */
+  public addSchemaDependency( construct: CfnResource ): boolean {
+    construct;
+    return false;
   }
 }

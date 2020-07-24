@@ -11,7 +11,7 @@ test('should not throw an Error', () => {
   const when = () => {
     new appsync.GraphQLApi(stack, 'api', {
       authorizationConfig: {},
-      apiName: 'api',
+      name: 'api',
       schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
     });
   };

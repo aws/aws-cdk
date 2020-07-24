@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Construct, Duration, IResolvable } from '@aws-cdk/core';
+import { CfnResource, Construct, Duration, IResolvable, PhysicalName } from '@aws-cdk/core';
 import { CfnApiKey,  CfnGraphQLApi,  CfnGraphQLSchema } from './appsync.generated';
 import { IGraphQLApi, GraphQLApiBase } from './graphqlapi-base';
 
@@ -204,11 +204,10 @@ export interface LogConfig {
  * Properties for an AppSync GraphQL API
  */
 export interface GraphQLApiProps {
-
   /**
    * the name of the GraphQL API
    */
-  readonly apiName: string;
+  readonly name: string;
 
   /**
    * Optional authorization configuration
@@ -239,20 +238,42 @@ export interface GraphQLApiProps {
 
 }
 
+/**
+ * Attributes for GraphQL From
+ */
 export interface GraphQLApiAttributes {
+  /**
+   * the arn for the GraphQL API
+   */
   readonly arn: string,
-  readonly schema?: CfnGraphQLSchema,
 }
 
 /**
  * An AppSync GraphQL API
+ *
+ * @resource AWS::AppSync::GraphQLApi
  */
 export class GraphQLApi extends GraphQLApiBase {
-  public static fromArn(scope: Construct, id: string, attr: GraphQLApiAttributes): IGraphQLApi {
+  /**
+   * Import a GraphQL API given an arn
+   * @param scope scope
+   * @param id id
+   * @param graphQLApiArn the arn of the api
+   */
+  public static fromGraphQLApiArn(scope: Construct, id: string, graphQLApiArn: string): IGraphQLApi {
+    return GraphQLApi.fromGraphQLApiAttributes(scope, id, { arn: graphQLApiArn });
+  }
+
+  /**
+   * Import a GraphQL API through this function
+   * @param scope scope
+   * @param id id
+   * @param attr GraphQL API Attributes of an API
+   */
+  public static fromGraphQLApiAttributes(scope: Construct, id: string, attrs: GraphQLApiAttributes): IGraphQLApi {
     class Import extends GraphQLApiBase {
       public readonly apiId = 'replace';
-      public readonly arn = attr.arn;
-      public readonly schema = attr.schema;
+      public readonly arn = attrs.arn;
       constructor (s: Construct, i: string){
         super(s, i);
       }
@@ -292,9 +313,7 @@ export class GraphQLApi extends GraphQLApiBase {
   private _apiKey?: string;
 
   constructor(scope: Construct, id: string, props: GraphQLApiProps) {
-    super(scope, id, {
-      physicalName: props.apiName,
-    });
+    super(scope, id);
 
     this.validateAuthorizationProps(props);
     const defaultAuthorizationType =
@@ -314,7 +333,7 @@ export class GraphQLApi extends GraphQLApiBase {
     }
 
     this.api = new CfnGraphQLApi(this, 'Resource', {
-      name: props.apiName,
+      name: props.name,
       authenticationType: defaultAuthorizationType,
       ...(props.logConfig && {
         logConfig: {
@@ -346,7 +365,7 @@ export class GraphQLApi extends GraphQLApiBase {
     this.apiId = this.api.attrApiId;
     this.arn = this.api.attrArn;
     this.graphQlUrl = this.api.attrGraphQlUrl;
-    this.name = this.api.name;=
+    this.name = this.api.name;
 
     if (
       defaultAuthorizationType === AuthorizationType.API_KEY ||
@@ -437,6 +456,15 @@ export class GraphQLApi extends GraphQLApiBase {
         },
       );
     }
+  }
+
+  /**
+   * Add schema dependency if not imported
+   * @param construct the construct that has a dependency
+   */
+  public addSchemaDependency( construct: CfnResource ): boolean {
+    construct.addDependsOn(this.schema);
+    return true;
   }
 
   private formatOpenIdConnectConfig(

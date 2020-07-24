@@ -34,7 +34,7 @@ const userPool = new UserPool(stack, 'Pool', {
 });
 
 const api = new GraphQLApi(stack, 'Api', {
-  apiName: 'demoapi',
+  name: 'demoapi',
   schemaDefinitionFile: join(__dirname, 'schema.graphql'),
   authorizationConfig: {
     defaultAuthorization: {

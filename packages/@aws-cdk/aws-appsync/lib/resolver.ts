@@ -74,9 +74,7 @@ export class Resolver extends Construct {
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
     });
-    // if (props.api.schema) {
-    //   this.resolver.addDependsOn(props.api.schema);
-    // }
+    props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {
       this.resolver.addDependsOn(props.dataSource.ds);
     }
