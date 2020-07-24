@@ -391,6 +391,8 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public abstract autoScalingGroupName: string;
   public abstract autoScalingGroupArn: string;
   protected albTargetGroup?: elbv2.ApplicationTargetGroup;
+  public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
+  public readonly operatingSystemType?: ec2.OperatingSystemType = undefined;
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
@@ -490,6 +492,10 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps): StepScalingPolicy {
     return new StepScalingPolicy(this, id, { ...props, autoScalingGroup: this });
   }
+
+  public addUserData(..._commands: string[]): void {
+    // do nothing
+  }
 }
 
 /**
@@ -508,8 +514,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
-  elbv2.INetworkLoadBalancerTarget,
-  iam.IGrantable {
+  elbv2.INetworkLoadBalancerTarget {
 
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
@@ -528,6 +533,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * The type of OS instances of this fleet are running.
    */
   public readonly osType: ec2.OperatingSystemType;
+
+  public readonly operatingSystemType?: ec2.OperatingSystemType;
 
   /**
    * Allows specify security group connections for instances of this fleet.
@@ -703,6 +710,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = imageConfig.osType;
+    this.operatingSystemType = imageConfig.osType;
     this.autoScalingGroupName = this.getResourceNameAttribute(this.autoScalingGroup.ref),
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
@@ -760,11 +768,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     return { targetType: elbv2.TargetType.INSTANCE };
   }
 
-  /**
-   * Add command to the startup script of fleet instances.
-   * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
-   */
-  public addUserData(...commands: string[]) {
+  public addUserData(...commands: string[]): void {
     this.userData.addCommands(...commands);
   }
 
@@ -1121,7 +1125,7 @@ function validatePercentage(x?: number): number | undefined {
 /**
  * An AutoScalingGroup
  */
-export interface IAutoScalingGroup extends IResource {
+export interface IAutoScalingGroup extends IResource, iam.IGrantable {
   /**
    * The name of the AutoScalingGroup
    * @attribute
@@ -1133,6 +1137,20 @@ export interface IAutoScalingGroup extends IResource {
    * @attribute
    */
   readonly autoScalingGroupArn: string;
+
+  /**
+   * The operating system family that the instances in this auto-scaling group belong to.
+   * Can be undefined for imported groups,
+   * is never undefined for new ASGs created by the CDK.
+   */
+  readonly operatingSystemType?: ec2.OperatingSystemType;
+
+  /**
+   * Add command to the startup script of fleet instances.
+   * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
+   * Does nothing for imported ASGs.
+   */
+  addUserData(...commands: string[]): void;
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate

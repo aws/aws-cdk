@@ -342,40 +342,38 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       return;
     }
 
-    if (asg instanceof autoscaling.AutoScalingGroup) {
-      this.codeDeployBucket.grantRead(asg.role, 'latest/*');
+    this.codeDeployBucket.grantRead(asg, 'latest/*');
 
-      switch (asg.osType) {
-        case ec2.OperatingSystemType.LINUX:
-          asg.addUserData(
-            'PKG_CMD=`which yum 2>/dev/null`',
-            'if [ -z "$PKG_CMD" ]; then',
-            'PKG_CMD=apt-get',
-            'else',
-            'PKG=CMD=yum',
-            'fi',
-            '$PKG_CMD update -y',
-            '$PKG_CMD install -y ruby2.0',
-            'if [ $? -ne 0 ]; then',
-            '$PKG_CMD install -y ruby',
-            'fi',
-            '$PKG_CMD install -y awscli',
-            'TMP_DIR=`mktemp -d`',
-            'cd $TMP_DIR',
-            `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/install . --region ${cdk.Stack.of(this).region}`,
-            'chmod +x ./install',
-            './install auto',
-            'rm -fr $TMP_DIR',
-          );
-          break;
-        case ec2.OperatingSystemType.WINDOWS:
-          asg.addUserData(
-            'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
-            `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
-            '$TEMPDIR\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt',
-          );
-          break;
-      }
+    switch (asg.operatingSystemType) {
+      case ec2.OperatingSystemType.LINUX:
+        asg.addUserData(
+          'PKG_CMD=`which yum 2>/dev/null`',
+          'if [ -z "$PKG_CMD" ]; then',
+          'PKG_CMD=apt-get',
+          'else',
+          'PKG=CMD=yum',
+          'fi',
+          '$PKG_CMD update -y',
+          '$PKG_CMD install -y ruby2.0',
+          'if [ $? -ne 0 ]; then',
+          '$PKG_CMD install -y ruby',
+          'fi',
+          '$PKG_CMD install -y awscli',
+          'TMP_DIR=`mktemp -d`',
+          'cd $TMP_DIR',
+          `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/install . --region ${cdk.Stack.of(this).region}`,
+          'chmod +x ./install',
+          './install auto',
+          'rm -fr $TMP_DIR',
+        );
+        break;
+      case ec2.OperatingSystemType.WINDOWS:
+        asg.addUserData(
+          'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
+          `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
+          '$TEMPDIR\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt',
+        );
+        break;
     }
   }
 
