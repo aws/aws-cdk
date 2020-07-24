@@ -24,7 +24,7 @@ export interface IServerDeploymentGroup extends cdk.IResource {
    */
   readonly deploymentGroupArn: string;
   readonly deploymentConfig: IServerDeploymentConfig;
-  readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
+  readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
 }
 
 /**
@@ -69,7 +69,7 @@ abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServer
   public abstract readonly deploymentGroupName: string;
   public abstract readonly deploymentGroupArn: string;
   public readonly deploymentConfig: IServerDeploymentConfig;
-  public abstract readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
+  public abstract readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
 
   constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
     super(scope, id, props);
@@ -171,7 +171,7 @@ export interface ServerDeploymentGroupProps {
    *
    * @default []
    */
-  readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
+  readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
 
   /**
    * If you've provided any auto-scaling groups with the {@link #autoScalingGroups} property,
@@ -258,7 +258,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly deploymentGroupArn: string;
   public readonly deploymentGroupName: string;
 
-  private readonly _autoScalingGroups: autoscaling.AutoScalingGroup[];
+  private readonly _autoScalingGroups: autoscaling.IAutoScalingGroup[];
   private readonly installAgent: boolean;
   private readonly codeDeployBucket: s3.IBucket;
   private readonly alarms: cloudwatch.IAlarm[];
@@ -333,47 +333,49 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     this.alarms.push(alarm);
   }
 
-  public get autoScalingGroups(): autoscaling.AutoScalingGroup[] | undefined {
+  public get autoScalingGroups(): autoscaling.IAutoScalingGroup[] | undefined {
     return this._autoScalingGroups.slice();
   }
 
-  private addCodeDeployAgentInstallUserData(asg: autoscaling.AutoScalingGroup): void {
+  private addCodeDeployAgentInstallUserData(asg: autoscaling.IAutoScalingGroup): void {
     if (!this.installAgent) {
       return;
     }
 
-    this.codeDeployBucket.grantRead(asg.role, 'latest/*');
+    if (asg instanceof autoscaling.AutoScalingGroup) {
+      this.codeDeployBucket.grantRead(asg.role, 'latest/*');
 
-    switch (asg.osType) {
-      case ec2.OperatingSystemType.LINUX:
-        asg.addUserData(
-          'PKG_CMD=`which yum 2>/dev/null`',
-          'if [ -z "$PKG_CMD" ]; then',
-          'PKG_CMD=apt-get',
-          'else',
-          'PKG=CMD=yum',
-          'fi',
-          '$PKG_CMD update -y',
-          '$PKG_CMD install -y ruby2.0',
-          'if [ $? -ne 0 ]; then',
-          '$PKG_CMD install -y ruby',
-          'fi',
-          '$PKG_CMD install -y awscli',
-          'TMP_DIR=`mktemp -d`',
-          'cd $TMP_DIR',
-          `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/install . --region ${cdk.Stack.of(this).region}`,
-          'chmod +x ./install',
-          './install auto',
-          'rm -fr $TMP_DIR',
-        );
-        break;
-      case ec2.OperatingSystemType.WINDOWS:
-        asg.addUserData(
-          'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
-          `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
-          '$TEMPDIR\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt',
-        );
-        break;
+      switch (asg.osType) {
+        case ec2.OperatingSystemType.LINUX:
+          asg.addUserData(
+            'PKG_CMD=`which yum 2>/dev/null`',
+            'if [ -z "$PKG_CMD" ]; then',
+            'PKG_CMD=apt-get',
+            'else',
+            'PKG=CMD=yum',
+            'fi',
+            '$PKG_CMD update -y',
+            '$PKG_CMD install -y ruby2.0',
+            'if [ $? -ne 0 ]; then',
+            '$PKG_CMD install -y ruby',
+            'fi',
+            '$PKG_CMD install -y awscli',
+            'TMP_DIR=`mktemp -d`',
+            'cd $TMP_DIR',
+            `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/install . --region ${cdk.Stack.of(this).region}`,
+            'chmod +x ./install',
+            './install auto',
+            'rm -fr $TMP_DIR',
+          );
+          break;
+        case ec2.OperatingSystemType.WINDOWS:
+          asg.addUserData(
+            'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
+            `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
+            '$TEMPDIR\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt',
+          );
+          break;
+      }
     }
   }
 
