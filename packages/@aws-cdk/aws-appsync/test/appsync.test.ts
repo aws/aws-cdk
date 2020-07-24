@@ -28,7 +28,7 @@ test('appsync should configure pipeline when pipelineConfig has contents', () =>
   const api = new appsync.GraphQLApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
-    schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
+    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
   });
 
   new appsync.Resolver(stack, 'resolver', {
@@ -53,7 +53,7 @@ test('appsync should configure resolver as unit when pipelineConfig is empty', (
   const api = new appsync.GraphQLApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
-    schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
+    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
   });
 
   new appsync.Resolver(stack, 'resolver', {
@@ -76,7 +76,7 @@ test('appsync should configure resolver as unit when pipelineConfig is empty arr
   const api = new appsync.GraphQLApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
-    schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
+    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
   });
 
   new appsync.Resolver(stack, 'resolver', {
