@@ -1,11 +1,11 @@
 {
   "Resources": {
-    "mycanary555ServiceBucket40CDD613": {
+    "mycanary444ServiceBucket356CB4CC": {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "mycanary555ServiceRoleF8E57AF2": {
+    "mycanary444ServiceRole9A3878F1": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -37,7 +37,7 @@
                   "Effect": "Allow",
                   "Resource": {
                     "Fn::GetAtt": [
-                      "mycanary555ServiceBucket40CDD613",
+                      "mycanary444ServiceBucket356CB4CC",
                       "Arn"
                     ]
                   }
@@ -69,7 +69,7 @@
         ]
       }
     },
-    "mycanary555DAA1D9EA": {
+    "mycanary444D0A1A784": {
       "Type": "AWS::Synthetics::Canary",
       "Properties": {
         "ArtifactS3Location": {
@@ -78,7 +78,7 @@
             [
               "s3://",
               {
-                "Ref": "mycanary555ServiceBucket40CDD613"
+                "Ref": "mycanary444ServiceBucket356CB4CC"
               }
             ]
           ]
@@ -89,11 +89,11 @@
         },
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
-            "mycanary555ServiceRoleF8E57AF2",
+            "mycanary444ServiceRole9A3878F1",
             "Arn"
           ]
         },
-        "Name": "awscanarymycanary555",
+        "Name": "awscanarymycanary444",
         "RuntimeVersion": "syn-1.0",
         "Schedule": {
           "DurationInSeconds": "0",
@@ -101,7 +101,6 @@
         },
         "StartCanaryAfterCreation": true,
         "RunConfig": {
-          "MemoryInMB": 960,
           "TimeoutInSeconds": 300
         }
       }

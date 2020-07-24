@@ -60,3 +60,21 @@ test('Add metric duration', () => {
     statistic: 'Average',
   });
 });
+
+test('Metric can specify statistic', () => {
+  // GIVEN
+  const canary = new synthetics.Canary(stack, 'mycanary', {
+  });
+
+  // WHEN
+  const metric = canary.metricFailed({statistic: 'Sum'});
+
+  // THEN
+  expect(metric).toEqual({
+    period: { amount: 5, unit: { inMillis: 60000, label: 'minutes' } },
+    dimensions: { CanaryName: canary.canaryName },
+    namespace: 'CloudWatchSynthetics',
+    metricName: 'Failed',
+    statistic: 'Sum',
+  });
+});
