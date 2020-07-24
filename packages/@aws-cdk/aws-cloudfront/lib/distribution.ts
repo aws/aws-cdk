@@ -1,4 +1,5 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Lazy, Resource, Stack, Token, Duration } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
 import { Origin } from './origin';
@@ -352,6 +353,49 @@ export interface ErrorResponse {
 }
 
 /**
+ * The type of events that a Lambda@Edge function can be invoked in response to.
+ */
+export enum LambdaEdgeEventType {
+  /**
+   * The origin-request specifies the request to the
+   * origin location (e.g. S3)
+   */
+  ORIGIN_REQUEST = 'origin-request',
+
+  /**
+   * The origin-response specifies the response from the
+   * origin location (e.g. S3)
+   */
+  ORIGIN_RESPONSE = 'origin-response',
+
+  /**
+   * The viewer-request specifies the incoming request
+   */
+  VIEWER_REQUEST = 'viewer-request',
+
+  /**
+   * The viewer-response specifies the outgoing reponse
+   */
+  VIEWER_RESPONSE = 'viewer-response',
+}
+
+/**
+ * Represents a Lambda function version and event type when using Lambda@Edge.
+ * The type of the {@link AddBehaviorOptions.edgeLambdas} property.
+ */
+export interface EdgeLambda {
+  /**
+   * The version of the Lambda function that will be invoked.
+   *
+   * **Note**: it's not possible to use the '$LATEST' function version for Lambda@Edge!
+   */
+  readonly functionVersion: lambda.IVersion;
+
+  /** The type of event in response to which should the function be invoked. */
+  readonly eventType: LambdaEdgeEventType;
+}
+
+/**
  * Options for adding a new behavior to a Distribution.
  *
  * @experimental
@@ -380,6 +424,14 @@ export interface AddBehaviorOptions {
    * @default []
    */
   readonly forwardQueryStringCacheKeys?: string[];
+
+  /**
+   * The Lambda@Edge functions to invoke before serving the contents.
+   *
+   * @default - no Lambda functions will be invoked
+   * @see https://aws.amazon.com/lambda/edge
+   */
+  readonly edgeLambdas?: EdgeLambda[];
 }
 
 /**
