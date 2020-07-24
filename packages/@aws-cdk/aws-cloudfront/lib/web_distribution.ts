@@ -4,7 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
-import { IDistribution, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
+import { IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
 import { IOriginAccessIdentity } from './origin_access_identity';
 
 export enum HttpVersion {
@@ -428,27 +428,6 @@ export interface LambdaFunctionAssociation {
    * A version of the lambda to associate
    */
   readonly lambdaFunction: lambda.IVersion;
-}
-
-export enum LambdaEdgeEventType {
-  /**
-   * The origin-request specifies the request to the
-   * origin location (e.g. S3)
-   */
-  ORIGIN_REQUEST = 'origin-request',
-  /**
-   * The origin-response specifies the response from the
-   * origin location (e.g. S3)
-   */
-  ORIGIN_RESPONSE = 'origin-response',
-  /**
-   * The viewer-request specifies the incoming request
-   */
-  VIEWER_REQUEST = 'viewer-request',
-  /**
-   * The viewer-response specifies the outgoing reponse
-   */
-  VIEWER_RESPONSE = 'viewer-response',
 }
 
 export interface ViewerCertificateOptions {

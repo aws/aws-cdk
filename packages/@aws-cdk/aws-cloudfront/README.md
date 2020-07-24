@@ -161,6 +161,67 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+### Lambda@Edge
+
+Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute functions that customize the content that CloudFront delivers.
+You can author Node.js or Python functions in the US East (N. Virginia) region,
+and then execute them in AWS locations globally that are closer to the viewer,
+without provisioning or managing servers.
+Lambda@Edge functions are associated with a specific behavior and event type.
+Lambda@Edge can be used rewrite URLs,
+alter responses based on headers or cookies,
+or authorize requests based on headers or authorization tokens.
+
+The following shows a Lambda@Edge function added to the default behavior and triggered on every request:
+
+```typescript
+const myFunc = new lambda.Function(...);
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: new origins.S3Origin(myBucket),
+    edgeLambdas: [
+      {
+        functionVersion: myFunc.currentVersion,
+        eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+      }
+    ],
+  },
+});
+```
+
+Lambda@Edge functions can also be associated with additional behaviors,
+either at Distribution creation time,
+or after.
+
+```typescript
+// assigning at Distribution creation
+const myOrigin = new origins.S3Origin(myBucket);
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: myOrigin },
+  additionalBehaviors: {
+    'images/*': {
+      origin: myOrigin,
+      edgeLambdas: [
+        {
+          functionVersion: myFunc.currentVersion,
+          eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
+        },
+      ],
+    },
+  },
+});
+
+// assigning after creation
+myDistribution.addBehavior('images/*', myOrigin, {
+  edgeLambdas: [
+    {
+      functionVersion: myFunc.currentVersion,
+      eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
+    },
+  ],
+});
+```
+
 ## CloudFrontWebDistribution API - Stable
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
