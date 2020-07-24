@@ -1,6 +1,6 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as route53 from '@aws-cdk/aws-route53';
-import { Aws, CfnMapping, Stack } from '@aws-cdk/core';
+import { Aws, CfnMapping, IConstruct, Stack } from '@aws-cdk/core';
 
 /**
  * Use a CloudFront Distribution as an alias record target
@@ -15,11 +15,15 @@ export class CloudFrontTarget implements route53.IAliasRecordTarget {
   /**
    * Get the hosted zone id for the current scope.
    *
-   * @param stack - Stack in which the resource is defined
+   * @param scope - scope in which this resource is defined
    */
-  public static getHostedZoneId(stack: Stack) {
-    if (!CloudFrontTarget.stackPartitionHostedZoneMapping.hasOwnProperty(stack.stackId)) {
-      CloudFrontTarget.stackPartitionHostedZoneMapping[stack.stackId] = new CfnMapping(stack, 'AWSCloudFrontPartitionHostedZoneIdMap', {
+  public static getHostedZoneId(scope: IConstruct) {
+    const mappingName = 'AWSCloudFrontPartitionHostedZoneIdMap';
+    const scopeStack = Stack.of(scope);
+
+    let mapping =
+      (scopeStack.node.tryFindChild(mappingName) as CfnMapping) ??
+      new CfnMapping(scopeStack, mappingName, {
         mapping: {
           ['aws']: {
             zoneId: 'Z2FDTNDATAQYW2', // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-aliastarget.html
@@ -29,19 +33,16 @@ export class CloudFrontTarget implements route53.IAliasRecordTarget {
           },
         },
       });
-    }
 
-    return CloudFrontTarget.stackPartitionHostedZoneMapping[stack.stackId].findInMap(Aws.PARTITION, 'zoneId');
+    return mapping.findInMap(Aws.PARTITION, 'zoneId');
   }
-
-  private static stackPartitionHostedZoneMapping: { [stackId: string]: CfnMapping } = {};
 
   constructor(private readonly distribution: cloudfront.IDistribution) {
   }
 
   public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
     return {
-      hostedZoneId: CloudFrontTarget.getHostedZoneId(this.distribution.stack),
+      hostedZoneId: CloudFrontTarget.getHostedZoneId(this.distribution),
       dnsName: this.distribution.domainName,
     };
   }
