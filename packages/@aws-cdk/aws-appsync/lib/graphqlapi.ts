@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { CfnResource, Construct, Duration, IResolvable, PhysicalName } from '@aws-cdk/core';
+import { CfnResource, Construct, Duration, IResolvable } from '@aws-cdk/core';
 import { CfnApiKey,  CfnGraphQLApi,  CfnGraphQLSchema } from './appsync.generated';
 import { IGraphQLApi, GraphQLApiBase } from './graphqlapi-base';
 
