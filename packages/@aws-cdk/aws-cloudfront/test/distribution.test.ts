@@ -1,8 +1,9 @@
 import '@aws-cdk/assert/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { Distribution, Origin, PriceClass, S3Origin } from '../lib';
+import { Distribution, LambdaEdgeEventType, Origin, PriceClass, S3Origin } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -204,7 +205,7 @@ describe('certificates', () => {
         defaultBehavior: { origin },
         certificate,
       });
-    }).toThrow(/Distribution certificates must be in the us-east-1 region/);
+    }).toThrow(/Distribution certificates must be in the us-east-1 region and the certificate you provided is in eu-west-1./);
   });
 
   test('adding a certificate renders the correct ViewerCertificate property', () => {
@@ -286,6 +287,101 @@ describe('custom error responses', () => {
     });
   });
 
+});
+
+describe('with Lambda@Edge functions', () => {
+  let lambdaFunction: lambda.Function;
+  let origin: Origin;
+
+  beforeEach(() => {
+    lambdaFunction = new lambda.Function(stack, 'Function', {
+      runtime: lambda.Runtime.NODEJS,
+      code: lambda.Code.fromInline('whatever'),
+      handler: 'index.handler',
+    });
+
+    origin = defaultS3Origin();
+  });
+
+  test('can add an edge lambdas to the default behavior', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: lambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          LambdaFunctionAssociations: [
+            {
+              EventType: 'origin-request',
+              LambdaFunctionARN: {
+                Ref: 'FunctionCurrentVersion4E2B22619c0305f954e58f25575548280c0a3629',
+              },
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('can add an edge lambdas to additional behaviors', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      additionalBehaviors: {
+        'images/*': {
+          origin,
+          edgeLambdas: [
+            {
+              functionVersion: lambdaFunction.currentVersion,
+              eventType: LambdaEdgeEventType.VIEWER_REQUEST,
+            },
+          ],
+        },
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        CacheBehaviors: [
+          {
+            PathPattern: 'images/*',
+            LambdaFunctionAssociations: [
+              {
+                EventType: 'viewer-request',
+                LambdaFunctionARN: {
+                  Ref: 'FunctionCurrentVersion4E2B22619c0305f954e58f25575548280c0a3629',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('fails creation when attempting to add the $LATEST function version as an edge Lambda to the default behavior', () => {
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: {
+          origin,
+          edgeLambdas: [
+            {
+              functionVersion: lambdaFunction.latestVersion,
+              eventType: LambdaEdgeEventType.ORIGIN_RESPONSE,
+            },
+          ],
+        },
+      });
+    }).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
+  });
 });
 
 test('price class is included if provided', () => {
