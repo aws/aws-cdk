@@ -45,11 +45,12 @@ documents.
 
 ```ts
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as origins from '@aws-cdk/aws-cloudfront-origins';
 
 // Creates a distribution for a S3 bucket.
 const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: cloudfront.Origin.fromBucket(myBucket) },
+  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
 });
 ```
 
@@ -59,13 +60,45 @@ CloudFront's redirect and error handling will be used. In the latter case, the O
 underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
 URLs and not S3 URLs directly.
 
+#### ELBv2 Load Balancer
+
+An Elastic Load Balancing (ELB) v2 load balancer may be used as an origin. In order for a load balancer to serve as an origin, it must be publicly
+accessible (`internetFacing` is true). Both Application and Network load balancers are supported.
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+
+const vpc = new ec2.Vpc(...);
+// Create an application load balancer in a VPC. 'internetFacing' must be 'true'
+// for CloudFront to access the load balancer and use it as an origin.
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.LoadBalancerV2Origin(lb) },
+});
+```
+
+## From an HTTP endpoint
+
+Origins can also be created from any other HTTP endpoint, given the domain name, and optionally, other origin properties.
+
+```ts
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+});
+```
+
 ### Domain Names and Certificates
 
 When you create a distribution, CloudFront assigns a domain name for the distribution, for example: `d111111abcdef8.cloudfront.net`; this value can
 be retrieved from `distribution.distributionDomainName`. CloudFront distributions use a default certificate (`*.cloudfront.net`) to support HTTPS by
 default. If you want to use your own domain name, such as `www.example.com`, you must associate a certificate with your distribution that contains
 your domain name. The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate
-may either be created by ACM, or created elsewhere and imported into ACM.
+may either be created by ACM, or created elsewhere and imported into ACM. When a certificate is used, the distribution will support HTTPS connections
+from SNI only and a minimum protocol version of TLSv1.2_2018.
 
 ```ts
 const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
@@ -73,7 +106,7 @@ const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
   hostedZone,
 });
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: cloudfront.Origin.fromBucket(myBucket) },
+  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
   certificate: myCertificate,
 });
 ```
@@ -90,7 +123,7 @@ methods and viewer protocol policy of the cache.
 ```ts
 const myWebDistribution = new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
-    origin: cloudfront.Origin.fromBucket(myBucket),
+    origin: new origins.S3Origin(myBucket),
     allowedMethods: AllowedMethods.ALLOW_ALL,
     viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
   }
@@ -102,7 +135,7 @@ and enable customization for a specific set of resources based on a URL path pat
 override the default time-to-live (TTL) for all of the images.
 
 ```ts
-myWebDistribution.addBehavior('/images/*.jpg', cloudfront.Origin.fromBucket(myOtherBucket), {
+myWebDistribution.addBehavior('/images/*.jpg', new origins.S3Origin(myBucket), {
   viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
   defaultTtl: cdk.Duration.days(7),
 });
@@ -111,7 +144,7 @@ myWebDistribution.addBehavior('/images/*.jpg', cloudfront.Origin.fromBucket(myOt
 These behaviors can also be specified at distribution creation time.
 
 ```ts
-const bucketOrigin = cloudfront.Origin.fromBucket(myBucket);
+const bucketOrigin = new origins.S3Origin(myBucket);
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
     origin: bucketOrigin,
@@ -221,5 +254,40 @@ const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
             connectionTimeout: cdk.Duration.seconds(10),
         }
     ]
+});
+```
+
+#### Origin Fallback
+
+In case the origin source is not available and answers with one of the
+specified status code the failover origin source will be used.
+
+
+```ts
+new CloudFrontWebDistribution(stack, 'ADistribution', {
+  originConfigs: [
+    {
+      s3OriginSource: {
+        s3BucketSource: s3.Bucket.fromBucketName(stack, 'aBucket', 'myoriginbucket'),
+        originPath: '/',
+        originHeaders: {
+          'myHeader': '42',
+        },
+      },
+      failoverS3OriginSource: {
+        s3BucketSource: s3.Bucket.fromBucketName(stack, 'aBucketFallback', 'myoriginbucketfallback'),
+        originPath: '/somwhere',
+        originHeaders: {
+          'myHeader2': '21',
+        },
+      },
+      failoverCriteriaStatusCodes: [FailoverStatusCode.INTERNAL_SERVER_ERROR],
+      behaviors: [
+        {
+          isDefaultBehavior: true,
+        },
+      ],
+    },
+  ],
 });
 ```

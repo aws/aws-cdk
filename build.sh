@@ -3,6 +3,7 @@ set -euo pipefail
 
 bail="--bail"
 runtarget="build+test"
+check_prereqs="true"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
@@ -17,6 +18,9 @@ while [[ "${1:-}" != "" ]]; do
             ;;
         --skip-test|--skip-tests)
             runtarget="build"
+            ;;
+        --skip-prereqs)
+            check_prereqs="false"
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -41,8 +45,10 @@ fail() {
 # Check for secrets that should not be committed
 /bin/bash ./git-secrets-scan.sh
 
-# Verify dependencies before starting the build
-/bin/bash ./scripts/check-prerequisites.sh
+# Verify all required tools are present before starting the build
+if [ "$check_prereqs" == "true" ]; then
+  /bin/bash ./scripts/check-prerequisites.sh
+fi
 
 # Prepare for build with references
 /bin/bash scripts/generate-aggregate-tsconfig.sh > tsconfig.json
