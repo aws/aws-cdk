@@ -199,7 +199,8 @@ export class Trail extends Resource {
 
   private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
-
+  private topic: sns.ITopic | undefined;
+  
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
     super(scope, id, {
       physicalName: props.trailName,
@@ -225,6 +226,11 @@ export class Trail extends Resource {
         StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
       },
     }));
+
+    this.topic = props.snsTopic;
+    if (this.topic) {
+      this.topic.grantPublish(cloudTrailPrincipal);
+    }
 
     let logsRole: iam.IRole | undefined;
 
@@ -276,7 +282,7 @@ export class Trail extends Resource {
       s3KeyPrefix: props.s3KeyPrefix,
       cloudWatchLogsLogGroupArn: this.logGroup?.logGroupArn,
       cloudWatchLogsRoleArn: logsRole?.roleArn,
-      snsTopicName: props.snsTopic?.topicName,
+      snsTopicName: this.topic?.topicName,
       eventSelectors: this.eventSelectors,
     });
 
