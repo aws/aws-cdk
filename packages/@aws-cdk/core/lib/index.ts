@@ -34,6 +34,8 @@ export * from './from-cfn';
 export * from './size';
 export * from './stack-trace';
 
+export * from './schedule';
+
 export * from './app';
 export * from './context-provider';
 export * from './environment';
