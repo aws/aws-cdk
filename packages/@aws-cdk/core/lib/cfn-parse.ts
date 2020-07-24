@@ -425,41 +425,10 @@ export class CfnParser {
           console.log(value);
         }
         if (typeof value === 'string') {
-          if (value.indexOf('!') !== -1) {
-            // loop from the '{' to the '!', eg "${    !  ..."
-            for (let i = value.indexOf('${') + 2; i < value.indexOf('!'); i++) {
-              if (value[i] !== ' ') {
-                throw new Error('variable names in Fn::Sub syntax must contain only alphanumeric characters, underscores, periods, and colons');
-              }
-            }
-            break;
-          }
-
-          /*let openIndices = [], closedIndicies = [];
-          for (let i = 0; i < value.length; i++) {
-            if (value[i] === "$" && value[i+1] === '{') {
-              openIndices.push(i);
-            } else if (value[i] === '}') {
-              closedIndicies.push(i);
-            }
-          }
-          for (let index of openIndices) {
-
-          }*/
-          const refTarget = value.substring(value.indexOf('${') + 2, value.indexOf('}')).trim();
-          const specialRef = specialCaseSubRefs(refTarget);
-          if (specialRef) {
-            console.log(specialRef)
-            return Fn.sub(value.substring(0, value.indexOf('$')) + specialRef);
-          } else {
-            const refElement = this.options.finder.findRefTarget(refTarget);
-            if (!refElement) {
-              throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
-            }
-            return Fn.sub(value.substring(0, value.indexOf('$')) + CfnReference.for(refElement, 'Sub'));
-          }
+          // 
+          return Fn.sub(value.substring(0, value.indexOf('${')) + this.parseSubRef(value.substring(value.indexOf('${'))));
         }
-        return "my-other-string";
+        return 'we dont support non string form yet'
       }
       case 'Condition': {
         // a reference to a Condition from another Condition
@@ -490,18 +459,24 @@ export class CfnParser {
   }
 
   private parseSubRef(value: string): string {
-    //TODO need base case
     const refTarget = value.substring(value.indexOf('${') + 2, value.indexOf('}')).trim();
+    console.log('-------------------------------')
+    console.log(refTarget)
+    if (refTarget === '') {
+      return '';
+    } else if (refTarget[0] === '!') {
+      return value.substring(0, value.indexOf('}') + 1) + this.parseSubRef(value.substring(value.indexOf('}')+1));
+    }
+
     const specialRef = specialCaseSubRefs(refTarget);
     if (specialRef) {
-      console.log(specialRef)
-      return Fn.sub(value.substring(0, value.indexOf('$')) + specialRef);
+      return value.substring(0, value.indexOf('${')) + specialRef + this.parseSubRef(value.substring(value.indexOf('}')+1));
     } else {
       const refElement = this.options.finder.findRefTarget(refTarget);
       if (!refElement) {
         throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
       }
-      return CfnReference.for(refElement, 'Sub') + this.parseSubRef(value.substring(value.indexOf('}')));
+      return value.substring(0, value.indexOf('${')) + CfnReference.for(refElement, 'Sub') + this.parseSubRef(value.substring(value.indexOf('}')+1));
     }
   }
 }

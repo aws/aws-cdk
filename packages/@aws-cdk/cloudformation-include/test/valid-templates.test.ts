@@ -266,6 +266,7 @@ describe('CDK Include', () => {
       loadTestFileToJsObject('resource-attribute-condition.json'),
     );
   });
+  //TODO: need Element used in Ref expression with logical ID: 'A WS::Region' in Fn::Sub not found
 
   test('correctly change references to Conditions when renaming them', () => {
     const cfnTemplate = includeTestTemplate(stack, 'condition-same-name-as-resource.json');
