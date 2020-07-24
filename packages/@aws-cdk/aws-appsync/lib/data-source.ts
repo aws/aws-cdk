@@ -1,6 +1,8 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
+import { IDatabaseCluster } from '@aws-cdk/aws-rds';
+import { ISecret } from '@aws-cdk/aws-secretsmanager';
 import { Construct, IResolvable } from '@aws-cdk/core';
 import { CfnDataSource } from './appsync.generated';
 import { GraphQLApi } from './graphqlapi';
@@ -247,5 +249,36 @@ export class LambdaDataSource extends BackedDataSource {
       },
     });
     props.lambdaFunction.grantInvoke(this);
+  }
+}
+
+/**
+ * Properties for an AppSync RDS datasource
+ */
+export interface RdsDataSourceProps extends BackedDataSourceProps {
+  /**
+   * The database cluster to call to interact with this data source
+   */
+  readonly databaseCluster: IDatabaseCluster;
+
+  readonly secretStore: ISecret;
+}
+
+/**
+ * An AppSync datasource backed by RDS
+ */
+export class RdsDataSource extends BackedDataSource {
+  constructor(scope: Construct, id: string, props: RdsDataSourceProps) {
+    super(scope, id, props, {
+      type: 'RELATIONAL_DATABASE',
+      relationalDatabaseConfig: {
+        rdsHttpEndpointConfig: {
+          awsRegion: props.databaseCluster.stack.region,
+          dbClusterIdentifier: props.databaseCluster.clusterIdentifier,
+          awsSecretStoreArn: props.secretStore.secretArn,
+        },
+        relationalDatabaseSourceType: 'RDS_HTTP_ENDPOINT',
+      },
+    });
   }
 }

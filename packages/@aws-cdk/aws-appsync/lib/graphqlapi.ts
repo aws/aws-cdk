@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import {
@@ -6,14 +7,15 @@ import {
   ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
+import { IDatabaseCluster } from '@aws-cdk/aws-rds';
+import { ISecret } from '@aws-cdk/aws-secretsmanager';
 import { Construct, Duration, IResolvable } from '@aws-cdk/core';
-import { readFileSync } from 'fs';
 import {
   CfnApiKey,
   CfnGraphQLApi,
   CfnGraphQLSchema,
 } from './appsync.generated';
-import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
+import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource, RdsDataSource } from './data-source';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -430,6 +432,28 @@ export class GraphQLApi extends Construct {
       description,
       name,
       lambdaFunction,
+    });
+  }
+
+  /**
+   * add a new Rds data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   * @param databaseCluster The database cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the database cluster
+   */
+  public addRdsDataSource(
+    name: string,
+    description: string,
+    databaseCluster: IDatabaseCluster,
+    secretStore: ISecret,
+  ): RdsDataSource {
+    return new RdsDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      name,
+      databaseCluster,
+      secretStore,
     });
   }
 

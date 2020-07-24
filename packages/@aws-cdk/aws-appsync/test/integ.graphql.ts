@@ -1,7 +1,9 @@
+import { join } from 'path';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
+import { Vpc, SecurityGroup, SubnetType, InstanceType, InstanceClass, InstanceSize } from '@aws-cdk/aws-ec2';
+import { DatabaseSecret, CfnDBCluster, CfnDBSubnetGroup, DatabaseCluster, DatabaseClusterEngine, AuroraMysqlEngineVersion } from '@aws-cdk/aws-rds';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { join } from 'path';
 import {
   AuthorizationType,
   GraphQLApi,
@@ -218,6 +220,49 @@ httpDS.createResolver({
         ## If response is not 200, append the response to error block.
         $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
     #end
+  `),
+
+
+});
+
+const vpc = new Vpc(stack, 'Vpc', {maxAzs: 2});
+
+const securityGroup = new SecurityGroup(stack, 'AuroraSecurityGroup', {
+  vpc,
+  allowAllOutbound: true,
+});
+
+const secret = new DatabaseSecret(stack, 'AuroraSecret', {
+  username: 'clusteradmin',
+});
+
+const cluster = new DatabaseCluster(stack, 'AuroraCluster', {
+  engine: DatabaseClusterEngine.auroraMysql({
+    version: AuroraMysqlEngineVersion.VER_2_07_1,
+  }),
+  masterUser: {
+    username: 'clusteradmin',
+  },
+  clusterIdentifier: 'db-endpoint-test',
+  instanceProps: {
+    instanceType: InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.SMALL),
+    vpcSubnets: {
+      subnetType: SubnetType.PRIVATE,
+    },
+    vpc,
+    securityGroups: [securityGroup],
+  },
+  defaultDatabaseName: 'Animals',
+});
+
+const rdsDS = api.addRdsDataSource('rds', 'The rds data source', cluster, secret);
+
+rdsDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getDatabase',
+  requestMappingTemplate: MappingTemplate.fromString(`
+  `),
+  responseMappingTemplate: MappingTemplate.fromString(`
   `),
 });
 
