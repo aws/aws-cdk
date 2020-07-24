@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
-import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { CfnResource, Construct, Duration, IResolvable } from '@aws-cdk/core';
+import { ManagedPolicy, Role, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
+import { CfnResource, Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
 import { CfnApiKey,  CfnGraphQLApi,  CfnGraphQLSchema } from './appsync.generated';
 import { IGraphQLApi, GraphQLApiBase } from './graphqlapi-base';
 
@@ -46,7 +46,7 @@ export interface AuthorizationMode {
   readonly userPoolConfig?: UserPoolConfig;
   /**
    * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
-   * @default - check default values of `ApiKeyConfig` memebers
+   * @default - name: 'DefaultAPIKey' | description: 'Default API Key created by CDK'
    */
   readonly apiKeyConfig?: ApiKeyConfig;
   /**
@@ -239,13 +239,77 @@ export interface GraphQLApiProps {
 }
 
 /**
+ * A class used to generate resource arns for AppSync
+ */
+export class IamResource {
+  /**
+   * Generate the resource names given custom arns
+   *
+   * @param arns The custom arns that need to be permissioned
+   *
+   * Example: custom('/types/Query/fields/getExample')
+   */
+  public static custom(...arns: string[]): IamResource {
+    if (arns.length === 0) {
+      throw new Error('At least 1 custom ARN must be provided.');
+    }
+    return new IamResource(arns);
+  }
+
+  /**
+   * Generate the resource names given a type and fields
+   *
+   * @param type The type that needs to be allowed
+   * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
+   *
+   * Example: ofType('Query', 'GetExample')
+   */
+  public static ofType(type: string, ...fields: string[]): IamResource {
+    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [ `types/${type}/*` ];
+    return new IamResource(arns);
+  }
+
+  /**
+   * Generate the resource names that accepts all types: `*`
+   */
+  public static all(): IamResource {
+    return new IamResource(['*']);
+  }
+
+  private arns: string[];
+
+  private constructor(arns: string[]){
+    this.arns = arns;
+  }
+
+  /**
+   * Return the Resource ARN
+   *
+   * @param api The GraphQL API to give permissions
+   */
+  public resourceArns(api: GraphQLApi): string[] {
+    return this.arns.map((arn) => Stack.of(api).formatArn({
+      service: 'appsync',
+      resource: `apis/${api.apiId}`,
+      sep: '/',
+      resourceName: `${arn}`,
+    }));
+  }
+}
+
+/**
  * Attributes for GraphQL From
  */
 export interface GraphQLApiAttributes {
   /**
-   * the arn for the GraphQL API
+   * the arn for the GraphQL Api
    */
   readonly arn: string,
+
+  /**
+   * the api id of the GraphQL Api
+   */
+  readonly api: string,
 }
 
 /**
@@ -258,21 +322,42 @@ export class GraphQLApi extends GraphQLApiBase {
    * Import a GraphQL API given an arn
    * @param scope scope
    * @param id id
+   * @param graphQLApiId the apiId of the api
+   */
+  public static fromGraphQLApiId(scope: Construct, id: string, graphQLApiId: string): IGraphQLApi {
+    const generatedArn = Stack.of(scope).formatArn({
+      service: 'appsync',
+      resource: `apis/${graphQLApiId}`,
+    });
+    return GraphQLApi.fromGraphQLApiAttributes(scope, id, { arn: generatedArn, api: graphQLApiId});
+  }
+
+  /**
+   * Import a GraphQL API given an arn
+   * @param scope scope
+   * @param id id
    * @param graphQLApiArn the arn of the api
    */
   public static fromGraphQLApiArn(scope: Construct, id: string, graphQLApiArn: string): IGraphQLApi {
-    return GraphQLApi.fromGraphQLApiAttributes(scope, id, { arn: graphQLApiArn });
+    const apiId = graphQLApiArn.split('/').slice(-1)[0];
+    if (apiId == undefined) {
+      throw Error('Arn does not contain a valid apiId');
+    }
+    return GraphQLApi.fromGraphQLApiAttributes(scope, id, { arn: graphQLApiArn, api: apiId});
   }
 
   /**
    * Import a GraphQL API through this function
    * @param scope scope
    * @param id id
-   * @param attr GraphQL API Attributes of an API
+   * @param attrs GraphQL API Attributes of an API
    */
   public static fromGraphQLApiAttributes(scope: Construct, id: string, attrs: GraphQLApiAttributes): IGraphQLApi {
+    if (attrs.arn == undefined && attrs.api == undefined ){
+      throw Error('Attributes requires either arn or api attribute');
+    }
     class Import extends GraphQLApiBase {
-      public readonly apiId = 'replace';
+      public readonly apiId = attrs.api;
       public readonly arn = attrs.arn;
       constructor (s: Construct, i: string){
         super(s, i);
@@ -369,16 +454,16 @@ export class GraphQLApi extends GraphQLApiBase {
 
     if (
       defaultAuthorizationType === AuthorizationType.API_KEY ||
-      props.authorizationConfig?.additionalAuthorizationModes?.findIndex(
+      props.authorizationConfig?.additionalAuthorizationModes?.some(
         (authMode) => authMode.authorizationType === AuthorizationType.API_KEY
-      ) !== -1
+      )
     ) {
       const apiKeyConfig: ApiKeyConfig = props.authorizationConfig
         ?.defaultAuthorization?.apiKeyConfig || {
           name: 'DefaultAPIKey',
           description: 'Default API Key created by CDK',
         };
-      this.createAPIKey(apiKeyConfig);
+      this._apiKey = this.createAPIKey(apiKeyConfig);
     }
 
     let definition;
@@ -393,6 +478,56 @@ export class GraphQLApi extends GraphQLApiBase {
       apiId: this.apiId,
       definition,
     });
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
+   * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
+   */
+  public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: resources.resourceArns(this),
+      scope: this,
+    });
+  }
+
+  /**
+   * Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Mutations (leave blank for all)
+   */
+  public grantMutation(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Mutation', ...fields), 'appsync:GraphQL');
+  }
+
+  /**
+   * Adds an IAM policy statement for Query access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Queries (leave blank for all)
+   */
+  public grantQuery(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Query', ...fields), 'appsync:GraphQL');
+  }
+
+  /**
+   * Adds an IAM policy statement for Subscription access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Subscriptions (leave blank for all)
+   */
+  public grantSubscription(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Subscription', ...fields), 'appsync:GraphQL');
   }
 
   private validateAuthorizationProps(props: GraphQLApiProps) {
@@ -505,7 +640,7 @@ export class GraphQLApi extends GraphQLApiBase {
       description: config.description || 'Default API Key created by CDK',
       apiId: this.apiId,
     });
-    this._apiKey = key.attrApiKey;
+    return key.attrApiKey;
   }
 
   private formatAdditionalAuthorizationModes(
