@@ -120,14 +120,14 @@ describe('cloudtrail', () => {
               Effect: 'Allow',
               Principal: { Service: 'cloudtrail.amazonaws.com' },
               Resource: { Ref: 'TopicBFC7AF6E' },
-              Sid: "0",
+              Sid: '0',
             },
           ],
           Version: '2012-10-17',
         },
       });
     });
-  
+
     test('with imported s3 bucket', () => {
       // GIVEN
       const stack = getTestStack();

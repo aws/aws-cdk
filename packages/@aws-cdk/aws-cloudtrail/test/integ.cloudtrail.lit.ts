@@ -1,8 +1,9 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as cloudtrail from '../lib';
-import * as sns from '@aws-cdk/aws-sns';
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-cloudtrail');
 
@@ -15,7 +16,7 @@ const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
 });
 
 const trail = new cloudtrail.Trail(stack, 'Trail', {
-  snsTopic: topic
+  snsTopic: topic,
 });
 trail.addLambdaEventSelector([lambdaFunction]);
 trail.addS3EventSelector([{bucket}]);

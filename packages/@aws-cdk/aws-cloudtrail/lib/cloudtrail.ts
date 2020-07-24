@@ -200,7 +200,7 @@ export class Trail extends Resource {
   private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
   private topic: sns.ITopic | undefined;
-  
+
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
     super(scope, id, {
       physicalName: props.trailName,
