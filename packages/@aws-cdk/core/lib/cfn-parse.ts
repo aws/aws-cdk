@@ -10,7 +10,6 @@ import { ICfnFinder } from './from-cfn';
 import { CfnReference } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
 import { isResolvableObject, Token } from './token';
-import { CfnRefElement } from './cfn-element';
 
 /**
  * This class contains static methods called when going from
@@ -435,16 +434,29 @@ export class CfnParser {
             }
             break;
           }
+
+          /*let openIndices = [], closedIndicies = [];
+          for (let i = 0; i < value.length; i++) {
+            if (value[i] === "$" && value[i+1] === '{') {
+              openIndices.push(i);
+            } else if (value[i] === '}') {
+              closedIndicies.push(i);
+            }
+          }
+          for (let index of openIndices) {
+
+          }*/
           const refTarget = value.substring(value.indexOf('${') + 2, value.indexOf('}')).trim();
-          const specialRef = specialCaseRefs(refTarget);
+          const specialRef = specialCaseSubRefs(refTarget);
           if (specialRef) {
-            return specialRef;
+            console.log(specialRef)
+            return Fn.sub(value.substring(0, value.indexOf('$')) + specialRef);
           } else {
             const refElement = this.options.finder.findRefTarget(refTarget);
             if (!refElement) {
               throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
             }
-            return Fn.sub( value.substring(0, value.indexOf('$')) + CfnReference.for(refElement, 'Sub'));
+            return Fn.sub(value.substring(0, value.indexOf('$')) + CfnReference.for(refElement, 'Sub'));
           }
         }
         return "my-other-string";
@@ -476,7 +488,24 @@ export class CfnParser {
       ? key
       : undefined;
   }
+
+  private parseSubRef(value: string): string {
+    //TODO need base case
+    const refTarget = value.substring(value.indexOf('${') + 2, value.indexOf('}')).trim();
+    const specialRef = specialCaseSubRefs(refTarget);
+    if (specialRef) {
+      console.log(specialRef)
+      return Fn.sub(value.substring(0, value.indexOf('$')) + specialRef);
+    } else {
+      const refElement = this.options.finder.findRefTarget(refTarget);
+      if (!refElement) {
+        throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
+      }
+      return CfnReference.for(refElement, 'Sub') + this.parseSubRef(value.substring(value.indexOf('}')));
+    }
+  }
 }
+
 
 function specialCaseRefs(value: any): any {
   switch (value) {
@@ -487,6 +516,21 @@ function specialCaseRefs(value: any): any {
     case 'AWS::NotificationARNs': return Aws.NOTIFICATION_ARNS;
     case 'AWS::StackId': return Aws.STACK_ID;
     case 'AWS::StackName': return Aws.STACK_NAME;
+    case 'AWS::NoValue': return Aws.NO_VALUE;
+    default: return undefined;
+  }
+}
+
+function specialCaseSubRefs(value: any): any {
+  switch (value) {
+    case 'AWS::AccountId': return Token.asString(`\$\{${value}\}`, { displayHint: value });
+    case 'AWS::Region': return Token.asString(`\$\{${value}\}`, { displayHint: value });
+    case 'AWS::Partition': return Token.asString(`\$\{${value}\}`, { displayHint: value });
+    case 'AWS::URLSuffix': return Token.asString(`\$\{${value}\}`, { displayHint: value });
+    case 'AWS::NotificationARNs': return Token.asList(`\$\{${value}\}`, { displayHint: value });
+    case 'AWS::StackId': return Token.asString(`\$\{${value}\}`, { displayHint: value });
+    case 'AWS::StackName': return Token.asString(`\$\{${value}\}`, { displayHint: value });
+    case 'AWS::NoValue': return Token.asString(`\$\{${value}\}`, { displayHint: value });
     case 'AWS::NoValue': return Aws.NO_VALUE;
     default: return undefined;
   }

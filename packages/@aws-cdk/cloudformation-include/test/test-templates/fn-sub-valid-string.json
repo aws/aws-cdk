@@ -9,7 +9,7 @@
     "AnotherBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": { "Fn::Sub": "unusued-bucket-fn-sub-${Bucket}" }
+        "BucketName": { "Fn::Sub": "unusued-bucket-fn-sub-${AWS::Region}-${AWS::Region}" }
       }
     }
   }
