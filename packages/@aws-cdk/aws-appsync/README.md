@@ -81,6 +81,23 @@ demoDS.createResolver({
 });
 ```
 
+## Imports
+
+Any GraphQL Api can be imported from another stack. Utilizing the `fromXxx`
+functions, you have the ability to add data sources and resolvers through
+a `IGraphQLApi` interface.
+
+```ts
+const importedApi = appsync.GraphQLApi.fromGraphQLApiId(...);
+importedApi.addDynamoDbDataSource(...);
+```
+
+GraphQL Apis can be imported in three ways:
+- `arn` through `GraphQLApi.fromGraphQLApiArn`: `apiId` is generated from parameter
+- `apiId` through `GraphQLApi.fromGraphQLApiId`: `arn` is generated from parameter
+- or both through `GraphQLApi.fromGraphQLApiAttributes`: both are specified
+
+
 ## Permissions
 
 When using `AWS_IAM` as the authorization type for GraphQL API, an IAM Role
