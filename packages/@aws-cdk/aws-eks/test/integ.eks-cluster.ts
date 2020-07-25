@@ -56,11 +56,11 @@ class EksClusterStack extends TestStack {
       },
     });
 
-    // inference instances
-    cluster.addCapacity('InferenceInstances', {
-      instanceType: new ec2.InstanceType('inf1.2xlarge'),
-      minCapacity: 1,
-    });
+    // // inference instances
+    // cluster.addCapacity('InferenceInstances', {
+    //   instanceType: new ec2.InstanceType('inf1.2xlarge'),
+    //   minCapacity: 1,
+    // });
 
     // add a extra nodegroup
     cluster.addNodegroup('extra-ng', {

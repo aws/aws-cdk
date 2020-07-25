@@ -56,7 +56,7 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 });
 ```
 
-The default value is `eks.EndpointAccess.publicAndPrivate()`, which means the cluster endpoint is accessible from outside of your VPC, and worker node traffic to the endpoint will stay within your VPC.
+The default value is `eks.EndpointAccess.publicAndPrivate()`. Which means the cluster endpoint is accessible from outside of your VPC, and worker node traffic to the endpoint will stay within your VPC.
 
 
 ### Capacity
