@@ -379,6 +379,7 @@ export = {
     const stack = testStack();
 
     const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_08_1 }),
       clusterEndpointAddress: 'addr',
       clusterIdentifier: 'identifier',
       instanceEndpointAddresses: ['addr'],

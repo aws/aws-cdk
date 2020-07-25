@@ -206,6 +206,10 @@ export interface DatabaseClusterProps {
  */
 abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
   /**
+   * The database engine
+   */
+  public abstract readonly engine: IClusterEngine;
+  /**
    * Identifier of the cluster
    */
   public abstract readonly clusterIdentifier: string;
@@ -271,6 +275,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         securityGroups: attrs.securityGroups,
         defaultPort: this.defaultPort,
       });
+      public readonly engine = attrs.engine;
       public readonly clusterIdentifier = attrs.clusterIdentifier;
       public readonly instanceIdentifiers: string[] = [];
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
@@ -280,6 +285,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     return new Import(scope, id);
   }
+
+  /**
+   * The database engine
+   */
+  public readonly engine: IClusterEngine;
 
   /**
    * Identifier of the cluster
@@ -528,6 +538,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups, defaultPort });
+    this.engine = props.engine;
   }
 
   /**

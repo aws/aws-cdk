@@ -4,7 +4,7 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { IDatabaseCluster } from './cluster-ref';
 import { IDatabaseInstance } from './instance';
-import { CfnDBCluster, CfnDBInstance, CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
+import { CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
 
 /**
  * SessionPinningFilter
@@ -65,17 +65,17 @@ export class ProxyTarget {
    * Bind this target to the specified database proxy.
    */
   public bind(_: DatabaseProxy): ProxyTargetConfig {
-    let engine: string | undefined;
+    let engineType: string | undefined;
     if (this.dbCluster && this.dbInstance) {
       throw new Error('Proxy cannot target both database cluster and database instance.');
     } else if (this.dbCluster) {
-      engine = (this.dbCluster.node.defaultChild as CfnDBCluster).engine;
+      engineType = this.dbCluster.engine.engineType;
     } else if (this.dbInstance) {
-      engine = (this.dbInstance.node.defaultChild as CfnDBInstance).engine;
+      engineType = this.dbInstance.engine.engineType;
     }
 
     let engineFamily;
-    switch (engine) {
+    switch (engineType) {
       case 'aurora':
       case 'aurora-mysql':
       case 'mysql':
@@ -86,7 +86,7 @@ export class ProxyTarget {
         engineFamily = 'POSTGRESQL';
         break;
       default:
-        throw new Error(`Unsupported engine type - ${engine}`);
+        throw new Error(`Unsupported engine type - ${engineType}`);
     }
 
     return {

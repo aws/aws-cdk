@@ -112,6 +112,20 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
 });
 ```
 
+To import an already existing instance:
+
+```ts
+rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'Database', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_5_7_30 }),
+  instanceEndpointAddress: 'address',
+  instanceIdentifier: 'identifier',
+  port: 3306,
+  securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+    allowAllOutbound: false,
+  })],
+});
+```
+
 Use `DatabaseInstanceFromSnapshot` and `DatabaseInstanceReadReplica` to create an instance from snapshot or
 a source database respectively:
 

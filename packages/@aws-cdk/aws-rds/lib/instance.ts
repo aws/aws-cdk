@@ -20,6 +20,11 @@ import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.gener
  */
 export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
+   * The database engine.
+   */
+  readonly engine: IInstanceEngine;
+
+  /**
    * The instance identifier.
    */
   readonly instanceIdentifier: string;
@@ -65,6 +70,11 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
  */
 export interface DatabaseInstanceAttributes {
   /**
+   * The database engine.
+   */
+  readonly engine: IInstanceEngine;
+
+  /**
    * The instance identifier.
    */
   readonly instanceIdentifier: string;
@@ -99,6 +109,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
         securityGroups: attrs.securityGroups,
         defaultPort: this.defaultPort,
       });
+      public readonly engine = attrs.engine;
       public readonly instanceIdentifier = attrs.instanceIdentifier;
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
       public readonly dbInstanceEndpointPort = attrs.port.toString();
@@ -108,6 +119,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     return new Import(scope, id);
   }
 
+  public abstract readonly engine: IInstanceEngine;
   public abstract readonly instanceIdentifier: string;
   public abstract readonly dbInstanceEndpointAddress: string;
   public abstract readonly dbInstanceEndpointPort: string;
@@ -776,6 +788,7 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
  * @resource AWS::RDS::DBInstance
  */
 export class DatabaseInstance extends DatabaseInstanceSource implements IDatabaseInstance {
+  public readonly engine: IInstanceEngine;
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -804,6 +817,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
+    this.engine = props.engine;
     this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
@@ -862,6 +876,7 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
  * @resource AWS::RDS::DBInstance
  */
 export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource implements IDatabaseInstance {
+  public readonly engine: IInstanceEngine;
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -900,6 +915,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
         : props.masterUserPassword && props.masterUserPassword.toString(),
     });
 
+    this.engine = props.engine;
     this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
@@ -957,6 +973,7 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
  * @resource AWS::RDS::DBInstance
  */
 export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements IDatabaseInstance {
+  public readonly engine: IInstanceEngine;
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -974,6 +991,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
+    this.engine = props.sourceDatabaseInstance.engine;
     this.instanceType = props.instanceType;
     this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;

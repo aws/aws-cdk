@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { IResource } from '@aws-cdk/core';
+import { IClusterEngine } from './cluster-engine';
 import { Endpoint } from './endpoint';
 import { DatabaseProxy, DatabaseProxyOptions } from './proxy';
 
@@ -8,6 +9,11 @@ import { DatabaseProxy, DatabaseProxyOptions } from './proxy';
  * Create a clustered database with a given number of instances.
  */
 export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+  /**
+   * The database engine
+   */
+  readonly engine: IClusterEngine;
+
   /**
    * Identifier of the cluster
    */
@@ -45,6 +51,11 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
  * Properties that describe an existing cluster instance
  */
 export interface DatabaseClusterAttributes {
+  /**
+   * The database engine
+   */
+  readonly engine: IClusterEngine;
+
   /**
    * The database port
    */

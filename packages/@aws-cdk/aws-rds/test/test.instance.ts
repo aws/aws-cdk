@@ -549,6 +549,7 @@ export = {
     const stack = new cdk.Stack();
 
     const instance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_5_7_30 }),
       instanceEndpointAddress: 'address',
       instanceIdentifier: 'identifier',
       port: 3306,
