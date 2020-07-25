@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
-import * as cdk from '@aws-cdk/core';
 import * as path from 'path';
+import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
 describe('AppSync Authorization Config', () => {

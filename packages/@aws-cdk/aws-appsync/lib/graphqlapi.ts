@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
-import { CfnResource, Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
+import { CfnResource, Construct, Duration, Fn, IResolvable, Stack } from '@aws-cdk/core';
 import { CfnApiKey,  CfnGraphQLApi,  CfnGraphQLSchema } from './appsync.generated';
 import { IGraphQLApi, GraphQLApiBase } from './graphqlapi-base';
 
@@ -309,7 +309,7 @@ export interface GraphQLApiAttributes {
   /**
    * the api id of the GraphQL Api
    */
-  readonly api: string,
+  readonly apiId: string,
 }
 
 /**
@@ -329,7 +329,7 @@ export class GraphQLApi extends GraphQLApiBase {
       service: 'appsync',
       resource: `apis/${graphQLApiId}`,
     });
-    return GraphQLApi.fromGraphQLApiAttributes(scope, id, { arn: generatedArn, api: graphQLApiId});
+    return GraphQLApi.fromGraphQLApiAttributes(scope, id, { arn: generatedArn, apiId: graphQLApiId});
   }
 
   /**
@@ -339,11 +339,11 @@ export class GraphQLApi extends GraphQLApiBase {
    * @param graphQLApiArn the arn of the api
    */
   public static fromGraphQLApiArn(scope: Construct, id: string, graphQLApiArn: string): IGraphQLApi {
-    const apiId = graphQLApiArn.split('/').slice(-1)[0];
-    if (apiId == undefined) {
+    const apiId = Fn.select(1, Fn.split('/', graphQLApiArn));
+    if (apiId == undefined || apiId == graphQLApiArn) {
       throw Error('Arn does not contain a valid apiId');
     }
-    return GraphQLApi.fromGraphQLApiAttributes(scope, id, { arn: graphQLApiArn, api: apiId});
+    return GraphQLApi.fromGraphQLApiAttributes(scope, id, { arn: graphQLApiArn, apiId: apiId});
   }
 
   /**
@@ -353,11 +353,8 @@ export class GraphQLApi extends GraphQLApiBase {
    * @param attrs GraphQL API Attributes of an API
    */
   public static fromGraphQLApiAttributes(scope: Construct, id: string, attrs: GraphQLApiAttributes): IGraphQLApi {
-    if (attrs.arn == undefined && attrs.api == undefined ){
-      throw Error('Attributes requires either arn or api attribute');
-    }
     class Import extends GraphQLApiBase {
-      public readonly apiId = attrs.api;
+      public readonly apiId = attrs.apiId;
       public readonly arn = attrs.arn;
       constructor (s: Construct, i: string){
         super(s, i);
