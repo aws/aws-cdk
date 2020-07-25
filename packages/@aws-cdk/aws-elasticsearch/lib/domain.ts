@@ -304,7 +304,7 @@ export interface DomainProps {
  */
 export interface IDomain extends cdk.IResource {
   /**
-   * Arn of the Elasticsearch table.
+   * Arn of the Elasticsearch domain.
    *
    * @attribute
    */
@@ -466,160 +466,23 @@ export interface IDomain extends cdk.IResource {
 
 
 /**
- * Provides an Elasticsearch domain.
+ * A new or imported domain.
  */
-export class Domain extends cdk.Resource implements IDomain {
-  private static createLogGroup(parent: cdk.Construct, domainName: string, id: string, name: string): logs.ILogGroup {
-    return new logs.LogGroup(parent, id, {
-      logGroupName: `elasticsearch/domains/${domainName}/${name}`,
-      retention: logs.RetentionDays.ONE_MONTH,
-    });
-  }
+abstract class DomainBase extends cdk.Resource implements IDomain {
+  /**
+   * @attribute
+   */
+  public abstract readonly domainArn: string;
 
   /**
    * @attribute
    */
-  public readonly domainArn: string;
+  public abstract readonly domainName: string;
 
   /**
    * @attribute
    */
-  public readonly domainName: string;
-
-  /**
-   * @attribute
-   */
-  public readonly domainEndpoint: string;
-
-
-  private readonly domain: CfnDomain;
-
-  private readonly slowSearchLogGroup?: logs.ILogGroup;
-
-  private readonly slowIndexLogGroup?: logs.ILogGroup;
-
-  private readonly appLogGroup?: logs.ILogGroup;
-
-  constructor(scope: cdk.Construct, id: string, props: DomainProps) {
-    super(scope, id, {
-      physicalName: props.domainName,
-    });
-
-    this.domainName = this.physicalName;
-
-    // Setup logging
-    const logGroups: logs.ILogGroup[] = [];
-
-    if (props.logPublishingOptions?.slowSearchLogEnabed) {
-      this.slowSearchLogGroup = props.logPublishingOptions.slowSearchLogGroup ??
-        Domain.createLogGroup(this, this.domainName, 'SlowSearchLogs', 'slow-search-logs');
-
-      logGroups.push(this.slowSearchLogGroup);
-    };
-
-    if (props.logPublishingOptions?.slowIndexLogEnabed) {
-      this.slowIndexLogGroup = props.logPublishingOptions.slowIndexLogGroup ??
-        Domain.createLogGroup(this, this.domainName, 'SlowIndexLogs', 'slow-index-logs');
-
-      logGroups.push(this.slowIndexLogGroup);
-    };
-
-    if (props.logPublishingOptions?.appLogEnabled) {
-      this.appLogGroup = props.logPublishingOptions.appLogGroup ??
-        Domain.createLogGroup(this, this.domainName, 'AppLogs', 'application-logs');
-
-      logGroups.push(this.appLogGroup);
-    };
-
-    let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
-    if (logGroups.length > 0) {
-      const logPolicyStatement = new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-        resources: logGroups.map((lg) => lg.logGroupArn),
-        principals: [new iam.ServicePrincipal('es.amazonaws.com')],
-      });
-
-      // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
-      // https://github.com/aws/aws-cdk/issues/5343
-      logGroupResourcePolicy = new LogGroupResourcePolicy(this, 'ESLogGroupPolicy', {
-        policyName: 'ESLogPolicy',
-        policyStatements: [logPolicyStatement],
-      });
-    }
-
-    // If VPC options are supplied ensure that the number of subnets matches the number AZ
-    if (props.vpcOptions?.subnets.map((subnet) => subnet.availabilityZone).length != props?.clusterConfig.availabilityZoneCount) {
-      throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
-    };
-
-    let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
-    if (props.vpcOptions) {
-      cfnVpcOptions = {
-        securityGroupIds: props.vpcOptions.securityGroups.map((sg) => sg.securityGroupId),
-        subnetIds: props.vpcOptions.subnets.map((subnet) => subnet.subnetId),
-      };
-    }
-
-    // Create the domain
-    this.domain = new CfnDomain(this, 'Resource', {
-      domainName: this.physicalName,
-      elasticsearchVersion: props.elasticsearchVersion,
-      elasticsearchClusterConfig: {
-        dedicatedMasterEnabled: props.clusterConfig.masterNodes != null,
-        dedicatedMasterCount: props.clusterConfig.masterNodes,
-        dedicatedMasterType: props.clusterConfig.masterNodeInstanceType,
-        instanceCount: props.clusterConfig.dataNodes,
-        instanceType: props.clusterConfig.dataNodeInstanceType,
-        zoneAwarenessEnabled: props.clusterConfig.availabilityZoneCount != null,
-        zoneAwarenessConfig: { availabilityZoneCount: props.clusterConfig.availabilityZoneCount },
-      },
-      ebsOptions: {
-        ebsEnabled: props.ebsOptions != null,
-        volumeSize: props.ebsOptions?.volumeSize,
-        volumeType: props.ebsOptions?.volumeType,
-        iops: props.ebsOptions?.iops,
-      },
-      encryptionAtRestOptions: {
-        enabled: props.encryptionAtRestOptions?.enabled ?? (props.encryptionAtRestOptions?.kmsKey != null),
-        kmsKeyId: props.encryptionAtRestOptions?.kmsKey?.keyId,
-      },
-      nodeToNodeEncryptionOptions: { enabled: props.nodeToNodeEncryptionEnabled ?? false },
-      logPublishingOptions: {
-        ES_APPLICATION_LOGS: {
-          enabled: this.appLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.appLogGroup?.logGroupArn,
-        },
-        SEARCH_SLOW_LOGS: {
-          enabled: this.slowSearchLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.slowSearchLogGroup?.logGroupArn,
-        },
-        INDEX_SLOW_LOGS: {
-          enabled: this.slowIndexLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.slowIndexLogGroup?.logGroupArn,
-        },
-      },
-      cognitoOptions: {
-        enabled: props.cognitoOptions != null,
-        identityPoolId: props.cognitoOptions?.identityPoolId,
-        roleArn: props.cognitoOptions?.role.roleArn,
-        userPoolId: props.cognitoOptions?.userPoolId,
-      },
-      vpcOptions: cfnVpcOptions,
-    });
-
-    if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
-
-    if (props.domainName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName); }
-
-    this.domainArn = this.getResourceArnAttribute(this.domain.attrArn, {
-      service: 'es',
-      resource: 'domain',
-      resourceName: this.physicalName,
-    });
-
-    this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
-  }
+  public abstract readonly domainEndpoint: string;
 
   /**
    * Adds an IAM policy statement associated with this domain to an IAM
@@ -833,5 +696,260 @@ export class Domain extends cdk.Resource implements IDomain {
    */
   public metricIndexingLatency(clientId: string, props?: MetricOptions): Metric {
     return this.metric('IndexingLatencyP99', clientId, { statistic: 'p99', ...props });
+  }
+}
+
+
+/**
+ * Reference to an Elasticsearch domain.
+ */
+export interface DomainAttributes {
+  /**
+   * The ARN of the Elasticsearch domain.
+   * One of this, or {@link domainName}, is required.
+   *
+   * @default - no domain arn
+   */
+  readonly domainArn?: string;
+
+  /**
+   * The domain name of the Elasticsearch domain.
+   * One of this, or {@link domainArn}, is required.
+   *
+   * @default - no domain name
+   */
+  readonly domainName?: string;
+
+  /**
+   * The domain endpoint of the Elasticsearch domain.
+   */
+  readonly domainEndpoint: string;
+}
+
+
+/**
+ * Provides an Elasticsearch domain.
+ */
+export class Domain extends DomainBase implements IDomain {
+  /**
+   * Creates a Domain construct that represents an external domain via domain arn.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param domainName The domain's name.
+   * @param domainEndpoint The domain's endpoint.
+   */
+  public static fromDomainName(scope: cdk.Construct, id: string, domainName: string, domainEndpoint: string): IDomain {
+    return Domain.fromDomainAttributes(scope, id, { domainName, domainEndpoint });
+  }
+
+  /**
+   * Creates a Domain construct that represents an external domain via domain arn.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param domainArn The domain's ARN.
+   * @param domainEndpoint The domain's endpoint.
+   */
+  public static fromDomainArn(scope: cdk.Construct, id: string, domainArn: string, domainEndpoint: string): IDomain {
+    return Domain.fromDomainAttributes(scope, id, { domainArn, domainEndpoint });
+  }
+
+  /**
+   * Creates a Domain construct that represents an external domain.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param attrs A `DomainAttributes` object.
+   */
+  public static fromDomainAttributes(scope: cdk.Construct, id: string, attrs: DomainAttributes): IDomain {
+
+    class Import extends DomainBase {
+
+      public readonly domainArn: string;
+      public readonly domainName: string;
+      public readonly domainEndpoint: string;
+
+      constructor(_domainArn: string, domainName: string, domainEndpoint: string) {
+        super(scope, id);
+        this.domainArn = _domainArn;
+        this.domainName = domainName;
+        this.domainEndpoint = domainEndpoint;
+      }
+    }
+
+    let name: string;
+    let arn: string;
+    const stack = cdk.Stack.of(scope);
+    if (!attrs.domainName) {
+      if (!attrs.domainArn) { throw new Error('One of domainName or domainArn is required!'); }
+
+      arn = attrs.domainArn;
+      const maybeDomainName = stack.parseArn(attrs.domainArn).resourceName;
+      if (!maybeDomainName) { throw new Error('ARN for Elasticsearch domain must be in the form: ...'); }
+      name = maybeDomainName;
+    } else {
+      if (attrs.domainArn) { throw new Error('Only one of domainArn or domainName can be provided'); }
+      name = attrs.domainName;
+      arn = stack.formatArn({
+        service: 'elasticsearch',
+        resource: 'domain',
+        resourceName: attrs.domainName,
+      });
+    }
+
+    return new Import(arn, name, attrs.domainEndpoint);
+  }
+
+  private static createLogGroup(parent: cdk.Construct, domainName: string, id: string, name: string): logs.ILogGroup {
+    return new logs.LogGroup(parent, id, {
+      logGroupName: `elasticsearch/domains/${domainName}/${name}`,
+      retention: logs.RetentionDays.ONE_MONTH,
+    });
+  }
+
+  /**
+   * @attribute
+   */
+  public readonly domainArn: string;
+
+  /**
+   * @attribute
+   */
+  public readonly domainName: string;
+
+  /**
+   * @attribute
+   */
+  public readonly domainEndpoint: string;
+
+
+  private readonly domain: CfnDomain;
+
+  private readonly slowSearchLogGroup?: logs.ILogGroup;
+
+  private readonly slowIndexLogGroup?: logs.ILogGroup;
+
+  private readonly appLogGroup?: logs.ILogGroup;
+
+  constructor(scope: cdk.Construct, id: string, props: DomainProps) {
+    super(scope, id, {
+      physicalName: props.domainName,
+    });
+
+    this.domainName = this.physicalName;
+
+    // Setup logging
+    const logGroups: logs.ILogGroup[] = [];
+
+    if (props.logPublishingOptions?.slowSearchLogEnabed) {
+      this.slowSearchLogGroup = props.logPublishingOptions.slowSearchLogGroup ??
+        Domain.createLogGroup(this, this.domainName, 'SlowSearchLogs', 'slow-search-logs');
+
+      logGroups.push(this.slowSearchLogGroup);
+    };
+
+    if (props.logPublishingOptions?.slowIndexLogEnabed) {
+      this.slowIndexLogGroup = props.logPublishingOptions.slowIndexLogGroup ??
+        Domain.createLogGroup(this, this.domainName, 'SlowIndexLogs', 'slow-index-logs');
+
+      logGroups.push(this.slowIndexLogGroup);
+    };
+
+    if (props.logPublishingOptions?.appLogEnabled) {
+      this.appLogGroup = props.logPublishingOptions.appLogGroup ??
+        Domain.createLogGroup(this, this.domainName, 'AppLogs', 'application-logs');
+
+      logGroups.push(this.appLogGroup);
+    };
+
+    let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
+    if (logGroups.length > 0) {
+      const logPolicyStatement = new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
+        resources: logGroups.map((lg) => lg.logGroupArn),
+        principals: [new iam.ServicePrincipal('es.amazonaws.com')],
+      });
+
+      // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
+      // https://github.com/aws/aws-cdk/issues/5343
+      logGroupResourcePolicy = new LogGroupResourcePolicy(this, 'ESLogGroupPolicy', {
+        policyName: 'ESLogPolicy',
+        policyStatements: [logPolicyStatement],
+      });
+    }
+
+    // If VPC options are supplied ensure that the number of subnets matches the number AZ
+    if (props.vpcOptions?.subnets.map((subnet) => subnet.availabilityZone).length != props?.clusterConfig.availabilityZoneCount) {
+      throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
+    };
+
+    let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
+    if (props.vpcOptions) {
+      cfnVpcOptions = {
+        securityGroupIds: props.vpcOptions.securityGroups.map((sg) => sg.securityGroupId),
+        subnetIds: props.vpcOptions.subnets.map((subnet) => subnet.subnetId),
+      };
+    }
+
+    // Create the domain
+    this.domain = new CfnDomain(this, 'Resource', {
+      domainName: this.physicalName,
+      elasticsearchVersion: props.elasticsearchVersion,
+      elasticsearchClusterConfig: {
+        dedicatedMasterEnabled: props.clusterConfig.masterNodes != null,
+        dedicatedMasterCount: props.clusterConfig.masterNodes,
+        dedicatedMasterType: props.clusterConfig.masterNodeInstanceType,
+        instanceCount: props.clusterConfig.dataNodes,
+        instanceType: props.clusterConfig.dataNodeInstanceType,
+        zoneAwarenessEnabled: props.clusterConfig.availabilityZoneCount != null,
+        zoneAwarenessConfig: { availabilityZoneCount: props.clusterConfig.availabilityZoneCount },
+      },
+      ebsOptions: {
+        ebsEnabled: props.ebsOptions != null,
+        volumeSize: props.ebsOptions?.volumeSize,
+        volumeType: props.ebsOptions?.volumeType,
+        iops: props.ebsOptions?.iops,
+      },
+      encryptionAtRestOptions: {
+        enabled: props.encryptionAtRestOptions?.enabled ?? (props.encryptionAtRestOptions?.kmsKey != null),
+        kmsKeyId: props.encryptionAtRestOptions?.kmsKey?.keyId,
+      },
+      nodeToNodeEncryptionOptions: { enabled: props.nodeToNodeEncryptionEnabled ?? false },
+      logPublishingOptions: {
+        ES_APPLICATION_LOGS: {
+          enabled: this.appLogGroup != null,
+          cloudWatchLogsLogGroupArn: this.appLogGroup?.logGroupArn,
+        },
+        SEARCH_SLOW_LOGS: {
+          enabled: this.slowSearchLogGroup != null,
+          cloudWatchLogsLogGroupArn: this.slowSearchLogGroup?.logGroupArn,
+        },
+        INDEX_SLOW_LOGS: {
+          enabled: this.slowIndexLogGroup != null,
+          cloudWatchLogsLogGroupArn: this.slowIndexLogGroup?.logGroupArn,
+        },
+      },
+      cognitoOptions: {
+        enabled: props.cognitoOptions != null,
+        identityPoolId: props.cognitoOptions?.identityPoolId,
+        roleArn: props.cognitoOptions?.role.roleArn,
+        userPoolId: props.cognitoOptions?.userPoolId,
+      },
+      vpcOptions: cfnVpcOptions,
+    });
+
+    if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
+
+    if (props.domainName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName); }
+
+    this.domainArn = this.getResourceArnAttribute(this.domain.attrArn, {
+      service: 'es',
+      resource: 'domain',
+      resourceName: this.physicalName,
+    });
+
+    this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
   }
 }
