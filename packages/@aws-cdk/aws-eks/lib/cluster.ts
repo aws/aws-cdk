@@ -516,6 +516,8 @@ export class Cluster extends Resource implements ICluster {
 
   private readonly kubctlProviderSecurityGroup?: ec2.ISecurityGroup;
 
+  private readonly vpcSubnets: ec2.SubnetSelection[];
+
   private readonly version: KubernetesVersion;
 
   /**
@@ -569,9 +571,10 @@ export class Cluster extends Resource implements ICluster {
       defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
+    this.vpcSubnets = props.vpcSubnets || [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
+
     // Get subnetIds for all selected subnets
-    const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
-    const subnetIds = [...new Set(Array().concat(...placements.map(s => this.vpc.selectSubnets(s).subnetIds)))];
+    const subnetIds = [...new Set(Array().concat(...this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds)))];
 
     const clusterProps: CfnClusterProps = {
       name: this.physicalName,
@@ -1033,9 +1036,8 @@ export class Cluster extends Resource implements ICluster {
         providerProps = {
           ...providerProps,
           vpc: this.vpc,
-          // lambda functions can only bind to one subnet per az, also, only private subnets
-          // are allowed (and needed).
-          vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+          // lambda can only be accociated with max 16 subnets and they all need to be private.
+          vpcSubnets: {subnets: this.selectPrivateSubnets().slice(0, 16)},
           securityGroups: [this.kubctlProviderSecurityGroup!],
         };
       }
@@ -1053,6 +1055,17 @@ export class Cluster extends Resource implements ICluster {
     resourceScope.node.addDependency(this._kubectlReadyBarrier);
 
     return provider;
+  }
+
+  private selectPrivateSubnets(): ec2.ISubnet[] {
+
+    const privateSubnets: ec2.ISubnet[] = [];
+
+    for (const placement of this.vpcSubnets) {
+      privateSubnets.push(...this.vpc.selectSubnets(placement).subnets.filter(s => s instanceof ec2.PrivateSubnet));
+    }
+
+    return privateSubnets;
   }
 
   /**
