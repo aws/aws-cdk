@@ -102,4 +102,4 @@ new lambda.NodejsFunction(this, 'my-handler', {
 The modules listed in `nodeModules` must be present in the `package.json`'s dependencies. The
 same version will be used for installation. If a lock file is detected (`package-lock.json` or
 `yarn.lock`) it will be used along with the right installer (`npm` or `yarn`). The modules are
-installed in a [Lambda compatible Docker container](https://github.com/lambci/docker-lambda).
+installed in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
