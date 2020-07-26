@@ -158,9 +158,9 @@ export class Runtime {
 
   /**
    * The bundling Docker image for this runtime.
-   * Points to the lambci/lambda build image for this runtime.
+   * Points to the AWS SAM build image for this runtime.
    *
-   * @see https://hub.docker.com/r/lambci/lambda/
+   * @see https://github.com/awslabs/aws-sam-cli
    */
   public readonly bundlingDockerImage: BundlingDockerImage;
 
@@ -168,7 +168,7 @@ export class Runtime {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
-    this.bundlingDockerImage = BundlingDockerImage.fromRegistry(`lambci/lambda:build-${name}`);
+    this.bundlingDockerImage = BundlingDockerImage.fromRegistry(`amazon/aws-sam-cli-build-image-${name}`);
 
     Runtime.ALL.push(this);
   }
