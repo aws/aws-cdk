@@ -133,7 +133,31 @@ test('creates a secret when master credentials are not specified', () => {
   }));
 });
 
-test('SIngle Node CLusters spawn only single node', () => {
+test('Multi node clusters contains NumberOfNodes with value passed in', () => {
+  // GIVEN
+  const stack = testStack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    nodeType: NodeType.DC1_8XLARGE,
+    clusterType: ClusterType.MULTI_NODE,
+    numberOfNodes: 7,
+  });
+
+  // THEN
+  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+    ClusterType: 'multi-node',
+    NodeType: 'dc1.8xlarge',
+    NumberOfNodes: 7,
+  }));
+});
+
+test('Single node clusters spawn only single node and omit NumberOfNodes', () => {
   // GIVEN
   const stack = testStack();
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -152,6 +176,9 @@ test('SIngle Node CLusters spawn only single node', () => {
   cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
     ClusterType: 'single-node',
     NodeType: 'dc1.8xlarge',
+  }));
+
+  cdkExpect(stack).notTo(haveResource('AWS::Redshift::Cluster', {
     NumberOfNodes: 1,
   }));
 });

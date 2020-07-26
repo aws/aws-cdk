@@ -465,7 +465,6 @@ export class Cluster extends ClusterBase {
           : 'default'),
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       nodeType: props.nodeType || NodeType.DC2_LARGE,
-      numberOfNodes: nodeCount,
       loggingProperties,
       iamRoles: props.roles ? props.roles.map(role => role.roleArn) : undefined,
       dbName: props.defaultDatabaseName || 'default_db',
@@ -474,6 +473,10 @@ export class Cluster extends ClusterBase {
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
       encrypted: props.encrypted !== undefined ? props.encrypted : true,
     });
+
+    if (clusterType === ClusterType.MULTI_NODE) {
+      cluster.numberOfNodes = nodeCount;
+    }
 
     cluster.applyRemovalPolicy(removalPolicy, {
       applyToUpdateReplacePolicy: true,
