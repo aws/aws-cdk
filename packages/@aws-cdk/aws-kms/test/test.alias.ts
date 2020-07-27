@@ -224,7 +224,7 @@ export = {
 
     const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
 
-    test.throws(() => myAlias.aliasTargetKey, 'Cannot access aliasTargetKey on an Alias imnported by Alias.fromAliasName().');
+    test.throws(() => myAlias.aliasTargetKey, 'Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().');
 
     test.done();
   },
