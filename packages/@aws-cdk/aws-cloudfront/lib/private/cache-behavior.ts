@@ -49,7 +49,17 @@ export class CacheBehavior {
         queryStringCacheKeys: this.props.forwardQueryStringCacheKeys,
       },
       viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+      lambdaFunctionAssociations: this.props.edgeLambdas
+        ? this.props.edgeLambdas.map(edgeLambda => {
+          if (edgeLambda.functionVersion.version === '$LATEST') {
+            throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+          }
+          return {
+            lambdaFunctionArn: edgeLambda.functionVersion.functionArn,
+            eventType: edgeLambda.eventType.toString(),
+          };
+        })
+        : undefined,
     };
   }
-
 }
