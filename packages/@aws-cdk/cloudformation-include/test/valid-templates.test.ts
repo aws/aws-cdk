@@ -200,11 +200,11 @@ describe('CDK Include', () => {
     );
   });
 
-  test('can ingest a template with Fn::Sub in string form and output it unchanged', () => {
+  test('can ingest a template with Fn::Sub in map form and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-valid-map.json');
 
     expect(stack).toMatchTemplate(
-      loadTestFileToJsObject('fn-sub-valid-string.json'),
+      loadTestFileToJsObject('fn-sub-valid-map.json'),
     );
   });
 

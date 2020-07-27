@@ -3,7 +3,7 @@
     "AnotherBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "AccessControl": { "Fn::Sub": "unusued-bucket-fn-sub-${   AFakeResource}" }
+        "AccessControl": { "Fn::Sub": "unusued-bucket-fn-sub-${AFakeResource}" }
       }
     }
   }

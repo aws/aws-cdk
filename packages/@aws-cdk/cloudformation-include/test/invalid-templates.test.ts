@@ -101,15 +101,21 @@ describe('CDK Include', () => {
     }).toThrow(/Output with name 'SomeOutput' refers to a Condition with name 'NonexistantCondition' which was not found in this template/);
   });
 
-  /*test("throws a validation exception when Fn::Sub uses a key that isn't in the template", () => {
-    expect(() => {
-      includeTestTemplate(stack, 'fn-sub-invalid-key.json');
-    }).toThrow(/Element used in Ref expression with logical ID: 'FakeResource' not found/);
-  });*/
-
   test("throws a validation exception when Fn::Sub in string form uses a key that isn't in the template", () => {
     expect(() => {
       includeTestTemplate(stack, 'fn-sub-invalid-key-string.json');
+    }).toThrow(/Element used in Ref expression with logical ID: 'AFakeResource' in Fn::Sub not found/);
+  });
+
+  test("throws a validation exception when Fn::Sub in map form uses a key that isn't in the template", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'fn-sub-invalid-key-map.json');
+    }).toThrow(/Element used in Ref expression with logical ID: 'AFakeResource' not found/);
+  });
+
+  test("throws a validation exception when Fn::Sub in map form uses a key that isn't in the template and isn't in the map", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'fn-sub-key-not-in-map.json');
     }).toThrow(/Element used in Ref expression with logical ID: 'AFakeResource' in Fn::Sub not found/);
   });
 });

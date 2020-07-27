@@ -1,0 +1,10 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": { "Fn::Sub": [ "${Name}-${Region}-here-${AFakeResource}", { "Name": {"Ref" : "AFakeResource" }, "Region": {"Fn::Base64": "a-string" }} ]}
+      }
+    }
+  }
+}

@@ -420,13 +420,12 @@ export class CfnParser {
         return Fn.conditionOr(...value);
       }
       case 'Fn::Sub': {
-        console.log(object);
         const value = this.parseValue(object[key]);
         if (typeof value === 'string') {
           // let parseSubRef() handle the references
           return Fn.sub(value.substring(0, value.indexOf('${')) + this.parseSubRef(value.substring(value.indexOf('${'))));
-        } else {
-          return Fn.sub(value[0].substring(0, value[0].indexOf('${')) + this.parseSubMapRef(value[0].substring(value[0].indexOf('${')), value[1]));
+        } else {                                                                                                      //TODO: this value, value is terrible
+          return Fn.sub(value[0].substring(0, value[0].indexOf('${')) + this.parseSubMapRef(value[0].substring(value[0].indexOf('${')), value[1]), value[1]);
         }
       }
       case 'Condition': {
@@ -462,41 +461,55 @@ export class CfnParser {
     if (refTarget === '') {
       return '';
     } else if (refTarget[0] === '!') {
-      return value.substring(0, value.indexOf('}') + 1) + this.parseSubRef(value.substring(value.indexOf('}')+1));
+      return value.substring(0, value.indexOf('}') + 1) + this.parseSubRef(value.substring(value.indexOf('}') + 1));
     }
 
     const specialRef = specialCaseSubRefs(refTarget);
     if (specialRef) {
-      return value.substring(0, value.indexOf('${')) + specialRef + this.parseSubRef(value.substring(value.indexOf('}')+1));
+      return value.substring(0, value.indexOf('${')) + specialRef + this.parseSubRef(value.substring(value.indexOf('}') + 1));
     } else {
       const refElement = this.options.finder.findRefTarget(refTarget);
       if (!refElement) {
         throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
       }
-      return value.substring(0, value.indexOf('${')) + CfnReference.for(refElement, 'Sub') + this.parseSubRef(value.substring(value.indexOf('}')+1));
+      return value.substring(0, value.indexOf('${')) + CfnReference.for(refElement, 'Sub') + this.parseSubRef(value.substring(value.indexOf('}') + 1));
     }
   }
 
+  // TODO: need to combine this method and parseSubRef() into one method, likely the one below. 
   private parseSubMapRef(value: string, map: any): string {
-    const refTarget = value.substring(value.indexOf('${') + 2, value.indexOf('}')).trim();
+    const leftBrace = value.indexOf('${');
+    const rightBrace = value.indexOf('}') + 1;
+    const leftHalf = value.substring(0, leftBrace);
+    const rightHalf = value.substring(rightBrace);
+    //const refTarget = value.substring(value.indexOf('${') + 2, value.indexOf('}')).trim();
+    // don't include left and right braces in refTarget
+    const refTarget = value.substring(leftBrace + 2, rightBrace - 1).trim();
     if (refTarget === '') {
       return '';
     } else if (refTarget[0] === '!') {
-      return value.substring(0, value.indexOf('}') + 1) + this.parseSubMapRef(value.substring(value.indexOf('}')+1), map);
+      //return value.substring(0, value.indexOf('}') + 1) + this.parseSubMapRef(value.substring(value.indexOf('}') + 1), map);
+      return  value.substring(0, rightBrace) + this.parseSubMapRef(rightHalf, map);
     }
 
-    //TODO: remove special ref foo
     const specialRef = specialCaseSubRefs(refTarget);
     if (specialRef) {
-      return value.substring(0, value.indexOf('${')) + specialRef + this.parseSubMapRef(value.substring(value.indexOf('}')+1), map);
+      //return value.substring(0, value.indexOf('${')) + specialRef + this.parseSubMapRef(value.substring(value.indexOf('}') + 1), map);
+      return leftHalf + specialRef + this.parseSubMapRef(rightHalf, map);
     } else {
-      const refElement = map[refTarget];
-      //TODO: can be a regular ID not in the map
-      //const refElement = this.options.finder.findRefTarget(refTarget);
+      let refElement = map[refTarget];
+      //TODO: can be a regular ID not in the map; GetAtt (ie ${A.B})
       if (!refElement) {
-        throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
+        refElement = this.options.finder.findRefTarget(refTarget);
+        if (!refElement) {
+          throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
+        }
+        // it's in the template
+        //return value.substring(0, value.indexOf('${')) + CfnReference.for(refElement, 'Sub') + this.parseSubRef(value.substring(value.indexOf('}') + 1));
+        return leftHalf + CfnReference.for(refElement, 'Sub') + this.parseSubRef(rightHalf);
       }
-      return value.substring(0, value.indexOf('${')) + '${' + refTarget + '}' + this.parseSubMapRef(value.substring(value.indexOf('}')+1), map);
+      //return value.substring(0, value.indexOf('${')) + '${' + refTarget + '}' + this.parseSubMapRef(value.substring(value.indexOf('}') + 1), map);
+      return leftHalf + '${' + refTarget + '}' + this.parseSubMapRef(rightHalf, map);
     }
   }
 }
