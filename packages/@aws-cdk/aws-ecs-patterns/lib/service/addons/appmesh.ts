@@ -4,7 +4,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ServiceAddon, ServiceBuild, TaskDefinitionBuild } from './addon-interfaces';
+import { ServiceAddon, ServiceBuild } from './addon-interfaces';
 import { Container } from './container';
 
 /**
@@ -45,7 +45,7 @@ export class AppMeshAddon extends ServiceAddon {
     }
   }
 
-  public mutateTaskDefinitionProps(props: TaskDefinitionBuild) {
+  public mutateTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
     // Find the app addon, to get its port
     const containerAddon = this.parentService.getAddon('service-container') as Container;
 
@@ -83,7 +83,7 @@ export class AppMeshAddon extends ServiceAddon {
           ],
         },
       }),
-    } as TaskDefinitionBuild;
+    } as ecs.TaskDefinitionProps;
   }
 
   public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {

@@ -21,40 +21,10 @@ export enum EnvironmentCapacityType {
 }
 
 /**
- * A task definition that is in the process of being built
- * by a series of hooks. Eventually it will be assigned to
- * an ecs.TaskDefinitionProps
- */
-export interface TaskDefinitionBuild {
-  /**
-   * How much CPU the task needs to run
-   * @default - 256 CPU
-   */
-  readonly cpu?: string;
-
-  /**
-   * How much memeory the task needs to run
-   * @default - 512 MB of memory
-   */
-  readonly memoryMiB?: string;
-
-  /**
-   * The proxy configuration, used for routing task network
-   * traffic through a sidecar container that asks as a proxy
-   * @default - No proxy configured
-   */
-  readonly proxyConfiguration?: ecs.ProxyConfiguration;
-
-  /**
-   * The network mode used for the task
-   * @default - AWS VPC networking mode
-   */
-  readonly networkMode?: ecs.NetworkMode;
-}
-
-/**
  * A service props that is in the process of being assembled
- * Eventually to be assigned to a ecs.ServiceProps
+ * Eventually to be assigned to a ecs.Ec2ServiceProps
+ * or ecs.FargateServiceProps depending on the environment's
+ * capacity type.
  */
 export interface ServiceBuild {
   /**
@@ -138,10 +108,10 @@ export abstract class ServiceAddon {
    * the task.
    * @param props - Properties of the task definition to be created
    */
-  public mutateTaskDefinitionProps(props: TaskDefinitionBuild) {
+  public mutateTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
     return {
       ...props,
-    } as TaskDefinitionBuild;
+    } as ecs.TaskDefinitionProps;
   }
 
   /**

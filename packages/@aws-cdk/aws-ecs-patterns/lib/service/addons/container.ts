@@ -1,7 +1,7 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ServiceAddon, TaskDefinitionBuild } from './addon-interfaces';
+import { ServiceAddon } from './addon-interfaces';
 
 /**
  * Setting for the main application container of a service
@@ -65,12 +65,12 @@ export class Container extends ServiceAddon {
 
   // This hook sets the overall task resource requirements to the
   // resource requirements of the application itself.
-  public mutateTaskDefinitionProps(props: TaskDefinitionBuild) {
+  public mutateTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
     return {
       ...props,
       cpu: this.props.cpu.toString(),
       memoryMiB: this.props.memoryMiB.toString(),
-    } as TaskDefinitionBuild;
+    } as ecs.TaskDefinitionProps;
   }
 
   // This hook adds the application container to the task definition.

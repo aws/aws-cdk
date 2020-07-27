@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { EnvironmentCapacityType, ServiceAddon, ServiceBuild, TaskDefinitionBuild } from './addons/addon-interfaces';
+import { EnvironmentCapacityType, ServiceAddon, ServiceBuild } from './addons/addon-interfaces';
 
 /**
  * The settings for an ECS Service
@@ -160,9 +160,13 @@ export class Service extends cdk.Construct {
 
     // Give each addon a chance to mutate the task def creation properties
     let taskDefProps = {
+      // Default CPU and memoryyarn clean
       cpu: '256',
       memory: '512',
-    } as TaskDefinitionBuild;
+
+      // Ensure that the task definition supports both EC2 and Fargate
+      compatibility: ecs.Compatibility.EC2_AND_FARGATE,
+    } as ecs.TaskDefinitionProps;
 
     for (const addon in this.addons) {
       if (this.addons[addon]) {
@@ -171,12 +175,7 @@ export class Service extends cdk.Construct {
     }
 
     // Now that the task definition properties are assembled, create it
-    this.taskDefinition = new ecs.TaskDefinition(this.scope, `${this.id}-task-definition`, {
-      ...taskDefProps,
-
-      // Ensure that the task definition supports both EC2 and Fargate
-      compatibility: ecs.Compatibility.EC2_AND_FARGATE,
-    });
+    this.taskDefinition = new ecs.TaskDefinition(this.scope, `${this.id}-task-definition`, taskDefProps);
 
     // Now give each addon a chance to use the task definition
     for (const addon in this.addons) {
