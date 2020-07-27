@@ -260,5 +260,5 @@ All items unchecked below are currently not supported.
 - [x] Fn::ImportValue
 - [x] Fn::Select
 - [x] Fn::Split
-- [ ] Fn::Sub
+- [x] Fn::Sub
 - [x] Fn::Transform
