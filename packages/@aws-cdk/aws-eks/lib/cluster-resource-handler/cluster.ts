@@ -22,24 +22,8 @@ export class ClusterResourceHandler extends ResourceHandler {
   constructor(eks: EksClient, event: ResourceEvent) {
     super(eks, event);
 
-    function patchEndpointAccess(props: any) {
-
-      // this is weird but these boolean properties are passed by CFN as a string, and we need them to be booleanic for the SDK.
-      // Otherwise it fails with 'Unexpected Parameter: params.resourcesVpcConfig.endpointPrivateAccess is expected to be a boolean'
-
-      if (typeof(props.resourcesVpcConfig?.endpointPrivateAccess) === 'string') {
-        Object.assign(props.resourcesVpcConfig, { endpointPrivateAccess: props.resourcesVpcConfig.endpointPrivateAccess === 'true' });
-      }
-
-      if (typeof(props.resourcesVpcConfig?.endpointPublicAccess) === 'string') {
-        Object.assign(props.resourcesVpcConfig, { endpointPublicAccess: props.resourcesVpcConfig.endpointPublicAccess === 'true' });
-      }
-
-      return props;
-    }
-
-    this.newProps = patchEndpointAccess(parseProps(this.event.ResourceProperties));
-    this.oldProps = event.RequestType === 'Update' ? patchEndpointAccess(parseProps(event.OldResourceProperties)) : { };
+    this.newProps = parseProps(this.event.ResourceProperties);
+    this.oldProps = event.RequestType === 'Update' ? parseProps(event.OldResourceProperties) : { };
   }
 
   // ------
@@ -277,7 +261,22 @@ export class ClusterResourceHandler extends ResourceHandler {
 }
 
 function parseProps(props: any): aws.EKS.CreateClusterRequest {
-  return props?.Config ?? { };
+
+  const parsed = props?.Config ?? { };
+
+  // this is weird but these boolean properties are passed by CFN as a string, and we need them to be booleanic for the SDK.
+  // Otherwise it fails with 'Unexpected Parameter: params.resourcesVpcConfig.endpointPrivateAccess is expected to be a boolean'
+
+  if (typeof(parsed.resourcesVpcConfig?.endpointPrivateAccess) === 'string') {
+    parsed.resourcesVpcConfig.endpointPrivateAccess = parsed.resourcesVpcConfig.endpointPrivateAccess === 'true';
+  }
+
+  if (typeof(parsed.resourcesVpcConfig?.endpointPublicAccess) === 'string') {
+    parsed.resourcesVpcConfig.endpointPublicAccess = parsed.resourcesVpcConfig.endpointPublicAccess === 'true';
+  }
+
+  return parsed;
+
 }
 
 interface UpdateMap {
