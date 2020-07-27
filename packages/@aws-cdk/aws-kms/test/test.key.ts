@@ -436,6 +436,34 @@ export = {
     test.done();
   },
 
+  'fails if key policy has no actions'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const key = new Key(stack, 'MyKey');
+
+    key.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one allow or deny action/);
+    test.done();
+  },
+
+  'fails if key policy has no IAM principals'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const key = new Key(stack, 'MyKey');
+
+    key.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['kms:*'],
+    }));
+
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+    test.done();
+  },
+
   'imported keys': {
     'throw an error when providing something that is not a valid key ARN'(test: Test) {
       const stack = new Stack();

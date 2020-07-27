@@ -291,4 +291,38 @@ export = {
     expect(stack2).to(haveResource('AWS::SNS::Subscription'));
     test.done();
   },
+
+  'fails if topic policy has no actions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one allow or deny action/);
+    test.done();
+  },
+
+  'fails if topic policy has no IAM principals'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['sns:*'],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+    test.done();
+  },
 };

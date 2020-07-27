@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, Stack, App } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 describe('IAM role', () => {
@@ -405,5 +405,28 @@ describe('IAM role', () => {
         sem neque sed ipsum.',
       });
     }).toThrow(/Role description must be no longer than 1000 characters./);
+  });
+
+  test('fails if managed policy is invalid', () => {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      managedPolicies: [new ManagedPolicy(stack, 'MyManagedPolicy', { statements: [new PolicyStatement()] })],
+    });
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one allow or deny action/);
+  });
+
+  test('fails if assumeRolePolicy is invalid', () => {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      managedPolicies: [new ManagedPolicy(stack, 'MyManagedPolicy')],
+    });
+    role.assumeRolePolicy?.addStatements(new PolicyStatement({ actions: ['*'] }));
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
   });
 });

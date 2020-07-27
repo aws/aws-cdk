@@ -420,6 +420,12 @@ export class Role extends Resource implements IRole {
 
     return this.immutableRole;
   }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() || []);
+    return errors;
+  }
 }
 
 /**

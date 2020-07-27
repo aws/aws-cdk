@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import { Key, IKey } from './key';
+import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
@@ -75,14 +75,6 @@ abstract class AliasBase extends Resource implements IAlias {
 
   public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult {
     return this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    if (this.aliasTargetKey instanceof Key) {
-      errors.push(...this.aliasTargetKey.validate());
-    }
-    return errors;
   }
 
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {

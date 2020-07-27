@@ -306,6 +306,40 @@ export = {
     test.done();
   },
 
+  'fails if repository policy has no actions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one allow or deny action/);
+    test.done();
+  },
+
+  'fails if repository policy has no IAM principals'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['ecr:*'],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+    test.done();
+  },
+
   'events': {
     'onImagePushed without imageTag creates the correct event'(test: Test) {
       const stack = new cdk.Stack();
