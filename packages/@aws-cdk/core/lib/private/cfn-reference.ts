@@ -34,10 +34,7 @@ export class CfnReference extends Reference {
    *
    *     Lazy.stringValue({ produce: () => new CfnReference(...) })
    *
-   * If sub is defined, this reference will resolve as
-   *
-   *     ${logicalID}
-   *
+   * If sub is defined, this reference will resolve as ${logicalID}
    * This allows cloudformation-include to correctly handle Fn::Sub
    */
   public static for(target: CfnElement, attribute: string, sub?: string) {
