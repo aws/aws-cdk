@@ -33,19 +33,27 @@ export class CfnReference extends Reference {
    * important that the state isn't lost if it's lazily created, like so:
    *
    *     Lazy.stringValue({ produce: () => new CfnReference(...) })
+   *
+   * If sub is defined, this reference will resolve as
+   *
+   *     ${logicalID}
+   *
+   * This allows cloudformation-include to correctly handle Fn::Sub
    */
-  public static for(target: CfnElement, attribute: string) {
+  public static for(target: CfnElement, attribute: string, sub?: string) {
     return CfnReference.singletonReference(target, attribute, () => {
       let cfnIntrinsic;
       if (attribute === 'Ref') {
-        cfnIntrinsic = { Ref: target.logicalId }; 
-      } else if (attribute === 'Sub') {
+        cfnIntrinsic = { Ref: target.logicalId };
+      } else if (sub === 'Ref') {
         cfnIntrinsic = `\$\{${target.logicalId}\}`;
+      } else if (sub === 'GetAtt') {
+        cfnIntrinsic = `\$\{${target.logicalId}.${attribute}\}`;
       } else {
         cfnIntrinsic = { 'Fn::GetAtt': [ target.logicalId, attribute ]};
       }
       return new CfnReference(cfnIntrinsic, attribute, target);
-    });
+    }, sub);
   }
 
   /**
@@ -65,15 +73,16 @@ export class CfnReference extends Reference {
 
   /**
    * Get or create the table
+   * Defining sub allows cloudformation-include to correctly handle Fn::Sub
    */
-  private static singletonReference(target: Construct, attribKey: string, fresh: () => CfnReference) {
+  private static singletonReference(target: Construct, attribKey: string, fresh: () => CfnReference, sub?: string) {
     let attribs = CfnReference.referenceTable.get(target);
     if (!attribs) {
       attribs = new Map();
       CfnReference.referenceTable.set(target, attribs);
     }
     let ref = attribs.get(attribKey);
-    if (!ref) {
+    if (!ref || sub) {
       ref = fresh();
       attribs.set(attribKey, ref);
     }

@@ -421,12 +421,19 @@ export class CfnParser {
       }
       case 'Fn::Sub': {
         const value = this.parseValue(object[key]);
+        let valString: string;
+        let map: any | undefined;
         if (typeof value === 'string') {
-          // let parseSubRef() handle the references
-          return Fn.sub(value.substring(0, value.indexOf('${')) + this.parseFnSubString(value.substring(value.indexOf('${'))));
-        } else {                                                                                                      //TODO: this value, value is terrible
-          return Fn.sub(value[0].substring(0, value[0].indexOf('${')) + this.parseFnSubString(value[0].substring(value[0].indexOf('${')), value[1]), value[1]);
+          valString = value;
+          map = undefined;
+        } else {
+          valString = value[0];
+          map = value[1];
         }
+
+        const leftBrace = valString.indexOf('${');
+        const leftHalf = valString.substring(0, leftBrace);
+        return Fn.sub(leftHalf + this.parseFnSubString(valString.substring(leftBrace), map), map);
       }
       case 'Condition': {
         // a reference to a Condition from another Condition
@@ -456,20 +463,20 @@ export class CfnParser {
       : undefined;
   }
 
-  private parseFnSubString(value: string, map?: any): string {
+  private parseFnSubString(value: string, map: any): string {
     const leftBrace = value.indexOf('${');
     const rightBrace = value.indexOf('}') + 1;
     const leftHalf = value.substring(0, leftBrace);
     const rightHalf = value.substring(rightBrace);
-    // don't include left and right braces in refTarget
+    // don't include left and right braces when searching for the target of the reference
     const refTarget = value.substring(leftBrace + 2, rightBrace - 1).trim();
     if (refTarget === '') {
       return '';
     } else if (refTarget[0] === '!') {
       return value.substring(0, rightBrace) + this.parseFnSubString(rightHalf, map);
     }
-    // TODO: need to add getatt support and better comments
 
+    // lookup in map
     let refElement;
     if (map) {
       refElement = map[refTarget];
@@ -478,15 +485,22 @@ export class CfnParser {
       }
     }
 
+    // since it's not in the map, check if it's a pseudo parameter
     const specialRef = specialCaseSubRefs(refTarget);
     if (specialRef) {
       return leftHalf + specialRef + this.parseFnSubString(rightHalf, map);
     }
 
+    // handle Ref
     refElement = this.options.finder.findRefTarget(refTarget);
     if (refElement) {
-    
-      return leftHalf + CfnReference.for(refElement, 'Sub') + this.parseFnSubString(rightHalf);
+      return leftHalf + CfnReference.for(refElement, 'Sub', 'Ref') + this.parseFnSubString(rightHalf, map);
+    }
+
+    // handle GetAtt
+    refElement = this.options.finder.findResource(refTarget.substring(0, refTarget.indexOf('.')));
+    if (refElement) {
+      return leftHalf + refElement.getAtt(refTarget.substring(refTarget.indexOf('.') + 1), 'GetAtt') + this.parseFnSubString(rightHalf, map);
     }
 
     throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);

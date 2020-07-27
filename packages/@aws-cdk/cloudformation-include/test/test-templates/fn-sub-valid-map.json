@@ -3,19 +3,14 @@
     "Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": { "Fn::Sub": [ "${Name}-${Region}-foo-${!Immediate}-foo-${AnotherBucket}", { "Name": {"Ref" : "AnotherBucket" }, "Region": {"Fn::Base64": "AWS::Region" }} ]}
+        "BucketName": { "Fn::Sub": [ "${Region}-foo-${!Immediate}-foo-${AnotherBucket}-${AnotherBucket.DomainName}-${Name}", 
+          { "Name": { "Ref" : "AnotherBucket" }, "Region": { "Fn::Base64": "AWS::Region" }} ]}
       }
     },
     "AnotherBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": { "Fn::Sub": "${!Literal}-${AWS::Region}-${LastResource}" }
-      }
-    },
-    "LastResource": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": "my-bucket"
+        "BucketName": "another-bucket"
       }
     }
   }

@@ -3,13 +3,13 @@
     "Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": { "Fn::Sub": [ "unusued-different-sub-${Name}", { "AnotherBucket": {"Ref" : "AnotherBucket" }} ]}
+        "BucketName": { "Fn::Sub": [ "${AnotherBucket}", { "AnotherBucket": { "Ref" : "AnotherBucket" }} ]}
       }
     },
     "AnotherBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": { "Fn::Sub": "unusued-bucket-fn-sub-${!Literal}" }
+        "BucketName": "another-bucket"
       }
     }
   }

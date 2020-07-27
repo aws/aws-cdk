@@ -3,13 +3,13 @@
     "Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": "some-bucket1231${!AWS::AccountId}232343453${ ! AWS::Region}452${!Immediate}234"
+        "BucketName": "some-bucket${!AWS::AccountId}2453${ ! AWS::Region}1-1${!Immediate}234"
       }
     },
     "AnotherBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": { "Fn::Sub": "unusued-bucket-fn-sub-${AWS::Region}-gibberish-${Bucket}-${!Literal}-${AWS::Region}" }
+        "BucketName": { "Fn::Sub": "1-${AWS::Region}-foo-${Bucket}-${!Literal}-${Bucket.DomainName}-${AWS::Region}" }
       }
     }
   }
