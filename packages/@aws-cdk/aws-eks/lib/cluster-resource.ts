@@ -4,10 +4,7 @@ import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnClusterProps, CfnCluster } from './eks.generated';
 
-/**
- * Cluster Endpoint access configuration.
- */
-export interface EndpointAccessConfig {
+export interface ClusterResourceProps extends CfnClusterProps {
 
   /**
    * Enable private endpoint access to the cluster.
@@ -23,14 +20,6 @@ export interface EndpointAccessConfig {
    * Limit public address with CIDR blocks.
    */
   readonly publicAccessCidrs?: string[];
-
-}
-export interface ClusterResourceProps extends CfnClusterProps {
-
-  /**
-   * Endpoint access configuration.
-   */
-  readonly endpointAccessConfig: EndpointAccessConfig
 
 }
 
@@ -157,9 +146,9 @@ export class ClusterResource extends Construct {
           resourcesVpcConfig: {
             subnetIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).subnetIds,
             securityGroupIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).securityGroupIds,
-            endpointPublicAccess: props.endpointAccessConfig.endpointPublicAccess,
-            endpointPrivateAccess: props.endpointAccessConfig.endpointPrivateAccess,
-            publicAccessCidrs: props.endpointAccessConfig.publicAccessCidrs,
+            endpointPublicAccess: props.endpointPublicAccess,
+            endpointPrivateAccess: props.endpointPrivateAccess,
+            publicAccessCidrs: props.publicAccessCidrs,
           },
         },
         AssumeRoleArn: this.creationRole.roleArn,

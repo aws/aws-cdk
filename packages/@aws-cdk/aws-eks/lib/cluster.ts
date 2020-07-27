@@ -601,11 +601,9 @@ export class Cluster extends Resource implements ICluster {
 
       resource = new ClusterResource(this, 'Resource', {
         ...clusterProps,
-        endpointAccessConfig: {
-          endpointPrivateAccess: this.endpointAccess.endpointPrivateAccess,
-          endpointPublicAccess: this.endpointAccess.endpointPublicAccess,
-          publicAccessCidrs: this.endpointAccess.publicAccessCidrs,
-        },
+        endpointPrivateAccess: this.endpointAccess.endpointPrivateAccess,
+        endpointPublicAccess: this.endpointAccess.endpointPublicAccess,
+        publicAccessCidrs: this.endpointAccess.publicAccessCidrs,
       });
       this._clusterResource = resource;
 
