@@ -1,3 +1,5 @@
+/// !cdk-integ *
+
 import * as path from 'path';
 import * as db from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
