@@ -323,6 +323,22 @@ describe('CDK Include', () => {
       loadTestFileToJsObject('long-form-subnet.yaml'),
     );
   });
+
+  test('can ingest a yaml tempalte with Fn::Sub in string form and output it unchanged', () => {
+    includeTestTemplate(stack, 'sub-string.yaml');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('sub-string.yaml'),
+    );
+  });
+
+  test('can ingest a yaml tempalte with Fn::Sub in map form and output it unchanged', () => {
+    includeTestTemplate(stack, 'short-form-sub-map.yaml');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('short-form-sub-map.yaml'),
+    );
+  });
 });
 
 function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {

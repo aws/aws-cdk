@@ -470,8 +470,8 @@ export class CfnParser {
     const rightHalf = value.substring(rightBrace);
     // don't include left and right braces when searching for the target of the reference
     const refTarget = value.substring(leftBrace + 2, rightBrace - 1).trim();
-    if (refTarget === '') {
-      return '';
+    if (leftBrace === -1) {
+      return value;
     } else if (refTarget[0] === '!') {
       return value.substring(0, rightBrace) + this.parseFnSubString(rightHalf, map);
     }
@@ -503,6 +503,7 @@ export class CfnParser {
       return leftHalf + refElement.getAtt(refTarget.substring(refTarget.indexOf('.') + 1), 'GetAtt') + this.parseFnSubString(rightHalf, map);
     }
 
+    if (refTarget === '2') { console.log(leftBrace)};
     throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
   }
 }
