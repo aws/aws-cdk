@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Duration, Stack, App } from '@aws-cdk/core';
-import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy } from '../lib';
 
 describe('IAM role', () => {
   test('default role', () => {
@@ -412,10 +412,67 @@ describe('IAM role', () => {
     const stack = new Stack(app, 'my-stack');
     new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
-      managedPolicies: [new ManagedPolicy(stack, 'MyManagedPolicy', { statements: [new PolicyStatement()] })],
+      managedPolicies: [new ManagedPolicy(stack, 'MyManagedPolicy', {
+        statements: [new PolicyStatement({
+          resources: ['*'],
+          actions: ['*'],
+          principals: [new ServicePrincipal('sns.amazonaws.com')],
+        })],
+      })],
     });
 
-    expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one allow or deny action/);
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+  });
+
+  test('fails if default role policy is invalid', () => {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+    role.addToPrincipalPolicy(new PolicyStatement({
+      resources: ['*'],
+      actions: ['*'],
+      principals: [new ServicePrincipal('sns.amazonaws.com')],
+    }));
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+  });
+
+  // test('fails if inline policy from props is invalid', () => {
+  //   const app = new App();
+  //   const stack = new Stack(app, 'my-stack');
+  //   new Role(stack, 'MyRole', {
+  //     assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+  //     inlinePolicies: {
+  //       testPolicy: new PolicyDocument({
+  //         statements: [new PolicyStatement({
+  //           resources: ['*'],
+  //           actions: ['*'],
+  //           principals: [new ServicePrincipal('sns.amazonaws.com')],
+  //         })],
+  //       }),
+  //     },
+  //   });
+
+  //   expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+  // });
+
+  test('fails if attached inline policy is invalid', () => {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+    role.attachInlinePolicy(new Policy(stack, 'MyPolicy', {
+      statements: [new PolicyStatement({
+        resources: ['*'],
+        actions: ['*'],
+        principals: [new ServicePrincipal('sns.amazonaws.com')],
+      })],
+    }));
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
   });
 
   test('fails if assumeRolePolicy is invalid', () => {
