@@ -11,7 +11,7 @@ import * as synthetics from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'awscanary');
 
-new synthetics.Canary(stack, 'mycanary-444', {
+new synthetics.Canary(stack, 'mycanary-333', {
 });
 
 app.synth();
