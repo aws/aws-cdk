@@ -11,7 +11,7 @@ export class CloudFrontTarget implements route53.IAliasRecordTarget {
    */
   public static readonly CLOUDFRONT_ZONE_ID = 'Z2FDTNDATAQYW2';
 
-  constructor(private readonly distribution: cloudfront.CloudFrontWebDistribution) {
+  constructor(private readonly distribution: cloudfront.IDistribution) {
   }
 
   public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
