@@ -306,8 +306,6 @@ export class Canary extends cdk.Resource {
    * Creates a unique name for the canary. The generated name becomes the physical ID of the canary.
    */
   private generateUniqueName(): string {
-    // eslint-disable-next-line no-console
-    console.log(this.node.uniqueId);
     return this.node.uniqueId.toLowerCase().replace(' ', '').substring(0,20);
   }
 }
