@@ -20,3 +20,4 @@ lib/sdk-api-metadata.json
 !jest.config.js
 
 junit.xml
+junit/

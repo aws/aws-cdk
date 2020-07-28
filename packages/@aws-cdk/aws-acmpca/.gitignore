@@ -18,3 +18,4 @@ coverage
 !jest.config.js
 
 junit.xml
+junit/

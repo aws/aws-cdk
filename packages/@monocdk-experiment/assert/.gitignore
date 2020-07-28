@@ -21,3 +21,4 @@ nyc.config.js
 !jest.config.js
 
 junit.xml
+junit/

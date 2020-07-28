@@ -892,6 +892,8 @@ export class MustIgnoreJunitXml extends ValidationRule {
   public validate(pkg: PackageJson): void {
     fileShouldContain(this.name, pkg, '.npmignore', 'junit.xml');
     fileShouldContain(this.name, pkg, '.gitignore', 'junit.xml');
+    fileShouldContain(this.name, pkg, '.npmignore', 'junit/');
+    fileShouldContain(this.name, pkg, '.gitignore', 'junit/');
   }
 }
 
