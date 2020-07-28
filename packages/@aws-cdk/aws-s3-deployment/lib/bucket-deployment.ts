@@ -326,12 +326,12 @@ export enum StorageClass {
   DEEP_ARCHIVE = 'DEEP_ARCHIVE'
 }
 
-/**	
- * Used for HTTP expires header, which influences downstream caches. Does NOT influence deletion of the object.	
- * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata	
+/**
+ * Used for HTTP expires header, which influences downstream caches. Does NOT influence deletion of the object.
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  *
  * @deprecated use core.Expiration
- */	
+ */
 export class Expires {
   /**
    * Expire at the specified date
