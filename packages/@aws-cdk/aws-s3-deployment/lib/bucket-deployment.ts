@@ -333,29 +333,28 @@ export enum StorageClass {
  * @deprecated use core.Expiration
  */	
 export class Expires {
-  /**	
-  * Expire at the specified date	
-  * @param d date to expire at	
-  */	
-  public static atDate(d: Date) { return new Expires(d.toUTCString()); }	
+  /**
+   * Expire at the specified date
+   * @param d date to expire at
+   */	
+  public static atDate(d: Date) { return new Expires(d.toUTCString()); }
 
-  /**	
-  * Expire at the specified timestamp	
-  * @param t timestamp in unix milliseconds	
-  */	
-  public static atTimestamp(t: number) { return Expires.atDate(new Date(t)); }	
+  /**
+   * Expire at the specified timestamp
+   * @param t timestamp in unix milliseconds
+   */
+  public static atTimestamp(t: number) { return Expires.atDate(new Date(t)); }
 
-  /**	
-  * Expire once the specified duration has passed since deployment time	
-  * @param t the duration to wait before expiring	
-  */	
-  public static after(t: cdk.Duration) { return Expires.atDate(new Date(Date.now() + t.toMilliseconds())); }	
+  /**
+   * Expire once the specified duration has passed since deployment time
+   * @param t the duration to wait before expiring
+   */
+  public static after(t: cdk.Duration) { return Expires.atDate(new Date(Date.now() + t.toMilliseconds())); }
 
-  public static fromString(s: string) { return new Expires(s); }	
+  public static fromString(s: string) { return new Expires(s); }
 
-  private constructor(public readonly value: any) {}	
+  private constructor(public readonly value: any) {}
 }	
-
 
 export interface UserDefinedObjectMetadata {
   /**
