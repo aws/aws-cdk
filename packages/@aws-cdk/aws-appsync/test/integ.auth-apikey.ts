@@ -1,13 +1,8 @@
 import { join } from 'path';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
-import { App, RemovalPolicy, Stack, Expires } from '@aws-cdk/core';
-import {
-  AuthorizationType,
-  GraphQLApi,
-  MappingTemplate,
-  PrimaryKey,
-  Values,
-} from '../lib';
+import { App, RemovalPolicy, Stack, Expiration } from '@aws-cdk/core';
+import { AuthorizationType, GraphQLApi, MappingTemplate, PrimaryKey, Values } from '../lib';
+
 /*
  * Creates an Appsync GraphQL API with API_KEY authorization.
  * Testing for API_KEY Authorization.
@@ -34,7 +29,7 @@ const api = new GraphQLApi(stack, 'Api', {
       authorizationType: AuthorizationType.API_KEY,
       apiKeyConfig: {
         // Generate a timestamp that's 365 days ahead, use atTimestamp so integ test doesn't fail
-        expires: Expires.atTimestamp(1626609600000),
+        expires: Expiration.atTimestamp(1626566400000),
       },
     },
   },
