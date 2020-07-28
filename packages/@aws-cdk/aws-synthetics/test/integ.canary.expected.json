@@ -1,11 +1,11 @@
 {
   "Resources": {
-    "mycanary777ServiceBucketE226A972": {
+    "mycanaryServiceBucketF66DFA57": {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "mycanary777ServiceRole432A24EB": {
+    "mycanaryServiceRoleEE2F0C82": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -41,7 +41,7 @@
                       [
                         {
                           "Fn::GetAtt": [
-                            "mycanary777ServiceBucketE226A972",
+                            "mycanaryServiceBucketF66DFA57",
                             "Arn"
                           ]
                         },
@@ -77,7 +77,7 @@
         ]
       }
     },
-    "mycanary7770EF092ED": {
+    "mycanaryDCC21B3D": {
       "Type": "AWS::Synthetics::Canary",
       "Properties": {
         "ArtifactS3Location": {
@@ -86,7 +86,7 @@
             [
               "s3://",
               {
-                "Ref": "mycanary777ServiceBucketE226A972"
+                "Ref": "mycanaryServiceBucketF66DFA57"
               }
             ]
           ]
@@ -97,11 +97,11 @@
         },
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
-            "mycanary777ServiceRole432A24EB",
+            "mycanaryServiceRoleEE2F0C82",
             "Arn"
           ]
         },
-        "Name": "awscanarymycanary777",
+        "Name": "integcanarymycanary9",
         "RuntimeVersion": "syn-1.0",
         "Schedule": {
           "DurationInSeconds": "0",

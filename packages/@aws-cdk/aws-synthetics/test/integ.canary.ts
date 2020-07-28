@@ -1,4 +1,4 @@
-/// !cdk-integ awscanary
+/// !cdk-integ integ-canary
 
 import * as cdk from '@aws-cdk/core';
 import * as synthetics from '../lib';
@@ -9,9 +9,8 @@ import * as synthetics from '../lib';
  * -- aws synthetics get-canary --name integ-canary has a state of 'RUNNING'
  */
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'awscanary');
+const stack = new cdk.Stack(app, 'integ-canary');
 
-new synthetics.Canary(stack, 'mycanary-777', {
-});
+new synthetics.Canary(stack, 'mycanary', {});
 
 app.synth();
