@@ -336,7 +336,7 @@ export class Expires {
   /**
    * Expire at the specified date
    * @param d date to expire at
-   */	
+   */
   public static atDate(d: Date) { return new Expires(d.toUTCString()); }
 
   /**
@@ -354,7 +354,7 @@ export class Expires {
   public static fromString(s: string) { return new Expires(s); }
 
   private constructor(public readonly value: any) {}
-}	
+}
 
 export interface UserDefinedObjectMetadata {
   /**
