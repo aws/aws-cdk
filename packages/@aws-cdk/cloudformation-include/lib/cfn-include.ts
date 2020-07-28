@@ -52,6 +52,7 @@ export interface IncludedNestedStack {
  */
 export class CfnInclude extends core.CfnElement {
   private readonly conditions: { [conditionName: string]: core.CfnCondition } = {};
+  private readonly conditionsScope: core.Construct;
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
   private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
   private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
@@ -75,8 +76,9 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the conditions
+    this.conditionsScope = new core.Construct(this, '$Conditions');
     for (const conditionName of Object.keys(this.template.Conditions || {})) {
-      this.createCondition(conditionName);
+      this.getOrCreateCondition(conditionName);
     }
 
     this.nestedStacksToInclude = props.nestedStacks || {};
@@ -262,8 +264,8 @@ export class CfnInclude extends core.CfnElement {
           return self.getCondition(outputAttributes.Condition);
         }
 
-        throw new Error(`Output with name '${logicalId}' refers to a Condition with name\
- '${outputAttributes.Condition}' which was not found in this template`);
+        throw new Error(`Output with name '${logicalId}' refers to a Condition with name ` +
+          `'${outputAttributes.Condition}' which was not found in this template`);
       })(),
     });
 
@@ -271,23 +273,35 @@ export class CfnInclude extends core.CfnElement {
     this.outputs[logicalId] = cfnOutput;
   }
 
-  private createCondition(conditionName: string): void {
-    // ToDo condition expressions can refer to other conditions -
-    // will be important when implementing preserveLogicalIds=false
-    const expression = new cfn_parse.CfnParser({
+  private getOrCreateCondition(conditionName: string): core.CfnCondition {
+    if (conditionName in this.conditions) {
+      return this.conditions[conditionName];
+    }
+
+    const self = this;
+    const cfnParser = new cfn_parse.CfnParser({
       finder: {
         findResource() { throw new Error('Using GetAtt in Condition definitions is not allowed'); },
-        findRefTarget() { throw new Error('Using Ref expressions in Condition definitions is not allowed'); },
-        // ToDo handle one Condition referencing another using the { Condition: "ConditionName" } syntax
-        findCondition() { return undefined; },
+        findRefTarget(elementName: string): core.CfnElement | undefined {
+          // only Parameters can be referenced in the 'Conditions' section
+          return self.parameters[elementName];
+        },
+        findCondition(cName: string): core.CfnCondition | undefined {
+          return cName in (self.template.Conditions || {})
+            ? self.getOrCreateCondition(cName)
+            : undefined;
+        },
       },
-    }).parseValue(this.template.Conditions[conditionName]);
-    const cfnCondition = new core.CfnCondition(this, conditionName, {
-      expression,
+      context: cfn_parse.CfnParsingContext.CONDITIONS,
     });
+    const cfnCondition = new core.CfnCondition(this.conditionsScope, conditionName, {
+      expression: cfnParser.parseValue(this.template.Conditions[conditionName]),
+    });
+
     // ToDo handle renaming of the logical IDs of the conditions
     cfnCondition.overrideLogicalId(conditionName);
     this.conditions[conditionName] = cfnCondition;
+    return cfnCondition;
   }
 
   private getOrCreateResource(logicalId: string): core.CfnResource {
@@ -297,12 +311,7 @@ export class CfnInclude extends core.CfnElement {
     }
 
     const resourceAttributes: any = this.template.Resources[logicalId];
-    const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
-    if (!l1ClassFqn) {
-      // currently, we only handle types we know the L1 for -
-      // in the future, we might construct an instance of CfnResource instead
-      throw new Error(`Unrecognized CloudFormation resource type: '${resourceAttributes.Type}'`);
-    }
+
     // fail early for resource attributes we don't support yet
     const knownAttributes = [
       'Type', 'Properties', 'Condition', 'DependsOn', 'Metadata',
@@ -315,9 +324,6 @@ export class CfnInclude extends core.CfnElement {
       }
     }
 
-    const [moduleName, ...className] = l1ClassFqn.split('.');
-    const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
-    const jsClassFromModule = module[className.join('.')];
     const self = this;
     const finder: core.ICfnFinder = {
       findCondition(conditionName: string): core.CfnCondition | undefined {
@@ -339,13 +345,31 @@ export class CfnInclude extends core.CfnElement {
         return this.findResource(elementName);
       },
     };
-    const options: core.FromCloudFormationOptions = {
+    const cfnParser = new cfn_parse.CfnParser({
       finder,
-    };
+    });
 
-    const l1Instance = this.nestedStacksToInclude[logicalId]
-      ? this.createNestedStack(logicalId, finder)
-      : jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
+    let l1Instance: core.CfnResource;
+    if (this.nestedStacksToInclude[logicalId]) {
+      l1Instance = this.createNestedStack(logicalId, cfnParser);
+    } else {
+      const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
+      if (l1ClassFqn) {
+        const options: core.FromCloudFormationOptions = {
+          finder,
+        };
+        const [moduleName, ...className] = l1ClassFqn.split('.');
+        const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
+        const jsClassFromModule = module[className.join('.')];
+        l1Instance = jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
+      } else {
+        l1Instance = new core.CfnResource(this, logicalId, {
+          type: resourceAttributes.Type,
+          properties: cfnParser.parseValue(resourceAttributes.Properties),
+        });
+        cfnParser.handleAttributes(l1Instance, resourceAttributes, logicalId);
+      }
+    }
 
     if (this.preserveLogicalIds) {
       // override the logical ID to match the original template
@@ -356,7 +380,7 @@ export class CfnInclude extends core.CfnElement {
     return l1Instance;
   }
 
-  private createNestedStack(nestedStackId: string, finder: core.ICfnFinder): core.CfnResource {
+  private createNestedStack(nestedStackId: string, cfnParser: cfn_parse.CfnParser): core.CfnResource {
     const templateResources = this.template.Resources || {};
     const nestedStackAttributes = templateResources[nestedStackId] || {};
 
@@ -370,9 +394,6 @@ export class CfnInclude extends core.CfnElement {
       throw new Error('UpdatePolicy is not supported by the AWS::CloudFormation::Stack resource');
     }
 
-    const cfnParser = new cfn_parse.CfnParser({
-      finder,
-    });
     const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);
     const nestedStack = new core.NestedStack(this, nestedStackId, {
       parameters: nestedStackProps.Parameters,
@@ -382,30 +403,7 @@ export class CfnInclude extends core.CfnElement {
 
     // we know this is never undefined for nested stacks
     const nestedStackResource: core.CfnResource = nestedStack.nestedStackResource!;
-    // handle resource attributes
-    const cfnOptions = nestedStackResource.cfnOptions;
-    cfnOptions.metadata = cfnParser.parseValue(nestedStackAttributes.Metadata);
-    cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(nestedStackAttributes.DeletionPolicy);
-    cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(nestedStackAttributes.UpdateReplacePolicy);
-    // handle DependsOn
-    nestedStackAttributes.DependsOn = nestedStackAttributes.DependsOn ?? [];
-    const dependencies: string[] = Array.isArray(nestedStackAttributes.DependsOn) ?
-      nestedStackAttributes.DependsOn : [nestedStackAttributes.DependsOn];
-    for (const dep of dependencies) {
-      const depResource = finder.findResource(dep);
-      if (!depResource) {
-        throw new Error(`nested stack '${nestedStackId}' depends on '${dep}' that doesn't exist`);
-      }
-      nestedStackResource.node.addDependency(depResource);
-    }
-    // handle Condition
-    if (nestedStackAttributes.Condition) {
-      const condition = finder.findCondition(nestedStackAttributes.Condition);
-      if (!condition) {
-        throw new Error(`nested stack '${nestedStackId}' uses Condition '${nestedStackAttributes.Condition}' that doesn't exist`);
-      }
-      cfnOptions.condition = condition;
-    }
+    cfnParser.handleAttributes(nestedStackResource, nestedStackAttributes, nestedStackId);
 
     const propStack = this.nestedStacksToInclude[nestedStackId];
     const template = new CfnInclude(nestedStack, nestedStackId, {

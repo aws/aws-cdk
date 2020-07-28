@@ -1,26 +1,52 @@
 import { IBucket } from '@aws-cdk/aws-s3';
-import { Construct } from '@aws-cdk/core';
+import { Construct, Duration, Token } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
 import { OriginProtocolPolicy } from './distribution';
 import { OriginAccessIdentity } from './origin_access_identity';
 
 /**
- * Properties to be used to create an Origin. Prefer to use one of the Origin.from* factory methods rather than
- * instantiating an Origin directly from these properties.
+ * Properties to define an Origin.
  *
  * @experimental
  */
 export interface OriginProps {
   /**
-   * The domain name of the Amazon S3 bucket or HTTP server origin.
+   * An optional path that CloudFront appends to the origin domain name when CloudFront requests content from the origin.
+   * Must begin, but not end, with '/' (e.g., '/production/images').
+   *
+   * @default '/'
    */
-  readonly domainName: string;
+  readonly originPath?: string;
+
+  /**
+   * The number of seconds that CloudFront waits when trying to establish a connection to the origin.
+   * Valid values are 1-10 seconds, inclusive.
+   *
+   * @default Duration.seconds(10)
+   */
+  readonly connectionTimeout?: Duration;
+
+  /**
+   * The number of times that CloudFront attempts to connect to the origin; valid values are 1, 2, or 3 attempts.
+   *
+   * @default 3
+   */
+  readonly connectionAttempts?: number;
+
+  /**
+   * A list of HTTP header names and values that CloudFront adds to requests it sends to the origin.
+   *
+   * @default {}
+   */
+  readonly customHeaders?: Record<string, string>;
 }
 
 /**
  * Options passed to Origin.bind().
+ *
+ * @experimental
  */
-interface OriginBindOptions {
+export interface OriginBindOptions {
   /**
    * The positional index of this origin within the distribution. Used for ensuring unique IDs.
    */
@@ -36,33 +62,26 @@ interface OriginBindOptions {
 export abstract class Origin {
 
   /**
-   * Creates a pre-configured origin for a S3 bucket.
-   * If this bucket has been configured for static website hosting, then `fromWebsiteBucket` should be used instead.
-   *
-   * An Origin Access Identity will be created and granted read access to the bucket.
-   *
-   * @param bucket the bucket to act as an origin.
-   */
-  public static fromBucket(bucket: IBucket): Origin {
-    if (bucket.isWebsite) {
-      return new HttpOrigin({
-        domainName: bucket.bucketWebsiteDomainName,
-        protocolPolicy: OriginProtocolPolicy.HTTP_ONLY, // S3 only supports HTTP for website buckets
-      });
-    } else {
-      return new S3Origin({ domainName: bucket.bucketRegionalDomainName, bucket });
-    }
-  }
-
-  /**
    * The domain name of the origin.
    */
   public readonly domainName: string;
 
-  private originId!: string;
+  private readonly originPath?: string;
+  private readonly connectionTimeout?: Duration;
+  private readonly connectionAttempts?: number;
+  private readonly customHeaders?: Record<string, string>;
 
-  constructor(props: OriginProps) {
-    this.domainName = props.domainName;
+  private originId?: string;
+
+  protected constructor(domainName: string, props: OriginProps = {}) {
+    validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
+    validateIntInRangeOrUndefined('connectionAttempts', 1, 3, props.connectionAttempts, false);
+
+    this.domainName = domainName;
+    this.originPath = this.validateOriginPath(props.originPath);
+    this.connectionTimeout = props.connectionTimeout;
+    this.connectionAttempts = props.connectionAttempts;
+    this.customHeaders = props.customHeaders;
   }
 
   /**
@@ -77,19 +96,15 @@ export abstract class Origin {
 
   /**
    * Binds the origin to the associated Distribution. Can be used to grant permissions, create dependent resources, etc.
-   *
-   * @internal
    */
-  public _bind(scope: Construct, options: OriginBindOptions): void {
+  public bind(scope: Construct, options: OriginBindOptions): void {
     this.originId = new Construct(scope, `Origin${options.originIndex}`).node.uniqueId;
   }
 
   /**
    * Creates and returns the CloudFormation representation of this origin.
-   *
-   * @internal
    */
-  public _renderOrigin(): CfnDistribution.OriginProperty {
+  public renderOrigin(): CfnDistribution.OriginProperty {
     const s3OriginConfig = this.renderS3OriginConfig();
     const customOriginConfig = this.renderCustomOriginConfig();
 
@@ -100,6 +115,10 @@ export abstract class Origin {
     return {
       domainName: this.domainName,
       id: this.id,
+      originPath: this.originPath,
+      connectionAttempts: this.connectionAttempts,
+      connectionTimeout: this.connectionTimeout?.toSeconds(),
+      originCustomHeaders: this.renderCustomHeaders(),
       s3OriginConfig,
       customOriginConfig,
     };
@@ -113,6 +132,26 @@ export abstract class Origin {
   // Overridden by sub-classes to provide custom origin config.
   protected renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
     return undefined;
+  }
+
+  private renderCustomHeaders(): CfnDistribution.OriginCustomHeaderProperty[] | undefined {
+    if (!this.customHeaders || Object.entries(this.customHeaders).length === 0) { return undefined; }
+    return Object.entries(this.customHeaders).map(([headerName, headerValue]) => {
+      return { headerName, headerValue };
+    });
+  }
+
+  /**
+   * If the path is defined, it must start with a '/' and not end with a '/'.
+   * This method takes in the originPath, and returns it back (if undefined) or adds/removes the '/' as appropriate.
+   */
+  private validateOriginPath(originPath?: string): string | undefined {
+    if (Token.isUnresolved(originPath)) { return originPath; }
+    if (originPath === undefined) { return undefined; }
+    let path = originPath;
+    if (!path.startsWith('/')) { path = '/' + path; }
+    if (path.endsWith('/')) { path = path.substr(0, path.length - 1); }
+    return path;
   }
 
 }
@@ -141,13 +180,12 @@ export class S3Origin extends Origin {
   private originAccessIdentity!: OriginAccessIdentity;
 
   constructor(props: S3OriginProps) {
-    super(props);
+    super(props.bucket.bucketRegionalDomainName, props);
     this.bucket = props.bucket;
   }
 
-  /** @internal */
-  public _bind(scope: Construct, options: OriginBindOptions) {
-    super._bind(scope, options);
+  public bind(scope: Construct, options: OriginBindOptions) {
+    super.bind(scope, options);
     if (!this.originAccessIdentity) {
       this.originAccessIdentity = new OriginAccessIdentity(scope, `S3Origin${options.originIndex}`);
       this.bucket.grantRead(this.originAccessIdentity);
@@ -171,6 +209,36 @@ export interface HttpOriginProps extends OriginProps {
    * @default OriginProtocolPolicy.HTTPS_ONLY
    */
   readonly protocolPolicy?: OriginProtocolPolicy;
+
+  /**
+   * The HTTP port that CloudFront uses to connect to the origin.
+   *
+   * @default 80
+   */
+  readonly httpPort?: number;
+
+  /**
+   * The HTTPS port that CloudFront uses to connect to the origin.
+   *
+   * @default 443
+   */
+  readonly httpsPort?: number;
+
+  /**
+   * Specifies how long, in seconds, CloudFront waits for a response from the origin, also known as the origin response timeout.
+   * The valid range is from 1 to 60 seconds, inclusive.
+   *
+   * @default Duration.seconds(30)
+   */
+  readonly readTimeout?: Duration;
+
+  /**
+   * Specifies how long, in seconds, CloudFront persists its connection to the origin.
+   * The valid range is from 1 to 60 seconds, inclusive.
+   *
+   * @default Duration.seconds(5)
+   */
+  readonly keepaliveTimeout?: Duration;
 }
 
 /**
@@ -180,16 +248,31 @@ export interface HttpOriginProps extends OriginProps {
  */
 export class HttpOrigin extends Origin {
 
-  private readonly protocolPolicy?: OriginProtocolPolicy;
+  constructor(domainName: string, private readonly props: HttpOriginProps = {}) {
+    super(domainName, props);
 
-  constructor(props: HttpOriginProps) {
-    super(props);
-    this.protocolPolicy = props.protocolPolicy;
+    validateIntInRangeOrUndefined('readTimeout', 1, 60, props.readTimeout?.toSeconds());
+    validateIntInRangeOrUndefined('keepaliveTimeout', 1, 60, props.keepaliveTimeout?.toSeconds());
   }
 
   protected renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
     return {
-      originProtocolPolicy: this.protocolPolicy ?? OriginProtocolPolicy.HTTPS_ONLY,
+      originProtocolPolicy: this.props.protocolPolicy ?? OriginProtocolPolicy.HTTPS_ONLY,
+      httpPort: this.props.httpPort,
+      httpsPort: this.props.httpsPort,
+      originReadTimeout: this.props.readTimeout?.toSeconds(),
+      originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
     };
+  }
+}
+
+/**
+ * Throws an error if a value is defined and not an integer or not in a range.
+ */
+function validateIntInRangeOrUndefined(name: string, min: number, max: number, value?: number, isDuration: boolean = true) {
+  if (value === undefined) { return; }
+  if (!Number.isInteger(value) || value < min || value > max) {
+    const seconds = isDuration ? ' seconds' : '';
+    throw new Error(`${name}: Must be an int between ${min} and ${max}${seconds} (inclusive); received ${value}.`);
   }
 }
