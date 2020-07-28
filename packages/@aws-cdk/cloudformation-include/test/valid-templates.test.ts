@@ -251,6 +251,41 @@ describe('CDK Include', () => {
     );
   });
 
+  test('correctly change references to Conditions when renaming them', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'condition-same-name-as-resource.json');
+    const alwaysFalse = cfnTemplate.getCondition('AlwaysFalse');
+    alwaysFalse.overrideLogicalId('TotallyFalse');
+
+    expect(stack).toMatchTemplate({
+      "Parameters": {
+        "Param": {
+          "Type": "String",
+        },
+      },
+      "Conditions": {
+        "AlwaysTrue": {
+          "Fn::Not": [{ "Condition": "TotallyFalse" }],
+        },
+        "TotallyFalse": {
+          "Fn::Equals": [{ "Ref": "Param" }, 2],
+        },
+      },
+      "Resources": {
+        "AlwaysTrue": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::If": ["TotallyFalse",
+                { "Ref": "Param" },
+                { "Ref": "AWS::NoValue" },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('correctly parses templates with parameters', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
@@ -409,10 +444,20 @@ describe('CDK Include', () => {
     });
   });
 
-  test("throws an exception when encountering a Resource type it doesn't recognize", () => {
+  test('can include a template with a custom resource that uses attributes', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'custom-resource-with-attributes.json');
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('custom-resource-with-attributes.json'),
+    );
+
+    const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');
+    expect(cfnTemplate.getResource('CustomBucket').cfnOptions.condition).toBe(alwaysFalseCondition);
+  });
+
+  test("throws an exception when a custom resource uses a Condition attribute that doesn't exist in the template", () => {
     expect(() => {
-      includeTestTemplate(stack, 'non-existent-resource-type.json');
-    }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
+      includeTestTemplate(stack, 'custom-resource-with-bad-condition.json');
+    }).toThrow(/Resource 'CustomResource' uses Condition 'AlwaysFalseCond' that doesn't exist/);
   });
 
   test('can ingest a template that contains outputs and modify them', () => {
