@@ -451,7 +451,11 @@ export class GraphQLApi extends Construct {
    * @param description The description of the data source
    * @param table The DynamoDB table backing this data source [disable-awslint:ref-via-interface]
    */
-  public addDynamoDbDataSource(name: string, description: string, table: ITable): DynamoDbDataSource {
+  public addDynamoDbDataSource(
+    name: string,
+    description: string,
+    table: ITable,
+  ): DynamoDbDataSource {
     return new DynamoDbDataSource(this, `${name}DS`, {
       api: this,
       description,
@@ -481,7 +485,11 @@ export class GraphQLApi extends Construct {
    * @param description The description of the data source
    * @param lambdaFunction The Lambda function to call to interact with this data source
    */
-  public addLambdaDataSource(name: string, description: string, lambdaFunction: IFunction): LambdaDataSource {
+  public addLambdaDataSource(
+    name: string,
+    description: string,
+    lambdaFunction: IFunction,
+  ): LambdaDataSource {
     return new LambdaDataSource(this, `${name}DS`, {
       api: this,
       description,
