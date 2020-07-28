@@ -685,7 +685,7 @@ export class GraphQLApi extends Construct {
    * Add an object type
    * @param name name of object type
    */
-  public addType (name: string): void{
+  public addDefinition (name: string): void{
     if ( this.schemaMode != SchemaDefinition.CODE ) {
       throw new Error('API cannot add type because schema definition mode configured to CODE');
     }
