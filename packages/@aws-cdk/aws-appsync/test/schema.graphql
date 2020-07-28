@@ -37,7 +37,7 @@ type Query @aws_api_key {
   getCustomerOrdersFilter(customer: String, order: String): Order
   getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order
   getPayment(id: String): Payment
-  get
+  getDatabaseVersion: String
 }
 
 input FirstOrderInput {
@@ -52,5 +52,4 @@ type Mutation @aws_api_key {
   saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order
   savePayment(payment: PaymentInput!): Payment
   doPostOnAws: String!
-  
 }

@@ -2,7 +2,7 @@ import { join } from 'path';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { Vpc, SecurityGroup, SubnetType, InstanceType, InstanceClass, InstanceSize } from '@aws-cdk/aws-ec2';
-import { DatabaseSecret, CfnDBCluster, CfnDBSubnetGroup, DatabaseCluster, DatabaseClusterEngine, AuroraMysqlEngineVersion } from '@aws-cdk/aws-rds';
+import { DatabaseSecret, DatabaseCluster, DatabaseClusterEngine, AuroraMysqlEngineVersion } from '@aws-cdk/aws-rds';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import {
   AuthorizationType,
@@ -259,11 +259,17 @@ const rdsDS = api.addRdsDataSource('rds', 'The rds data source', cluster, secret
 
 rdsDS.createResolver({
   typeName: 'Query',
-  fieldName: 'getDatabase',
+  fieldName: 'getDatabaseVersion',
   requestMappingTemplate: MappingTemplate.fromString(`
+  {
+    "version": "2018-05-29",
+    "statements": [
+      $util.toJson("SHOW VARIABLES LIKE "%version%";")
+    ],
+    "variableMap": {}
+  }
   `),
-  responseMappingTemplate: MappingTemplate.fromString(`
-  `),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
 app.synth();

@@ -260,7 +260,9 @@ export interface RdsDataSourceProps extends BackedDataSourceProps {
    * The database cluster to call to interact with this data source
    */
   readonly databaseCluster: IDatabaseCluster;
-
+  /**
+   * The secret containing the credentials for the database
+   */
   readonly secretStore: ISecret;
 }
 
