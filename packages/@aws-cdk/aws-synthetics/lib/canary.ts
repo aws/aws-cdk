@@ -34,7 +34,7 @@ export interface CanaryProps {
   readonly role?: iam.IRole;
 
   /**
-   * How long the canary will be in a 'RUNNING' state. For example, if you set `timeToLive` to be 1 hour and `schedule` to be 'rate(10 minutes)',
+   * How long the canary will be in a 'RUNNING' state. For example, if you set `timeToLive` to be 1 hour and `schedule` to be `rate(10 minutes)`,
    * your canary will run at 10 minute intervals for an hour, for a total of 6 times.
    *
    * @default - no limit
@@ -42,7 +42,7 @@ export interface CanaryProps {
   readonly timeToLive?: cdk.Duration;
 
   /**
-   * How often the canary runs. For example, if you set `schedule` to 'rate(10 minutes)', then the canary will run every 10 minutes.
+   * How often the canary runs. For example, if you set `schedule` to `rate(10 minutes)`, then the canary will run every 10 minutes.
    *
    * @default 'rate(5 minutes)'
    */
