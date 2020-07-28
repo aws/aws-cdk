@@ -1,5 +1,6 @@
 import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';
+import { CfnResource } from './cfn-resource';
 import {
   CfnAutoScalingReplacingUpdate, CfnAutoScalingRollingUpdate, CfnAutoScalingScheduledAction, CfnCodeDeployLambdaAliasUpdate,
   CfnCreationPolicy, CfnDeletionPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
@@ -169,7 +170,39 @@ export class CfnParser {
     this.options = options;
   }
 
-  public parseCreationPolicy(policy: any): CfnCreationPolicy | undefined {
+  public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
+    const finder = this.options.finder;
+    const cfnOptions = resource.cfnOptions;
+
+    cfnOptions.creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy);
+    cfnOptions.updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
+    cfnOptions.deletionPolicy = this.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
+    cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
+    cfnOptions.metadata = this.parseValue(resourceAttributes.Metadata);
+
+    // handle Condition
+    if (resourceAttributes.Condition) {
+      const condition = finder.findCondition(resourceAttributes.Condition);
+      if (!condition) {
+        throw new Error(`Resource '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
+      }
+      cfnOptions.condition = condition;
+    }
+
+    // handle DependsOn
+    resourceAttributes.DependsOn = resourceAttributes.DependsOn ?? [];
+    const dependencies: string[] = Array.isArray(resourceAttributes.DependsOn) ?
+      resourceAttributes.DependsOn : [resourceAttributes.DependsOn];
+    for (const dep of dependencies) {
+      const depResource = finder.findResource(dep);
+      if (!depResource) {
+        throw new Error(`Resource '${logicalId}' depends on '${dep}' that doesn't exist`);
+      }
+      resource.node.addDependency(depResource);
+    }
+  }
+
+  private parseCreationPolicy(policy: any): CfnCreationPolicy | undefined {
     if (typeof policy !== 'object') { return undefined; }
 
     // change simple JS values to their CDK equivalents
@@ -198,7 +231,7 @@ export class CfnParser {
     }
   }
 
-  public parseUpdatePolicy(policy: any): CfnUpdatePolicy | undefined {
+  private parseUpdatePolicy(policy: any): CfnUpdatePolicy | undefined {
     if (typeof policy !== 'object') { return undefined; }
 
     // change simple JS values to their CDK equivalents
@@ -254,7 +287,7 @@ export class CfnParser {
     }
   }
 
-  public parseDeletionPolicy(policy: any): CfnDeletionPolicy | undefined {
+  private parseDeletionPolicy(policy: any): CfnDeletionPolicy | undefined {
     switch (policy) {
       case null: return undefined;
       case undefined: return undefined;
