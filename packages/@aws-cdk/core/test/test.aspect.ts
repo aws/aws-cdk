@@ -19,7 +19,11 @@ class VisitOnce implements IAspect {
   }
 }
 
-
+class MyAspect implements IAspect {
+  public visit(node: IConstruct): void {
+    node.node.addMetadata('foo', 'bar');
+  }
+}
 
 export = {
   'Aspects are invoked only once'(test: Test) {
@@ -33,42 +37,41 @@ export = {
     test.done();
   },
 
-  'Warn if an aspect is added via another aspect and will be ignored'(test: Test) {
+  'Warn if an Aspect is added via another Aspect'(test: Test) {
     const app = new App();
     const root = new MyConstruct(app, 'MyConstruct');
+    const child = new MyConstruct(root, 'ChildConstruct');
     root.node.applyAspect({
       visit(construct: IConstruct) {
-        // tslint:disable-next-line: no-console
-        console.log('hiiiiii');
         construct.node.applyAspect({
           visit(inner: IConstruct) {
-            // tslint:disable-next-line: no-console
-           console.log('hiiiiii AGAINNNN');
-           inner.node.addMetadata('test', 'would-be-ingored');
-          }
+            inner.node.addMetadata('test', 'would-be-ignored');
+          },
         });
-      }
+      },
     });
     app.synth();
     test.deepEqual(root.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-    test.deepEqual(root.node.metadata[0].data, 'We detected an aspect was added via another aspect, this is not supported and may result in an unexpected behavior');
+    test.deepEqual(root.node.metadata[0].data, 'We detected an Aspect was added via another Aspect, and will not be applied');
+    // warning is not added to child construct
+    test.equal(child.node.metadata.length, 0);
     test.done();
   },
 
-  // 'No warning is added if no aspect is added via another aspect'(test: Test) {
-  //   const app = new App();
-  //   const root = new MyConstruct(app, 'MyConstruct');
-  //   const child = new MyConstruct(root, 'ChildConstruct');
-  //   const gChild = new MyConstruct(child, 'GConstruct');
-  //   const rootValue = 'Root';
-  //   const childValue = 'Child';
-  //   root.node.applyAspect(new SimpleAspect((rootValue)));
-  //   child.node.applyAspect(new SimpleAspect(childValue));
-  //   ConstructNode.prepare(root.node);
-
-  //   test.deepEqual(gChild.node.metadata[0].type,  'Aspect');
-  //   test.deepEqual(gChild.node.metadata[0].data,  'Applied');
-  //   test.done();
-  // },
+  'Do not warn if an Aspect is added directly (not by another aspect)'(test: Test) {
+    const app = new App();
+    const root = new MyConstruct(app, 'Construct');
+    const child = new MyConstruct(root, 'ChildConstruct');
+    root.node.applyAspect(new MyAspect());
+    app.synth();
+    test.deepEqual(root.node.metadata[0].type, 'foo');
+    test.deepEqual(root.node.metadata[0].data, 'bar');
+    test.deepEqual(root.node.metadata[0].type, 'foo');
+    test.deepEqual(child.node.metadata[0].data, 'bar');
+    // no warning is added
+    test.equal(root.node.metadata.length, 1);
+    test.equal(child.node.metadata.length, 1);
+    test.done();
+  },
 
 };
