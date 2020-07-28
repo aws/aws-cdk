@@ -267,5 +267,7 @@ function renderDomainValidation(validation: CertificateValidation, domainNames: 
  * DNS validation errors out with the duplicate records.
  */
 function getUniqueDnsDomainNames(domainNames: string[]) {
-  return domainNames.filter(domain => !domain.startsWith('*.') || !domainNames.includes(domain.replace('*.', '')));
+  return domainNames.filter(domain => {
+    return Token.isUnresolved(domain) || !domain.startsWith('*.') || !domainNames.includes(domain.replace('*.', ''));
+  });
 }
