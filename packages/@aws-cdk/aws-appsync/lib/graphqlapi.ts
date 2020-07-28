@@ -215,6 +215,11 @@ export enum SchemaDefinition {
    * Define schema in a file, i.e. schema.graphql
    */
   FILE = 'FILE',
+
+  /**
+   * Define schema in a S3 location
+   */
+  S3 = 'S3',
 }
 
 /**
@@ -350,6 +355,7 @@ export class GraphQLApi extends Construct {
     return this._apiKey;
   }
 
+  private schemaMode: SchemaDefinition;
   private api: CfnGraphQLApi;
   private _apiKey?: string;
 
@@ -407,6 +413,7 @@ export class GraphQLApi extends Construct {
     this.arn = this.api.attrArn;
     this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
+    this.schemaMode = props.schemaDefinition;
 
     if (
       defaultAuthorizationType === AuthorizationType.API_KEY ||
@@ -422,7 +429,7 @@ export class GraphQLApi extends Construct {
       this._apiKey = this.createAPIKey(apiKeyConfig);
     }
 
-    this.schema = this.defineSchema(props.schemaDefinition, props.schemaDefinitionFile);
+    this.schema = this.defineSchema(props.schemaDefinitionFile);
   }
 
   /**
@@ -674,21 +681,43 @@ export class GraphQLApi extends Construct {
     return authModes ? this.formatAdditionalAuthorizationModes(authModes) : undefined;
   }
 
-  private defineSchema(mode: SchemaDefinition, file?: string): CfnGraphQLSchema {
-    if (mode == SchemaDefinition.CODE && file) {
-      throw new Error('You cant use the mode CODE and define and file. Change mode to FILE or unconfigure schemaDefinitionFile');
-    } else if (mode == SchemaDefinition.FILE && !file) {
-      throw new Error('Missing Schema definition. Provide schemaDefinition or schemaDefinitionFile');
+  /**
+   * Add an object type
+   * @param name name of object type
+   */
+  public addType (name: string): void{
+    if ( this.schemaMode != SchemaDefinition.CODE ) {
+      throw new Error('API cannot add type because schema definition mode configured to CODE');
     }
+    this.schema.definition = name;
+  }
+
+  /**
+   * Define schema based on props configuration
+   * @param file the file name/s3 location of Schema
+   */
+  private defineSchema(file?: string): CfnGraphQLSchema {
     let definition;
-    if (file) {
+    let definitionS3Location;
+
+    if ( this.schemaMode == SchemaDefinition.FILE && !file) {
+      throw new Error('schemaDefinitionFile must be configured if using FILE definition mode.');
+    } else if ( this.schemaMode == SchemaDefinition.FILE && file ) {
       definition = readFileSync(file).toString('UTF-8');
-    } else {
+    } else if ( this.schemaMode == SchemaDefinition.CODE && !file ) {
       definition = '';
+    } else if ( this.schemaMode == SchemaDefinition.CODE && file) {
+      throw new Error('You cant use the mode CODE and define and file. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
+    } else if ( this.schemaMode == SchemaDefinition.S3 && !file) {
+      throw new Error('schemaDefinitionFile must be configured if using S3 definition mode.');
+    } else if ( this.schemaMode == SchemaDefinition.S3 && file ) {
+      definitionS3Location = file;
     }
+
     return new CfnGraphQLSchema(this, 'Schema', {
       apiId: this.apiId,
       definition,
+      definitionS3Location,
     });
   }
 }
