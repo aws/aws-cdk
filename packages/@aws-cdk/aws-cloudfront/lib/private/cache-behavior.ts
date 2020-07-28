@@ -1,11 +1,10 @@
 import { CfnDistribution } from '../cloudfront.generated';
-import { BehaviorOptions, ViewerProtocolPolicy } from '../distribution';
-import { Origin } from '../origin';
+import { AddBehaviorOptions, ViewerProtocolPolicy } from '../distribution';
 
 /**
  * Properties for specifying custom behaviors for origins.
  */
-export interface CacheBehaviorProps extends BehaviorOptions {
+export interface CacheBehaviorProps extends AddBehaviorOptions {
   /**
    * The pattern (e.g., `images/*.jpg`) that specifies which requests to apply the behavior to.
    * There must be exactly one behavior associated with each `Distribution` that has a path pattern
@@ -21,14 +20,10 @@ export interface CacheBehaviorProps extends BehaviorOptions {
  * CloudFrontWebDistribution implementation.
  */
 export class CacheBehavior {
+  private readonly originId: string;
 
-  /**
-   * Origin that this behavior will route traffic to.
-   */
-  public readonly origin: Origin;
-
-  constructor(private readonly props: CacheBehaviorProps) {
-    this.origin = props.origin;
+  constructor(originId: string, private readonly props: CacheBehaviorProps) {
+    this.originId = originId;
   }
 
   /**
@@ -42,7 +37,7 @@ export class CacheBehavior {
   public _renderBehavior(): CfnDistribution.CacheBehaviorProperty {
     return {
       pathPattern: this.props.pathPattern,
-      targetOriginId: this.origin.id,
+      targetOriginId: this.originId,
       allowedMethods: this.props.allowedMethods?.methods ?? undefined,
       forwardedValues: {
         queryString: this.props.forwardQueryString ?? false,
