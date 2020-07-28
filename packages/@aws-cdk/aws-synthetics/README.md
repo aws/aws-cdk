@@ -36,7 +36,7 @@ The below code defines a canary that will hit the `books/topbook` endpoint every
 import * as synthetics from '@aws-cdk/aws-synthetics';
 
 const canary = new synthetics.Canary(this, 'MyCanary', {
-  frequency: Duration.minutes(5),
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: synthetics.Test.custom({ // 🚧 Not yet implemented 
     code: synthetics.Code.fromInline(`const https = require('https');
       var synthetics = require('Synthetics');

@@ -58,14 +58,14 @@ export interface CanaryProps {
   /**
    * How many days should successful runs be retained.
    *
-   * @default Duration.days(31)
+   * @default - Duration.days(31)
    */
   readonly successRetentionPeriod?: cdk.Duration;
 
   /**
    * How many days should failed runs be retained.
    *
-   * @default Duration.days(31)
+   * @default - Duration.days(31)
    */
   readonly failureRetentionPeriod?: cdk.Duration;
 
@@ -142,7 +142,7 @@ export class Canary extends cdk.Resource {
           actions: ['s3:ListAllMyBuckets'],
         }),
         new iam.PolicyStatement({
-          resources: [`${this.artifactBucket.bucketArn}/*`],
+          resources: [this.artifactBucket.arnForObjects('*')],
           actions: ['s3:PutObject', 's3:GetBucketLocation'],
         }),
         new iam.PolicyStatement({

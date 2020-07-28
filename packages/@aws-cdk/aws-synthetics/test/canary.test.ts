@@ -151,6 +151,25 @@ test('Canary can set schedule with Expression', () => {
   });
 });
 
+test('Canary can set schedule to run once', () => {
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'mycanary',
+    schedule: synthetics.Schedule.once(),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+    Code: {
+      Handler: 'index.handler',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
+    },
+    RuntimeVersion: 'syn-1.0',
+    Schedule: objectLike({ Expression: 'rate(0 minutes)'}),
+  });
+});
+
 test('Schedule fails when rate above 60 minutes', () => {
   expect(() => new synthetics.Canary(stack, 'Canary', {schedule: synthetics.Schedule.rate(Duration.minutes(61))})).toThrowError('Schedule duration must be either 0 (for a single run) or between 1 and 60 minutes');
 });
