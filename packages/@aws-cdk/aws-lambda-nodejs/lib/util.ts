@@ -51,28 +51,19 @@ export function nodeMajorVersion(): number {
 }
 
 /**
- * Finds the closest path containg a path
+ * Find a file by walking up parent directories
  */
-function findClosestPathContaining(p: string): string | undefined {
-  for (const nodeModulesPath of module.paths) {
-    if (fs.existsSync(path.join(path.dirname(nodeModulesPath), p))) {
-      return path.dirname(nodeModulesPath);
-    }
+export function findUp(name: string, directory: string = process.cwd()): string | undefined {
+  const absoluteDirectory = path.resolve(directory);
+
+  if (fs.existsSync(path.join(directory, name))) {
+    return directory;
   }
 
-  return undefined;
-}
+  const { root } = path.parse(absoluteDirectory);
+  if (absoluteDirectory === root) {
+    return undefined;
+  }
 
-/**
- * Finds closest package.json path
- */
-export function findPkgPath(): string | undefined {
-  return findClosestPathContaining('package.json');
-}
-
-/**
- * Finds closest .git/
- */
-export function findGitPath(): string | undefined {
-  return findClosestPathContaining(`.git${path.sep}`);
+  return findUp(name, path.dirname(absoluteDirectory));
 }

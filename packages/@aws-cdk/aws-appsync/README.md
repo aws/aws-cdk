@@ -13,185 +13,149 @@
 ---
 <!--END STABILITY BANNER-->
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+The `@aws-cdk/aws-appsync` package contains constructs for building flexible
+APIs that use GraphQL. 
 
-## Usage Example
+### Example
 
-Given the following GraphQL schema file `schema.graphql`:
+Example of a GraphQL API with `AWS_IAM` authorization resolving into a DynamoDb
+backend data source. 
 
-```graphql
-type ServiceVersion {
-    version: String!
+GraphQL schema file `schema.graphql`:
+
+```gql
+type demo {
+  id: String!
+  version: String!
 }
-
-type Customer {
-    id: String!
-    name: String!
-}
-
-input SaveCustomerInput {
-    name: String!
-}
-
-type Order {
-    customer: String!
-    order: String!
-}
-
 type Query {
-    getServiceVersion: ServiceVersion
-    getCustomers: [Customer]
-    getCustomer(id: String): Customer
+  getDemos: [ test! ]
 }
-
-input FirstOrderInput {
-    product: String!
-    quantity: Int!
+input DemoInput {
+  version: String!
 }
-
 type Mutation {
-    addCustomer(customer: SaveCustomerInput!): Customer
-    saveCustomer(id: String!, customer: SaveCustomerInput!): Customer
-    removeCustomer(id: String!): Customer
-    saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order
-    doPostOnAws: String!
+  addDemo(input: DemoInput!): demo
 }
 ```
 
-the following CDK app snippet will create a complete CRUD AppSync API:
+CDK stack file `app-stack.ts`:
 
 ```ts
-export class ApiStack extends Stack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+import * as appsync from '@aws-cdk/aws-appsync';
+import * as db from '@aws-cdk/aws-dynamodb';
 
-    const userPool = new UserPool(this, 'UserPool'{
-      userPoolName: 'myPool',
-    });
+const api = new appsync.GraphQLApi(stack, 'Api', {
+  name: 'demo',
+  schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+  authorizationConfig: {
+    defaultAuthorization: {
+      authorizationType: appsync.AuthorizationType.IAM
+    },
+  },
+});
 
-    const api = new GraphQLApi(this, 'Api', {
-      name: `demoapi`,
-      logConfig: {
-        fieldLogLevel: FieldLogLevel.ALL,
-      },
-      authorizationConfig: {
-        defaultAuthorization: {
-          authorizationType: AuthorizationType.USER_POOL,
-          userPoolConfig: {
-            userPool,
-            defaultAction: UserPoolDefaultAction.ALLOW
-          },
-        },
-        additionalAuthorizationModes: [
-          {
-            authorizationType: AuthorizationType.API_KEY,
-          }
-        ],
-      },
-      schemaDefinitionFile: './schema.graphql',
-    });
+const demoTable = new db.Table(stack, 'DemoTable', {
+  partitionKey: {
+    name: 'id',
+    type: AttributeType.STRING,
+  },
+});
 
-    const noneDS = api.addNoneDataSource('None', 'Dummy data source');
+const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos"', demoTable);
 
-    noneDS.createResolver({
-      typeName: 'Query',
-      fieldName: 'getServiceVersion',
-      requestMappingTemplate: MappingTemplate.fromString(JSON.stringify({
-        version: '2017-02-28',
-      })),
-      responseMappingTemplate: MappingTemplate.fromString(JSON.stringify({
-        version: 'v1',
-      })),
-    });
+// Resolver for the Query "getDemos" that scans the DyanmoDb table and returns the entire list.
+demoDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getDemos',
+  requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+});
 
-    const customerTable = new Table(this, 'CustomerTable', {
-      billingMode: BillingMode.PAY_PER_REQUEST,
-      partitionKey: {
-        name: 'id',
-        type: AttributeType.STRING,
-      },
-    });
-    const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
-    customerDS.createResolver({
-      typeName: 'Query',
-      fieldName: 'getCustomers',
-      requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
-      responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
-    });
-    customerDS.createResolver({
-      typeName: 'Query',
-      fieldName: 'getCustomer',
-      requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
-      responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
-    });
-    customerDS.createResolver({
-      typeName: 'Mutation',
-      fieldName: 'addCustomer',
-      requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
-          PrimaryKey.partition('id').auto(),
-          Values.projecting('customer')),
-      responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
-    });
-    customerDS.createResolver({
-      typeName: 'Mutation',
-      fieldName: 'saveCustomer',
-      requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
-          PrimaryKey.partition('id').is('id'),
-          Values.projecting('customer')),
-      responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
-    });
-    customerDS.createResolver({
-      typeName: 'Mutation',
-      fieldName: 'saveCustomerWithFirstOrder',
-      requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
-          PrimaryKey
-              .partition('order').auto()
-              .sort('customer').is('customer.id'),
-          Values
-              .projecting('order')
-              .attribute('referral').is('referral')),
-      responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
-    });
-    customerDS.createResolver({
-      typeName: 'Mutation',
-      fieldName: 'removeCustomer',
-      requestMappingTemplate: MappingTemplate.dynamoDbDeleteItem('id', 'id'),
-      responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
-    });
+// Resolver for the Mutation "addDemo" that puts the item into the DynamoDb table.
+demoDS.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'addDemo',
+  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('demo')),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+```
 
-    const httpDS = api.addHttpDataSource('http', 'The http data source', 'https://aws.amazon.com/');
+## Permissions
 
-    httpDS.createResolver({
-      typeName: 'Mutation',
-      fieldName: 'doPostOnAws',
-      requestMappingTemplate: MappingTemplate.fromString(`{
-        "version": "2018-05-29",
-        "method": "POST",
-        # if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts
-        "resourcePath": "/path/123",
-        "params":{
-            "body": $util.toJson($ctx.args),
-            "headers":{
-                "Content-Type": "application/json",
-                "Authorization": "$ctx.request.headers.Authorization"
-            }
-        }
-      }`),
-      responseMappingTemplate: MappingTemplate.fromString(`
-        ## Raise a GraphQL field error in case of a datasource invocation error
-        #if($ctx.error)
-          $util.error($ctx.error.message, $ctx.error.type)
-        #end
-        ## if the response status code is not 200, then return an error. Else return the body **
-        #if($ctx.result.statusCode == 200)
-            ## If response is 200, return the body.
-            $ctx.result.body
-        #else
-            ## If response is not 200, append the response to error block.
-            $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
-        #end
-      `),
-    });
-  }
+When using `AWS_IAM` as the authorization type for GraphQL API, an IAM Role
+with correct permissions must be used for access to API.
+
+When configuring permissions, you can specify specific resources to only be
+accessible by `IAM` authorization. For example, if you want to only allow mutability
+for `IAM` authorized access you would configure the following.
+
+In `schema.graphql`:
+```ts
+type Mutation {
+  updateExample(...): ...
+    @aws_iam
 }
+```
+
+In `IAM`:
+```json
+{
+   "Version": "2012-10-17",
+   "Statement": [
+      {
+         "Effect": "Allow",
+         "Action": [
+            "appsync:GraphQL"
+         ],
+         "Resource": [
+            "arn:aws:appsync:REGION:ACCOUNT_ID:apis/GRAPHQL_ID/types/Mutation/fields/updateExample"
+         ]
+      }
+   ]
+}
+```
+
+See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/security.html#aws-iam-authorization) for more details.
+
+To make this easier, CDK provides `grant` API.
+
+Use the `grant` function for more granular authorization.
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+const api = new appsync.GraphQLApi(stack, 'API', {
+  definition
+});
+
+api.grant(role, appsync.IamResource.custom('types/Mutation/fields/updateExample'), 'appsync:GraphQL')
+```
+
+### IamResource
+
+In order to use the `grant` functions, you need to use the class `IamResource`.
+
+- `IamResource.custom(...arns)` permits custom ARNs and requires an argument.
+
+- `IamResouce.ofType(type, ...fields)` permits ARNs for types and their fields.
+
+- `IamResource.all()` permits ALL resources.
+
+### Generic Permissions
+
+Alternatively, you can use more generic `grant` functions to accomplish the same usage.
+
+These include:
+- grantMutation (use to grant access to Mutation fields)
+- grantQuery (use to grant access to Query fields)
+- grantSubscription (use to grant access to Subscription fields)
+
+```ts
+// For generic types
+api.grantMutation(role, 'updateExample');
+
+// For custom types and granular design
+api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```

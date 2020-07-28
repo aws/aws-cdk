@@ -39,6 +39,11 @@ export interface IRestApi extends IResourceBase {
   readonly latestDeployment?: Deployment;
 
   /**
+   * API Gateway stage that points to the latest deployment (if defined).
+   */
+  deploymentStage: Stage;
+
+  /**
    * Represents the root resource ("/") of this API. Use it to define the API model:
    *
    *    api.root.addMethod('ANY', redirectToHomePage); // "ANY /"
@@ -46,12 +51,23 @@ export interface IRestApi extends IResourceBase {
    *
    */
   readonly root: IResource;
+
+  /**
+   * Gets the "execute-api" ARN
+   * @returns The "execute-api" ARN.
+   * @default "*" returns the execute API ARN for all methods/resources in
+   * this API.
+   * @param method The method (default `*`)
+   * @param path The resource path. Must start with '/' (default `*`)
+   * @param stage The stage (default `*`)
+   */
+  arnForExecuteApi(method?: string, path?: string, stage?: string): string;
 }
 
 /**
  * Represents the props that all Rest APIs share
  */
-export interface RestApiOptions extends ResourceOptions {
+export interface RestApiBaseProps {
   /**
    * Indicates if a Deployment should be automatically created for this API,
    * and recreated when the API model (resources, methods) changes.
@@ -146,6 +162,13 @@ export interface RestApiOptions extends ResourceOptions {
 }
 
 /**
+ * Represents the props that all Rest APIs share.
+ * @deprecated - superceded by `RestApiBaseProps`
+ */
+export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {
+}
+
+/**
  * Props to create a new instance of RestApi
  */
 export interface RestApiProps extends RestApiOptions {
@@ -213,7 +236,7 @@ export interface RestApiProps extends RestApiOptions {
  * Props to instantiate a new SpecRestApi
  * @experimental
  */
-export interface SpecRestApiProps extends RestApiOptions {
+export interface SpecRestApiProps extends RestApiBaseProps {
   /**
    * An OpenAPI definition compatible with API Gateway.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
@@ -280,7 +303,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
-  constructor(scope: Construct, id: string, props: RestApiOptions = { }) {
+  constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
     super(scope, id, {
       physicalName: props.restApiName || id,
     });
@@ -324,15 +347,6 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     return new UsagePlan(this, id, props);
   }
 
-  /**
-   * Gets the "execute-api" ARN
-   * @returns The "execute-api" ARN.
-   * @default "*" returns the execute API ARN for all methods/resources in
-   * this API.
-   * @param method The method (default `*`)
-   * @param path The resource path. Must start with '/' (default `*`)
-   * @param stage The stage (default `*`)
-   */
   public arnForExecuteApi(method: string = '*', path: string = '/*', stage: string = '*') {
     if (!path.startsWith('/')) {
       throw new Error(`"path" must begin with a "/": '${path}'`);
@@ -454,7 +468,7 @@ export class SpecRestApi extends RestApiBase {
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
     this.restApiRootResourceId = resource.attrRootResourceId;
-    this.root = new RootResource(this, props, this.restApiRootResourceId);
+    this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
     this.configureDeployment(props);
     if (props.domainName) {
@@ -496,7 +510,7 @@ export class RestApi extends RestApiBase {
    * Import an existing RestApi.
    */
   public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
-    class Import extends Resource implements IRestApi {
+    class Import extends RestApiBase {
       public readonly restApiId = restApiId;
 
       public get root(): IResource {

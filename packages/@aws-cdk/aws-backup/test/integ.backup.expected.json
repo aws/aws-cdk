@@ -29,17 +29,7 @@
     "Vault23237E5B": {
       "Type": "AWS::Backup::BackupVault",
       "Properties": {
-        "BackupVaultName": {
-          "Fn::Join": [
-            "",
-            [
-              "cdkbackupVaultC2A6D3CB",
-              {
-                "Ref": "AWS::StackName"
-              }
-            ]
-          ]
-        }
+        "BackupVaultName": "cdkbackupVaultC2A6D3CB"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"

@@ -443,10 +443,7 @@
         "Certificates": [
           {
             "CertificateArn": {
-              "Fn::GetAtt": [
-                "myServiceCertificateCertificateRequestorResource76DB9304",
-                "Arn"
-              ]
+              "Ref": "myServiceCertificate152F9DDA"
             }
           }
         ]
@@ -463,153 +460,18 @@
         }
       }
     },
-    "myServiceCertificateCertificateRequestorFunctionServiceRoleB55B306C": {
-      "Type": "AWS::IAM::Role",
+    "myServiceCertificate152F9DDA": {
+      "Type": "AWS::CertificateManager::Certificate",
       "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "myServiceCertificateCertificateRequestorFunctionServiceRoleDefaultPolicyFB403A3B": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "acm:RequestCertificate",
-                "acm:DescribeCertificate",
-                "acm:DeleteCertificate"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "route53:GetChange",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "route53:changeResourceRecordSets",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":route53:::hostedzone/fakeId"
-                  ]
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "myServiceCertificateCertificateRequestorFunctionServiceRoleDefaultPolicyFB403A3B",
-        "Roles": [
-          {
-            "Ref": "myServiceCertificateCertificateRequestorFunctionServiceRoleB55B306C"
-          }
-        ]
-      }
-    },
-    "myServiceCertificateCertificateRequestorFunctionC16CEAAF": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "AssetParameters19e461d2ff1a5b90438fed6ceee4c197d7efee8712a6f76d85b501ab20bfb1a2S3BucketFCCD3A76"
-          },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters19e461d2ff1a5b90438fed6ceee4c197d7efee8712a6f76d85b501ab20bfb1a2S3VersionKey07AF06B6"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters19e461d2ff1a5b90438fed6ceee4c197d7efee8712a6f76d85b501ab20bfb1a2S3VersionKey07AF06B6"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
-        },
-        "Handler": "index.certificateRequestHandler",
-        "Role": {
-          "Fn::GetAtt": [
-            "myServiceCertificateCertificateRequestorFunctionServiceRoleB55B306C",
-            "Arn"
-          ]
-        },
-        "Runtime": "nodejs10.x",
-        "Timeout": 900
-      },
-      "DependsOn": [
-        "myServiceCertificateCertificateRequestorFunctionServiceRoleDefaultPolicyFB403A3B",
-        "myServiceCertificateCertificateRequestorFunctionServiceRoleB55B306C"
-      ]
-    },
-    "myServiceCertificateCertificateRequestorResource76DB9304": {
-      "Type": "AWS::CloudFormation::CustomResource",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "myServiceCertificateCertificateRequestorFunctionC16CEAAF",
-            "Arn"
-          ]
-        },
         "DomainName": "test.example.com",
-        "HostedZoneId": "fakeId"
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+        "DomainValidationOptions": [
+          {
+            "DomainName": "test.example.com",
+            "HostedZoneId": "fakeId"
+          }
+        ],
+        "ValidationMethod": "DNS"
+      }
     },
     "myServiceDNSD76FB53A": {
       "Type": "AWS::Route53::RecordSet",
@@ -618,9 +480,18 @@
         "Type": "A",
         "AliasTarget": {
           "DNSName": {
-            "Fn::GetAtt": [
-              "myServiceLB168895E1",
-              "DNSName"
+            "Fn::Join":
+            [
+              "",
+              [
+                "dualstack.",
+                {
+                  "Fn::GetAtt": [
+                    "myServiceLB168895E1",
+                    "DNSName"
+                  ]
+                }
+              ]
             ]
           },
           "HostedZoneId": {
@@ -862,20 +733,6 @@
           ]
         ]
       }
-    }
-  },
-  "Parameters": {
-    "AssetParameters19e461d2ff1a5b90438fed6ceee4c197d7efee8712a6f76d85b501ab20bfb1a2S3BucketFCCD3A76": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"19e461d2ff1a5b90438fed6ceee4c197d7efee8712a6f76d85b501ab20bfb1a2\""
-    },
-    "AssetParameters19e461d2ff1a5b90438fed6ceee4c197d7efee8712a6f76d85b501ab20bfb1a2S3VersionKey07AF06B6": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"19e461d2ff1a5b90438fed6ceee4c197d7efee8712a6f76d85b501ab20bfb1a2\""
-    },
-    "AssetParameters19e461d2ff1a5b90438fed6ceee4c197d7efee8712a6f76d85b501ab20bfb1a2ArtifactHash652C125C": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"19e461d2ff1a5b90438fed6ceee4c197d7efee8712a6f76d85b501ab20bfb1a2\""
     }
   }
 }

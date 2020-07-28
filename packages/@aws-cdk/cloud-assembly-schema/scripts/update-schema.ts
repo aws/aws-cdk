@@ -5,30 +5,54 @@ import * as semver from 'semver';
 import * as tjs from 'typescript-json-schema';
 
 function log(message: string) {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.log(message);
 }
 
-function bump() {
+/**
+ * Where schemas are committed.
+ */
+const SCHEMA_DIR = path.resolve(__dirname, '../schema');
 
-  const metadataPath = '../schema/cloud-assembly.version.json';
+const SCHEMA_DEFINITIONS: { [schemaName: string]: { rootTypeName: string } } = {
+  'assets': { rootTypeName: 'AssetManifest' },
+  'cloud-assembly': { rootTypeName: 'AssemblyManifest' },
+};
+
+export const SCHEMAS = Object.keys(SCHEMA_DEFINITIONS);
+
+export function update() {
+  for (const s of SCHEMAS) {
+    generateSchema(s);
+  }
+
+  bump();
+}
+
+export function bump() {
+  const versionFile = path.join(SCHEMA_DIR, 'cloud-assembly.version.json');
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const metadata = require(metadataPath);
+  const metadata = require(versionFile);
 
   const oldVersion = metadata.version;
   const newVersion = semver.inc(oldVersion, 'major');
 
   log(`Updating schema version: ${oldVersion} -> ${newVersion}`);
-
-  const out = path.join(__dirname, metadataPath);
-  fs.writeFileSync(out, JSON.stringify({version: newVersion}));
-
+  fs.writeFileSync(versionFile, JSON.stringify({version: newVersion}));
 }
 
-export function generate(out: string, shouldBump: boolean) {
+/**
+ * Generates a schema from typescript types.
+ * @returns JSON schema
+ * @param schemaName the schema to generate
+ * @param shouldBump writes a new version of the schema and bumps the major version
+ */
+export function generateSchema(schemaName: string, saveToFile: boolean = true) {
+  const spec = SCHEMA_DEFINITIONS[schemaName];
+  const out = saveToFile ? path.join(SCHEMA_DIR, `${schemaName}.schema.json`) : '';
 
-  const settings = {
+  const settings: Partial<tjs.Args> = {
     required: true,
     ref: true,
     topRef: true,
@@ -40,15 +64,11 @@ export function generate(out: string, shouldBump: boolean) {
     strictNullChecks: true,
   };
 
-  const program = tjs.getProgramFromFiles([path.join(__dirname, '../lib/schema.d.ts')], compilerOptions);
-  const schema = tjs.generateSchema(program, 'AssemblyManifest', settings);
+  const program = tjs.getProgramFromFiles([ path.join(__dirname, '../lib/index.d.ts') ], compilerOptions);
+  const schema = tjs.generateSchema(program, spec.rootTypeName, settings);
 
   augmentDescription(schema);
   addAnyMetadataEntry(schema);
-
-  if (shouldBump) {
-    bump();
-  }
 
   if (out) {
     log(`Generating schema to ${out}`);
@@ -56,7 +76,6 @@ export function generate(out: string, shouldBump: boolean) {
   }
 
   return schema;
-
 }
 
 /**
@@ -105,5 +124,5 @@ function augmentDescription(schema: any) {
  * compatibility checks.
  */
 function addAnyMetadataEntry(schema: any) {
-  schema.definitions.MetadataEntry.properties.data.anyOf.push({description: 'Free form data.'});
+  schema.definitions.MetadataEntry?.properties.data.anyOf.push({description: 'Free form data.'});
 }

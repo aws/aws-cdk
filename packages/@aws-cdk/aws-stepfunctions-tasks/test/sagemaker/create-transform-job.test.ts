@@ -184,8 +184,8 @@ test('create complex transform job', () => {
 test('pass param to transform job', () => {
   // WHEN
   const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
-    transformJobName: sfn.Data.stringAt('$.TransformJobName'),
-    modelName: sfn.Data.stringAt('$.ModelName'),
+    transformJobName: sfn.JsonPath.stringAt('$.TransformJobName'),
+    modelName: sfn.JsonPath.stringAt('$.ModelName'),
     role,
     transformInput: {
       transformDataSource: {

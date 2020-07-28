@@ -1,3 +1,207 @@
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.DestinationConfig (__added__)
+* AWS::Serverless::Function.OnFailure (__added__)
+* AWS::Serverless::Function.DynamoDBEvent BisectBatchOnFunctionError (__added__)
+* AWS::Serverless::Function.DynamoDBEvent DestinationConfig (__added__)
+* AWS::Serverless::Function.DynamoDBEvent MaximumBatchingWindowInSeconds (__added__)
+* AWS::Serverless::Function.DynamoDBEvent MaximumRecordAgeInSeconds (__added__)
+* AWS::Serverless::Function.DynamoDBEvent MaximumRetryAttempts (__added__)
+* AWS::Serverless::Function.DynamoDBEvent ParallelizationFactor (__added__)
+
+# CloudFormation Resource Specification v16.1.0
+
+## New Resource Types
+
+* AWS::Athena::DataCatalog
+* AWS::EC2::PrefixList
+* AWS::QLDB::Stream
+
+## Attribute Changes
+
+* AWS::Amplify::Domain AutoSubDomainCreationPatterns (__added__)
+* AWS::Amplify::Domain AutoSubDomainIAMRole (__added__)
+* AWS::Amplify::Domain EnableAutoSubDomain (__added__)
+* AWS::RDS::DBProxyTargetGroup TargetGroupName (__deleted__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct Outputs (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct ProvisionedProductId (__added__)
+
+## Property Changes
+
+* AWS::Amplify::App EnableBranchAutoDeletion (__added__)
+* AWS::Amplify::Domain AutoSubDomainCreationPatterns (__added__)
+* AWS::Amplify::Domain AutoSubDomainIAMRole (__added__)
+* AWS::Amplify::Domain EnableAutoSubDomain (__added__)
+* AWS::AutoScaling::AutoScalingGroup NewInstancesProtectedFromScaleIn (__added__)
+* AWS::CodeGuruProfiler::ProfilingGroup ComputePlatform (__added__)
+* AWS::ElastiCache::ReplicationGroup MultiAZEnabled.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ElasticLoadBalancingV2::Listener AlpnPolicy (__added__)
+* AWS::Elasticsearch::Domain AdvancedSecurityOptions (__added__)
+* AWS::Elasticsearch::Domain DomainEndpointOptions (__added__)
+* AWS::FSx::FileSystem StorageCapacity.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ImageBuilder::Component SupportedOsVersions (__added__)
+* AWS::ImageBuilder::Image EnhancedImageMetadataEnabled (__added__)
+* AWS::ImageBuilder::ImagePipeline EnhancedImageMetadataEnabled (__added__)
+* AWS::ImageBuilder::ImageRecipe WorkingDirectory (__added__)
+* AWS::Lambda::Function FileSystemConfigs (__added__)
+* AWS::RDS::DBProxyTargetGroup TargetGroupName (__added__)
+* AWS::RDS::DBProxyTargetGroup DBProxyName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Route53::HealthCheck HealthCheckConfig.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Conditional
+* AWS::SSM::Association ApplyOnlyAtCronInterval (__added__)
+* AWS::SageMaker::EndpointConfig DataCaptureConfig (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct NotificationArns.DuplicatesAllowed (__added__)
+* AWS::ServiceDiscovery::HttpNamespace Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceDiscovery::PrivateDnsNamespace Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceDiscovery::PublicDnsNamespace Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceDiscovery::Service Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Synthetics::Canary RunConfig.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::CodeBuild::Project.BuildStatusConfig (__added__)
+* AWS::Elasticsearch::Domain.AdvancedSecurityOptionsInput (__added__)
+* AWS::Elasticsearch::Domain.DomainEndpointOptions (__added__)
+* AWS::Elasticsearch::Domain.MasterUserOptions (__added__)
+* AWS::Lambda::Function.FileSystemConfig (__added__)
+* AWS::SageMaker::EndpointConfig.CaptureContentTypeHeader (__added__)
+* AWS::SageMaker::EndpointConfig.CaptureOption (__added__)
+* AWS::SageMaker::EndpointConfig.DataCaptureConfig (__added__)
+* AWS::WAFv2::RuleGroup.ForwardedIPConfiguration (__added__)
+* AWS::WAFv2::RuleGroup.IPSetForwardedIPConfiguration (__added__)
+* AWS::WAFv2::WebACL.ForwardedIPConfiguration (__added__)
+* AWS::WAFv2::WebACL.IPSetForwardedIPConfiguration (__added__)
+* AWS::CodeBuild::Project.Source BuildStatusConfig (__added__)
+* AWS::FSx::FileSystem.LustreConfiguration AutomaticBackupRetentionDays (__added__)
+* AWS::FSx::FileSystem.LustreConfiguration CopyTagsToBackups (__added__)
+* AWS::FSx::FileSystem.LustreConfiguration DailyAutomaticBackupStartTime (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration ThroughputCapacity.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::Model.ContainerDefinition ModelPackageName (__added__)
+* AWS::SageMaker::Model.ContainerDefinition Image.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct.ProvisioningParameter Key.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct.ProvisioningParameter Value.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct.ProvisioningPreferences StackSetAccounts.DuplicatesAllowed (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct.ProvisioningPreferences StackSetRegions.DuplicatesAllowed (__added__)
+* AWS::Synthetics::Canary.RunConfig MemoryInMB (__added__)
+* AWS::Synthetics::Canary.Schedule DurationInSeconds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::WAFv2::RuleGroup.GeoMatchStatement ForwardedIPConfig (__added__)
+* AWS::WAFv2::RuleGroup.IPSetReferenceStatement IPSetForwardedIPConfig (__added__)
+* AWS::WAFv2::RuleGroup.RateBasedStatementOne ForwardedIPConfig (__added__)
+* AWS::WAFv2::RuleGroup.RateBasedStatementTwo ForwardedIPConfig (__added__)
+* AWS::WAFv2::WebACL.GeoMatchStatement ForwardedIPConfig (__added__)
+* AWS::WAFv2::WebACL.IPSetReferenceStatement IPSetForwardedIPConfig (__added__)
+* AWS::WAFv2::WebACL.RateBasedStatementOne ForwardedIPConfig (__added__)
+* AWS::WAFv2::WebACL.RateBasedStatementTwo ForwardedIPConfig (__added__)
+
+
+# CloudFormation Resource Specification v16.0.0
+
+## New Resource Types
+
+* AWS::AppConfig::HostedConfigurationVersion
+* AWS::ECS::CapacityProvider
+
+## Removed Resource Types
+
+* AWS::EC2::PrefixList
+
+## Attribute Changes
+
+* AWS::EC2::FlowLog Id (__added__)
+
+## Property Changes
+
+* AWS::ECS::Cluster CapacityProviders (__added__)
+* AWS::ECS::Cluster DefaultCapacityProviderStrategy (__added__)
+* AWS::SSM::MaintenanceWindow ScheduleOffset (__added__)
+* AWS::SSM::MaintenanceWindowTask TaskType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceDiscovery::HttpNamespace Tags (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace Tags (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace Tags (__added__)
+* AWS::ServiceDiscovery::Service Tags (__added__)
+* AWS::WAFv2::WebACLAssociation ResourceArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::WAFv2::WebACLAssociation WebACLArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::AppMesh::Route.GrpcTimeout (__added__)
+* AWS::AppMesh::Route.HttpTimeout (__added__)
+* AWS::AppMesh::Route.TcpTimeout (__added__)
+* AWS::AppMesh::VirtualNode.Duration (__added__)
+* AWS::AppMesh::VirtualNode.GrpcTimeout (__added__)
+* AWS::AppMesh::VirtualNode.HttpTimeout (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTimeout (__added__)
+* AWS::AppMesh::VirtualNode.TcpTimeout (__added__)
+* AWS::ECS::Cluster.CapacityProviderStrategyItem (__added__)
+* AWS::AppMesh::Route.GrpcRoute Timeout (__added__)
+* AWS::AppMesh::Route.HttpRoute Timeout (__added__)
+* AWS::AppMesh::Route.TcpRoute Timeout (__added__)
+* AWS::AppMesh::VirtualNode.Listener Timeout (__added__)
+* AWS::FMS::Policy.IEMap ORGUNIT (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api OpenApiVersion (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.EventBridgeRuleEvent (__added__)
+* AWS::Serverless::Function.EventSource Properties.Types (__changed__)
+  * Added EventBridgeRuleEvent
+
 # CloudFormation Resource Specification v15.1.0
 
 ## New Resource Types

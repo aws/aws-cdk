@@ -28,7 +28,7 @@ export = testCase({
     test.done();
   },
 
-  'ignoreEmpty': {
+  ignoreEmpty: {
 
     '[]'(test: Test) {
       const stack = new Stack();
@@ -73,7 +73,7 @@ export = testCase({
     },
   },
 
-  'filterUnderined': {
+  filterUnderined: {
     'is null-safe (aka treats null and undefined the same)'(test: Test) {
       test.deepEqual(filterUndefined({ 'a null': null, 'a not null': true }), { 'a not null': true });
       test.done();

@@ -104,7 +104,7 @@ export class ClusterResource extends Construct {
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'iam:GetRole' ],
+      actions: [ 'iam:GetRole', 'iam:listAttachedRolePolicies' ],
       resources: [ '*' ],
     }));
 

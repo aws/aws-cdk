@@ -1,9 +1,9 @@
+import * as util from 'util';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
-import * as util from 'util';
-import { error, isVerbose, setVerbose } from '../../../logging';
+import { error, logLevel, LogLevel, setLogLevel } from '../../../logging';
 import { RewritableBlock } from '../display';
 
 interface StackActivity {
@@ -28,13 +28,13 @@ export interface StackActivityMonitorProps {
   readonly resourcesTotal?: number;
 
   /**
-   * Whether 'verbose' was requested in the CLI
+   * The log level that was requested in the CLI
    *
-   * If verbose is requested, we'll always use the full history printer.
+   * If verbose or trace is requested, we'll always use the full history printer.
    *
-   * @default - Use value from logging.isVerbose
+   * @default - Use value from logging.logLevel
    */
-  readonly verbose?: boolean;
+  readonly logLevel?: LogLevel;
 }
 
 export class StackActivityMonitor {
@@ -78,7 +78,7 @@ export class StackActivityMonitor {
     };
 
     const isWindows = process.platform === 'win32';
-    const verbose = options.verbose ?? isVerbose;
+    const verbose = options.logLevel ?? logLevel;
     const fancyOutputAvailable = !isWindows && stream.isTTY;
 
     this.printer = fancyOutputAvailable && !verbose
@@ -479,7 +479,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
    */
   public readonly updateSleep: number = 2_000;
 
-  private oldVerbose: boolean = false;
+  private oldLogLevel: LogLevel = LogLevel.DEFAULT;
   private block = new RewritableBlock(this.stream);
 
   constructor(props: PrinterProps) {
@@ -490,7 +490,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     const lines = [];
 
     // Add a progress bar at the top
-    const progressWidth = Math.min((this.block.width ?? 80) - PROGRESSBAR_EXTRA_SPACE - 1, MAX_PROGRESSBAR_WIDTH);
+    const progressWidth = Math.max(Math.min((this.block.width ?? 80) - PROGRESSBAR_EXTRA_SPACE - 1, MAX_PROGRESSBAR_WIDTH), MIN_PROGRESSBAR_WIDTH);
     const prog = this.progressBar(progressWidth);
     if (prog) {
       lines.push('  ' + prog, '');
@@ -520,12 +520,12 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   public start() {
     // Need to prevent the waiter from printing 'stack not stable' every 5 seconds, it messes
     // with the output calculations.
-    this.oldVerbose = isVerbose;
-    setVerbose(false);
+    this.oldLogLevel = logLevel;
+    setLogLevel(LogLevel.DEFAULT);
   }
 
   public stop() {
-    setVerbose(this.oldVerbose);
+    setLogLevel(this.oldLogLevel);
 
     // Print failures at the end
     const lines = new Array<string>();
@@ -550,12 +550,13 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   private progressBar(width: number) {
     if (!this.resourcesTotal) { return ''; }
     const fraction = Math.min(this.resourcesDone / this.resourcesTotal, 1);
-    const chars = (width - 2) * fraction;
+    const innerWidth = Math.max(1, width - 2);
+    const chars = innerWidth * fraction;
     const remainder = chars - Math.floor(chars);
 
     const fullChars = FULL_BLOCK.repeat(Math.floor(chars));
     const partialChar = PARTIAL_BLOCK[Math.floor(remainder * PARTIAL_BLOCK.length)];
-    const filler = '·'.repeat(width - 2 - Math.floor(chars) - (partialChar ? 1 : 0));
+    const filler = '·'.repeat(innerWidth - Math.floor(chars) - (partialChar ? 1 : 0));
 
     const color = this.rollingBack ? colors.yellow : colors.green;
 
@@ -572,6 +573,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 const FULL_BLOCK = '█';
 const PARTIAL_BLOCK = ['', '▏', '▎', '▍', '▌', '▋', '▊', '▉'];
 const MAX_PROGRESSBAR_WIDTH = 60;
+const MIN_PROGRESSBAR_WIDTH = 10;
 const PROGRESSBAR_EXTRA_SPACE = 2 /* leading spaces */ + 2 /* brackets */ + 4 /* progress number decoration */ + 6 /* 2 progress numbers up to 999 */;
 
 function colorFromStatusResult(status?: string) {

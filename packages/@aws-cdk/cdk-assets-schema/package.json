@@ -44,12 +44,9 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "dependencies": {
-    "semver": "^7.2.2"
-  },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.0",
+    "@types/jest": "^26.0.4",
     "cdk-build-tools": "0.0.0",
     "jest": "^25.5.4",
     "pkglint": "0.0.0"
@@ -64,17 +61,15 @@
     "cdk"
   ],
   "homepage": "https://github.com/aws/aws-cdk",
-  "bundledDependencies": [
-    "semver"
-  ],
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "stable",
+  "stability": "deprecated",
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable",
+  "deprecated": "merged into @aws-cdk/cloud-assembly-schema",
+  "maturity": "deprecated",
   "cdk-build": {
     "jest": true
   }

@@ -173,7 +173,7 @@ test('Execute State Machine - Wait For Task Token', () => {
     stateMachine: child,
     integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     input: sfn.TaskInput.fromObject({
-      token: sfn.Context.taskToken,
+      token: sfn.JsonPath.taskToken,
     }),
   });
 
@@ -213,5 +213,5 @@ test('Execute State Machine - Wait For Task Token - Missing Task Token', () => {
       stateMachine: child,
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
-  }).toThrow('Task Token is required in `input` for callback. Use Context.taskToken to set the token.');
+  }).toThrow('Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.');
 });

@@ -47,7 +47,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CloudFront"
+    "cloudformation": "AWS::CloudFront",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -63,12 +64,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.31",
-    "aws-sdk": "^2.699.0",
+    "aws-sdk": "^2.715.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
+    "nodeunit-shim": "0.0.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -94,11 +94,23 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
-  "maturity": "experimental",
+  "features": [
+    {
+      "name": "Higher level constructs for Distribution",
+      "stability": "Experimental"
+    },
+    {
+      "name": "Higher level constructs for CloudFrontWebDistribution",
+      "stability": "Stable"
+    }
+  ],
   "awslint": {
     "exclude": [
+      "props-physical-name:@aws-cdk/aws-cloudfront.Distribution",
+      "props-physical-name:@aws-cdk/aws-cloudfront.DistributionProps",
+      "props-physical-name:@aws-cdk/aws-cloudfront.CloudFrontWebDistribution",
+      "props-physical-name:@aws-cdk/aws-cloudfront.CloudFrontWebDistributionProps",
       "props-physical-name:@aws-cdk/aws-cloudfront.OriginAccessIdentityProps",
-      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginProtocolPolicy",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerProtocolPolicy.ALLOW_ALL",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS",
       "props-default-doc:@aws-cdk/aws-cloudfront.Behavior.isDefaultBehavior",
@@ -117,19 +129,11 @@
       "docs-public-apis:@aws-cdk/aws-cloudfront.HttpVersion",
       "docs-public-apis:@aws-cdk/aws-cloudfront.HttpVersion.HTTP1_1",
       "docs-public-apis:@aws-cdk/aws-cloudfront.HttpVersion.HTTP2",
-      "docs-public-apis:@aws-cdk/aws-cloudfront.LambdaEdgeEventType",
-      "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerProtocolPolicy.HTTPS_ONLY",
-      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginProtocolPolicy.HTTP_ONLY",
-      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginProtocolPolicy.MATCH_VIEWER",
-      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginProtocolPolicy.HTTPS_ONLY",
       "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy",
       "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy.SSL_V3",
       "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy.TLS_V1",
       "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy.TLS_V1_1",
       "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy.TLS_V1_2",
-      "docs-public-apis:@aws-cdk/aws-cloudfront.PriceClass.PRICE_CLASS_100",
-      "docs-public-apis:@aws-cdk/aws-cloudfront.PriceClass.PRICE_CLASS_200",
-      "docs-public-apis:@aws-cdk/aws-cloudfront.PriceClass.PRICE_CLASS_ALL",
       "docs-public-apis:@aws-cdk/aws-cloudfront.SSLMethod.SNI",
       "docs-public-apis:@aws-cdk/aws-cloudfront.SSLMethod.VIP",
       "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.SSL_V3",

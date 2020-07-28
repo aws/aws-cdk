@@ -104,11 +104,11 @@ describe('Batch Compute Evironment', () => {
             'Fn::Join': [
               '',
               [
-                'arn',
+                'arn:',
                 {
                   Ref: 'AWS::Partition',
                 },
-                'iam::',
+                ':iam::',
                 {
                   Ref: 'AWS::AccountId',
                 },
@@ -168,7 +168,7 @@ describe('Batch Compute Evironment', () => {
             generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
             hardwareType: ecs.AmiHardwareType.STANDARD,
           }),
-          instanceRole:  new iam.CfnInstanceProfile(stack, 'Instance-Profile', {
+          instanceRole: new iam.CfnInstanceProfile(stack, 'Instance-Profile', {
             roles: [ new iam.Role(stack, 'Ecs-Instance-Role', {
               assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
               managedPolicies: [

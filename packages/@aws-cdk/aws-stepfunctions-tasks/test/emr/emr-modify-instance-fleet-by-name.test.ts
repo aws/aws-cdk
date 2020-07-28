@@ -48,7 +48,7 @@ test('Modify an InstanceFleet with static ClusterId, InstanceFleetName, and Inst
 test('Modify an InstanceFleet with ClusterId from payload and static InstanceFleetName and InstanceFleetConfiguration', () => {
   // WHEN
   const task = new tasks.EmrModifyInstanceFleetByName(stack, 'Task', {
-    clusterId: sfn.Data.stringAt('$.ClusterId'),
+    clusterId: sfn.JsonPath.stringAt('$.ClusterId'),
     instanceFleetName: 'InstanceFleetName',
     targetOnDemandCapacity: 2,
     targetSpotCapacity: 0,
@@ -85,7 +85,7 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetConfigurate
   // WHEN
   const task = new tasks.EmrModifyInstanceFleetByName(stack, 'Task', {
     clusterId: 'ClusterId',
-    instanceFleetName: sfn.Data.stringAt('$.InstanceFleetName'),
+    instanceFleetName: sfn.JsonPath.stringAt('$.InstanceFleetName'),
     targetOnDemandCapacity: 2,
     targetSpotCapacity: 0,
   });
@@ -122,8 +122,8 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetName and Ta
   const task = new tasks.EmrModifyInstanceFleetByName(stack, 'Task', {
     clusterId: 'ClusterId',
     instanceFleetName: 'InstanceFleetName',
-    targetOnDemandCapacity: sfn.Data.numberAt('$.TargetOnDemandCapacity'),
-    targetSpotCapacity: sfn.Data.numberAt('$.TargetSpotCapacity'),
+    targetOnDemandCapacity: sfn.JsonPath.numberAt('$.TargetOnDemandCapacity'),
+    targetSpotCapacity: sfn.JsonPath.numberAt('$.TargetSpotCapacity'),
   });
 
   // THEN

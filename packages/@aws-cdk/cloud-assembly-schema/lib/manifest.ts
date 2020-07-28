@@ -1,51 +1,88 @@
 import * as fs from 'fs';
 import * as jsonschema from 'jsonschema';
 import * as semver from 'semver';
-import { ArtifactMetadataEntryType } from './metadata-schema';
-import * as assembly from './schema';
+import * as assets from './assets';
+import * as assembly from './cloud-assembly';
+
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
 
 // this prefix is used by the CLI to identify this specific error.
 // in which case we want to instruct the user to upgrade his CLI.
 // see exec.ts#createAssembly
 export const VERSION_MISMATCH: string = 'Cloud assembly schema version mismatch';
 
+const ASSETS_SCHEMA = require('../schema/assets.schema.json');
+
+const ASSEMBLY_SCHEMA = require('../schema/cloud-assembly.schema.json');
+
+/**
+ * Version is shared for both manifests
+ */
+const SCHEMA_VERSION = require('../schema/cloud-assembly.version.json').version;
+
 /**
  * Protocol utility class.
  */
 export class Manifest {
   /**
-   * Save manifest to file.
+   * Validates and saves the cloud assembly manifest to file.
    *
    * @param manifest - manifest.
+   * @param filePath - output file path.
    */
-  public static save(manifest: assembly.AssemblyManifest, filePath: string) {
-    fs.writeFileSync(filePath, JSON.stringify(manifest, undefined, 2));
+  public static saveAssemblyManifest(manifest: assembly.AssemblyManifest, filePath: string) {
+    Manifest.saveManifest(manifest, filePath, ASSEMBLY_SCHEMA);
   }
 
   /**
-   * Load manifest from file.
+   * Load and validates the cloud assembly manifest from file.
    *
    * @param filePath - path to the manifest file.
    */
-  public static load(filePath: string): assembly.AssemblyManifest {
-    const raw: assembly.AssemblyManifest = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf-8' }));
-    Manifest.patchStackTags(raw);
-    Manifest.validate(raw);
-    return raw;
+  public static loadAssemblyManifest(filePath: string): assembly.AssemblyManifest {
+    return Manifest.loadManifest(filePath, ASSEMBLY_SCHEMA, obj => Manifest.patchStackTags(obj));
+  }
+
+  /**
+   * Validates and saves the asset manifest to file.
+   *
+   * @param manifest - manifest.
+   * @param filePath - output file path.
+   */
+  public static saveAssetManifest(manifest: assets.AssetManifest, filePath: string) {
+    Manifest.saveManifest(manifest, filePath, ASSETS_SCHEMA);
+  }
+
+  /**
+   * Load and validates the asset manifest from file.
+   *
+   * @param filePath - path to the manifest file.
+   */
+  public static loadAssetManifest(filePath: string): assets.AssetManifest {
+    return this.loadManifest(filePath, ASSETS_SCHEMA);
   }
 
   /**
    * Fetch the current schema version number.
    */
   public static version(): string {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require('../schema/cloud-assembly.version.json').version;
+    return SCHEMA_VERSION;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  private static schema: jsonschema.Schema = require('../schema/cloud-assembly.schema.json');
+  /**
+   * Deprecated
+   * @deprecated use `saveAssemblyManifest()`
+   */
+  public static save(manifest: assembly.AssemblyManifest, filePath: string) { return this.saveAssemblyManifest(manifest, filePath); }
 
-  private static validate(manifest: assembly.AssemblyManifest) {
+  /**
+   * Deprecated
+   * @deprecated use `loadAssemblyManifest()`
+   */
+  public static load(filePath: string): assembly.AssemblyManifest { return this.loadAssemblyManifest(filePath); }
+
+  private static validate(manifest: { version: string }, schema: jsonschema.Schema) {
 
     function parseVersion(version: string) {
       const ver = semver.valid(version);
@@ -67,7 +104,7 @@ export class Manifest {
 
     // now validate the format is good.
     const validator = new jsonschema.Validator();
-    const result = validator.validate(manifest, Manifest.schema, {
+    const result = validator.validate(manifest, schema, {
 
       // does exist but is not in the TypeScript definitions
       nestedErrors: true,
@@ -79,6 +116,21 @@ export class Manifest {
       throw new Error(`Invalid assembly manifest:\n${result}`);
     }
 
+  }
+
+  private static saveManifest(manifest: any, filePath: string, schema: jsonschema.Schema) {
+    const withVersion = { ...manifest, version: Manifest.version() };
+    Manifest.validate(withVersion, schema);
+    fs.writeFileSync(filePath, JSON.stringify(withVersion, undefined, 2));
+  }
+
+  private static loadManifest(filePath: string, schema: jsonschema.Schema, preprocess?: (obj: any) => any) {
+    let obj = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf-8' }));
+    if (preprocess) {
+      obj = preprocess(obj);
+    }
+    Manifest.validate(obj, schema);
+    return obj;
   }
 
   /**
@@ -101,18 +153,16 @@ export class Manifest {
       if (artifact.type === assembly.ArtifactType.AWS_CLOUDFORMATION_STACK) {
         for (const metadataEntries of Object.values(artifact.metadata || [])) {
           for (const metadataEntry of metadataEntries) {
-            if (metadataEntry.type === ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
-
+            if (metadataEntry.type === assembly.ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
               const metadataAny = metadataEntry as any;
-
-              metadataAny.data = metadataAny.data.map((t: any) => {
-                return { key: t.Key, value: t.Value };
-              });
+              metadataAny.data = metadataAny.data.map((t: any) => ({ key: t.Key, value: t.Value }));
             }
           }
         }
       }
     }
+
+    return manifest;
   }
 
   private constructor() {}
