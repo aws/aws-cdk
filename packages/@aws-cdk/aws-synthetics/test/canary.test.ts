@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import { arrayWith, objectLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Duration, Size, Stack } from '@aws-cdk/core';
+import { App, Duration, Stack } from '@aws-cdk/core';
 import * as synthetics from '../lib';
 
 let stack: Stack;
@@ -11,6 +11,21 @@ beforeEach(() => {
 });
 
 test('Create a basic canary', () => {
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {});
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    Name: 'canariescanary8f7842',
+    Code: {
+      Handler: 'index.handler',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
+    },
+    RuntimeVersion: 'syn-1.0',
+  });
+});
+
+test('Canary can have specified name', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
@@ -27,19 +42,12 @@ test('Create a basic canary', () => {
   });
 });
 
-test('Create a basic canary with no name', () => {
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {});
+test('Canary returns error when name is specified incorrectly', () => {
+  expect(() => new synthetics.Canary(stack, 'Canary', {canaryName: 'myCanary'})).toThrowError('Canary Name must be lowercase, numbers, hyphens, or underscores (no spaces)');
+});
 
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'canariescanary8f7842',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
-  });
+test('Canary name must be less than 21 characters', () => {
+  expect(() => new synthetics.Canary(stack, 'Canary', {canaryName: 'canary-name-super-long'})).toThrowError('Canary Name must be less than 21 characters');
 });
 
 test('Canary can have specified IAM role', () => {
@@ -105,11 +113,11 @@ test('Canary can have specified s3 Bucket', () => {
   });
 });
 
-test('Canary can set frequency', () => {
+test('Canary can set schedule with Rate', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
-    frequency: Duration.minutes(3),
+    schedule: synthetics.Schedule.rate(Duration.minutes(3)),
   });
 
   // THEN
@@ -124,8 +132,27 @@ test('Canary can set frequency', () => {
   });
 });
 
-test('Frequency fails when above 60 minutes', () => {
-  expect(() => new synthetics.Canary(stack, 'Canary', {frequency: Duration.minutes(61)})).toThrowError('Frequency must be either 0 (for a single run), or between 1 minute and 1 hour');
+test('Canary can set schedule with Expression', () => {
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'mycanary',
+    schedule: synthetics.Schedule.expression('rate(3 minutes)'),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+    Code: {
+      Handler: 'index.handler',
+      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
+    },
+    RuntimeVersion: 'syn-1.0',
+    Schedule: objectLike({ Expression: 'rate(3 minutes)'}),
+  });
+});
+
+test('Schedule fails when rate above 60 minutes', () => {
+  expect(() => new synthetics.Canary(stack, 'Canary', {schedule: synthetics.Schedule.rate(Duration.minutes(61))})).toThrowError('Schedule duration must be either 0 (for a single run) or between 1 and 60 minutes');
 });
 
 test('Canary can set timeToLive', () => {
@@ -145,73 +172,6 @@ test('Canary can set timeToLive', () => {
     RuntimeVersion: 'syn-1.0',
     Schedule: objectLike({ DurationInSeconds: '1800'}),
   });
-});
-
-test('Timeout is set to 900 when frequency > 900', () => {
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'mycanary',
-    frequency: Duration.seconds(60),
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
-    RunConfig: objectLike({ TimeoutInSeconds: 60}),
-    Schedule: objectLike({ Expression: 'rate(1 minute)'}),
-  });
-});
-
-test('Timeout is set to frequency', () => {
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'mycanary',
-    frequency: Duration.minutes(5),
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
-    RunConfig: objectLike({ TimeoutInSeconds: 300}),
-    Schedule: objectLike({ Expression: 'rate(5 minutes)'}),
-  });
-});
-
-test('Canary can set memorySize', () => {
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'mycanary',
-    memorySize: Size.mebibytes(3008),
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
-    RunConfig: objectLike({ MemoryInMB: 3008}),
-  });
-});
-
-test('memorySize must be below 3008 MiB', () => {
-  expect(() => new synthetics.Canary(stack, 'Canary', {memorySize: Size.mebibytes(3009)})).toThrowError('memory size must be greater than 960 mebibytes and less than 3008 mebibytes');
-});
-
-test('memorySize must be a multiple of 64 MiB', () => {
-  expect(() => new synthetics.Canary(stack, 'Canary', {memorySize: Size.mebibytes(1000)})).toThrowError('memory size must be a multiple of 64 mebibytes');
 });
 
 test('Canary can disable startCanaryAfterCreation', () => {
@@ -269,12 +229,4 @@ test('Canary can set failureRetentionPeriod', () => {
     RuntimeVersion: 'syn-1.0',
     FailureRetentionPeriod: 1,
   });
-});
-
-test('Canary returns error when name is specified incorrectly', () => {
-  expect(() => new synthetics.Canary(stack, 'Canary', {canaryName: 'myCanary'})).toThrowError('Canary Name must be lowercase, numbers, hyphens, or underscores (no spaces)');
-});
-
-test('Canary name must be less than 21 characters', () => {
-  expect(() => new synthetics.Canary(stack, 'Canary', {canaryName: 'canary-name-super-long'})).toThrowError('Canary Name must be less than 21 characters');
 });

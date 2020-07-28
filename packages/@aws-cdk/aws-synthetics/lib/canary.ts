@@ -2,6 +2,7 @@ import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Schedule } from './schedule';
 import { CfnCanary } from './synthetics.generated';
 
 /**
@@ -33,14 +34,7 @@ export interface CanaryProps {
   readonly role?: iam.IRole;
 
   /**
-   * The amount of memory that is allocated to your Canary. Must be a multiple of 64 MiB and inside the range 960 MiB to 3008 MiB.
-   *
-   * @default - 960 MiB
-   */
-  readonly memorySize?: cdk.Size;
-
-  /**
-   * How long the canary will be in a 'RUNNING' state. For example, if you set `timeToLive` to be 1 hour and `frequency` to be 10 minutes,
+   * How long the canary will be in a 'RUNNING' state. For example, if you set `timeToLive` to be 1 hour and `schedule` to be 'rate(10 minutes)',
    * your canary will run at 10 minute intervals for an hour, for a total of 6 times.
    *
    * @default - no limit
@@ -48,11 +42,11 @@ export interface CanaryProps {
   readonly timeToLive?: cdk.Duration;
 
   /**
-   * How often the canary runs. For example, if you set `frequency` to 10 minutes, then the canary will run every 10 minutes.
+   * How often the canary runs. For example, if you set `schedule` to 'rate(10 minutes)', then the canary will run every 10 minutes.
    *
-   * @default Duration.minutes(5)
+   * @default 'rate(5 minutes)'
    */
-  readonly frequency?: cdk.Duration;
+  readonly schedule?: Schedule;
 
   /**
    * Whether or not the canary should start after creation. If set to false, then the canary will not start.
@@ -62,14 +56,14 @@ export interface CanaryProps {
   readonly startAfterCreation?: boolean;
 
   /**
-   * How many days should successful runs be retained
+   * How many days should successful runs be retained.
    *
    * @default Duration.days(31)
    */
   readonly successRetentionPeriod?: cdk.Duration;
 
   /**
-   * How many days should failed runs be retained
+   * How many days should failed runs be retained.
    *
    * @default Duration.days(31)
    */
@@ -137,15 +131,6 @@ export class Canary extends cdk.Resource {
       this.validateName(props.canaryName);
     }
 
-    if (props.memorySize){
-      this.validateMemory(props.memorySize.toMebibytes());
-    }
-
-    if (props.frequency) {
-      this.validateFrequency(props.frequency);
-    }
-    const frequency = props.frequency ?? cdk.Duration.minutes(5);
-
     this.artifactBucket = props.artifactBucket ?? new s3.Bucket(this, 'ServiceBucket');
 
     // Created role will need these policies to run the Canary.
@@ -157,7 +142,7 @@ export class Canary extends cdk.Resource {
           actions: ['s3:ListAllMyBuckets'],
         }),
         new iam.PolicyStatement({
-          resources: ['*'],
+          resources: [`${this.artifactBucket.bucketArn}/*`],
           actions: ['s3:PutObject', 's3:GetBucketLocation'],
         }),
         new iam.PolicyStatement({
@@ -185,21 +170,16 @@ export class Canary extends cdk.Resource {
       startCanaryAfterCreation: props.startAfterCreation ?? true,
       runtimeVersion: 'syn-1.0',
       name: this.physicalName,
-      runConfig: {
-        memoryInMb: props.memorySize && props.memorySize.toMebibytes(),
-        timeoutInSeconds: Math.min(frequency.toSeconds(), 900),
-      },
       schedule: {
         durationInSeconds: props.timeToLive ? String(props.timeToLive.toSeconds()) : '0' ,
-        expression: this.createExpression(frequency),
+        expression: props.schedule ? props.schedule.expressionString : 'rate(5 minutes)',
       },
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
       // 🚧 TODO: implement
       code: {
         handler: 'index.handler',
-        script: 'var synthetics = require(\'Synthetics\');\nconst log = require(\'SyntheticsLogger\');\n\nconst pageLoadBlueprint = async function () {\n\n    // INSERT URL here\n    const URL = \"https://amazon.com\";\n\n    let page = await synthetics.getPage();\n    const response = await page.goto(URL, {waitUntil: \'domcontentloaded\', timeout: 30000});\n    //Wait for page to render.\n    //Increase or decrease wait time based on endpoint being monitored.\n    await page.waitFor(15000);\n    await synthetics.takeScreenshot(\'loaded\', \'loaded\');\n    let pageTitle = await page.title();\n    log.info(\'Page title: \' + pageTitle);\n    if (response.status() !== 200) {\n        throw \"Failed to load page!\";\n    }\n};\n\nexports.handler = async () => {\n    return await pageLoadBlueprint();\n};\n',
-        // script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
+        script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
       },
     });
 
@@ -251,29 +231,6 @@ export class Canary extends cdk.Resource {
   }
 
   /**
-   * Creates the expression that is readable by CloudFormation
-   *
-   * @param frequency - the provided frequency
-   */
-  private createExpression(frequency: cdk.Duration): string {
-    if (frequency.toMinutes() === 1) {
-      return 'rate(1 minute)';
-    }
-    return `rate(${frequency.toMinutes()} minutes)`;
-  }
-
-  /**
-   * Verifies that the given expression evaluates to 0 or is inside the range of 1-60 minutes.
-   *
-   * @param frequency - the provided frequency
-   */
-  private validateFrequency(frequency: cdk.Duration) {
-    if (frequency.toMinutes() !== 0 && (frequency.toMinutes() < 1 || frequency.toMinutes() > 60)) {
-      throw new Error('Frequency must be either 0 (for a single run), or between 1 minute and 1 hour');
-    }
-  }
-
-  /**
    * Verifies that the name fits the regex expression: ^[0-9a-z_\-]+$.
    *
    * @param name - the given name of the canary
@@ -285,20 +242,6 @@ export class Canary extends cdk.Resource {
     }
     if (name.length > 21) {
       throw new Error('Canary Name must be less than 21 characters');
-    }
-  }
-
-  /**
-   * Verifies that the memory specified is a multiple of 64 and in between 960 - 3008.
-   *
-   * @param memory the amount of memory specified, in mebibytes
-   */
-  private validateMemory(memory: number) {
-    if(memory < 960 || memory > 3008) {
-      throw new Error('memory size must be greater than 960 mebibytes and less than 3008 mebibytes');
-    }
-    if(memory % 64 !== 0) {
-      throw new Error('memory size must be a multiple of 64 mebibytes');
     }
   }
 
