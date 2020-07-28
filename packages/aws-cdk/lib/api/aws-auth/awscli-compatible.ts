@@ -58,6 +58,7 @@ export class AwsCliCompatible {
       // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
       // run on EC2 boxes but the creds represent something different. Same behavior as
       // upstream code.
+      this.isEc2 = true;
       sources.push(() => new AWS.EC2MetadataCredentials());
     }
 
@@ -76,8 +77,6 @@ export class AwsCliCompatible {
    * 2. $AWS_DEFAULT_PROFILE and $AWS_DEFAULT_REGION are also respected.
    *
    * Lambda and CodeBuild set the $AWS_REGION variable.
-   *
-   * FIXME: EC2 instances require querying the metadata service to determine the current region.
    */
   public static async region(profile: string | undefined): Promise<string> {
     profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
@@ -101,6 +100,17 @@ export class AwsCliCompatible {
       }
     }
 
+    if (!region && this.isEc2) {
+      debug('Looking up AWS region in the EC2 Instance Metadata Service (IMDS).');
+      const imdsOptions = {
+        httpOptions: { timeout: 1000, connectTimeout: 1000 }, maxRetries: 2,
+      };
+      const metadataService = new AWS.MetadataService(imdsOptions);
+      const token = await getImdsV2Token(metadataService);
+      region = await getRegionFromImds(metadataService, token);
+      debug(region ? `Retrieved AWS region "${region}" from the IMDS.` : 'Unable to retrieve the AWS region from the IMDS.');
+    }
+
     if (!region) {
       const usedProfile = !profile ? '' : ` (profile: "${profile}")`;
       region = 'us-east-1'; // This is what the AWS CLI does
@@ -109,6 +119,8 @@ export class AwsCliCompatible {
 
     return region;
   }
+
+  private static isEc2: boolean | undefined;
 }
 
 /**
@@ -156,6 +168,52 @@ async function hasEc2Credentials() {
   return instance;
 }
 
+/**
+ * Attempts to get a Instance Metadata Service V2 token
+ */
+async function getImdsV2Token(metadataService: AWS.MetadataService): Promise<string> {
+  debug('Attempting to retrieve an IMDSv2 token.');
+  return new Promise((resolve) => {
+    metadataService.request(
+      '/latest/api/token',
+      {
+        method: 'PUT',
+        headers: { 'x-aws-ec2-metadata-token-ttl-seconds': '60' },
+      },
+      (err: AWS.AWSError, token: string | undefined) => {
+        if (err || !token) {
+          resolve(token);
+          return;
+        }
+        resolve(token);
+      });
+  });
+}
+
+/**
+ * Attempts to get the region from the Instance Metadata Service
+ */
+async function getRegionFromImds(metadataService: AWS.MetadataService, token: string | undefined): Promise<string> {
+  debug('Retrieving the AWS region from the IMDS.');
+  let options: { method?: string | undefined; headers?: { [key: string]: string; } | undefined; } = {};
+  if (token) {
+    options = { headers: { 'x-aws-ec2-metadata-token': token } };
+  }
+  return new Promise((resolve) => {
+    metadataService.request(
+      '/latest/dynamic/instance-identity/document',
+      options,
+      (err: AWS.AWSError, instanceIdentityDocument: string | undefined) => {
+        if (err || !instanceIdentityDocument) {
+          resolve(instanceIdentityDocument);
+          return;
+        }
+        const region = JSON.parse(instanceIdentityDocument).region;
+        resolve(region);
+      });
+  });
+}
+
 function homeDir() {
   return process.env.HOME || process.env.USERPROFILE
     || (process.env.HOMEPATH ? ((process.env.HOMEDRIVE || 'C:/') + process.env.HOMEPATH) : null) || os.homedir();
@@ -172,7 +230,7 @@ function configFileName() {
 /**
  * Force the JS SDK to honor the ~/.aws/config file (and various settings therein)
  *
- * For example, ther is just *NO* way to do AssumeRole credentials as long as AWS_SDK_LOAD_CONFIG is not set,
+ * For example, there is just *NO* way to do AssumeRole credentials as long as AWS_SDK_LOAD_CONFIG is not set,
  * or read credentials from that file.
  *
  * The SDK crashes if the variable is set but the file does not exist, so conditionally set it.
