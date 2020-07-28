@@ -188,6 +188,7 @@ export class BucketDeployment extends cdk.Construct {
     if (!handlerRole) { throw new Error('lambda.SingletonFunction should have created a Role'); }
 
     const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this, { handlerRole }));
+    sources.forEach(source => source.bucket.grantRead(handler));
 
     props.destinationBucket.grantReadWrite(handler);
     if (props.distribution) {
