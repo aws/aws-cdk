@@ -342,7 +342,7 @@ test('system metadata is correctly transformed', () => {
 test('expires type has correct values', () => {
   expect(cdk.Expiration.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).value).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
   expect(cdk.Expiration.atTimestamp(1580000000000).value).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
-  expect(Math.abs(new Date(cdk.Expires.after(cdk.Duration.minutes(10)).value).getTime() - (Date.now() + 600000)) < 15000).toBeTruthy();
+  expect(Math.abs(new Date(cdk.Expiration.after(cdk.Duration.minutes(10)).value).getTime() - (Date.now() + 600000)) < 15000).toBeTruthy();
   expect(cdk.Expiration.fromString('Tue, 04 Feb 2020 08:45:33 GMT').value).toEqual('Tue, 04 Feb 2020 08:45:33 GMT');
 
 });
