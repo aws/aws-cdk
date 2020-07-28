@@ -250,7 +250,8 @@ export interface GraphQLApiProps {
    * GraphQL schema definition. Specify how you want to define your schema.
    *
    * SchemaDefinition.CODE allows schema definition through CDK
-   * SchemaDefinition.FILE allows schema definition through outside file
+   * SchemaDefinition.FILE allows schema definition through schema.graphql file
+   * SchemaDefinition.S3 allows schema definition through s3 location
    *
    * @experimental
    */
