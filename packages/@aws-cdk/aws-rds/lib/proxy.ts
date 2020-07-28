@@ -427,16 +427,13 @@ export class DatabaseProxy extends cdk.Resource
       throw new Error('Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers');
     }
 
-    const proxyTargetGroup = new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
+    new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
+      targetGroupName: 'default',
       dbProxyName: this.dbProxyName,
       dbInstanceIdentifiers,
       dbClusterIdentifiers,
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
-
-    // Currently(2020-07-04), this property must be set to default.
-    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbproxytargetgroup.html#TargetGroupName-fn::getatt
-    proxyTargetGroup.addOverride('Properties.TargetGroupName', 'default');
   }
 
   /**

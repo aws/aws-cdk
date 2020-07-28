@@ -23,11 +23,18 @@ test('use user pool domain as record target', () => {
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
-      DNSName: { 'Fn::GetAtt': [
-        'UserPoolDomainCloudFrontDomainName0B254952',
-        'DomainDescription.CloudFrontDistribution',
-      ] },
-      HostedZoneId: 'Z2FDTNDATAQYW2',
+      DNSName: {
+        'Fn::GetAtt': ['UserPoolDomainCloudFrontDomainName0B254952', 'DomainDescription.CloudFrontDistribution'],
+      },
+      HostedZoneId: {
+        'Fn::FindInMap': [
+          'AWSCloudFrontPartitionHostedZoneIdMap',
+          {
+            Ref: 'AWS::Partition',
+          },
+          'zoneId',
+        ],
+      },
     },
   });
 });

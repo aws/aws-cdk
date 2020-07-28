@@ -66,4 +66,13 @@ export = testCase({
 
     test.done();
   },
+  'bundlingDockerImage points to AWS SAM build image'(test: Test) {
+    // GIVEN
+    const runtime = new lambda.Runtime('my-runtime-name');
+
+    // THEN
+    test.equal(runtime.bundlingDockerImage.image, 'amazon/aws-sam-cli-build-image-my-runtime-name');
+
+    test.done();
+  },
 });

@@ -444,10 +444,20 @@ describe('CDK Include', () => {
     });
   });
 
-  test("throws an exception when encountering a Resource type it doesn't recognize", () => {
+  test('can include a template with a custom resource that uses attributes', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'custom-resource-with-attributes.json');
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('custom-resource-with-attributes.json'),
+    );
+
+    const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');
+    expect(cfnTemplate.getResource('CustomBucket').cfnOptions.condition).toBe(alwaysFalseCondition);
+  });
+
+  test("throws an exception when a custom resource uses a Condition attribute that doesn't exist in the template", () => {
     expect(() => {
-      includeTestTemplate(stack, 'non-existent-resource-type.json');
-    }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
+      includeTestTemplate(stack, 'custom-resource-with-bad-condition.json');
+    }).toThrow(/Resource 'CustomResource' uses Condition 'AlwaysFalseCond' that doesn't exist/);
   });
 
   test('can ingest a template that contains outputs and modify them', () => {

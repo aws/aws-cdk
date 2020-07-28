@@ -1,7 +1,6 @@
 import '@aws-cdk/assert/jest';
-import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack } from '@aws-cdk/core';
-import { AllowedMethods, Origin } from '../../lib';
+import { AllowedMethods, HttpOrigin } from '../../lib';
 import { CacheBehavior } from '../../lib/private/cache-behavior';
 
 let app: App;
@@ -15,12 +14,12 @@ beforeEach(() => {
 });
 
 test('renders the minimum template with an origin and path specified', () => {
-  const origin = Origin.fromBucket(new s3.Bucket(stack, 'MyBucket'));
+  const origin = new HttpOrigin('www.example.com');
   const behavior = new CacheBehavior({
     origin,
     pathPattern: '*',
   });
-  origin._bind(stack, { originIndex: 0 });
+  origin.bind(stack, { originIndex: 0 });
 
   expect(behavior._renderBehavior()).toEqual({
     targetOriginId: behavior.origin.id,
@@ -31,7 +30,7 @@ test('renders the minimum template with an origin and path specified', () => {
 });
 
 test('renders with all properties specified', () => {
-  const origin = Origin.fromBucket(new s3.Bucket(stack, 'MyBucket'));
+  const origin = new HttpOrigin('www.example.com');
   const behavior = new CacheBehavior({
     origin,
     pathPattern: '*',
@@ -39,7 +38,7 @@ test('renders with all properties specified', () => {
     forwardQueryString: true,
     forwardQueryStringCacheKeys: ['user_id', 'auth'],
   });
-  origin._bind(stack, { originIndex: 0 });
+  origin.bind(stack, { originIndex: 0 });
 
   expect(behavior._renderBehavior()).toEqual({
     targetOriginId: behavior.origin.id,
