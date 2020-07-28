@@ -1,11 +1,11 @@
 {
   "Resources": {
-    "mycanary444ServiceBucket356CB4CC": {
+    "mycanary777ServiceBucketE226A972": {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "mycanary444ServiceRole9A3878F1": {
+    "mycanary777ServiceRole432A24EB": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -36,9 +36,17 @@
                   ],
                   "Effect": "Allow",
                   "Resource": {
-                    "Fn::GetAtt": [
-                      "mycanary444ServiceBucket356CB4CC",
-                      "Arn"
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "mycanary777ServiceBucketE226A972",
+                            "Arn"
+                          ]
+                        },
+                        "/*"
+                      ]
                     ]
                   }
                 },
@@ -69,7 +77,7 @@
         ]
       }
     },
-    "mycanary444D0A1A784": {
+    "mycanary7770EF092ED": {
       "Type": "AWS::Synthetics::Canary",
       "Properties": {
         "ArtifactS3Location": {
@@ -78,7 +86,7 @@
             [
               "s3://",
               {
-                "Ref": "mycanary444ServiceBucket356CB4CC"
+                "Ref": "mycanary777ServiceBucketE226A972"
               }
             ]
           ]
@@ -89,20 +97,17 @@
         },
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
-            "mycanary444ServiceRole9A3878F1",
+            "mycanary777ServiceRole432A24EB",
             "Arn"
           ]
         },
-        "Name": "awscanarymycanary444",
+        "Name": "awscanarymycanary777",
         "RuntimeVersion": "syn-1.0",
         "Schedule": {
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
         },
-        "StartCanaryAfterCreation": true,
-        "RunConfig": {
-          "TimeoutInSeconds": 300
-        }
+        "StartCanaryAfterCreation": true
       }
     }
   }
