@@ -451,11 +451,7 @@ export class GraphQLApi extends Construct {
    * @param description The description of the data source
    * @param table The DynamoDB table backing this data source [disable-awslint:ref-via-interface]
    */
-  public addDynamoDbDataSource(
-    name: string,
-    description: string,
-    table: ITable,
-  ): DynamoDbDataSource {
+  public addDynamoDbDataSource(name: string, description: string, table: ITable): DynamoDbDataSource {
     return new DynamoDbDataSource(this, `${name}DS`, {
       api: this,
       description,
@@ -485,11 +481,7 @@ export class GraphQLApi extends Construct {
    * @param description The description of the data source
    * @param lambdaFunction The Lambda function to call to interact with this data source
    */
-  public addLambdaDataSource(
-    name: string,
-    description: string,
-    lambdaFunction: IFunction,
-  ): LambdaDataSource {
+  public addLambdaDataSource(name: string, description: string, lambdaFunction: IFunction): LambdaDataSource {
     return new LambdaDataSource(this, `${name}DS`, {
       api: this,
       description,
@@ -682,14 +674,16 @@ export class GraphQLApi extends Construct {
   }
 
   /**
-   * Add an object type
-   * @param name name of object type
+   * Sets schema defintiion to input if schema mode is configured with SchemaDefinition.CODE
+   *
+   * @param definition string that is the graphql representation of schema
+   * @experimental temporary
    */
-  public addDefinition (name: string): void{
+  public updateDefinition (definition: string): void{
     if ( this.schemaMode != SchemaDefinition.CODE ) {
-      throw new Error('API cannot add type because schema definition mode configured to CODE');
+      throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
     }
-    this.schema.definition = name;
+    this.schema.definition = definition;
   }
 
   /**
@@ -707,7 +701,7 @@ export class GraphQLApi extends Construct {
     } else if ( this.schemaMode == SchemaDefinition.CODE && !file ) {
       definition = '';
     } else if ( this.schemaMode == SchemaDefinition.CODE && file) {
-      throw new Error('You cant use the mode CODE and define and file. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
+      throw new Error('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
     } else if ( this.schemaMode == SchemaDefinition.S3 && !file) {
       throw new Error('schemaDefinitionFile must be configured if using S3 definition mode.');
     } else if ( this.schemaMode == SchemaDefinition.S3 && file ) {

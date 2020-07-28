@@ -47,6 +47,7 @@ import * as db from '@aws-cdk/aws-dynamodb';
 
 const api = new appsync.GraphQLApi(stack, 'Api', {
   name: 'demo',
+  schemaDefinition: appsync.SchemaDefinition.FILE,
   schemaDefinitionFile: join(__dirname, 'schema.graphql'),
   authorizationConfig: {
     defaultAuthorization: {
@@ -159,3 +160,24 @@ api.grantMutation(role, 'updateExample');
 // For custom types and granular design
 api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```
+
+### s3-assets
+
+`aws-appsync` supports using s3 location for schema definition.
+
+```ts
+import * as appsync from '@aws-cdk/aws-appsync';
+import * as assets from '@aws-cdk/aws-s3-assets';
+
+const asset = new assets.Asset(stack, 'asset', {
+  path: path.join(__dirname, 'appsync.test.graphql'),
+});
+
+const api = new appsync.GraphQLApi(stack, 'api' {
+  name: 'api',
+  schemaDefinition: appsync.SchemaDefinition.S3,
+  schemaDefinitionFile: asset.s3ObjectUrl,
+});
+```
+
+Use `s3-assets` when `schema.graphql` file is too large for CloudFormations.
