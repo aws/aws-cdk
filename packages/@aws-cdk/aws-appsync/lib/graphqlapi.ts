@@ -203,6 +203,21 @@ export interface LogConfig {
 }
 
 /**
+ * Enum containing the different modes of schema definition
+ */
+export enum SchemaDefinition {
+  /**
+   * Define schema through functions like addType, addQuery, etc.
+   */
+  CODE = 'CODE',
+
+  /**
+   * Define schema in a file, i.e. schema.graphql
+   */
+  FILE = 'FILE',
+}
+
+/**
  * Properties for an AppSync GraphQL API
  */
 export interface GraphQLApiProps {
@@ -227,11 +242,14 @@ export interface GraphQLApiProps {
   readonly logConfig?: LogConfig;
 
   /**
-   * GraphQL schema definition. You have to specify a definition or a file containing one.
+   * GraphQL schema definition. Specify how you want to define your schema.
    *
-   * @default - Use schemaDefinitionFile
+   * SchemaDefinition.CODE allows schema definition through CDK
+   * SchemaDefinition.FILE allows schema definition through outside file
+   *
+   * @experimental
    */
-  readonly schemaDefinition?: string;
+  readonly schemaDefinition: SchemaDefinition;
   /**
    * File containing the GraphQL schema definition. You have to specify a definition or a file containing one.
    *
@@ -404,18 +422,7 @@ export class GraphQLApi extends Construct {
       this._apiKey = this.createAPIKey(apiKeyConfig);
     }
 
-    let definition;
-    if (props.schemaDefinition) {
-      definition = props.schemaDefinition;
-    } else if (props.schemaDefinitionFile) {
-      definition = readFileSync(props.schemaDefinitionFile).toString('UTF-8');
-    } else {
-      throw new Error('Missing Schema definition. Provide schemaDefinition or schemaDefinitionFile');
-    }
-    this.schema = new CfnGraphQLSchema(this, 'Schema', {
-      apiId: this.apiId,
-      definition,
-    });
+    this.schema = this.defineSchema(props.schemaDefinition, props.schemaDefinitionFile);
   }
 
   /**
@@ -665,5 +672,23 @@ export class GraphQLApi extends Construct {
   private formatAdditionalAuthenticationProviders(props: GraphQLApiProps): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] | undefined {
     const authModes = props.authorizationConfig?.additionalAuthorizationModes;
     return authModes ? this.formatAdditionalAuthorizationModes(authModes) : undefined;
+  }
+
+  private defineSchema(mode: SchemaDefinition, file?: string): CfnGraphQLSchema {
+    if (mode == SchemaDefinition.CODE && file) {
+      throw new Error('You cant use the mode CODE and define and file. Change mode to FILE or unconfigure schemaDefinitionFile');
+    } else if (mode == SchemaDefinition.FILE && !file) {
+      throw new Error('Missing Schema definition. Provide schemaDefinition or schemaDefinitionFile');
+    }
+    let definition;
+    if (file) {
+      definition = readFileSync(file).toString('UTF-8');
+    } else {
+      definition = '';
+    }
+    return new CfnGraphQLSchema(this, 'Schema', {
+      apiId: this.apiId,
+      definition,
+    });
   }
 }
