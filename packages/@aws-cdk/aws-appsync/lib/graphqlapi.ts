@@ -621,7 +621,7 @@ export class GraphQLApi extends Construct {
   }
 
   private createAPIKey(config: ApiKeyConfig): string {
-    if (config.expires?.lessThan(Duration.days(1)) || config.expires?.greaterThan(Duration.days(365))) {
+    if (config.expires?.isBefore(Duration.days(1)) || config.expires?.isAfter(Duration.days(365))) {
       throw Error('API key expiration must be between 1 and 365 days.');
     }
     const expires = config.expires ? config.expires.asEpoch() : undefined;

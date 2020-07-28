@@ -52,18 +52,18 @@ export class Expiration {
     return Math.floor( this.date.getTime() / 86400000) * 86400;
   }
   /**
-   * Check if Exipiration is less than input
+   * Check if Exipiration expires before input
    * @param t the duration to check against
    */
-  public lessThan( t: Duration ): boolean {
+  public isBefore( t: Duration ): boolean {
     return this.date < new Date(Date.now() + t.toMilliseconds());
   }
 
   /**
-   * Check if Exipiration is greater than input
+   * Check if Exipiration expires after input
    * @param t the duration to check against
    */
-  public greaterThan( t: Duration ): boolean {
+  public isAfter( t: Duration ): boolean {
     return this.date > new Date(Date.now() + t.toMilliseconds());
   }
 }

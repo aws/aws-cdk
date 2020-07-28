@@ -26,4 +26,24 @@ export = nodeunit.testCase({
     test.done();
   },
 
+  'asEpoch returns correct value'(test: nodeunit.Test) {
+    const date = new Date('Sun, 26 Jan 2020 00:53:20 GMT');
+    test.equal(Expiration.atDate(date).asEpoch(), 1579996800);
+    test.done();
+  },
+
+  'isBefore'(test: nodeunit.Test) {
+    const expire = Expiration.after(Duration.days(2));
+    test.ok(!expire.isBefore(Duration.days(1)));
+    test.ok(expire.isBefore(Duration.days(3)));
+    test.done();
+  },
+
+  'isAfter'(test: nodeunit.Test) {
+    const expire = Expiration.after(Duration.days(2));
+    test.ok(expire.isAfter(Duration.days(1)));
+    test.ok(!expire.isAfter(Duration.days(3)));
+    test.done();
+  },
+
 });
