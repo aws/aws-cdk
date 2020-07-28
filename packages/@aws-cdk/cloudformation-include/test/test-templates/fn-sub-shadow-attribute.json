@@ -3,8 +3,14 @@
     "Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": { "Fn::Sub": [ "${Region}-foo-${!Immediate}-foo-${AnotherBucket}-${AnotherBucket.DomainName}-${Name}", 
-          { "Name": { "Ref" : "AnotherBucket" }, "Region": { "Fn::Base64": "AWS::Region" }} ]}
+        "BucketName": {
+          "Fn::Sub": [
+            "${AnotherBucket.DomainName}",
+            {
+               "AnotherBucket": "whatever"
+            }
+          ]
+        }
       }
     },
     "AnotherBucket": {

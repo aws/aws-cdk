@@ -103,13 +103,13 @@ describe('CDK Include', () => {
 
   test("throws a validation exception when Fn::Sub in string form uses a key that isn't in the template", () => {
     expect(() => {
-      includeTestTemplate(stack, 'fn-sub-invalid-key-string.json');
+      includeTestTemplate(stack, 'fn-sub-key-not-in-template-string.json');
     }).toThrow(/Element used in Ref expression with logical ID: 'AFakeResource' in Fn::Sub not found/);
   });
 
   test("throws a validation exception when Fn::Sub in map form uses a key that isn't in the template", () => {
     expect(() => {
-      includeTestTemplate(stack, 'fn-sub-invalid-key-map.json');
+      includeTestTemplate(stack, 'fn-sub-key-not-in-template.json');
     }).toThrow(/Element used in Ref expression with logical ID: 'AFakeResource' not found/);
   });
 
@@ -117,6 +117,12 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'fn-sub-key-not-in-map.json');
     }).toThrow(/Element used in Ref expression with logical ID: 'AFakeResource' in Fn::Sub not found/);
+  });
+
+  test("throws a validation exception when Fn::Sub uses a resource attribute that doesn't exist", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'fn-sub-bad-get-att.json');
+    }).toThrow(/Resource referenced in Fn::Sub expression with logical ID: 'FakeBucket' not found/);
   });
 });
 

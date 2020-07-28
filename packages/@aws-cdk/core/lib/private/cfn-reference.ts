@@ -34,30 +34,23 @@ export class CfnReference extends Reference {
    *
    *     Lazy.stringValue({ produce: () => new CfnReference(...) })
    *
-   * If sub is defined, this reference will resolve as ${logicalID}
-   * This allows cloudformation-include to correctly handle Fn::Sub
+   * If fnSub is true, then this reference will resolve as ${logicalID}.
+   * This allows cloudformation-include to correctly handle Fn::Sub.
    */
-  public static for(target: CfnElement, attribute: string, sub?: string) {
-    return CfnReference.singletonReference(target, attribute, () => {
-      let cfnIntrinsic;
-      if (attribute === 'Ref') {
-        cfnIntrinsic = { Ref: target.logicalId };
-      } else if (sub === 'Ref') {
-        cfnIntrinsic = `\$\{${target.logicalId}\}`;
-      } else if (sub === 'GetAtt') {
-        cfnIntrinsic = `\$\{${target.logicalId}.${attribute}\}`;
-      } else {
-        cfnIntrinsic = { 'Fn::GetAtt': [ target.logicalId, attribute ]};
-      }
+  public static for(target: CfnElement, attribute: string, fnSub: boolean = false) {
+    return CfnReference.singletonReference(target, attribute, fnSub, () => {
+      const cfnIntrinsic = fnSub
+        ? (attribute === 'Ref' ? '${' + target.logicalId + '}' : '${' + target.logicalId + '.' + attribute + '}')
+        : (attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [ target.logicalId, attribute ] });
       return new CfnReference(cfnIntrinsic, attribute, target);
-    }, sub);
+    });
   }
 
   /**
    * Return a CfnReference that references a pseudo referencd
    */
   public static forPseudo(pseudoName: string, scope: Construct) {
-    return CfnReference.singletonReference(scope, `Pseudo:${pseudoName}`, () => {
+    return CfnReference.singletonReference(scope, `Pseudo:${pseudoName}`, false, () => {
       const cfnIntrinsic = { Ref: pseudoName };
       return new CfnReference(cfnIntrinsic, pseudoName, scope);
     });
@@ -69,19 +62,20 @@ export class CfnReference extends Reference {
   private static referenceTable = new Map<Construct, Map<string, CfnReference>>();
 
   /**
-   * Get or create the table
-   * Defining sub allows cloudformation-include to correctly handle Fn::Sub
+   * Get or create the table.
+   * Defining sub allows cloudformation-include to correctly handle Fn::Sub.
    */
-  private static singletonReference(target: Construct, attribKey: string, fresh: () => CfnReference, sub?: string) {
+  private static singletonReference(target: Construct, attribKey: string, fnSub: boolean, fresh: () => CfnReference) {
     let attribs = CfnReference.referenceTable.get(target);
     if (!attribs) {
       attribs = new Map();
       CfnReference.referenceTable.set(target, attribs);
     }
-    let ref = attribs.get(attribKey);
-    if (!ref || sub) {
+    const cacheKey = attribKey + (fnSub ? 'Fn::Sub' : '');
+    let ref = attribs.get(cacheKey);
+    if (!ref) {
       ref = fresh();
-      attribs.set(attribKey, ref);
+      attribs.set(cacheKey, ref);
     }
     return ref;
   }

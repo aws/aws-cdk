@@ -3,7 +3,14 @@
     "Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": { "Fn::Sub": [ "${AnotherBucket}", { "AnotherBucket": { "Ref" : "AnotherBucket" }} ]}
+        "BucketName": { 
+          "Fn::Sub": [ 
+            "${AnotherBucket}", 
+            { 
+              "AnotherBucket": { "Ref" : "AnotherBucket" }
+            } 
+          ]
+        }
       }
     },
     "AnotherBucket": {

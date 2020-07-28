@@ -192,7 +192,7 @@ describe('CDK Include', () => {
     );
   });
 
-  test('can ingest a template with Fn::Sub in string form and output it unchanged', () => {
+  test('can ingest a template with Fn::Sub in string form with escaped and unescaped references and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-valid-string.json');
 
     expect(stack).toMatchTemplate(
@@ -200,20 +200,53 @@ describe('CDK Include', () => {
     );
   });
 
-  test('can ingest a template with Fn::Sub in map form and output it unchanged', () => {
-    includeTestTemplate(stack, 'fn-sub-valid-map.json');
+  test('can ingest a template with Fn::Sub in string form with escaped references and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-valid-escaping.json');
 
     expect(stack).toMatchTemplate(
-      loadTestFileToJsObject('fn-sub-valid-map.json'),
+      loadTestFileToJsObject('fn-sub-valid-escaping.json'),
     );
   });
 
-  test('can ingest a template with Fn::Sub with a key that is a logicalID and a literal and output it unchanged', () => {
+  test('can ingest a template with Fn::Sub in map form and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-map-dotted-attributes.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-map-dotted-attributes.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub with a key that is a logicalID and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-shadow.json');
 
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('fn-sub-shadow.json'),
     );
+  });
+
+  test('can ingest a template with Fn::Sub with a key that is a logicalID with an attribue and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow-attribute.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-shadow-attribute.json'),
+    );
+  });
+
+  test('can modify resources used in Fn::Sub references and see the changes in the template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'fn-sub-shadow.json');
+
+    cfnTemplate.getResource('AnotherBucket').overrideLogicalId('NewBucket');
+
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "BucketName": {
+        "Fn::Sub": [
+          "${AnotherBucket}",
+          {
+            "AnotherBucket": { "Ref": "NewBucket" },
+          },
+        ],
+      },
+    });
   });
 
   test('can ingest a template with a Ref expression for an array value, and output it unchanged', () => {
@@ -274,7 +307,6 @@ describe('CDK Include', () => {
       loadTestFileToJsObject('resource-attribute-condition.json'),
     );
   });
-  //TODO: need Element used in Ref expression with logical ID: 'A WS::Region' in Fn::Sub not found
 
   test('correctly change references to Conditions when renaming them', () => {
     const cfnTemplate = includeTestTemplate(stack, 'condition-same-name-as-resource.json');

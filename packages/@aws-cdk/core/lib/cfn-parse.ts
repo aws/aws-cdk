@@ -111,7 +111,7 @@ export class FromCloudFormation {
 
   public static getCfnTag(tag: any): CfnTag {
     return tag == null
-      ? {} as any // break the type system - this should be detected at runtime by a tag validator
+      ? { } as any // break the type system - this should be detected at runtime by a tag validator
       : {
         key: tag.Key,
         value: tag.Value,
@@ -421,19 +421,17 @@ export class CfnParser {
       }
       case 'Fn::Sub': {
         const value = this.parseValue(object[key]);
-        let valString: string;
-        let map: any | undefined;
+        let fnSubString: string;
+        let map: { [key: string]: any } | undefined;
         if (typeof value === 'string') {
-          valString = value;
+          fnSubString = value;
           map = undefined;
         } else {
-          valString = value[0];
+          fnSubString = value[0];
           map = value[1];
         }
 
-        const leftBrace = valString.indexOf('${');
-        const leftHalf = valString.substring(0, leftBrace);
-        return Fn.sub(leftHalf + this.parseFnSubString(valString.substring(leftBrace), map), map);
+        return Fn.sub(this.parseFnSubString(fnSubString, map), map);
       }
       case 'Condition': {
         // a reference to a Condition from another Condition
@@ -457,13 +455,13 @@ export class CfnParser {
 
     const key = objectKeys[0];
     return key === 'Ref' || key.startsWith('Fn::') ||
-      // special intrinsic only available in the 'Conditions' section
-      (this.options.context === CfnParsingContext.CONDITIONS && key === 'Condition')
+        // special intrinsic only available in the 'Conditions' section
+        (this.options.context === CfnParsingContext.CONDITIONS && key === 'Condition')
       ? key
       : undefined;
   }
 
-  private parseFnSubString(value: string, map: any): string {
+  private parseFnSubString(value: string, map: { [key: string]: any } | undefined): string {
     const leftBrace = value.indexOf('${');
     const rightBrace = value.indexOf('}') + 1;
     const leftHalf = value.substring(0, leftBrace);
@@ -477,12 +475,8 @@ export class CfnParser {
     }
 
     // lookup in map
-    let refElement;
-    if (map) {
-      refElement = map[refTarget];
-      if (refElement) {
-        return leftHalf + '${' + refTarget + '}' + this.parseFnSubString(rightHalf, map);
-      }
+    if (refTarget in (map || {})) {
+      return leftHalf + '${' + refTarget + '}' + this.parseFnSubString(rightHalf, map);
     }
 
     // since it's not in the map, check if it's a pseudo parameter
@@ -491,20 +485,21 @@ export class CfnParser {
       return leftHalf + specialRef + this.parseFnSubString(rightHalf, map);
     }
 
-    // handle Ref
-    refElement = this.options.finder.findRefTarget(refTarget);
-    if (refElement) {
-      return leftHalf + CfnReference.for(refElement, 'Sub', 'Ref') + this.parseFnSubString(rightHalf, map);
+    const isRef = refTarget.indexOf('.') === -1;
+    if (isRef) {
+      const refElement = this.options.finder.findRefTarget(refTarget);
+      if (!refElement) {
+        throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
+      }
+      return leftHalf + CfnReference.for(refElement, 'Ref', true).toString() + this.parseFnSubString(rightHalf, map);
+    } else {
+      const targetId = refTarget.substring(0, refTarget.indexOf('.'));
+      const refResource = this.options.finder.findResource(targetId);
+      if (!refResource) {
+        throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' not found`);
+      }
+      return leftHalf + CfnReference.for(refResource, refTarget.substring(refTarget.indexOf('.') + 1), true).toString() + this.parseFnSubString(rightHalf, map);
     }
-
-    // handle GetAtt
-    refElement = this.options.finder.findResource(refTarget.substring(0, refTarget.indexOf('.')));
-    if (refElement) {
-      return leftHalf + refElement.getAtt(refTarget.substring(refTarget.indexOf('.') + 1), 'GetAtt') + this.parseFnSubString(rightHalf, map);
-    }
-
-    if (refTarget === '2') { console.log(leftBrace)};
-    throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
   }
 }
 
@@ -524,17 +519,21 @@ function specialCaseRefs(value: any): any {
 
 function specialCaseSubRefs(value: any): any {
   switch (value) {
-    case 'AWS::AccountId': return Token.asString(`\$\{${value}\}`, { displayHint: value });
-    case 'AWS::Region': return Token.asString(`\$\{${value}\}`, { displayHint: value });
-    case 'AWS::Partition': return Token.asString(`\$\{${value}\}`, { displayHint: value });
-    case 'AWS::URLSuffix': return Token.asString(`\$\{${value}\}`, { displayHint: value });
-    case 'AWS::NotificationARNs': return Token.asList(`\$\{${value}\}`, { displayHint: value });
-    case 'AWS::StackId': return Token.asString(`\$\{${value}\}`, { displayHint: value });
-    case 'AWS::StackName': return Token.asString(`\$\{${value}\}`, { displayHint: value });
-    case 'AWS::NoValue': return Token.asString(`\$\{${value}\}`, { displayHint: value });
-    case 'AWS::NoValue': return Aws.NO_VALUE;
+    case 'AWS::AccountId': return pseudoString(value);
+    case 'AWS::Region': return pseudoString(value);
+    case 'AWS::Partition': return pseudoString(value);
+    case 'AWS::URLSuffix': return pseudoString(value);
+    case 'AWS::NotificationARNs': return pseudoString(value);
+    case 'AWS::StackId': return pseudoString(value);
+    case 'AWS::StackName': return pseudoString(value);
+    case 'AWS::NoValue': return pseudoString(value);
+    case 'AWS::NoValue': return pseudoString(value);
     default: return undefined;
   }
+}
+
+function pseudoString(value: any): any {
+  return Token.asString('${' + value + '}', {displayHint: value });
 }
 
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {

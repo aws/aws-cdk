@@ -133,10 +133,9 @@ export class CfnResource extends CfnRefElement {
    * Ideally, use generated attribute accessors (e.g. `resource.arn`), but this can be used for future compatibility
    * in case there is no generated attribute.
    * @param attributeName The name of the attribute.
-   * @param sub optional, indicates if this is in a Fn::Sub call from cloudformation-include
    */
-  public getAtt(attributeName: string, sub?: string): Reference {
-    return CfnReference.for(this, attributeName, sub);
+  public getAtt(attributeName: string ): Reference {
+    return CfnReference.for(this, attributeName);
   }
 
   /**
