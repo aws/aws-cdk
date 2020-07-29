@@ -419,6 +419,20 @@ export class CfnParser {
         const value = this.parseValue(object[key]);
         return Fn.conditionOr(...value);
       }
+      case 'Fn::Sub': {
+        const value = this.parseValue(object[key]);
+        let fnSubString: string;
+        let map: { [key: string]: any } | undefined;
+        if (typeof value === 'string') {
+          fnSubString = value;
+          map = undefined;
+        } else {
+          fnSubString = value[0];
+          map = value[1];
+        }
+
+        return Fn.sub(this.parseFnSubString(fnSubString, map), map);
+      }
       case 'Condition': {
         // a reference to a Condition from another Condition
         const condition = this.options.finder.findCondition(object[key]);
@@ -446,6 +460,51 @@ export class CfnParser {
       ? key
       : undefined;
   }
+
+  private parseFnSubString(value: string, map: { [key: string]: any } = {}): string {
+    const leftBrace = value.indexOf('${');
+    const rightBrace = value.indexOf('}') + 1;
+    // don't include left and right braces when searching for the target of the reference
+    if (leftBrace === -1 || leftBrace >= rightBrace) {
+      return value;
+    }
+
+    const leftHalf = value.substring(0, leftBrace);
+    const rightHalf = value.substring(rightBrace);
+    const refTarget = value.substring(leftBrace + 2, rightBrace - 1).trim();
+    if (refTarget[0] === '!') {
+      return value.substring(0, rightBrace) + this.parseFnSubString(rightHalf, map);
+    }
+
+    // lookup in map
+    if (refTarget in map) {
+      return leftHalf + '${' + refTarget + '}' + this.parseFnSubString(rightHalf, map);
+    }
+
+    // since it's not in the map, check if it's a pseudo parameter
+    const specialRef = specialCaseSubRefs(refTarget);
+    if (specialRef) {
+      return leftHalf + specialRef + this.parseFnSubString(rightHalf, map);
+    }
+
+    const dotIndex = refTarget.indexOf('.');
+    const isRef = dotIndex === -1;
+    if (isRef) {
+      const refElement = this.options.finder.findRefTarget(refTarget);
+      if (!refElement) {
+        throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
+      }
+      return leftHalf + CfnReference.for(refElement, 'Ref', true).toString() + this.parseFnSubString(rightHalf, map);
+    } else {
+      const targetId = refTarget.substring(0, dotIndex);
+      const refResource = this.options.finder.findResource(targetId);
+      if (!refResource) {
+        throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
+      }
+      const attribute = refTarget.substring(dotIndex + 1);
+      return leftHalf + CfnReference.for(refResource, attribute, true).toString() + this.parseFnSubString(rightHalf, map);
+    }
+  }
 }
 
 function specialCaseRefs(value: any): any {
@@ -460,6 +519,10 @@ function specialCaseRefs(value: any): any {
     case 'AWS::NoValue': return Aws.NO_VALUE;
     default: return undefined;
   }
+}
+
+function specialCaseSubRefs(value: string): string | undefined {
+  return value.indexOf('::') === -1 ? undefined: '${' + value + '}';
 }
 
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
