@@ -106,6 +106,10 @@ const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
 
+Note that [Custom Resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html)
+will be of type CfnResource, and hence won't need to be casted.
+This holds for any resource that isn't in the CloudFormation schema.
+
 ## Conditions
 
 If your template uses [CloudFormation Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html),
@@ -140,6 +144,79 @@ and any changes you make to it will be reflected in the resulting template:
 
 ```typescript
 output.value = cfnBucket.attrArn;
+```
+
+## Nested Stacks
+
+This module also support templates that use [nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html).
+
+For example, if you have the following parent template:
+
+```json
+{
+  "Resources": {
+    "ChildStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json"
+      }
+    }
+  }
+}
+```
+
+where the child template pointed to by `https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json` is:
+
+```json
+{
+  "Resources": {
+    "MyBucket": {
+      "Type": "AWS::S3::Bucket"
+      }
+    }
+  }
+}
+```
+
+You can include both the parent stack and the nested stack in your CDK Application as follows:
+
+```typescript
+const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+  templateFile: 'path/to/my-parent-template.json',
+  nestedStacks: {
+    'ChildStack': {
+      templateFile: 'path/to/my-nested-template.json',
+    },
+  },
+});
+```
+
+Now you can access the ChildStack nested stack and included template with:
+
+```typescript
+const includedChildStack = parentTemplate.getNestedStack('ChildStack');
+const childStack: core.NestedStack = includedChildStack.stack;
+const childStackTemplate: cfn_inc.CfnInclude = includedChildStack.includedTemplate;
+```
+
+Now you can reference resources from `ChildStack` and modify them like any other included template:
+
+```typescript
+const bucket = childStackTemplate.getResource('MyBucket') as s3.CfnBucket;
+bucket.bucketName = 'my-new-bucket-name';
+
+const bucketReadRole = new iam.Role(childStack, 'MyRole', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+
+bucketReadRole.addToPolicy(new iam.PolicyStatement({
+  actions: [
+    's3:GetObject*',
+    's3:GetBucket*',
+    's3:List*',
+  ],
+  resources: [bucket.attrArn],
+}));
 ```
 
 ## Known limitations

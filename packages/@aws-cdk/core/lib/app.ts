@@ -49,7 +49,7 @@ export interface AppProps {
    *
    * @default - no additional context
    */
-  readonly context?: { [key: string]: string };
+  readonly context?: { [key: string]: any };
 
   /**
    * Include construct tree metadata as part of the Cloud Assembly.
