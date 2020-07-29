@@ -15,9 +15,9 @@ beforeEach(() => {
 
 test('Renders minimal example with just a domain name', () => {
   const origin = new HttpOrigin('www.example.com');
-  origin.bind(stack, { originIndex: 0 });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-  expect(origin.renderOrigin()).toEqual({
+  expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
     domainName: 'www.example.com',
     customOriginConfig: {
@@ -32,9 +32,9 @@ test('Can customize properties of the origin', () => {
     readTimeout: Duration.seconds(10),
     protocolPolicy: cloudfront.OriginProtocolPolicy.MATCH_VIEWER,
   });
-  origin.bind(stack, { originIndex: 0 });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-  expect(origin.renderOrigin()).toEqual({
+  expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
     domainName: 'www.example.com',
     originCustomHeaders: [{

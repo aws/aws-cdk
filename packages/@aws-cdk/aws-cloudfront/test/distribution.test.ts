@@ -3,7 +3,7 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { Distribution, LambdaEdgeEventType, Origin, PriceClass, S3Origin } from '../lib';
+import { Distribution, IOrigin, LambdaEdgeEventType, S3Origin, PriceClass } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -32,7 +32,7 @@ test('minimal example renders correctly', () => {
         Id: 'StackMyDistOrigin1D6D5E535',
         S3OriginConfig: {
           OriginAccessIdentity: { 'Fn::Join': [ '',
-            [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
+            [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistOrigin1S3Origin071F2793' } ],
           ]},
         },
       }],
@@ -83,7 +83,7 @@ describe('multiple behaviors', () => {
           Id: 'StackMyDistOrigin1D6D5E535',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistOrigin1S3Origin071F2793' } ],
             ]},
           },
         }],
@@ -121,7 +121,7 @@ describe('multiple behaviors', () => {
           Id: 'StackMyDistOrigin1D6D5E535',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistOrigin1S3Origin071F2793' } ],
             ]},
           },
         },
@@ -130,7 +130,7 @@ describe('multiple behaviors', () => {
           Id: 'StackMyDistOrigin20B96F3AD',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin2E88F08BB' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistOrigin2S3Origin26A1EB27' } ],
             ]},
           },
         }],
@@ -175,7 +175,7 @@ describe('multiple behaviors', () => {
           Id: 'StackMyDistOrigin1D6D5E535',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistOrigin1S3Origin071F2793' } ],
             ]},
           },
         },
@@ -184,14 +184,13 @@ describe('multiple behaviors', () => {
           Id: 'StackMyDistOrigin20B96F3AD',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin2E88F08BB' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistOrigin2S3Origin26A1EB27' } ],
             ]},
           },
         }],
       },
     });
   });
-
 });
 
 describe('certificates', () => {
@@ -291,7 +290,7 @@ describe('custom error responses', () => {
 
 describe('with Lambda@Edge functions', () => {
   let lambdaFunction: lambda.Function;
-  let origin: Origin;
+  let origin: IOrigin;
 
   beforeEach(() => {
     lambdaFunction = new lambda.Function(stack, 'Function', {
@@ -398,6 +397,6 @@ test('price class is included if provided', () => {
   });
 });
 
-function defaultS3Origin(): Origin {
+function defaultS3Origin(): IOrigin {
   return new S3Origin({ bucket: new s3.Bucket(stack, 'Bucket') });
 }

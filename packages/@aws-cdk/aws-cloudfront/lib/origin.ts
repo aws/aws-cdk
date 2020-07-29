@@ -4,6 +4,28 @@ import { CfnDistribution } from './cloudfront.generated';
 import { OriginProtocolPolicy } from './distribution';
 import { OriginAccessIdentity } from './origin_access_identity';
 
+/** The struct returned from {@link IOrigin.bind}. */
+export interface OriginBindConfig {
+  /**
+   * The CloudFormation OriginProperty configuration for this Origin.
+   *
+   * @default - nothing is returned
+   */
+  readonly originProperty?: CfnDistribution.OriginProperty;
+}
+
+/**
+ * Represents the concept of a CloudFront Origin.
+ * You provide one or more origins when creating a Distribution.
+ */
+export interface IOrigin {
+  /**
+   * The method called when a given Origin is added
+   * (for the first time) to a Distribution.
+   */
+  bind(scope: Construct, options: OriginBindOptions): OriginBindConfig;
+}
+
 /**
  * Properties to define an Origin.
  *
@@ -48,9 +70,10 @@ export interface OriginProps {
  */
 export interface OriginBindOptions {
   /**
-   * The positional index of this origin within the distribution. Used for ensuring unique IDs.
+   * The identifier of this Origin,
+   * as assigned by the Distribution this Origin has been used added to.
    */
-  readonly originIndex: number;
+  readonly originId: string;
 }
 
 /**
@@ -59,13 +82,8 @@ export interface OriginBindOptions {
  *
  * @experimental
  */
-export abstract class Origin {
-
-  /**
-   * The domain name of the origin.
-   */
-  public readonly domainName: string;
-
+export abstract class Origin implements IOrigin {
+  private readonly domainName: string;
   private readonly originPath?: string;
   private readonly connectionTimeout?: Duration;
   private readonly connectionAttempts?: number;
@@ -97,14 +115,9 @@ export abstract class Origin {
   /**
    * Binds the origin to the associated Distribution. Can be used to grant permissions, create dependent resources, etc.
    */
-  public bind(scope: Construct, options: OriginBindOptions): void {
-    this.originId = new Construct(scope, `Origin${options.originIndex}`).node.uniqueId;
-  }
+  public bind(_scope: Construct, options: OriginBindOptions): OriginBindConfig {
+    this.originId = options.originId;
 
-  /**
-   * Creates and returns the CloudFormation representation of this origin.
-   */
-  public renderOrigin(): CfnDistribution.OriginProperty {
     const s3OriginConfig = this.renderS3OriginConfig();
     const customOriginConfig = this.renderCustomOriginConfig();
 
@@ -112,7 +125,7 @@ export abstract class Origin {
       throw new Error('Subclass must override and provide either s3OriginConfig or customOriginConfig');
     }
 
-    return {
+    return { originProperty: {
       domainName: this.domainName,
       id: this.id,
       originPath: this.originPath,
@@ -121,7 +134,7 @@ export abstract class Origin {
       originCustomHeaders: this.renderCustomHeaders(),
       s3OriginConfig,
       customOriginConfig,
-    };
+    }};
   }
 
   // Overridden by sub-classes to provide S3 origin config.
@@ -153,7 +166,6 @@ export abstract class Origin {
     if (path.endsWith('/')) { path = path.substr(0, path.length - 1); }
     return path;
   }
-
 }
 
 /**
@@ -184,12 +196,12 @@ export class S3Origin extends Origin {
     this.bucket = props.bucket;
   }
 
-  public bind(scope: Construct, options: OriginBindOptions) {
-    super.bind(scope, options);
+  public bind(scope: Construct, options: OriginBindOptions): OriginBindConfig {
     if (!this.originAccessIdentity) {
-      this.originAccessIdentity = new OriginAccessIdentity(scope, `S3Origin${options.originIndex}`);
+      this.originAccessIdentity = new OriginAccessIdentity(scope, 'S3Origin');
       this.bucket.grantRead(this.originAccessIdentity);
     }
+    return super.bind(scope, options);
   }
 
   protected renderS3OriginConfig(): CfnDistribution.S3OriginConfigProperty | undefined {

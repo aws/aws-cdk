@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack, Duration } from '@aws-cdk/core';
-import { CfnDistribution, Distribution, Origin, OriginProps, HttpOrigin, OriginProtocolPolicy, S3Origin } from '../lib';
+import { CfnDistribution, Distribution, HttpOrigin, OriginProtocolPolicy, S3Origin, Origin, OriginProps } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -18,9 +18,9 @@ describe('S3Origin', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
     const origin = new S3Origin({ bucket });
-    origin.bind(stack, { originIndex: 0 });
+    const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-    expect(origin.renderOrigin()).toEqual({
+    expect(originBindConfig.originProperty).toEqual({
       id: 'StackOrigin029E19582',
       domainName: bucket.bucketRegionalDomainName,
       s3OriginConfig: {
@@ -44,7 +44,7 @@ describe('S3Origin', () => {
       PolicyDocument: {
         Statement: [{
           Principal: {
-            CanonicalUser: { 'Fn::GetAtt': [ 'DistS3Origin1C4519663', 'S3CanonicalUserId' ] },
+            CanonicalUser: { 'Fn::GetAtt': [ 'DistOrigin1S3Origin87D64058', 'S3CanonicalUserId' ] },
           },
         }],
       },
@@ -55,9 +55,9 @@ describe('S3Origin', () => {
 describe('HttpOrigin', () => {
   test('renders a minimal example with required props', () => {
     const origin = new HttpOrigin('www.example.com');
-    origin.bind(stack, { originIndex: 0 });
+    const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-    expect(origin.renderOrigin()).toEqual({
+    expect(originBindConfig.originProperty).toEqual({
       id: 'StackOrigin029E19582',
       domainName: 'www.example.com',
       customOriginConfig: {
@@ -78,9 +78,9 @@ describe('HttpOrigin', () => {
       readTimeout: Duration.seconds(45),
       keepaliveTimeout: Duration.seconds(3),
     });
-    origin.bind(stack, { originIndex: 0 });
+    const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-    expect(origin.renderOrigin()).toEqual({
+    expect(originBindConfig.originProperty).toEqual({
       id: 'StackOrigin029E19582',
       domainName: 'www.example.com',
       originPath: '/app',
@@ -127,7 +127,7 @@ describe('HttpOrigin', () => {
       });
     }).toThrow(`keepaliveTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${keepaliveTimeout.toSeconds()}.`);
   });
-});;
+});
 
 describe('Origin', () => {
   test.each([
@@ -158,9 +158,9 @@ describe('Origin', () => {
     const origin = new TestOrigin('www.example.com', {
       originPath,
     });
-    origin.bind(stack, { originIndex: 0 });
+    const originBindConfig = origin.bind(stack, { originId: '0' });
 
-    expect(origin.renderOrigin().originPath).toEqual('/api');
+    expect(originBindConfig.originProperty?.originPath).toEqual('/api');
   });
 });
 

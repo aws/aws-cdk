@@ -17,9 +17,9 @@ test('With non-website bucket, renders all required properties, including S3Orig
   const bucket = new s3.Bucket(stack, 'Bucket');
 
   const origin = new S3Origin(bucket);
-  origin.bind(stack, { originIndex: 0 });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-  expect(origin.renderOrigin()).toEqual({
+  expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
     domainName: bucket.bucketRegionalDomainName,
     s3OriginConfig: {
@@ -34,9 +34,9 @@ test('With website bucket, renders all required properties, including custom ori
   });
 
   const origin = new S3Origin(bucket);
-  origin.bind(stack, { originIndex: 0 });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-  expect(origin.renderOrigin()).toEqual({
+  expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
     domainName: bucket.bucketWebsiteDomainName,
     customOriginConfig: {
@@ -51,9 +51,9 @@ test('Respects props passed down to underlying origin', () => {
   });
 
   const origin = new S3Origin(bucket, { originPath: '/website' });
-  origin.bind(stack, { originIndex: 0 });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-  expect(origin.renderOrigin()).toEqual({
+  expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
     domainName: bucket.bucketWebsiteDomainName,
     originPath: '/website',
