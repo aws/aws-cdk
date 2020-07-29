@@ -158,10 +158,7 @@ For example, if you have the following parent template:
     "ChildStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json",
-        "Parameters": {
-          "MyBucketParameter": "my-bucket-name"
-        }
+        "TemplateURL": "https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json"
       }
     }
   }
@@ -172,19 +169,9 @@ where the child template pointed to by `https://my-s3-template-source.s3.amazona
 
 ```json
 {
-  "Parameters": {
-    "MyBucketParameter": {
-      "Type": "String",
-      "Default": "default-bucket-param-name"
-    }
-  },
   "Resources": {
-    "BucketImport": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Ref": "MyBucketParameter"
-        }
+    "MyBucket": {
+      "Type": "AWS::S3::Bucket"
       }
     }
   }
