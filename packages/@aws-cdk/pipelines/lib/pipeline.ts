@@ -245,7 +245,8 @@ class AssetPublishing extends Construct {
   private readonly myCxAsmRoot: string;
 
   private readonly stage: codepipeline.IStage;
-  private assetRole?: iam.Role;
+  private readonly pipeline: codepipeline.Pipeline;
+  private assetRole?: iam.IRole;
   private _fileAssetCtr = 1;
   private _dockerAssetCtr = 1;
 
@@ -256,6 +257,7 @@ class AssetPublishing extends Construct {
     // We MUST add the Stage immediately here, otherwise it will be in the wrong place
     // in the pipeline!
     this.stage = this.props.pipeline.addStage({ stageName: 'Assets' });
+    this.pipeline = this.props.pipeline;
   }
 
   /**
@@ -269,15 +271,9 @@ class AssetPublishing extends Construct {
     // FIXME: this is silly, we need the relative path here but no easy way to get it
     const relativePath = path.relative(this.myCxAsmRoot, command.assetManifestPath);
 
-    // This role is used by both the CodePipeline build action and related CodeBuild project. Consolidating these two
-    // roles into one, and re-using across all assets, saves significant size of the final synthesized output.
-    // Modeled after the CodePipeline role and 'CodePipelineActionRole' roles.
-    // Late-binding here to prevent creating the role in cases where no asset actions are created.
+    // Late-binding here (rather than in the constructor) to prevent creating the role in cases where no asset actions are created.
     if (!this.assetRole) {
-      this.assetRole = new iam.Role(this, 'Role', {
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new iam.CompositePrincipal(new iam.ServicePrincipal('codebuild.amazonaws.com'), new iam.AccountPrincipal(Stack.of(this).account)),
-      });
+      this.generateAssetRole();
     }
 
     let action = this.publishers[command.assetId];
@@ -320,6 +316,67 @@ class AssetPublishing extends Construct {
         stages.splice(ix, 1);
       }
     }
+  }
+
+  /**
+   * This role is used by both the CodePipeline build action and related CodeBuild project. Consolidating these two
+   * roles into one, and re-using across all assets, saves significant size of the final synthesized output.
+   * Modeled after the CodePipeline role and 'CodePipelineActionRole' roles.
+   */
+  private generateAssetRole() {
+    const assetRole = new iam.Role(this, 'Role', {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+      assumedBy: new iam.CompositePrincipal(new iam.ServicePrincipal('codebuild.amazonaws.com'), new iam.AccountPrincipal(Stack.of(this).account)),
+    });
+
+    // Logging permissions
+    const logGroupArn = Stack.of(this).formatArn({
+      service: 'logs',
+      resource: 'log-group',
+      sep: ':',
+      resourceName: '/aws/codebuild/*',
+    });
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      resources: [logGroupArn],
+      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+    }));
+
+    // CodeBuild report groups
+    const codeBuildArn = Stack.of(this).formatArn({
+      service: 'codebuild',
+      resource: 'report-group',
+      resourceName: '*',
+    });
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      actions: [
+        'codebuild:CreateReportGroup',
+        'codebuild:CreateReport',
+        'codebuild:UpdateReport',
+        'codebuild:BatchPutTestCases',
+      ],
+      resources: [codeBuildArn],
+    }));
+
+    // CodeBuild start/stop
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        'codebuild:BatchGetBuilds',
+        'codebuild:StartBuild',
+        'codebuild:StopBuild',
+      ],
+    }));
+
+    // Publishing role access
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      resources: ['arn:*:iam::*:role/*-image-publishing-role-*', 'arn:*:iam::*:role/*-file-publishing-role-*'],
+    }));
+
+    this.pipeline.artifactBucket.grantRead(assetRole);
+
+    this.assetRole = assetRole.withoutPolicyUpdates();
+    return this.assetRole;
   }
 }
 
