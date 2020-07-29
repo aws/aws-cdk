@@ -29,13 +29,15 @@ type demo {
   version: String!
 }
 type Query {
-  getDemos: [ test! ]
+  getDemosDynamo: [ demo! ]
+  getDemosRds: [ demo! ]
 }
 input DemoInput {
   version: String!
 }
 type Mutation {
-  addDemo(input: DemoInput!): demo
+  addDemoDynamo(input: DemoInput!): demo
+  addDemoRds(input: DemoInput!): demo
 }
 ```
 
@@ -44,6 +46,7 @@ CDK stack file `app-stack.ts`:
 ```ts
 import * as appsync from '@aws-cdk/aws-appsync';
 import * as db from '@aws-cdk/aws-dynamodb';
+import { DatabaseSecret, DatabaseCluster, DatabaseClusterEngine, AuroraMysqlEngineVersion } from '@aws-cdk/aws-rds';
 
 const api = new appsync.GraphQLApi(stack, 'Api', {
   name: 'demo',
@@ -64,20 +67,79 @@ const demoTable = new db.Table(stack, 'DemoTable', {
 
 const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos"', demoTable);
 
-// Resolver for the Query "getDemos" that scans the DyanmoDb table and returns the entire list.
+// Resolver for the Query "getDemosDynamo" that scans the DyanmoDb table and returns the entire list.
 demoDS.createResolver({
   typeName: 'Query',
-  fieldName: 'getDemos',
+  fieldName: 'getDemosDynamo',
   requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 
-// Resolver for the Mutation "addDemo" that puts the item into the DynamoDb table.
+// Resolver for the Mutation "addDemoDynamo" that puts the item into the DynamoDb table.
 demoDS.createResolver({
   typeName: 'Mutation',
-  fieldName: 'addDemo',
+  fieldName: 'addDemoDynamo',
   requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('demo')),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+
+// Create username and password secret for DB Cluster
+const secret = new DatabaseSecret(stack, 'AuroraSecret', {
+  username: 'clusteradmin',
+});
+
+// Create the DB cluster, provide all values needed to customise the database.
+const cluster = new DatabaseCluster(stack, 'AuroraCluster', {
+  engine: DatabaseClusterEngine.auroraMysql({
+    version: AuroraMysqlEngineVersion.VER_2_07_1,
+  }),
+  masterUser: {
+    username: 'clusteradmin',
+  },
+  clusterIdentifier: 'db-endpoint-test',
+  defaultDatabaseName: 'demos',
+});
+
+// Build a data source for AppSync to access the database.
+const rdsDS = api.addRdsDataSource('rds', 'The rds data source', cluster, secret);
+
+// Set up a resolver for an RDS query.
+rdsDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getDemosRds',
+  requestMappingTemplate: MappingTemplate.fromString(`
+  {
+    "version": "2018-05-29",
+    "statements": [
+      "SELECT * FROM demos"
+    ]
+  }
+  `),
+  responseMappingTemplate: MappingTemplate.fromString(`
+    $util.rds.toJsonObject($ctx.result)
+  `),
+});
+
+// Set up a resolver for an RDS mutation.
+rdsDS.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'addDemoRds',
+  requestMappingTemplate: MappingTemplate.fromString(`
+  {
+    "version": "2018-05-29",
+    "statements": [
+      "INSERT INTO demos VALUES (:id, :version)",
+      "SELECT * WHERE id = :id"
+    ],
+    "variableMap": {
+      ":id": $util.toJson($util.autoId()),
+      ":version": $util.toJson($ctx.args.version)
+    }
+  }
+  `),
+  responseMappingTemplate: MappingTemplate.fromString(`
+    $util.rds.toJsonObject($ctx.result)
+  `),
 });
 ```
 
