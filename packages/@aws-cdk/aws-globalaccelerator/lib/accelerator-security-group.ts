@@ -1,5 +1,5 @@
-import { Construct } from '@aws-cdk/core';
 import { ISecurityGroup, SecurityGroup, IVpc } from '@aws-cdk/aws-ec2';
+import { Construct } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId} from '@aws-cdk/custom-resources';
 
 /**
