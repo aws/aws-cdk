@@ -1,0 +1,62 @@
+import { Construct } from '@aws-cdk/core';
+import { ISecurityGroup, SecurityGroup, IVpc } from '@aws-cdk/aws-ec2';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId} from '@aws-cdk/custom-resources';
+
+/**
+ * The security group used by a Global Accelerator to send traffic to resources in a VPC.
+ */
+export class AcceleratorSecurityGroup {
+  /**
+   * Lookup the Global Accelerator security group at CloudFormation deployment time.
+   *
+   * As of this writing, Global Accelerators (AGA) create a single security group per VPC. AGA security groups are shared
+   * by all AGAs in an account. Additionally, there is no CloudFormation mechanism to reference the AGA security groups.
+   *
+   * This makes creating security group rules which allow traffic from an AGA complicated in CDK. This lookup will identify
+   * the AGA security group for a given VPC at CloudFormation deployment time, and lets you create rules for traffic from AGA
+   * to other resources created by CDK.
+   */
+  public static fromVpc(scope: Construct, vpc: IVpc): ISecurityGroup {
+
+    // The security group name is always 'GlobalAccelerator'
+    const globalAcceleratorSGName = 'GlobalAccelerator';
+
+    // How to reference the security group name in the response from EC2
+    const ec2ResponseSGIdField = 'SecurityGroups.0.GroupId';
+
+    // The AWS Custom Resource that make a call to EC2 to get the security group ID, for the given VPC
+    const lookupAcceleratorSGCustomResource = new AwsCustomResource(scope, 'GetGlobalAcceleratorSGCustomResource', {
+      onCreate: {
+        service: 'EC2',
+        action: 'describeSecurityGroups',
+        parameters: {
+          Filters: [
+            {
+              Name: 'group-name',
+              Values: [
+                globalAcceleratorSGName,
+              ],
+            },
+            {
+              Name: 'vpc-id',
+              Values: [
+                vpc.vpcId,
+              ],
+            },
+          ],
+        },
+        // We get back a list of responses, but the list should be of length 0 or 1
+        // Getting no response means no resources have been linked to the AGA
+        physicalResourceId: PhysicalResourceId.fromResponse(ec2ResponseSGIdField),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+    });
+
+    // Look up the security group ID
+    return SecurityGroup.fromSecurityGroupId(scope,
+      'GlobalAcceleratorSecurityGroup',
+      lookupAcceleratorSGCustomResource.getResponseField(ec2ResponseSGIdField));
+  }
+}
