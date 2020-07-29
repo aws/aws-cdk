@@ -22,9 +22,9 @@ export = {
     const app = new App();
     const root = new MyConstruct(app, 'MyConstruct');
     root.node.applyAspect(new VisitOnce());
-    ConstructNode.prepare(root.node);
+    app.synth();
     test.deepEqual(root.visitCounter, 1);
-    ConstructNode.prepare(root.node);
+    app.synth();
     test.deepEqual(root.visitCounter, 1);
     test.done();
   },
