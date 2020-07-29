@@ -521,7 +521,7 @@ function specialCaseRefs(value: any): any {
   }
 }
 
-function specialCaseSubRefs(value: any): any {
+function specialCaseSubRefs(value: string): string | undefined {
   return value.indexOf('::') === -1 ? undefined: '${' + value + '}';
 }
 
