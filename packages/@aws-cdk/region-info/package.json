@@ -80,7 +80,9 @@
       "docs-public-apis:@aws-cdk/region-info.RegionInfo.name"
     ]
   },
-  "ostools": ["yarn", "bash"],
+  "nozem": {
+    "ostools": ["yarn", "bash"]
+  },
   "awscdkio": {
     "announce": false
   }

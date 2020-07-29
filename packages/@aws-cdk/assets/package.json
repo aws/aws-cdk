@@ -88,7 +88,9 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "ostools": ["rm", "tar"],
+  "nozem": {
+    "ostools": ["rm", "tar"]
+  },
   "stability": "deprecated",
   "maturity": "deprecated",
   "awscdkio": {

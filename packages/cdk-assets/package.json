@@ -67,7 +67,9 @@
   "cdk-package": {
     "shrinkWrap": true
   },
-  "ostools": ["unzip", "diff"],
+  "nozem": {
+    "ostools": ["unzip", "diff"]
+  },
   "stability": "experimental",
   "maturity": "experimental"
 }

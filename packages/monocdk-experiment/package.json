@@ -273,11 +273,13 @@
     "aws",
     "cdk"
   ],
-  "ostools": [
-    "yarn",
-    "dirname",
-    "rsync"
-  ],
+  "nozem": {
+    "ostools": [
+      "yarn",
+      "dirname",
+      "rsync"
+    ]
+  },
   "awscdkio": {
     "announce": false
   }

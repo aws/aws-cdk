@@ -111,7 +111,9 @@
       "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource"
     ]
   },
-  "ostools": ["cp", "rm", "npm"],
+  "nozem": {
+    "ostools": ["cp", "rm", "npm"]
+  },
   "awscdkio": {
     "announce": false
   },

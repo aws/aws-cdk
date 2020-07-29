@@ -330,7 +330,9 @@
   },
   "stability": "experimental",
   "maturity": "experimental",
-  "nzl$skipTsApiOptimization": true,
+  "nozem": {
+    "skipTsApiOptimization": true
+  },
   "awscdkio": {
     "announce": false
   }

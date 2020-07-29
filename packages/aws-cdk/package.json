@@ -100,7 +100,9 @@
     "cdk"
   ],
   "homepage": "https://github.com/aws/aws-cdk",
-  "ostools": ["git", "date", "cat", "dotnet", "mvn", "npm"],
+  "nozem": {
+    "ostools": ["git", "date", "cat", "dotnet", "mvn", "npm"]
+  },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },

@@ -73,8 +73,10 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "ostools": ["dirname", "rsync", "cp", "npx"],
-  "nzl$skipTsApiOptimization": true,
+  "nozem": {
+    "ostools": ["dirname", "rsync", "cp", "npx"],
+    "skipTsApiOptimization": true
+  },
   "stability": "experimental",
   "maturity": "developer-preview"
 }

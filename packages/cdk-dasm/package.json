@@ -39,7 +39,9 @@
     "aws",
     "cdk"
   ],
-  "ostools": ["chmod"],
+  "nozem": {
+    "ostools": ["chmod"]
+  },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"

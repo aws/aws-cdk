@@ -46,7 +46,9 @@
     "aws",
     "cdk"
   ],
-  "ostools": ["chmod"],
+  "nozem": {
+    "ostools": ["chmod"]
+  },
   "maturity": "developer-preview",
   "stability": "experimental",
   "engines": {

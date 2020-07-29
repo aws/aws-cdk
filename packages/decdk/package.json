@@ -197,9 +197,11 @@
     "aws",
     "cdk"
   ],
-  "ostools": ["chmod"],
-  "nzl$skipTsApiOptimization": true,
-  "nzl$copyAllSourcesForTest": true,
+  "nozem": {
+    "ostools": ["chmod"],
+    "skipTsApiOptimization": true,
+    "copyAllSourcesForTest": true
+  },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"

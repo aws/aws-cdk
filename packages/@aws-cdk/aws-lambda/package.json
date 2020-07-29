@@ -171,7 +171,9 @@
     ]
   },
   "stability": "stable",
-  "ostools": ["docker"],
+  "nozem": {
+    "ostools": ["docker"]
+  },
   "awscdkio": {
     "announce": false
   },

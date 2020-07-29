@@ -53,7 +53,9 @@
     "cdk"
   ],
   "homepage": "https://github.com/aws/aws-cdk",
-  "ostools": ["ln"],
+  "nozem": {
+    "ostools": ["ln"]
+  },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   }

@@ -85,10 +85,10 @@
   "awscdkio": {
     "announce": false
   },
-  "ostools": [
-    "docker"
-  ],
-  "nzl$copyAllSourcesForTest": true,
+  "nozem": {
+    "ostools": ["docker"],
+    "copyAllSourcesForTest": true
+  },
   "cdk-build": {
     "jest": true
   }

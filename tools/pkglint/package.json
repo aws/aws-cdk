@@ -43,7 +43,9 @@
     "jest": "^25.5.4",
     "typescript": "~3.9.6"
   },
-  "ostools": ["chmod"],
+  "nozem": {
+    "ostools": ["chmod"]
+  },
   "dependencies": {
     "case": "^1.6.3",
     "colors": "^1.4.0",
