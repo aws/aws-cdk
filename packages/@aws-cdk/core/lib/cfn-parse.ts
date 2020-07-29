@@ -477,7 +477,7 @@ export class CfnParser {
     }
 
     // lookup in map
-    if (refTarget in (map || {})) {
+    if (refTarget in map) {
       return leftHalf + '${' + refTarget + '}' + this.parseFnSubString(rightHalf, map);
     }
 
