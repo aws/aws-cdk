@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { BaseOrigin, CfnDistribution, Distribution, IOrigin, LambdaEdgeEventType, OriginProps, OriginProtocolPolicy, PriceClass } from '../lib';
+import { CfnDistribution, Distribution, IOrigin, LambdaEdgeEventType, OriginBase, OriginProps, OriginProtocolPolicy, PriceClass } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -386,7 +386,7 @@ function defaultOrigin(domainName?: string): IOrigin {
   return new TestOrigin(domainName ?? 'www.example.com');
 }
 
-class TestOrigin extends BaseOrigin {
+class TestOrigin extends OriginBase {
   constructor(domainName: string, props: OriginProps = {}) { super(domainName, props); }
   protected renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
     return { originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY };

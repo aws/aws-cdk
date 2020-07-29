@@ -79,7 +79,7 @@ export interface OriginBindOptions {
  *
  * @experimental
  */
-export abstract class BaseOrigin implements IOrigin {
+export abstract class OriginBase implements IOrigin {
   private readonly domainName: string;
   private readonly originPath?: string;
   private readonly connectionTimeout?: Duration;

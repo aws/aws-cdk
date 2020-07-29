@@ -50,7 +50,7 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
  *
  * @experimental
  */
-export class HttpOrigin extends cloudfront.BaseOrigin {
+export class HttpOrigin extends cloudfront.OriginBase {
 
   constructor(domainName: string, private readonly props: HttpOriginProps = {}) {
     super(domainName, props);

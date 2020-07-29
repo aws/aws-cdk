@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { App, Stack, Duration } from '@aws-cdk/core';
-import { CfnDistribution, OriginProtocolPolicy, BaseOrigin, OriginProps } from '../lib';
+import { CfnDistribution, OriginProtocolPolicy, OriginBase, OriginProps } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -46,7 +46,7 @@ test.each(['api', '/api', '/api/', 'api/'])
 });
 
 /** Used for testing common Origin functionality */
-class TestOrigin extends BaseOrigin {
+class TestOrigin extends OriginBase {
   constructor(domainName: string, props: OriginProps = {}) { super(domainName, props); }
   protected renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
     return { originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY };
