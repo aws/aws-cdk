@@ -7,11 +7,11 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const projectRoot = process.env.NZL_PACKAGE_SOURCE
-      ? path.join(process.env.NZL_PACKAGE_SOURCE, '..', '..', '..')
+    const projectRoot = process.env.NZM_PACKAGE_SOURCE
+      ? path.join(process.env.NZM_PACKAGE_SOURCE, '..', '..', '..')
       : undefined;
-    const testRoot = process.env.NZL_PACKAGE_SOURCE
-      ? path.join(process.env.NZL_PACKAGE_SOURCE, 'test')
+    const testRoot = process.env.NZM_PACKAGE_SOURCE
+      ? path.join(process.env.NZM_PACKAGE_SOURCE, 'test')
       : __dirname;
 
     new lambda.NodejsFunction(this, 'ts-handler', {

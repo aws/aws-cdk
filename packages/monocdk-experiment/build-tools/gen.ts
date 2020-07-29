@@ -60,7 +60,7 @@ interface PackageJson {
 async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
   console.log('🔍 Discovering libraries that need packaging...');
 
-  const packageRoot = process.env.NZL_PACKAGE_SOURCE || path.join(__dirname, '..');
+  const packageRoot = process.env.NZM_PACKAGE_SOURCE || path.join(__dirname, '..');
 
   const result = new Array<LibraryReference>();
   const librariesRoot = path.resolve(packageRoot, '..', '@aws-cdk');
@@ -85,7 +85,7 @@ async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
     // If this is a "Nazel" build, we actually need to grab the sources from a different
     // directory than the source tree, because we also need the .ts files that got
     // generated as part of the build step.
-    if (process.env.NZL_PACKAGE_SOURCE) {
+    if (process.env.NZM_PACKAGE_SOURCE) {
       try {
         const outPath = path.resolve(require.resolve(`${dir}/package.json`), '..');
         sourcePath = path.resolve(outPath, '..', 'src');
@@ -108,7 +108,7 @@ async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
 
 async function verifyDependencies(libraries: readonly LibraryReference[]): Promise<PackageJson> {
   console.log('🧐 Verifying dependencies are complete...');
-  const packageRoot = process.env.NZL_PACKAGE_SOURCE || path.join(__dirname, '..');
+  const packageRoot = process.env.NZM_PACKAGE_SOURCE || path.join(__dirname, '..');
   const packageJsonPath = path.resolve(packageRoot, 'package.json');
   const packageJson = await fs.readJson(packageJsonPath);
 
