@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack, Duration } from '@aws-cdk/core';
-import { CfnDistribution, Distribution, Origin, OriginProps, HttpOrigin, OriginProtocolPolicy } from '../lib';
+import { CfnDistribution, Distribution, HttpOrigin, OriginProtocolPolicy, S3Origin, Origin, OriginProps } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -13,14 +13,14 @@ beforeEach(() => {
   });
 });
 
-describe('fromBucket', () => {
+describe('S3Origin', () => {
   test('as bucket, renders all required properties, including S3Origin config', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
-    const origin = Origin.fromBucket(bucket);
-    origin._bind(stack, { originIndex: 0 });
+    const origin = new S3Origin({ bucket });
+    const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-    expect(origin._renderOrigin()).toEqual({
+    expect(originBindConfig.originProperty).toEqual({
       id: 'StackOrigin029E19582',
       domainName: bucket.bucketRegionalDomainName,
       s3OriginConfig: {
@@ -32,7 +32,7 @@ describe('fromBucket', () => {
   test('as bucket, creates an OriginAccessIdentity and grants read permissions on the bucket', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
-    const origin = Origin.fromBucket(bucket);
+    const origin = new S3Origin({ bucket });
     new Distribution(stack, 'Dist', { defaultBehavior: { origin } });
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
@@ -44,26 +44,9 @@ describe('fromBucket', () => {
       PolicyDocument: {
         Statement: [{
           Principal: {
-            CanonicalUser: { 'Fn::GetAtt': [ 'DistS3Origin1C4519663', 'S3CanonicalUserId' ] },
+            CanonicalUser: { 'Fn::GetAtt': [ 'DistOrigin1S3Origin87D64058', 'S3CanonicalUserId' ] },
           },
         }],
-      },
-    });
-  });
-
-  test('as website bucket, renders all required properties, including custom origin config', () => {
-    const bucket = new s3.Bucket(stack, 'Bucket', {
-      websiteIndexDocument: 'index.html',
-    });
-
-    const origin = Origin.fromBucket(bucket);
-    origin._bind(stack, { originIndex: 0 });
-
-    expect(origin._renderOrigin()).toEqual({
-      id: 'StackOrigin029E19582',
-      domainName: bucket.bucketWebsiteDomainName,
-      customOriginConfig: {
-        originProtocolPolicy: 'http-only',
       },
     });
   });
@@ -71,10 +54,10 @@ describe('fromBucket', () => {
 
 describe('HttpOrigin', () => {
   test('renders a minimal example with required props', () => {
-    const origin = new HttpOrigin({ domainName: 'www.example.com' });
-    origin._bind(stack, { originIndex: 0 });
+    const origin = new HttpOrigin('www.example.com');
+    const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-    expect(origin._renderOrigin()).toEqual({
+    expect(originBindConfig.originProperty).toEqual({
       id: 'StackOrigin029E19582',
       domainName: 'www.example.com',
       customOriginConfig: {
@@ -84,8 +67,7 @@ describe('HttpOrigin', () => {
   });
 
   test('renders an example with all available props', () => {
-    const origin = new HttpOrigin({
-      domainName: 'www.example.com',
+    const origin = new HttpOrigin('www.example.com', {
       originPath: '/app',
       connectionTimeout: Duration.seconds(5),
       connectionAttempts: 2,
@@ -96,9 +78,9 @@ describe('HttpOrigin', () => {
       readTimeout: Duration.seconds(45),
       keepaliveTimeout: Duration.seconds(3),
     });
-    origin._bind(stack, { originIndex: 0 });
+    const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-    expect(origin._renderOrigin()).toEqual({
+    expect(originBindConfig.originProperty).toEqual({
       id: 'StackOrigin029E19582',
       domainName: 'www.example.com',
       originPath: '/app',
@@ -126,8 +108,7 @@ describe('HttpOrigin', () => {
     Duration.minutes(5),
   ])('validates readTimeout is an integer between 1 and 60 seconds', (readTimeout) => {
     expect(() => {
-      new HttpOrigin({
-        domainName: 'www.example.com',
+      new HttpOrigin('www.example.com', {
         readTimeout,
       });
     }).toThrow(`readTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${readTimeout.toSeconds()}.`);
@@ -141,13 +122,12 @@ describe('HttpOrigin', () => {
     Duration.minutes(5),
   ])('validates keepaliveTimeout is an integer between 1 and 60 seconds', (keepaliveTimeout) => {
     expect(() => {
-      new HttpOrigin({
-        domainName: 'www.example.com',
+      new HttpOrigin('www.example.com', {
         keepaliveTimeout,
       });
     }).toThrow(`keepaliveTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${keepaliveTimeout.toSeconds()}.`);
   });
-});;
+});
 
 describe('Origin', () => {
   test.each([
@@ -158,8 +138,7 @@ describe('Origin', () => {
     Duration.minutes(5),
   ])('validates connectionTimeout is an int between 1 and 10 seconds', (connectionTimeout) => {
     expect(() => {
-      new TestOrigin({
-        domainName: 'www.example.com',
+      new TestOrigin('www.example.com', {
         connectionTimeout,
       });
     }).toThrow(`connectionTimeout: Must be an int between 1 and 10 seconds (inclusive); received ${connectionTimeout.toSeconds()}.`);
@@ -168,8 +147,7 @@ describe('Origin', () => {
   test.each([-0.5, 0.5, 1.5, 4])
   ('validates connectionAttempts is an int between 1 and 3', (connectionAttempts) => {
     expect(() => {
-      new TestOrigin({
-        domainName: 'www.example.com',
+      new TestOrigin('www.example.com', {
         connectionAttempts,
       });
     }).toThrow(`connectionAttempts: Must be an int between 1 and 3 (inclusive); received ${connectionAttempts}.`);
@@ -177,19 +155,18 @@ describe('Origin', () => {
 
   test.each(['api', '/api', '/api/', 'api/'])
   ('enforces that originPath starts but does not end, with a /', (originPath) => {
-    const origin = new TestOrigin({
-      domainName: 'www.example.com',
+    const origin = new TestOrigin('www.example.com', {
       originPath,
     });
-    origin._bind(stack, { originIndex: 0 });
+    const originBindConfig = origin.bind(stack, { originId: '0' });
 
-    expect(origin._renderOrigin().originPath).toEqual('/api');
+    expect(originBindConfig.originProperty?.originPath).toEqual('/api');
   });
 });
 
 /** Used for testing common Origin functionality */
 class TestOrigin extends Origin {
-  constructor(props: OriginProps) { super(props); }
+  constructor(domainName: string, props: OriginProps = {}) { super(domainName, props); }
   protected renderS3OriginConfig(): CfnDistribution.S3OriginConfigProperty | undefined {
     return { originAccessIdentity: 'origin-access-identity/cloudfront/MyOAIName' };
   }

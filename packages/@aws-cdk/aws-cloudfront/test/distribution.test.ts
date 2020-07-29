@@ -1,8 +1,9 @@
 import '@aws-cdk/assert/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { Distribution, Origin, PriceClass } from '../lib';
+import { Distribution, IOrigin, LambdaEdgeEventType, S3Origin, PriceClass } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -15,7 +16,7 @@ beforeEach(() => {
 });
 
 test('minimal example renders correctly', () => {
-  const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+  const origin = defaultS3Origin();
   new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
 
   expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
@@ -31,7 +32,7 @@ test('minimal example renders correctly', () => {
         Id: 'StackMyDistOrigin1D6D5E535',
         S3OriginConfig: {
           OriginAccessIdentity: { 'Fn::Join': [ '',
-            [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
+            [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistOrigin1S3Origin071F2793' } ],
           ]},
         },
       }],
@@ -42,7 +43,7 @@ test('minimal example renders correctly', () => {
 describe('multiple behaviors', () => {
 
   test('a second behavior can\'t be specified with the catch-all path pattern', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin = defaultS3Origin();
 
     expect(() => {
       new Distribution(stack, 'MyDist', {
@@ -55,7 +56,7 @@ describe('multiple behaviors', () => {
   });
 
   test('a second behavior can be added to the original origin', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin = defaultS3Origin();
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -82,7 +83,7 @@ describe('multiple behaviors', () => {
           Id: 'StackMyDistOrigin1D6D5E535',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistOrigin1S3Origin071F2793' } ],
             ]},
           },
         }],
@@ -91,8 +92,9 @@ describe('multiple behaviors', () => {
   });
 
   test('a second behavior can be added to a secondary origin', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
-    const origin2 = Origin.fromBucket(new s3.Bucket(stack, 'Bucket2'));
+    const origin = defaultS3Origin();
+    const bucket2 = new s3.Bucket(stack, 'Bucket2');
+    const origin2 = new S3Origin({ bucket: bucket2 });
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -119,7 +121,7 @@ describe('multiple behaviors', () => {
           Id: 'StackMyDistOrigin1D6D5E535',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistOrigin1S3Origin071F2793' } ],
             ]},
           },
         },
@@ -128,7 +130,7 @@ describe('multiple behaviors', () => {
           Id: 'StackMyDistOrigin20B96F3AD',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin2E88F08BB' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistOrigin2S3Origin26A1EB27' } ],
             ]},
           },
         }],
@@ -137,8 +139,9 @@ describe('multiple behaviors', () => {
   });
 
   test('behavior creation order is preserved', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
-    const origin2 = Origin.fromBucket(new s3.Bucket(stack, 'Bucket2'));
+    const origin = defaultS3Origin();
+    const bucket2 = new s3.Bucket(stack, 'Bucket2');
+    const origin2 = new S3Origin({ bucket: bucket2 });
     const dist = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -172,7 +175,7 @@ describe('multiple behaviors', () => {
           Id: 'StackMyDistOrigin1D6D5E535',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistOrigin1S3Origin071F2793' } ],
             ]},
           },
         },
@@ -181,20 +184,19 @@ describe('multiple behaviors', () => {
           Id: 'StackMyDistOrigin20B96F3AD',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin2E88F08BB' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistOrigin2S3Origin26A1EB27' } ],
             ]},
           },
         }],
       },
     });
   });
-
 });
 
 describe('certificates', () => {
 
   test('should fail if using an imported certificate from outside of us-east-1', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin = defaultS3Origin();
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:eu-west-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
     expect(() => {
@@ -202,14 +204,14 @@ describe('certificates', () => {
         defaultBehavior: { origin },
         certificate,
       });
-    }).toThrow(/Distribution certificates must be in the us-east-1 region/);
+    }).toThrow(/Distribution certificates must be in the us-east-1 region and the certificate you provided is in eu-west-1./);
   });
 
   test('adding a certificate renders the correct ViewerCertificate property', () => {
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
     new Distribution(stack, 'Dist', {
-      defaultBehavior: { origin: Origin.fromBucket(new s3.Bucket(stack, 'Bucket')) },
+      defaultBehavior: { origin: defaultS3Origin() },
       certificate,
     });
 
@@ -217,6 +219,8 @@ describe('certificates', () => {
       DistributionConfig: {
         ViewerCertificate: {
           AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+          SslSupportMethod: 'sni-only',
+          MinimumProtocolVersion: 'TLSv1.2_2018',
         },
       },
     });
@@ -226,7 +230,7 @@ describe('certificates', () => {
 describe('custom error responses', () => {
 
   test('should fail if responsePagePath is defined but responseCode is not', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin = defaultS3Origin();
 
     expect(() => {
       new Distribution(stack, 'Dist', {
@@ -240,7 +244,7 @@ describe('custom error responses', () => {
   });
 
   test('should fail if only the error code is provided', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin = defaultS3Origin();
 
     expect(() => {
       new Distribution(stack, 'Dist', {
@@ -251,7 +255,7 @@ describe('custom error responses', () => {
   });
 
   test('should render the array of error configs if provided', () => {
-    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin = defaultS3Origin();
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin },
       errorResponses: [{
@@ -284,8 +288,103 @@ describe('custom error responses', () => {
 
 });
 
+describe('with Lambda@Edge functions', () => {
+  let lambdaFunction: lambda.Function;
+  let origin: IOrigin;
+
+  beforeEach(() => {
+    lambdaFunction = new lambda.Function(stack, 'Function', {
+      runtime: lambda.Runtime.NODEJS,
+      code: lambda.Code.fromInline('whatever'),
+      handler: 'index.handler',
+    });
+
+    origin = defaultS3Origin();
+  });
+
+  test('can add an edge lambdas to the default behavior', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: lambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          LambdaFunctionAssociations: [
+            {
+              EventType: 'origin-request',
+              LambdaFunctionARN: {
+                Ref: 'FunctionCurrentVersion4E2B22619c0305f954e58f25575548280c0a3629',
+              },
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('can add an edge lambdas to additional behaviors', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      additionalBehaviors: {
+        'images/*': {
+          origin,
+          edgeLambdas: [
+            {
+              functionVersion: lambdaFunction.currentVersion,
+              eventType: LambdaEdgeEventType.VIEWER_REQUEST,
+            },
+          ],
+        },
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        CacheBehaviors: [
+          {
+            PathPattern: 'images/*',
+            LambdaFunctionAssociations: [
+              {
+                EventType: 'viewer-request',
+                LambdaFunctionARN: {
+                  Ref: 'FunctionCurrentVersion4E2B22619c0305f954e58f25575548280c0a3629',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('fails creation when attempting to add the $LATEST function version as an edge Lambda to the default behavior', () => {
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: {
+          origin,
+          edgeLambdas: [
+            {
+              functionVersion: lambdaFunction.latestVersion,
+              eventType: LambdaEdgeEventType.ORIGIN_RESPONSE,
+            },
+          ],
+        },
+      });
+    }).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
+  });
+});
+
 test('price class is included if provided', () => {
-  const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+  const origin = defaultS3Origin();
   new Distribution(stack, 'Dist', {
     defaultBehavior: { origin },
     priceClass: PriceClass.PRICE_CLASS_200,
@@ -296,5 +395,8 @@ test('price class is included if provided', () => {
       PriceClass: 'PriceClass_200',
     },
   });
-
 });
+
+function defaultS3Origin(): IOrigin {
+  return new S3Origin({ bucket: new s3.Bucket(stack, 'Bucket') });
+}
