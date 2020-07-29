@@ -101,7 +101,12 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
-  "maturity": "cfn-only",
+  "features": [
+    {
+      "name": "Higher level constructs for Domain",
+      "stability": "Experimental"
+    }
+  ],
   "awscdkio": {
     "announce": false
   }
