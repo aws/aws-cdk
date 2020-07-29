@@ -223,8 +223,7 @@ export interface ClusterOptions {
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
    *
-   * @default - Private and Public. The cluster endpoint is accessible from outside of your VPC.
-   * Worker node traffic will leave your VPC to connect to the endpoint
+   * @default EndpointAccess.publicAndPrivate()
    */
   readonly endpointAccess?: EndpointAccess;
 }
