@@ -1611,5 +1611,35 @@ export = {
       test.done();
     },
 
+    'throw when private access is configured without dns support enabled for the VPC'(test: Test) {
+
+      const { stack } = testFixture();
+
+      test.throws(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          vpc: new ec2.Vpc(stack, 'Vpc', {
+            enableDnsSupport: false,
+          }),
+          version: CLUSTER_VERSION,
+        });
+      }, /Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
+      test.done();
+    },
+
+    'throw when private access is configured without dns hostnames enabled for the VPC'(test: Test) {
+
+      const { stack } = testFixture();
+
+      test.throws(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          vpc: new ec2.Vpc(stack, 'Vpc', {
+            enableDnsHostnames: false,
+          }),
+          version: CLUSTER_VERSION,
+        });
+      }, /Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
+      test.done();
+    },
+
   },
 };

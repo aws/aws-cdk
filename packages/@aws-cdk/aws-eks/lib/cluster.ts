@@ -122,10 +122,6 @@ export interface ClusterOptions {
   /**
    * The VPC in which to create the Cluster.
    *
-   * Note that if `endpointAccess` is configured to private only, the VPC must
-   * have `enableDnsHostnames` and `enableDnsSupport` set to true.
-   * In addition, the DHCP options set for your VPC must include 'AmazonProvidedDNS' in its domain name servers list.
-   *
    * @default - a VPC with default configuration will be created and can be accessed through `cluster.vpc`.
    */
   readonly vpc?: ec2.IVpc;
@@ -591,6 +587,14 @@ export class Cluster extends Resource implements ICluster {
     if (this.kubectlEnabled) {
 
       this.endpointAccess = props.endpointAccess ?? EndpointAccess.publicAndPrivate();
+
+      if (this.endpointAccess.endpointPrivateAccess && this.vpc instanceof ec2.Vpc) {
+        // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
+        if (!this.vpc.dnsHostnamesEnabled || !this.vpc.dnsSupportEnabled) {
+          throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
+        }
+      }
+
       this.kubctlProviderSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
         vpc: this.vpc,
         description: 'Comminication between KubectlProvider and EKS Control Plane',
