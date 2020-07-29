@@ -28,7 +28,9 @@ const baseApi = new appsync.GraphQLApi(baseStack, 'baseApi', {
 });
 
 const stack = new cdk.Stack(app, 'stack');
-const api = appsync.GraphQLApi.fromGraphQLApiId(stack, 'Api', `${baseApi.apiId}`);
+const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'Api', {
+  graphqlApiId: `${baseApi.apiId}`,
+});
 
 const testTable = new db.Table(stack, 'TestTable', {
   billingMode: db.BillingMode.PAY_PER_REQUEST,
@@ -55,7 +57,10 @@ testDS.createResolver({
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
 
-const api2 = appsync.GraphQLApi.fromGraphQLApiArn(stack, 'api2', baseApi.arn);
+const api2 = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'api2', {
+  graphqlApiId: baseApi.apiId,
+  graphqlArn: baseApi.arn,
+});
 
 api2.addNoneDataSource('none', 'none');
 

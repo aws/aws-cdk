@@ -18,7 +18,9 @@ beforeEach( () => {
 
 test('imported api can add NoneDataSource from id', () => {
   // WHEN
-  const api = appsync.GraphQLApi.fromGraphQLApiId(stack, 'importedApi', baseApi.apiId);
+  const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'importedApi', {
+    graphqlApiId: baseApi.apiId,
+  });
 
   api.addNoneDataSource('none', 'none data source with imported Api');
 
@@ -29,25 +31,11 @@ test('imported api can add NoneDataSource from id', () => {
     },
   });
 });
-
-test('imported api can add NoneDataSource from arn', () => {
-  // WHEN
-  const api = appsync.GraphQLApi.fromGraphQLApiArn(stack, 'importedApi', baseApi.arn);
-
-  api.addNoneDataSource('none', 'none data source with imported Api');
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
-    Type: 'NONE',
-    ApiId: { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', { 'Fn::GetAtt': [ 'baseApiCDA4D43A', 'Arn' ] } ] } ] },
-  });
-});
-
 test('imported api can add NoneDataSource from attributes', () => {
   // WHEN
   const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'importedApi', {
-    apiId: baseApi.apiId,
-    arn: baseApi.arn,
+    graphqlApiId: baseApi.apiId,
+    graphqlArn: baseApi.arn,
   });
 
   api.addNoneDataSource('none', 'none data source with imported Api');
@@ -62,7 +50,9 @@ test('imported api can add NoneDataSource from attributes', () => {
 
 test('imported api can add DynamoDbDataSource from id', () => {
   // WHEN
-  const api = appsync.GraphQLApi.fromGraphQLApiId(stack, 'importedApi', baseApi.apiId);
+  const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'importedApi', {
+    graphqlApiId: baseApi.apiId,
+  });
   const table = new db.Table(stack, 'table', {
     partitionKey: {
       name: 'key',
@@ -79,29 +69,11 @@ test('imported api can add DynamoDbDataSource from id', () => {
   });
 });
 
-test('imported api can add DynamoDbDataSource from arn', () => {
-  // WHEN
-  const api = appsync.GraphQLApi.fromGraphQLApiArn(stack, 'importedApi', baseApi.arn);
-  const table = new db.Table(stack, 'table', {
-    partitionKey: {
-      name: 'key',
-      type: db.AttributeType.NUMBER,
-    },
-  });
-  api.addDynamoDbDataSource('db', 'db data source with imported Api', table);
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
-    Type: 'AMAZON_DYNAMODB',
-    ApiId: { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', { 'Fn::GetAtt': [ 'baseApiCDA4D43A', 'Arn' ] } ] } ] },
-  });
-});
-
 test('imported api can add DynamoDbDataSource from attributes', () => {
   // WHEN
   const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'importedApi', {
-    apiId: baseApi.apiId,
-    arn: baseApi.arn,
+    graphqlApiId: baseApi.apiId,
+    graphqlArn: baseApi.arn,
   });
   const table = new db.Table(stack, 'table', {
     partitionKey: {
@@ -121,7 +93,9 @@ test('imported api can add DynamoDbDataSource from attributes', () => {
 
 test('imported api can add LambdaDbDataSource from id', () => {
   // WHEN
-  const api = appsync.GraphQLApi.fromGraphQLApiId(stack, 'importedApi', baseApi.apiId);
+  const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'importedApi', {
+    graphqlApiId: baseApi.apiId,
+  });
   const func = new lambda.Function(stack, 'func', {
     code: lambda.Code.fromAsset('test/verify'),
     handler: 'iam-query.handler',
@@ -137,28 +111,11 @@ test('imported api can add LambdaDbDataSource from id', () => {
   });
 });
 
-test('imported api can add LambdaDataSource from arn', () => {
-  // WHEN
-  const api = appsync.GraphQLApi.fromGraphQLApiArn(stack, 'importedApi', baseApi.arn);
-  const func = new lambda.Function(stack, 'func', {
-    code: lambda.Code.fromAsset('test/verify'),
-    handler: 'iam-query.handler',
-    runtime: lambda.Runtime.NODEJS_12_X,
-  });
-  api.addLambdaDataSource('lambda', 'lambda data source with imported Api', func);
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
-    Type: 'AWS_LAMBDA',
-    ApiId: { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', { 'Fn::GetAtt': [ 'baseApiCDA4D43A', 'Arn' ] } ] } ] },
-  });
-});
-
 test('imported api can add LambdaDataSource from attributes', () => {
   // WHEN
   const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'importedApi', {
-    apiId: baseApi.apiId,
-    arn: baseApi.arn,
+    graphqlApiId: baseApi.apiId,
+    graphqlArn: baseApi.arn,
   });
   const func = new lambda.Function(stack, 'func', {
     code: lambda.Code.fromAsset('test/verify'),

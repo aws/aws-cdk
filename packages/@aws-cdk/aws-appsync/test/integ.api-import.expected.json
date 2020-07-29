@@ -44,17 +44,6 @@
         "Export": {
           "Name": "baseStack:ExportsOutputFnGetAttbaseApiCDA4D43AApiId50287E68"
         }
-      },
-      "ExportsOutputFnGetAttbaseApiCDA4D43AArn68A2A4E6": {
-        "Value": {
-          "Fn::GetAtt": [
-            "baseApiCDA4D43A",
-            "Arn"
-          ]
-        },
-        "Export": {
-          "Name": "baseStack:ExportsOutputFnGetAttbaseApiCDA4D43AArn68A2A4E6"
-        }
       }
     }
   },
@@ -202,17 +191,7 @@
         "Type": "AWS::AppSync::DataSource",
         "Properties": {
           "ApiId": {
-            "Fn::Select": [
-              1,
-              {
-                "Fn::Split": [
-                  "/",
-                  {
-                    "Fn::ImportValue": "baseStack:ExportsOutputFnGetAttbaseApiCDA4D43AArn68A2A4E6"
-                  }
-                ]
-              }
-            ]
+            "Fn::ImportValue": "baseStack:ExportsOutputFnGetAttbaseApiCDA4D43AApiId50287E68"
           },
           "Name": "none",
           "Type": "NONE",
