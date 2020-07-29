@@ -43,9 +43,10 @@ Resources:
               AnotherParameter:
                 Fn::Base64: AnotherValue
       AccessControl:
-        Fn::Sub:
-          - "${Region}-foo-${!Immediate}-foo-${Vpc}-${Vpc.Id}-${Name}"
-          - Name:
-              Ref: Vpc
-            Region:
-              Fn::Base64: AWS::Region
+        Fn::ImportValue: 
+          Fn::Sub:
+            - "${Region}-foo-${!Immediate}-foo-${Vpc}-${Vpc.Id}-${Name}"
+            - Name:
+                Ref: Vpc
+              Region:
+                Fn::Base64: AWS::Region

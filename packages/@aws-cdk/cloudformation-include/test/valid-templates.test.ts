@@ -193,18 +193,18 @@ describe('CDK Include', () => {
   });
 
   test('can ingest a template with Fn::Sub in string form with escaped and unescaped references and output it unchanged', () => {
-    includeTestTemplate(stack, 'fn-sub-valid-string.json');
+    includeTestTemplate(stack, 'fn-sub-string.json');
 
     expect(stack).toMatchTemplate(
-      loadTestFileToJsObject('fn-sub-valid-string.json'),
+      loadTestFileToJsObject('fn-sub-string.json'),
     );
   });
 
-  test('can ingest a template with Fn::Sub in string form with escaped references and output it unchanged', () => {
-    includeTestTemplate(stack, 'fn-sub-valid-escaping.json');
+  test('can parse the string argument Fn::Sub with escaped references that contain whitespace', () => {
+    includeTestTemplate(stack, 'fn-sub-escaping.json');
 
     expect(stack).toMatchTemplate(
-      loadTestFileToJsObject('fn-sub-valid-escaping.json'),
+      loadTestFileToJsObject('fn-sub-escaping.json'),
     );
   });
 
@@ -216,7 +216,7 @@ describe('CDK Include', () => {
     );
   });
 
-  test('can ingest a template with Fn::Sub with a key that is a logicalID and output it unchanged', () => {
+  test('can ingest a template with Fn::Sub shadowing a logical ID from the template and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-shadow.json');
 
     expect(stack).toMatchTemplate(
@@ -224,7 +224,7 @@ describe('CDK Include', () => {
     );
   });
 
-  test('can ingest a template with Fn::Sub with a key that is a logicalID with an attribue and output it unchanged', () => {
+  test('can ingest a template with Fn::Sub attribute expression shadowing a logical ID from the template, and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-shadow-attribute.json');
 
     expect(stack).toMatchTemplate(
@@ -232,7 +232,7 @@ describe('CDK Include', () => {
     );
   });
 
-  test('can modify resources used in Fn::Sub references and see the changes in the template', () => {
+  test('can modify resources used in Fn::Sub in map form references and see the changes in the template', () => {
     const cfnTemplate = includeTestTemplate(stack, 'fn-sub-shadow.json');
 
     cfnTemplate.getResource('AnotherBucket').overrideLogicalId('NewBucket');
@@ -247,6 +247,26 @@ describe('CDK Include', () => {
         ],
       },
     });
+  });
+
+  test('can modify resources used in Fn::Sub in string form and see the changes in the template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'fn-sub-override.json');
+
+    cfnTemplate.getResource('Bucket').overrideLogicalId('NewBucket');
+
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "BucketName": {
+        "Fn::Sub": "${NewBucket}-${!Bucket}-${NewBucket.DomainName}",
+      },
+    });
+  });
+
+  test('can ingest a template with Fn::Sub with brace edge cases and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-brace-edges.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-brace-edges.json'),
+    );
   });
 
   test('can ingest a template with a Ref expression for an array value, and output it unchanged', () => {

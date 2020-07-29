@@ -4,13 +4,7 @@
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketName": { 
-          "Fn::Sub": [ 
-            "${Region}${ELB}-${ELB.SourceSecurityGroup.GroupName}-${Name}", 
-            { 
-              "Name": { "Ref" : "ELB" }, 
-              "Region": { "Fn::Base64": "AWS::Region" }
-            } 
-          ]
+          "Fn::Sub": "${ELB.SourceSecurityGroup.GroupName}"
         }
       }
     },
@@ -20,8 +14,7 @@
         "AvailabilityZones": [
           "us-east-1a"
         ],
-        "Listeners": [
-        {
+        "Listeners": [{
           "LoadBalancerPort": "80",
           "InstancePort": "80",
           "Protocol": "HTTP"

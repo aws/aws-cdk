@@ -461,16 +461,18 @@ export class CfnParser {
       : undefined;
   }
 
-  private parseFnSubString(value: string, map: { [key: string]: any } | undefined): string {
+  private parseFnSubString(value: string, map: { [key: string]: any } = {}): string {
     const leftBrace = value.indexOf('${');
     const rightBrace = value.indexOf('}') + 1;
+    // don't include left and right braces when searching for the target of the reference
+    if (leftBrace === -1 || leftBrace >= rightBrace) {
+      return value;
+    }
+
     const leftHalf = value.substring(0, leftBrace);
     const rightHalf = value.substring(rightBrace);
-    // don't include left and right braces when searching for the target of the reference
     const refTarget = value.substring(leftBrace + 2, rightBrace - 1).trim();
-    if (leftBrace === -1) {
-      return value;
-    } else if (refTarget[0] === '!') {
+    if (refTarget[0] === '!') {
       return value.substring(0, rightBrace) + this.parseFnSubString(rightHalf, map);
     }
 
@@ -485,20 +487,22 @@ export class CfnParser {
       return leftHalf + specialRef + this.parseFnSubString(rightHalf, map);
     }
 
-    const isRef = refTarget.indexOf('.') === -1;
+    const dotIndex = refTarget.indexOf('.');
+    const isRef = dotIndex === -1;
     if (isRef) {
       const refElement = this.options.finder.findRefTarget(refTarget);
       if (!refElement) {
-        throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' in Fn::Sub not found`);
+        throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
       }
       return leftHalf + CfnReference.for(refElement, 'Ref', true).toString() + this.parseFnSubString(rightHalf, map);
     } else {
-      const targetId = refTarget.substring(0, refTarget.indexOf('.'));
+      const targetId = refTarget.substring(0, dotIndex);
       const refResource = this.options.finder.findResource(targetId);
       if (!refResource) {
-        throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' not found`);
+        throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
       }
-      return leftHalf + CfnReference.for(refResource, refTarget.substring(refTarget.indexOf('.') + 1), true).toString() + this.parseFnSubString(rightHalf, map);
+      const attribute = refTarget.substring(dotIndex + 1);
+      return leftHalf + CfnReference.for(refResource, attribute, true).toString() + this.parseFnSubString(rightHalf, map);
     }
   }
 }
@@ -518,22 +522,7 @@ function specialCaseRefs(value: any): any {
 }
 
 function specialCaseSubRefs(value: any): any {
-  switch (value) {
-    case 'AWS::AccountId': return pseudoString(value);
-    case 'AWS::Region': return pseudoString(value);
-    case 'AWS::Partition': return pseudoString(value);
-    case 'AWS::URLSuffix': return pseudoString(value);
-    case 'AWS::NotificationARNs': return pseudoString(value);
-    case 'AWS::StackId': return pseudoString(value);
-    case 'AWS::StackName': return pseudoString(value);
-    case 'AWS::NoValue': return pseudoString(value);
-    case 'AWS::NoValue': return pseudoString(value);
-    default: return undefined;
-  }
-}
-
-function pseudoString(value: any): any {
-  return Token.asString('${' + value + '}', {displayHint: value });
+  return value.indexOf('::') === -1 ? undefined: '${' + value + '}';
 }
 
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {

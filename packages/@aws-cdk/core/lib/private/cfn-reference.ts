@@ -40,8 +40,8 @@ export class CfnReference extends Reference {
   public static for(target: CfnElement, attribute: string, fnSub: boolean = false) {
     return CfnReference.singletonReference(target, attribute, fnSub, () => {
       const cfnIntrinsic = fnSub
-        ? (attribute === 'Ref' ? '${' + target.logicalId + '}' : '${' + target.logicalId + '.' + attribute + '}')
-        : (attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [ target.logicalId, attribute ] });
+        ? ('${' + target.logicalId + (attribute === 'Ref' ? '' :  `.${attribute}`) + '}')
+        : (attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [target.logicalId, attribute] });
       return new CfnReference(cfnIntrinsic, attribute, target);
     });
   }
@@ -63,7 +63,7 @@ export class CfnReference extends Reference {
 
   /**
    * Get or create the table.
-   * Defining sub allows cloudformation-include to correctly handle Fn::Sub.
+   * Passing fnSub = true allows cloudformation-include to correctly handle Fn::Sub.
    */
   private static singletonReference(target: Construct, attribKey: string, fnSub: boolean, fresh: () => CfnReference) {
     let attribs = CfnReference.referenceTable.get(target);

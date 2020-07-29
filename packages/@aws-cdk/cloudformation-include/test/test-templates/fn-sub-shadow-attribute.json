@@ -14,10 +14,7 @@
       }
     },
     "AnotherBucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": "another-bucket"
-      }
+      "Type": "AWS::S3::Bucket"
     }
   }
 }

@@ -134,7 +134,7 @@ export class CfnResource extends CfnRefElement {
    * in case there is no generated attribute.
    * @param attributeName The name of the attribute.
    */
-  public getAtt(attributeName: string ): Reference {
+  public getAtt(attributeName: string): Reference {
     return CfnReference.for(this, attributeName);
   }
 
