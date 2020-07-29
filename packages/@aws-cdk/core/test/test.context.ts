@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Construct, ConstructNode, Stack } from '../lib';
+import { Construct, Stack } from '../lib';
 import { ContextProvider } from '../lib/context-provider';
 import { synthesize } from '../lib/private/synthesis';
 

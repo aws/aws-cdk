@@ -1084,6 +1084,7 @@ import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 import { FileSystem } from './fs';
+import { App } from './app';
 
 interface StackDependency {
   stack: Stack;
