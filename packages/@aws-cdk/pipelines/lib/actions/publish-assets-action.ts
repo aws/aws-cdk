@@ -53,6 +53,13 @@ export interface PublishAssetsActionProps {
    * @default - Automatically generated
    */
   readonly projectName?: string;
+
+  /**
+   * Role to use for CodePipeline and CodeBuild to build and publish the assets.
+   *
+   * @default - Automatically generated
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -88,6 +95,7 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
       }),
       // Needed to perform Docker builds
       environment: props.assetType === AssetType.DOCKER_IMAGE ? { privileged: true } : undefined,
+      role: props.role,
     });
 
     const rolePattern = props.assetType === AssetType.DOCKER_IMAGE
@@ -103,6 +111,7 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
       actionName: props.actionName,
       project,
       input: this.props.cloudAssemblyInput,
+      role: props.role,
     });
   }
 

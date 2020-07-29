@@ -83,7 +83,7 @@ test('assets are also published when using the lower-level addStackArtifactDeplo
       Name: 'Assets',
       Actions: [
         objectLike({
-          Name: FILE_ASSET_SOURCE_HASH,
+          Name: 'FileAsset1',
           RunOrder: 1,
         }),
       ],

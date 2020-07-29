@@ -312,12 +312,7 @@ export class CfnInclude extends core.CfnElement {
     }
 
     const resourceAttributes: any = this.template.Resources[logicalId];
-    const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
-    if (!l1ClassFqn) {
-      // currently, we only handle types we know the L1 for -
-      // in the future, we might construct an instance of CfnResource instead
-      throw new Error(`Unrecognized CloudFormation resource type: '${resourceAttributes.Type}'`);
-    }
+
     // fail early for resource attributes we don't support yet
     const knownAttributes = [
       'Type', 'Properties', 'Condition', 'DependsOn', 'Metadata',
@@ -330,9 +325,6 @@ export class CfnInclude extends core.CfnElement {
       }
     }
 
-    const [moduleName, ...className] = l1ClassFqn.split('.');
-    const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
-    const jsClassFromModule = module[className.join('.')];
     const self = this;
     const finder: core.ICfnFinder = {
       findCondition(conditionName: string): core.CfnCondition | undefined {
@@ -354,13 +346,31 @@ export class CfnInclude extends core.CfnElement {
         return this.findResource(elementName);
       },
     };
-    const options: core.FromCloudFormationOptions = {
+    const cfnParser = new cfn_parse.CfnParser({
       finder,
-    };
+    });
 
-    const l1Instance = this.nestedStacksToInclude[logicalId]
-      ? this.createNestedStack(logicalId, finder)
-      : jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
+    let l1Instance: core.CfnResource;
+    if (this.nestedStacksToInclude[logicalId]) {
+      l1Instance = this.createNestedStack(logicalId, cfnParser);
+    } else {
+      const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
+      if (l1ClassFqn) {
+        const options: core.FromCloudFormationOptions = {
+          finder,
+        };
+        const [moduleName, ...className] = l1ClassFqn.split('.');
+        const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
+        const jsClassFromModule = module[className.join('.')];
+        l1Instance = jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
+      } else {
+        l1Instance = new core.CfnResource(this, logicalId, {
+          type: resourceAttributes.Type,
+          properties: cfnParser.parseValue(resourceAttributes.Properties),
+        });
+        cfnParser.handleAttributes(l1Instance, resourceAttributes, logicalId);
+      }
+    }
 
     if (this.preserveLogicalIds) {
       // override the logical ID to match the original template
@@ -371,7 +381,7 @@ export class CfnInclude extends core.CfnElement {
     return l1Instance;
   }
 
-  private createNestedStack(nestedStackId: string, finder: core.ICfnFinder): core.CfnResource {
+  private createNestedStack(nestedStackId: string, cfnParser: cfn_parse.CfnParser): core.CfnResource {
     const templateResources = this.template.Resources || {};
     const nestedStackAttributes = templateResources[nestedStackId] || {};
 
@@ -385,9 +395,6 @@ export class CfnInclude extends core.CfnElement {
       throw new Error('UpdatePolicy is not supported by the AWS::CloudFormation::Stack resource');
     }
 
-    const cfnParser = new cfn_parse.CfnParser({
-      finder,
-    });
     const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);
     const nestedStack = new core.NestedStack(this, nestedStackId, {
       parameters: nestedStackProps.Parameters,
@@ -397,30 +404,7 @@ export class CfnInclude extends core.CfnElement {
 
     // we know this is never undefined for nested stacks
     const nestedStackResource: core.CfnResource = nestedStack.nestedStackResource!;
-    // handle resource attributes
-    const cfnOptions = nestedStackResource.cfnOptions;
-    cfnOptions.metadata = cfnParser.parseValue(nestedStackAttributes.Metadata);
-    cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(nestedStackAttributes.DeletionPolicy);
-    cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(nestedStackAttributes.UpdateReplacePolicy);
-    // handle DependsOn
-    nestedStackAttributes.DependsOn = nestedStackAttributes.DependsOn ?? [];
-    const dependencies: string[] = Array.isArray(nestedStackAttributes.DependsOn) ?
-      nestedStackAttributes.DependsOn : [nestedStackAttributes.DependsOn];
-    for (const dep of dependencies) {
-      const depResource = finder.findResource(dep);
-      if (!depResource) {
-        throw new Error(`nested stack '${nestedStackId}' depends on '${dep}' that doesn't exist`);
-      }
-      nestedStackResource.node.addDependency(depResource);
-    }
-    // handle Condition
-    if (nestedStackAttributes.Condition) {
-      const condition = finder.findCondition(nestedStackAttributes.Condition);
-      if (!condition) {
-        throw new Error(`nested stack '${nestedStackId}' uses Condition '${nestedStackAttributes.Condition}' that doesn't exist`);
-      }
-      cfnOptions.condition = condition;
-    }
+    cfnParser.handleAttributes(nestedStackResource, nestedStackAttributes, nestedStackId);
 
     const propStack = this.nestedStacksToInclude[nestedStackId];
     const template = new CfnInclude(nestedStack, nestedStackId, {

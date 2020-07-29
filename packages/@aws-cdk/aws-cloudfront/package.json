@@ -129,7 +129,6 @@
       "docs-public-apis:@aws-cdk/aws-cloudfront.HttpVersion",
       "docs-public-apis:@aws-cdk/aws-cloudfront.HttpVersion.HTTP1_1",
       "docs-public-apis:@aws-cdk/aws-cloudfront.HttpVersion.HTTP2",
-      "docs-public-apis:@aws-cdk/aws-cloudfront.LambdaEdgeEventType",
       "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy",
       "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy.SSL_V3",
       "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy.TLS_V1",

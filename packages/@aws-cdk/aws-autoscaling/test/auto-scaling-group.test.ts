@@ -186,7 +186,7 @@ nodeunitShim({
     test.done();
   },
 
-  'userdata can be overriden by image'(test: Test) {
+  'userdata can be overridden by image'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -209,7 +209,7 @@ nodeunitShim({
     test.done();
   },
 
-  'userdata can be overriden at ASG directly'(test: Test) {
+  'userdata can be overridden at ASG directly'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1089,24 +1089,92 @@ nodeunitShim({
     test.done();
   },
 
-  'throw if notification and notificationsTopics are both configured'(test: Test) {
+  'test GroupMetrics.all(), adds a single MetricsCollection with no Metrics specified'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
-    const topic = new sns.Topic(stack, 'MyTopic');
+    // When
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      groupMetrics: [autoscaling.GroupMetrics.all()],
+    });
 
-    // THEN
-    test.throws(() => {
-      new autoscaling.AutoScalingGroup(stack, 'MyASG', {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-        machineImage: new ec2.AmazonLinuxImage(),
-        vpc,
-        notificationsTopic: topic,
-        notifications: [{
-          topic,
-        }],
-      });
-    }, 'Cannot set \'notificationsTopic\' and \'notifications\', \'notificationsTopic\' is deprecated use \'notifications\' instead');
+    // Then
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      MetricsCollection: [
+        {
+          Granularity: '1Minute',
+          Metrics: ABSENT,
+        },
+      ],
+    }));
+    test.done();
+  },
+
+  'test can specify a subset of group metrics'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      groupMetrics: [
+        new autoscaling.GroupMetrics(autoscaling.GroupMetric.MIN_SIZE,
+          autoscaling.GroupMetric.MAX_SIZE,
+          autoscaling.GroupMetric.DESIRED_CAPACITY,
+          autoscaling.GroupMetric.IN_SERVICE_INSTANCES),
+        new autoscaling.GroupMetrics(autoscaling.GroupMetric.PENDING_INSTANCES,
+          autoscaling.GroupMetric.STANDBY_INSTANCES,
+          autoscaling.GroupMetric.TOTAL_INSTANCES,
+          autoscaling.GroupMetric.TERMINATING_INSTANCES,
+        ),
+      ],
+      vpc,
+    });
+
+    // Then
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      MetricsCollection: [
+        {
+          Granularity: '1Minute',
+          Metrics: [ 'GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances' ],
+        }, {
+          Granularity: '1Minute',
+          Metrics: [ 'GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances' ],
+        },
+      ],
+    }));
+    test.done();
+  },
+
+  'test deduplication of group metrics '(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      groupMetrics: [new autoscaling.GroupMetrics(autoscaling.GroupMetric.MIN_SIZE,
+        autoscaling.GroupMetric.MAX_SIZE,
+        autoscaling.GroupMetric.MAX_SIZE,
+        autoscaling.GroupMetric.MIN_SIZE,
+      )],
+    });
+
+    // Then
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      MetricsCollection: [
+        {
+          Granularity: '1Minute',
+          Metrics: [ 'GroupMinSize', 'GroupMaxSize' ],
+        },
+      ],
+    }));
     test.done();
   },
 
@@ -1152,6 +1220,27 @@ nodeunitShim({
       ]},
     ));
 
+    test.done();
+  },
+
+  'throw if notification and notificationsTopics are both configured'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        notificationsTopic: topic,
+        notifications: [{
+          topic,
+        }],
+      });
+    }, 'Cannot set \'notificationsTopic\' and \'notifications\', \'notificationsTopic\' is deprecated use \'notifications\' instead');
     test.done();
   },
 

@@ -47,7 +47,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CertificateManager"
+    "cloudformation": "AWS::CertificateManager",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -63,10 +64,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
   "dependencies": {

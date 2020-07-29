@@ -106,6 +106,10 @@ const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
 
+Note that [Custom Resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html)
+will be of type CfnResource, and hence won't need to be casted.
+This holds for any resource that isn't in the CloudFormation schema.
+
 ## Conditions
 
 If your template uses [CloudFormation Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html),
@@ -154,10 +158,7 @@ For example, if you have the following parent template:
     "ChildStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json",
-        "Parameters": {
-          "MyBucketParameter": "my-bucket-name"
-        }
+        "TemplateURL": "https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json"
       }
     }
   }
@@ -168,19 +169,9 @@ where the child template pointed to by `https://my-s3-template-source.s3.amazona
 
 ```json
 {
-  "Parameters": {
-    "MyBucketParameter": {
-      "Type": "String",
-      "Default": "default-bucket-param-name"
-    }
-  },
   "Resources": {
-    "BucketImport": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Ref": "MyBucketParameter"
-        }
+    "MyBucket": {
+      "Type": "AWS::S3::Bucket"
       }
     }
   }

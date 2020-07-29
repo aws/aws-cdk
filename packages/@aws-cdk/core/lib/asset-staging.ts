@@ -179,8 +179,7 @@ export class AssetStaging extends Construct {
     ];
 
     try {
-      // eslint-disable-next-line no-console
-      console.error(`Bundling asset ${this.node.path}...`);
+      process.stderr.write(`Bundling asset ${this.node.path}...\n`);
       options.image._run({
         command: options.command,
         user,

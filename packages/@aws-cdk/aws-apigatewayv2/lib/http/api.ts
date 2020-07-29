@@ -15,6 +15,11 @@ export interface IHttpApi extends IResource {
    * @attribute
    */
   readonly httpApiId: string;
+
+  /**
+   * The default stage
+   */
+  readonly defaultStage?: HttpStage;
 }
 
 /**
@@ -130,7 +135,7 @@ export class HttpApi extends Resource implements IHttpApi {
   /**
    * default stage of the api resource
    */
-  private readonly defaultStage: HttpStage | undefined;
+  public readonly defaultStage: HttpStage | undefined;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
@@ -180,6 +185,11 @@ export class HttpApi extends Resource implements IHttpApi {
         autoDeploy: true,
         domainMapping: props?.defaultDomainMapping,
       });
+
+      // to ensure the domain is ready before creating the default stage
+      if(props?.defaultDomainMapping) {
+        this.defaultStage.node.addDependency(props.defaultDomainMapping.domainName);
+      }
     }
 
     if (props?.createDefaultStage === false && props.defaultDomainMapping) {
