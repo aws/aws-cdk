@@ -917,13 +917,13 @@ export interface Inventory {
   /**
    * The format of the inventory.
    *
-   * @default - CSV
+   * @default InventoryFormat.CSV
    */
   readonly format?: InventoryFormat;
   /**
    * Whether the inventory is enabled or disabled.
    *
-   * @default - true
+   * @default true
    */
   readonly enabled?: boolean;
   /**
@@ -935,13 +935,13 @@ export interface Inventory {
   /**
    * Frequency at which the inventory should be generated.
    *
-   * @default - Weekly inventory.
+   * @default InventoryFrequency.WEEKLY
    */
   readonly frequency?: InventoryFrequency;
   /**
    * If the inventory should contain all the object versions or only the current one.
    *
-   * @default - All versions are included.
+   * @default InventoryObjectVersion.ALL
    */
   readonly includeObjectVersions?: InventoryObjectVersion;
   /**
@@ -1625,7 +1625,7 @@ export class Bucket extends BucketBase {
           actions: ['s3:PutObject'],
           resources: [
             inventory.destination.bucket.bucketArn,
-            inventory.destination.bucket.arnForObjects('*'),
+            inventory.destination.bucket.arnForObjects(`${inventory.destination.prefix ?? ''}*`),
           ],
           principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
           conditions: {

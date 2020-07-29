@@ -254,6 +254,24 @@ const dataBucket = new s3.Bucket(this, 'DataBucket', {
 });
 ```
 
+If the destination bucket is created as part of the same CDK application, the necessary permissions will be automatically added to the bucket policy.
+However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to make sure it contains the following policy document:
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InventoryAndAnalyticsExamplePolicy",
+      "Effect": "Allow",
+      "Principal": { "Service": "s3.amazonaws.com" },
+      "Action": "s3:PutObject",
+      "Resource": ["arn:aws:s3:::destinationBucket/*"]
+    }
+  ]
+}
+```
+
 ### Website redirection
 
 You can use the two following properties to specify the bucket [redirection policy]. Please note that these methods cannot both be applied to the same bucket.
