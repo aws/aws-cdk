@@ -4,6 +4,7 @@ set -euo pipefail
 bail="--bail"
 runtarget="build+test"
 check_prereqs="true"
+check_compat="true"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
@@ -21,6 +22,9 @@ while [[ "${1:-}" != "" ]]; do
             ;;
         --skip-prereqs)
             check_prereqs="false"
+            ;;
+        --skip-compat)
+            check_compat="false"
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -70,6 +74,8 @@ echo "==========================================================================
 echo "building..."
 time lerna run $bail --stream $runtarget || fail
 
-/bin/bash scripts/check-api-compatibility.sh
+if [ "$check_compat" == "true" ]; then
+  /bin/bash scripts/check-api-compatibility.sh
+fi
 
 touch $BUILD_INDICATOR
