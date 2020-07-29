@@ -56,6 +56,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   }
 
   public readonly connections: ec2.Connections;
+  public readonly ipAddressType?: IpAddressType;
   private readonly securityGroup: ec2.ISecurityGroup;
 
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
@@ -65,6 +66,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       ipAddressType: props.ipAddressType,
     });
 
+    this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
       description: `Automatically created Security Group for ELB ${this.node.uniqueId}`,
@@ -459,6 +461,13 @@ export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnecta
   readonly vpc?: ec2.IVpc;
 
   /**
+   * The IP Address Type for this load balancer
+   *
+   * @default IpAddressType.IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
+
+  /**
    * Add a new listener to this load balancer
    */
   addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener;
@@ -552,13 +561,13 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
 
   public get loadBalancerCanonicalHostedZoneId(): string {
     if (this.props.loadBalancerCanonicalHostedZoneId) { return this.props.loadBalancerCanonicalHostedZoneId; }
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
   }
 
   public get loadBalancerDnsName(): string {
     if (this.props.loadBalancerDnsName) { return this.props.loadBalancerDnsName; }
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
   }
 }

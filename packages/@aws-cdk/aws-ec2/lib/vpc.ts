@@ -94,6 +94,7 @@ export interface IVpc extends IResource {
    * Identifier for the VPN gateway
    */
   readonly vpnGatewayId?: string;
+
   /**
    * Dependable that can be depended upon to force internet connectivity established on the VPC
    */
@@ -1098,6 +1099,12 @@ export class Vpc extends VpcBase {
    */
   public readonly availabilityZones: string[];
 
+  /**
+   * Internet Gateway for the VPC. Note that in case the VPC is configured only
+   * with ISOLATED subnets, this attribute will be `undefined`.
+   */
+  public readonly internetGatewayId?: string;
+
   public readonly internetConnectivityEstablished: IDependable;
 
   /**
@@ -1184,6 +1191,9 @@ export class Vpc extends VpcBase {
     if (allowOutbound) {
       const igw = new CfnInternetGateway(this, 'IGW', {
       });
+
+      this.internetGatewayId = igw.ref;
+
       this._internetConnectivityEstablished.add(igw);
       const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
         internetGatewayId: igw.ref,
@@ -1406,11 +1416,10 @@ export class Subnet extends Resource implements ISubnet {
   /**
    * Import existing subnet from id.
    */
-  // tslint:disable:no-shadowed-variable
+  // eslint-disable-next-line no-shadow
   public static fromSubnetId(scope: Construct, id: string, subnetId: string): ISubnet {
     return this.fromSubnetAttributes(scope, id, { subnetId });
   }
-  // tslint:enable:no-shadowed-variable
 
   /**
    * The Availability Zone the subnet is located in
@@ -1662,7 +1671,6 @@ function routerTypeToPropName(routerType: RouterType) {
   })[routerType];
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface PublicSubnetProps extends SubnetProps {
 
 }
@@ -1701,7 +1709,6 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
   }
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface PrivateSubnetProps extends SubnetProps {
 
 }
@@ -1746,11 +1753,11 @@ class ImportedVpc extends VpcBase {
     this._vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
 
-    // tslint:disable:max-line-length
+    /* eslint-disable max-len */
     const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds');
     const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, props.privateSubnetRouteTableIds, SubnetType.PRIVATE, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames', 'privateSubnetRouteTableIds');
     const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, props.isolatedSubnetRouteTableIds, SubnetType.ISOLATED, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames', 'isolatedSubnetRouteTableIds');
-    // tslint:enable:max-line-length
+    /* eslint-enable max-len */
 
     this.publicSubnets = pub.import(this);
     this.privateSubnets = priv.import(this);
@@ -1876,7 +1883,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       const ref = Token.isUnresolved(attrs.subnetId)
         ? `at '${scope.node.path}/${id}'`
         : `'${attrs.subnetId}'`;
-      // tslint:disable-next-line: max-line-length
+      // eslint-disable-next-line max-len
       scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
@@ -1890,7 +1897,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 
   public get availabilityZone(): string {
     if (!this._availabilityZone) {
-      // tslint:disable-next-line: max-line-length
+      // eslint-disable-next-line max-len
       throw new Error("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
     }
     return this._availabilityZone;
@@ -1924,12 +1931,12 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
 
   if (count === 0 && hasPrivateSubnets) {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
   }
 
   if (count > 0 && !hasPublicSubnets) {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error(`If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into (got ${JSON.stringify(subnetConfig)}.`);
   }
 

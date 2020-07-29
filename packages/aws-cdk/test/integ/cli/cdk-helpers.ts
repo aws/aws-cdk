@@ -5,16 +5,14 @@ import { cloudFormation, deleteBucket, deleteImageRepository, deleteStacks, empt
 
 export const INTEG_TEST_DIR = path.join(os.tmpdir(), 'cdk-integ-test2');
 
-export const STACK_NAME_PREFIX = process.env.STACK_NAME_PREFIX || (() => {
-  // Make the stack names unique based on the codebuild project name
-  // (if it exists). This prevents multiple codebuild projects stomping
-  // on each other's stacks and failing them.
-  //
-  // The get codebuild project name from the ID: PROJECT_NAME:1238a83
-  if (process.env.CODEBUILD_BUILD_ID) { return process.env.CODEBUILD_BUILD_ID.split(':')[0]; }
-  if (process.env.IS_CANARY === 'true') { return 'cdk-toolkit-canary'; }
-  return 'cdk-toolkit-integration';
-})();
+// create a unique stack name prefix for this test test run. this is passed
+// through an environment variable to app.js so that all stacks use this prefix.
+const timestamp = new Date().toISOString().replace(/[^0-9]/g, '');
+export const STACK_NAME_PREFIX = `cdktest-${timestamp}`;
+
+process.stdout.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
+process.stdout.write(` All stacks created by this test run will have the prefix: ${STACK_NAME_PREFIX}\n`);
+process.stdout.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
 
 export interface ShellOptions extends child_process.SpawnOptions {
   /**
@@ -142,7 +140,8 @@ export async function deleteableStacks(prefix: string): Promise<AWS.CloudFormati
 
   return (response.Stacks ?? [])
     .filter(s => s.StackName.startsWith(prefix))
-    .filter(s => statusFilter.includes(s.StackStatus));
+    .filter(s => statusFilter.includes(s.StackStatus))
+    .filter(s => s.RootId === undefined); // Only delete parent stacks. Nested stacks are deleted in the process
 }
 
 /**

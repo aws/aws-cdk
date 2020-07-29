@@ -1,8 +1,8 @@
+import * as os from 'os';
+import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
-import * as os from 'os';
-import * as path from 'path';
 import * as sinon from 'sinon';
 import { App, AssetHashType, AssetStaging, BundlingDockerImage, Stack } from '../lib';
 
@@ -108,6 +108,7 @@ export = {
     const ensureDirSyncSpy = sinon.spy(fs, 'ensureDirSync');
     const mkdtempSyncSpy = sinon.spy(fs, 'mkdtempSync');
     const chmodSyncSpy = sinon.spy(fs, 'chmodSync');
+    const processStdErrWriteSpy = sinon.spy(process.stderr, 'write');
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -137,6 +138,9 @@ export = {
     test.ok(ensureDirSyncSpy.calledWith(stagingTmp));
     test.ok(mkdtempSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-'))));
     test.ok(chmodSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-')), 0o777));
+
+    // shows a message before bundling
+    test.ok(processStdErrWriteSpy.calledWith('Bundling asset stack/Asset...\n'));
 
     test.done();
   },

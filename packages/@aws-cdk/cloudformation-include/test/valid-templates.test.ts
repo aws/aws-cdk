@@ -1,13 +1,13 @@
+import * as path from 'path';
 import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
-import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 /* eslint-disable quotes */
 
 describe('CDK Include', () => {
@@ -192,6 +192,83 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template with Fn::Sub in string form with escaped and unescaped references and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-string.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-string.json'),
+    );
+  });
+
+  test('can parse the string argument Fn::Sub with escaped references that contain whitespace', () => {
+    includeTestTemplate(stack, 'fn-sub-escaping.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-escaping.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub in map form and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-map-dotted-attributes.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-map-dotted-attributes.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub shadowing a logical ID from the template and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-shadow.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub attribute expression shadowing a logical ID from the template, and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow-attribute.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-shadow-attribute.json'),
+    );
+  });
+
+  test('can modify resources used in Fn::Sub in map form references and see the changes in the template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'fn-sub-shadow.json');
+
+    cfnTemplate.getResource('AnotherBucket').overrideLogicalId('NewBucket');
+
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "BucketName": {
+        "Fn::Sub": [
+          "${AnotherBucket}",
+          {
+            "AnotherBucket": { "Ref": "NewBucket" },
+          },
+        ],
+      },
+    });
+  });
+
+  test('can modify resources used in Fn::Sub in string form and see the changes in the template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'fn-sub-override.json');
+
+    cfnTemplate.getResource('Bucket').overrideLogicalId('NewBucket');
+
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "BucketName": {
+        "Fn::Sub": "${NewBucket}-${!Bucket}-${NewBucket.DomainName}",
+      },
+    });
+  });
+
+  test('can ingest a template with Fn::Sub with brace edge cases and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-brace-edges.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-brace-edges.json'),
+    );
+  });
+
   test('can ingest a template with a Ref expression for an array value, and output it unchanged', () => {
     includeTestTemplate(stack, 'ref-array-property.json');
 
@@ -251,7 +328,42 @@ describe('CDK Include', () => {
     );
   });
 
-  test("correctly parses templates with parameters", () => {
+  test('correctly change references to Conditions when renaming them', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'condition-same-name-as-resource.json');
+    const alwaysFalse = cfnTemplate.getCondition('AlwaysFalse');
+    alwaysFalse.overrideLogicalId('TotallyFalse');
+
+    expect(stack).toMatchTemplate({
+      "Parameters": {
+        "Param": {
+          "Type": "String",
+        },
+      },
+      "Conditions": {
+        "AlwaysTrue": {
+          "Fn::Not": [{ "Condition": "TotallyFalse" }],
+        },
+        "TotallyFalse": {
+          "Fn::Equals": [{ "Ref": "Param" }, 2],
+        },
+      },
+      "Resources": {
+        "AlwaysTrue": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::If": ["TotallyFalse",
+                { "Ref": "Param" },
+                { "Ref": "AWS::NoValue" },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('correctly parses templates with parameters', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
     new s3.CfnBucket(stack, 'NewBucket', {
@@ -396,8 +508,8 @@ describe('CDK Include', () => {
               ],
             },
           },
-          "Metadata" : {
-            "Object1" : "Location1",
+          "Metadata": {
+            "Object1": "Location1",
             "KeyRef": { "Ref": "TotallyDifferentKey" },
             "KeyArn": { "Fn::GetAtt": ["TotallyDifferentKey", "Arn"] },
           },
@@ -409,10 +521,87 @@ describe('CDK Include', () => {
     });
   });
 
-  test("throws an exception when encountering a Resource type it doesn't recognize", () => {
+  test('can include a template with a custom resource that uses attributes', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'custom-resource-with-attributes.json');
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('custom-resource-with-attributes.json'),
+    );
+
+    const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');
+    expect(cfnTemplate.getResource('CustomBucket').cfnOptions.condition).toBe(alwaysFalseCondition);
+  });
+
+  test("throws an exception when a custom resource uses a Condition attribute that doesn't exist in the template", () => {
     expect(() => {
-      includeTestTemplate(stack, 'non-existent-resource-type.json');
-    }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
+      includeTestTemplate(stack, 'custom-resource-with-bad-condition.json');
+    }).toThrow(/Resource 'CustomResource' uses Condition 'AlwaysFalseCond' that doesn't exist/);
+  });
+
+  test('can ingest a template that contains outputs and modify them', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
+
+    const output = cfnTemplate.getOutput('Output1');
+    output.value = 'a mutated value';
+    output.description = undefined;
+    output.exportName = 'an export';
+    output.condition = new core.CfnCondition(stack, 'MyCondition', {
+      expression: core.Fn.conditionIf('AlwaysFalseCond', core.Aws.NO_VALUE, true),
+    });
+
+    const originalTemplate = loadTestFileToJsObject('outputs-with-references.json');
+
+    expect(stack).toMatchTemplate({
+      "Conditions": {
+        ...originalTemplate.Conditions,
+        "MyCondition": {
+          "Fn::If": [
+            "AlwaysFalseCond",
+            { "Ref": "AWS::NoValue" },
+            true,
+          ],
+        },
+      },
+      "Parameters": {
+        ...originalTemplate.Parameters,
+      },
+      "Resources": {
+        ...originalTemplate.Resources,
+      },
+      "Outputs": {
+        "Output1": {
+          "Value": "a mutated value",
+          "Export": {
+            "Name": "an export",
+          },
+          "Condition": "MyCondition",
+        },
+        "OutputWithNoCondition": {
+          "Value": "some-value",
+        },
+      },
+    });
+  });
+
+  test('can ingest a template that contains outputs and get those outputs', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
+    const output = cfnTemplate.getOutput('Output1');
+
+    expect(output.condition).toBe(cfnTemplate.getCondition('AlwaysFalseCond'));
+    expect(output.description).toBeDefined();
+    expect(output.value).toBeDefined();
+    expect(output.exportName).toBeDefined();
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('outputs-with-references.json'),
+    );
+  });
+
+  test("throws an exception when attempting to retrieve an Output that doesn't exist", () => {
+    const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
+
+    expect(() => {
+      cfnTemplate.getOutput('FakeOutput');
+    }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);
   });
 });
 

@@ -14,9 +14,9 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 ```
 
-### Sources
+## Sources
 
-#### AWS CodeCommit
+### AWS CodeCommit
 
 To use a CodeCommit Repository in a CodePipeline:
 
@@ -62,7 +62,14 @@ new codepipeline_actions.CodeBuildAction({
 });
 ```
 
-#### GitHub
+### GitHub
+
+If you want to use a GitHub repository as the source, you must create:
+
+* A [GitHub Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+* A [Secrets Manager PlainText Secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html)
+  with the value of the **GitHub Access Token**. Pick whatever name you want
+  (for example `my-github-token`) and pass it as the argument of `oauthToken`.
 
 To use GitHub as the source of a CodePipeline:
 
@@ -104,7 +111,7 @@ new codepipeline_actions.CodeBuildAction({
 });
 ```
 
-#### BitBucket
+### BitBucket
 
 CodePipeline can use a BitBucket Git repository as a source:
 
@@ -135,7 +142,7 @@ const sourceAction = new codepipeline_actions.BitBucketSourceAction({
 the above class `BitBucketSourceAction` is experimental -
 we reserve the right to make breaking changes to it.
 
-#### AWS S3
+### AWS S3
 
 To use an S3 Bucket as a source in CodePipeline:
 
@@ -205,7 +212,7 @@ new codepipeline_actions.CodeBuildAction({
 });
 ```
 
-#### AWS ECR
+### AWS ECR
 
 To use an ECR Repository as a source in a Pipeline:
 
@@ -246,9 +253,9 @@ new codepipeline_actions.CodeBuildAction({
 });
 ```
 
-### Build & test
+## Build & test
 
-#### AWS CodeBuild
+### AWS CodeBuild
 
 Example of a CodeBuild Project used in a Pipeline, alongside CodeCommit:
 
@@ -301,7 +308,7 @@ const testAction = new codepipeline_actions.CodeBuildAction({
 });
 ```
 
-##### Multiple inputs and outputs
+#### Multiple inputs and outputs
 
 When you want to have multiple inputs and/or outputs for a Project used in a
 Pipeline, instead of using the `secondarySources` and `secondaryArtifacts`
@@ -375,7 +382,7 @@ const project = new codebuild.PipelineProject(this, 'MyProject', {
 });
 ```
 
-##### Variables
+#### Variables
 
 The CodeBuild action emits variables.
 Unlike many other actions, the variables are not static,
@@ -399,7 +406,7 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
         build: {
           commands: 'export MY_VAR="some value"',
         },
-      }, 
+      },
     }),
   }),
   variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
@@ -417,7 +424,7 @@ new codepipeline_actions.CodeBuildAction({
 });
 ```
 
-#### Jenkins
+### Jenkins
 
 In order to use Jenkins Actions in the Pipeline,
 you first need to create a `JenkinsProvider`:
@@ -459,9 +466,9 @@ const buildAction = new codepipeline_actions.JenkinsAction({
 });
 ```
 
-### Deploy
+## Deploy
 
-#### AWS CloudFormation
+### AWS CloudFormation
 
 This module contains Actions that allows you to deploy to CloudFormation from AWS CodePipeline.
 
@@ -497,7 +504,7 @@ using a CloudFormation CodePipeline Action. Example:
 
 [Example of deploying a Lambda through CodePipeline](test/integ.lambda-deployed-through-codepipeline.lit.ts)
 
-##### Cross-account actions
+#### Cross-account actions
 
 If you want to update stacks in a different account,
 pass the `account` property when creating the action:
@@ -534,9 +541,9 @@ new codepipeline_actions.CloudFormationCreateUpdateStackAction({
 });
 ```
 
-#### AWS CodeDeploy
+### AWS CodeDeploy
 
-##### Server deployments
+#### Server deployments
 
 To use CodeDeploy for EC2/on-premise deployments in a Pipeline:
 
@@ -589,7 +596,7 @@ where you will define your Pipeline,
 and deploy the `lambdaStack` using a CloudFormation CodePipeline Action
 (see above for a complete example).
 
-#### ECS
+### ECS
 
 CodePipeline can deploy an ECS service.
 The deploy Action receives one input Artifact which contains the [image definition file]:
@@ -616,7 +623,7 @@ const deployStage = pipeline.addStage({
 
 [image definition file]: https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
 
-#### AWS S3
+### AWS S3
 
 To use an S3 Bucket as a deployment target in CodePipeline:
 
@@ -636,7 +643,7 @@ const deployStage = pipeline.addStage({
 });
 ```
 
-#### Alexa Skill
+### Alexa Skill
 
 You can deploy to Alexa using CodePipeline with the following Action:
 
@@ -687,9 +694,32 @@ new codepipeline_actions.AlexaSkillDeployAction({
 });
 ```
 
-### Approve & invoke
+### AWS Service Catalog 
 
-#### Manual approval Action
+You can deploy a CloudFormation template to an existing Service Catalog product with the following action:
+
+```ts
+new codepipeline.Pipeline(this, 'Pipeline', {
+      stages: [
+          {
+            stageName: 'ServiceCatalogDeploy',
+            actions: [
+            new codepipeline_actions.ServiceCatalogDeployAction({
+                actionName: 'ServiceCatalogDeploy',
+                templatePath: cdkBuildOutput.atPath("Sample.template.json"),
+                productVersionName: "Version - " + Date.now.toString,
+                productType: "CLOUD_FORMATION_TEMPLATE",
+                productVersionDescription: "This is a version from the pipeline with a new description.",
+                productId: "prod-XXXXXXXX",
+            }),
+          },
+        ],     
+});
+```
+
+## Approve & invoke
+
+### Manual approval Action
 
 This package contains an Action that stops the Pipeline until someone manually clicks the approve button:
 
@@ -712,7 +742,7 @@ but `notifyEmails` were,
 a new SNS Topic will be created
 (and accessible through the `notificationTopic` property of the Action).
 
-#### AWS Lambda
+### AWS Lambda
 
 This module contains an Action that allows you to invoke a Lambda function in a Pipeline:
 
@@ -794,3 +824,52 @@ new codepipeline_actions.CodeBuildAction({
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
 on how to write a Lambda function invoked from CodePipeline.
+
+### AWS Step Functions
+
+This module contains an Action that allows you to invoke a Step Function in a Pipeline:
+
+```ts
+import * as stepfunction from '@aws-cdk/aws-stepfunctions';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const startState = new stepfunction.Pass(stack, 'StartState');
+const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+  definition: startState,
+});
+const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
+  actionName: 'Invoke',
+  stateMachine: simpleStateMachine,
+  stateMachineInput: codepipeline_actions.StateMachineInput.literal({ IsHelloWorldExample: true }),
+});
+pipeline.addStage({
+  stageName: 'StepFunctions',
+  actions: [stepFunctionAction],
+});
+```
+
+The `StateMachineInput` can be created with one of 2 static factory methods:
+`literal`, which takes an arbitrary map as its only argument, or `filePath`:
+
+```ts
+import * as stepfunction from '@aws-cdk/aws-stepfunctions';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const inputArtifact = new codepipeline.Artifact();
+const startState = new stepfunction.Pass(stack, 'StartState');
+const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+  definition: startState,
+});
+const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
+  actionName: 'Invoke',
+  stateMachine: simpleStateMachine,
+  stateMachineInput: codepipeline_actions.StateMachineInput.filePath(inputArtifact.atPath('assets/input.json')),
+});
+pipeline.addStage({
+  stageName: 'StepFunctions',
+  actions: [stepFunctionAction],
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html)
+for information on Action structure reference.

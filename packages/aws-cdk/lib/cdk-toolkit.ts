@@ -1,10 +1,10 @@
+import * as path from 'path';
+import { format } from 'util';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import * as promptly from 'promptly';
-import { format } from 'util';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 import { bootstrapEnvironment } from './api';
 import { SdkProvider } from './api/aws-auth';
@@ -101,7 +101,7 @@ export class CdkToolkit {
       for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', colors.bold(stack.displayName)));
         const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
-        diffs = printStackDiff(currentTemplate, stack, strict, contextLines, stream);
+        diffs += printStackDiff(currentTemplate, stack, strict, contextLines, stream);
       }
     }
 
@@ -134,7 +134,7 @@ export class CdkToolkit {
     for (const stack of stacks.stackArtifacts) {
       if (stacks.stackCount !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
       }
 
@@ -237,7 +237,7 @@ export class CdkToolkit {
     stacks = stacks.reversed();
 
     if (!options.force) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.stackArtifacts.map(s => s.id).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;

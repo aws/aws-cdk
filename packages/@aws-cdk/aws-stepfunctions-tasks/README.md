@@ -2,9 +2,7 @@
 <!--BEGIN STABILITY BANNER-->
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -54,6 +52,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Create Transform Job](#create-transform-job)
 - [SNS](#sns)
 - [Step Functions](#step-functions)
+  - [Start Execution](#start-execution)
+  - [Invoke Activity Worker](#invoke-activity)
 - [SQS](#sqs)
 
 ## Task
@@ -623,6 +623,19 @@ new tasks.LambdaInvoke(this, 'Invoke and set function response as task output', 
 });
 ```
 
+If you want to combine the input and the Lambda function response you can use
+the `payloadResponseOnly` property and specify the `resultPath`. This will put the
+Lambda function ARN directly in the "Resource" string, but it conflicts with the
+integrationPattern, invocationType, clientContext, and qualifier properties.
+
+```ts
+new tasks.LambdaInvoke(this, 'Invoke and combine function response with task input', {
+  lambdaFunction: myLambda,
+  payloadResponseOnly: true,
+  resultPath: '$.myLambda',
+});
+```
+
 You can have Step Functions pause a task, and wait for an external process to
 return a task token. Read more about the [callback pattern](https://docs.aws.amazon.com/step-functions/latest/dg/callback-task-sample-sqs.html#call-back-lambda-example)
 
@@ -750,6 +763,8 @@ const task2 = new tasks.SnsPublish(this, 'Publish2', {
 
 ## Step Functions
 
+### Start Execution
+
 You can manage [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html) executions.
 
 AWS Step Functions supports it's own [`StartExecution`](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html) API as a service integration.
@@ -774,6 +789,33 @@ const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
 // Define a second state machine with the Task state above
 new sfn.StateMachine(stack, 'ParentStateMachine', {
   definition: task
+});
+```
+
+### Invoke Activity
+
+You can invoke a [Step Functions Activity](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-activities.html) which enables you to have
+a task in your state machine where the work is performed by a *worker* that can
+be hosted on Amazon EC2, Amazon ECS, AWS Lambda, basically anywhere. Activities
+are a way to associate code running somewhere (known as an activity worker) with
+a specific task in a state machine.
+
+When Step Functions reaches an activity task state, the workflow waits for an
+activity worker to poll for a task. An activity worker polls Step Functions by
+using GetActivityTask, and sending the ARN for the related activity.  
+
+After the activity worker completes its work, it can provide a report of its
+success or failure by using `SendTaskSuccess` or `SendTaskFailure`. These two
+calls use the taskToken provided by GetActivityTask to associate the result
+with that task.
+
+The following example creates an activity and creates a task that invokes the activity.
+
+```ts
+const submitJobActivity = new sfn.Activity(this, 'SubmitJob');
+
+new tasks.StepFunctionsInvokeActivity(this, 'Submit Job', {
+  activity: submitJobActivity,
 });
 ```
 

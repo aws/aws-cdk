@@ -122,10 +122,10 @@ abstract class RuleNew extends RuleBase {
    * @param identifier the resource identifier
    */
   public scopeToResource(type: string, identifier?: string) {
-    this.scopeTo({
+    this.scope = {
       complianceResourceId: identifier,
       complianceResourceTypes: [type],
-    });
+    };
   }
 
   /**
@@ -136,9 +136,9 @@ abstract class RuleNew extends RuleBase {
    * @param types resource types
    */
   public scopeToResources(...types: string[]) {
-    this.scopeTo({
+    this.scope = {
       complianceResourceTypes: types,
-    });
+    };
   }
 
   /**
@@ -148,18 +148,10 @@ abstract class RuleNew extends RuleBase {
    * @param value the tag value
    */
   public scopeToTag(key: string, value?: string) {
-    this.scopeTo({
+    this.scope = {
       tagKey: key,
       tagValue: value,
-    });
-  }
-
-  private scopeTo(scope: CfnConfigRule.ScopeProperty) {
-    if (!this.isManaged && !this.isCustomWithChanges) {
-      throw new Error('Cannot scope rule when `configurationChanges` is set to false.');
-    }
-
-    this.scope = scope;
+    };
   }
 }
 

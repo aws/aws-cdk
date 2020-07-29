@@ -9,5 +9,5 @@ exportsLinter.add({
     if (e.ctx.isClassType() || e.ctx.isInterfaceType()) {
       e.assert(!e.ctx.allMethods.some(m => m.name === 'export'), e.ctx.fqn);
     }
-  }
+  },
 });
