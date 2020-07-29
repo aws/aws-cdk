@@ -20,7 +20,7 @@ iFunc.addPermission('iFunc', {
 });
 
 const iVersionFunc = lambda.Version.fromVersionAttributes(stack, 'iVersionFunc', {
-  version: baseFunc.latestVersion.version,
+  version: baseFunc.currentVersion.version,
   lambda: baseFunc,
 });
 

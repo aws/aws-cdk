@@ -182,7 +182,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
   /**
    * Whether the addPermission() call adds any permissions
    *
-   * True for new Lambdas, false for imported Lambdas (they might live in different accounts).
+   * True for new Lambdas, false for version $LATEST.
    */
   protected abstract readonly canCreatePermissions: boolean;
 
@@ -387,7 +387,7 @@ class LatestVersion extends FunctionBase implements IVersion {
   public readonly version = '$LATEST';
   public readonly permissionsNode = this.node;
 
-  protected readonly canCreatePermissions = true;
+  protected readonly canCreatePermissions = false;
 
   constructor(lambda: FunctionBase) {
     super(lambda, '$LATEST');

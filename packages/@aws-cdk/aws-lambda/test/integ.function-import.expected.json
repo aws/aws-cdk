@@ -50,6 +50,14 @@
         "BaseFunctionServiceRole9D84751B"
       ]
     },
+    "BaseFunctionCurrentVersionDC3A2BBC4175cbf29d4a4c32006b69731674305b": {
+      "Type": "AWS::Lambda::Version",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "BaseFunction2720903A"
+        }
+      }
+    },
     "iFuncA576B2A7": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
@@ -58,6 +66,33 @@
           "Fn::GetAtt": [
             "BaseFunction2720903A",
             "Arn"
+          ]
+        },
+        "Principal": "cloudformation.amazonaws.com"
+      }
+    },
+    "iVersionFunc0B2A8D74": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::GetAtt": [
+                  "BaseFunction2720903A",
+                  "Arn"
+                ]
+              },
+              ":",
+              {
+                "Fn::GetAtt": [
+                  "BaseFunctionCurrentVersionDC3A2BBC4175cbf29d4a4c32006b69731674305b",
+                  "Version"
+                ]
+              }
+            ]
           ]
         },
         "Principal": "cloudformation.amazonaws.com"
