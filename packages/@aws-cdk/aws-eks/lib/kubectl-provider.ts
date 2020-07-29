@@ -29,6 +29,11 @@ export interface KubectlProviderProps {
    */
   readonly securityGroups?: ISecurityGroup[];
 
+  /**
+   * Environment variables to inject to the provider function.
+   */
+  readonly env?: { [key: string]: string };
+
 }
 
 export class KubectlProvider extends NestedStack {
@@ -56,6 +61,7 @@ export class KubectlProvider extends NestedStack {
       vpc: props.vpc,
       securityGroups: props.securityGroups,
       vpcSubnets: props.vpcSubnets,
+      environment: props.env,
     });
 
     this.provider = new cr.Provider(this, 'Provider', {

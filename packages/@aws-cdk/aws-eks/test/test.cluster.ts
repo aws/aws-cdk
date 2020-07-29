@@ -1611,6 +1611,41 @@ export = {
       test.done();
     },
 
+    'kubectl provider accepts passes environment to lambda'(test: Test) {
+
+      const { stack } = testFixture();
+
+      const cluster = new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.private(),
+        kubectlEnvironment: {
+          Foo: 'Bar',
+        },
+      });
+
+      cluster.addResource('resource', {
+        kind: 'ConfigMap',
+        apiVersion: 'v1',
+        data: {
+          hello: 'world',
+        },
+        metadata: {
+          name: 'config-map',
+        },
+      });
+
+      // the kubectl provider is inside a nested stack.
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      expect(nested).to(haveResource('AWS::Lambda::Function', {
+        Environment: {
+          Variables: {
+            Foo: 'Bar',
+          },
+        },
+      }));
+
+      test.done();
+    },
+
     'throw when private access is configured without dns support enabled for the VPC'(test: Test) {
 
       const { stack } = testFixture();

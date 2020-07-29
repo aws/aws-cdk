@@ -226,6 +226,15 @@ export interface ClusterOptions {
    * @default EndpointAccess.publicAndPrivate()
    */
   readonly endpointAccess?: EndpointAccess;
+
+  /**
+   * Environment for the kubectl execution. Only relevant for kubectl enabled clusters.
+   *
+   * These variables will be injected to the handler executing kubectl/helm commands.
+   *
+   * @default - No environment.
+   */
+  readonly kubectlEnvironment?: { [key: string]: string }
 }
 
 /**
@@ -513,6 +522,8 @@ export class Cluster extends Resource implements ICluster {
 
   private readonly vpcSubnets: ec2.SubnetSelection[];
 
+  private readonly kubectlProviderEnv?: { [key: string]: string };
+
   private readonly version: KubernetesVersion;
 
   /**
@@ -586,6 +597,7 @@ export class Cluster extends Resource implements ICluster {
     if (this.kubectlEnabled) {
 
       this.endpointAccess = props.endpointAccess ?? EndpointAccess.publicAndPrivate();
+      this.kubectlProviderEnv = props.kubectlEnvironment;
 
       if (this.endpointAccess.endpointPrivateAccess && this.vpc instanceof ec2.Vpc) {
         // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
@@ -1029,7 +1041,9 @@ export class Cluster extends Resource implements ICluster {
     if (!provider) {
       // create the provider.
 
-      let providerProps: KubectlProviderProps = {};
+      let providerProps: KubectlProviderProps = {
+        env: this.kubectlProviderEnv,
+      };
 
       if (!this.endpointAccess!.endpointPublicAccess) {
         // endpoint access is private only, we need to attach the
