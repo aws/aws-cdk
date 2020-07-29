@@ -41,7 +41,13 @@
     "@types/yargs": "^15.0.5",
     "tslint": "^5.20.1",
     "jest": "^25.5.4",
-    "typescript": "~3.9.6"
+    "typescript": "~3.9.6",
+    "@typescript-eslint/eslint-plugin": "^3.6.1",
+    "@typescript-eslint/parser": "^2.19.2",
+    "eslint": "^6.8.0",
+    "eslint-import-resolver-node": "^0.3.4",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-import": "^2.22.0"
   },
   "nozem": {
     "ostools": ["chmod"]

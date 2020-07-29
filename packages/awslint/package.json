@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Enforces the AWS Construct Library guidelines",
   "scripts": {
-    "build": "tsc -b && npm run lint && chmod +x bin/awslint",
+    "build": "tsc -b && eslint . --ext=.ts && pkglint && chmod +x bin/awslint",
     "lint": "eslint . --ext=.ts && pkglint",
     "test": "echo ok",
     "watch": "tsc -b -w",
@@ -27,7 +27,13 @@
     "@types/fs-extra": "^8.1.0",
     "@types/yargs": "^15.0.5",
     "pkglint": "0.0.0",
-    "typescript": "~3.9.6"
+    "typescript": "~3.9.6",
+    "@typescript-eslint/eslint-plugin": "^3.6.1",
+    "@typescript-eslint/parser": "^2.19.2",
+    "eslint": "^6.8.0",
+    "eslint-import-resolver-node": "^0.3.4",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-import": "^2.22.0"
   },
   "repository": {
     "type": "git",
@@ -46,7 +52,7 @@
     "cdk"
   ],
   "nozem": {
-    "ostools": ["chmod"]
+    "ostools": ["chmod", "npm"]
   },
   "maturity": "developer-preview",
   "stability": "experimental",
