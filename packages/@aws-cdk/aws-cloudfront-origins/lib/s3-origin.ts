@@ -26,9 +26,8 @@ export interface S3OriginProps {
  *
  * @experimental
  */
-export class S3Origin extends cloudfront.Origin {
-
-  private readonly origin: cloudfront.Origin;
+export class S3Origin implements cloudfront.IOrigin {
+  private readonly origin: cloudfront.IOrigin;
 
   constructor(bucket: s3.IBucket, props: S3OriginProps = {}) {
     let proxyOrigin;
@@ -43,22 +42,10 @@ export class S3Origin extends cloudfront.Origin {
         ...props,
       });
     }
-
-    super(proxyOrigin.domainName);
-
     this.origin = proxyOrigin;
   }
 
-  public get id() {
-    return this.origin.id;
+  public bind(scope: cdk.Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+    return this.origin.bind(scope, options);
   }
-
-  public bind(scope: cdk.Construct, options: cloudfront.OriginBindOptions) {
-    this.origin.bind(scope, options);
-  }
-
-  public renderOrigin() {
-    return this.origin.renderOrigin();
-  }
-
 }
