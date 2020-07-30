@@ -242,11 +242,11 @@ interface AssetPublishingProps {
  */
 class AssetPublishing extends Construct {
   private readonly publishers: Record<string, PublishAssetsAction> = {};
+  private readonly assetRoles: Record<string, iam.IRole> = {};
   private readonly myCxAsmRoot: string;
 
   private readonly stage: codepipeline.IStage;
   private readonly pipeline: codepipeline.Pipeline;
-  private assetRole?: iam.IRole;
   private _fileAssetCtr = 1;
   private _dockerAssetCtr = 1;
 
@@ -272,8 +272,8 @@ class AssetPublishing extends Construct {
     const relativePath = path.relative(this.myCxAsmRoot, command.assetManifestPath);
 
     // Late-binding here (rather than in the constructor) to prevent creating the role in cases where no asset actions are created.
-    if (!this.assetRole) {
-      this.generateAssetRole();
+    if (!this.assetRoles[command.assetType]) {
+      this.generateAssetRole(command.assetType);
     }
 
     let action = this.publishers[command.assetId];
@@ -294,7 +294,7 @@ class AssetPublishing extends Construct {
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
-        role: this.assetRole,
+        role: this.assetRoles[command.assetType],
       });
       this.stage.addAction(action);
     }
@@ -322,9 +322,13 @@ class AssetPublishing extends Construct {
    * This role is used by both the CodePipeline build action and related CodeBuild project. Consolidating these two
    * roles into one, and re-using across all assets, saves significant size of the final synthesized output.
    * Modeled after the CodePipeline role and 'CodePipelineActionRole' roles.
+   * Generates one role per asset type to separate file and Docker/image-based permissions.
    */
-  private generateAssetRole() {
-    const assetRole = new iam.Role(this, 'Role', {
+  private generateAssetRole(assetType: AssetType) {
+    if (this.assetRoles[assetType]) { return this.assetRoles[assetType]; }
+
+    const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
+    const assetRole = new iam.Role(this, `${rolePrefix}Role`, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.CompositePrincipal(new iam.ServicePrincipal('codebuild.amazonaws.com'), new iam.AccountPrincipal(Stack.of(this).account)),
     });
@@ -368,15 +372,19 @@ class AssetPublishing extends Construct {
     }));
 
     // Publishing role access
+    const rolePattern = assetType === AssetType.DOCKER_IMAGE
+      ? 'arn:*:iam::*:role/*-image-publishing-role-*'
+      : 'arn:*:iam::*:role/*-file-publishing-role-*';
     assetRole.addToPolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: ['arn:*:iam::*:role/*-image-publishing-role-*', 'arn:*:iam::*:role/*-file-publishing-role-*'],
+      resources: [rolePattern],
     }));
 
+    // Artifact access
     this.pipeline.artifactBucket.grantRead(assetRole);
 
-    this.assetRole = assetRole.withoutPolicyUpdates();
-    return this.assetRole;
+    this.assetRoles[assetType] = assetRole.withoutPolicyUpdates();
+    return this.assetRoles[assetType];
   }
 }
 
