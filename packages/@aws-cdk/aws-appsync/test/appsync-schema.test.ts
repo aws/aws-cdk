@@ -1,6 +1,5 @@
 import { join } from 'path';
 import '@aws-cdk/assert/jest';
-import * as assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
