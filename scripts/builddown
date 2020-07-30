@@ -17,9 +17,8 @@ else
     echo "Unknown option: $1"
     exit 1
   fi
+  ${scriptdir}/foreach.sh --down yarn build
 fi
-
-${scriptdir}/foreach.sh --down yarn build
 
 echo "************************************************************"
 echo "builddown done"
