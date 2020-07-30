@@ -27,6 +27,11 @@ same, the *CDK Pipelines* library takes care of the details.
 will work, see the section **CDK Environment Bootstrapping** below).
 
 ```ts
+/** The stacks for our app are defined in my-stacks.ts.  The internals of these
+  * stacks aren't important, except that DatabaseStack exposes an attribute
+  * "table" for a database table it defines, and ComputeStack accepts a reference
+  * to this table in its properties.
+  */
 import { DatabaseStack, ComputeStack } from '../lib/my-stacks';
 
 import { Construct, Stage, Stack, StackProps, StageProps } from '@aws-cdk/core';
@@ -36,7 +41,10 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 /**
  * Your application
  *
- * May consist of one or more Stacks
+ * May consist of one or more Stacks (here, two)
+ *
+ * By declaring our DatabaseStack and our ComputeStack inside a Stage,
+ * we make sure they are deployed together, or not at all.
  */
 class MyApplication extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
@@ -104,45 +112,45 @@ to build. The Pipeline will be provisioned in account `111111111111` and region
 
 ```ts
 class MyPipelineStack extends Stack {
-    constructor(scope: Construct, id: string, props?: StackProps) {
-      super(scope, id, props);
-  
-      const sourceArtifact = new codepipeline.Artifact();
-      const cloudAssemblyArtifact = new codepipeline.Artifact();
-  
-      const pipeline = new CdkPipeline(this, 'Pipeline', {
-        pipelineName: 'MyAppPipeline',
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const sourceArtifact = new codepipeline.Artifact();
+    const cloudAssemblyArtifact = new codepipeline.Artifact();
+
+    const pipeline = new CdkPipeline(this, 'Pipeline', {
+      pipelineName: 'MyAppPipeline',
+      cloudAssemblyArtifact,
+
+      sourceAction: new codepipeline_actions.GitHubSourceAction({
+        actionName: 'GitHub',
+        output: sourceArtifact,
+        oauthToken: SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
+        trigger: codepipeline_actions.GitHubTrigger.POLL,
+        // Replace these with your actual GitHub project name
+        owner: 'OWNER',
+        repo: 'REPO',
+      }),
+
+      synthAction: SimpleSynthAction.standardNpmSynth({
+        sourceArtifact,
         cloudAssemblyArtifact,
-  
-        sourceAction: new codepipeline_actions.GitHubSourceAction({
-          actionName: 'GitHub',
-          output: sourceArtifact,
-          oauthToken: SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
-          trigger: codepipeline_actions.GitHubTrigger.POLL,
-          // Replace these with your actual GitHub project name
-          owner: 'OWNER',
-          repo: 'REPO',
-        }),
-  
-        synthAction: SimpleSynthAction.standardNpmSynth({
-          sourceArtifact,
-          cloudAssemblyArtifact,
-  
-          // Use this if you need a build step (if you're not using ts-node
-          // or if you have TypeScript Lambdas that need to be compiled).
-          buildCommand: 'npm run build',
-        }),
-      });
-    }
+
+        // Use this if you need a build step (if you're not using ts-node
+        // or if you have TypeScript Lambdas that need to be compiled).
+        buildCommand: 'npm run build',
+      }),
+    });
   }
-    
-  const app = new App();
-  new MyPipelineStack(app, 'PipelineStack', {
-    env: {
-      account: '111111111111',
-      region: 'eu-west-1',
-    }
-  });
+}
+
+const app = new App();
+new MyPipelineStack(this, 'PipelineStack', {
+  env: {
+    account: '111111111111',
+    region: 'eu-west-1',
+  }
+});
 ```
 
 ## Initial pipeline deployment
