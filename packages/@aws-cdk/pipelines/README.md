@@ -27,12 +27,24 @@ same, the *CDK Pipelines* library takes care of the details.
 will work, see the section **CDK Environment Bootstrapping** below).
 
 ```ts
-import { Construct, Stage } from '@aws-cdk/core';
+/** The stacks for our app are defined in my-stacks.ts.  The internals of these
+  * stacks aren't important, except that DatabaseStack exposes an attribute
+  * "table" for a database table it defines, and ComputeStack accepts a reference
+  * to this table in its properties.
+  */
+import { DatabaseStack, ComputeStack } from '../lib/my-stacks';
+
+import { Construct, Stage, Stack, StackProps, StageProps } from '@aws-cdk/core';
+import { CdkPipeline } from '@aws-cdk/pipelines';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 
 /**
  * Your application
  *
- * May consist of one or more Stacks
+ * May consist of one or more Stacks (here, two)
+ *
+ * By declaring our DatabaseStack and our ComputeStack inside a Stage,
+ * we make sure they are deployed together, or not at all.
  */
 class MyApplication extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
@@ -292,7 +304,7 @@ In its simplest form, adding validation actions looks like this:
 const stage = pipeline.addApplicationStage(new MyApplication(/* ... */));
 
 stage.addActions(new ShellScriptAction({
-  name: 'MyValidation',
+  actionName: 'MyValidation',
   commands: ['curl -Ssf https://my.webservice.com/'],
   // ... more configuration ...
 }));
@@ -403,7 +415,7 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
 });
 
 const validationAction = new ShellScriptAction({
-  name: 'TestUsingBuildArtifact',
+  actionName: 'TestUsingBuildArtifact',
   additionalArtifacts: [integTestsArtifact],
   // 'test.js' was produced from 'test/test.ts' during the synth step
   commands: ['node ./test.js'],
