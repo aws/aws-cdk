@@ -8,16 +8,16 @@ let stack: Stack;
 
 beforeEach(() => {
   app = new App();
-  stack = new Stack(app, 'Stack', {
+  new Stack(app, 'Stack', {
     env: { account: '1234', region: 'testregion' },
   });
 });
 
 test('Renders minimal example with just a domain name', () => {
   const origin = new HttpOrigin('www.example.com');
-  origin.bind(stack, { originIndex: 0 });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-  expect(origin.renderOrigin()).toEqual({
+  expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
     domainName: 'www.example.com',
     customOriginConfig: {
@@ -26,24 +26,64 @@ test('Renders minimal example with just a domain name', () => {
   });
 });
 
-test('Can customize properties of the origin', () => {
+test('renders an example with all available props', () => {
   const origin = new HttpOrigin('www.example.com', {
+    originPath: '/app',
+    connectionTimeout: Duration.seconds(5),
+    connectionAttempts: 2,
     customHeaders: { AUTH: 'NONE' },
-    readTimeout: Duration.seconds(10),
     protocolPolicy: cloudfront.OriginProtocolPolicy.MATCH_VIEWER,
+    httpPort: 8080,
+    httpsPort: 8443,
+    readTimeout: Duration.seconds(45),
+    keepaliveTimeout: Duration.seconds(3),
   });
-  origin.bind(stack, { originIndex: 0 });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-  expect(origin.renderOrigin()).toEqual({
+  expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
     domainName: 'www.example.com',
+    originPath: '/app',
+    connectionTimeout: 5,
+    connectionAttempts: 2,
     originCustomHeaders: [{
       headerName: 'AUTH',
       headerValue: 'NONE',
     }],
     customOriginConfig: {
       originProtocolPolicy: 'match-viewer',
-      originReadTimeout: 10,
+      httpPort: 8080,
+      httpsPort: 8443,
+      originReadTimeout: 45,
+      originKeepaliveTimeout: 3,
     },
   });
+});
+
+test.each([
+  Duration.seconds(0),
+  Duration.seconds(0.5),
+  Duration.seconds(60.5),
+  Duration.seconds(61),
+  Duration.minutes(5),
+])('validates readTimeout is an integer between 1 and 60 seconds', (readTimeout) => {
+  expect(() => {
+    new HttpOrigin('www.example.com', {
+      readTimeout,
+    });
+  }).toThrow(`readTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${readTimeout.toSeconds()}.`);
+});
+
+test.each([
+  Duration.seconds(0),
+  Duration.seconds(0.5),
+  Duration.seconds(60.5),
+  Duration.seconds(61),
+  Duration.minutes(5),
+])('validates keepaliveTimeout is an integer between 1 and 60 seconds', (keepaliveTimeout) => {
+  expect(() => {
+    new HttpOrigin('www.example.com', {
+      keepaliveTimeout,
+    });
+  }).toThrow(`keepaliveTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${keepaliveTimeout.toSeconds()}.`);
 });
