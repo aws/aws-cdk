@@ -21,12 +21,16 @@ To create an Elasticsearch domain:
 import * as es from '@aws-cdk/aws-elasticsearch';
 
 const domain = new es.Domain(this, 'Domain', {
-    elasticsearchVersion: '7.4',
+    elasticsearchVersion: es.ElasticsearchVersion.ES_VERSION_7_1,
     clusterConfig: {
         masterNodes: 3,
         masterNodeInstanceType: 'c5.large.elasticsearch',
         dataNodes: 3,
         dataNodeInstanceType: 'r5.large.elasticsearch',
+    },
+    ebsOptions: {
+        volumeSize: 100,
+        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
     },
     logPublishingOptions: {
         slowSearchLogEnabed: true,
@@ -38,6 +42,16 @@ const domain = new es.Domain(this, 'Domain', {
 This creates an Elasticsearch cluster and automatically sets up log groups for
 logging the domain logs and slow search logs.
 
+### Importing existing domains
+
+To import an existing domain into your CDK application, use the `Domain.fromDomainEndpoint` factory method.
+This method accepts a domain endpoint of an already existing domain:
+
+```ts
+const domainEndpoint = 'https://my-domain-jcjotrt6f7otem4sqcwbch3c4u.us-east-1.es.amazonaws.com';
+const domain = Domain.fromDomainEndpoint(this, 'ImportedDomain', domainEndpoint);
+domain.grantIndex('existing-index', myLambdaFunction, 'es:ESHttpGet', 'es:ESHttpPut');
+```
 
 ### Permissions
 
@@ -48,7 +62,7 @@ Helper methods also exist for managing access to the domain.
 ```ts
 const lambda = new lambda.Function(this, 'Lambda', { /* ... */ });
 // Grant the lambda functiomn read access to app-search index
-domain.grantIndex(lambda, 'app-search', 'es:HttpGet');
+domain.grantIndex('app-search', lambda, 'es:ESHttpGet');
 ```
 
 ### Encryption
@@ -57,7 +71,7 @@ The domain can also be created with encryption enabled:
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    elasticsearchVersion: '7.4',
+    elasticsearchVersion: es.ElasticsearchVersion.ES_VERSION_7_4,
     clusterConfig: {
         masterNodes: 3,
         masterNodeInstanceType: 'c5.large.elasticsearch',
@@ -69,7 +83,6 @@ const domain = new es.Domain(this, 'Domain', {
         enabled: true,
     },
 });
-
 ```
 
 This sets up the domain with node to node encryption and encryption at
@@ -81,9 +94,8 @@ rest.
 Helper methods exist to access common domain metrics for example:
 
 ```ts
-
-const freeStorageSpace = domain.metricFreeStorageSpace('account-id');
-const masterSysMemoryUtilization = domain.metric('MasterSysMemoryUtilization', 'account-id');
+const freeStorageSpace = domain.metricFreeStorageSpace();
+const masterSysMemoryUtilization = domain.metric('MasterSysMemoryUtilization');
 ```
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.

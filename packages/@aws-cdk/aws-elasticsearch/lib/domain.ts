@@ -1,3 +1,5 @@
+import { URL } from 'url';
+
 import { Metric, MetricOptions, Statistic } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -252,8 +254,9 @@ export interface DomainProps {
   /**
    * The Elasticsearch Version
    *
+   * @default ElasticsearchVersion.ES_VERSION_7_4
    */
-  readonly elasticsearchVersion: string;
+  readonly elasticsearchVersion?: ElasticsearchVersion;
 
   /**
    * Encryption at rest options for the cluster.
@@ -329,7 +332,7 @@ export interface IDomain extends cdk.IResource {
    * principal's policy.
    *
    * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "es:HttpGet", "es:HttpPut", ...)
+   * @param actions The set of actions to allow (i.e. "es:ESHttpGet", "es:ESHttpPut", ...)
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
@@ -339,7 +342,7 @@ export interface IDomain extends cdk.IResource {
    *
    * @param index The index to grant permissions for
    * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "es:HttpGet", "es:HttpPut", ...)
+   * @param actions The set of actions to allow (i.e. "es:ESHttpGet", "es:ESHttpPut", ...)
    */
   grantIndex(index: string, grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
@@ -349,119 +352,119 @@ export interface IDomain extends cdk.IResource {
    *
    * @param path The path to grant permissions for
    * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "es:HttpGet", "es:HttpPut", ...)
+   * @param actions The set of actions to allow (i.e. "es:ESHttpGet", "es:ESHttpPut", ...)
    */
   grantPath(path: string, grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
    * Return the given named metric for this Domain.
    */
-  metric(metricName: string, clientId: string, props?: MetricOptions): Metric;
+  metric(metricName: string, props?: MetricOptions): Metric;
 
   /**
    * Metric for the time the cluster status is red.
    *
    * @default maximum over a minute
    */
-  metricClusterStatusRed(clientId: string, props?: MetricOptions): Metric;
+  metricClusterStatusRed(props?: MetricOptions): Metric;
 
   /**
    * Metric for the time the cluster status is yellow.
    *
    * @default maximum over a minute
    */
-  metricClusterStatusYellow(clientId: string, props?: MetricOptions): Metric;
+  metricClusterStatusYellow(props?: MetricOptions): Metric;
 
   /**
    * Metric for the storage space of nodes in the cluster.
    *
    * @default minimum over a minute
    */
-  metricFreeStorageSpace(clientId: string, props?: MetricOptions): Metric;
+  metricFreeStorageSpace(props?: MetricOptions): Metric;
 
   /**
    * Metric for the cluster blocking index writes.
    *
    * @default maximum over 5 minutes
    */
-  metricClusterIndexWriteBlocked(clientId: string, props?: MetricOptions): Metric;
+  metricClusterIndexWriteBlocked(props?: MetricOptions): Metric;
 
   /**
    * Metric for the number of nodes.
    *
    * @default minimum over 1 hour
    */
-  metricNodes(clientId: string, props?: MetricOptions): Metric;
+  metricNodes(props?: MetricOptions): Metric;
 
   /**
    * Metric for automated snapshot failures.
    *
    * @default maximum over a minute
    */
-  metricAutomatedSnapshotFailure(clientId: string, props?: MetricOptions): Metric;
+  metricAutomatedSnapshotFailure(props?: MetricOptions): Metric;
 
   /**
    * Metric for CPU utilization.
    *
    * @default maximum over a minute
    */
-  metricCPUUtilization(clientId: string, props?: MetricOptions): Metric;
+  metricCPUUtilization(props?: MetricOptions): Metric;
 
   /**
    * Metric for JVM memory pressure.
    *
    * @default maximum over a minute
    */
-  metricJVMMemoryPressure(clientId: string, props?: MetricOptions): Metric;
+  metricJVMMemoryPressure(props?: MetricOptions): Metric;
 
   /**
    * Metric for master CPU utilization.
    *
    * @default maximum over a minute
    */
-  metricMasterCPUUtilization(clientId: string, props?: MetricOptions): Metric;
+  metricMasterCPUUtilization(props?: MetricOptions): Metric;
 
   /**
    * Metric for master JVM memory pressure.
    *
    * @default maximum over a minute
    */
-  metricMasterJVMMemoryPressure(clientId: string, props?: MetricOptions): Metric;
+  metricMasterJVMMemoryPressure(props?: MetricOptions): Metric;
 
   /**
    * Metric for KMS key errors.
    *
    * @default maximum over a minute
    */
-  metricKMSKeyError(clientId: string, props?: MetricOptions): Metric;
+  metricKMSKeyError(props?: MetricOptions): Metric;
 
   /**
    * Metric for KMS key being inaccessible.
    *
    * @default maximum over a minute
    */
-  metricKMSKeyInaccessible(clientId: string, props?: MetricOptions): Metric;
+  metricKMSKeyInaccessible(props?: MetricOptions): Metric;
 
   /**
    * Metric for number of searchable documents.
    *
    * @default maximum over a minute
    */
-  metricSearchableDocuments(clientId: string, props?: MetricOptions): Metric;
+  metricSearchableDocuments(props?: MetricOptions): Metric;
 
   /**
    * Metric for search latency.
    *
    * @default maximum over a minute
    */
-  metricSearchLatency(clientId: string, props?: MetricOptions): Metric;
+  metricSearchLatency(props?: MetricOptions): Metric;
 
   /**
    * Metric for indexing latency.
    *
    * @default maximum over a minute
    */
-  metricIndexingLatency(clientId: string, props?: MetricOptions): Metric;
+  metricIndexingLatency(props?: MetricOptions): Metric;
 }
 
 
@@ -489,7 +492,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * principal's policy.
    *
    * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "es:HttpGet", "es:HttpPut", ...)
+   * @param actions The set of actions to allow (i.e. "es:ESHttpGet", "es:ESHttpPut", ...)
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
@@ -509,7 +512,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param index   The index to grant permissions for
    * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "es:HttpGet", "es:HttpPut", ...)
+   * @param actions The set of actions to allow (i.e. "es:ESHttpGet", "es:ESHttpPut", ...)
    */
   public grantIndex(index: string, grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
@@ -529,7 +532,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param path   The path to grant permissions for
    * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "es:HttpGet", "es:HttpPut", ...)
+   * @param actions The set of actions to allow (i.e. "es:ESHttpGet", "es:ESHttpPut", ...)
    */
   public grantPath(path: string, grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
@@ -543,13 +546,13 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Return the given named metric for this Domain.
    */
-  public metric(metricName: string, clientId: string, props?: MetricOptions): Metric {
+  public metric(metricName: string, props?: MetricOptions): Metric {
     return new Metric({
       namespace: 'AWS/ES',
       metricName,
       dimensions: {
         DomainName: this.domainName,
-        ClientId: clientId,
+        ClientId: this.stack.account,
       },
       ...props,
     });
@@ -558,37 +561,37 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Metric for the time the cluster status is red.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
-  public metricClusterStatusRed(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('ClusterStatus.red', clientId, { statistic: Statistic.MAXIMUM, ...props });
+  public metricClusterStatusRed(props?: MetricOptions): Metric {
+    return this.metric('ClusterStatus.red', { statistic: Statistic.MAXIMUM, ...props });
   }
 
   /**
    * Metric for the time the cluster status is yellow.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
-  public metricClusterStatusYellow(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('ClusterStatus.yellow', clientId, { statistic: Statistic.MAXIMUM, ...props });
+  public metricClusterStatusYellow(props?: MetricOptions): Metric {
+    return this.metric('ClusterStatus.yellow', { statistic: Statistic.MAXIMUM, ...props });
   }
 
   /**
    * Metric for the storage space of nodes in the cluster.
    *
-   * @default minimum over a minute
+   * @default minimum over 5 minutes
    */
-  public metricFreeStorageSpace(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('FreeStorageSpace', clientId, { statistic: Statistic.MINIMUM, ...props });
+  public metricFreeStorageSpace(props?: MetricOptions): Metric {
+    return this.metric('FreeStorageSpace', { statistic: Statistic.MINIMUM, ...props });
   }
 
   /**
    * Metric for the cluster blocking index writes.
    *
-   * @default maximum over 5 minutes
+   * @default maximum over 1 minute
    */
-  public metricClusterIndexWriteBlocked(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('ClusterIndexWriteBlocked', clientId, {
+  public metricClusterIndexWriteBlocked(props?: MetricOptions): Metric {
+    return this.metric('ClusterIndexWriteBlocked', {
       statistic: Statistic.MAXIMUM,
       period: cdk.Duration.minutes(1),
       ...props,
@@ -598,10 +601,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Metric for the number of nodes.
    *
-   * @default minimum over 1 hour
+   * @default maximum over 1 hour
    */
-  public metricNodes(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('Nodes', clientId, {
+  public metricNodes(props?: MetricOptions): Metric {
+    return this.metric('Nodes', {
       statistic: Statistic.MAXIMUM,
       period: cdk.Duration.hours(1),
       ...props,
@@ -611,91 +614,91 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Metric for automated snapshot failures.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
-  public metricAutomatedSnapshotFailure(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('AutomatedSnapshotFailure', clientId, { statistic: Statistic.MAXIMUM, ...props });
+  public metricAutomatedSnapshotFailure(props?: MetricOptions): Metric {
+    return this.metric('AutomatedSnapshotFailure', { statistic: Statistic.MAXIMUM, ...props });
   }
 
   /**
    * Metric for CPU utilization.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
-  public metricCPUUtilization(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('CPUUtilization', clientId, { statistic: Statistic.MAXIMUM, ...props });
+  public metricCPUUtilization(props?: MetricOptions): Metric {
+    return this.metric('CPUUtilization', { statistic: Statistic.MAXIMUM, ...props });
   }
 
   /**
    * Metric for JVM memory pressure.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
-  public metricJVMMemoryPressure(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('JVMMemoryPressure', clientId, { statistic: Statistic.MAXIMUM, ...props });
+  public metricJVMMemoryPressure(props?: MetricOptions): Metric {
+    return this.metric('JVMMemoryPressure', { statistic: Statistic.MAXIMUM, ...props });
   }
 
   /**
    * Metric for master CPU utilization.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
-  public metricMasterCPUUtilization(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('MasterCPUUtilization', clientId, { statistic: Statistic.MAXIMUM, ...props });
+  public metricMasterCPUUtilization(props?: MetricOptions): Metric {
+    return this.metric('MasterCPUUtilization', { statistic: Statistic.MAXIMUM, ...props });
   }
 
   /**
    * Metric for master JVM memory pressure.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
-  public metricMasterJVMMemoryPressure(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('MasterJVMMemoryPressure', clientId, { statistic: Statistic.MAXIMUM, ...props });
+  public metricMasterJVMMemoryPressure(props?: MetricOptions): Metric {
+    return this.metric('MasterJVMMemoryPressure', { statistic: Statistic.MAXIMUM, ...props });
   }
 
   /**
    * Metric for KMS key errors.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
-  public metricKMSKeyError(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('KMSKeyError', clientId, { statistic: Statistic.MAXIMUM, ...props });
+  public metricKMSKeyError(props?: MetricOptions): Metric {
+    return this.metric('KMSKeyError', { statistic: Statistic.MAXIMUM, ...props });
   }
 
   /**
    * Metric for KMS key being inaccessible.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
-  public metricKMSKeyInaccessible(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('KMSKeyInaccessible', clientId, { statistic: Statistic.MAXIMUM, ...props });
+  public metricKMSKeyInaccessible(props?: MetricOptions): Metric {
+    return this.metric('KMSKeyInaccessible', { statistic: Statistic.MAXIMUM, ...props });
   }
 
   /**
    * Metric for number of searchable documents.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
-  public metricSearchableDocuments(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('SearchableDocuments', clientId, { statistic: Statistic.MAXIMUM, ...props });
+  public metricSearchableDocuments(props?: MetricOptions): Metric {
+    return this.metric('SearchableDocuments', { statistic: Statistic.MAXIMUM, ...props });
   }
 
   /**
    * Metric for search latency.
    *
-   * @default maximum over a minute
+   * @default p99 over 5 minutes
    */
-  public metricSearchLatency(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('SearchLatencyP99', clientId, { statistic: 'p99', ...props });
+  public metricSearchLatency(props?: MetricOptions): Metric {
+    return this.metric('SearchLatencyP99', { statistic: 'p99', ...props });
   }
 
   /**
    * Metric for indexing latency.
    *
-   * @default maximum over a minute
+   * @default p99 over 5 minutes
    */
-  public metricIndexingLatency(clientId: string, props?: MetricOptions): Metric {
-    return this.metric('IndexingLatencyP99', clientId, { statistic: 'p99', ...props });
+  public metricIndexingLatency(props?: MetricOptions): Metric {
+    return this.metric('IndexingLatencyP99', { statistic: 'p99', ...props });
   }
 }
 
@@ -706,19 +709,13 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 export interface DomainAttributes {
   /**
    * The ARN of the Elasticsearch domain.
-   * One of this, or {@link domainName}, is required.
-   *
-   * @default - no domain arn
    */
-  readonly domainArn?: string;
+  readonly domainArn: string;
 
   /**
    * The domain name of the Elasticsearch domain.
-   * One of this, or {@link domainArn}, is required.
-   *
-   * @default - no domain name
    */
-  readonly domainName?: string;
+  readonly domainName: string;
 
   /**
    * The domain endpoint of the Elasticsearch domain.
@@ -732,27 +729,21 @@ export interface DomainAttributes {
  */
 export class Domain extends DomainBase implements IDomain {
   /**
-   * Creates a Domain construct that represents an external domain via domain arn.
+   * Creates a Domain construct that represents an external domain via domain endpoint.
    *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
-   * @param domainName The domain's name.
    * @param domainEndpoint The domain's endpoint.
    */
-  public static fromDomainName(scope: cdk.Construct, id: string, domainName: string, domainEndpoint: string): IDomain {
-    return Domain.fromDomainAttributes(scope, id, { domainName, domainEndpoint });
-  }
-
-  /**
-   * Creates a Domain construct that represents an external domain via domain arn.
-   *
-   * @param scope The parent creating construct (usually `this`).
-   * @param id The construct's name.
-   * @param domainArn The domain's ARN.
-   * @param domainEndpoint The domain's endpoint.
-   */
-  public static fromDomainArn(scope: cdk.Construct, id: string, domainArn: string, domainEndpoint: string): IDomain {
-    return Domain.fromDomainAttributes(scope, id, { domainArn, domainEndpoint });
+  public static fromDomainEndpoint(scope: cdk.Construct, id: string, domainEndpoint: string): IDomain {
+    const stack = cdk.Stack.of(scope);
+    const domainName = extractNameFromEndpoint(domainEndpoint);
+    const domainArn = stack.formatArn({
+      service: 'es',
+      resource: 'domain',
+      resourceName: domainName,
+    });
+    return Domain.fromDomainAttributes(scope, id, { domainArn, domainName, domainEndpoint });
   }
 
   /**
@@ -763,49 +754,18 @@ export class Domain extends DomainBase implements IDomain {
    * @param attrs A `DomainAttributes` object.
    */
   public static fromDomainAttributes(scope: cdk.Construct, id: string, attrs: DomainAttributes): IDomain {
-
-    class Import extends DomainBase {
-
+    return new class extends DomainBase implements IDomain {
       public readonly domainArn: string;
       public readonly domainName: string;
       public readonly domainEndpoint: string;
 
-      constructor(_domainArn: string, domainName: string, domainEndpoint: string) {
+      constructor() {
         super(scope, id);
-        this.domainArn = _domainArn;
-        this.domainName = domainName;
-        this.domainEndpoint = domainEndpoint;
+        this.domainArn = attrs.domainArn;
+        this.domainName = attrs.domainName;
+        this.domainEndpoint = attrs.domainEndpoint;
       }
-    }
-
-    let name: string;
-    let arn: string;
-    const stack = cdk.Stack.of(scope);
-    if (!attrs.domainName) {
-      if (!attrs.domainArn) { throw new Error('One of domainName or domainArn is required!'); }
-
-      arn = attrs.domainArn;
-      const maybeDomainName = stack.parseArn(attrs.domainArn).resourceName;
-      if (!maybeDomainName) { throw new Error('ARN for Elasticsearch domain must be in the form: ...'); }
-      name = maybeDomainName;
-    } else {
-      if (attrs.domainArn) { throw new Error('Only one of domainArn or domainName can be provided'); }
-      name = attrs.domainName;
-      arn = stack.formatArn({
-        service: 'elasticsearch',
-        resource: 'domain',
-        resourceName: attrs.domainName,
-      });
-    }
-
-    return new Import(arn, name, attrs.domainEndpoint);
-  }
-
-  private static createLogGroup(parent: cdk.Construct, domainName: string, id: string, name: string): logs.ILogGroup {
-    return new logs.LogGroup(parent, id, {
-      logGroupName: `elasticsearch/domains/${domainName}/${name}`,
-      retention: logs.RetentionDays.ONE_MONTH,
-    });
+    };
   }
 
   /**
@@ -837,28 +797,32 @@ export class Domain extends DomainBase implements IDomain {
       physicalName: props.domainName,
     });
 
-    this.domainName = this.physicalName;
-
     // Setup logging
     const logGroups: logs.ILogGroup[] = [];
 
     if (props.logPublishingOptions?.slowSearchLogEnabed) {
       this.slowSearchLogGroup = props.logPublishingOptions.slowSearchLogGroup ??
-        Domain.createLogGroup(this, this.domainName, 'SlowSearchLogs', 'slow-search-logs');
+        new logs.LogGroup(scope, 'SlowSearchLogs', {
+          retention: logs.RetentionDays.ONE_MONTH,
+        });
 
       logGroups.push(this.slowSearchLogGroup);
     };
 
     if (props.logPublishingOptions?.slowIndexLogEnabed) {
       this.slowIndexLogGroup = props.logPublishingOptions.slowIndexLogGroup ??
-        Domain.createLogGroup(this, this.domainName, 'SlowIndexLogs', 'slow-index-logs');
+        new logs.LogGroup(scope, 'SlowIndexLogs', {
+          retention: logs.RetentionDays.ONE_MONTH,
+        });
 
       logGroups.push(this.slowIndexLogGroup);
     };
 
     if (props.logPublishingOptions?.appLogEnabled) {
       this.appLogGroup = props.logPublishingOptions.appLogGroup ??
-        Domain.createLogGroup(this, this.domainName, 'AppLogs', 'application-logs');
+        new logs.LogGroup(scope, 'AppLogs', {
+          retention: logs.RetentionDays.ONE_MONTH,
+        });
 
       logGroups.push(this.appLogGroup);
     };
@@ -896,7 +860,7 @@ export class Domain extends DomainBase implements IDomain {
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
-      elasticsearchVersion: props.elasticsearchVersion,
+      elasticsearchVersion: props.elasticsearchVersion ?? ElasticsearchVersion.ES_VERSION_7_4,
       elasticsearchClusterConfig: {
         dedicatedMasterEnabled: props.clusterConfig.masterNodes != null,
         dedicatedMasterCount: props.clusterConfig.masterNodes,
@@ -904,7 +868,10 @@ export class Domain extends DomainBase implements IDomain {
         instanceCount: props.clusterConfig.dataNodes,
         instanceType: props.clusterConfig.dataNodeInstanceType,
         zoneAwarenessEnabled: props.clusterConfig.availabilityZoneCount != null,
-        zoneAwarenessConfig: { availabilityZoneCount: props.clusterConfig.availabilityZoneCount },
+        zoneAwarenessConfig:
+          props.clusterConfig.availabilityZoneCount != null
+            ? { availabilityZoneCount: props.clusterConfig.availabilityZoneCount }
+            : undefined,
       },
       ebsOptions: {
         ebsEnabled: props.ebsOptions != null,
@@ -949,7 +916,69 @@ export class Domain extends DomainBase implements IDomain {
       resource: 'domain',
       resourceName: this.physicalName,
     });
+    this.domainName = this.getResourceNameAttribute(this.domain.ref);
 
     this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
   }
+}
+
+/**
+ * The Elasticsearch version that your domain will leverage.
+ *
+ * Per https://aws.amazon.com/elasticsearch-service/faqs/, Amazon Elasticsearch Service
+ * currently supports Elasticsearch versions 7.4, 7.1, 6.8, 6.7, 6.5, 6.4, 6.3, 6.2, 6.0,
+ * 5.6, 5.5, 5.3, 5.1, 2.3, and 1.5.
+ */
+export enum ElasticsearchVersion {
+  /** Elasticsearch Version 7.4 */
+  ES_VERSION_7_4 = '7.4',
+  /** Elasticsearch Version 7.1 */
+  ES_VERSION_7_1 = '7.1',
+  /** Elasticsearch Version 6.8 */
+  ES_VERSION_6_8 = '6.8',
+  /** Elasticsearch Version 6.7 */
+  ES_VERSION_6_7 = '6.7',
+  /** Elasticsearch Version 6.5 */
+  ES_VERSION_6_5 = '6.5',
+  /** Elasticsearch Version 6.4 */
+  ES_VERSION_6_4 = '6.4',
+  /** Elasticsearch Version 6.3 */
+  ES_VERSION_6_3 = '6.3',
+  /** Elasticsearch Version 6.2 */
+  ES_VERSION_6_2 = '6.2',
+  /** Elasticsearch Version 6.0 */
+  ES_VERSION_6_0 = '6.0',
+  /** Elasticsearch Version 5.6 */
+  ES_VERSION_5_6 = '5.6',
+  /** Elasticsearch Version 5.5 */
+  ES_VERSION_5_5 = '5.5',
+  /** Elasticsearch Version 5.3 */
+  ES_VERSION_5_3 = '5.3',
+  /** Elasticsearch Version 5.1 */
+  ES_VERSION_5_1 = '5.1',
+  /** Elasticsearch Version 2.3 */
+  ES_VERSION_2_3 = '2.3',
+  /** Elasticsearch Version 1.5 */
+  ES_VERSION_1_5 = '1.5',
+}
+
+/**
+ * Given an Elasticsearch domain endpoint, returns a CloudFormation expression that
+ * extracts the domain name.
+ *
+ * Domain endpoints look like this:
+ *
+ *   https://example-domain-jcjotrt6f7otem4sqcwbch3c4u.us-east-1.es.amazonaws.com
+ *   https://<domain-name>-<suffix>.<region>.es.amazonaws.com
+ *
+ * ..which means that in order to extract the domain name from the endpoint, we can
+ * split the endpoint using "-<suffix>" and select the component in index 0.
+ *
+ * @param domainEndpoint The Elasticsearch domain endpoint
+ */
+function extractNameFromEndpoint(domainEndpoint: string) {
+  const { hostname } = new URL(domainEndpoint);
+  const domain = hostname.split('.')[0];
+  const suffix = '-' + domain.split('-').slice(-1)[0];
+  return domain.split(suffix)[0];
 }
