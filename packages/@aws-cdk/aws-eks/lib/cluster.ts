@@ -274,12 +274,6 @@ export class EndpointAccess {
    */
   public static readonly PUBLIC_AND_PRIVATE = new EndpointAccess(true, true);
 
-  /**
-   * Public access is allowed only from these CIDR blocks.
-   * An empty array means access is open to any address.
-   */
-  public readonly publicCidrs: string[] = [];
-
   private constructor(
     /**
      * Indicates if private access is enabled.
@@ -289,7 +283,16 @@ export class EndpointAccess {
     /**
      * Indicates if public access is enabled.
      */
-    public readonly publicAccess: boolean) {}
+    public readonly publicAccess: boolean,
+    /**
+     * Public access is allowed only from these CIDR blocks.
+     * An empty array means access is open to any address.
+     */
+    public readonly publicCidrs?: string[]) {
+    if (!publicAccess && publicCidrs && publicCidrs.length > 0) {
+      throw new Error('CIDR blocks can only be configured when public access is enabled');
+    }
+  }
 
 
   /**
@@ -299,11 +302,7 @@ export class EndpointAccess {
    * @param cidr CIDR blocks.
    */
   public onlyFrom(...cidr: string[]) {
-    if (!this.publicAccess) {
-      throw new Error('CIDR blocks can only be configured on public access endpoints');
-    }
-    this.publicCidrs.push(...cidr);
-    return this;
+    return new EndpointAccess(this.privateAccess, this.publicAccess, cidr);
   }
 }
 
@@ -620,8 +619,7 @@ export class Cluster extends Resource implements ICluster {
         ...clusterProps,
         endpointPrivateAccess: this.endpointAccess.privateAccess,
         endpointPublicAccess: this.endpointAccess.publicAccess,
-        // an empty array is invalid.
-        publicAccessCidrs: this.endpointAccess.publicCidrs.length > 0 ? this.endpointAccess.publicCidrs : undefined,
+        publicAccessCidrs: this.endpointAccess.publicCidrs,
       });
       this._clusterResource = resource;
 

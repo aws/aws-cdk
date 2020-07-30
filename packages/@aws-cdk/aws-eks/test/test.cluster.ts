@@ -1381,6 +1381,10 @@ export = {
       test.done();
     },
 
+  },
+
+  'endpoint access': {
+
     'can configure private endpoint access'(test: Test) {
       // GIVEN
       const { stack } = testFixture();
@@ -1673,6 +1677,14 @@ export = {
           version: CLUSTER_VERSION,
         });
       }, /Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
+      test.done();
+    },
+
+    'throw when cidrs are configured without public access endpoint'(test: Test) {
+
+      test.throws(() => {
+        eks.EndpointAccess.PRIVATE.onlyFrom('1.2.3.4/5');
+      }, /CIDR blocks can only be configured when public access is enabled/);
       test.done();
     },
 
