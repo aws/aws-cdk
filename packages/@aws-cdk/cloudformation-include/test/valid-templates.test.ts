@@ -397,6 +397,52 @@ describe('CDK Include', () => {
     }).toThrow(/Parameter with name 'FakeBucketNameThatDoesNotExist' was not found in the template/);
   });
 
+  test('reflects changes to a retrieved CfnParameter object in the resulting template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
+    const stringParam = cfnTemplate.getParameter('BucketName');
+    const numberParam = cfnTemplate.getParameter('CorsMaxAge');
+
+    stringParam.default = 'MyDefault'
+    stringParam.allowedPattern = '[0-9]*$'
+    stringParam.allowedValues = ['123123', '456789'];
+    stringParam.constraintDescription = 'MyNewConstraint';
+    stringParam.description = 'a string of numeric characters';
+    stringParam.maxLength = 6;
+    stringParam.minLength = 2;
+
+    numberParam.maxValue = 100;
+    numberParam.minValue = 4;
+    numberParam.noEcho = false;
+    numberParam.type = "NewType";
+    const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        ...originalTemplate.Resources,
+      },
+      "Parameters": {
+        ...originalTemplate.Parameters,
+        "BucketName": {
+          ...originalTemplate.Parameters.BucketName,
+          "Default": "MyDefault",
+          "AllowedPattern": "[0-9]*$",
+          "AllowedValues": [ "123123", "456789" ],
+          "ConstraintDescription": "MyNewConstraint",
+          "Description": "a string of numeric characters",
+          "MaxLength": 6,
+          "MinLength": 2,
+        },
+        "CorsMaxAge" : {
+          ...originalTemplate.Parameters.CorsMaxAge,
+          "MaxValue": 100,
+          "MinValue": 4,
+          "NoEcho": false,
+          "Type": "NewType",
+        },
+      },
+    });
+  });
+
   test('reflects changes to a retrieved CfnCondition object in the resulting template', () => {
     const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-condition.json');
     const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');

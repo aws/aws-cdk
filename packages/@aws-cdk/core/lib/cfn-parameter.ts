@@ -19,21 +19,21 @@ export interface CfnParameterProps {
    *
    * @default - No default value for parameter.
    */
-  readonly default?: any;
+  default?: any;
 
   /**
    * A regular expression that represents the patterns to allow for String types.
    *
    * @default - No constraints on patterns allowed for parameter.
    */
-  readonly allowedPattern?: string;
+  allowedPattern?: string;
 
   /**
    * An array containing the list of values allowed for the parameter.
    *
    * @default - No constraints on values allowed for parameter.
    */
-  readonly allowedValues?: string[];
+  allowedValues?: string[];
 
   /**
    * A string that explains a constraint when the constraint is violated.
@@ -43,42 +43,42 @@ export interface CfnParameterProps {
    *
    * @default - No description with customized error message when user specifies invalid values.
    */
-  readonly constraintDescription?: string;
+  constraintDescription?: string;
 
   /**
    * A string of up to 4000 characters that describes the parameter.
    *
    * @default - No description for the parameter.
    */
-  readonly description?: string;
+  description?: string;
 
   /**
    * An integer value that determines the largest number of characters you want to allow for String types.
    *
    * @default - None.
    */
-  readonly maxLength?: number;
+  maxLength?: number;
 
   /**
    * A numeric value that determines the largest numeric value you want to allow for Number types.
    *
    * @default - None.
    */
-  readonly maxValue?: number;
+  maxValue?: number;
 
   /**
    * An integer value that determines the smallest number of characters you want to allow for String types.
    *
    * @default - None.
    */
-  readonly minLength?: number;
+  minLength?: number;
 
   /**
    * A numeric value that determines the smallest numeric value you want to allow for Number types.
    *
    * @default - None.
    */
-  readonly minValue?: number;
+  minValue?: number;
 
   /**
    * Whether to mask the parameter value when anyone makes a call that describes the stack.
@@ -86,7 +86,7 @@ export interface CfnParameterProps {
    *
    * @default - Parameter values are not masked.
    */
-  readonly noEcho?: boolean;
+  noEcho?: boolean;
 }
 
 /**
@@ -97,8 +97,7 @@ export interface CfnParameterProps {
  * update a stack.
  */
 export class CfnParameter extends CfnElement {
-  private readonly type: string;
-
+  private _type: string;
   /**
    * Creates a parameter construct.
    * Note that the name (logical ID) of the parameter will derive from it's `coname` and location
@@ -107,10 +106,10 @@ export class CfnParameter extends CfnElement {
    * @param scope The parent construct.
    * @param props The parameter properties.
    */
-  constructor(scope: Construct, id: string, private readonly props: CfnParameterProps = {}) {
+  constructor(scope: Construct, id: string, public props: CfnParameterProps = {}) {
     super(scope, id);
 
-    this.type = props.type || 'String';
+    this._type = props.type || 'String';
   }
 
   /**
@@ -118,6 +117,18 @@ export class CfnParameter extends CfnElement {
    */
   public get noEcho(): boolean {
     return !!this.props.noEcho;
+  }
+
+  public set noEcho(echo: boolean) {
+    this.props.noEcho = echo;
+  }
+
+  public set type(type: string) {
+    this._type = type;
+  }
+
+  public get type(): string {
+    return this._type;
   }
 
   /**
@@ -131,8 +142,8 @@ export class CfnParameter extends CfnElement {
    * The parameter value, if it represents a string.
    */
   public get valueAsString(): string {
-    if (!isStringType(this.type)) {
-      throw new Error(`Parameter type (${this.type}) is not a string type`);
+    if (!isStringType(this._type)) {
+      throw new Error(`Parameter type (${this._type}) is not a string type`);
     }
     return Token.asString(this.value);
   }
@@ -141,8 +152,8 @@ export class CfnParameter extends CfnElement {
    * The parameter value, if it represents a string list.
    */
   public get valueAsList(): string[] {
-    if (!isListType(this.type)) {
-      throw new Error(`Parameter type (${this.type}) is not a string list type`);
+    if (!isListType(this._type)) {
+      throw new Error(`Parameter type (${this._type}) is not a string list type`);
     }
     return Token.asList(this.value);
   }
@@ -151,10 +162,82 @@ export class CfnParameter extends CfnElement {
    * The parameter value, if it represents a number.
    */
   public get valueAsNumber(): number {
-    if (!isNumberType(this.type)) {
-      throw new Error(`Parameter type (${this.type}) is not a number type`);
+    if (!isNumberType(this._type)) {
+      throw new Error(`Parameter type (${this._type}) is not a number type`);
     }
     return Token.asNumber(this.value);
+  }
+
+  public get default(): any {
+    return this.props.default;
+  }
+
+  public set default(value: any) {
+    this.props.default = value;
+  }
+
+  public get allowedPattern(): string | undefined {
+    return this.props.allowedPattern;
+  }
+
+  public set allowedPattern(pattern: string | undefined) {
+    this.props.allowedPattern = pattern;
+  }
+
+  public get allowedValues(): string[] | undefined {
+    return this.props.allowedValues;
+  }
+
+  public set allowedValues(values: string[] | undefined) {
+    this.props.allowedValues = values;
+  }
+
+  public get constraintDescription(): string | undefined {
+    return this.props.constraintDescription;
+  }
+
+  public set constraintDescription(desc: string | undefined) {
+    this.props.constraintDescription = desc;
+  }
+
+  public get description(): string | undefined {
+    return this.props.description;
+  }
+
+  public set description(desc: string | undefined) {
+    this.props.description = desc;
+  }
+
+  public get maxLength(): number | undefined {
+    return this.props.maxLength;
+  }
+
+  public set maxLength(len: number | undefined) {
+    this.props.maxLength = len;
+  }
+
+  public get minLength(): number | undefined {
+    return this.props.minLength;
+  }
+
+  public set minLength(len: number | undefined) {
+    this.props.minLength = len;
+  }
+
+  public get maxValue(): number | undefined {
+    return this.props.maxValue;
+  }
+
+  public set maxValue(len: number | undefined) {
+    this.props.maxValue = len;
+  }
+
+  public get minValue(): number | undefined {
+    return this.props.minValue;
+  }
+
+  public set minValue(len: number | undefined) {
+    this.props.minValue = len;
   }
 
   /**
@@ -164,7 +247,7 @@ export class CfnParameter extends CfnElement {
     return {
       Parameters: {
         [this.logicalId]: {
-          Type: this.type,
+          Type: this._type,
           Default: this.props.default,
           AllowedPattern: this.props.allowedPattern,
           AllowedValues: this.props.allowedValues,
