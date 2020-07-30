@@ -1,4 +1,4 @@
-// tslint:disable: no-console
+/* eslint-disable no-console */
 import * as fs from 'fs';
 import * as _glob from 'glob';
 

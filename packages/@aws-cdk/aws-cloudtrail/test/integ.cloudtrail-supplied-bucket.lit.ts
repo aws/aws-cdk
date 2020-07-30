@@ -30,7 +30,7 @@ Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
   resources: [Trailbucket.arnForObjects(`AWSLogs/${cdk.Stack.of(stack).account}/*`)],
   actions: ['s3:PutObject'],
   principals: [cloudTrailPrincipal],
-  conditions:  {
+  conditions: {
     StringEquals: {'s3:x-amz-acl': 'bucket-owner-full-control'},
   },
 }));

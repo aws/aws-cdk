@@ -1,10 +1,10 @@
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, Duration, Stack } from '@aws-cdk/core';
+import { App, Duration, Stack, CfnParameter } from '@aws-cdk/core';
 import { Stream, StreamEncryption } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('Kinesis data streams', () => {
 
@@ -1283,5 +1283,76 @@ describe('Kinesis data streams', () => {
     expect(() => {
       app.synth();
     }).toThrow(/'stack.' depends on 'stack.'/);
+  });
+
+  test('accepts if retentionPeriodHours is a Token', () => {
+    const stack = new Stack();
+
+    const parameter = new CfnParameter(stack, 'my-retention-period', {
+      type: 'Number',
+      default: 48,
+      minValue: 24,
+      maxValue: 168,
+    });
+
+    new Stream(stack, 'MyStream', {
+      retentionPeriod: Duration.hours(parameter.valueAsNumber),
+    });
+
+    expect(stack).toMatchTemplate({
+      Parameters: {
+        myretentionperiod: {
+          Type: 'Number',
+          Default: 48,
+          MaxValue: 168,
+          MinValue: 24,
+        },
+      },
+      Resources: {
+        MyStream5C050E93: {
+          Type: 'AWS::Kinesis::Stream',
+          Properties: {
+            ShardCount: 1,
+            RetentionPeriodHours: {
+              Ref: 'myretentionperiod',
+            },
+            StreamEncryption: {
+              'Fn::If': [
+                'AwsCdkKinesisEncryptedStreamsUnsupportedRegions',
+                {
+                  Ref: 'AWS::NoValue',
+                },
+                {
+                  EncryptionType: 'KMS',
+                  KeyId: 'alias/aws/kinesis',
+                },
+              ],
+            },
+          },
+        },
+      },
+      Conditions: {
+        AwsCdkKinesisEncryptedStreamsUnsupportedRegions: {
+          'Fn::Or': [
+            {
+              'Fn::Equals': [
+                {
+                  Ref: 'AWS::Region',
+                },
+                'cn-north-1',
+              ],
+            },
+            {
+              'Fn::Equals': [
+                {
+                  Ref: 'AWS::Region',
+                },
+                'cn-northwest-1',
+              ],
+            },
+          ],
+        },
+      },
+    });
   });
 });

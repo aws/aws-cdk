@@ -1,10 +1,10 @@
+import * as path from 'path';
 import '@aws-cdk/assert/jest';
 import * as core from '@aws-cdk/core';
-import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 /* eslint-disable quotes */
 
 describe('CDK Include', () => {
@@ -322,6 +322,28 @@ describe('CDK Include', () => {
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('long-form-subnet.yaml'),
     );
+  });
+
+  test('can ingest a YAML tempalte with Fn::Sub in string form and output it unchanged', () => {
+    includeTestTemplate(stack, 'short-form-fnsub-string.yaml');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('short-form-fnsub-string.yaml'),
+    );
+  });
+
+  test('can ingest a YAML tmeplate with Fn::Sub in map form and output it unchanged', () => {
+    includeTestTemplate(stack, 'short-form-sub-map.yaml');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('short-form-sub-map.yaml'),
+    );
+  });
+
+  test('the parser throws an error on a YAML tmeplate with short form import value that uses short form sub', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'invalid/short-form-import-sub.yaml');
+    }).toThrow(/A node can have at most one tag/);
   });
 });
 

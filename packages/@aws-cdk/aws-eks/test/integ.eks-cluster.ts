@@ -1,6 +1,7 @@
+/// !cdk-integ pragma:ignore-assets
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput, Duration } from '@aws-cdk/core';
+import { App, CfnOutput, Duration, Token } from '@aws-cdk/core';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { TestStack } from './util';
@@ -22,7 +23,7 @@ class EksClusterStack extends TestStack {
       vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: '1.16',
+      version: eks.KubernetesVersion.V1_16,
     });
 
     // fargate profile for resources in the "default" namespace
@@ -72,19 +73,33 @@ class EksClusterStack extends TestStack {
     // apply a kubernetes manifest
     cluster.addResource('HelloApp', ...hello.resources);
 
-    // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
+    // deploy the Kubernetes dashboard through a helm chart
     cluster.addChart('dashboard', {
       chart: 'kubernetes-dashboard',
       repository: 'https://kubernetes.github.io/dashboard/',
     });
 
-    cluster.addChart('nginx-ingress', {
+    // deploy an nginx ingress in a namespace
+
+    const nginxNamespace = cluster.addResource('nginx-namespace', {
+      apiVersion: 'v1',
+      kind: 'Namespace',
+      metadata: {
+        name: 'nginx',
+      },
+    });
+
+    const nginxIngress = cluster.addChart('nginx-ingress', {
       chart: 'nginx-ingress',
       repository: 'https://helm.nginx.com/stable',
-      namespace: 'kube-system',
+      namespace: 'nginx',
       wait: true,
+      createNamespace: false,
       timeout: Duration.minutes(15),
     });
+
+    // make sure namespace is deployed before the chart
+    nginxIngress.node.addDependency(nginxNamespace);
 
     // add a service account connected to a IAM role
     cluster.addServiceAccount('MyServiceAccount');
@@ -98,10 +113,36 @@ class EksClusterStack extends TestStack {
   }
 }
 
+// this test uses the bottlerocket image, which is only supported in these
+// regions. see https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-eks#bottlerocket
+const supportedRegions = [
+  'ap-northeast-1',
+  'ap-south-1',
+  'eu-central-1',
+  'us-east-1',
+  'us-west-2',
+];
+
 const app = new App();
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
-new EksClusterStack(app, 'aws-cdk-eks-cluster-test');
+const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test');
+
+if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
+
+  // only validate if we are about to actually deploy.
+  // TODO: better way to determine this, right now the 'CDK_INTEG_ACCOUNT' seems like the only way.
+
+  if (Token.isUnresolved(stack.region)) {
+    throw new Error(`region (${stack.region}) cannot be a token and must be configured to one of: ${supportedRegions}`);
+  }
+
+  if (!supportedRegions.includes(stack.region)) {
+    throw new Error(`region (${stack.region}) must be configured to one of: ${supportedRegions}`);
+  }
+
+}
+
 
 app.synth();

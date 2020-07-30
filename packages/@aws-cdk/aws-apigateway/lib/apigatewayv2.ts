@@ -1,7 +1,7 @@
 // Copyright 2012-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // Originally generated from the AWS CloudFormation Resource Specification. Now, hand managed.
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 import * as cdk from '@aws-cdk/core';
 

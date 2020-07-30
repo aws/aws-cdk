@@ -10,7 +10,7 @@
   "scripts": {
     "build": "echo No build",
     "test": "jest",
-    "lint": "eslint lib",
+    "eslint": "eslint lib",
     "build+test+package": "npm run build+test",
     "build+test": "npm run build && npm test"
   },

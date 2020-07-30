@@ -1,8 +1,8 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as crypto from 'crypto';
-import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
 import { Construct, ISynthesisSession } from './construct-compat';
@@ -171,6 +171,7 @@ export class AssetStaging extends Construct {
     ];
 
     try {
+      process.stderr.write(`Bundling asset ${this.node.path}...\n`);
       options.image._run({
         command: options.command,
         user,

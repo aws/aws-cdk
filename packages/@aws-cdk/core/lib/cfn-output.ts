@@ -36,10 +36,10 @@ export interface CfnOutputProps {
 }
 
 export class CfnOutput extends CfnElement {
-  private readonly _description?: string;
-  private readonly _condition?: CfnCondition;
-  private readonly _value?: any;
-  private readonly _export?: string;
+  private _description?: string;
+  private _condition?: CfnCondition;
+  private _value?: any;
+  private _exportName?: string;
 
   /**
    * Creates an CfnOutput value for this stack.
@@ -56,7 +56,67 @@ export class CfnOutput extends CfnElement {
     this._description = props.description;
     this._value = props.value;
     this._condition = props.condition;
-    this._export = props.exportName;
+    this._exportName = props.exportName;
+  }
+
+  /**
+   * Returns the description of this Output
+   */
+  public get description() {
+    return this._description;
+  }
+
+  /**
+   * Sets this output's description to the parameter
+   * @param description the description to update this Output's description to
+   */
+  public set description(description: string | undefined) {
+    this._description = description;
+  }
+
+  /**
+   * Returns the value of this Output
+   */
+  public get value() {
+    return this._value;
+  }
+
+  /**
+   * Sets this output's value to the parameter
+   * @param value the value to update this Output's value to
+   */
+  public set value(value: any) {
+    this._value = value;
+  }
+
+  /**
+   * Returns the condition of this Output
+   */
+  public get condition() {
+    return this._condition;
+  }
+
+  /**
+   * Sets this output's condition to the parameter
+   * @param condition the condition to update this Output's condition to
+   */
+  public set condition(condition: CfnCondition | undefined) {
+    this._condition = condition;
+  }
+
+  /**
+   * Returns the export of this Output
+   */
+  public get exportName() {
+    return this._exportName;
+  }
+
+  /**
+   * Sets this output's export to the parameter
+   * @param exportName the export to update this Output's export to
+   */
+  public set exportName(exportName: string | undefined) {
+    this._exportName = exportName;
   }
 
   /**
@@ -68,7 +128,7 @@ export class CfnOutput extends CfnElement {
         [this.logicalId]: {
           Description: this._description,
           Value: this._value,
-          Export: this._export != null ? { Name: this._export } : undefined,
+          Export: this._exportName != null ? { Name: this._exportName } : undefined,
           Condition: this._condition ? this._condition.logicalId : undefined,
         },
       },

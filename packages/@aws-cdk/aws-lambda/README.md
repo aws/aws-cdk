@@ -240,6 +240,22 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html)
 to learn more about AWS Lambda's X-Ray support.
 
+### Lambda with Profiling
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    profiling: true
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html)
+to learn more about AWS Lambda's Profiling support.
+
 ### Lambda with Reserved Concurrent Executions
 
 ```ts
@@ -266,7 +282,7 @@ The `logRetention` property can be used to set a different expiration period.
 It is possible to obtain the function's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
 `Function` construct.
 
-By default, CDK uses the AWS SDK retry options when creating a log group. The `logRetentionRetryOptions` property 
+By default, CDK uses the AWS SDK retry options when creating a log group. The `logRetentionRetryOptions` property
 allows you to customize the maximum number of retries and base backoff duration.
 
 *Note* that, if either `logRetention` is set or `logGroup` property is called, a [CloudFormation custom
@@ -276,6 +292,46 @@ correct log retention period (never expire, by default).
 
 *Further note* that, if the log group already exists and the `logRetention` is not set, the custom resource will reset
 the log retention to never expire even if it was configured with a different value.
+
+### FileSystem Access
+
+You can configure a function to mount an Amazon Elastic File System (Amazon EFS) to a
+directory in your runtime environment with the `filesystem` property. To access Amazon EFS
+from lambda function, the Amazon EFS access point will be required.
+
+The following sample allows the lambda function to mount the Amazon EFS access point to `/mnt/msg` in the runtime environment and access the filesystem with the POSIX identity defined in `posixUser`.
+
+```ts
+// create a new Amaozn EFS filesystem
+const fileSystem = new efs.FileSystem(stack, 'Efs', { vpc });
+
+// create a new access point from the filesystem
+const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
+  // set /export/lambda as the root of the access point
+  path: '/export/lambda',
+  // as /export/lambda does not exist in a new efs filesystem, the efs will create the directory with the following createAcl
+  createAcl: {
+    ownerUid: '1001',
+    ownerGid: '1001',
+    permissions: '750',
+  },
+  // enforce the POSIX identity so lambda function will access with this identity
+  posixUser: {
+    uid: '1001',
+    gid: '1001',
+  },
+});
+
+const fn = new lambda.Function(stack, 'MyLambda', {
+  code,
+  handler,
+  runtime,
+  vpc,
+  // mount the access point to /mnt/msg in the lambda runtime enironment
+  filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+});
+```
+
 
 ### Singleton Function
 
@@ -315,7 +371,7 @@ new lambda.Function(this, 'Function', {
   handler: 'index.handler',
 });
 ```
-Runtimes expose a `bundlingDockerImage` property that points to the [lambci/lambda](https://hub.docker.com/r/lambci/lambda/) build image.
+Runtimes expose a `bundlingDockerImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
 
 Use `cdk.BundlingDockerImage.fromRegistry(image)` to use an existing image or
 `cdk.BundlingDockerImage.fromAsset(path)` to build a specific image:
@@ -342,3 +398,4 @@ new lambda.Function(this, 'Function', {
 Language-specific higher level constructs are provided in separate modules:
 
 * Node.js: [`@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs)
+* Python: [`@aws-cdk/aws-lambda-python`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-python)

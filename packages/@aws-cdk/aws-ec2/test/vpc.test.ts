@@ -71,6 +71,13 @@ nodeunitShim({
       test.done();
     },
 
+    'can refer to the internet gateway'(test: Test) {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC');
+      test.deepEqual(stack.resolve(vpc.internetGatewayId), { Ref: 'TheVPCIGWFA25CC08' });
+      test.done();
+    },
+
     'with only isolated subnets, the VPC should not contain an IGW or NAT Gateways'(test: Test) {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
@@ -103,7 +110,8 @@ nodeunitShim({
           },
         ],
       });
-      expect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
+      expect(stack).to(countResources('AWS::EC2::InternetGateway', 1))
+      ;
       expect(stack).notTo(haveResource('AWS::EC2::NatGateway'));
       test.done();
     },
@@ -155,6 +163,48 @@ nodeunitShim({
       new Vpc(stack, 'TheVPC', { });
       expect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
       expect(stack).to(countResources('AWS::EC2::NatGateway', zones));
+      test.done();
+    },
+
+    'with isolated and public subnet, should be able to use the internet gateway to define routes'(test: Test) {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.ISOLATED,
+            name: 'isolated',
+          },
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+          },
+        ],
+      });
+      (vpc.isolatedSubnets[0] as Subnet).addRoute('TheRoute', {
+        routerId: vpc.internetGatewayId!,
+        routerType: RouterType.GATEWAY,
+        destinationCidrBlock: '8.8.8.8/32',
+      });
+      expect(stack).to(haveResource('AWS::EC2::InternetGateway'));
+      expect(stack).to(haveResourceLike('AWS::EC2::Route', {
+        DestinationCidrBlock: '8.8.8.8/32',
+        GatewayId: { },
+      }));
+      test.done();
+    },
+
+    'with only isolated subnets the internet gateway should be undefined'(test: Test) {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.ISOLATED,
+            name: 'isolated',
+          },
+        ],
+      });
+      test.equal(vpc.internetGatewayId, undefined);
+      expect(stack).notTo(haveResource('AWS::EC2::InternetGateway'));
       test.done();
     },
 
@@ -417,15 +467,47 @@ nodeunitShim({
       test.done();
     },
 
-    'natGateways = 0 requires there to be no PRIVATE subnets'(test: Test) {
+    'natGateways = 0 throws if no PRIVATE subnets configured'(test: Test) {
       const stack = getTestStack();
       test.throws(() => {
         new Vpc(stack, 'VPC', {
           natGateways: 0,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE,
+            },
+          ],
         });
       }, /make sure you don't configure any PRIVATE subnets/);
       test.done();
 
+    },
+
+    'natGateway = 0 defaults with ISOLATED subnet'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        natGateways: 0,
+      });
+      expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
+        Key: 'aws-cdk:subnet-type',
+        Value: 'Isolated',
+      }])));
+      test.done();
+    },
+
+    'unspecified natGateways constructs with PRIVATE subnet'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC');
+      expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
+        Key: 'aws-cdk:subnet-type',
+        Value: 'Private',
+      }])));
+      test.done();
     },
 
     'natGateways = 0 allows RESERVED PRIVATE subnets'(test: Test) {
@@ -1147,7 +1229,7 @@ nodeunitShim({
       const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
 
       // THEN
-      // tslint:disable-next-line: max-line-length
+      // eslint-disable-next-line max-len
       test.throws(() => subnet.availabilityZone, "You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
       test.done();
     },
@@ -1157,11 +1239,11 @@ nodeunitShim({
       const stack = getTestStack();
 
       // WHEN
-      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId : 'pub-1', availabilityZone: '' });
+      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId: 'pub-1', availabilityZone: '' });
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
-      // tslint:disable-next-line: max-line-length
+      // eslint-disable-next-line max-len
       test.throws(() => subnet.availabilityZone, "You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
       test.done();
     },
@@ -1171,7 +1253,7 @@ nodeunitShim({
       const stack = getTestStack();
 
       // WHEN
-      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId : 'pub-1', availabilityZone: 'az-1234' });
+      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId: 'pub-1', availabilityZone: 'az-1234' });
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
@@ -1273,11 +1355,11 @@ function hasTags(expectedTags: Array<{Key: string, Value: string}>): (props: any
       });
       return actualTags.length === expectedTags.length;
     } catch (e) {
-      // tslint:disable:no-console
+      /* eslint-disable no-console */
       console.error('Tags are incorrect');
       console.error('found tags ', props.Tags);
       console.error('expected tags ', expectedTags);
-      // tslint:enable:no-console
+      /* eslint-enable no-console */
       throw e;
     }
   };
