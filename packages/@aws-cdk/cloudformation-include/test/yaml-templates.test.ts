@@ -323,6 +323,28 @@ describe('CDK Include', () => {
       loadTestFileToJsObject('long-form-subnet.yaml'),
     );
   });
+
+  test('can ingest a YAML tempalte with Fn::Sub in string form and output it unchanged', () => {
+    includeTestTemplate(stack, 'short-form-fnsub-string.yaml');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('short-form-fnsub-string.yaml'),
+    );
+  });
+
+  test('can ingest a YAML tmeplate with Fn::Sub in map form and output it unchanged', () => {
+    includeTestTemplate(stack, 'short-form-sub-map.yaml');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('short-form-sub-map.yaml'),
+    );
+  });
+
+  test('the parser throws an error on a YAML tmeplate with short form import value that uses short form sub', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'invalid/short-form-import-sub.yaml');
+    }).toThrow(/A node can have at most one tag/);
+  });
 });
 
 function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {
