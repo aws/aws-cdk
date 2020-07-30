@@ -36,7 +36,8 @@ for more complex use cases.
 
 CloudFront distributions deliver your content from one or more origins; an origin is the location where you store the original version of your
 content. Origins can be created from S3 buckets or a custom origin (HTTP server). Each distribution has a default behavior which applies to all
-requests to that distribution, and routes requests to a primary origin.
+requests to that distribution, and routes requests to a primary origin. Constructs to define origins are in the `@aws-cdk/aws-cloudfront-origins`
+module.
 
 #### From an S3 Bucket
 
@@ -322,7 +323,6 @@ const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
 
 In case the origin source is not available and answers with one of the
 specified status code the failover origin source will be used.
-
 
 ```ts
 new CloudFrontWebDistribution(stack, 'ADistribution', {
