@@ -11,6 +11,7 @@ export interface IGraphQLApi extends IResource {
   /**
    * an unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
+   *
    * @attribute
    */
   readonly apiId: string;
@@ -25,6 +26,7 @@ export interface IGraphQLApi extends IResource {
   /**
    * add a new dummy data source to this API. Useful for pipeline resolvers
    * and for backend changes that don't require a data source.
+   *
    * @param name The name of the data source
    * @param description The description of the data source
    */
@@ -40,6 +42,7 @@ export interface IGraphQLApi extends IResource {
 
   /**
    * add a new http data source to this API
+   *
    * @param name The name of the data source
    * @param description The description of the data source
    * @param endpoint The http endpoint
@@ -48,17 +51,12 @@ export interface IGraphQLApi extends IResource {
 
   /**
    * add a new Lambda data source to this API
+   *
    * @param name The name of the data source
    * @param description The description of the data source
    * @param lambdaFunction The Lambda function to call to interact with this data source
    */
   addLambdaDataSource(name: string, description: string, lambdaFunction: IFunction): LambdaDataSource;
-
-  /**
-   * Add schema dependency if not imported
-   * @param construct the construct that has a dependency
-   */
-  addSchemaDependency(construct: CfnResource): boolean;
 }
 
 /**
@@ -79,6 +77,7 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
   /**
    * add a new none data source to this API. Useful for pipeline resolvers
    * and for backend changes that don't require a data source.
+   *
    * @param name The name of the data source @default 'None'
    * @param description The description of the data source @default undefined
    */
@@ -92,6 +91,7 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
 
   /**
    * add a new DynamoDB data source to this API
+   *
    * @param name The name of the data source
    * @param description The description of the data source
    * @param table The DynamoDB table backing this data source
@@ -107,6 +107,7 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
 
   /**
    * add a new http data source to this API
+   *
    * @param name The name of the data source
    * @param description The description of the data source
    * @param endpoint The http endpoint
@@ -122,6 +123,7 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
 
   /**
    * add a new Lambda data source to this API
+   *
    * @param name The name of the data source
    * @param description The description of the data source
    * @param lambdaFunction The Lambda function to call to interact with this data source
@@ -137,9 +139,10 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
 
   /**
    * Add schema dependency if not imported
+   *
    * @param construct the dependee
    */
-  public addSchemaDependency(construct: CfnResource): boolean {
+  protected addSchemaDependency(construct: CfnResource): boolean {
     construct;
     return false;
   }

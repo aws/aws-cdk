@@ -321,6 +321,7 @@ export interface GraphQLApiAttributes {
 export class GraphQLApi extends GraphQLApiBase {
   /**
    * Import a GraphQL API through this function
+   *
    * @param scope scope
    * @param id id
    * @param attrs GraphQL API Attributes of an API
@@ -575,9 +576,10 @@ export class GraphQLApi extends GraphQLApiBase {
 
   /**
    * Add schema dependency to a given construct
+   *
    * @param construct the dependee
    */
-  public addSchemaDependency(construct: CfnResource): boolean {
+  protected addSchemaDependency(construct: CfnResource): boolean {
     construct.addDependsOn(this.schema);
     return true;
   }
