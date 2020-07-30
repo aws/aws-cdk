@@ -134,7 +134,7 @@ export = {
       },
       'FunctionVersion': {
         'Fn::GetAtt': [
-          'FnCurrentVersion17A89ABBab5c765f3c55e4e61583b51b00a95742',
+          'FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005',
           'Version',
         ],
       },
