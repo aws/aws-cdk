@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import { Port } from '@aws-cdk/aws-ec2';
 import * as ga from '../lib';
 import { testFixture, testFixtureAlb } from './util';
@@ -23,35 +23,43 @@ test('custom resource exists', () => {
 
   // THEN
   expect(stack).to(haveResource('Custom::AWS', {
-    Create: {
-      action: 'describeSecurityGroups',
-      service: 'EC2',
-      parameters: {
-        Filters: [
-          {
-            Name: 'group-name',
-            Values: [
-              'GlobalAccelerator',
-            ],
-          },
-          {
-            Name: 'vpc-id',
-            Values: [
-              {
-                Ref: 'VPCB9E5F0B4',
-              },
-            ],
-          },
+    Properties: {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
+          'Arn',
         ],
       },
-      physicalResourceId: {
-        responsePath: 'SecurityGroups.0.GroupId',
+      Create: {
+        action: 'describeSecurityGroups',
+        service: 'EC2',
+        parameters: {
+          Filters: [
+            {
+              Name: 'group-name',
+              Values: [
+                'GlobalAccelerator',
+              ],
+            },
+            {
+              Name: 'vpc-id',
+              Values: [
+                {
+                  Ref: 'VPCB9E5F0B4',
+                },
+              ],
+            },
+          ],
+        },
+        physicalResourceId: {
+          responsePath: 'SecurityGroups.0.GroupId',
+        },
       },
     },
     DependsOn: [
-      'GroupAFA0823F',
+      'GroupC77FDACD',
     ],
-  }));
+  }, ResourcePart.CompleteDefinition));
 });
 
 test('can create security group rule', () => {

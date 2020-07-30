@@ -62,7 +62,7 @@ export class AcceleratorSecurityGroup {
     // We add a dependency on the endpoint group, guaranteeing that CloudFormation won't
     // try and look up the SG before AGA creates it. The SG is created when a VPC resource
     // is associated with an AGA
-    sg.node.addDependency(endpointGroup);
+    lookupAcceleratorSGCustomResource.node.addDependency(endpointGroup);
     return sg;
   }
 }
