@@ -24,6 +24,13 @@ const defaultClusterConfig = {
   dataNodeInstanceType: 'r5.large.elasticsearch',
 };
 
+const readActions = ['ESHttpGet', 'ESHttpHead'];
+const writeActions = ['ESHttpDelete', 'ESHttpPost', 'ESHttpPut', 'ESHttpPatch'];
+const readWriteActions = [
+  ...readActions,
+  ...writeActions,
+];
+
 test('minimal example renders correctly', () => {
   new Domain(stack, 'Domain', {
     elasticsearchVersion: ElasticsearchVersion.ES_VERSION_7_1,
@@ -159,73 +166,67 @@ describe('log groups', () => {
 
 describe('grants', () => {
 
-  test('"grant" allows adding arbitrary actions associated with this domain resource', () => {
-    const domain = new Domain(stack, 'Domain', {
-      clusterConfig: defaultClusterConfig,
-    });
-    const user = new iam.User(stack, 'user');
-
-    domain.grant(user, 'es:ESHttpGet');
-
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'es:ESHttpGet',
-            Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Domain66AC69E0',
-                  'Arn',
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      'Fn::GetAtt': [
-                        'Domain66AC69E0',
-                        'Arn',
-                      ],
-                    },
-                    '/*',
-                  ],
-                ],
-              },
-            ],
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      PolicyName: 'userDefaultPolicy083DF682',
-      Users: [
-        {
-          Ref: 'user2C2B57AE',
-        },
-      ],
-    });
+  test('"grantRead" allows read actions associated with this domain resource', () => {
+    testGrant(readActions, (p, t) => t.grantRead(p));
   });
 
-  test('"grant" allows adding arbitrary actions associated with this domain resource', () => {
-    testGrant(
-      ['action1', 'action2'], (p, t) => t.grant(p, 'es:action1', 'es:action2'));
+  test('"grantWrite" allows write actions associated with this domain resource', () => {
+    testGrant(writeActions, (p, t) => t.grantWrite(p));
   });
 
-  test('"grantIndex" allows adding arbitrary actions associated with an index in this domain resource', () => {
+  test('"grantReadWrite" allows read and write actions associated with this domain resource', () => {
+    testGrant(readWriteActions, (p, t) => t.grantReadWrite(p));
+  });
+
+  test('"grantIndexRead" allows read actions associated with an index in this domain resource', () => {
     testGrant(
-      ['action1', 'action2'],
-      (p, d) => d.grantIndex('my-index', p, 'es:action1', 'es:action2'),
+      readActions,
+      (p, d) => d.grantIndexRead('my-index', p),
       false,
       ['/my-index', '/my-index/*'],
     );
   });
 
-  test('"grantPath" allows adding arbitrary actions associated with a given path in this domain resource', () => {
+  test('"grantIndexWrite" allows write actions associated with an index in this domain resource', () => {
     testGrant(
-      ['action1', 'action2'],
-      (p, d) => d.grantPath('my-index/my-path', p, 'es:action1', 'es:action2'),
+      writeActions,
+      (p, d) => d.grantIndexWrite('my-index', p),
+      false,
+      ['/my-index', '/my-index/*'],
+    );
+  });
+
+  test('"grantIndexReadWrite" allows read and write actions associated with an index in this domain resource', () => {
+    testGrant(
+      readWriteActions,
+      (p, d) => d.grantIndexReadWrite('my-index', p),
+      false,
+      ['/my-index', '/my-index/*'],
+    );
+  });
+
+  test('"grantPathRead" allows read actions associated with a given path in this domain resource', () => {
+    testGrant(
+      readActions,
+      (p, d) => d.grantPathRead('my-index/my-path', p),
+      false,
+      ['/my-index/my-path'],
+    );
+  });
+
+  test('"grantPathWrite" allows write actions associated with a given path in this domain resource', () => {
+    testGrant(
+      writeActions,
+      (p, d) => d.grantPathWrite('my-index/my-path', p),
+      false,
+      ['/my-index/my-path'],
+    );
+  });
+
+  test('"grantPathReadWrite" allows read and write actions associated with a given path in this domain resource', () => {
+    testGrant(
+      readWriteActions,
+      (p, d) => d.grantPathReadWrite('my-index/my-path', p),
       false,
       ['/my-index/my-path'],
     );
@@ -236,13 +237,20 @@ describe('grants', () => {
     const domain = Domain.fromDomainEndpoint(stack, 'Domain', domainEndpoint);
     const user = new iam.User(stack, 'user');
 
-    domain.grant(user, 'es:*');
+    domain.grantReadWrite(user);
 
     expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'es:*',
+            Action: [
+              'es:ESHttpGet',
+              'es:ESHttpHead',
+              'es:ESHttpDelete',
+              'es:ESHttpPost',
+              'es:ESHttpPut',
+              'es:ESHttpPatch',
+            ],
             Effect: 'Allow',
             Resource: [
               {

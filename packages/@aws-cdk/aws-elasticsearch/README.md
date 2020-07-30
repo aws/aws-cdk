@@ -50,7 +50,6 @@ This method accepts a domain endpoint of an already existing domain:
 ```ts
 const domainEndpoint = 'https://my-domain-jcjotrt6f7otem4sqcwbch3c4u.us-east-1.es.amazonaws.com';
 const domain = Domain.fromDomainEndpoint(this, 'ImportedDomain', domainEndpoint);
-domain.grantIndex('existing-index', myLambdaFunction, 'es:ESHttpGet', 'es:ESHttpPut');
 ```
 
 ### Permissions
@@ -61,8 +60,12 @@ Helper methods also exist for managing access to the domain.
 
 ```ts
 const lambda = new lambda.Function(this, 'Lambda', { /* ... */ });
-// Grant the lambda functiomn read access to app-search index
-domain.grantIndex('app-search', lambda, 'es:ESHttpGet');
+
+// Grant write access to the app-search index
+domain.grantIndexWrite('app-search', lambda);
+
+// Grant read access to the 'app-search/_search' path
+domain.grantPathRead('app-search/_search', lambda);
 ```
 
 ### Encryption

@@ -9,6 +9,7 @@ import * as cdk from '@aws-cdk/core';
 
 import { CfnDomain } from './elasticsearch.generated';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
+import * as perms from './perms';
 
 /**
  * Configures the makeup of the cluster such as number of nodes and instance
@@ -141,7 +142,7 @@ export interface LoggingOptions {
 /**
  * Whether the domain should encrypt data at rest, and if so, the AWS Key
  * Management Service (KMS) key to use. Can only be used to create a new domain,
- * not update an existing one
+ * not update an existing one.
  */
 export interface EncryptionAtRestOptions {
   /**
@@ -328,33 +329,114 @@ export interface IDomain extends cdk.IResource {
   readonly domainEndpoint: string;
 
   /**
-   * Adds an IAM policy statement associated with this domain to an IAM
-   * principal's policy.
-   *
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "es:ESHttpGet", "es:ESHttpPut", ...)
+   * Optional KMS encryption key associated with this domain.
    */
-  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+  readonly encryptionKey?: kms.IKey;
 
   /**
-   * Adds an IAM policy statement associated with an index in this domain to an IAM
-   * principal's policy.
+   * Grant read permissions for this domain and its contents to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to decrypt the contents
+   * of the domain will also be granted to the same principal.
+   *
+   * @param identity The principal
+   */
+  grantRead(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant write permissions for this domain and its contents to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to encrypt the contents
+   * of the domain will also be granted to the same principal.
+   *
+   * @param identity The principal
+   */
+  grantWrite(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant read/write permissions for this domain and its contents to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to encrypt and decrypt the
+   * contents of the domain will also be granted to the same principal.
+   *
+   * @param identity The principal
+   */
+  grantReadWrite(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant read permissions for an index in this domain to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to decrypt the contents
+   * of the index will also be granted to the same principal.
    *
    * @param index The index to grant permissions for
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "es:ESHttpGet", "es:ESHttpPut", ...)
+   * @param identity The principal
    */
-  grantIndex(index: string, grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+  grantIndexRead(index: string, identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Adds an IAM policy statement associated with a path in this domain to an IAM
-   * principal's policy.
+   * Grant write permissions for an index in this domain to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to encrypt the contents
+   * of the index will also be granted to the same principal.
+   *
+   * @param index The index to grant permissions for
+   * @param identity The principal
+   */
+  grantIndexWrite(index: string, identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant read/write permissions for an index in this domain to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to encrypt/decrypt the contents
+   * of the index will also be granted to the same principal.
+   *
+   * @param index The index to grant permissions for
+   * @param identity The principal
+   */
+  grantIndexReadWrite(index: string, identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant read permissions for a specific path in this domain to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to decrypt the contents
+   * of the path will also be granted to the same principal.
    *
    * @param path The path to grant permissions for
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "es:ESHttpGet", "es:ESHttpPut", ...)
+   * @param identity The principal
    */
-  grantPath(path: string, grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+  grantPathRead(path: string, identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant write permissions for a specific path in this domain to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to encrypt the contents
+   * of the path will also be granted to the same principal.
+   *
+   * @param path The path to grant permissions for
+   * @param identity The principal
+   */
+  grantPathWrite(path: string, identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant read/write permissions for a specific path in this domain to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to encrypt/decrypt the contents
+   * of the path will also be granted to the same principal.
+   *
+   * @param path The path to grant permissions for
+   * @param identity The principal
+   */
+  grantPathReadWrite(path: string, identity: iam.IGrantable): iam.Grant;
 
   /**
    * Return the given named metric for this Domain.
@@ -364,105 +446,105 @@ export interface IDomain extends cdk.IResource {
   /**
    * Metric for the time the cluster status is red.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
   metricClusterStatusRed(props?: MetricOptions): Metric;
 
   /**
    * Metric for the time the cluster status is yellow.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
   metricClusterStatusYellow(props?: MetricOptions): Metric;
 
   /**
    * Metric for the storage space of nodes in the cluster.
    *
-   * @default minimum over a minute
+   * @default minimum over 5 minutes
    */
   metricFreeStorageSpace(props?: MetricOptions): Metric;
 
   /**
    * Metric for the cluster blocking index writes.
    *
-   * @default maximum over 5 minutes
+   * @default maximum over 1 minute
    */
   metricClusterIndexWriteBlocked(props?: MetricOptions): Metric;
 
   /**
    * Metric for the number of nodes.
    *
-   * @default minimum over 1 hour
+   * @default maximum over 1 hour
    */
   metricNodes(props?: MetricOptions): Metric;
 
   /**
    * Metric for automated snapshot failures.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
   metricAutomatedSnapshotFailure(props?: MetricOptions): Metric;
 
   /**
    * Metric for CPU utilization.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
   metricCPUUtilization(props?: MetricOptions): Metric;
 
   /**
    * Metric for JVM memory pressure.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
   metricJVMMemoryPressure(props?: MetricOptions): Metric;
 
   /**
    * Metric for master CPU utilization.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
   metricMasterCPUUtilization(props?: MetricOptions): Metric;
 
   /**
    * Metric for master JVM memory pressure.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
   metricMasterJVMMemoryPressure(props?: MetricOptions): Metric;
 
   /**
    * Metric for KMS key errors.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
   metricKMSKeyError(props?: MetricOptions): Metric;
 
   /**
    * Metric for KMS key being inaccessible.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
   metricKMSKeyInaccessible(props?: MetricOptions): Metric;
 
   /**
    * Metric for number of searchable documents.
    *
-   * @default maximum over a minute
+   * @default maximum over 5 minutes
    */
   metricSearchableDocuments(props?: MetricOptions): Metric;
 
   /**
    * Metric for search latency.
    *
-   * @default maximum over a minute
+   * @default p99 over 5 minutes
    */
   metricSearchLatency(props?: MetricOptions): Metric;
 
   /**
    * Metric for indexing latency.
    *
-   * @default maximum over a minute
+   * @default p99 over 5 minutes
    */
   metricIndexingLatency(props?: MetricOptions): Metric;
 }
@@ -472,75 +554,187 @@ export interface IDomain extends cdk.IResource {
  * A new or imported domain.
  */
 abstract class DomainBase extends cdk.Resource implements IDomain {
-  /**
-   * @attribute
-   */
   public abstract readonly domainArn: string;
-
-  /**
-   * @attribute
-   */
   public abstract readonly domainName: string;
-
-  /**
-   * @attribute
-   */
   public abstract readonly domainEndpoint: string;
 
   /**
-   * Adds an IAM policy statement associated with this domain to an IAM
-   * principal's policy.
-   *
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "es:ESHttpGet", "es:ESHttpPut", ...)
+   * Optional KMS encryption key associated with this domain.
    */
-  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [
-        this.domainArn,
-        `${this.domainArn}/*`,
-      ],
-      scope: this,
-    });
+  public abstract readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Grant read permissions for this domain and its contents to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to decrypt the contents
+   * of the domain will also be granted to the same principal.
+   *
+   * @param identity The principal
+   */
+  grantRead(identity: iam.IGrantable): iam.Grant {
+    return this.grant(
+      identity,
+      perms.ES_READ_ACTIONS,
+      perms.KEY_READ_ACTIONS,
+      this.domainArn,
+      `${this.domainArn}/*`,
+    );
   }
 
   /**
-   * Adds an IAM policy statement associated with an index in this domain to an IAM
-   * principal's policy.
+   * Grant write permissions for this domain and its contents to an IAM
+   * principal (Role/Group/User).
    *
-   * @param index   The index to grant permissions for
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "es:ESHttpGet", "es:ESHttpPut", ...)
+   * If encryption is used, permission to use the key to encrypt the contents
+   * of the domain will also be granted to the same principal.
+   *
+   * @param identity The principal
    */
-  public grantIndex(index: string, grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [
-        `${this.domainArn}/${index}`,
-        `${this.domainArn}/${index}/*`,
-      ],
-      scope: this,
-    });
+  grantWrite(identity: iam.IGrantable): iam.Grant {
+    return this.grant(
+      identity,
+      perms.ES_WRITE_ACTIONS,
+      perms.KEY_WRITE_ACTIONS,
+      this.domainArn,
+      `${this.domainArn}/*`,
+    );
   }
 
   /**
-   * Adds an IAM policy statement associated with a path in this domain to an IAM
-   * principal's policy.
+   * Grant read/write permissions for this domain and its contents to an IAM
+   * principal (Role/Group/User).
    *
-   * @param path   The path to grant permissions for
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "es:ESHttpGet", "es:ESHttpPut", ...)
+   * If encryption is used, permission to use the key to encrypt and decrypt the
+   * contents of the domain will also be granted to the same principal.
+   *
+   * @param identity The principal
    */
-  public grantPath(path: string, grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [`${this.domainArn}/${path}`],
-      scope: this,
-    });
+  grantReadWrite(identity: iam.IGrantable): iam.Grant {
+    return this.grant(
+      identity,
+      perms.ES_READ_WRITE_ACTIONS,
+      perms.KEY_READ_WRITE_ACTIONS,
+      this.domainArn,
+      `${this.domainArn}/*`,
+    );
+  }
+
+  /**
+   * Grant read permissions for an index in this domain to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to decrypt the contents
+   * of the index will also be granted to the same principal.
+   *
+   * @param index The index to grant permissions for
+   * @param identity The principal
+   */
+  grantIndexRead(index: string, identity: iam.IGrantable): iam.Grant {
+    return this.grant(
+      identity,
+      perms.ES_READ_ACTIONS,
+      perms.KEY_READ_ACTIONS,
+      `${this.domainArn}/${index}`,
+      `${this.domainArn}/${index}/*`,
+    );
+  }
+
+  /**
+   * Grant write permissions for an index in this domain to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to encrypt the contents
+   * of the index will also be granted to the same principal.
+   *
+   * @param index The index to grant permissions for
+   * @param identity The principal
+   */
+  grantIndexWrite(index: string, identity: iam.IGrantable): iam.Grant {
+    return this.grant(
+      identity,
+      perms.ES_WRITE_ACTIONS,
+      perms.KEY_WRITE_ACTIONS,
+      `${this.domainArn}/${index}`,
+      `${this.domainArn}/${index}/*`,
+    );
+  }
+
+  /**
+   * Grant read/write permissions for an index in this domain to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to encrypt/decrypt the contents
+   * of the index will also be granted to the same principal.
+   *
+   * @param index The index to grant permissions for
+   * @param identity The principal
+   */
+  grantIndexReadWrite(index: string, identity: iam.IGrantable): iam.Grant {
+    return this.grant(
+      identity,
+      perms.ES_READ_WRITE_ACTIONS,
+      perms.KEY_READ_WRITE_ACTIONS,
+      `${this.domainArn}/${index}`,
+      `${this.domainArn}/${index}/*`,
+    );
+  }
+
+  /**
+   * Grant read permissions for a specific path in this domain to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to decrypt the contents
+   * of the path will also be granted to the same principal.
+   *
+   * @param path The path to grant permissions for
+   * @param identity The principal
+   */
+  grantPathRead(path: string, identity: iam.IGrantable): iam.Grant {
+    return this.grant(
+      identity,
+      perms.ES_READ_ACTIONS,
+      perms.KEY_READ_ACTIONS,
+      `${this.domainArn}/${path}`,
+    );
+  }
+
+  /**
+   * Grant write permissions for a specific path in this domain to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to encrypt the contents
+   * of the path will also be granted to the same principal.
+   *
+   * @param path The path to grant permissions for
+   * @param identity The principal
+   */
+  grantPathWrite(path: string, identity: iam.IGrantable): iam.Grant {
+    return this.grant(
+      identity,
+      perms.ES_WRITE_ACTIONS,
+      perms.KEY_WRITE_ACTIONS,
+      `${this.domainArn}/${path}`,
+    );
+  }
+
+  /**
+   * Grant read/write permissions for a specific path in this domain to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to encrypt/decrypt the contents
+   * of the path will also be granted to the same principal.
+   *
+   * @param path The path to grant permissions for
+   * @param identity The principal
+   */
+  grantPathReadWrite(path: string, identity: iam.IGrantable): iam.Grant {
+    return this.grant(
+      identity,
+      perms.ES_READ_WRITE_ACTIONS,
+      perms.KEY_READ_WRITE_ACTIONS,
+      `${this.domainArn}/${path}`,
+    );
   }
 
   /**
@@ -564,7 +758,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default maximum over 5 minutes
    */
   public metricClusterStatusRed(props?: MetricOptions): Metric {
-    return this.metric('ClusterStatus.red', { statistic: Statistic.MAXIMUM, ...props });
+    return this.metric('ClusterStatus.red', {
+      statistic: Statistic.MAXIMUM,
+      ...props,
+    });
   }
 
   /**
@@ -573,7 +770,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default maximum over 5 minutes
    */
   public metricClusterStatusYellow(props?: MetricOptions): Metric {
-    return this.metric('ClusterStatus.yellow', { statistic: Statistic.MAXIMUM, ...props });
+    return this.metric('ClusterStatus.yellow', {
+      statistic: Statistic.MAXIMUM,
+      ...props,
+    });
   }
 
   /**
@@ -582,7 +782,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default minimum over 5 minutes
    */
   public metricFreeStorageSpace(props?: MetricOptions): Metric {
-    return this.metric('FreeStorageSpace', { statistic: Statistic.MINIMUM, ...props });
+    return this.metric('FreeStorageSpace', {
+      statistic: Statistic.MINIMUM,
+      ...props,
+    });
   }
 
   /**
@@ -617,7 +820,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default maximum over 5 minutes
    */
   public metricAutomatedSnapshotFailure(props?: MetricOptions): Metric {
-    return this.metric('AutomatedSnapshotFailure', { statistic: Statistic.MAXIMUM, ...props });
+    return this.metric('AutomatedSnapshotFailure', {
+      statistic: Statistic.MAXIMUM,
+      ...props,
+    });
   }
 
   /**
@@ -626,7 +832,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default maximum over 5 minutes
    */
   public metricCPUUtilization(props?: MetricOptions): Metric {
-    return this.metric('CPUUtilization', { statistic: Statistic.MAXIMUM, ...props });
+    return this.metric('CPUUtilization', {
+      statistic: Statistic.MAXIMUM,
+      ...props,
+    });
   }
 
   /**
@@ -635,7 +844,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default maximum over 5 minutes
    */
   public metricJVMMemoryPressure(props?: MetricOptions): Metric {
-    return this.metric('JVMMemoryPressure', { statistic: Statistic.MAXIMUM, ...props });
+    return this.metric('JVMMemoryPressure', {
+      statistic: Statistic.MAXIMUM,
+      ...props,
+    });
   }
 
   /**
@@ -644,7 +856,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default maximum over 5 minutes
    */
   public metricMasterCPUUtilization(props?: MetricOptions): Metric {
-    return this.metric('MasterCPUUtilization', { statistic: Statistic.MAXIMUM, ...props });
+    return this.metric('MasterCPUUtilization', {
+      statistic: Statistic.MAXIMUM,
+      ...props,
+    });
   }
 
   /**
@@ -653,7 +868,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default maximum over 5 minutes
    */
   public metricMasterJVMMemoryPressure(props?: MetricOptions): Metric {
-    return this.metric('MasterJVMMemoryPressure', { statistic: Statistic.MAXIMUM, ...props });
+    return this.metric('MasterJVMMemoryPressure', {
+      statistic: Statistic.MAXIMUM,
+      ...props,
+    });
   }
 
   /**
@@ -662,7 +880,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default maximum over 5 minutes
    */
   public metricKMSKeyError(props?: MetricOptions): Metric {
-    return this.metric('KMSKeyError', { statistic: Statistic.MAXIMUM, ...props });
+    return this.metric('KMSKeyError', {
+      statistic: Statistic.MAXIMUM,
+      ...props,
+    });
   }
 
   /**
@@ -671,7 +892,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default maximum over 5 minutes
    */
   public metricKMSKeyInaccessible(props?: MetricOptions): Metric {
-    return this.metric('KMSKeyInaccessible', { statistic: Statistic.MAXIMUM, ...props });
+    return this.metric('KMSKeyInaccessible', {
+      statistic: Statistic.MAXIMUM,
+      ...props,
+    });
   }
 
   /**
@@ -680,7 +904,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default maximum over 5 minutes
    */
   public metricSearchableDocuments(props?: MetricOptions): Metric {
-    return this.metric('SearchableDocuments', { statistic: Statistic.MAXIMUM, ...props });
+    return this.metric('SearchableDocuments', {
+      statistic: Statistic.MAXIMUM,
+      ...props,
+    });
   }
 
   /**
@@ -699,6 +926,29 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricIndexingLatency(props?: MetricOptions): Metric {
     return this.metric('IndexingLatencyP99', { statistic: 'p99', ...props });
+  }
+
+  private grant(
+    grantee: iam.IGrantable,
+    domainActions: string[],
+    keyActions: string[],
+    resourceArn: string,
+    ...otherResourceArns: string[]
+  ): iam.Grant {
+    const resourceArns = [resourceArn, ...otherResourceArns];
+
+    const grant = iam.Grant.addToPrincipal({
+      grantee,
+      actions: domainActions,
+      resourceArns,
+      scope: this,
+    });
+
+    if (this.encryptionKey && keyActions && keyActions.length !== 0) {
+      this.encryptionKey.grant(grantee, ...keyActions);
+    }
+
+    return grant;
   }
 }
 
@@ -721,6 +971,13 @@ export interface DomainAttributes {
    * The domain endpoint of the Elasticsearch domain.
    */
   readonly domainEndpoint: string;
+
+  /**
+   * Optional KMS encryption key associated with this domain.
+   *
+   * @default no encryption key
+   */
+  readonly encryptionKey?: kms.IKey;
 }
 
 
@@ -735,7 +992,11 @@ export class Domain extends DomainBase implements IDomain {
    * @param id The construct's name.
    * @param domainEndpoint The domain's endpoint.
    */
-  public static fromDomainEndpoint(scope: cdk.Construct, id: string, domainEndpoint: string): IDomain {
+  public static fromDomainEndpoint(
+    scope: cdk.Construct,
+    id: string,
+    domainEndpoint: string,
+  ): IDomain {
     const stack = cdk.Stack.of(scope);
     const domainName = extractNameFromEndpoint(domainEndpoint);
     const domainArn = stack.formatArn({
@@ -743,7 +1004,12 @@ export class Domain extends DomainBase implements IDomain {
       resource: 'domain',
       resourceName: domainName,
     });
-    return Domain.fromDomainAttributes(scope, id, { domainArn, domainName, domainEndpoint });
+
+    return Domain.fromDomainAttributes(scope, id, {
+      domainArn,
+      domainName,
+      domainEndpoint,
+    });
   }
 
   /**
@@ -754,48 +1020,44 @@ export class Domain extends DomainBase implements IDomain {
    * @param attrs A `DomainAttributes` object.
    */
   public static fromDomainAttributes(scope: cdk.Construct, id: string, attrs: DomainAttributes): IDomain {
-    return new class extends DomainBase implements IDomain {
-      public readonly domainArn: string;
-      public readonly domainName: string;
-      public readonly domainEndpoint: string;
+    return new class extends DomainBase {
+      public readonly domainArn = attrs.domainArn;
+      public readonly domainName = attrs.domainName;
+      public readonly domainEndpoint = attrs.domainEndpoint;
+      public readonly encryptionKey = attrs.encryptionKey;
 
-      constructor() {
-        super(scope, id);
-        this.domainArn = attrs.domainArn;
-        this.domainName = attrs.domainName;
-        this.domainEndpoint = attrs.domainEndpoint;
-      }
+      constructor() { super(scope, id); }
     };
   }
 
-  /**
-   * @attribute
-   */
   public readonly domainArn: string;
-
-  /**
-   * @attribute
-   */
   public readonly domainName: string;
-
-  /**
-   * @attribute
-   */
   public readonly domainEndpoint: string;
+  public readonly encryptionKey?: kms.IKey;
 
 
   private readonly domain: CfnDomain;
-
   private readonly slowSearchLogGroup?: logs.ILogGroup;
-
   private readonly slowIndexLogGroup?: logs.ILogGroup;
-
   private readonly appLogGroup?: logs.ILogGroup;
 
   constructor(scope: cdk.Construct, id: string, props: DomainProps) {
     super(scope, id, {
       physicalName: props.domainName,
     });
+
+    // If VPC options are supplied ensure that the number of subnets matches the number AZ
+    if (props.vpcOptions?.subnets.map((subnet) => subnet.availabilityZone).length != props?.clusterConfig.availabilityZoneCount) {
+      throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
+    };
+
+    let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
+    if (props.vpcOptions) {
+      cfnVpcOptions = {
+        securityGroupIds: props.vpcOptions.securityGroups.map((sg) => sg.securityGroupId),
+        subnetIds: props.vpcOptions.subnets.map((subnet) => subnet.subnetId),
+      };
+    }
 
     // Setup logging
     const logGroups: logs.ILogGroup[] = [];
@@ -842,19 +1104,6 @@ export class Domain extends DomainBase implements IDomain {
         policyName: 'ESLogPolicy',
         policyStatements: [logPolicyStatement],
       });
-    }
-
-    // If VPC options are supplied ensure that the number of subnets matches the number AZ
-    if (props.vpcOptions?.subnets.map((subnet) => subnet.availabilityZone).length != props?.clusterConfig.availabilityZoneCount) {
-      throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
-    };
-
-    let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
-    if (props.vpcOptions) {
-      cfnVpcOptions = {
-        securityGroupIds: props.vpcOptions.securityGroups.map((sg) => sg.securityGroupId),
-        subnetIds: props.vpcOptions.subnets.map((subnet) => subnet.subnetId),
-      };
     }
 
     // Create the domain
@@ -911,6 +1160,7 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.domainName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName); }
 
+    this.encryptionKey = props.encryptionAtRestOptions?.kmsKey;
     this.domainArn = this.getResourceArnAttribute(this.domain.attrArn, {
       service: 'es',
       resource: 'domain',
