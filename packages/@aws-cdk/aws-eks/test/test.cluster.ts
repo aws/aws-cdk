@@ -1383,6 +1383,41 @@ export = {
 
   },
 
+  'kubectl provider passes environment to lambda'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+      kubectlEnvironment: {
+        Foo: 'Bar',
+      },
+    });
+
+    cluster.addResource('resource', {
+      kind: 'ConfigMap',
+      apiVersion: 'v1',
+      data: {
+        hello: 'world',
+      },
+      metadata: {
+        name: 'config-map',
+      },
+    });
+
+    // the kubectl provider is inside a nested stack.
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    expect(nested).to(haveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          Foo: 'Bar',
+        },
+      },
+    }));
+
+    test.done();
+  },
+
   'endpoint access': {
 
     'can configure private endpoint access'(test: Test) {
@@ -1609,41 +1644,6 @@ export = {
               Ref: 'referencetoStackVpcPrivate2Subnet2SubnetE42148C0Ref',
             },
           ],
-        },
-      }));
-
-      test.done();
-    },
-
-    'kubectl provider accepts passes environment to lambda'(test: Test) {
-
-      const { stack } = testFixture();
-
-      const cluster = new eks.Cluster(stack, 'Cluster1', {
-        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
-        kubectlEnvironment: {
-          Foo: 'Bar',
-        },
-      });
-
-      cluster.addResource('resource', {
-        kind: 'ConfigMap',
-        apiVersion: 'v1',
-        data: {
-          hello: 'world',
-        },
-        metadata: {
-          name: 'config-map',
-        },
-      });
-
-      // the kubectl provider is inside a nested stack.
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      expect(nested).to(haveResource('AWS::Lambda::Function', {
-        Environment: {
-          Variables: {
-            Foo: 'Bar',
-          },
         },
       }));
 
