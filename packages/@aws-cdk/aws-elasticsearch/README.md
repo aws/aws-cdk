@@ -33,7 +33,7 @@ const domain = new es.Domain(this, 'Domain', {
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
     },
     logPublishingOptions: {
-        slowSearchLogEnabed: true,
+        slowSearchLogEnabled: true,
         appLogEnabled: true
     },
 });
@@ -80,6 +80,10 @@ const domain = new es.Domain(this, 'Domain', {
         masterNodeInstanceType: 'c5.large.elasticsearch',
         dataNodes: 3,
         dataNodeInstanceType: 'r5.large.elasticsearch',
+    },
+    ebsOptions: {
+        volumeSize: 100,
+        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
     },
     nodeToNodeEncryptionEnabled: true,
     encryptionAtRestOptions: {

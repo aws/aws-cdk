@@ -19,7 +19,7 @@ class TestStack extends Stack {
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
       logPublishingOptions: {
-        slowSearchLogEnabed: true,
+        slowSearchLogEnabled: true,
         appLogEnabled: true,
       },
       nodeToNodeEncryptionEnabled: true,

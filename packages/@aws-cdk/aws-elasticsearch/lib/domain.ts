@@ -98,10 +98,11 @@ export interface EbsOptions {
 export interface LoggingOptions {
   /**
    * Specify if slow search logging should be set up.
+   * Requires Elasticsearch version 5.1 or later.
    *
    * @default - false
    */
-  readonly slowSearchLogEnabed?: boolean;
+  readonly slowSearchLogEnabled?: boolean;
 
   /**
    * Log slow searches to this log group.
@@ -112,13 +113,14 @@ export interface LoggingOptions {
 
   /**
    * Specify if slow index logging should be set up.
+   * Requires Elasticsearch version 5.1 or later.
    *
    * @default - false
    */
-  readonly slowIndexLogEnabed?: boolean;
+  readonly slowIndexLogEnabled?: boolean;
 
   /**
-   * Log slow indecies to this log group.
+   * Log slow indices to this log group.
    *
    * @default - a new log group is created if slow index logging is enabled
    */
@@ -126,6 +128,7 @@ export interface LoggingOptions {
 
   /**
    * Specify if Elasticsearch application logging should be set up.
+   * Requires Elasticsearch version 5.1 or later.
    *
    * @default - false
    */
@@ -142,7 +145,7 @@ export interface LoggingOptions {
 /**
  * Whether the domain should encrypt data at rest, and if so, the AWS Key
  * Management Service (KMS) key to use. Can only be used to create a new domain,
- * not update an existing one.
+ * not update an existing one. Requires Elasticsearch version 5.1 or later.
  */
 export interface EncryptionAtRestOptions {
   /**
@@ -277,6 +280,7 @@ export interface DomainProps {
 
   /**
    * Specify true to enable node to node encryption.
+   * Requires Elasticsearch version 6.0 or later.
    *
    * @default - Node to node encryption is not enabled.
    */
@@ -284,10 +288,9 @@ export interface DomainProps {
 
   /**
    * The hour in UTC during which the service takes an automated daily snapshot
-   * of the indices in the Amazon ES domain. Only applies for Elasticsearch
-   * versions below 5.3.
+   * of the indices in the Amazon ES domain. Requires Elasticsearch version 5.3 and later.
    *
-   * @default - Not used for Elasticsearch versions above 5.3.
+   * @default - Hourly automated snapshots not used
    */
   readonly automatedSnapshotStartHour?: number;
 
@@ -1051,6 +1054,79 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
     };
 
+    const masterInstanceType = props.clusterConfig.masterNodeInstanceType.toLowerCase();
+    const dataInstanceType = props.clusterConfig.dataNodeInstanceType.toLowerCase();
+
+    if ([masterInstanceType, dataInstanceType].some(instanceType => !instanceType.endsWith('.elasticsearch'))) {
+      throw new Error('Master and data node instance types must end with ".elasticsearch".');
+    }
+
+    const elasticsearchVersion = props.elasticsearchVersion ?? ElasticsearchVersion.ES_VERSION_7_4;
+    const versionNumber = parseFloat(elasticsearchVersion.toString());
+    const encryptionAtRestEnabled = props.encryptionAtRestOptions?.enabled ?? (props.encryptionAtRestOptions?.kmsKey != null);
+    const ebsEnabled = props.ebsOptions != null;
+
+    const isInstanceType = function(instanceType: string) : Boolean {
+      return masterInstanceType.startsWith(instanceType) || dataInstanceType.startsWith(instanceType);
+    };
+
+    const isSomeInstanceType = function(...instanceTypes: string[]) : Boolean {
+      return instanceTypes.some(isInstanceType);
+    };
+
+    const isEveryInstanceType = function(...instanceTypes: string[]) : Boolean {
+      return instanceTypes.every(isInstanceType);
+    };
+
+    // Validate feature support for the given Elasticsearch version, per
+    // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-features-by-version.html
+    if (versionNumber < 5.1) {
+      if (
+        props.logPublishingOptions?.slowIndexLogEnabled
+        || props.logPublishingOptions?.appLogEnabled
+        || props.logPublishingOptions?.slowSearchLogEnabled
+      ) {
+        throw new Error('Error and slow logs publishing requires Elasticsearch version 5.1 or later.');
+      }
+      if (props.encryptionAtRestOptions?.enabled) {
+        throw new Error('Encryption of data at rest requires Elasticsearch version 5.1 or later.');
+      }
+      if (props.cognitoOptions != null) {
+        throw new Error('Cognito authentication for Kibana requires Elasticsearch version 5.1 or later.');
+      }
+      if (isSomeInstanceType('c5', 'i3', 'm5', 'r5')) {
+        throw new Error('C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later.');
+      }
+    } else if (versionNumber < 5.3) {
+      if (props.automatedSnapshotStartHour) {
+        throw new Error('Hourly automated snapshots requires Elasticsearch version 5.3 or later.');
+      }
+    } else if (versionNumber < 6.0) {
+      if (props.nodeToNodeEncryptionEnabled) {
+        throw new Error('Node-to-node encryption requires Elasticsearch version 6.0 or later.');
+      }
+    }
+
+    // Validate against instance type restrictions, per
+    // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-supported-instance-types.html
+    if (isInstanceType('i3') && ebsEnabled) {
+      throw new Error('I3 instance types do not support EBS storage volumes.');
+    }
+
+    if (isSomeInstanceType('m3', 'r3', 't2') && encryptionAtRestEnabled) {
+      throw new Error('M3, R3, and T2 instance types do not support encryption of data at rest.');
+    }
+
+    if (isInstanceType('t2.micro') && versionNumber > 2.3) {
+      throw new Error('The t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3.');
+    }
+
+    // Only R3 and I3 support instance storage, per
+    // https://aws.amazon.com/elasticsearch-service/pricing/
+    if (!ebsEnabled && !isEveryInstanceType('r3', 'i3')) {
+      throw new Error('EBS volumes are required for all instance types except R3 and I3.');
+    }
+
     let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
     if (props.vpcOptions) {
       cfnVpcOptions = {
@@ -1062,7 +1138,7 @@ export class Domain extends DomainBase implements IDomain {
     // Setup logging
     const logGroups: logs.ILogGroup[] = [];
 
-    if (props.logPublishingOptions?.slowSearchLogEnabed) {
+    if (props.logPublishingOptions?.slowSearchLogEnabled) {
       this.slowSearchLogGroup = props.logPublishingOptions.slowSearchLogGroup ??
         new logs.LogGroup(scope, 'SlowSearchLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
@@ -1071,7 +1147,7 @@ export class Domain extends DomainBase implements IDomain {
       logGroups.push(this.slowSearchLogGroup);
     };
 
-    if (props.logPublishingOptions?.slowIndexLogEnabed) {
+    if (props.logPublishingOptions?.slowIndexLogEnabled) {
       this.slowIndexLogGroup = props.logPublishingOptions.slowIndexLogGroup ??
         new logs.LogGroup(scope, 'SlowIndexLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
@@ -1109,7 +1185,7 @@ export class Domain extends DomainBase implements IDomain {
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
-      elasticsearchVersion: props.elasticsearchVersion ?? ElasticsearchVersion.ES_VERSION_7_4,
+      elasticsearchVersion: elasticsearchVersion,
       elasticsearchClusterConfig: {
         dedicatedMasterEnabled: props.clusterConfig.masterNodes != null,
         dedicatedMasterCount: props.clusterConfig.masterNodes,
@@ -1123,13 +1199,13 @@ export class Domain extends DomainBase implements IDomain {
             : undefined,
       },
       ebsOptions: {
-        ebsEnabled: props.ebsOptions != null,
+        ebsEnabled,
         volumeSize: props.ebsOptions?.volumeSize,
         volumeType: props.ebsOptions?.volumeType,
         iops: props.ebsOptions?.iops,
       },
       encryptionAtRestOptions: {
-        enabled: props.encryptionAtRestOptions?.enabled ?? (props.encryptionAtRestOptions?.kmsKey != null),
+        enabled: encryptionAtRestEnabled,
         kmsKeyId: props.encryptionAtRestOptions?.kmsKey?.keyId,
       },
       nodeToNodeEncryptionOptions: { enabled: props.nodeToNodeEncryptionEnabled ?? false },
@@ -1154,6 +1230,9 @@ export class Domain extends DomainBase implements IDomain {
         userPoolId: props.cognitoOptions?.userPoolId,
       },
       vpcOptions: cfnVpcOptions,
+      snapshotOptions: props.automatedSnapshotStartHour
+        ? { automatedSnapshotStartHour: props.automatedSnapshotStartHour }
+        : undefined,
     });
 
     if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }

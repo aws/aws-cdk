@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
-import { Subnet, Vpc } from '@aws-cdk/aws-ec2';
+import { Subnet, Vpc, EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack, Duration } from '@aws-cdk/core';
 import { Domain, ElasticsearchVersion } from '../lib';
@@ -19,9 +19,9 @@ beforeEach(() => {
 
 const defaultClusterConfig = {
   masterNodes: 3,
-  masterNodeInstanceType: 'c5.large.elasticsearch',
+  masterNodeInstanceType: 'i3.large.elasticsearch',
   dataNodes: 3,
-  dataNodeInstanceType: 'r5.large.elasticsearch',
+  dataNodeInstanceType: 'r3.large.elasticsearch',
 };
 
 const readActions = ['ESHttpGet', 'ESHttpHead'];
@@ -47,9 +47,9 @@ test('minimal example renders correctly', () => {
     ElasticsearchClusterConfig: {
       DedicatedMasterCount: 3,
       DedicatedMasterEnabled: true,
-      DedicatedMasterType: 'c5.large.elasticsearch',
+      DedicatedMasterType: 'i3.large.elasticsearch',
       InstanceCount: 3,
-      InstanceType: 'r5.large.elasticsearch',
+      InstanceType: 'r3.large.elasticsearch',
       ZoneAwarenessEnabled: false,
     },
     ElasticsearchVersion: '7.1',
@@ -79,7 +79,7 @@ describe('log groups', () => {
     new Domain(stack, 'Domain', {
       clusterConfig: defaultClusterConfig,
       logPublishingOptions: {
-        slowSearchLogEnabed: true,
+        slowSearchLogEnabled: true,
       },
     });
 
@@ -108,7 +108,7 @@ describe('log groups', () => {
     new Domain(stack, 'Domain', {
       clusterConfig: defaultClusterConfig,
       logPublishingOptions: {
-        slowIndexLogEnabed: true,
+        slowIndexLogEnabled: true,
       },
     });
 
@@ -455,6 +455,181 @@ describe('custom error responses', () => {
         securityGroups: [],
       },
     })).toThrow(/you need to provide a subnet for each AZ you are using/);
+  });
+
+  test('error when master or data node instance types do not end with .elasticsearch', () => {
+    const error = /instance types must end with ".elasticsearch"/;
+    expect(() => new Domain(stack, 'Domain1', {
+      clusterConfig: {
+        ...defaultClusterConfig,
+        masterNodeInstanceType: 'c5.large',
+      },
+    })).toThrow(error);
+    expect(() => new Domain(stack, 'Domain2', {
+      clusterConfig: {
+        ...defaultClusterConfig,
+        dataNodeInstanceType: 'c5.2xlarge',
+      },
+    })).toThrow(error);
+  });
+
+  test('error when log publishing is enabled for elasticsearch version < 5.1', () => {
+    const error = /logs publishing requires Elasticsearch version 5.1 or later/;
+    expect(() => new Domain(stack, 'Domain1', {
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_2_3,
+      clusterConfig: defaultClusterConfig,
+      logPublishingOptions: {
+        appLogEnabled: true,
+      },
+    })).toThrow(error);
+    expect(() => new Domain(stack, 'Domain2', {
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_1_5,
+      clusterConfig: defaultClusterConfig,
+      logPublishingOptions: {
+        slowSearchLogEnabled: true,
+      },
+    })).toThrow(error);
+    expect(() => new Domain(stack, 'Domain3', {
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_1_5,
+      clusterConfig: defaultClusterConfig,
+      logPublishingOptions: {
+        slowIndexLogEnabled: true,
+      },
+    })).toThrow(error);
+  });
+
+  test('error when encryption at rest is enabled for elasticsearch version < 5.1', () => {
+    expect(() => new Domain(stack, 'Domain1', {
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_2_3,
+      clusterConfig: defaultClusterConfig,
+      encryptionAtRestOptions: {
+        enabled: true,
+      },
+    })).toThrow(/Encryption of data at rest requires Elasticsearch version 5.1 or later/);
+  });
+
+  test('error when cognito for kibana is enabled for elasticsearch version < 5.1', () => {
+    const user = new iam.User(stack, 'user');
+    expect(() => new Domain(stack, 'Domain1', {
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_2_3,
+      clusterConfig: defaultClusterConfig,
+      cognitoOptions: {
+        identityPoolId: 'test-identity-pool-id',
+        role: new iam.Role(stack, 'Role', { assumedBy: user }),
+        userPoolId: 'test-user-pool-id',
+      },
+    })).toThrow(/Cognito authentication for Kibana requires Elasticsearch version 5.1 or later/);
+  });
+
+  test('error when C5, I3, M5, or R5 instance types are specified for elasticsearch version < 5.1', () => {
+    const error = /C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later/;
+    expect(() => new Domain(stack, 'Domain1', {
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_2_3,
+      clusterConfig: {
+        ...defaultClusterConfig,
+        masterNodeInstanceType: 'c5.medium.elasticsearch',
+      },
+    })).toThrow(error);
+    expect(() => new Domain(stack, 'Domain2', {
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_1_5,
+      clusterConfig: {
+        ...defaultClusterConfig,
+        dataNodeInstanceType: 'i3.2xlarge.elasticsearch',
+      },
+    })).toThrow(error);
+    expect(() => new Domain(stack, 'Domain3', {
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_1_5,
+      clusterConfig: {
+        ...defaultClusterConfig,
+        dataNodeInstanceType: 'm5.2xlarge.elasticsearch',
+      },
+    })).toThrow(error);
+    expect(() => new Domain(stack, 'Domain4', {
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_1_5,
+      clusterConfig: {
+        ...defaultClusterConfig,
+        masterNodeInstanceType: 'r5.2xlarge.elasticsearch',
+      },
+    })).toThrow(error);
+  });
+
+  test('error when automated snapshots are enabled for elasticsearch version < 5.3', () => {
+    expect(() => new Domain(stack, 'Domain1', {
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_5_1,
+      clusterConfig: defaultClusterConfig,
+      automatedSnapshotStartHour: 2,
+    })).toThrow(/Hourly automated snapshots requires Elasticsearch version 5.3 or later/);
+  });
+
+  test('error when node to node encryption is enabled for elasticsearch version < 6.0', () => {
+    expect(() => new Domain(stack, 'Domain1', {
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_5_6,
+      clusterConfig: defaultClusterConfig,
+      nodeToNodeEncryptionEnabled: true,
+    })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later/);
+  });
+
+  test('error when i3 instance types are specified with EBS enabled', () => {
+    expect(() => new Domain(stack, 'Domain1', {
+      clusterConfig: {
+        ...defaultClusterConfig,
+        masterNodeInstanceType: 'i3.2xlarge.elasticsearch',
+      },
+      ebsOptions: {
+        volumeSize: 100,
+        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+      },
+    })).toThrow(/I3 instance types do not support EBS storage volumes/);
+  });
+
+  test('error when m3, r3, or t2 instance types are specified with encryption at rest enabled', () => {
+    const error = /M3, R3, and T2 instance types do not support encryption of data at rest/;
+    expect(() => new Domain(stack, 'Domain1', {
+      clusterConfig: {
+        ...defaultClusterConfig,
+        masterNodeInstanceType: 'm3.2xlarge.elasticsearch',
+      },
+      encryptionAtRestOptions: {
+        enabled: true,
+      },
+    })).toThrow(error);
+    expect(() => new Domain(stack, 'Domain2', {
+      clusterConfig: {
+        ...defaultClusterConfig,
+        dataNodeInstanceType: 'r3.2xlarge.elasticsearch',
+      },
+      encryptionAtRestOptions: {
+        enabled: true,
+      },
+    })).toThrow(error);
+    expect(() => new Domain(stack, 'Domain3', {
+      clusterConfig: {
+        ...defaultClusterConfig,
+        masterNodeInstanceType: 't2.2xlarge.elasticsearch',
+      },
+      encryptionAtRestOptions: {
+        enabled: true,
+      },
+    })).toThrow(error);
+  });
+
+  test('error when t2.micro is specified with elasticsearch version > 2.3', () => {
+    expect(() => new Domain(stack, 'Domain1', {
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_6_7,
+      clusterConfig: {
+        ...defaultClusterConfig,
+        masterNodeInstanceType: 't2.micro.elasticsearch',
+      },
+    })).toThrow(/t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3/);
+  });
+
+  test('error when any instance type other than R3 and I3 are specified without EBS enabled', () => {
+    expect(() => new Domain(stack, 'Domain1', {
+      clusterConfig: {
+        ...defaultClusterConfig,
+        masterNodeInstanceType: 'm5.large.elasticsearch',
+      },
+    })).toThrow(/EBS volumes are required for all instance types except R3 and I3/);
   });
 
 });
