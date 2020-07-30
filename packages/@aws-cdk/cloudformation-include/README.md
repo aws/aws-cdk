@@ -158,10 +158,7 @@ For example, if you have the following parent template:
     "ChildStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json",
-        "Parameters": {
-          "MyBucketParameter": "my-bucket-name"
-        }
+        "TemplateURL": "https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json"
       }
     }
   }
@@ -172,19 +169,9 @@ where the child template pointed to by `https://my-s3-template-source.s3.amazona
 
 ```json
 {
-  "Parameters": {
-    "MyBucketParameter": {
-      "Type": "String",
-      "Default": "default-bucket-param-name"
-    }
-  },
   "Resources": {
-    "BucketImport": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Ref": "MyBucketParameter"
-        }
+    "MyBucket": {
+      "Type": "AWS::S3::Bucket"
       }
     }
   }
@@ -231,47 +218,3 @@ bucketReadRole.addToPolicy(new iam.PolicyStatement({
   resources: [bucket.attrArn],
 }));
 ```
-
-## Known limitations
-
-This module is still in its early, experimental stage,
-and so does not implement all features of CloudFormation templates.
-All items unchecked below are currently not supported.
-
-### Ability to retrieve CloudFormation objects from the template:
-
-- [x] Resources
-- [x] Parameters
-- [x] Conditions
-- [x] Outputs
-
-### [Resource attributes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html):
-
-- [x] Properties
-- [x] Condition
-- [x] DependsOn
-- [x] CreationPolicy
-- [x] UpdatePolicy
-- [x] UpdateReplacePolicy
-- [x] DeletionPolicy
-- [x] Metadata
-
-### [CloudFormation functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html):
-
-- [x] Ref
-- [x] Fn::GetAtt
-- [x] Fn::Join
-- [x] Fn::If
-- [x] Fn::And
-- [x] Fn::Equals
-- [x] Fn::Not
-- [x] Fn::Or
-- [x] Fn::Base64
-- [x] Fn::Cidr
-- [x] Fn::FindInMap
-- [x] Fn::GetAZs
-- [x] Fn::ImportValue
-- [x] Fn::Select
-- [x] Fn::Split
-- [ ] Fn::Sub
-- [x] Fn::Transform
