@@ -1,9 +1,8 @@
 import '@aws-cdk/assert/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { Distribution, LambdaEdgeEventType, Origin, PriceClass, S3Origin } from '../lib';
+import { CfnDistribution, Distribution, IOrigin, LambdaEdgeEventType, OriginBase, OriginProps, OriginProtocolPolicy, PriceClass } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -16,7 +15,7 @@ beforeEach(() => {
 });
 
 test('minimal example renders correctly', () => {
-  const origin = defaultS3Origin();
+  const origin = defaultOrigin();
   new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
 
   expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
@@ -28,12 +27,10 @@ test('minimal example renders correctly', () => {
       },
       Enabled: true,
       Origins: [{
-        DomainName: { 'Fn::GetAtt': [ 'Bucket83908E77', 'RegionalDomainName' ] },
+        DomainName: 'www.example.com',
         Id: 'StackMyDistOrigin1D6D5E535',
-        S3OriginConfig: {
-          OriginAccessIdentity: { 'Fn::Join': [ '',
-            [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
-          ]},
+        CustomOriginConfig: {
+          OriginProtocolPolicy: 'https-only',
         },
       }],
     },
@@ -43,7 +40,7 @@ test('minimal example renders correctly', () => {
 describe('multiple behaviors', () => {
 
   test('a second behavior can\'t be specified with the catch-all path pattern', () => {
-    const origin = defaultS3Origin();
+    const origin = defaultOrigin();
 
     expect(() => {
       new Distribution(stack, 'MyDist', {
@@ -56,7 +53,7 @@ describe('multiple behaviors', () => {
   });
 
   test('a second behavior can be added to the original origin', () => {
-    const origin = defaultS3Origin();
+    const origin = defaultOrigin();
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -79,12 +76,10 @@ describe('multiple behaviors', () => {
         }],
         Enabled: true,
         Origins: [{
-          DomainName: { 'Fn::GetAtt': [ 'Bucket83908E77', 'RegionalDomainName' ] },
+          DomainName: 'www.example.com',
           Id: 'StackMyDistOrigin1D6D5E535',
-          S3OriginConfig: {
-            OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
-            ]},
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
           },
         }],
       },
@@ -92,9 +87,8 @@ describe('multiple behaviors', () => {
   });
 
   test('a second behavior can be added to a secondary origin', () => {
-    const origin = defaultS3Origin();
-    const bucket2 = new s3.Bucket(stack, 'Bucket2');
-    const origin2 = new S3Origin({ bucket: bucket2 });
+    const origin = defaultOrigin();
+    const origin2 = defaultOrigin('origin2.example.com');
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -117,21 +111,17 @@ describe('multiple behaviors', () => {
         }],
         Enabled: true,
         Origins: [{
-          DomainName: { 'Fn::GetAtt': [ 'Bucket83908E77', 'RegionalDomainName' ] },
+          DomainName: 'www.example.com',
           Id: 'StackMyDistOrigin1D6D5E535',
-          S3OriginConfig: {
-            OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
-            ]},
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
           },
         },
         {
-          DomainName: { 'Fn::GetAtt': [ 'Bucket25524B414', 'RegionalDomainName' ] },
+          DomainName: 'origin2.example.com',
           Id: 'StackMyDistOrigin20B96F3AD',
-          S3OriginConfig: {
-            OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin2E88F08BB' } ],
-            ]},
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
           },
         }],
       },
@@ -139,9 +129,8 @@ describe('multiple behaviors', () => {
   });
 
   test('behavior creation order is preserved', () => {
-    const origin = defaultS3Origin();
-    const bucket2 = new s3.Bucket(stack, 'Bucket2');
-    const origin2 = new S3Origin({ bucket: bucket2 });
+    const origin = defaultOrigin();
+    const origin2 = defaultOrigin('origin2.example.com');
     const dist = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -171,33 +160,28 @@ describe('multiple behaviors', () => {
         }],
         Enabled: true,
         Origins: [{
-          DomainName: { 'Fn::GetAtt': [ 'Bucket83908E77', 'RegionalDomainName' ] },
+          DomainName: 'www.example.com',
           Id: 'StackMyDistOrigin1D6D5E535',
-          S3OriginConfig: {
-            OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
-            ]},
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
           },
         },
         {
-          DomainName: { 'Fn::GetAtt': [ 'Bucket25524B414', 'RegionalDomainName' ] },
+          DomainName: 'origin2.example.com',
           Id: 'StackMyDistOrigin20B96F3AD',
-          S3OriginConfig: {
-            OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin2E88F08BB' } ],
-            ]},
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
           },
         }],
       },
     });
   });
-
 });
 
 describe('certificates', () => {
 
   test('should fail if using an imported certificate from outside of us-east-1', () => {
-    const origin = defaultS3Origin();
+    const origin = defaultOrigin();
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:eu-west-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
     expect(() => {
@@ -212,7 +196,7 @@ describe('certificates', () => {
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
     new Distribution(stack, 'Dist', {
-      defaultBehavior: { origin: defaultS3Origin() },
+      defaultBehavior: { origin: defaultOrigin() },
       certificate,
     });
 
@@ -231,7 +215,7 @@ describe('certificates', () => {
 describe('custom error responses', () => {
 
   test('should fail if responsePagePath is defined but responseCode is not', () => {
-    const origin = defaultS3Origin();
+    const origin = defaultOrigin();
 
     expect(() => {
       new Distribution(stack, 'Dist', {
@@ -245,7 +229,7 @@ describe('custom error responses', () => {
   });
 
   test('should fail if only the error code is provided', () => {
-    const origin = defaultS3Origin();
+    const origin = defaultOrigin();
 
     expect(() => {
       new Distribution(stack, 'Dist', {
@@ -256,7 +240,7 @@ describe('custom error responses', () => {
   });
 
   test('should render the array of error configs if provided', () => {
-    const origin = defaultS3Origin();
+    const origin = defaultOrigin();
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin },
       errorResponses: [{
@@ -291,7 +275,7 @@ describe('custom error responses', () => {
 
 describe('with Lambda@Edge functions', () => {
   let lambdaFunction: lambda.Function;
-  let origin: Origin;
+  let origin: IOrigin;
 
   beforeEach(() => {
     lambdaFunction = new lambda.Function(stack, 'Function', {
@@ -300,7 +284,7 @@ describe('with Lambda@Edge functions', () => {
       handler: 'index.handler',
     });
 
-    origin = defaultS3Origin();
+    origin = defaultOrigin();
   });
 
   test('can add an edge lambdas to the default behavior', () => {
@@ -385,7 +369,7 @@ describe('with Lambda@Edge functions', () => {
 });
 
 test('price class is included if provided', () => {
-  const origin = defaultS3Origin();
+  const origin = defaultOrigin();
   new Distribution(stack, 'Dist', {
     defaultBehavior: { origin },
     priceClass: PriceClass.PRICE_CLASS_200,
@@ -398,6 +382,13 @@ test('price class is included if provided', () => {
   });
 });
 
-function defaultS3Origin(): Origin {
-  return new S3Origin({ bucket: new s3.Bucket(stack, 'Bucket') });
+function defaultOrigin(domainName?: string): IOrigin {
+  return new TestOrigin(domainName ?? 'www.example.com');
+}
+
+class TestOrigin extends OriginBase {
+  constructor(domainName: string, props: OriginProps = {}) { super(domainName, props); }
+  protected renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
+    return { originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY };
+  }
 }

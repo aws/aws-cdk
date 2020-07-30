@@ -1,6 +1,7 @@
-import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { App, CfnOutput, Construct, Stack, Stage } from '@aws-cdk/core';
 import * as path from 'path';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
+import { App, CfnOutput, Construct, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
@@ -244,6 +245,7 @@ class AssetPublishing extends Construct {
   private readonly myCxAsmRoot: string;
 
   private readonly stage: codepipeline.IStage;
+  private assetRole?: iam.Role;
   private _fileAssetCtr = 1;
   private _dockerAssetCtr = 1;
 
@@ -267,6 +269,17 @@ class AssetPublishing extends Construct {
     // FIXME: this is silly, we need the relative path here but no easy way to get it
     const relativePath = path.relative(this.myCxAsmRoot, command.assetManifestPath);
 
+    // This role is used by both the CodePipeline build action and related CodeBuild project. Consolidating these two
+    // roles into one, and re-using across all assets, saves significant size of the final synthesized output.
+    // Modeled after the CodePipeline role and 'CodePipelineActionRole' roles.
+    // Late-binding here to prevent creating the role in cases where no asset actions are created.
+    if (!this.assetRole) {
+      this.assetRole = new iam.Role(this, 'Role', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.CompositePrincipal(new iam.ServicePrincipal('codebuild.amazonaws.com'), new iam.AccountPrincipal(Stack.of(this).account)),
+      });
+    }
+
     let action = this.publishers[command.assetId];
     if (!action) {
       // The asset ID would be a logical candidate for the construct path and project names, but if the asset
@@ -275,7 +288,6 @@ class AssetPublishing extends Construct {
       //
       // FIXME: The ultimate best solution is probably to generate a single Project per asset type
       // and reuse that for all assets.
-
       const id = command.assetType === AssetType.FILE ? `FileAsset${this._fileAssetCtr++}` : `DockerAsset${this._dockerAssetCtr++}`;
 
       // NOTE: It's important that asset changes don't force a pipeline self-mutation.
@@ -286,6 +298,7 @@ class AssetPublishing extends Construct {
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
+        role: this.assetRole,
       });
       this.stage.addAction(action);
     }
