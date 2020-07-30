@@ -8,7 +8,7 @@ import * as appsync from '../lib';
 let stack: cdk.Stack;
 let baseApi: appsync.GraphQLApi;
 beforeEach( () => {
-  // Given
+  // GIVEN
   stack = new cdk.Stack();
   baseApi = new appsync.GraphQLApi(stack, 'baseApi', {
     name: 'api',
@@ -18,7 +18,7 @@ beforeEach( () => {
 
 test('imported api can add NoneDataSource from id', () => {
   // WHEN
-  const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'importedApi', {
+  const api = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
     graphqlApiId: baseApi.apiId,
   });
 
@@ -33,7 +33,7 @@ test('imported api can add NoneDataSource from id', () => {
 });
 test('imported api can add NoneDataSource from attributes', () => {
   // WHEN
-  const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'importedApi', {
+  const api = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
     graphqlApiId: baseApi.apiId,
     graphqlArn: baseApi.arn,
   });
@@ -50,7 +50,7 @@ test('imported api can add NoneDataSource from attributes', () => {
 
 test('imported api can add DynamoDbDataSource from id', () => {
   // WHEN
-  const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'importedApi', {
+  const api = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
     graphqlApiId: baseApi.apiId,
   });
   const table = new db.Table(stack, 'table', {
@@ -71,7 +71,7 @@ test('imported api can add DynamoDbDataSource from id', () => {
 
 test('imported api can add DynamoDbDataSource from attributes', () => {
   // WHEN
-  const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'importedApi', {
+  const api = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
     graphqlApiId: baseApi.apiId,
     graphqlArn: baseApi.arn,
   });
@@ -93,7 +93,7 @@ test('imported api can add DynamoDbDataSource from attributes', () => {
 
 test('imported api can add LambdaDbDataSource from id', () => {
   // WHEN
-  const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'importedApi', {
+  const api = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
     graphqlApiId: baseApi.apiId,
   });
   const func = new lambda.Function(stack, 'func', {
@@ -113,7 +113,7 @@ test('imported api can add LambdaDbDataSource from id', () => {
 
 test('imported api can add LambdaDataSource from attributes', () => {
   // WHEN
-  const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'importedApi', {
+  const api = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
     graphqlApiId: baseApi.apiId,
     graphqlArn: baseApi.arn,
   });

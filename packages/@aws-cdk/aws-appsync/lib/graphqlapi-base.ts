@@ -57,6 +57,13 @@ export interface IGraphQLApi extends IResource {
    * @param lambdaFunction The Lambda function to call to interact with this data source
    */
   addLambdaDataSource(name: string, description: string, lambdaFunction: IFunction): LambdaDataSource;
+
+  /**
+   * Add schema dependency if not imported
+   *
+   * @param construct the dependee
+   */
+  addSchemaDependency(construct: CfnResource): boolean;
 }
 
 /**
@@ -65,7 +72,8 @@ export interface IGraphQLApi extends IResource {
 export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
 
   /**
-   * the id of the GraphQL API
+   * an unique AWS AppSync GraphQL API identifier
+   * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   public abstract readonly apiId: string;
 
@@ -78,8 +86,10 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
    * add a new none data source to this API. Useful for pipeline resolvers
    * and for backend changes that don't require a data source.
    *
-   * @param name The name of the data source @default 'None'
-   * @param description The description of the data source @default undefined
+   * @param name The name of the data source
+   * @default 'None'
+   * @param description The description of the data source
+   * @default undefined
    */
   public addNoneDataSource(name?: string, description?: string): NoneDataSource {
     return new NoneDataSource(this, `${name ?? 'None'}DS`, {
@@ -142,7 +152,7 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
    *
    * @param construct the dependee
    */
-  protected addSchemaDependency(construct: CfnResource): boolean {
+  public addSchemaDependency(construct: CfnResource): boolean {
     construct;
     return false;
   }

@@ -28,7 +28,7 @@ const baseApi = new appsync.GraphQLApi(baseStack, 'baseApi', {
 });
 
 const stack = new cdk.Stack(app, 'stack');
-const api = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'Api', {
+const api = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'Api', {
   graphqlApiId: `${baseApi.apiId}`,
 });
 
@@ -57,7 +57,7 @@ testDS.createResolver({
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
 
-const api2 = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'api2', {
+const api2 = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'api2', {
   graphqlApiId: baseApi.apiId,
   graphqlArn: baseApi.arn,
 });

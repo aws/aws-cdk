@@ -302,7 +302,8 @@ export class IamResource {
  */
 export interface GraphQLApiAttributes {
   /**
-   * the api id of the GraphQL Api
+   * an unique AWS AppSync GraphQL API identifier
+   * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   readonly graphqlApiId: string,
 
@@ -326,7 +327,7 @@ export class GraphQLApi extends GraphQLApiBase {
    * @param id id
    * @param attrs GraphQL API Attributes of an API
    */
-  public static fromGraphQLApiAttributes(scope: Construct, id: string, attrs: GraphQLApiAttributes): IGraphQLApi {
+  public static fromGraphqlApiAttributes(scope: Construct, id: string, attrs: GraphQLApiAttributes): IGraphQLApi {
     const arn = attrs.graphqlArn ?? Stack.of(scope).formatArn({
       service: 'appsync',
       resource: `apis/${attrs.graphqlApiId}`,
@@ -342,7 +343,8 @@ export class GraphQLApi extends GraphQLApiBase {
   }
 
   /**
-   * the id of the GraphQL API
+   * an unique AWS AppSync GraphQL API identifier
+   * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   public readonly apiId: string;
 
@@ -579,7 +581,7 @@ export class GraphQLApi extends GraphQLApiBase {
    *
    * @param construct the dependee
    */
-  protected addSchemaDependency(construct: CfnResource): boolean {
+  public addSchemaDependency(construct: CfnResource): boolean {
     construct.addDependsOn(this.schema);
     return true;
   }
