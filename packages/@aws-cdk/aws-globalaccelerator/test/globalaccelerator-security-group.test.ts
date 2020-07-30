@@ -6,9 +6,20 @@ import { testFixture, testFixtureAlb } from './util';
 test('custom resource exists', () => {
   // GIVEN
   const { stack, vpc } = testFixture();
+  const accelerator = new ga.Accelerator(stack, 'Accelerator');
+  const listener = new ga.Listener(stack, 'Listener', {
+    accelerator,
+    portRanges: [
+      {
+        fromPort: 443,
+        toPort: 443,
+      },
+    ],
+  });
+  const endpointGroup = new ga.EndpointGroup(stack, 'Group', { listener });
 
   // WHEN
-  ga.AcceleratorSecurityGroup.fromVpc(stack, 'GlobalAcceleratorSG', vpc);
+  ga.AcceleratorSecurityGroup.fromVpc(stack, 'GlobalAcceleratorSG', vpc, endpointGroup);
 
   // THEN
   expect(stack).to(haveResource('Custom::AWS', {
@@ -37,15 +48,30 @@ test('custom resource exists', () => {
         responsePath: 'SecurityGroups.0.GroupId',
       },
     },
+    DependsOn: [
+      'GroupAFA0823F',
+    ],
   }));
 });
 
 test('can create security group rule', () => {
   // GIVEN
   const { stack, alb, vpc } = testFixtureAlb();
+  const accelerator = new ga.Accelerator(stack, 'Accelerator');
+  const listener = new ga.Listener(stack, 'Listener', {
+    accelerator,
+    portRanges: [
+      {
+        fromPort: 443,
+        toPort: 443,
+      },
+    ],
+  });
+  const endpointGroup = new ga.EndpointGroup(stack, 'Group', { listener });
+  endpointGroup.addLoadBalancer('endpoint', alb);
 
   // WHEN
-  const sg = ga.AcceleratorSecurityGroup.fromVpc(stack, 'GlobalAcceleratorSG', vpc);
+  const sg = ga.AcceleratorSecurityGroup.fromVpc(stack, 'GlobalAcceleratorSG', vpc, endpointGroup);
   alb.connections.allowFrom(sg, Port.tcp(443));
 
   // THEN

@@ -1,6 +1,7 @@
 import { ISecurityGroup, SecurityGroup, IVpc } from '@aws-cdk/aws-ec2';
 import { Construct } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId} from '@aws-cdk/custom-resources';
+import { EndpointGroup } from '../lib';
 
 /**
  * The security group used by a Global Accelerator to send traffic to resources in a VPC.
@@ -16,7 +17,7 @@ export class AcceleratorSecurityGroup {
    * the AGA security group for a given VPC at CloudFormation deployment time, and lets you create rules for traffic from AGA
    * to other resources created by CDK.
    */
-  public static fromVpc(scope: Construct, id: string, vpc: IVpc): ISecurityGroup {
+  public static fromVpc(scope: Construct, id: string, vpc: IVpc, endpointGroup: EndpointGroup): ISecurityGroup {
 
     // The security group name is always 'GlobalAccelerator'
     const globalAcceleratorSGName = 'GlobalAccelerator';
@@ -55,8 +56,13 @@ export class AcceleratorSecurityGroup {
     });
 
     // Look up the security group ID
-    return SecurityGroup.fromSecurityGroupId(scope,
+    const sg = SecurityGroup.fromSecurityGroupId(scope,
       id,
       lookupAcceleratorSGCustomResource.getResponseField(ec2ResponseSGIdField));
+    // We add a dependency on the endpoint group, guaranteeing that CloudFormation won't
+    // try and look up the SG before AGA creates it. The SG is created when a VPC resource
+    // is associated with an AGA
+    sg.node.addDependency(endpointGroup);
+    return sg;
   }
 }
