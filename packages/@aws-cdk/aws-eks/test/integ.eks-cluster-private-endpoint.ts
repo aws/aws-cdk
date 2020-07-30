@@ -22,7 +22,7 @@ class EksClusterStack extends TestStack {
       mastersRole,
       defaultCapacity: 2,
       version: eks.KubernetesVersion.V1_16,
-      endpointAccess: eks.EndpointAccess.private(),
+      endpointAccess: eks.EndpointAccess.PRIVATE,
     });
 
     // this is the valdiation. it won't work if the private access is not setup properly.

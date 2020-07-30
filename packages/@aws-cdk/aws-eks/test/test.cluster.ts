@@ -1384,7 +1384,7 @@ export = {
     'can configure private endpoint access'(test: Test) {
       // GIVEN
       const { stack } = testFixture();
-      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.private() });
+      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE });
 
       expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
         Config: {
@@ -1410,7 +1410,7 @@ export = {
     'can configure cidr blocks in public endpoint access'(test: Test) {
       // GIVEN
       const { stack } = testFixture();
-      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.public('1.2.3.4/5') });
+      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PUBLIC.onlyFrom('1.2.3.4/5') });
 
       expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
         Config: {
@@ -1454,7 +1454,7 @@ export = {
       });
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
-        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.private(),
+        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc,
       });
 
@@ -1518,7 +1518,7 @@ export = {
       });
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
-        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.private(),
+        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc: vpc2,
       });
 
@@ -1566,7 +1566,7 @@ export = {
       });
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
-        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.private(),
+        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc: vpc2,
         vpcSubnets: [{subnetGroupName: 'Private1'}, {subnetGroupName: 'Private2'}],
       });
@@ -1616,7 +1616,7 @@ export = {
       const { stack } = testFixture();
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
-        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.private(),
+        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
         kubectlEnvironment: {
           Foo: 'Bar',
         },
