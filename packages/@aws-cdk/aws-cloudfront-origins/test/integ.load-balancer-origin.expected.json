@@ -1,0 +1,69 @@
+{
+  "Resources": {
+    "LB8A12904C": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "Scheme": "internet-facing",
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "LBSecurityGroup8A41EA2B",
+              "GroupId"
+            ]
+          }
+        ],
+        "Subnets": [
+          "subnet-e19455ca",
+          "subnet-e0c24797",
+          "subnet-ccd77395"
+        ],
+        "Type": "application"
+      }
+    },
+    "LBSecurityGroup8A41EA2B": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatically created Security Group for ELB cloudfrontloadbalanceroriginLB8CFBA9DF",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "255.255.255.255/32",
+            "Description": "Disallow all traffic",
+            "FromPort": 252,
+            "IpProtocol": "icmp",
+            "ToPort": 86
+          }
+        ],
+        "VpcId": "vpc-60900905"
+      }
+    },
+    "DistributionCFDistribution882A7313": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "DefaultCacheBehavior": {
+            "ForwardedValues": {
+              "QueryString": false
+            },
+            "TargetOriginId": "cloudfrontloadbalanceroriginDistributionOrigin1BCC75186",
+            "ViewerProtocolPolicy": "allow-all"
+          },
+          "Enabled": true,
+          "Origins": [
+            {
+              "CustomOriginConfig": {
+                "OriginProtocolPolicy": "https-only"
+              },
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "LB8A12904C",
+                  "DNSName"
+                ]
+              },
+              "Id": "cloudfrontloadbalanceroriginDistributionOrigin1BCC75186"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
