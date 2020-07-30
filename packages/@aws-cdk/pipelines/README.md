@@ -376,7 +376,7 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
 });
 
 const validationAction = new ShellScriptAction({
-  name: 'TestUsingSourceArtifact',
+  actionName: 'TestUsingSourceArtifact',
   additionalArtifacts: [sourceArtifact],
 
   // 'test.sh' comes from the source repository
