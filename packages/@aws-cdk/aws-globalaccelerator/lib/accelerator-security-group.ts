@@ -16,7 +16,7 @@ export class AcceleratorSecurityGroup {
    * the AGA security group for a given VPC at CloudFormation deployment time, and lets you create rules for traffic from AGA
    * to other resources created by CDK.
    */
-  public static fromVpc(scope: Construct, vpc: IVpc): ISecurityGroup {
+  public static fromVpc(scope: Construct, id: string, vpc: IVpc): ISecurityGroup {
 
     // The security group name is always 'GlobalAccelerator'
     const globalAcceleratorSGName = 'GlobalAccelerator';
@@ -25,7 +25,7 @@ export class AcceleratorSecurityGroup {
     const ec2ResponseSGIdField = 'SecurityGroups.0.GroupId';
 
     // The AWS Custom Resource that make a call to EC2 to get the security group ID, for the given VPC
-    const lookupAcceleratorSGCustomResource = new AwsCustomResource(scope, 'GetGlobalAcceleratorSGCustomResource', {
+    const lookupAcceleratorSGCustomResource = new AwsCustomResource(scope, id + 'CustomResource', {
       onCreate: {
         service: 'EC2',
         action: 'describeSecurityGroups',
@@ -56,7 +56,7 @@ export class AcceleratorSecurityGroup {
 
     // Look up the security group ID
     return SecurityGroup.fromSecurityGroupId(scope,
-      'GlobalAcceleratorSecurityGroup',
+      id,
       lookupAcceleratorSGCustomResource.getResponseField(ec2ResponseSGIdField));
   }
 }
