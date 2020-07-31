@@ -58,9 +58,9 @@ The canary will automatically produce a CloudWatch Dashboard:
 
 ![UI Screenshot](images/ui-screenshot.png)
 
-### Canary Test Property 🚧
+### Canary Test 🚧
 
-The `test` property represents the test that the canary executes. You can supply you own code using the `Test.custom()` method, or you can use a blueprint e.g `Test.heartbeat()`.
+The `test` property represents the test the canary executes. You can supply you own code using the `Test.custom()` method, or you can use a blueprint e.g `Test.heartbeat()`.
 
 #### Custom 🚧
 
@@ -75,7 +75,7 @@ const canary = new Canary(this, 'MyCanary', {
 });
 ```
 
-#### Blueprint 🚧
+#### Blueprints 🚧
 
 TODO add description
 
