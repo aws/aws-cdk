@@ -5,6 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { LogGroup, RetentionDays } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
 import { ReadWriteType, Trail } from '../lib';
 
@@ -100,6 +101,31 @@ describe('cloudtrail', () => {
       expect(stack).toHaveResource('AWS::S3::Bucket');
       expect(stack).toHaveResource('AWS::S3::BucketPolicy');
       expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
+    });
+
+    test('with sns topic', () => {
+      const stack = getTestStack();
+      const topic = new sns.Topic(stack, 'Topic');
+
+
+      new Trail(stack, 'Trail', { snsTopic: topic});
+
+      expect(stack).toHaveResource('AWS::CloudTrail::Trail');
+      expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
+      expect(stack).toHaveResource('AWS::SNS::TopicPolicy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'sns:Publish',
+              Effect: 'Allow',
+              Principal: { Service: 'cloudtrail.amazonaws.com' },
+              Resource: { Ref: 'TopicBFC7AF6E' },
+              Sid: '0',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
     });
 
     test('with imported s3 bucket', () => {

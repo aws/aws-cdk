@@ -192,6 +192,83 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template with Fn::Sub in string form with escaped and unescaped references and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-string.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-string.json'),
+    );
+  });
+
+  test('can parse the string argument Fn::Sub with escaped references that contain whitespace', () => {
+    includeTestTemplate(stack, 'fn-sub-escaping.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-escaping.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub in map form and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-map-dotted-attributes.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-map-dotted-attributes.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub shadowing a logical ID from the template and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-shadow.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub attribute expression shadowing a logical ID from the template, and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow-attribute.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-shadow-attribute.json'),
+    );
+  });
+
+  test('can modify resources used in Fn::Sub in map form references and see the changes in the template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'fn-sub-shadow.json');
+
+    cfnTemplate.getResource('AnotherBucket').overrideLogicalId('NewBucket');
+
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "BucketName": {
+        "Fn::Sub": [
+          "${AnotherBucket}",
+          {
+            "AnotherBucket": { "Ref": "NewBucket" },
+          },
+        ],
+      },
+    });
+  });
+
+  test('can modify resources used in Fn::Sub in string form and see the changes in the template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'fn-sub-override.json');
+
+    cfnTemplate.getResource('Bucket').overrideLogicalId('NewBucket');
+
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "BucketName": {
+        "Fn::Sub": "${NewBucket}-${!Bucket}-${NewBucket.DomainName}",
+      },
+    });
+  });
+
+  test('can ingest a template with Fn::Sub with brace edge cases and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-brace-edges.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-brace-edges.json'),
+    );
+  });
+
   test('can ingest a template with a Ref expression for an array value, and output it unchanged', () => {
     includeTestTemplate(stack, 'ref-array-property.json');
 
@@ -444,10 +521,20 @@ describe('CDK Include', () => {
     });
   });
 
-  test("throws an exception when encountering a Resource type it doesn't recognize", () => {
+  test('can include a template with a custom resource that uses attributes', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'custom-resource-with-attributes.json');
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('custom-resource-with-attributes.json'),
+    );
+
+    const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');
+    expect(cfnTemplate.getResource('CustomBucket').cfnOptions.condition).toBe(alwaysFalseCondition);
+  });
+
+  test("throws an exception when a custom resource uses a Condition attribute that doesn't exist in the template", () => {
     expect(() => {
-      includeTestTemplate(stack, 'non-existent-resource-type.json');
-    }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
+      includeTestTemplate(stack, 'custom-resource-with-bad-condition.json');
+    }).toThrow(/Resource 'CustomResource' uses Condition 'AlwaysFalseCond' that doesn't exist/);
   });
 
   test('can ingest a template that contains outputs and modify them', () => {

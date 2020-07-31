@@ -1,18 +1,10 @@
+import { readFileSync } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ITable } from '@aws-cdk/aws-dynamodb';
-import {
-  ManagedPolicy,
-  Role,
-  ServicePrincipal,
-} from '@aws-cdk/aws-iam';
+import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResolvable } from '@aws-cdk/core';
-import { readFileSync } from 'fs';
-import {
-  CfnApiKey,
-  CfnGraphQLApi,
-  CfnGraphQLSchema,
-} from './appsync.generated';
+import { Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
+import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
 
 /**
@@ -56,7 +48,7 @@ export interface AuthorizationMode {
   readonly userPoolConfig?: UserPoolConfig;
   /**
    * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
-   * @default - check default values of `ApiKeyConfig` memebers
+   * @default - name: 'DefaultAPIKey' | description: 'Default API Key created by CDK'
    */
   readonly apiKeyConfig?: ApiKeyConfig;
   /**
@@ -211,6 +203,21 @@ export interface LogConfig {
 }
 
 /**
+ * Enum containing the different modes of schema definition
+ */
+export enum SchemaDefinition {
+  /**
+   * Define schema through functions like addType, addQuery, etc.
+   */
+  CODE = 'CODE',
+
+  /**
+   * Define schema in a file, i.e. schema.graphql
+   */
+  FILE = 'FILE',
+}
+
+/**
  * Properties for an AppSync GraphQL API
  */
 export interface GraphQLApiProps {
@@ -235,11 +242,14 @@ export interface GraphQLApiProps {
   readonly logConfig?: LogConfig;
 
   /**
-   * GraphQL schema definition. You have to specify a definition or a file containing one.
+   * GraphQL schema definition. Specify how you want to define your schema.
    *
-   * @default - Use schemaDefinitionFile
+   * SchemaDefinition.CODE allows schema definition through CDK
+   * SchemaDefinition.FILE allows schema definition through schema.graphql file
+   *
+   * @experimental
    */
-  readonly schemaDefinition?: string;
+  readonly schemaDefinition: SchemaDefinition;
   /**
    * File containing the GraphQL schema definition. You have to specify a definition or a file containing one.
    *
@@ -247,6 +257,65 @@ export interface GraphQLApiProps {
    */
   readonly schemaDefinitionFile?: string;
 
+}
+
+/**
+ * A class used to generate resource arns for AppSync
+ */
+export class IamResource {
+  /**
+   * Generate the resource names given custom arns
+   *
+   * @param arns The custom arns that need to be permissioned
+   *
+   * Example: custom('/types/Query/fields/getExample')
+   */
+  public static custom(...arns: string[]): IamResource {
+    if (arns.length === 0) {
+      throw new Error('At least 1 custom ARN must be provided.');
+    }
+    return new IamResource(arns);
+  }
+
+  /**
+   * Generate the resource names given a type and fields
+   *
+   * @param type The type that needs to be allowed
+   * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
+   *
+   * Example: ofType('Query', 'GetExample')
+   */
+  public static ofType(type: string, ...fields: string[]): IamResource {
+    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [ `types/${type}/*` ];
+    return new IamResource(arns);
+  }
+
+  /**
+   * Generate the resource names that accepts all types: `*`
+   */
+  public static all(): IamResource {
+    return new IamResource(['*']);
+  }
+
+  private arns: string[];
+
+  private constructor(arns: string[]){
+    this.arns = arns;
+  }
+
+  /**
+   * Return the Resource ARN
+   *
+   * @param api The GraphQL API to give permissions
+   */
+  public resourceArns(api: GraphQLApi): string[] {
+    return this.arns.map((arn) => Stack.of(api).formatArn({
+      service: 'appsync',
+      resource: `apis/${api.apiId}`,
+      sep: '/',
+      resourceName: `${arn}`,
+    }));
+  }
 }
 
 /**
@@ -269,7 +338,7 @@ export class GraphQLApi extends Construct {
   /**
    * the name of the API
    */
-  public name: string;
+  public readonly name: string;
   /**
    * underlying CFN schema resource
    */
@@ -281,6 +350,7 @@ export class GraphQLApi extends Construct {
     return this._apiKey;
   }
 
+  private schemaMode: SchemaDefinition;
   private api: CfnGraphQLApi;
   private _apiKey?: string;
 
@@ -338,6 +408,7 @@ export class GraphQLApi extends Construct {
     this.arn = this.api.attrArn;
     this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
+    this.schemaMode = props.schemaDefinition;
 
     if (
       defaultAuthorizationType === AuthorizationType.API_KEY ||
@@ -350,21 +421,10 @@ export class GraphQLApi extends Construct {
           name: 'DefaultAPIKey',
           description: 'Default API Key created by CDK',
         };
-      this.createAPIKey(apiKeyConfig);
+      this._apiKey = this.createAPIKey(apiKeyConfig);
     }
 
-    let definition;
-    if (props.schemaDefinition) {
-      definition = props.schemaDefinition;
-    } else if (props.schemaDefinitionFile) {
-      definition = readFileSync(props.schemaDefinitionFile).toString('UTF-8');
-    } else {
-      throw new Error('Missing Schema definition. Provide schemaDefinition or schemaDefinitionFile');
-    }
-    this.schema = new CfnGraphQLSchema(this, 'Schema', {
-      apiId: this.apiId,
-      definition,
-    });
+    this.schema = this.defineSchema(props.schemaDefinitionFile);
   }
 
   /**
@@ -431,6 +491,56 @@ export class GraphQLApi extends Construct {
       name,
       lambdaFunction,
     });
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
+   * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
+   */
+  public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: resources.resourceArns(this),
+      scope: this,
+    });
+  }
+
+  /**
+   * Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Mutations (leave blank for all)
+   */
+  public grantMutation(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Mutation', ...fields), 'appsync:GraphQL');
+  }
+
+  /**
+   * Adds an IAM policy statement for Query access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Queries (leave blank for all)
+   */
+  public grantQuery(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Query', ...fields), 'appsync:GraphQL');
+  }
+
+  /**
+   * Adds an IAM policy statement for Subscription access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Subscriptions (leave blank for all)
+   */
+  public grantSubscription(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Subscription', ...fields), 'appsync:GraphQL');
   }
 
   private validateAuthorizationProps(props: GraphQLApiProps) {
@@ -534,7 +644,7 @@ export class GraphQLApi extends Construct {
       description: config.description || 'Default API Key created by CDK',
       apiId: this.apiId,
     });
-    this._apiKey = key.attrApiKey;
+    return key.attrApiKey;
   }
 
   private formatAdditionalAuthorizationModes(
@@ -564,5 +674,41 @@ export class GraphQLApi extends Construct {
   private formatAdditionalAuthenticationProviders(props: GraphQLApiProps): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] | undefined {
     const authModes = props.authorizationConfig?.additionalAuthorizationModes;
     return authModes ? this.formatAdditionalAuthorizationModes(authModes) : undefined;
+  }
+
+  /**
+   * Sets schema defintiion to input if schema mode is configured with SchemaDefinition.CODE
+   *
+   * @param definition string that is the graphql representation of schema
+   * @experimental temporary
+   */
+  public updateDefinition (definition: string): void{
+    if ( this.schemaMode != SchemaDefinition.CODE ) {
+      throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
+    }
+    this.schema.definition = definition;
+  }
+
+  /**
+   * Define schema based on props configuration
+   * @param file the file name/s3 location of Schema
+   */
+  private defineSchema(file?: string): CfnGraphQLSchema {
+    let definition;
+
+    if ( this.schemaMode == SchemaDefinition.FILE && !file) {
+      throw new Error('schemaDefinitionFile must be configured if using FILE definition mode.');
+    } else if ( this.schemaMode == SchemaDefinition.FILE && file ) {
+      definition = readFileSync(file).toString('UTF-8');
+    } else if ( this.schemaMode == SchemaDefinition.CODE && !file ) {
+      definition = '';
+    } else if ( this.schemaMode == SchemaDefinition.CODE && file) {
+      throw new Error('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
+    }
+
+    return new CfnGraphQLSchema(this, 'Schema', {
+      apiId: this.apiId,
+      definition,
+    });
   }
 }
