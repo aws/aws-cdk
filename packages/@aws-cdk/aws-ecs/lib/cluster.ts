@@ -105,11 +105,6 @@ export class Cluster extends Resource implements ICluster {
   private _autoscalingGroup?: autoscaling.IAutoScalingGroup;
 
   /**
-   * The capacity providers for this cluster
-   */
-  private _capacityProvider: ICapacityProvider[] = [];
-
-  /**
    * Constructs a new instance of the Cluster class.
    */
   constructor(scope: Construct, id: string, props: ClusterProps = {}) {
@@ -119,15 +114,10 @@ export class Cluster extends Resource implements ICluster {
 
     const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
     const clusterSettings = containerInsights ? [{name: 'containerInsights', value: 'enabled'}] : undefined;
-    if (props.capacityProviders) {
-      this._capacityProvider.push(...props.capacityProviders);
-    }
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
-      capacityProviders: Lazy.listValue({ produce: () => this._capacityProvider.map(cp => cp.capacityProviderName)},
-        { omitEmpty: true}),
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
