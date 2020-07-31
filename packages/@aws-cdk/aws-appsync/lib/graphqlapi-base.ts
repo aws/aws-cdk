@@ -128,11 +128,11 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
    *
    * @param table The DynamoDB table backing this data source
    * @param options The optional configuration for this data source
-   * @default name - 'DynamoDbCDKDefault'
+   * @default name - 'TableCDKDefault'
    * description - undefined
    */
   public addDynamoDbDataSource(table: ITable, options?: DataSourceOptions): DynamoDbDataSource {
-    const name = options?.name ?? 'DynamoDbCDKDefault';
+    const name = options?.name ?? 'TableCDKDefault';
     return new DynamoDbDataSource(this, name, {
       api: this,
       table,
