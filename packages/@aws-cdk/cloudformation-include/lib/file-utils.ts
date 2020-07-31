@@ -31,11 +31,9 @@ function makeTagForCfnIntrinsic(
 }
 
 const shortForms: yaml_types.Schema.CustomTag[] = [
-  'Base64', 'Cidr', 'FindInMap', 'GetAZs', 'ImportValue', 'Join',
+  'Base64', 'Cidr', 'FindInMap', 'GetAZs', 'ImportValue', 'Join', 'Sub',
   'Select', 'Split', 'Transform', 'And', 'Equals', 'If', 'Not', 'Or',
 ].map(name => makeTagForCfnIntrinsic(name)).concat(
-  // ToDo: special logic for ImportValue will be needed when support for Fn::Sub is added. See
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html
   makeTagForCfnIntrinsic('Ref', false),
   makeTagForCfnIntrinsic('GetAtt', true, (_doc: yaml.Document, cstNode: yaml_cst.CST.Node): any => {
     // The position of the leftmost period and opening bracket tell us what syntax is being used
