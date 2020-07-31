@@ -192,20 +192,16 @@ export interface CapacityProviderStrategy {
    * The base value designates how many tasks, at a minimum, to run on the specified capacity provider.
    * Only one capacity provider in a capacity provider strategy can have a base defined.
    *
-   * @default  - no base value
+   * @default - no base capacity
    */
   readonly base?: number;
 }
 
-/**
- * Properties of the CapacityProviderConfiguration construct
- */
-export interface CapacityProviderConfigurationProps {
-  /**
-   * the cluster for the capacity providers
-   */
-  readonly cluster: ICluster;
 
+/**
+ * Options for addCapacityProviderConfiguration
+ */
+export interface CapacityProviderConfigurationOpts {
   /**
    * the capacity provisers to be configured with
    */
@@ -215,6 +211,17 @@ export interface CapacityProviderConfigurationProps {
    * default strategy for each capacity provider
    */
   readonly defaultStrategy: CapacityProviderStrategy[];
+}
+
+
+/**
+ * Properties of the CapacityProviderConfiguration construct
+ */
+export interface CapacityProviderConfigurationProps extends CapacityProviderConfigurationOpts {
+  /**
+   * the cluster for the capacity providers
+   */
+  readonly cluster: ICluster;
 }
 
 /**
@@ -236,6 +243,16 @@ export class CapacityProviderConfiguration extends cdk.Construct {
             base: s.base,
             weight: s.weight,
           })),
+        },
+        physicalResourceId: cr.PhysicalResourceId.of(id),
+      },
+      onDelete: {
+        service: 'ECS',
+        action: 'putClusterCapacityProviders',
+        parameters: {
+          cluster: props.cluster.clusterName,
+          capacityProviders: [],
+          defaultCapacityProviderStrategy: [],
         },
         physicalResourceId: cr.PhysicalResourceId.of(id),
       },

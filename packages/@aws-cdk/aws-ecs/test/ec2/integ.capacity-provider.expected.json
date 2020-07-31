@@ -591,8 +591,8 @@
     "ClusterCPcapacityASGCFF02D37": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
-        "MaxSize": "1",
-        "MinSize": "1",
+        "MaxSize": "2",
+        "MinSize": "2",
         "LaunchConfigurationName": {
           "Ref": "ClusterCPcapacityLaunchConfig75C18BF8"
         },
@@ -1359,8 +1359,8 @@
     "ClusterCPSpotcapacityASG2BEE5548": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
-        "MaxSize": "1",
-        "MinSize": "1",
+        "MaxSize": "3",
+        "MinSize": "3",
         "LaunchConfigurationName": {
           "Ref": "ClusterCPSpotcapacityLaunchConfig66766B90"
         },
@@ -1988,7 +1988,7 @@
         "ClusterCPSpotcapacityProviderEnforcedInstanceProtectionC63AF6D3"
       ]
     },
-    "CapacityProviderConfigurationB0200508": {
+    "ClusterCapacityProviderConfiguration284129D5": {
       "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {
@@ -2017,13 +2017,13 @@
                 "capacityProvider": {
                   "Ref": "ClusterCPcapacityProviderDB735893"
                 },
+                "base": 1,
                 "weight": 1
               },
               {
                 "capacityProvider": {
                   "Ref": "ClusterCPSpotcapacityProviderBA316E26"
                 },
-                "base": 1,
                 "weight": 3
               }
             ]
@@ -2052,16 +2052,30 @@
                 "capacityProvider": {
                   "Ref": "ClusterCPcapacityProviderDB735893"
                 },
+                "base": 1,
                 "weight": 1
               },
               {
                 "capacityProvider": {
                   "Ref": "ClusterCPSpotcapacityProviderBA316E26"
                 },
-                "base": 1,
                 "weight": 3
               }
             ]
+          },
+          "physicalResourceId": {
+            "id": "CapacityProviderConfiguration"
+          }
+        },
+        "Delete": {
+          "service": "ECS",
+          "action": "putClusterCapacityProviders",
+          "parameters": {
+            "cluster": {
+              "Ref": "ClusterEB0386A7"
+            },
+            "capacityProviders": [],
+            "defaultCapacityProviderStrategy": []
           },
           "physicalResourceId": {
             "id": "CapacityProviderConfiguration"

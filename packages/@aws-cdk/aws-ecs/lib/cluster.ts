@@ -5,7 +5,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Construct, Duration, IResource, Resource, Stack, Lazy } from '@aws-cdk/core';
-import { ICapacityProvider, CapacityProviderOpts, CapacityProvider } from './capacity-provider';
+import { ICapacityProvider, CapacityProviderOpts, CapacityProvider, CapacityProviderConfigurationOpts, 
+  CapacityProviderConfiguration } from './capacity-provider';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -158,6 +159,19 @@ export class Cluster extends Resource implements ICluster {
       ...options,
     });
     return cp;
+  }
+
+  /**
+  * Configure capacity providers as well as their default strategies with the cluster
+  * @param options options to create the CapacityProviderConfiguration
+  */
+  public addCapacityProviderConfiguration(id: string, options: CapacityProviderConfigurationOpts): 
+    CapacityProviderConfiguration {
+    return new CapacityProviderConfiguration(this, id, {
+      cluster: this,
+      capacityProvider: options.capacityProvider,
+      defaultStrategy: options.defaultStrategy,
+    });
   }
 
   /**

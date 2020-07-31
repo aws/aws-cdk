@@ -599,23 +599,40 @@ their clusters. You can use the managed scaling feature to have Amazon ECS manag
 actions of the Auto Scaling group or you can manage the scaling actions yourself. This enables you to effectively
 use cluster auto scaling.
 
-The following sample creates an Autoscaling Group Capacity Provider and register it to the cluster.
+The following sample creates two Autoscaling Group Capacity Providers and register them to the cluster.
 
 ```ts
-// create an auto scaling group
-const autoscalingGroup = new AutoScalingGroup(stack, 'ASG', {
-  vpc,
-  machineImage: new ecs.EcsOptimizedAmi(),
-  instanceType: new ec2.InstanceType('t3.large'),
+const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+// create the 1st capacity provider with on-demand t3.large instances
+const cp = cluster.addCapacityProvider('CP', {
+  capacityOptions: {
+    instanceType: new ec2.InstanceType('t3.large'),
+    minCapacity: 2,
+  },
+  managedScaling: true,
+  managedTerminationProtection: true,
 });
 
-// create a capacity provider with this auto scaling group
-const cp = new CapacityProvider (stack, 'CP', {
-  autoscalingGroup
+// create the 2nd capacity provider with ec2 spot t3.large instances
+const cpSpot = cluster.addCapacityProvider('CPSpot', {
+  capacityOptions: {
+    instanceType: new ec2.InstanceType('t3.large'),
+    minCapacity: 3,
+    spotPrice: '0.1',
+  },
+  managedScaling: true,
+  managedTerminationProtection: true,
 });
 
-// add this capacity provider to the cluster
-cluster.addCapacityProvider(cp);
+// register both capacity providers to the cluster
+cluster.addCapacityProviderConfiguration('CapacityProviderConfiguration', {
+  capacityProvider: [cp, cpSpot],
+  defaultStrategy: [
+    { capacityProvider: cp, base: 1, weight: 1 },
+    { capacityProvider: cpSpot, weight: 3 },
+  ],
+});
 ```
 
 
