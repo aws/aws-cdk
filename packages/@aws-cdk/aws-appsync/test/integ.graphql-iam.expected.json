@@ -109,7 +109,7 @@
         "Definition": "type test @aws_iam {\n  id: String!\n  version: String!\n}\n\ntype Query {\n  getTest(id: String!): test\n  getTests: [ test! ]\n    @aws_iam \n}\n\ninput TestInput {\n  version: String!\n}\n\ntype Mutation {\n  addTest(input: TestInput!): test\n    @aws_iam\n}\n"
       }
     },
-    "ApitestDataSourceDSServiceRoleE543E310": {
+    "ApiDynamoDbCDKDefaultServiceRoleFF246E00": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -126,7 +126,7 @@
         }
       }
     },
-    "ApitestDataSourceDSServiceRoleDefaultPolicy53D2252C": {
+    "ApiDynamoDbCDKDefaultServiceRoleDefaultPolicy2BC1F6C3": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -160,15 +160,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ApitestDataSourceDSServiceRoleDefaultPolicy53D2252C",
+        "PolicyName": "ApiDynamoDbCDKDefaultServiceRoleDefaultPolicy2BC1F6C3",
         "Roles": [
           {
-            "Ref": "ApitestDataSourceDSServiceRoleE543E310"
+            "Ref": "ApiDynamoDbCDKDefaultServiceRoleFF246E00"
           }
         ]
       }
     },
-    "ApitestDataSourceDS776EA507": {
+    "ApiDynamoDbCDKDefault5BF6C4EC": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -177,9 +177,8 @@
             "ApiId"
           ]
         },
-        "Name": "testDataSource",
+        "Name": "DynamoDbCDKDefault",
         "Type": "AMAZON_DYNAMODB",
-        "Description": "Table for Tests\"",
         "DynamoDBConfig": {
           "AwsRegion": {
             "Ref": "AWS::Region"
@@ -190,13 +189,13 @@
         },
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "ApitestDataSourceDSServiceRoleE543E310",
+            "ApiDynamoDbCDKDefaultServiceRoleFF246E00",
             "Arn"
           ]
         }
       }
     },
-    "ApitestDataSourceDSQuerygetTestResolver1A3C9201": {
+    "ApiDynamoDbCDKDefaultQuerygetTestResolverCC295D20": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -207,17 +206,17 @@
         },
         "FieldName": "getTest",
         "TypeName": "Query",
-        "DataSourceName": "testDataSource",
+        "DataSourceName": "DynamoDbCDKDefault",
         "Kind": "UNIT",
         "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
-        "ApiSchema510EECD7",
-        "ApitestDataSourceDS776EA507"
+        "ApiDynamoDbCDKDefault5BF6C4EC",
+        "ApiSchema510EECD7"
       ]
     },
-    "ApitestDataSourceDSQuerygetTestsResolver61ED88B6": {
+    "ApiDynamoDbCDKDefaultQuerygetTestsResolver39CE25D4": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -228,17 +227,17 @@
         },
         "FieldName": "getTests",
         "TypeName": "Query",
-        "DataSourceName": "testDataSource",
+        "DataSourceName": "DynamoDbCDKDefault",
         "Kind": "UNIT",
         "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
         "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
       },
       "DependsOn": [
-        "ApiSchema510EECD7",
-        "ApitestDataSourceDS776EA507"
+        "ApiDynamoDbCDKDefault5BF6C4EC",
+        "ApiSchema510EECD7"
       ]
     },
-    "ApitestDataSourceDSMutationaddTestResolver0D3A4591": {
+    "ApiDynamoDbCDKDefaultMutationaddTestResolverB340117E": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -249,14 +248,14 @@
         },
         "FieldName": "addTest",
         "TypeName": "Mutation",
-        "DataSourceName": "testDataSource",
+        "DataSourceName": "DynamoDbCDKDefault",
         "Kind": "UNIT",
         "RequestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
-        "ApiSchema510EECD7",
-        "ApitestDataSourceDS776EA507"
+        "ApiDynamoDbCDKDefault5BF6C4EC",
+        "ApiSchema510EECD7"
       ]
     },
     "TestTable5769773A": {

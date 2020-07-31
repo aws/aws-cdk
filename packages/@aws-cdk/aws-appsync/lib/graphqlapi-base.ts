@@ -4,6 +4,25 @@ import { CfnResource, IResource, Resource } from '@aws-cdk/core';
 import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
 
 /**
+ * Optional configuration for data sources
+ */
+export interface DataSourceOptions {
+  /**
+   * The name of the data source
+   *
+   * @default - '<DataSourceType>CDKDefault'
+   */
+  readonly name?: string;
+
+  /**
+   * The description of the data source
+   *
+   * @default - undefined
+   */
+  readonly description?: string;
+}
+
+/**
  * Interface for GraphQL
  */
 export interface IGraphQLApi extends IResource {
@@ -27,36 +46,41 @@ export interface IGraphQLApi extends IResource {
    * add a new dummy data source to this API. Useful for pipeline resolvers
    * and for backend changes that don't require a data source.
    *
-   * @param name The name of the data source
-   * @param description The description of the data source
+   * @param options The optional configuration for this data source
+   * @default name - 'NoneCDKDefault'
+   * description - undefined
    */
-  addNoneDataSource(name?: string, description?: string): NoneDataSource;
+  addNoneDataSource(options?: DataSourceOptions): NoneDataSource;
 
   /**
    * add a new DynamoDB data source to this API
-   * @param name The name of the data source
-   * @param description The description of the data source
+   *
    * @param table The DynamoDB table backing this data source
+   * @param options The optional configuration for this data source
+   * @default name - 'DynamoDbCDKDefault'
+   * description - undefined
    */
-  addDynamoDbDataSource(name: string, description: string, table: ITable): DynamoDbDataSource;
+  addDynamoDbDataSource(table: ITable, options?: DataSourceOptions): DynamoDbDataSource;
 
   /**
    * add a new http data source to this API
    *
-   * @param name The name of the data source
-   * @param description The description of the data source
    * @param endpoint The http endpoint
+   * @param options The optional configuration for this data source
+   * @default name - 'HttpCDKDefault'
+   * description - undefined
    */
-  addHttpDataSource(name: string, description: string, endpoint: string): HttpDataSource;
+  addHttpDataSource(endpoint: string, options?: DataSourceOptions): HttpDataSource;
 
   /**
    * add a new Lambda data source to this API
    *
-   * @param name The name of the data source
-   * @param description The description of the data source
    * @param lambdaFunction The Lambda function to call to interact with this data source
+   * @param options The optional configuration for this data source
+   * @default name - 'LambdaCDKDefault'
+   * description - undefined
    */
-  addLambdaDataSource(name: string, description: string, lambdaFunction: IFunction): LambdaDataSource;
+  addLambdaDataSource(lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource;
 
   /**
    * Add schema dependency if not imported
@@ -86,64 +110,70 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
    * add a new none data source to this API. Useful for pipeline resolvers
    * and for backend changes that don't require a data source.
    *
-   * @param name The name of the data source
-   * @default 'None'
-   * @param description The description of the data source
-   * @default undefined
+   * @param options The optional configuration for this data source
+   * @default name - 'NoneCDKDefault'
+   * description - undefined
    */
-  public addNoneDataSource(name?: string, description?: string): NoneDataSource {
-    return new NoneDataSource(this, `${name ?? 'None'}DS`, {
+  public addNoneDataSource(options?: DataSourceOptions): NoneDataSource {
+    const name = options?.name ?? 'NoneCDKDefault';
+    return new NoneDataSource(this, name, {
       api: this,
-      description,
-      name: name ?? 'NoneDS',
+      name: name,
+      description: options?.description,
     });
   }
 
   /**
    * add a new DynamoDB data source to this API
    *
-   * @param name The name of the data source
-   * @param description The description of the data source
    * @param table The DynamoDB table backing this data source
+   * @param options The optional configuration for this data source
+   * @default name - 'DynamoDbCDKDefault'
+   * description - undefined
    */
-  public addDynamoDbDataSource(name: string, description: string, table: ITable): DynamoDbDataSource {
-    return new DynamoDbDataSource(this, `${name}DS`, {
+  public addDynamoDbDataSource(table: ITable, options?: DataSourceOptions): DynamoDbDataSource {
+    const name = options?.name ?? 'DynamoDbCDKDefault';
+    return new DynamoDbDataSource(this, name, {
       api: this,
-      description,
-      name,
       table,
+      name,
+      description: options?.description,
     });
   }
 
   /**
    * add a new http data source to this API
    *
-   * @param name The name of the data source
-   * @param description The description of the data source
    * @param endpoint The http endpoint
+   * @param options The optional configuration for this data source
+   * @default name - 'HttpCDKDefault'
+   * description - undefined
    */
-  public addHttpDataSource(name: string, description: string, endpoint: string): HttpDataSource {
-    return new HttpDataSource(this, `${name}DS`, {
+  public addHttpDataSource(endpoint: string, options?: DataSourceOptions): HttpDataSource {
+    const name = options?.name ?? 'HttpCDKDefault';
+    return new HttpDataSource(this, name, {
       api: this,
-      description,
       endpoint,
       name,
+      description: options?.description,
     });
   }
 
   /**
    * add a new Lambda data source to this API
    *
-   * @param name The name of the data source
-   * @param description The description of the data source
    * @param lambdaFunction The Lambda function to call to interact with this data source
+   * @param options The optional configuration for this data source
+   * @default name - 'LambdaCDKDefault'
+   * description - undefined
    */
-  public addLambdaDataSource(name: string, description: string, lambdaFunction: IFunction): LambdaDataSource {
-    return new LambdaDataSource(this, `${name}DS`, {
+  public addLambdaDataSource(lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource {
+    const name = options?.name ?? 'LambdaCDKDefault';
+    return new LambdaDataSource(this, name, {
       api: this,
-      description,
-      name,
       lambdaFunction,
+      name,
+      description: options?.description,
     });
   }
 

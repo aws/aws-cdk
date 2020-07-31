@@ -121,46 +121,118 @@ test('CertificateValidation.fromEmail', () => {
   });
 });
 
-test('CertificateValidation.fromDns', () => {
-  const stack = new Stack();
+describe('CertificateValidation.fromDns', () => {
 
-  new Certificate(stack, 'Certificate', {
-    domainName: 'test.example.com',
-    subjectAlternativeNames: ['extra.example.com'],
-    validation: CertificateValidation.fromDns(),
+  test('without a hosted zone', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      subjectAlternativeNames: ['extra.example.com'],
+      validation: CertificateValidation.fromDns(),
+    });
+
+    expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      SubjectAlternativeNames: ['extra.example.com'],
+      ValidationMethod: 'DNS',
+    });
   });
 
-  expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
-    DomainName: 'test.example.com',
-    SubjectAlternativeNames: ['extra.example.com'],
-    ValidationMethod: 'DNS',
-  });
-});
+  test('with a hosted zone', () => {
+    const stack = new Stack();
 
-test('CertificateValidation.fromDns with hosted zone', () => {
-  const stack = new Stack();
+    const exampleCom = new route53.HostedZone(stack, 'ExampleCom', {
+      zoneName: 'example.com',
+    });
 
-  const exampleCom = new route53.HostedZone(stack, 'ExampleCom', {
-    zoneName: 'example.com',
-  });
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      validation: CertificateValidation.fromDns(exampleCom),
+    });
 
-  new Certificate(stack, 'Certificate', {
-    domainName: 'test.example.com',
-    validation: CertificateValidation.fromDns(exampleCom),
-  });
-
-  expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
-    DomainName: 'test.example.com',
-    DomainValidationOptions: [
-      {
-        DomainName: 'test.example.com',
-        HostedZoneId: {
-          Ref: 'ExampleCom20E1324B',
+    expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      DomainValidationOptions: [
+        {
+          DomainName: 'test.example.com',
+          HostedZoneId: {
+            Ref: 'ExampleCom20E1324B',
+          },
         },
-      },
-    ],
-    ValidationMethod: 'DNS',
+      ],
+      ValidationMethod: 'DNS',
+    });
   });
+
+  test('with hosted zone and a wildcard name', () => {
+    const stack = new Stack();
+
+    const exampleCom = new route53.HostedZone(stack, 'ExampleCom', {
+      zoneName: 'example.com',
+    });
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      validation: CertificateValidation.fromDns(exampleCom),
+      subjectAlternativeNames: ['*.test.example.com'],
+    });
+
+    //Wildcard domain names are de-duped.
+    expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      DomainValidationOptions: [
+        {
+          DomainName: 'test.example.com',
+          HostedZoneId: {
+            Ref: 'ExampleCom20E1324B',
+          },
+        },
+      ],
+      ValidationMethod: 'DNS',
+    });
+  });
+
+  test('with hosted zone and multiple wildcard names', () => {
+    const stack = new Stack();
+
+    const exampleCom = new route53.HostedZone(stack, 'ExampleCom', {
+      zoneName: 'example.com',
+    });
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      validation: CertificateValidation.fromDns(exampleCom),
+      subjectAlternativeNames: ['*.test.example.com', '*.foo.test.example.com', 'bar.test.example.com'],
+    });
+
+    //Wildcard domain names are de-duped.
+    expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      DomainValidationOptions: [
+        {
+          DomainName: 'test.example.com',
+          HostedZoneId: {
+            Ref: 'ExampleCom20E1324B',
+          },
+        },
+        {
+          DomainName: '*.foo.test.example.com',
+          HostedZoneId: {
+            Ref: 'ExampleCom20E1324B',
+          },
+        },
+        {
+          DomainName: 'bar.test.example.com',
+          HostedZoneId: {
+            Ref: 'ExampleCom20E1324B',
+          },
+        },
+      ],
+      ValidationMethod: 'DNS',
+    });
+  });
+
 });
 
 test('CertificateValidation.fromDnsMultiZone', () => {

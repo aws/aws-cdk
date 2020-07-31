@@ -10,6 +10,7 @@ import {
   PrimaryKey,
   UserPoolDefaultAction,
   Values,
+  SchemaDefinition,
 } from '../lib';
 
 /*
@@ -35,6 +36,7 @@ const userPool = new UserPool(stack, 'Pool', {
 
 const api = new GraphQLApi(stack, 'Api', {
   name: 'demoapi',
+  schemaDefinition: SchemaDefinition.FILE,
   schemaDefinitionFile: join(__dirname, 'integ.graphql.graphql'),
   authorizationConfig: {
     defaultAuthorization: {
@@ -52,7 +54,7 @@ const api = new GraphQLApi(stack, 'Api', {
   },
 });
 
-const noneDS = api.addNoneDataSource('None', 'Dummy data source');
+const noneDS = api.addNoneDataSource();
 
 noneDS.createResolver({
   typeName: 'Query',
@@ -97,9 +99,9 @@ new Table(stack, 'PaymentTable', {
 
 const paymentTable =  Table.fromTableName(stack, 'ImportedPaymentTable', 'PaymentTable');
 
-const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
-const orderDS = api.addDynamoDbDataSource('Order', 'The order data source', orderTable);
-const paymentDS = api.addDynamoDbDataSource('Payment', 'The payment data source', paymentTable);
+const customerDS = api.addDynamoDbDataSource(customerTable, {name: 'customer'});
+const orderDS = api.addDynamoDbDataSource(orderTable, {name: 'order'});
+const paymentDS = api.addDynamoDbDataSource(paymentTable, {name: 'payment'});
 
 customerDS.createResolver({
   typeName: 'Query',
@@ -187,7 +189,7 @@ paymentDS.createResolver({
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
-const httpDS = api.addHttpDataSource('http', 'The http data source', 'https://aws.amazon.com/');
+const httpDS = api.addHttpDataSource('https://aws.amazon.com/');
 
 httpDS.createResolver({
   typeName: 'Mutation',

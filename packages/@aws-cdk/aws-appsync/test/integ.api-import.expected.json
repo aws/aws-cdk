@@ -49,7 +49,7 @@
   },
   {
     "Resources": {
-      "ApitestDataSourceDSServiceRoleE543E310": {
+      "ApiDynamoDbCDKDefaultServiceRoleFF246E00": {
         "Type": "AWS::IAM::Role",
         "Properties": {
           "AssumeRolePolicyDocument": {
@@ -66,7 +66,7 @@
           }
         }
       },
-      "ApitestDataSourceDSServiceRoleDefaultPolicy53D2252C": {
+      "ApiDynamoDbCDKDefaultServiceRoleDefaultPolicy2BC1F6C3": {
         "Type": "AWS::IAM::Policy",
         "Properties": {
           "PolicyDocument": {
@@ -100,23 +100,22 @@
             ],
             "Version": "2012-10-17"
           },
-          "PolicyName": "ApitestDataSourceDSServiceRoleDefaultPolicy53D2252C",
+          "PolicyName": "ApiDynamoDbCDKDefaultServiceRoleDefaultPolicy2BC1F6C3",
           "Roles": [
             {
-              "Ref": "ApitestDataSourceDSServiceRoleE543E310"
+              "Ref": "ApiDynamoDbCDKDefaultServiceRoleFF246E00"
             }
           ]
         }
       },
-      "ApitestDataSourceDS776EA507": {
+      "ApiDynamoDbCDKDefault5BF6C4EC": {
         "Type": "AWS::AppSync::DataSource",
         "Properties": {
           "ApiId": {
             "Fn::ImportValue": "baseStack:ExportsOutputFnGetAttbaseApiCDA4D43AApiId50287E68"
           },
-          "Name": "testDataSource",
+          "Name": "DynamoDbCDKDefault",
           "Type": "AMAZON_DYNAMODB",
-          "Description": "test table data source",
           "DynamoDBConfig": {
             "AwsRegion": {
               "Ref": "AWS::Region"
@@ -127,13 +126,13 @@
           },
           "ServiceRoleArn": {
             "Fn::GetAtt": [
-              "ApitestDataSourceDSServiceRoleE543E310",
+              "ApiDynamoDbCDKDefaultServiceRoleFF246E00",
               "Arn"
             ]
           }
         }
       },
-      "ApitestDataSourceDSQuerygetTestsResolver61ED88B6": {
+      "ApiDynamoDbCDKDefaultQuerygetTestsResolver39CE25D4": {
         "Type": "AWS::AppSync::Resolver",
         "Properties": {
           "ApiId": {
@@ -141,16 +140,16 @@
           },
           "FieldName": "getTests",
           "TypeName": "Query",
-          "DataSourceName": "testDataSource",
+          "DataSourceName": "DynamoDbCDKDefault",
           "Kind": "UNIT",
           "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
           "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
         },
         "DependsOn": [
-          "ApitestDataSourceDS776EA507"
+          "ApiDynamoDbCDKDefault5BF6C4EC"
         ]
       },
-      "ApitestDataSourceDSMutationaddTestResolver0D3A4591": {
+      "ApiDynamoDbCDKDefaultMutationaddTestResolverB340117E": {
         "Type": "AWS::AppSync::Resolver",
         "Properties": {
           "ApiId": {
@@ -158,13 +157,13 @@
           },
           "FieldName": "addTest",
           "TypeName": "Mutation",
-          "DataSourceName": "testDataSource",
+          "DataSourceName": "DynamoDbCDKDefault",
           "Kind": "UNIT",
           "RequestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
           "ResponseMappingTemplate": "$util.toJson($ctx.result)"
         },
         "DependsOn": [
-          "ApitestDataSourceDS776EA507"
+          "ApiDynamoDbCDKDefault5BF6C4EC"
         ]
       },
       "TestTable5769773A": {
@@ -187,15 +186,14 @@
         "UpdateReplacePolicy": "Delete",
         "DeletionPolicy": "Delete"
       },
-      "api2noneDSA74A64A5": {
+      "api2NoneCDKDefaultCFB889A5": {
         "Type": "AWS::AppSync::DataSource",
         "Properties": {
           "ApiId": {
             "Fn::ImportValue": "baseStack:ExportsOutputFnGetAttbaseApiCDA4D43AApiId50287E68"
           },
-          "Name": "none",
-          "Type": "NONE",
-          "Description": "none"
+          "Name": "NoneCDKDefault",
+          "Type": "NONE"
         }
       }
     }

@@ -12,6 +12,7 @@ beforeEach( () => {
   stack = new cdk.Stack();
   baseApi = new appsync.GraphQLApi(stack, 'baseApi', {
     name: 'api',
+    schemaDefinition: appsync.SchemaDefinition.FILE,
     schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
   });
 });
@@ -22,7 +23,7 @@ test('imported api can add NoneDataSource from id', () => {
     graphqlApiId: baseApi.apiId,
   });
 
-  api.addNoneDataSource('none', 'none data source with imported Api');
+  api.addNoneDataSource();
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
@@ -38,7 +39,7 @@ test('imported api can add NoneDataSource from attributes', () => {
     graphqlArn: baseApi.arn,
   });
 
-  api.addNoneDataSource('none', 'none data source with imported Api');
+  api.addNoneDataSource();
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
@@ -59,7 +60,7 @@ test('imported api can add DynamoDbDataSource from id', () => {
       type: db.AttributeType.NUMBER,
     },
   });
-  api.addDynamoDbDataSource('db', 'db data source with imported Api', table);
+  api.addDynamoDbDataSource(table);
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
@@ -81,7 +82,7 @@ test('imported api can add DynamoDbDataSource from attributes', () => {
       type: db.AttributeType.NUMBER,
     },
   });
-  api.addDynamoDbDataSource('db', 'db data source with imported Api', table);
+  api.addDynamoDbDataSource(table);
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
@@ -101,7 +102,7 @@ test('imported api can add LambdaDbDataSource from id', () => {
     handler: 'iam-query.handler',
     runtime: lambda.Runtime.NODEJS_12_X,
   });
-  api.addLambdaDataSource('lambda', 'lambda data source with imported Api', func);
+  api.addLambdaDataSource(func);
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
@@ -122,7 +123,7 @@ test('imported api can add LambdaDataSource from attributes', () => {
     handler: 'iam-query.handler',
     runtime: lambda.Runtime.NODEJS_12_X,
   });
-  api.addLambdaDataSource('lambda', 'lambda data source with imported Api', func);
+  api.addLambdaDataSource(func);
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {

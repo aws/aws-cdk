@@ -24,6 +24,7 @@ const baseStack = new cdk.Stack(app, 'baseStack');
 
 const baseApi = new appsync.GraphQLApi(baseStack, 'baseApi', {
   name: 'baseApi',
+  schemaDefinition: appsync.SchemaDefinition.FILE,
   schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
 });
 
@@ -41,7 +42,7 @@ const testTable = new db.Table(stack, 'TestTable', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const testDS = api.addDynamoDbDataSource('testDataSource', 'test table data source', testTable);
+const testDS = api.addDynamoDbDataSource(testTable);
 
 testDS.createResolver({
   typeName: 'Query',
@@ -62,6 +63,6 @@ const api2 = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'api2', {
   graphqlArn: baseApi.arn,
 });
 
-api2.addNoneDataSource('none', 'none');
+api2.addNoneDataSource();
 
 app.synth();
