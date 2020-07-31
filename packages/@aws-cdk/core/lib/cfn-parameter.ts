@@ -106,12 +106,11 @@ export class CfnParameter extends CfnElement {
    * @param scope The parent construct.
    * @param props The parameter properties.
    */
-  constructor(scope: Construct, id: string, public props: CfnParameterProps = {}) {
+  constructor(scope: Construct, id: string, private readonly props: CfnParameterProps = {}) {
     super(scope, id);
 
     this._type = props.type || 'String';
   }
-
 
   /**
    * The data type for the parameter (DataType).
@@ -125,7 +124,6 @@ export class CfnParameter extends CfnElement {
   public set type(type: string) {
     this._type = type;
   }
-
 
   /**
    * A value of the appropriate type for the template to use if no value is specified
@@ -197,7 +195,6 @@ export class CfnParameter extends CfnElement {
   public set description(desc: string | undefined) {
     this.props.description = desc;
   }
-
 
   /**
    * An integer value that determines the largest number of characters you want to allow for String types.
@@ -297,7 +294,6 @@ export class CfnParameter extends CfnElement {
     }
     return Token.asNumber(this.value);
   }
-
 
   /**
    * @internal
