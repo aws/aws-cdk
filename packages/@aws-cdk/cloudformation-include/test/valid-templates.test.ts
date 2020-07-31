@@ -402,8 +402,8 @@ describe('CDK Include', () => {
     const stringParam = cfnTemplate.getParameter('BucketName');
     const numberParam = cfnTemplate.getParameter('CorsMaxAge');
 
-    stringParam.default = 'MyDefault'
-    stringParam.allowedPattern = '[0-9]*$'
+    stringParam.default = 'MyDefault';
+    stringParam.allowedPattern = '[0-9]*$';
     stringParam.allowedValues = ['123123', '456789'];
     stringParam.constraintDescription = 'MyNewConstraint';
     stringParam.description = 'a string of numeric characters';
@@ -432,7 +432,7 @@ describe('CDK Include', () => {
           "MaxLength": 6,
           "MinLength": 2,
         },
-        "CorsMaxAge" : {
+        "CorsMaxAge": {
           ...originalTemplate.Parameters.CorsMaxAge,
           "MaxValue": 100,
           "MinValue": 4,

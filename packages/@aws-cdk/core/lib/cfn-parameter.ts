@@ -112,6 +112,144 @@ export class CfnParameter extends CfnElement {
     this._type = props.type || 'String';
   }
 
+
+  /**
+   * The data type for the parameter (DataType).
+   *
+   * @default String
+   */
+  public get type(): string {
+    return this._type;
+  }
+
+  public set type(type: string) {
+    this._type = type;
+  }
+
+
+  /**
+   * A value of the appropriate type for the template to use if no value is specified
+   * when a stack is created. If you define constraints for the parameter, you must specify
+   * a value that adheres to those constraints.
+   *
+   * @default - No default value for parameter.
+   */
+  public get default(): any {
+    return this.props.default;
+  }
+
+  public set default(value: any) {
+    this.props.default = value;
+  }
+
+  /**
+   * A regular expression that represents the patterns to allow for String types.
+   *
+   * @default - No constraints on patterns allowed for parameter.
+   */
+  public get allowedPattern(): string | undefined {
+    return this.props.allowedPattern;
+  }
+
+  public set allowedPattern(pattern: string | undefined) {
+    this.props.allowedPattern = pattern;
+  }
+
+  /**
+   * An array containing the list of values allowed for the parameter.
+   *
+   * @default - No constraints on values allowed for parameter.
+   */
+
+  public get allowedValues(): string[] | undefined {
+    return this.props.allowedValues;
+  }
+
+  public set allowedValues(values: string[] | undefined) {
+    this.props.allowedValues = values;
+  }
+
+  /**
+   * A string that explains a constraint when the constraint is violated.
+   * For example, without a constraint description, a parameter that has an allowed
+   * pattern of [A-Za-z0-9]+ displays the following error message when the user specifies
+   * an invalid value:
+   *
+   * @default - No description with customized error message when user specifies invalid values.
+   */
+  public get constraintDescription(): string | undefined {
+    return this.props.constraintDescription;
+  }
+
+  public set constraintDescription(desc: string | undefined) {
+    this.props.constraintDescription = desc;
+  }
+
+  /**
+   * A string of up to 4000 characters that describes the parameter.
+   *
+   * @default - No description for the parameter.
+   */
+  public get description(): string | undefined {
+    return this.props.description;
+  }
+
+  public set description(desc: string | undefined) {
+    this.props.description = desc;
+  }
+
+
+  /**
+   * An integer value that determines the largest number of characters you want to allow for String types.
+   *
+   * @default - None.
+   */
+  public get maxLength(): number | undefined {
+    return this.props.maxLength;
+  }
+
+  public set maxLength(len: number | undefined) {
+    this.props.maxLength = len;
+  }
+
+  /**
+   * An integer value that determines the smallest number of characters you want to allow for String types.
+   *
+   * @default - None.
+   */
+  public get minLength(): number | undefined {
+    return this.props.minLength;
+  }
+
+  public set minLength(len: number | undefined) {
+    this.props.minLength = len;
+  }
+
+  /**
+   * A numeric value that determines the largest numeric value you want to allow for Number types.
+   *
+   * @default - None.
+   */
+  public get maxValue(): number | undefined {
+    return this.props.maxValue;
+  }
+
+  public set maxValue(len: number | undefined) {
+    this.props.maxValue = len;
+  }
+  /**
+   * A numeric value that determines the smallest numeric value you want to allow for Number types.
+   *
+   * @default - None.
+   */
+  public get minValue(): number | undefined {
+    return this.props.minValue;
+  }
+
+  public set minValue(len: number | undefined) {
+    this.props.minValue = len;
+  }
+
   /**
    * Indicates if this parameter is configured with "NoEcho" enabled.
    */
@@ -121,14 +259,6 @@ export class CfnParameter extends CfnElement {
 
   public set noEcho(echo: boolean) {
     this.props.noEcho = echo;
-  }
-
-  public set type(type: string) {
-    this._type = type;
-  }
-
-  public get type(): string {
-    return this._type;
   }
 
   /**
@@ -168,77 +298,6 @@ export class CfnParameter extends CfnElement {
     return Token.asNumber(this.value);
   }
 
-  public get default(): any {
-    return this.props.default;
-  }
-
-  public set default(value: any) {
-    this.props.default = value;
-  }
-
-  public get allowedPattern(): string | undefined {
-    return this.props.allowedPattern;
-  }
-
-  public set allowedPattern(pattern: string | undefined) {
-    this.props.allowedPattern = pattern;
-  }
-
-  public get allowedValues(): string[] | undefined {
-    return this.props.allowedValues;
-  }
-
-  public set allowedValues(values: string[] | undefined) {
-    this.props.allowedValues = values;
-  }
-
-  public get constraintDescription(): string | undefined {
-    return this.props.constraintDescription;
-  }
-
-  public set constraintDescription(desc: string | undefined) {
-    this.props.constraintDescription = desc;
-  }
-
-  public get description(): string | undefined {
-    return this.props.description;
-  }
-
-  public set description(desc: string | undefined) {
-    this.props.description = desc;
-  }
-
-  public get maxLength(): number | undefined {
-    return this.props.maxLength;
-  }
-
-  public set maxLength(len: number | undefined) {
-    this.props.maxLength = len;
-  }
-
-  public get minLength(): number | undefined {
-    return this.props.minLength;
-  }
-
-  public set minLength(len: number | undefined) {
-    this.props.minLength = len;
-  }
-
-  public get maxValue(): number | undefined {
-    return this.props.maxValue;
-  }
-
-  public set maxValue(len: number | undefined) {
-    this.props.maxValue = len;
-  }
-
-  public get minValue(): number | undefined {
-    return this.props.minValue;
-  }
-
-  public set minValue(len: number | undefined) {
-    this.props.minValue = len;
-  }
 
   /**
    * @internal
