@@ -2,7 +2,7 @@
 
 ## The context
 
-As we add more features to ECS one problem that must be faced is that ECS is not a standalone service. The strength of ECS is in its integration with other AWS services, so customer's expect these integrations to be a smooth and easy as possible. Therefore we must create CDK constructs that can help customers connect their ECS orchestrated application to other AWS services. The constructs in CDK must be extensible enough address all the possible integrations that users may want to enable on their ECS service.
+As we add more features to ECS one problem that must be faced is that ECS is not a standalone service. The strength of ECS is in its integration with other AWS services, so customer's expect these integrations to be as smooth and easy as possible. We must create CDK constructs that can help customers connect their ECS orchestrated application to other AWS services. The constructs in CDK must be extensible enough address all the possible integrations that users may want to enable on their ECS service.
 
 Currently we have built out a set of L3 constructs:
 
@@ -23,9 +23,9 @@ Another angle to the problem is the internal code organization of how these ECS 
 - `TaskDefinition.addAppMeshEnvoy()`
 - `TaskDefinition.addCloudwatchAgent()`
 
-As a result the TaskDefinition L2 construct would become an ever growing monolithic collection of code that pertains to other services, instead of just focusing on ECS as it should be. I believe that this problem is contributing to lack of progress on the development of higher level abstractions for ECS integrations, because these features can not be added to the existing codebase without introducing bloated complexity to the existing L2 construct classes.
+As a result the TaskDefinition L2 construct would become an ever growing monolithic collection of code that pertains to other services, instead of just focusing on ECS as it should be. I believe that this problem is contributing to lack of progress on the development of higher level abstractions for ECS integrations, because these features can not be added to the existing codebase using existing patterns without introducing bloated complexity to the L2 construct classes.
 
-Another challenge is that some features such as App Mesh require resources and settings across multiple construct types. For example App Mesh requires that the service be modified to have a CloudMap namespace, it must modify the task definition to have an Envoy sidecar and proxy settings, and it must have linked App Mesh specific resources like Virtual Node and Virtual Service. There is no single place for all of this to live in the current construct architecture.
+Another challenge is that some features such as App Mesh require resources and settings across multiple construct types. For example App Mesh requires that the service be modified to have a CloudMap namespace, it must modify the task definition to have an Envoy sidecar and proxy settings, and it must have created App Mesh specific resources like Virtual Node and Virtual Service. There is no single place for all of this cross construct logic to live in the current construct architecture.
 
 Last but not least the existing approach to L3 constructs has an `Ec2` and a `Fargate` version of each L3 construct. Ideally there would be a way for customers to create a service which is agnostic to whether it is deployed on EC2 or Fargate.
 
@@ -34,15 +34,14 @@ Last but not least the existing approach to L3 constructs has an `Ec2` and a `Fa
 To solve the problems with ECS construct implemention we propose adding a new `Service` class with the following goals:
 
 - __One service class to learn__: Instead of a collection of many different L3 classes that all have different names there is a single class which can implement any number of different forms depending on what the customer wants. Customers don't need to learn the names for different L3 constructs. All architectures start the same way: with the same `Service` class.
-- __Easy to extend and customize__: It is easy to extend the `Service` class with new behaviors and features, in any combination required. The `Service` class comes with batteries included: a set of easy to use extensions created and maintained by the AWS team. However there are also clear instructions and examples of how customers can create their own custom extensions. Third parties will be enabled to also create and distribute extensions for their own services, for example a provider like DataDog could easily build an extension that automatically adds DataDog agent to an ECS service.
-- __Extensions self configure and self provision__: Service extensions provision their own resources as well as configuring the ECS service to use those resources. For example a load balancer addon creates its own load balancer and also attaches the ECS service to the load balancer. An App Mesh extension creates its own App Mesh virtual service and virtual node as well as configuring the task definition to have the right Envoy sidecar and proxy settings.
+- __Easy to extend and customize__: It is easy to extend the `Service` class with new behaviors and features, in any combination required. The `Service` class comes with batteries included: a set of easy to use extensions created and maintained by the AWS team. However there are also clear instructions and examples of how customers can create their own custom extensions. Third parties will be enabled to also create and distribute extensions for their own services, for example a provider like Datadog could easily build an extension that automatically adds Datadog agent to an ECS service.
+- __Extensions self configure and self provision__: Service extensions provision their own resources as well as configuring the ECS service to use those resources. For example a load balancer extension creates its own load balancer and also attaches the ECS service to the load balancer. An App Mesh extension creates its own App Mesh virtual service and virtual node as well as configuring the ECS service and ECS task definition to have the right Envoy sidecar and proxy settings.
 - __Extensions are aware of each other__: There are no hidden "gotchas" when enabling a service extension. Extensions know of each other's existence. For example the application's container is aware that there is an Envoy proxy and that it must wait until the Envoy proxy has started before the app starts.
-- __Service class is agnostic to EC2 vs Fargate__: Rather than choosing up the capacity strategy in the class name customers just create a service, and add it to an environment. The service automatically modifies its settings as needed to adjust to the capacity available in the environment.
+- __Service class is agnostic to EC2 vs Fargate__: Rather than choosing the capacity strategy in the class name customers just create a service, and add it to an environment. The service automatically modifies its settings as needed to adjust to the capacity available in the environment.
 
+## `Service` Implementation 1: Lazy evaluating construct
 
-## Implementation
-
-The new `Service` class acheives its goals via a method `Service.add()` This method is used to add extensions to the service. Each extension is responsible for customizing the service to support a specific feature. The following example shows how the end user instantiates a service with various feature's enabled:
+A new `Service` class which is a `cdk.Construct` with a method `Service.add()` This method is used to add an extension to the service. Each extension is responsible for customizing the service to support a specific feature. The following example shows one proposal for how the end user instantiates a service with various features enabled:
 
 ```js
 const myService = new Service(stack, 'my-service', {});
@@ -52,50 +51,107 @@ myService.add(new Container({
   trafficPort: 80,
   image: ContainerImage.fromRegistry('nathanpeck/greeter')
 }));
-myService.add(new AppMeshAddon({ mesh }));
-myService.add(new FireLensAddon());
-myService.add(new XRayAddon());
-myService.add(new CloudwatchAgentAddon());
-myService.add(new HttpLoadBalancerAddon());
+myService.add(new AppMeshExtension({ mesh }));
+myService.add(new FireLensExtension());
+myService.add(new XRayExtension());
+myService.add(new CloudwatchAgentExtension());
+myService.add(new HttpLoadBalancerExtension());
+
+const myEnvironment = new Environment(stack, 'production', {
+  vpc: vpc,
+  cluster: cluster,
+  capacityType: capacityTypes.EC2 || capacityTypes.FARGATE
+});
+myEnvironment.addService(myService);
 ```
 
-Each addon is responsible for one aspect of the resulting service. The final generated service is the sum of all the features that were enabled. There are a few benefits to this approach:
+In this implementation Service is a `cdk.Construct`. However it differs a bit from other CDK L2+ constructs. Most CDK constructs are fully assembled in the constructor and are then mostly immutable except for some properties or methods. This `Service` class is not like those constructs. The constructor does nothing but initialize an empty list of extensions. Users add extensions to this list, to define their intention about what should be built later on. The underlying constructs that make up the servie and its associated extensions do not actually exist at this point. The only thing that exists is a list of user specified intentions about what they want to add to the service.
 
-- Users no longer have to select their full architecture up front as with the current ECS patterns. Instead of chosing between `ApplicationLoadBalancedEc2Service` and `NetworkLoadBalancedEc2Service` up front, they can actually deploy a service, and then later add or remove an `HttpLoadBalancerAddon` from the service without needing to change the base class in their code.
-- Users can enable any number of different combinations of features which were not accessible before. They can build the same load balanced services they could before, but now they can also enable App Mesh, X-Ray, Cloudwatch Agent, and FireLens on the service at the same time.
-- The code for each extension is its own self contained class. Rather than bloating the ECS constructs with logic that is specific to another service all of that logic can live in the extension itself.
+When `Environment.addService()` is called the class actually evaluates all of the extensions and defines resources to create at that time. From that point on the underlying resources have been added to the stack and the construct is now immutable. You can no longer add more extensions as the service has already been "locked in".
 
-## Service Lifecycle
+## `Service` Implementation 2: A more traditional CDK construct
 
-The new `Service` construct differs a bit from other CDK L2+ constructs. Most CDK constructs are fully assembled in the constructor and are then immutable. The `Service` class is not like this. The constructor does nothing but initialize an empty list of extensions. Users add extensions to this list, to define their intention about what should be built later on. The service constructs do not actually exist at this point. The only thing that exists is a list of user specified intentions about what constructs they do want to exist.
+A new `ServiceDescription` class and a `Service` class which is a `cdk.Construct`. Usage like this:
 
-The service's constructs are instantiated once the service is added to an environment. At that point all the extensions are executed to build out the actual CDK resources. From this point on the service constructs are available and immutable.
+```js
+const myServiceDesc = new ServiceDescription();
+myServiceDesc.add(new Container({
+  cpu: 1024,
+  memoryMiB: 2048,
+  trafficPort: 80,
+  image: ContainerImage.fromRegistry('nathanpeck/greeter')
+}));
+myServiceDesc.add(new AppMeshExtension({ mesh }));
+myServiceDesc.add(new FireLensExtension());
+myServiceDesc.add(new XRayExtension());
+myServiceDesc.add(new CloudwatchAgentExtension());
+myServiceDesc.add(new HttpLoadBalancerExtension());
+
+const myEnvironment = new Environment(stack, 'production', {
+  vpc: vpc,
+  cluster: cluster,
+  capacityType: capacityTypes.EC2 || capacityTypes.FARGATE
+});
+
+const myService = new Service(stack, myService, {
+  environment: myEnvironment
+  serviceDescription: myServiceDesc
+});
+```
+
+This implementation looks slightly more complicated, but it is more traditional in behavior compared to other CDK constructs. The lazy evaluating construct looks more simple to understand when you are starting out, but it may lead to some customer confusion because it does not actually create any resources until later. For example if you tried to access a subproperty of the service before adding the service to the environment you would find that the property is undefined.
+
+With this alternate approach the `ServiceDescription` is not a `cdk.Construct`, it is just a helper class which is used as a semantic wrapper to define the intent for what to create. Because of this there should be no customer expectation that it has accessible construct properties on it. When the `Service` is instantiated the `ServiceDescription` is passed to the constructor and the `Service` builds itself out according to the description.
+
+The benefit of this approach is that the `Service` class behaves like a traditional construct: it immeadiately defines all the resources in the constructor as most CDK resources do, and all properties are accessible right away and immutable from the time of construction rather than from an arbitrary future point when the serivce is added to an environment.
+
+## Choosing a `Service` implementation
+
+Of the two implementations the first is slightly friendlier to look at and has one less "term" to learn. However the danger is that it introduces an inconsistency of construct behavior. Because of that the slightly more complex second implementation may be preferable.
 
 ## Extension Implemention
 
-Each extension is a collection of functions which are executed by the `Service` class when the service is added to an environment. Functions are executed in the order that the extensions were added to the service. Some functions are mutating hooks which modify service or task definition properties prior to these constructs being created. Other functions are called after each construct has been created so that the extension can make use of the construct.
+Each extension is a collection of functions which are executed by the `Service` class when the service is added to an environment. An extension is never called directly by end users, only added to a `Service`. The methods on an extension are only called by the `Service` class itself when it is constructing itself.
+
+The functions that make up an extension are executed in the order that the extensions were added to the service. Some functions are mutating hooks which modify service or task definition properties prior to these constructs being created. Other functions are called after each construct has been created so that the extension can make use of the construct.
 
 The hooks for an extension are as follows:
 
-- `addHooks()` - This hook is called after all the extensions are added, but before anything else has been run. It gives each extension a chance to do some inspection of the overall service and see what other extensions have been added. Some addons may want to register hooks on the other addons to modify them. For example the Firelens addon wants to be able to modify the settings of the application container to route logs through Firelens.
-- `mutateTaskDefinitionProps()` - This is a mutating hook which is passed the `ecs.TaskDefinitionProps` for a TaskDefinition. This allows the extension to make modifications to the task definition, such as App Mesh extension modifying the proxy settings for the task.
-- `useTaskDefinition()` - After the task definition is created, this hook is passed the actual `TaskDefinition` construct that was created. This allows the extension to add containers to the task, modify the task definition's IAM role, etc.
-- `bakeContainerDependencies()` - Once all extensions have added their containers each addon is given a chance to modify its container's `dependsOn` settings. Extensions need to check and see what other extensions were enabled, and decide whether their container needs to wait on another container to start first.
-- `mutateServiceProps()` - Before a service is created this mutating hook is passed a draft service properties to change. For example the App Mesh extension needs to modify the service settings to enable CloudMap service discovery.
+- `addHooks()` - This hook is called after all the extensions are added, but before anything else has been run. It gives each extension a chance to do some inspection of the overall service and see what other extensions have been added. Some extension may want to register hooks on the other extension to modify them. For example the Firelens extension wants to be able to modify the settings of the application container to route logs through Firelens.
+- `modifyTaskDefinitionProps()` - This is hook is passed the proposed `ecs.TaskDefinitionProps` for a TaskDefinition that is about to be created. This allows the extension to make modifications to the task definition props before the `TaskDefinition` is created. For example the App Mesh extension modifies the proxy settings for the task.
+- `useTaskDefinition()` - After the `TaskDefinition` is created, this hook is passed the actual `TaskDefinition` construct that was created. This allows the extension to add containers to the task, modify the task definition's IAM role, etc.
+- `resolveContainerDependencies()` - Once all extensions have added their containers each extension is given a chance to modify its container's `dependsOn` settings. Extensions need to check and see what other extensions were enabled, and decide whether their container needs to wait on another container to start first.
+- `modifyServiceProps()` - Before an `Ec2Service` or `FargateService` is created this hook is passed a draft version of the service props to change. Each extension adds its own modifications to the service properties. For example the App Mesh extension needs to modify the service settings to enable CloudMap service discovery.
 - `useService()` - After the service is created this hook is given a chance to utilize the service that was created. This is used by extensions like the load balancer or App Mesh extension which create and link other AWS resources to the ECS extension.
-- `connectToService()` - This hook is called when a user wants to connect one service to another service. It allows an extension to implement logic about how to allow connections from one service to another. For example the App Mesh addon implements this method so that you can easily connect one service mesh service to another so that the service's Envoy proxy sidecars know how to route traffic to each other.
+- `connectToService()` - This hook is called when a user wants to connect one service to another service. It allows an extension to implement logic about how to allow connections from one service to another. For example the App Mesh extension implements this method so that you can easily connect one service mesh service to another so that the service's Envoy proxy sidecars know how to route traffic to each other.
 
 A combination of these hooks should be able to implement any type of functionality that needs to be attached to an ECS service. If we identify new use cases that aren't served by this collection of hooks we can add new hooks to enable new extension types without breaking existing extensions.
 
+A customer can easily create their own extension by creating a class that adheres to the spec, with hooks that have the same name. They can put their own logic in each hook.
+
+## Concerns with extensions
+
+__Do we anticipate certain extensions conflicting with each other?__
+
+Yes it is possible that extensions may conflict with each other. It is the responsibility of each extension to check for other extensions at the time of being added to the service and throw an exception if there is an expected conflict.
+
+__Given that ECS patterns are meant to push best practices in application infrastructure/architecture, how will we provide that guidance with extensions?__
+
+The goal of these extensions is to do the right thing by default, similar to the existing ECS patterns, but the user just has more choices about what combinations of feature integrations they want to enable. When using the built-in extensions there should be no "bad" choices. If a user wants to leave out an extension it is safe to do so, and if they chose to enable it there should be no gotchas from adding another extension. The goal is to make this hard to misuse, but still powerful and extendable.
+
 ## Environments
 
-As part of this proposal there is also a new construct called `Environment`. This construct is designed to be similar to AWS Copilot environments. The intention is that an environment is a transparent wrapper for a VPC, cluster, and any other resources that the environment needs. The environment understands whether it is using EC2 or Fargate capacity. A `Service` is added to an `Environment`. The `Service` changes to EC2 mode if the environment is set to have EC2 capacity. The `Service` changes to Fargate made if the environment is set to have Fargate capacity.
+As part of this proposal there is also a new construct called `Environment`. This construct is deliberately designed to be similar to [AWS Copilot environments](https://github.com/aws/copilot-cli). The intention is that an environment is an opaque wrapper for a VPC, cluster, and any other such resources that the service needs. The environment understands whether it is using EC2 or Fargate capacity. A `Service` is added to an `Environment`. The `Service` changes to EC2 mode if the environment is set to have EC2 capacity. The `Service` changes to Fargate mode if the environment is set to have Fargate capacity.
 
-There is potential here for customers to eventually add an extension to an environment as well as adding extensions to a service. Adding an extension to the environment would automatically enable that extension on all services that are added to the environment. This would allow operation's minded orgs to enforce for example that all services in an environment have a mandatory security sidecar attached. It would also serve as a simplification for attaching an extension globally if there is an extension that needs to be on every single service anyway.
+## Future Looking (Out of scope for first release version)
 
-## Future Looking
+### Environment extensions
 
-The service class already supports extensions. A future goal is to add support for a new feature called "traits". The idea behind this is to allow customers to modify the behavior of all of their extensions via higher level intentions about how the service should behave. Traits are higher level adjectives that describe how the service should be configured. For example some traits could be:
+There is potential here for customers to eventually add an extension to an environment as well as adding extensions to a service. Adding an extension to the environment would automatically add that extension on all services that are added to the environment. The service would inherit all environment level extensions on top of any locally defined extensions. For example, this would allow operations minded orgs to enforce that all services in an environment have a mandatory security sidecar attached. It would also serve as a DRY simplification for attaching an extension globally if there is an extension that needs to be on every single service anyway.
+
+### Service (and environment) traits
+
+A future goal is to add support for a new feature called "traits". The idea behind this is to allow customers to modify the behavior of all of their extensions via higher level intentions about how the service should behave. Traits are higher level adjectives that describe how the service should be configured. For example some traits could be:
 
 - "cost optimized"
 - "performance optimized"
