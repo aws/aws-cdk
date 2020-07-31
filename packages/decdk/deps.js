@@ -8,7 +8,7 @@ const path = require('path');
 const pkg = require('./package.json');
 const deps = pkg.dependencies || (pkg.dependencies = {});
 
-const root = path.resolve(process.env.NZL_PACKAGE_SOURCE || '.', '..', '..', 'packages', '@aws-cdk');
+const root = path.resolve(process.env.NZM_PACKAGE_SOURCE || '.', '..', '..', 'packages', '@aws-cdk');
 const modules = fs.readdirSync(root);
 let errors = false;
 

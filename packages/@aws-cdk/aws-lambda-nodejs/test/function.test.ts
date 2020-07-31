@@ -7,8 +7,8 @@ import { Stack } from '@aws-cdk/core';
 import { NodejsFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
 
-const PROJECT_ROOT = process.env.NZL_SOURCE_PACKAGE
-  ? process.env.NZL_SOURCE_PACKAGE
+const PROJECT_ROOT = process.env.NZM_SOURCE_PACKAGE
+  ? process.env.NZM_SOURCE_PACKAGE
   : path.join(__dirname, '..');
 
 jest.mock('../lib/bundling', () => {

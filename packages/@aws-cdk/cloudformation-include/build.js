@@ -28,7 +28,7 @@ async function main() {
  * Validate that we have all requires packages in package.json
  */
 async function validatePackageJsonCompleteness() {
-  const sourcePath = path.resolve(process.env.NZL_PACKAGE_SOURCE || __dirname);
+  const sourcePath = path.resolve(process.env.NZM_PACKAGE_SOURCE || __dirname);
 
   const constructLibrariesRoot = path.resolve(sourcePath, '..');
   const constructLibrariesDirs = fs.readdirSync(constructLibrariesRoot);
