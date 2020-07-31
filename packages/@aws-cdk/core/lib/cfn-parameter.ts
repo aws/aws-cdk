@@ -97,7 +97,17 @@ export interface CfnParameterProps {
  * update a stack.
  */
 export class CfnParameter extends CfnElement {
-  private readonly type: string;
+  private _type: string;
+  private _default?: any;
+  private _allowedPattern?: string;
+  private _allowedValues?: string[];
+  private _constraintDescription?: string;
+  private _description?: string;
+  private _maxLength?: number;
+  private _maxValue?: number;
+  private _minLength?: number;
+  private _minValue?: number;
+  private _noEcho?: boolean;
 
   /**
    * Creates a parameter construct.
@@ -107,17 +117,165 @@ export class CfnParameter extends CfnElement {
    * @param scope The parent construct.
    * @param props The parameter properties.
    */
-  constructor(scope: Construct, id: string, private readonly props: CfnParameterProps = {}) {
+  constructor(scope: Construct, id: string, props: CfnParameterProps = {}) {
     super(scope, id);
 
-    this.type = props.type || 'String';
+    this._type = props.type || 'String';
+    this._default = props.default;
+    this._allowedPattern = props.allowedPattern;
+    this._allowedValues = props.allowedValues;
+    this._constraintDescription = props.constraintDescription;
+    this._description = props.description;
+    this._maxLength = props.maxLength;
+    this._maxValue = props.maxValue;
+    this._minLength = props.minLength;
+    this._minValue = props.minValue;
+    this._noEcho = props.noEcho;
+  }
+
+  /**
+   * The data type for the parameter (DataType).
+   *
+   * @default String
+   */
+  public get type(): string {
+    return this._type;
+  }
+
+  public set type(type: string) {
+    this._type = type;
+  }
+
+  /**
+   * A value of the appropriate type for the template to use if no value is specified
+   * when a stack is created. If you define constraints for the parameter, you must specify
+   * a value that adheres to those constraints.
+   *
+   * @default - No default value for parameter.
+   */
+  public get default(): any {
+    return this._default;
+  }
+
+  public set default(value: any) {
+    this._default = value;
+  }
+
+  /**
+   * A regular expression that represents the patterns to allow for String types.
+   *
+   * @default - No constraints on patterns allowed for parameter.
+   */
+  public get allowedPattern(): string | undefined {
+    return this._allowedPattern;
+  }
+
+  public set allowedPattern(pattern: string | undefined) {
+    this._allowedPattern = pattern;
+  }
+
+  /**
+   * An array containing the list of values allowed for the parameter.
+   *
+   * @default - No constraints on values allowed for parameter.
+   */
+  public get allowedValues(): string[] | undefined {
+    return this._allowedValues;
+  }
+
+  public set allowedValues(values: string[] | undefined) {
+    this._allowedValues = values;
+  }
+
+  /**
+   * A string that explains a constraint when the constraint is violated.
+   * For example, without a constraint description, a parameter that has an allowed
+   * pattern of [A-Za-z0-9]+ displays the following error message when the user specifies
+   * an invalid value:
+   *
+   * @default - No description with customized error message when user specifies invalid values.
+   */
+  public get constraintDescription(): string | undefined {
+    return this._constraintDescription;
+  }
+
+  public set constraintDescription(desc: string | undefined) {
+    this._constraintDescription = desc;
+  }
+
+  /**
+   * A string of up to 4000 characters that describes the parameter.
+   *
+   * @default - No description for the parameter.
+   */
+  public get description(): string | undefined {
+    return this._description;
+  }
+
+  public set description(desc: string | undefined) {
+    this._description = desc;
+  }
+
+  /**
+   * An integer value that determines the largest number of characters you want to allow for String types.
+   *
+   * @default - None.
+   */
+  public get maxLength(): number | undefined {
+    return this._maxLength;
+  }
+
+  public set maxLength(len: number | undefined) {
+    this._maxLength = len;
+  }
+
+  /**
+   * An integer value that determines the smallest number of characters you want to allow for String types.
+   *
+   * @default - None.
+   */
+  public get minLength(): number | undefined {
+    return this._minLength;
+  }
+
+  public set minLength(len: number | undefined) {
+    this._minLength = len;
+  }
+
+  /**
+   * A numeric value that determines the largest numeric value you want to allow for Number types.
+   *
+   * @default - None.
+   */
+  public get maxValue(): number | undefined {
+    return this._maxValue;
+  }
+
+  public set maxValue(len: number | undefined) {
+    this._maxValue = len;
+  }
+  /**
+   * A numeric value that determines the smallest numeric value you want to allow for Number types.
+   *
+   * @default - None.
+   */
+  public get minValue(): number | undefined {
+    return this._minValue;
+  }
+
+  public set minValue(len: number | undefined) {
+    this._minValue = len;
   }
 
   /**
    * Indicates if this parameter is configured with "NoEcho" enabled.
    */
   public get noEcho(): boolean {
-    return !!this.props.noEcho;
+    return !!this._noEcho;
+  }
+
+  public set noEcho(echo: boolean) {
+    this._noEcho = echo;
   }
 
   /**
@@ -165,16 +323,16 @@ export class CfnParameter extends CfnElement {
       Parameters: {
         [this.logicalId]: {
           Type: this.type,
-          Default: this.props.default,
-          AllowedPattern: this.props.allowedPattern,
-          AllowedValues: this.props.allowedValues,
-          ConstraintDescription: this.props.constraintDescription,
-          Description: this.props.description,
-          MaxLength: this.props.maxLength,
-          MaxValue: this.props.maxValue,
-          MinLength: this.props.minLength,
-          MinValue: this.props.minValue,
-          NoEcho: this.props.noEcho,
+          Default: this.default,
+          AllowedPattern: this.allowedPattern,
+          AllowedValues: this.allowedValues,
+          ConstraintDescription: this.constraintDescription,
+          Description: this.description,
+          MaxLength: this.maxLength,
+          MaxValue: this.maxValue,
+          MinLength: this.minLength,
+          MinValue: this.minValue,
+          NoEcho: this._noEcho,
         },
       },
     };
