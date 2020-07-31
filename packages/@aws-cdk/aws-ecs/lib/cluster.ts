@@ -49,13 +49,6 @@ export interface ClusterProps {
    * @default - Container Insights will be disabled for this cluser.
    */
   readonly containerInsights?: boolean;
-
-  /**
-   * The capacity providers associated with the cluster
-   *
-   * @default - no capacity provider for this cluster
-   */
-  readonly capacityProviders?: ICapacityProvider[];
 }
 
 /**
