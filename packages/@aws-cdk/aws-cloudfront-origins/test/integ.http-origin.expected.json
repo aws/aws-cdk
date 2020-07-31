@@ -1,0 +1,28 @@
+{
+  "Resources": {
+    "DistributionCFDistribution882A7313": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "DefaultCacheBehavior": {
+            "ForwardedValues": {
+              "QueryString": false
+            },
+            "TargetOriginId": "cloudfronthttporiginDistributionOrigin162B02709",
+            "ViewerProtocolPolicy": "allow-all"
+          },
+          "Enabled": true,
+          "Origins": [
+            {
+              "CustomOriginConfig": {
+                "OriginProtocolPolicy": "https-only"
+              },
+              "DomainName": "www.example.com",
+              "Id": "cloudfronthttporiginDistributionOrigin162B02709"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
