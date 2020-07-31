@@ -5,6 +5,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { CfnCapacityProvider } from './ecs.generated';
+import { ICluster, AddCapacityOptions } from './cluster';
 
 /**
  * Represents the CapacityProvider
@@ -18,14 +19,9 @@ export interface ICapacityProvider extends cdk.IResource {
 }
 
 /**
- * Construct properties for CapacityProvider
+ * Options for addCapacityProvider()
  */
-export interface CapacityProviderProps {
-  /**
-   * The AutoscalingGroup for the CapacityProvider
-   */
-  readonly autoscalingGroup: IAutoScalingGroup;
-
+export interface CapacityProviderBase {
   /**
    * The name of the CapacityProvider
    *
@@ -71,6 +67,27 @@ export interface CapacityProviderProps {
    */
   readonly targetCapacity?: number;
 
+}
+
+/**
+ * Options for addCapacityProvider
+ */
+export interface CapacityProviderOpts extends CapacityProviderBase {
+  /**
+   * capacity options for the autoscaling group
+   */
+  readonly capacityOptions: AddCapacityOptions;
+}
+
+
+/**
+ * Construct properties for CapacityProvider
+ */
+export interface CapacityProviderProps extends CapacityProviderBase {
+  /**
+   * The AutoscalingGroup for the CapacityProvider
+   */
+  readonly autoscalingGroup: IAutoScalingGroup;
 
 }
 
@@ -152,5 +169,51 @@ export class CapacityProvider extends cdk.Resource implements ICapacityProvider 
     });
     resource.node.addDependency(instanceProtection);
     this.capacityProviderName = resource.ref;
+  }
+}
+
+
+/**
+ * The capacity provider strategy to use by default for the cluster
+ */
+export interface CapacityProviderStrategy {
+  readonly capacityProvider: ICapacityProvider;
+  readonly weight: number;
+  readonly base?: number;
+}
+
+/**
+ * Properties of the CapacityProviderConfiguration construct
+ */
+export interface CapacityProviderConfigurationProps {
+  readonly cluster: ICluster;
+  readonly capacityProvider: ICapacityProvider[];
+  readonly defaultStrategy: CapacityProviderStrategy[];
+}
+
+/**
+ * capacity provider configurations for the cluster
+ */
+export class CapacityProviderConfiguration extends cdk.Resource {
+  constructor(stack: cdk.Construct, id: string, props: CapacityProviderConfigurationProps ) {
+    super(stack, id)
+
+    new cr.AwsCustomResource(this, 'CapacityProviderConfiguration', {
+      onUpdate: {
+        service: 'ECS',
+        action: 'putClusterCapacityProviders',
+        parameters: {
+          cluster: props.cluster.clusterName,
+          capacityProviders: props.capacityProvider.map(cp => cp.capacityProviderName),
+          defaultCapacityProviderStrategy: props.defaultStrategy.map(s => ({
+            capacityProvider: s.capacityProvider.capacityProviderName,
+            base: s.base,
+            weight: s.weight,
+          }))
+        },
+        physicalResourceId: cr.PhysicalResourceId.of(id)
+      },
+      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE })
+    })
   }
 }
