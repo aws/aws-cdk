@@ -100,6 +100,18 @@ describe('CDK Include', () => {
       includeTestTemplate(stack, 'output-referencing-nonexistant-condition.json');
     }).toThrow(/Output with name 'SomeOutput' refers to a Condition with name 'NonexistantCondition' which was not found in this template/);
   });
+
+  test("throws a validation exception when Fn::Sub in string form uses a key that isn't in the template", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'fn-sub-key-not-in-template-string.json');
+    }).toThrow(/Element referenced in Fn::Sub expression with logical ID: 'AFakeResource' was not found in the template/);
+  });
+
+  test('throws a validation exception when Fn::Sub has an empty ${} reference', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'fn-sub-${}-only.json');
+    }).toThrow(/Element referenced in Fn::Sub expression with logical ID: '' was not found in the template/);
+  });
 });
 
 function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {

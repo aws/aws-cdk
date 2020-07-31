@@ -23,7 +23,7 @@
               "Principal": {
                 "CanonicalUser": {
                   "Fn::GetAtt": [
-                    "DistributionS3Origin115FD918D",
+                    "DistributionOrigin1S3Origin5F5C0696",
                     "S3CanonicalUserId"
                   ]
                 }
@@ -56,7 +56,7 @@
         }
       }
     },
-    "DistributionS3Origin115FD918D": {
+    "DistributionOrigin1S3Origin5F5C0696": {
       "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
       "Properties": {
         "CloudFrontOriginAccessIdentityConfig": {
@@ -92,7 +92,7 @@
                     [
                       "origin-access-identity/cloudfront/",
                       {
-                        "Ref": "DistributionS3Origin115FD918D"
+                        "Ref": "DistributionOrigin1S3Origin5F5C0696"
                       }
                     ]
                   ]

@@ -2,7 +2,7 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Lazy, Resource, Stack, Token, Duration } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
-import { Origin } from './origin';
+import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
 
 /**
@@ -51,6 +51,10 @@ export interface DistributionAttributes {
    * @attribute
    */
   readonly distributionId: string;
+}
+
+interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
+  readonly origin: IOrigin;
 }
 
 /**
@@ -127,7 +131,7 @@ export class Distribution extends Resource implements IDistribution {
 
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
-  private readonly origins: Set<Origin> = new Set<Origin>();
+  private readonly boundOrigins: BoundOrigin[] = [];
 
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: acm.ICertificate;
@@ -142,8 +146,8 @@ export class Distribution extends Resource implements IDistribution {
       }
     }
 
-    this.defaultBehavior = new CacheBehavior({ pathPattern: '*', ...props.defaultBehavior });
-    this.addOrigin(this.defaultBehavior.origin);
+    const originId = this.addOrigin(props.defaultBehavior.origin);
+    this.defaultBehavior = new CacheBehavior(originId, { pathPattern: '*', ...props.defaultBehavior });
     if (props.additionalBehaviors) {
       Object.entries(props.additionalBehaviors).forEach(([pathPattern, behaviorOptions]) => {
         this.addBehavior(pathPattern, behaviorOptions.origin, behaviorOptions);
@@ -172,26 +176,38 @@ export class Distribution extends Resource implements IDistribution {
    * Adds a new behavior to this distribution for the given pathPattern.
    *
    * @param pathPattern the path pattern (e.g., 'images/*') that specifies which requests to apply the behavior to.
+   * @param origin the origin to use for this behavior
    * @param behaviorOptions the options for the behavior at this path.
    */
-  public addBehavior(pathPattern: string, origin: Origin, behaviorOptions: AddBehaviorOptions = {}) {
+  public addBehavior(pathPattern: string, origin: IOrigin, behaviorOptions: AddBehaviorOptions = {}) {
     if (pathPattern === '*') {
       throw new Error('Only the default behavior can have a path pattern of \'*\'');
     }
-    this.additionalBehaviors.push(new CacheBehavior({ pathPattern, origin, ...behaviorOptions }));
-    this.addOrigin(origin);
+    const originId = this.addOrigin(origin);
+    this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
   }
 
-  private addOrigin(origin: Origin) {
-    if (!this.origins.has(origin)) {
-      this.origins.add(origin);
-      origin.bind(this, { originIndex: this.origins.size });
+  private addOrigin(origin: IOrigin): string {
+    const existingOrigin = this.boundOrigins.find(boundOrigin => boundOrigin.origin === origin);
+    if (existingOrigin) {
+      return existingOrigin.originId;
+    } else {
+      const originIndex = this.boundOrigins.length + 1;
+      const scope = new Construct(this, `Origin${originIndex}`);
+      const originId = scope.node.uniqueId;
+      const originBindConfig = origin.bind(scope, { originId });
+      this.boundOrigins.push({ origin, originId, ...originBindConfig });
+      return originId;
     }
   }
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
     const renderedOrigins: CfnDistribution.OriginProperty[] = [];
-    this.origins.forEach(origin => renderedOrigins.push(origin.renderOrigin()));
+    this.boundOrigins.forEach(boundOrigin => {
+      if (boundOrigin.originProperty) {
+        renderedOrigins.push(boundOrigin.originProperty);
+      }
+    });
     return renderedOrigins;
   }
 
@@ -229,7 +245,6 @@ export class Distribution extends Resource implements IDistribution {
       minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2018,
     };
   }
-
 }
 
 /**
@@ -443,5 +458,5 @@ export interface BehaviorOptions extends AddBehaviorOptions {
   /**
    * The origin that you want CloudFront to route requests to when they match this behavior.
    */
-  readonly origin: Origin;
+  readonly origin: IOrigin;
 }
