@@ -4,8 +4,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import { CfnCapacityProvider } from './ecs.generated';
 import { ICluster, AddCapacityOptions } from './cluster';
+import { CfnCapacityProvider } from './ecs.generated';
 
 /**
  * Represents the CapacityProvider
@@ -177,8 +177,23 @@ export class CapacityProvider extends cdk.Resource implements ICapacityProvider 
  * The capacity provider strategy to use by default for the cluster
  */
 export interface CapacityProviderStrategy {
+  /**
+   * The capacity provider
+   */
   readonly capacityProvider: ICapacityProvider;
+
+  /**
+   * The `weight` value designates the relative percentage of the total number of tasks launched that should
+   * use the specified capacity provider.
+   */
   readonly weight: number;
+
+  /**
+   * The base value designates how many tasks, at a minimum, to run on the specified capacity provider.
+   * Only one capacity provider in a capacity provider strategy can have a base defined.
+   *
+   * @default  - no base value
+   */
   readonly base?: number;
 }
 
@@ -186,17 +201,28 @@ export interface CapacityProviderStrategy {
  * Properties of the CapacityProviderConfiguration construct
  */
 export interface CapacityProviderConfigurationProps {
+  /**
+   * the cluster for the capacity providers
+   */
   readonly cluster: ICluster;
+
+  /**
+   * the capacity provisers to be configured with
+   */
   readonly capacityProvider: ICapacityProvider[];
+
+  /**
+   * default strategy for each capacity provider
+   */
   readonly defaultStrategy: CapacityProviderStrategy[];
 }
 
 /**
  * capacity provider configurations for the cluster
  */
-export class CapacityProviderConfiguration extends cdk.Resource {
-  constructor(stack: cdk.Construct, id: string, props: CapacityProviderConfigurationProps ) {
-    super(stack, id)
+export class CapacityProviderConfiguration extends cdk.Construct {
+  constructor(scope: cdk.Construct, id: string, props: CapacityProviderConfigurationProps ) {
+    super(scope, id);
 
     new cr.AwsCustomResource(this, 'CapacityProviderConfiguration', {
       onUpdate: {
@@ -209,11 +235,11 @@ export class CapacityProviderConfiguration extends cdk.Resource {
             capacityProvider: s.capacityProvider.capacityProviderName,
             base: s.base,
             weight: s.weight,
-          }))
+          })),
         },
-        physicalResourceId: cr.PhysicalResourceId.of(id)
+        physicalResourceId: cr.PhysicalResourceId.of(id),
       },
-      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE })
-    })
+      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
   }
 }

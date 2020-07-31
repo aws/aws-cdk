@@ -152,12 +152,12 @@ export class Cluster extends Resource implements ICluster {
    * @param options options to create the CapacityProvider
    */
   public addCapacityProvider(id: string, options: CapacityProviderOpts ): CapacityProvider {
-    const asg = this.addCapacity(`${id}-capacity`, options.capacityOptions)
+    const asg = this.addCapacity(`${id}-capacity`, options.capacityOptions);
     const cp = new CapacityProvider(this, `${id}-capacityProvider`, {
       autoscalingGroup: asg,
-      ...options
+      ...options,
     });
-    return cp
+    return cp;
   }
 
   /**

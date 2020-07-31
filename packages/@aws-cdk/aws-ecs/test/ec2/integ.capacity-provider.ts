@@ -5,15 +5,9 @@ import { CapacityProviderConfiguration } from '../../lib/capacity-provider';
 
 const app = new cdk.App();
 
-const env = {
-  region: process.env.CDK_DEFAULT_REGION,
-  account: process.env.CDK_DEFAULT_ACCOUNT,
-};
+const stack = new cdk.Stack(app, 'integ-capacity-provider');
 
-const stack = new cdk.Stack(app, 'integ-capacity-provider2', { env });
-
-// const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1});
-const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { isDefault: true })
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1});
 
 const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -23,7 +17,7 @@ const cp = cluster.addCapacityProvider('CP', {
   },
   managedScaling: true,
   managedTerminationProtection: true,
-})
+});
 
 const cpSpot = cluster.addCapacityProvider('CPSpot', {
   capacityOptions: {
@@ -32,7 +26,7 @@ const cpSpot = cluster.addCapacityProvider('CPSpot', {
   },
   managedScaling: true,
   managedTerminationProtection: true,
-})
+});
 
 new CapacityProviderConfiguration(stack, 'CapacityProviderConfiguration', {
   cluster,
@@ -41,4 +35,4 @@ new CapacityProviderConfiguration(stack, 'CapacityProviderConfiguration', {
     { capacityProvider: cp, weight: 1 },
     { capacityProvider: cpSpot, base: 1, weight: 3 },
   ],
-})
+});
