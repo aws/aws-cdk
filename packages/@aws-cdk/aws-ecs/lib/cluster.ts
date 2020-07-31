@@ -137,11 +137,10 @@ export class Cluster extends Resource implements ICluster {
    */
   public addCapacityProvider(id: string, options: CapacityProviderOpts ): CapacityProvider {
     const asg = this.addCapacity(`${id}-capacity`, options.capacityOptions);
-    const cp = new CapacityProvider(this, `${id}-capacityProvider`, {
+    return new CapacityProvider(this, `${id}-capacityProvider`, {
       autoscalingGroup: asg,
       ...options,
     });
-    return cp;
   }
 
   /**
