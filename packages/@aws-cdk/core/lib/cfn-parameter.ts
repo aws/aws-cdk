@@ -270,11 +270,11 @@ export class CfnParameter extends CfnElement {
   /**
    * Indicates if this parameter is configured with "NoEcho" enabled.
    */
-  public get noEcho(): boolean | undefined {
-    return this._noEcho;
+  public get noEcho(): boolean {
+    return !!this._noEcho;
   }
 
-  public set noEcho(echo: boolean | undefined) {
+  public set noEcho(echo: boolean) {
     this._noEcho = echo;
   }
 
@@ -332,7 +332,7 @@ export class CfnParameter extends CfnElement {
           MaxValue: this.maxValue,
           MinLength: this.minLength,
           MinValue: this.minValue,
-          NoEcho: this.noEcho,
+          NoEcho: this._noEcho,
         },
       },
     };
