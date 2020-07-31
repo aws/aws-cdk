@@ -179,7 +179,6 @@ export class CfnParameter extends CfnElement {
    *
    * @default - No constraints on values allowed for parameter.
    */
-
   public get allowedValues(): string[] | undefined {
     return this._allowedValues;
   }
@@ -271,11 +270,11 @@ export class CfnParameter extends CfnElement {
   /**
    * Indicates if this parameter is configured with "NoEcho" enabled.
    */
-  public get noEcho(): boolean {
-    return !!this._noEcho;
+  public get noEcho(): boolean | undefined {
+    return this._noEcho;
   }
 
-  public set noEcho(echo: boolean) {
+  public set noEcho(echo: boolean | undefined) {
     this._noEcho = echo;
   }
 
@@ -290,8 +289,8 @@ export class CfnParameter extends CfnElement {
    * The parameter value, if it represents a string.
    */
   public get valueAsString(): string {
-    if (!isStringType(this._type)) {
-      throw new Error(`Parameter type (${this._type}) is not a string type`);
+    if (!isStringType(this.type)) {
+      throw new Error(`Parameter type (${this.type}) is not a string type`);
     }
     return Token.asString(this.value);
   }
@@ -300,8 +299,8 @@ export class CfnParameter extends CfnElement {
    * The parameter value, if it represents a string list.
    */
   public get valueAsList(): string[] {
-    if (!isListType(this._type)) {
-      throw new Error(`Parameter type (${this._type}) is not a string list type`);
+    if (!isListType(this.type)) {
+      throw new Error(`Parameter type (${this.type}) is not a string list type`);
     }
     return Token.asList(this.value);
   }
@@ -310,8 +309,8 @@ export class CfnParameter extends CfnElement {
    * The parameter value, if it represents a number.
    */
   public get valueAsNumber(): number {
-    if (!isNumberType(this._type)) {
-      throw new Error(`Parameter type (${this._type}) is not a number type`);
+    if (!isNumberType(this.type)) {
+      throw new Error(`Parameter type (${this.type}) is not a number type`);
     }
     return Token.asNumber(this.value);
   }
@@ -323,17 +322,17 @@ export class CfnParameter extends CfnElement {
     return {
       Parameters: {
         [this.logicalId]: {
-          Type: this._type,
-          Default: this._default,
-          AllowedPattern: this._allowedPattern,
-          AllowedValues: this._allowedValues,
-          ConstraintDescription: this._constraintDescription,
-          Description: this._description,
-          MaxLength: this._maxLength,
-          MaxValue: this._maxValue,
-          MinLength: this._minLength,
-          MinValue: this._minValue,
-          NoEcho: this._noEcho,
+          Type: this.type,
+          Default: this.default,
+          AllowedPattern: this.allowedPattern,
+          AllowedValues: this.allowedValues,
+          ConstraintDescription: this.constraintDescription,
+          Description: this.description,
+          MaxLength: this.maxLength,
+          MaxValue: this.maxValue,
+          MinLength: this.minLength,
+          MinValue: this.minValue,
+          NoEcho: this.noEcho,
         },
       },
     };

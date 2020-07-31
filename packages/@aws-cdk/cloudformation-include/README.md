@@ -110,6 +110,24 @@ Note that [Custom Resources](https://docs.aws.amazon.com/AWSCloudFormation/lates
 will be of type CfnResource, and hence won't need to be casted.
 This holds for any resource that isn't in the CloudFormation schema.
 
+## Parameters
+
+If your template uses [CloudFormation Parameters] (https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const param: core.CfnParameter = cfnTemplate.getParameter('MyParameter');
+```
+
+The `CfnParameter` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+param.default = 'MyDefault';
+```
+
 ## Conditions
 
 If your template uses [CloudFormation Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html),
@@ -144,24 +162,6 @@ and any changes you make to it will be reflected in the resulting template:
 
 ```typescript
 output.value = cfnBucket.attrArn;
-```
-
-## Parameters
-
-If your template uses [CloudFormation Parameters] (https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html),
-you can retrieve them from your template:
-
-```typescript
-import * as core from '@aws-cdk/core';
-
-const param: core.CfnParameter = cfnTemplate.getParameter('MyParameter');
-```
-
-The `CfnParameter` object is mutable,
-and any changes you make to it will be reflected in the resulting template:
-
-```typescript
-param.default = 'MyDefault';
 ```
 
 ## Nested Stacks
