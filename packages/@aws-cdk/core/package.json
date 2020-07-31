@@ -189,7 +189,7 @@
   },
   "stability": "stable",
   "nozem": {
-    "ostools": ["rm", "tar", "grep", "xargs", "head", "cut", "touch", "diff"]
+    "ostools": ["rm", "tar", "grep", "xargs", "head", "cut", "touch", "diff", "echo"]
   },
   "awscdkio": {
     "announce": false
