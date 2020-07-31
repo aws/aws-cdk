@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
-import { arrayWith, objectLike } from '@aws-cdk/assert';
+import { objectLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Duration, Stack } from '@aws-cdk/core';
+import { App, Duration, Lazy, Stack } from '@aws-cdk/core';
 import * as synthetics from '../lib';
 
 let stack: Stack;
@@ -10,64 +10,65 @@ beforeEach(() => {
   stack = new Stack(new App(), 'canaries');
 });
 
-test('Create a basic canary', () => {
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {});
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'canariescanary8f7842',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
-  });
-});
-
-test('Canary can have specified name', () => {
+test('Basic canary properties work', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
+    successRetentionPeriod: Duration.days(10),
+    failureRetentionPeriod: Duration.days(10),
+    startAfterCreation: false,
+    timeToLive: Duration.minutes(30),
+    runtime: synthetics.Runtime.SYN_1_0,
   });
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
     Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
+    SuccessRetentionPeriod: 10,
+    FailureRetentionPeriod: 10,
+    StartCanaryAfterCreation: false,
+    Schedule: objectLike({ DurationInSeconds: '1800'}),
     RuntimeVersion: 'syn-1.0',
   });
 });
 
-test('Canary returns error when name is specified incorrectly', () => {
-  expect(() => new synthetics.Canary(stack, 'Canary', {canaryName: 'myCanary'})).toThrowError('Canary Name must be lowercase, numbers, hyphens, or underscores (no spaces)');
+test('Canary can have with generated name', () => {
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {});
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    Name: 'canariescanary8195898',
+  });
 });
 
-test('Canary name must be less than 21 characters', () => {
-  expect(() => new synthetics.Canary(stack, 'Canary', {canaryName: 'canary-name-super-long'})).toThrowError('Canary Name must be less than 21 characters');
+test('Name validation does not fail when using Tokens', () => {
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: Lazy.stringValue({produce: () => 'myCanary'}),
+  });
+
+  // THEN: no exception
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary');
 });
 
-test('Canary can have specified IAM role', () => {
+test('Throws when name is specified incorrectly', () => {
+  expect(() => new synthetics.Canary(stack, 'Canary', {canaryName: 'myCanary'}))
+    .toThrowError('Canary name must be lowercase, numbers, hyphens, or underscores (no spaces) (myCanary)');
+});
+
+test('Throws when name has more than 21 characters', () => {
+  expect(() => new synthetics.Canary(stack, 'Canary', {canaryName: 'a'.repeat(22)}))
+    .toThrowError('Canary name is too large, must be <= 21 characters, but is 22');
+});
+
+test('An existing role can be specified instead of auto-created', () => {
   // GIVEN
   const role = new iam.Role(stack, 'role', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   });
 
-  role.addToPolicy(new iam.PolicyStatement({
-    resources: ['*'],
-    actions: [
-      's3:PutObject',
-      's3:GetBucketLocation',
-      's3:ListAllMyBuckets',
-      'cloudwatch:PutMetricData',
-      'logs:CreateLogGroup',
-      'logs:CreateLogStream',
-      'logs:PutLogEvents',
-    ],
-  }));
+  // role.addToPolicy(/* required permissions per the documentation */);
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -77,43 +78,28 @@ test('Canary can have specified IAM role', () => {
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
-    ExecutionRoleArn: objectLike({
-      'Fn::GetAtt': arrayWith('roleC7B7E775'),
-    }),
+    ExecutionRoleArn: stack.resolve(role.roleArn),
   });
 });
 
-test('Canary can have specified s3 Bucket', () => {
+test('An existing bucket can be specified instead of auto-created', () => {
   // GIVEN
   const bucket = new s3.Bucket(stack, 'mytestbucket');
+  const prefix = 'canary';
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
-    artifactBucket: bucket,
+    artifactsBucket: { bucket, prefix },
   });
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
-    ArtifactS3Location: objectLike({
-      'Fn::Join': arrayWith(arrayWith('s3://', {Ref: 'mytestbucket8DC16178'})),
-    }),
+    ArtifactS3Location: stack.resolve(bucket.s3UrlForObject(prefix)),
   });
 });
 
-test('Canary can set schedule with Rate', () => {
+test('Schedule can be set with Rate', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
@@ -122,36 +108,24 @@ test('Canary can set schedule with Rate', () => {
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
     Schedule: objectLike({ Expression: 'rate(3 minutes)'}),
   });
 });
 
-test('Canary can set schedule with Expression', () => {
+test('Schedule can be set with Expression', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
-    schedule: synthetics.Schedule.expression('rate(3 minutes)'),
+    schedule: synthetics.Schedule.expression('rate(1 hour)'),
   });
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
-    Schedule: objectLike({ Expression: 'rate(3 minutes)'}),
+    Schedule: objectLike({ Expression: 'rate(1 hour)'}),
   });
 });
 
-test('Canary can set schedule to run once', () => {
+test('Schedule can be set to run once', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
@@ -160,92 +134,14 @@ test('Canary can set schedule to run once', () => {
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
     Schedule: objectLike({ Expression: 'rate(0 minutes)'}),
   });
 });
 
-test('Schedule fails when rate above 60 minutes', () => {
-  expect(() => new synthetics.Canary(stack, 'Canary', {schedule: synthetics.Schedule.rate(Duration.minutes(61))})).toThrowError('Schedule duration must be either 0 (for a single run) or between 1 and 60 minutes');
+test('Throws when rate above 60 minutes', () => {
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    schedule: synthetics.Schedule.rate(Duration.minutes(61))},
+  ))
+    .toThrowError('Schedule duration must be between 1 and 60 minutes');
 });
 
-test('Canary can set timeToLive', () => {
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'mycanary',
-    timeToLive: Duration.minutes(30),
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
-    Schedule: objectLike({ DurationInSeconds: '1800'}),
-  });
-});
-
-test('Canary can disable startCanaryAfterCreation', () => {
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'mycanary',
-    startAfterCreation: false,
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
-    StartCanaryAfterCreation: false,
-  });
-});
-
-test('Canary can set successRetentionPeriod', () => {
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'mycanary',
-    successRetentionPeriod: Duration.days(1),
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
-    SuccessRetentionPeriod: 1,
-  });
-});
-
-test('Canary can set failureRetentionPeriod', () => {
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'mycanary',
-    failureRetentionPeriod: Duration.days(1),
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'mycanary',
-    Code: {
-      Handler: 'index.handler',
-      Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-    },
-    RuntimeVersion: 'syn-1.0',
-    FailureRetentionPeriod: 1,
-  });
-});

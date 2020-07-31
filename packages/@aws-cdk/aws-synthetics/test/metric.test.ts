@@ -7,52 +7,34 @@ beforeEach(() => {
   stack = new Stack();
 });
 
-test('Add metric success percent', () => {
+test('.metricXxx() methods can be used to obtain Metrics for the canary', () => {
   // GIVEN
   const canary = new synthetics.Canary(stack, 'mycanary', {
   });
 
   // WHEN
-  const metric = canary.metricSuccessPercent();
+  const metricSuccess = canary.metricSuccessPercent();
+  const metricFailed = canary.metricFailed();
+  const metricDuration = canary.metricDuration();
 
   // THEN
-  expect(metric).toEqual({
+  expect(metricSuccess).toEqual({
     period: { amount: 5, unit: { inMillis: 60000, label: 'minutes' } },
     dimensions: { CanaryName: canary.canaryName },
     namespace: 'CloudWatchSynthetics',
     metricName: 'SuccessPercent',
     statistic: 'Average',
   });
-});
 
-test('Add metric failed', () => {
-  // GIVEN
-  const canary = new synthetics.Canary(stack, 'mycanary', {
-  });
-
-  // WHEN
-  const metric = canary.metricFailed();
-
-  // THEN
-  expect(metric).toEqual({
+  expect(metricFailed).toEqual({
     period: { amount: 5, unit: { inMillis: 60000, label: 'minutes' } },
     dimensions: { CanaryName: canary.canaryName },
     namespace: 'CloudWatchSynthetics',
     metricName: 'Failed',
     statistic: 'Average',
   });
-});
 
-test('Add metric duration', () => {
-  // GIVEN
-  const canary = new synthetics.Canary(stack, 'mycanary', {
-  });
-
-  // WHEN
-  const metric = canary.metricDuration();
-
-  // THEN
-  expect(metric).toEqual({
+  expect(metricDuration).toEqual({
     period: { amount: 5, unit: { inMillis: 60000, label: 'minutes' } },
     dimensions: { CanaryName: canary.canaryName },
     namespace: 'CloudWatchSynthetics',

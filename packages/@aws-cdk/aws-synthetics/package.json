@@ -75,7 +75,8 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/aws-cloudwatch": "0.0.0"
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
@@ -89,10 +90,6 @@
   },
   "awslint": {
     "exclude": [
-      "docs-public-apis:@aws-cdk/aws-synthetics.ICanary",
-      "docs-public-apis:@aws-cdk/aws-synthetics.ICanary",
-      "docs-public-apis:@aws-cdk/aws-synthetics.Canary",
-      "props-physical-name:@aws-cdk/aws-synthetics.CanaryProps",
       "construct-ctor-props-optional:@aws-cdk/aws-synthetics.Canary"
     ]
   },

@@ -83,7 +83,7 @@ TODO add description
 
 You can configure a CloudWatch Alarm on canary metrics. Metrics are emitted by CloudWatch automatically and can be accessed by the following APIs:
 - `canary.metricSuccessPercent()` - percentage of successful canary runs over a given time
-- `canary.metricDuration()` - how much time each canary run takes
+- `canary.metricDuration()` - how much time each canary run takes, in seconds.
 - `canary.metricFailed()` - number of failed canary runs over a given time
 
 Create an alarm that tracks the canary metric:
