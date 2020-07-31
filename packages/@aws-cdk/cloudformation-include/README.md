@@ -146,6 +146,24 @@ and any changes you make to it will be reflected in the resulting template:
 output.value = cfnBucket.attrArn;
 ```
 
+## Parameters
+
+If your template uses [CloudFormation Parameters] (https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const param: core.CfnParameter = cfnTemplate.getParameter('MyParameter');
+```
+
+The `CfnParameter` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+param.default = 'MyDefault';
+```
+
 ## Nested Stacks
 
 This module also support templates that use [nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html).
