@@ -159,3 +159,15 @@ api.grantMutation(role, 'updateExample');
 // For custom types and granular design
 api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```
+
+## AppSync with X-Ray Tracing
+
+```ts
+const api = new appsync.GraphQLApi(stack, 'Api', {
+  name: 'demo',
+  schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+  xrayEnabled: true,
+});
+```
+
+See the  [the AWS documentation](https://docs.aws.amazon.com/appsync/latest/devguide/x-ray-tracing.html) to learn more about AWS AppSync's X-Ray support.
