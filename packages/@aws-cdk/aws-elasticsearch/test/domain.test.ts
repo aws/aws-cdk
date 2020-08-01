@@ -332,7 +332,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricNodes(),
       'Nodes',
-      Statistic.MAXIMUM,
+      Statistic.MINIMUM,
       Duration.hours(1),
     );
   });

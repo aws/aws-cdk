@@ -477,7 +477,7 @@ export interface IDomain extends cdk.IResource {
   /**
    * Metric for the number of nodes.
    *
-   * @default maximum over 1 hour
+   * @default minimum over 1 hour
    */
   metricNodes(props?: MetricOptions): Metric;
 
@@ -807,11 +807,11 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Metric for the number of nodes.
    *
-   * @default maximum over 1 hour
+   * @default minimum over 1 hour
    */
   public metricNodes(props?: MetricOptions): Metric {
     return this.metric('Nodes', {
-      statistic: Statistic.MAXIMUM,
+      statistic: Statistic.MINIMUM,
       period: cdk.Duration.hours(1),
       ...props,
     });
