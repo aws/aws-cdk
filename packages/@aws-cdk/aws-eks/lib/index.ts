@@ -9,3 +9,4 @@ export * from './k8s-resource';
 export * from './fargate-cluster';
 export * from './service-account';
 export * from './managed-nodegroup';
+export * from './service-description';

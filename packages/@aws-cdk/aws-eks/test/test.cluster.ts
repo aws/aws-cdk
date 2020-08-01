@@ -1379,4 +1379,28 @@ export = {
       test.done();
     },
   },
+
+  'describeService'(test: Test) {
+
+    const { stack } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION });
+
+    cluster.describeService('myservice');
+
+    new eks.ServiceDescription(stack, 'ExpectedService', {
+      cluster: cluster,
+      serviceName: 'myservice',
+    });
+
+    const expectedId = 'ExpectedServiceLoadBalancerAttributeDAB697B2';
+    const actualId = 'Cluster1ServicemyserviceDescriptionLoadBalancerAttributeBCB8A179';
+
+    const rawTemplate = expect(stack).value;
+
+    // this comparison makes sure the describeCluster creates the same resource as new ServiceDescription.
+    // the validity of the actual properties is tested in 'test.service-description.ts'
+    test.deepEqual(rawTemplate.Resources[actualId].Properties, rawTemplate.Resources[expectedId].Properties);
+    test.done();
+
+  },
 };

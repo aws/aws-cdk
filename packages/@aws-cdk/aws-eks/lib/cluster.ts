@@ -16,6 +16,7 @@ import { KubernetesResource } from './k8s-resource';
 import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
+import { ServiceDescription } from './service-description';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -574,6 +575,18 @@ export class Cluster extends Resource implements ICluster {
     if (this.kubectlEnabled) {
       this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
     }
+  }
+
+  /**
+   * Describe the service to retrieve runtime information from the cluster.
+   *
+   * @param name The service name.
+   */
+  public describeService(name: string): ServiceDescription {
+    return new ServiceDescription(this, `Service${name}Description`, {
+      cluster: this,
+      serviceName: name,
+    });
   }
 
   /**
