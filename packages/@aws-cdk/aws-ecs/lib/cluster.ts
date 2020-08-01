@@ -4,8 +4,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Construct, Duration, IResource, Resource, Stack, Lazy } from '@aws-cdk/core';
-import { ICapacityProvider, CapacityProviderOpts, CapacityProvider, CapacityProviderConfigurationOpts,
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { CapacityProviderOpts, CapacityProvider, CapacityProviderConfigurationOpts,
   CapacityProviderConfiguration } from './capacity-provider';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
