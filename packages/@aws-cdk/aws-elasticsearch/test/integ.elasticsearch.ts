@@ -7,7 +7,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     new es.Domain(this, 'Domain', {
-      elasticsearchVersion: es.ElasticsearchVersion.ES_VERSION_7_1,
+      elasticsearchVersion: 7.1,
       clusterConfig: {
         masterNodes: 3,
         masterNodeInstanceType: 'm5.large.elasticsearch',

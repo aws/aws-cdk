@@ -256,11 +256,15 @@ export interface DomainProps {
   readonly clusterConfig: ClusterConfig;
 
   /**
-   * The Elasticsearch Version
+   * The Elasticsearch version that your domain will leverage.
    *
-   * @default ElasticsearchVersion.ES_VERSION_7_4
+   * Per https://aws.amazon.com/elasticsearch-service/faqs/, Amazon Elasticsearch Service
+   * currently supports Elasticsearch versions 7.4, 7.1, 6.8, 6.7, 6.5, 6.4, 6.3, 6.2, 6.0,
+   * 5.6, 5.5, 5.3, 5.1, 2.3, and 1.5.
+   *
+   * @default 7.4
    */
-  readonly elasticsearchVersion?: ElasticsearchVersion;
+  readonly elasticsearchVersion?: number;
 
   /**
    * Encryption at rest options for the cluster.
@@ -975,8 +979,17 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error('Master and data node instance types must end with ".elasticsearch".');
     }
 
-    const elasticsearchVersion = props.elasticsearchVersion ?? ElasticsearchVersion.ES_VERSION_7_4;
-    const versionNumber = parseFloat(elasticsearchVersion.toString());
+    const elasticsearchVersion = props.elasticsearchVersion ?? 7.4;
+    if (
+      elasticsearchVersion <= 7.4 &&
+      ![
+        1.5, 2.3, 5.1, 5.3, 5.5, 5.6, 6.0,
+        6.2, 6.3, 6.4, 6.5, 6.7, 6.8, 7.1, 7.4,
+      ].includes(elasticsearchVersion)
+    ) {
+      throw new Error(`Unknown Elasticsearch version: ${elasticsearchVersion}`);
+    }
+
     const encryptionAtRestEnabled = props.encryptionAtRestOptions?.enabled ?? (props.encryptionAtRestOptions?.kmsKey != null);
     const ebsEnabled = props.ebsOptions != null;
 
@@ -995,7 +1008,7 @@ export class Domain extends DomainBase implements IDomain {
 
     // Validate feature support for the given Elasticsearch version, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-features-by-version.html
-    if (versionNumber < 5.1) {
+    if (elasticsearchVersion < 5.1) {
       if (
         props.logPublishingOptions?.slowIndexLogEnabled
         || props.logPublishingOptions?.appLogEnabled
@@ -1014,7 +1027,7 @@ export class Domain extends DomainBase implements IDomain {
       }
     }
 
-    if (versionNumber < 6.0) {
+    if (elasticsearchVersion < 6.0) {
       if (props.nodeToNodeEncryptionEnabled) {
         throw new Error('Node-to-node encryption requires Elasticsearch version 6.0 or later.');
       }
@@ -1030,7 +1043,7 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error('M3, R3, and T2 instance types do not support encryption of data at rest.');
     }
 
-    if (isInstanceType('t2.micro') && versionNumber > 2.3) {
+    if (isInstanceType('t2.micro') && elasticsearchVersion > 2.3) {
       throw new Error('The t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3.');
     }
 
@@ -1098,7 +1111,7 @@ export class Domain extends DomainBase implements IDomain {
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
-      elasticsearchVersion: elasticsearchVersion,
+      elasticsearchVersion: elasticsearchVersion.toString(),
       elasticsearchClusterConfig: {
         dedicatedMasterEnabled: props.clusterConfig.masterNodes != null,
         dedicatedMasterCount: props.clusterConfig.masterNodes,
@@ -1161,46 +1174,6 @@ export class Domain extends DomainBase implements IDomain {
 
     this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
   }
-}
-
-/**
- * The Elasticsearch version that your domain will leverage.
- *
- * Per https://aws.amazon.com/elasticsearch-service/faqs/, Amazon Elasticsearch Service
- * currently supports Elasticsearch versions 7.4, 7.1, 6.8, 6.7, 6.5, 6.4, 6.3, 6.2, 6.0,
- * 5.6, 5.5, 5.3, 5.1, 2.3, and 1.5.
- */
-export enum ElasticsearchVersion {
-  /** Elasticsearch Version 7.4 */
-  ES_VERSION_7_4 = '7.4',
-  /** Elasticsearch Version 7.1 */
-  ES_VERSION_7_1 = '7.1',
-  /** Elasticsearch Version 6.8 */
-  ES_VERSION_6_8 = '6.8',
-  /** Elasticsearch Version 6.7 */
-  ES_VERSION_6_7 = '6.7',
-  /** Elasticsearch Version 6.5 */
-  ES_VERSION_6_5 = '6.5',
-  /** Elasticsearch Version 6.4 */
-  ES_VERSION_6_4 = '6.4',
-  /** Elasticsearch Version 6.3 */
-  ES_VERSION_6_3 = '6.3',
-  /** Elasticsearch Version 6.2 */
-  ES_VERSION_6_2 = '6.2',
-  /** Elasticsearch Version 6.0 */
-  ES_VERSION_6_0 = '6.0',
-  /** Elasticsearch Version 5.6 */
-  ES_VERSION_5_6 = '5.6',
-  /** Elasticsearch Version 5.5 */
-  ES_VERSION_5_5 = '5.5',
-  /** Elasticsearch Version 5.3 */
-  ES_VERSION_5_3 = '5.3',
-  /** Elasticsearch Version 5.1 */
-  ES_VERSION_5_1 = '5.1',
-  /** Elasticsearch Version 2.3 */
-  ES_VERSION_2_3 = '2.3',
-  /** Elasticsearch Version 1.5 */
-  ES_VERSION_1_5 = '1.5',
 }
 
 /**
