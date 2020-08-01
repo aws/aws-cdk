@@ -10,9 +10,9 @@ class TestStack extends Stack {
       elasticsearchVersion: es.ElasticsearchVersion.ES_VERSION_7_1,
       clusterConfig: {
         masterNodes: 3,
-        masterNodeInstanceType: 'm4.large.elasticsearch',
+        masterNodeInstanceType: 'm5.large.elasticsearch',
         dataNodes: 3,
-        dataNodeInstanceType: 'm4.large.elasticsearch',
+        dataNodeInstanceType: 'm5.large.elasticsearch',
       },
       ebsOptions: {
         volumeSize: 10,

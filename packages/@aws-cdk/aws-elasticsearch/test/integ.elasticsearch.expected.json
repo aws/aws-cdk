@@ -99,9 +99,9 @@
         "ElasticsearchClusterConfig": {
           "DedicatedMasterCount": 3,
           "DedicatedMasterEnabled": true,
-          "DedicatedMasterType": "m4.large.elasticsearch",
+          "DedicatedMasterType": "m5.large.elasticsearch",
           "InstanceCount": 3,
-          "InstanceType": "m4.large.elasticsearch",
+          "InstanceType": "m5.large.elasticsearch",
           "ZoneAwarenessEnabled": false
         },
         "ElasticsearchVersion": "7.1",

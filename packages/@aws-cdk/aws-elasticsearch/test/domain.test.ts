@@ -167,15 +167,15 @@ describe('log groups', () => {
 describe('grants', () => {
 
   test('"grantRead" allows read actions associated with this domain resource', () => {
-    testGrant(readActions, (p, t) => t.grantRead(p));
+    testGrant(readActions, (p, d) => d.grantRead(p));
   });
 
   test('"grantWrite" allows write actions associated with this domain resource', () => {
-    testGrant(writeActions, (p, t) => t.grantWrite(p));
+    testGrant(writeActions, (p, d) => d.grantWrite(p));
   });
 
   test('"grantReadWrite" allows read and write actions associated with this domain resource', () => {
-    testGrant(readWriteActions, (p, t) => t.grantReadWrite(p));
+    testGrant(readWriteActions, (p, d) => d.grantReadWrite(p));
   });
 
   test('"grantIndexRead" allows read actions associated with an index in this domain resource', () => {
