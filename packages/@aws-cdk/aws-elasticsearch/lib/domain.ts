@@ -979,15 +979,15 @@ export class Domain extends DomainBase implements IDomain {
     const encryptionAtRestEnabled = props.encryptionAtRestOptions?.enabled ?? (props.encryptionAtRestOptions?.kmsKey != null);
     const ebsEnabled = props.ebsOptions != null;
 
-    const isInstanceType = function(instanceType: string) : Boolean {
+    function isInstanceType(instanceType: string): Boolean {
       return masterInstanceType.startsWith(instanceType) || dataInstanceType.startsWith(instanceType);
     };
 
-    const isSomeInstanceType = function(...instanceTypes: string[]) : Boolean {
+    function isSomeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(isInstanceType);
     };
 
-    const isEveryInstanceType = function(...instanceTypes: string[]) : Boolean {
+    function isEveryInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.every(isInstanceType);
     };
 
