@@ -989,7 +989,8 @@ export class Domain extends DomainBase implements IDomain {
     };
 
     function isEveryInstanceType(...instanceTypes: string[]): Boolean {
-      return instanceTypes.every(isInstanceType);
+      return instanceTypes.some(t => masterInstanceType.startsWith(t))
+        && instanceTypes.some(t => dataInstanceType.startsWith(t));
     };
 
     // Validate feature support for the given Elasticsearch version, per
