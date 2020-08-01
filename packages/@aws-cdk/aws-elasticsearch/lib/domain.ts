@@ -288,7 +288,8 @@ export interface DomainProps {
 
   /**
    * The hour in UTC during which the service takes an automated daily snapshot
-   * of the indices in the Amazon ES domain. Requires Elasticsearch version 5.3 and later.
+   * of the indices in the Amazon ES domain. Only applies for Elasticsearch
+   * versions below 5.3.
    *
    * @default - Hourly automated snapshots not used
    */
@@ -1009,12 +1010,6 @@ export class Domain extends DomainBase implements IDomain {
       }
       if (isSomeInstanceType('c5', 'i3', 'm5', 'r5')) {
         throw new Error('C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later.');
-      }
-    }
-
-    if (versionNumber < 5.3) {
-      if (props.automatedSnapshotStartHour) {
-        throw new Error('Hourly automated snapshots requires Elasticsearch version 5.3 or later.');
       }
     }
 
