@@ -32,3 +32,13 @@ const publishAppRole = new Role(stack, 'PublishAppRole', {
 const profilingGroup = new ProfilingGroup(stack, 'MyProfilingGroup');
 profilingGroup.grantPublish(publishAppRole);
 ```
+
+### Compute Platform Configuration
+
+Code Guru Profiler supports multiple compute environments and this can be configured while setting up a Profiling Group
+
+```ts
+const profilingGroup = new ProfilingGroup(stack, 'MyProfilingGroup', {
+  computePlatform: ComputePlatform.AWS_LAMBDA,
+});
+```
