@@ -13,7 +13,8 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "experimentalDecorators": true,
-    "typeRoots": ["./node_modules/@types"]
+    "typeRoots": ["./node_modules/@types"],
+    "forceConsistentCasingInFileNames": true
   },
   "exclude": ["cdk.out"]
 }
