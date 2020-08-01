@@ -1010,11 +1010,15 @@ export class Domain extends DomainBase implements IDomain {
       if (isSomeInstanceType('c5', 'i3', 'm5', 'r5')) {
         throw new Error('C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later.');
       }
-    } else if (versionNumber < 5.3) {
+    }
+
+    if (versionNumber < 5.3) {
       if (props.automatedSnapshotStartHour) {
         throw new Error('Hourly automated snapshots requires Elasticsearch version 5.3 or later.');
       }
-    } else if (versionNumber < 6.0) {
+    }
+
+    if (versionNumber < 6.0) {
       if (props.nodeToNodeEncryptionEnabled) {
         throw new Error('Node-to-node encryption requires Elasticsearch version 6.0 or later.');
       }

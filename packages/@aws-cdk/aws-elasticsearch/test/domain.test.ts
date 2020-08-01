@@ -555,8 +555,12 @@ describe('custom error responses', () => {
 
   test('error when automated snapshots are enabled for elasticsearch version < 5.3', () => {
     expect(() => new Domain(stack, 'Domain1', {
-      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_5_1,
-      clusterConfig: defaultClusterConfig,
+      elasticsearchVersion: ElasticsearchVersion.ES_VERSION_2_3,
+      clusterConfig: {
+        ...defaultClusterConfig,
+        masterNodeInstanceType: 'm4.2xlarge.elasticsearch',
+        dataNodeInstanceType: 'm4.2xlarge.elasticsearch',
+      },
       automatedSnapshotStartHour: 2,
     })).toThrow(/Hourly automated snapshots requires Elasticsearch version 5.3 or later/);
   });
