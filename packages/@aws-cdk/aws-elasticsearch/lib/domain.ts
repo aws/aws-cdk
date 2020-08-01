@@ -332,16 +332,8 @@ export interface IDomain extends cdk.IResource {
   readonly domainEndpoint: string;
 
   /**
-   * Optional KMS encryption key associated with this domain.
-   */
-  readonly encryptionKey?: kms.IKey;
-
-  /**
    * Grant read permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
-   *
-   * If encryption is used, permission to use the key to decrypt the contents
-   * of the domain will also be granted to the same principal.
    *
    * @param identity The principal
    */
@@ -351,9 +343,6 @@ export interface IDomain extends cdk.IResource {
    * Grant write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to encrypt the contents
-   * of the domain will also be granted to the same principal.
-   *
    * @param identity The principal
    */
   grantWrite(identity: iam.IGrantable): iam.Grant;
@@ -362,9 +351,6 @@ export interface IDomain extends cdk.IResource {
    * Grant read/write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to encrypt and decrypt the
-   * contents of the domain will also be granted to the same principal.
-   *
    * @param identity The principal
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant;
@@ -372,9 +358,6 @@ export interface IDomain extends cdk.IResource {
   /**
    * Grant read permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
-   *
-   * If encryption is used, permission to use the key to decrypt the contents
-   * of the index will also be granted to the same principal.
    *
    * @param index The index to grant permissions for
    * @param identity The principal
@@ -385,9 +368,6 @@ export interface IDomain extends cdk.IResource {
    * Grant write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to encrypt the contents
-   * of the index will also be granted to the same principal.
-   *
    * @param index The index to grant permissions for
    * @param identity The principal
    */
@@ -396,9 +376,6 @@ export interface IDomain extends cdk.IResource {
   /**
    * Grant read/write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
-   *
-   * If encryption is used, permission to use the key to encrypt/decrypt the contents
-   * of the index will also be granted to the same principal.
    *
    * @param index The index to grant permissions for
    * @param identity The principal
@@ -409,9 +386,6 @@ export interface IDomain extends cdk.IResource {
    * Grant read permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to decrypt the contents
-   * of the path will also be granted to the same principal.
-   *
    * @param path The path to grant permissions for
    * @param identity The principal
    */
@@ -421,9 +395,6 @@ export interface IDomain extends cdk.IResource {
    * Grant write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to encrypt the contents
-   * of the path will also be granted to the same principal.
-   *
    * @param path The path to grant permissions for
    * @param identity The principal
    */
@@ -432,9 +403,6 @@ export interface IDomain extends cdk.IResource {
   /**
    * Grant read/write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
-   *
-   * If encryption is used, permission to use the key to encrypt/decrypt the contents
-   * of the path will also be granted to the same principal.
    *
    * @param path The path to grant permissions for
    * @param identity The principal
@@ -562,16 +530,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   public abstract readonly domainEndpoint: string;
 
   /**
-   * Optional KMS encryption key associated with this domain.
-   */
-  public abstract readonly encryptionKey?: kms.IKey;
-
-  /**
    * Grant read permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
-   *
-   * If encryption is used, permission to use the key to decrypt the contents
-   * of the domain will also be granted to the same principal.
    *
    * @param identity The principal
    */
@@ -579,7 +539,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
     return this.grant(
       identity,
       perms.ES_READ_ACTIONS,
-      perms.KEY_READ_ACTIONS,
       this.domainArn,
       `${this.domainArn}/*`,
     );
@@ -589,16 +548,12 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to encrypt the contents
-   * of the domain will also be granted to the same principal.
-   *
    * @param identity The principal
    */
   grantWrite(identity: iam.IGrantable): iam.Grant {
     return this.grant(
       identity,
       perms.ES_WRITE_ACTIONS,
-      perms.KEY_WRITE_ACTIONS,
       this.domainArn,
       `${this.domainArn}/*`,
     );
@@ -608,16 +563,12 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read/write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to encrypt and decrypt the
-   * contents of the domain will also be granted to the same principal.
-   *
    * @param identity The principal
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant {
     return this.grant(
       identity,
       perms.ES_READ_WRITE_ACTIONS,
-      perms.KEY_READ_WRITE_ACTIONS,
       this.domainArn,
       `${this.domainArn}/*`,
     );
@@ -627,9 +578,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to decrypt the contents
-   * of the index will also be granted to the same principal.
-   *
    * @param index The index to grant permissions for
    * @param identity The principal
    */
@@ -637,7 +585,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
     return this.grant(
       identity,
       perms.ES_READ_ACTIONS,
-      perms.KEY_READ_ACTIONS,
       `${this.domainArn}/${index}`,
       `${this.domainArn}/${index}/*`,
     );
@@ -647,9 +594,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to encrypt the contents
-   * of the index will also be granted to the same principal.
-   *
    * @param index The index to grant permissions for
    * @param identity The principal
    */
@@ -657,7 +601,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
     return this.grant(
       identity,
       perms.ES_WRITE_ACTIONS,
-      perms.KEY_WRITE_ACTIONS,
       `${this.domainArn}/${index}`,
       `${this.domainArn}/${index}/*`,
     );
@@ -667,9 +610,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read/write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to encrypt/decrypt the contents
-   * of the index will also be granted to the same principal.
-   *
    * @param index The index to grant permissions for
    * @param identity The principal
    */
@@ -677,7 +617,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
     return this.grant(
       identity,
       perms.ES_READ_WRITE_ACTIONS,
-      perms.KEY_READ_WRITE_ACTIONS,
       `${this.domainArn}/${index}`,
       `${this.domainArn}/${index}/*`,
     );
@@ -687,9 +626,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to decrypt the contents
-   * of the path will also be granted to the same principal.
-   *
    * @param path The path to grant permissions for
    * @param identity The principal
    */
@@ -697,7 +633,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
     return this.grant(
       identity,
       perms.ES_READ_ACTIONS,
-      perms.KEY_READ_ACTIONS,
       `${this.domainArn}/${path}`,
     );
   }
@@ -706,9 +641,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to encrypt the contents
-   * of the path will also be granted to the same principal.
-   *
    * @param path The path to grant permissions for
    * @param identity The principal
    */
@@ -716,7 +648,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
     return this.grant(
       identity,
       perms.ES_WRITE_ACTIONS,
-      perms.KEY_WRITE_ACTIONS,
       `${this.domainArn}/${path}`,
     );
   }
@@ -725,9 +656,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read/write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
-   * If encryption is used, permission to use the key to encrypt/decrypt the contents
-   * of the path will also be granted to the same principal.
-   *
    * @param path The path to grant permissions for
    * @param identity The principal
    */
@@ -735,7 +663,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
     return this.grant(
       identity,
       perms.ES_READ_WRITE_ACTIONS,
-      perms.KEY_READ_WRITE_ACTIONS,
       `${this.domainArn}/${path}`,
     );
   }
@@ -934,7 +861,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   private grant(
     grantee: iam.IGrantable,
     domainActions: string[],
-    keyActions: string[],
     resourceArn: string,
     ...otherResourceArns: string[]
   ): iam.Grant {
@@ -946,10 +872,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
       resourceArns,
       scope: this,
     });
-
-    if (this.encryptionKey && keyActions && keyActions.length !== 0) {
-      this.encryptionKey.grant(grantee, ...keyActions);
-    }
 
     return grant;
   }
@@ -974,13 +896,6 @@ export interface DomainAttributes {
    * The domain endpoint of the Elasticsearch domain.
    */
   readonly domainEndpoint: string;
-
-  /**
-   * Optional KMS encryption key associated with this domain.
-   *
-   * @default no encryption key
-   */
-  readonly encryptionKey?: kms.IKey;
 }
 
 
@@ -1027,7 +942,6 @@ export class Domain extends DomainBase implements IDomain {
       public readonly domainArn = attrs.domainArn;
       public readonly domainName = attrs.domainName;
       public readonly domainEndpoint = attrs.domainEndpoint;
-      public readonly encryptionKey = attrs.encryptionKey;
 
       constructor() { super(scope, id); }
     };
@@ -1036,7 +950,6 @@ export class Domain extends DomainBase implements IDomain {
   public readonly domainArn: string;
   public readonly domainName: string;
   public readonly domainEndpoint: string;
-  public readonly encryptionKey?: kms.IKey;
 
 
   private readonly domain: CfnDomain;
@@ -1239,7 +1152,6 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.domainName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName); }
 
-    this.encryptionKey = props.encryptionAtRestOptions?.kmsKey;
     this.domainArn = this.getResourceArnAttribute(this.domain.attrArn, {
       service: 'es',
       resource: 'domain',
