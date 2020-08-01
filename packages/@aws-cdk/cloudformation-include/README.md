@@ -190,7 +190,6 @@ where the child template pointed to by `https://my-s3-template-source.s3.amazona
   "Resources": {
     "MyBucket": {
       "Type": "AWS::S3::Bucket"
-      }
     }
   }
 }
