@@ -94,7 +94,8 @@
           "UserPoolId": {
             "Ref": "PoolD3F588B8"
           }
-        }
+        },
+        "XrayEnabled": false
       }
     },
     "ApiSchema510EECD7": {

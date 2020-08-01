@@ -91,3 +91,21 @@ test('appsync should configure resolver as unit when pipelineConfig is empty arr
     Kind: 'UNIT',
   });
 });
+
+test('when xray is enabled should not throw an Error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new appsync.GraphQLApi(stack, 'api', {
+    authorizationConfig: {},
+    name: 'api',
+    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+    xrayEnabled: true,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    XrayEnabled: true,
+  });
+});

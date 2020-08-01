@@ -94,7 +94,8 @@
           "UserPoolId": {
             "Ref": "PoolD3F588B8"
           }
-        }
+        },
+        "XrayEnabled": false
       }
     },
     "ApiDefaultAPIKeyApiKey74F5313B": {
