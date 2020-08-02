@@ -292,6 +292,7 @@ export class Role extends Resource implements IRole {
   private defaultPolicy?: Policy;
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
+  private readonly inlinePolicies: { [name: string]: PolicyDocument };
   private immutableRole?: IRole;
 
   constructor(scope: Construct, id: string, props: RoleProps) {
@@ -306,6 +307,7 @@ export class Role extends Resource implements IRole {
 
     this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, externalIds);
     this.managedPolicies.push(...props.managedPolicies || []);
+    this.inlinePolicies = props.inlinePolicies || {};
     this.permissionsBoundary = props.permissionsBoundary;
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(maxSessionDuration);
@@ -318,7 +320,7 @@ export class Role extends Resource implements IRole {
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
-      policies: _flatten(props.inlinePolicies),
+      policies: _flatten(this.inlinePolicies),
       path: props.path,
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       roleName: this.physicalName,
@@ -424,6 +426,9 @@ export class Role extends Resource implements IRole {
   protected validate(): string[] {
     const errors = super.validate();
     errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() || []);
+    for (const policyName of Object.keys(this.inlinePolicies)) {
+      errors.push(...this.inlinePolicies[policyName].validateForIdentityPolicy());
+    }
     return errors;
   }
 }
