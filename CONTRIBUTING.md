@@ -377,7 +377,7 @@ Here are a few useful commands:
  * `scripts/foreach.sh yarn awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
  * `lerna run awslint --no-bail --stream 2> awslint.txt` will run __awslint__ in all modules and collect all results into awslint.txt
  * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
-   evaluate only the rule specified [awslint README](./tools/awslint/README.md)
+   evaluate only the rule specified [awslint README](./packages/awslint/README.md)
    for details on include/exclude rule patterns.
 
 ### cfn2ts
