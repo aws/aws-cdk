@@ -364,7 +364,7 @@ part of the build of all AWS modules in the project and enforces the [AWS
 Construct Library Design Guidelines](./DESIGN_GUIDELINES.md).
 
 For more information about this tool, see the [awslint
-README](./tools/awslint/README.md).
+README](./packages/awslint/README.md).
 
 Generally speaking, if you make any changes which violate an awslint rule, build
 will fail with appropriate messages. All rules are documented and explained in
