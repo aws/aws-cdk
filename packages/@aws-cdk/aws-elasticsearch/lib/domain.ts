@@ -12,6 +12,56 @@ import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import * as perms from './perms';
 
 /**
+ * Supported Elasticsearch Versions
+ */
+export class Version {
+  /** AWS Elasticsearch 1.5 */
+  public static readonly ES_1_5 = '1.5';
+
+  /** AWS Elasticsearch 2.3 */
+  public static readonly ES_2_3 = '2.3';
+
+  /** AWS Elasticsearch 5.1 */
+  public static readonly ES_5_1 = '5.1';
+
+  /** AWS Elasticsearch 5.3 */
+  public static readonly ES_5_3 = '5.3';
+
+  /** AWS Elasticsearch 5.5 */
+  public static readonly ES_5_5 = '5.5';
+
+  /** AWS Elasticsearch 5.6 */
+  public static readonly ES_5_6 = '5.6';
+
+  /** AWS Elasticsearch 6.0 */
+  public static readonly ES_6_0 = '6.0';
+
+  /** AWS Elasticsearch 6.2 */
+  public static readonly ES_6_2 = '6.2';
+
+  /** AWS Elasticsearch 6.3 */
+  public static readonly ES_6_3 = '6.3';
+
+  /** AWS Elasticsearch 6.4 */
+  public static readonly ES_6_4 = '6.4';
+
+  /** AWS Elasticsearch 6.5 */
+  public static readonly ES_6_5 = '6.5';
+
+  /** AWS Elasticsearch 6.7 */
+  public static readonly ES_6_7 = '6.7';
+
+  /** AWS Elasticsearch 6.8 */
+  public static readonly ES_6_8 = '6.8';
+
+  /** AWS Elasticsearch 7.1 */
+  public static readonly ES_7_1 = '7.1';
+
+  /** AWS Elasticsearch 7.4 */
+  public static readonly ES_7_4 = '7.4';
+}
+
+/**
  * Configures the makeup of the cluster such as number of nodes and instance
  * type.
  */
@@ -262,9 +312,9 @@ export interface DomainProps {
    * currently supports Elasticsearch versions 7.4, 7.1, 6.8, 6.7, 6.5, 6.4, 6.3, 6.2, 6.0,
    * 5.6, 5.5, 5.3, 5.1, 2.3, and 1.5.
    *
-   * @default 7.4
+   * @default '7.4'
    */
-  readonly elasticsearchVersion?: number;
+  readonly elasticsearchVersion?: string;
 
   /**
    * Encryption at rest options for the cluster.
@@ -688,7 +738,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   }
 
   /**
-   * Metric for the time the cluster status is red.
+
+  * Metric for the time the cluster status is red.
    *
    * @default maximum over 5 minutes
    */
@@ -979,13 +1030,35 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error('Master and data node instance types must end with ".elasticsearch".');
     }
 
-    const elasticsearchVersion = props.elasticsearchVersion ?? 7.4;
+    const elasticsearchVersion = props.elasticsearchVersion ?? '7.4';
+    const elasticsearchVersionNum = parseVersion(elasticsearchVersion);
+
+    function parseVersion(version: string): number {
+      const firstDot = version.indexOf('.');
+
+      if (firstDot < 1) {
+        throw new Error(`Invalid Elasticsearch version: ${version}. Version string needs to start with major and minor version (x.y).`);
+      }
+
+      const secondDot = version.indexOf('.', firstDot + 1);
+
+      try {
+        if (secondDot == -1) {
+          return parseFloat(version);
+        } else {
+          return parseFloat(version.substring(0, secondDot));
+        }
+      } catch (error) {
+        throw new Error(`Invalid Elasticsearch version: ${version}. Version string needs to start with major and minor version (x.y).`);
+      }
+    }
+
     if (
-      elasticsearchVersion <= 7.4 &&
+      elasticsearchVersionNum <= 7.4 &&
       ![
         1.5, 2.3, 5.1, 5.3, 5.5, 5.6, 6.0,
         6.2, 6.3, 6.4, 6.5, 6.7, 6.8, 7.1, 7.4,
-      ].includes(elasticsearchVersion)
+      ].includes(elasticsearchVersionNum)
     ) {
       throw new Error(`Unknown Elasticsearch version: ${elasticsearchVersion}`);
     }
@@ -1008,7 +1081,7 @@ export class Domain extends DomainBase implements IDomain {
 
     // Validate feature support for the given Elasticsearch version, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-features-by-version.html
-    if (elasticsearchVersion < 5.1) {
+    if (elasticsearchVersionNum < 5.1) {
       if (
         props.logPublishingOptions?.slowIndexLogEnabled
         || props.logPublishingOptions?.appLogEnabled
@@ -1027,7 +1100,7 @@ export class Domain extends DomainBase implements IDomain {
       }
     }
 
-    if (elasticsearchVersion < 6.0) {
+    if (elasticsearchVersionNum < 6.0) {
       if (props.nodeToNodeEncryptionEnabled) {
         throw new Error('Node-to-node encryption requires Elasticsearch version 6.0 or later.');
       }
@@ -1043,7 +1116,7 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error('M3, R3, and T2 instance types do not support encryption of data at rest.');
     }
 
-    if (isInstanceType('t2.micro') && elasticsearchVersion > 2.3) {
+    if (isInstanceType('t2.micro') && elasticsearchVersionNum > 2.3) {
       throw new Error('The t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3.');
     }
 

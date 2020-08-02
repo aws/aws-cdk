@@ -21,7 +21,7 @@ To create an Elasticsearch domain:
 import * as es from '@aws-cdk/aws-elasticsearch';
 
 const domain = new es.Domain(this, 'Domain', {
-    elasticsearchVersion: es.ElasticsearchVersion.ES_VERSION_7_1,
+    elasticsearchVersion: es.Version.ES_7_1,
     clusterConfig: {
         masterNodes: 3,
         masterNodeInstanceType: 'c5.large.elasticsearch',
@@ -74,7 +74,7 @@ The domain can also be created with encryption enabled:
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    elasticsearchVersion: es.ElasticsearchVersion.ES_VERSION_7_4,
+    elasticsearchVersion: es.Version.ES_7_4,
     clusterConfig: {
         masterNodes: 3,
         masterNodeInstanceType: 'c5.large.elasticsearch',

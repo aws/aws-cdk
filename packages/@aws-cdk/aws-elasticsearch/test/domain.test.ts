@@ -3,7 +3,7 @@ import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
 import { Subnet, Vpc, EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack, Duration } from '@aws-cdk/core';
-import { Domain } from '../lib';
+import { Domain, Version } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -33,7 +33,7 @@ const readWriteActions = [
 
 test('minimal example renders correctly', () => {
   new Domain(stack, 'Domain', {
-    elasticsearchVersion: 7.1,
+    elasticsearchVersion: Version.ES_7_1,
     clusterConfig: defaultClusterConfig,
   });
 
@@ -476,28 +476,28 @@ describe('custom error responses', () => {
   test('error when elasticsearchVersion is unsupported/unknown', () => {
     expect(() => new Domain(stack, 'Domain1', {
       clusterConfig: defaultClusterConfig,
-      elasticsearchVersion: 5.4,
+      elasticsearchVersion: '5.4',
     })).toThrow(/Unknown Elasticsearch version: 5\.4/);
   });
 
   test('error when log publishing is enabled for elasticsearch version < 5.1', () => {
     const error = /logs publishing requires Elasticsearch version 5.1 or later/;
     expect(() => new Domain(stack, 'Domain1', {
-      elasticsearchVersion: 2.3,
+      elasticsearchVersion: Version.ES_2_3,
       clusterConfig: defaultClusterConfig,
       logPublishingOptions: {
         appLogEnabled: true,
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain2', {
-      elasticsearchVersion: 1.5,
+      elasticsearchVersion: Version.ES_1_5,
       clusterConfig: defaultClusterConfig,
       logPublishingOptions: {
         slowSearchLogEnabled: true,
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain3', {
-      elasticsearchVersion: 1.5,
+      elasticsearchVersion: Version.ES_1_5,
       clusterConfig: defaultClusterConfig,
       logPublishingOptions: {
         slowIndexLogEnabled: true,
@@ -507,7 +507,7 @@ describe('custom error responses', () => {
 
   test('error when encryption at rest is enabled for elasticsearch version < 5.1', () => {
     expect(() => new Domain(stack, 'Domain1', {
-      elasticsearchVersion: 2.3,
+      elasticsearchVersion: Version.ES_2_3,
       clusterConfig: defaultClusterConfig,
       encryptionAtRestOptions: {
         enabled: true,
@@ -518,7 +518,7 @@ describe('custom error responses', () => {
   test('error when cognito for kibana is enabled for elasticsearch version < 5.1', () => {
     const user = new iam.User(stack, 'user');
     expect(() => new Domain(stack, 'Domain1', {
-      elasticsearchVersion: 2.3,
+      elasticsearchVersion: Version.ES_2_3,
       clusterConfig: defaultClusterConfig,
       cognitoOptions: {
         identityPoolId: 'test-identity-pool-id',
@@ -531,28 +531,28 @@ describe('custom error responses', () => {
   test('error when C5, I3, M5, or R5 instance types are specified for elasticsearch version < 5.1', () => {
     const error = /C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later/;
     expect(() => new Domain(stack, 'Domain1', {
-      elasticsearchVersion: 2.3,
+      elasticsearchVersion: Version.ES_2_3,
       clusterConfig: {
         ...defaultClusterConfig,
         masterNodeInstanceType: 'c5.medium.elasticsearch',
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain2', {
-      elasticsearchVersion: 1.5,
+      elasticsearchVersion: Version.ES_1_5,
       clusterConfig: {
         ...defaultClusterConfig,
         dataNodeInstanceType: 'i3.2xlarge.elasticsearch',
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain3', {
-      elasticsearchVersion: 1.5,
+      elasticsearchVersion: Version.ES_1_5,
       clusterConfig: {
         ...defaultClusterConfig,
         dataNodeInstanceType: 'm5.2xlarge.elasticsearch',
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain4', {
-      elasticsearchVersion: 1.5,
+      elasticsearchVersion: Version.ES_1_5,
       clusterConfig: {
         ...defaultClusterConfig,
         masterNodeInstanceType: 'r5.2xlarge.elasticsearch',
@@ -562,7 +562,7 @@ describe('custom error responses', () => {
 
   test('error when node to node encryption is enabled for elasticsearch version < 6.0', () => {
     expect(() => new Domain(stack, 'Domain1', {
-      elasticsearchVersion: 5.6,
+      elasticsearchVersion: Version.ES_5_6,
       clusterConfig: defaultClusterConfig,
       nodeToNodeEncryptionEnabled: true,
     })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later/);
@@ -614,7 +614,7 @@ describe('custom error responses', () => {
 
   test('error when t2.micro is specified with elasticsearch version > 2.3', () => {
     expect(() => new Domain(stack, 'Domain1', {
-      elasticsearchVersion: 6.7,
+      elasticsearchVersion: Version.ES_6_7,
       clusterConfig: {
         ...defaultClusterConfig,
         masterNodeInstanceType: 't2.micro.elasticsearch',
@@ -632,6 +632,18 @@ describe('custom error responses', () => {
   });
 
 });
+
+test('can specify future version', () => {
+  new Domain(stack, 'Domain', {
+    elasticsearchVersion: '8.2',
+    clusterConfig: defaultClusterConfig,
+  });
+
+  expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    ElasticsearchVersion: '8.2',
+  });
+});
+
 
 function testGrant(
   expectedActions: string[],
