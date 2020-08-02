@@ -1,9 +1,9 @@
-import { ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, CfnDeletionPolicy, ConstructNode, Duration, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
+import { App, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import {
   Attribute,
   AttributeType,
@@ -67,8 +67,12 @@ function* LSI_GENERATOR(): Generator<LocalSecondaryIndexProps, never> {
 }
 
 describe('default properties', () => {
+  let stack: Stack;
+  beforeEach(() => {
+    stack = new Stack();
+  });
+
   test('hash key only', () => {
-    const stack = new Stack();
     new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
 
     expect(stack).toHaveResource('AWS::DynamoDB::Table', {
@@ -82,7 +86,6 @@ describe('default properties', () => {
   });
 
   test('removalPolicy is DESTROY', () => {
-    const stack = new Stack();
     new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, removalPolicy: RemovalPolicy.DESTROY });
 
     expect(stack).toHaveResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.DELETE }, ResourcePart.CompleteDefinition);
@@ -90,7 +93,6 @@ describe('default properties', () => {
   });
 
   test('hash + range key', () => {
-    const stack = new Stack();
     new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY,
@@ -110,8 +112,6 @@ describe('default properties', () => {
   });
 
   test('hash + range key can also be specified in props', () => {
-    const stack = new Stack();
-
     new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY,
@@ -132,7 +132,6 @@ describe('default properties', () => {
   });
 
   test('point-in-time recovery is not enabled', () => {
-    const stack = new Stack();
     new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY,
@@ -154,7 +153,6 @@ describe('default properties', () => {
   });
 
   test('server-side encryption is not enabled', () => {
-    const stack = new Stack();
     new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY,
@@ -176,7 +174,6 @@ describe('default properties', () => {
   });
 
   test('stream is not enabled', () => {
-    const stack = new Stack();
     new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY,
@@ -198,7 +195,6 @@ describe('default properties', () => {
   });
 
   test('ttl is not enabled', () => {
-    const stack = new Stack();
     new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY,
@@ -220,8 +216,6 @@ describe('default properties', () => {
   });
 
   test('can specify new and old images', () => {
-    const stack = new Stack();
-
     new Table(stack, CONSTRUCT_NAME, {
       tableName: TABLE_NAME,
       readCapacity: 42,
@@ -249,8 +243,6 @@ describe('default properties', () => {
   });
 
   test('can specify new images only', () => {
-    const stack = new Stack();
-
     new Table(stack, CONSTRUCT_NAME, {
       tableName: TABLE_NAME,
       readCapacity: 42,
@@ -278,8 +270,6 @@ describe('default properties', () => {
   });
 
   test('can specify old images only', () => {
-    const stack = new Stack();
-
     new Table(stack, CONSTRUCT_NAME, {
       tableName: TABLE_NAME,
       readCapacity: 42,
@@ -304,6 +294,19 @@ describe('default properties', () => {
         TableName: 'MyTable',
       },
     );
+  });
+
+  test('can use PhysicalName.GENERATE_IF_NEEDED as the Table name', () => {
+    new Table(stack, CONSTRUCT_NAME, {
+      tableName: PhysicalName.GENERATE_IF_NEEDED,
+      partitionKey: TABLE_PARTITION_KEY,
+    });
+
+    // since the resource has not been used in a cross-environment manner,
+    // so the name should not be filled
+    expect(stack).toHaveResourceLike('AWS::DynamoDB::Table', {
+      TableName: ABSENT,
+    });
   });
 });
 
