@@ -203,6 +203,21 @@ export interface LogConfig {
 }
 
 /**
+ * Enum containing the different modes of schema definition
+ */
+export enum SchemaDefinition {
+  /**
+   * Define schema through functions like addType, addQuery, etc.
+   */
+  CODE = 'CODE',
+
+  /**
+   * Define schema in a file, i.e. schema.graphql
+   */
+  FILE = 'FILE',
+}
+
+/**
  * Properties for an AppSync GraphQL API
  */
 export interface GraphQLApiProps {
@@ -227,11 +242,14 @@ export interface GraphQLApiProps {
   readonly logConfig?: LogConfig;
 
   /**
-   * GraphQL schema definition. You have to specify a definition or a file containing one.
+   * GraphQL schema definition. Specify how you want to define your schema.
    *
-   * @default - Use schemaDefinitionFile
+   * SchemaDefinition.CODE allows schema definition through CDK
+   * SchemaDefinition.FILE allows schema definition through schema.graphql file
+   *
+   * @experimental
    */
-  readonly schemaDefinition?: string;
+  readonly schemaDefinition: SchemaDefinition;
   /**
    * File containing the GraphQL schema definition. You have to specify a definition or a file containing one.
    *
@@ -332,6 +350,7 @@ export class GraphQLApi extends Construct {
     return this._apiKey;
   }
 
+  private schemaMode: SchemaDefinition;
   private api: CfnGraphQLApi;
   private _apiKey?: string;
 
@@ -389,6 +408,7 @@ export class GraphQLApi extends Construct {
     this.arn = this.api.attrArn;
     this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
+    this.schemaMode = props.schemaDefinition;
 
     if (
       defaultAuthorizationType === AuthorizationType.API_KEY ||
@@ -404,18 +424,7 @@ export class GraphQLApi extends Construct {
       this._apiKey = this.createAPIKey(apiKeyConfig);
     }
 
-    let definition;
-    if (props.schemaDefinition) {
-      definition = props.schemaDefinition;
-    } else if (props.schemaDefinitionFile) {
-      definition = readFileSync(props.schemaDefinitionFile).toString('UTF-8');
-    } else {
-      throw new Error('Missing Schema definition. Provide schemaDefinition or schemaDefinitionFile');
-    }
-    this.schema = new CfnGraphQLSchema(this, 'Schema', {
-      apiId: this.apiId,
-      definition,
-    });
+    this.schema = this.defineSchema(props.schemaDefinitionFile);
   }
 
   /**
@@ -665,5 +674,41 @@ export class GraphQLApi extends Construct {
   private formatAdditionalAuthenticationProviders(props: GraphQLApiProps): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] | undefined {
     const authModes = props.authorizationConfig?.additionalAuthorizationModes;
     return authModes ? this.formatAdditionalAuthorizationModes(authModes) : undefined;
+  }
+
+  /**
+   * Sets schema defintiion to input if schema mode is configured with SchemaDefinition.CODE
+   *
+   * @param definition string that is the graphql representation of schema
+   * @experimental temporary
+   */
+  public updateDefinition (definition: string): void{
+    if ( this.schemaMode != SchemaDefinition.CODE ) {
+      throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
+    }
+    this.schema.definition = definition;
+  }
+
+  /**
+   * Define schema based on props configuration
+   * @param file the file name/s3 location of Schema
+   */
+  private defineSchema(file?: string): CfnGraphQLSchema {
+    let definition;
+
+    if ( this.schemaMode == SchemaDefinition.FILE && !file) {
+      throw new Error('schemaDefinitionFile must be configured if using FILE definition mode.');
+    } else if ( this.schemaMode == SchemaDefinition.FILE && file ) {
+      definition = readFileSync(file).toString('UTF-8');
+    } else if ( this.schemaMode == SchemaDefinition.CODE && !file ) {
+      definition = '';
+    } else if ( this.schemaMode == SchemaDefinition.CODE && file) {
+      throw new Error('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
+    }
+
+    return new CfnGraphQLSchema(this, 'Schema', {
+      apiId: this.apiId,
+      definition,
+    });
   }
 }
