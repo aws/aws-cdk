@@ -10,6 +10,10 @@ beforeEach(() => {
 test('.metricXxx() methods can be used to obtain Metrics for the canary', () => {
   // GIVEN
   const canary = new synthetics.Canary(stack, 'mycanary', {
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
   });
 
   // WHEN
@@ -46,6 +50,10 @@ test('.metricXxx() methods can be used to obtain Metrics for the canary', () => 
 test('Metric can specify statistic', () => {
   // GIVEN
   const canary = new synthetics.Canary(stack, 'mycanary', {
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
   });
 
   // WHEN

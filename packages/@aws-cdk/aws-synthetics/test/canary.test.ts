@@ -14,11 +14,15 @@ test('Basic canary properties work', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
     successRetentionPeriod: Duration.days(10),
     failureRetentionPeriod: Duration.days(10),
     startAfterCreation: false,
     timeToLive: Duration.minutes(30),
-    runtime: synthetics.Runtime.SYN_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_1_0,
   });
 
   // THEN
@@ -32,13 +36,18 @@ test('Basic canary properties work', () => {
   });
 });
 
-test('Canary can have with generated name', () => {
+test('Canary can have generated name', () => {
   // WHEN
-  new synthetics.Canary(stack, 'Canary', {});
+  new synthetics.Canary(stack, 'Canary', {
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
+  });
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'canariescanary8195898',
+    Name: 'canariescanary8ee009f',
   });
 });
 
@@ -46,6 +55,10 @@ test('Name validation does not fail when using Tokens', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
     canaryName: Lazy.stringValue({produce: () => 'myCanary'}),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
   });
 
   // THEN: no exception
@@ -53,12 +66,24 @@ test('Name validation does not fail when using Tokens', () => {
 });
 
 test('Throws when name is specified incorrectly', () => {
-  expect(() => new synthetics.Canary(stack, 'Canary', {canaryName: 'myCanary'}))
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'myCanary',
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
+  }))
     .toThrowError('Canary name must be lowercase, numbers, hyphens, or underscores (no spaces) (myCanary)');
 });
 
 test('Throws when name has more than 21 characters', () => {
-  expect(() => new synthetics.Canary(stack, 'Canary', {canaryName: 'a'.repeat(22)}))
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'a'.repeat(22),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
+  }))
     .toThrowError('Canary name is too large, must be <= 21 characters, but is 22');
 });
 
@@ -74,6 +99,10 @@ test('An existing role can be specified instead of auto-created', () => {
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
     role,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
   });
 
   // THEN
@@ -90,7 +119,11 @@ test('An existing bucket can be specified instead of auto-created', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
-    artifactsBucket: { bucket, prefix },
+    artifactsBucketLocation: { bucket, prefix },
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
   });
 
   // THEN
@@ -104,6 +137,10 @@ test('Schedule can be set with Rate', () => {
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
     schedule: synthetics.Schedule.rate(Duration.minutes(3)),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
   });
 
   // THEN
@@ -117,6 +154,10 @@ test('Schedule can be set with Expression', () => {
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
     schedule: synthetics.Schedule.expression('rate(1 hour)'),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
   });
 
   // THEN
@@ -130,6 +171,10 @@ test('Schedule can be set to run once', () => {
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
     schedule: synthetics.Schedule.once(),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
   });
 
   // THEN
@@ -140,8 +185,12 @@ test('Schedule can be set to run once', () => {
 
 test('Throws when rate above 60 minutes', () => {
   expect(() => new synthetics.Canary(stack, 'Canary', {
-    schedule: synthetics.Schedule.rate(Duration.minutes(61))},
-  ))
+    schedule: synthetics.Schedule.rate(Duration.minutes(61)),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
+  }))
     .toThrowError('Schedule duration must be between 1 and 60 minutes');
 });
 

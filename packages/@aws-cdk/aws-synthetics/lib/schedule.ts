@@ -1,16 +1,15 @@
 import { Duration } from '@aws-cdk/core';
 
-//TODO: remove Abstract
 /**
  * Schedule for canary runs
  */
-export abstract class Schedule {
+export class Schedule {
 
   /**
    * Construct a schedule that runs the canary once.
    */
   public static once(): Schedule {
-    return new LiteralSchedule('rate(0 minutes)');
+    return new Schedule('rate(0 minutes)');
   }
 
   /**
@@ -19,7 +18,7 @@ export abstract class Schedule {
    * @param expression The expression to use.
    */
   public static expression(expression: string): Schedule {
-    return new LiteralSchedule(expression);
+    return new Schedule(expression);
   }
 
   /**
@@ -34,19 +33,14 @@ export abstract class Schedule {
       throw new Error('Schedule duration must be between 1 and 60 minutes');
     }
     if (minutes === 1) {
-      return new LiteralSchedule('rate(1 minute)');
+      return new Schedule('rate(1 minute)');
     }
-    return new LiteralSchedule(`rate(${minutes} minutes)`);
+    return new Schedule(`rate(${minutes} minutes)`);
   }
 
-  /**
-   * Retrieve the expression for this schedule
-   */
-  public abstract readonly expressionString: string;
-}
-
-class LiteralSchedule extends Schedule {
-  constructor(public readonly expressionString: string){
-    super();
-  }
+  private constructor(
+    /**
+     * Retrieve the expression for this schedule
+     */
+    public readonly expressionString: string){}
 }

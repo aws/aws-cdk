@@ -1,9 +1,12 @@
+import * as crypto from 'crypto';
 import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Schedule } from './schedule';
 import { CfnCanary } from './synthetics.generated';
+import { Test, TestOptions } from './test-script';
+
 
 /**
  * Runtime options for a canary
@@ -22,9 +25,9 @@ export class Runtime {
    *
    * The Chromium version that matches Puppeteer-core 1.14.0
    */
-  public static readonly SYN_1_0 = new Runtime('syn-1.0');
+  public static readonly SYNTHETICS_1_0 = new Runtime('syn-1.0');
 
-  private constructor(
+  public constructor(
     /**
      * The name of the runtime version
      */
@@ -34,14 +37,16 @@ export class Runtime {
 /**
  * Options for specifying the s3 location that stores the data of each canary run
  */
-export interface ArtifactsBucketOptions {
+export interface ArtifactsBucketLocation {
   /**
    * The s3 location that stores the data of each run.
    */
   readonly bucket: s3.IBucket;
 
   /**
-   * The key prefix of an S3 object. For example, if a key is specified, the resulting s3 location looks like this:
+   * The key prefix of an S3 object. Specify this is you want a more specific key within the artifacts bucket.
+   *
+   * For example, if a key is specified, the resulting s3 location looks like this:
    * @example
    * s3://bucket/key
    *
@@ -49,6 +54,8 @@ export interface ArtifactsBucketOptions {
    *
    * @example
    * s3://onlybucket
+   *
+   * @default - no prefix
    */
   readonly prefix?: string;
 }
@@ -62,7 +69,7 @@ export interface CanaryProps {
    *
    * @default - A new s3 bucket will be created.
    */
-  readonly artifactsBucket?: ArtifactsBucketOptions;
+  readonly artifactsBucketLocation?: ArtifactsBucketLocation;
 
   /**
    * Canary execution role.
@@ -80,13 +87,6 @@ export interface CanaryProps {
    * You can add permissions to roles by calling 'addToRolePolicy'.
    */
   readonly role?: iam.IRole;
-
-  /**
-   * Specify the runtime version to use for the canary. Currently, the only valid value is `Runtime.SYN_1.0`.
-   *
-   * @default Runtime.SYN_1_0
-   */
-  readonly runtime?: Runtime;
 
   /**
    * How long the canary will be in a 'RUNNING' state. For example, if you set `timeToLive` to be 1 hour and `schedule` to be `rate(10 minutes)`,
@@ -137,12 +137,17 @@ export interface CanaryProps {
   readonly canaryName?: string;
 
   /**
-   * Specify the endpoint that you want the canary code to hit. Alternatively, you can specify
-   * your own canary script to run.
+   * Specify the runtime version to use for the canary. Currently, the only valid value is `Runtime.SYN_1.0`.
    *
-   * 🚧 TODO: implement
+   * @default Runtime.SYN_1_0
    */
-  //readonly test: Test;
+  readonly runtime?: Runtime;
+
+  /**
+   * The type of test that you want your canary to run. Right now, you can only use `Test.custom()`.
+   * In the future, a more robust `Test` class will offer more options.
+   */
+  readonly test: Test;
 
 }
 
@@ -189,28 +194,22 @@ export class Canary extends cdk.Resource {
       }),
     });
 
-    this.artifactsBucket = props.artifactsBucket?.bucket ?? new s3.Bucket(this, 'ServiceBucket', {
+    this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ServiceBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
     });
 
     this.role = props.role ?? this.createDefaultRole();
 
-    //this.artifactsBucket.grantWrite(this.role);
-
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
-      artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucket?.prefix),
+      artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
       startCanaryAfterCreation: props.startAfterCreation !== false,
-      runtimeVersion: props.runtime?.name ?? Runtime.SYN_1_0.name,
+      runtimeVersion: props.runtime?.name ?? Runtime.SYNTHETICS_1_0.name,
       name: this.physicalName,
       schedule: this.createSchedule(props),
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
-      // 🚧 TODO: implement
-      code: {
-        handler: 'index.handler',
-        script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-      },
+      code: this.createCode(props),
     });
 
     this.canaryId = resource.attrId;
@@ -305,6 +304,28 @@ export class Canary extends cdk.Resource {
   }
 
   /**
+   * Returns the code object taken in by the canary resource.
+   */
+  private createCode(props: CanaryProps): CfnCanary.CodeProperty {
+    let codeConfig: TestOptions;
+    if(props.test.customCode){
+      codeConfig = {
+        handler: props.test.customCode.handler,
+        ...props.test.customCode.code.bind(this, props.test.customCode.handler),
+      };
+    } else {
+      codeConfig = props.test.testCode!;
+    }
+    return {
+      handler: codeConfig.handler,
+      script: codeConfig.inlineCode,
+      s3Bucket: codeConfig.s3Location?.bucketName,
+      s3Key: codeConfig.s3Location?.objectKey,
+      s3ObjectVersion: codeConfig.s3Location?.objectVersion,
+    };
+  }
+
+  /**
    * Returns a canary schedule object
    */
   private createSchedule(props: CanaryProps): CfnCanary.ScheduleProperty {
@@ -322,28 +343,22 @@ export class Canary extends cdk.Resource {
     if (name.length <= 21){
       return name;
     } else {
-      const front = name.substring(0,15);
-      const hash = this.hashCode(name.substring(15));
-      return front + String(hash).substring(0,6);
+      return name.substring(0,15) + nameHash(name.substring(15));
     }
-  }
-
-  /**
-   * @see https://stackoverflow.com/questions/6122571/simple-non-secure-hash-function-for-javascript
-   * @param s the string to be hashed
-   */
-  private hashCode(s: string): number {
-    var hash = 0;
-    for(let i = 0; i<s.length; i++){
-      hash = ((hash << 5) - hash) + s.charCodeAt(i); //eslint-disable-line no-bitwise
-      // Convert to 32bit integer
-      hash = hash & hash; //eslint-disable-line no-bitwise
-    }
-    return hash;
   }
 }
 
-const regex: RegExp = new RegExp('^[0-9a-z_\-]+$');
+/**
+ * Take a hash of the given name.
+ *
+ * @param name the name to be hashed
+ */
+function nameHash(name: string): string {
+  const md5 = crypto.createHash('md5').update(name).digest('hex');
+  return md5.slice(0,6);
+}
+
+const nameRegex: RegExp = new RegExp('^[0-9a-z_\-]+$');
 
 /**
  * Verifies that the name fits the regex expression: ^[0-9a-z_\-]+$.
@@ -354,7 +369,7 @@ function validateName(name: string) {
   if (name.length > 21) {
     throw new Error('Canary name is too large, must be <= 21 characters, but is ' + name.length);
   }
-  if (!regex.test(name)) {
+  if (!nameRegex.test(name)) {
     throw new Error(`Canary name must be lowercase, numbers, hyphens, or underscores (no spaces) (${name})`);
   }
 }

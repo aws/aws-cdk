@@ -1,11 +1,22 @@
 {
   "Resources": {
-    "mycanaryServiceBucketF66DFA57": {
+    "MyCanaryServiceBucketE50F48B7": {
       "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "aws:kms"
+              }
+            }
+          ]
+        }
+      },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "mycanaryServiceRoleEE2F0C82": {
+    "MyCanaryServiceRole593F9DD9": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -41,7 +52,7 @@
                       [
                         {
                           "Fn::GetAtt": [
-                            "mycanaryServiceBucketF66DFA57",
+                            "MyCanaryServiceBucketE50F48B7",
                             "Arn"
                           ]
                         },
@@ -77,7 +88,7 @@
         ]
       }
     },
-    "mycanaryDCC21B3D": {
+    "MyCanary1A94CAFA": {
       "Type": "AWS::Synthetics::Canary",
       "Properties": {
         "ArtifactS3Location": {
@@ -86,7 +97,7 @@
             [
               "s3://",
               {
-                "Ref": "mycanaryServiceBucketF66DFA57"
+                "Ref": "MyCanaryServiceBucketE50F48B7"
               }
             ]
           ]
@@ -97,11 +108,11 @@
         },
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
-            "mycanaryServiceRoleEE2F0C82",
+            "MyCanaryServiceRole593F9DD9",
             "Arn"
           ]
         },
-        "Name": "integcanarymycanary9",
+        "Name": "canary-one",
         "RuntimeVersion": "syn-1.0",
         "Schedule": {
           "DurationInSeconds": "0",

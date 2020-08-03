@@ -30,14 +30,13 @@ The Hitchhikers Guide to the Galaxy
 ```
 
 The below code defines a canary that will hit the `books/topbook` endpoint every 5 minutes: 
-> 🚧 Note the `Test` class is not yet implemented and is presented here to give reviewer context
 
 ```ts
 import * as synthetics from '@aws-cdk/aws-synthetics';
 
 const canary = new synthetics.Canary(this, 'MyCanary', {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
-  test: synthetics.Test.custom({ // 🚧 Not yet implemented 
+  test: synthetics.Test.custom({
     code: synthetics.Code.fromInline(`const https = require('https');
       var synthetics = require('Synthetics');
       const log = require('SyntheticsLogger');
@@ -58,18 +57,22 @@ The canary will automatically produce a CloudWatch Dashboard:
 
 ![UI Screenshot](images/ui-screenshot.png)
 
-### Canary Test 🚧
+### Canary Test
 
-The `test` property represents the test the canary executes. You can supply you own code using the `Test.custom()` method, or you can use a blueprint e.g `Test.heartbeat()`.
+The `test` property represents the test the canary executes. You can supply you own code using the `Test.custom()` method, or you can use a blueprint 🚧 e.g `Test.heartbeat()`.
 
-#### Custom 🚧
+#### Custom
 
-which will allow you to specify a custom script and handler for the canary. To specify the script in the `code` property, use the static method `code.fromInline()`.
+This will allow you to specify a custom script and handler for the canary. To specify the script in the `code` property, use one of the following static methods:
+
+  - `code.fromInline()` - specify an inline script.
+  - `code.fromAsset()` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 before deployment. Due to restrictions from the Canary resource, the asset must have the folder structure `nodejs/node_modules` and the canary file must be immediately inside the `node_modules` folder. The file must have the same name as the handler, for example, `index.js` and `index.handler`.
+  - `code.fromBucket()` - specify an S3 object that contains the archive of your runtime code.
 
 ```ts
 const canary = new Canary(this, 'MyCanary', {
-  test: Test.custom({ // 🚧 Not yet implemented 
-    code: Code.fromInline('exports.handler = async () => {\nconsole.log(\'hello world\');\n};'),
+  test: Test.custom({
+    code: Code.fromAsset(path.join(__dirname, 'canary'))),
     handler: 'index.handler',
   }),
 });
