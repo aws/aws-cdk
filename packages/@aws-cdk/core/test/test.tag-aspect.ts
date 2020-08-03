@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
-import { CfnResource, CfnResourceProps, Construct, ConstructNode, RemoveTag, Stack, Tag, TagManager, TagType } from '../lib';
+import { CfnResource, CfnResourceProps, Construct, RemoveTag, Stack, Tag, TagManager, TagType } from '../lib';
+import { synthesize } from '../lib/private/synthesis';
 
 class TaggableResource extends CfnResource {
   public readonly tags: TagManager;
@@ -55,7 +56,7 @@ export = {
     });
     res.node.applyAspect(new Tag('foo', 'bar'));
 
-    ConstructNode.synth(root.node);
+    synthesize(root);
 
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.deepEqual(res2.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
@@ -75,7 +76,7 @@ export = {
     res.node.applyAspect(new Tag('foo', 'foobar'));
     res.node.applyAspect(new Tag('foo', 'baz'));
     res2.node.applyAspect(new Tag('foo', 'good'));
-    ConstructNode.prepare(root.node);
+    synthesize(root);
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'baz'}]);
     test.deepEqual(res2.tags.renderTags(), [{key: 'foo', value: 'good'}]);
     test.done();
@@ -99,7 +100,7 @@ export = {
     res.node.applyAspect(new Tag('first', 'there is only 1'));
     res.node.applyAspect(new RemoveTag('root'));
     res.node.applyAspect(new RemoveTag('doesnotexist'));
-    ConstructNode.prepare(root.node);
+    synthesize(root);
 
     test.deepEqual(res.tags.renderTags(), [{key: 'first', value: 'there is only 1'}]);
     test.deepEqual(map.tags.renderTags(), {first: 'there is only 1'});
@@ -126,7 +127,8 @@ export = {
     Tag.add(res, 'first', 'there is only 1');
     Tag.remove(res, 'root');
     Tag.remove(res, 'doesnotexist');
-    ConstructNode.prepare(root.node);
+
+    synthesize(root);
 
     test.deepEqual(res.tags.renderTags(), [{key: 'first', value: 'there is only 1'}]);
     test.deepEqual(map.tags.renderTags(), {first: 'there is only 1'});
@@ -141,11 +143,11 @@ export = {
     });
 
     res.node.applyAspect(new Tag('foo', 'bar'));
-    ConstructNode.prepare(root.node);
+    synthesize(root);
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
-    ConstructNode.prepare(root.node);
+    synthesize(root);
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
-    ConstructNode.prepare(root.node);
+    synthesize(root);
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.done();
   },
@@ -159,7 +161,7 @@ export = {
     });
     res.node.applyAspect(new RemoveTag('key'));
     res2.node.applyAspect(new Tag('key', 'value'));
-    ConstructNode.prepare(root.node);
+    synthesize(root);
     test.deepEqual(res.tags.renderTags(), undefined);
     test.deepEqual(res2.tags.renderTags(), undefined);
     test.done();
@@ -174,7 +176,7 @@ export = {
     });
     res.node.applyAspect(new RemoveTag('key', {priority: 0}));
     res2.node.applyAspect(new Tag('key', 'value'));
-    ConstructNode.prepare(root.node);
+    synthesize(root);
     test.deepEqual(res.tags.renderTags(), undefined);
     test.deepEqual(res2.tags.renderTags(), [{key: 'key', value: 'value'}]);
     test.done();
@@ -217,7 +219,7 @@ export = {
       },
     });
     aspectBranch.node.applyAspect(new Tag('aspects', 'rule'));
-    ConstructNode.prepare(root.node);
+    synthesize(root);
     test.deepEqual(aspectBranch.testProperties().tags, [{key: 'aspects', value: 'rule'}, {key: 'cfn', value: 'is cool'}]);
     test.deepEqual(asgResource.testProperties().tags, [
       {key: 'aspects', value: 'rule', propagateAtLaunch: true},
