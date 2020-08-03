@@ -28,7 +28,7 @@
             "ApiId"
           ]
         },
-        "Definition": "type test @aws_iam {\n  id: String!\n  version: String!\n}\n\ntype Query {\n  getTest(id: String!): test\n}\n"
+        "Definition": "type test @aws_iam {\n  id: String!\n  version: String!\n}\n\ntype Query {\n  getTests: [test]\n}\n"
       }
     }
   }

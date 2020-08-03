@@ -26,6 +26,6 @@ api.addType('test', {
   ],
 });
 
-api.appendToSchema('type Query {\n  getTests(): [test]\n}', '\n');
+api.appendToSchema('type Query {\n  getTests: [test]\n}', '\n');
 
 app.synth();
