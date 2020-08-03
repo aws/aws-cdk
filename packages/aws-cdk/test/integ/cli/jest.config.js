@@ -10,6 +10,6 @@ module.exports = {
     verbose: true,
     reporters: [
         "default",
-          [ "jest-junit", { suiteName: "jest tests" } ]
+          [ "jest-junit", { suiteName: "jest tests", outputDirectory: "coverage" } ]
     ]
 };

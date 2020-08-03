@@ -1,29 +1,24 @@
 import '@aws-cdk/assert/jest';
-import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack } from '@aws-cdk/core';
-import { AllowedMethods, Origin } from '../../lib';
+import { AllowedMethods } from '../../lib';
 import { CacheBehavior } from '../../lib/private/cache-behavior';
 
 let app: App;
-let stack: Stack;
 
 beforeEach(() => {
   app = new App();
-  stack = new Stack(app, 'Stack', {
+  new Stack(app, 'Stack', {
     env: { account: '1234', region: 'testregion' },
   });
 });
 
 test('renders the minimum template with an origin and path specified', () => {
-  const origin = Origin.fromBucket(new s3.Bucket(stack, 'MyBucket'));
-  const behavior = new CacheBehavior({
-    origin,
+  const behavior = new CacheBehavior('origin_id', {
     pathPattern: '*',
   });
-  origin._bind(stack, { originIndex: 0 });
 
   expect(behavior._renderBehavior()).toEqual({
-    targetOriginId: behavior.origin.id,
+    targetOriginId: 'origin_id',
     pathPattern: '*',
     forwardedValues: { queryString: false },
     viewerProtocolPolicy: 'allow-all',
@@ -31,18 +26,15 @@ test('renders the minimum template with an origin and path specified', () => {
 });
 
 test('renders with all properties specified', () => {
-  const origin = Origin.fromBucket(new s3.Bucket(stack, 'MyBucket'));
-  const behavior = new CacheBehavior({
-    origin,
+  const behavior = new CacheBehavior('origin_id', {
     pathPattern: '*',
     allowedMethods: AllowedMethods.ALLOW_ALL,
     forwardQueryString: true,
     forwardQueryStringCacheKeys: ['user_id', 'auth'],
   });
-  origin._bind(stack, { originIndex: 0 });
 
   expect(behavior._renderBehavior()).toEqual({
-    targetOriginId: behavior.origin.id,
+    targetOriginId: 'origin_id',
     pathPattern: '*',
     allowedMethods: ['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE'],
     forwardedValues: {
