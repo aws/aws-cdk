@@ -352,7 +352,6 @@ export class GraphQLApi extends Construct {
   }
 
   private schemaMode: SchemaDefinition;
-  private types: ObjectType[];
   private api: CfnGraphQLApi;
   private _apiKey?: string;
 
@@ -411,7 +410,6 @@ export class GraphQLApi extends Construct {
     this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
     this.schemaMode = props.schemaDefinition;
-    this.types = [];
 
     if (
       defaultAuthorizationType === AuthorizationType.API_KEY ||
@@ -736,7 +734,6 @@ export class GraphQLApi extends Construct {
       definition: props.definition,
       directives: props.directives,
     });
-    this.types.push(type);
     this.generateObjectType(type);
     return type;
   }
