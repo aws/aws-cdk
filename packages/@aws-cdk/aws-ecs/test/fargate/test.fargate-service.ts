@@ -66,7 +66,7 @@ export = {
       }));
 
       expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'FargateService/SecurityGroup',
+        GroupDescription: 'Default/FargateService/SecurityGroup',
         SecurityGroupEgress: [
           {
             CidrIp: '0.0.0.0/0',
@@ -897,7 +897,7 @@ export = {
               protocol: ecs.Protocol.TCP,
             })],
           });
-        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
+        }, /Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
 
         test.done();
       },
@@ -932,7 +932,7 @@ export = {
               containerPort: 8002,
             })],
           });
-        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
+        }, /Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
 
         test.done();
       },

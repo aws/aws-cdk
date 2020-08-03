@@ -887,7 +887,7 @@ test('throws with mutliple subscriptions of the same subscriber', () => {
   topic.addSubscription(new subs.SqsSubscription(queue));
 
   expect(() => topic.addSubscription(new subs.SqsSubscription(queue)))
-    .toThrowError(/A subscription with id \"MyTopic\" already exists under the scope MyQueue/);
+    .toThrowError(/A subscription with id \"MyTopic\" already exists under the scope Default\/MyQueue/);
 });
 
 test('with filter policy', () => {

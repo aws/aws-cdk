@@ -515,7 +515,8 @@ export = {
 
   'passing in imported network load balancer and resources to NLB Fargate service'(test: Test) {
     // GIVEN
-    const stack1 = new cdk.Stack();
+    const app = new cdk.App();
+    const stack1 = new cdk.Stack(app, 'MyStack');
     const vpc1 = new ec2.Vpc(stack1, 'VPC');
     const cluster1 = new ecs.Cluster(stack1, 'Cluster', { vpc: vpc1 });
     const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
