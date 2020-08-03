@@ -672,6 +672,29 @@ export class GraphQLApi extends Construct {
   }
 
   /**
+   * Define schema based on props configuration
+   * @param file the file name/s3 location of Schema
+   */
+  private defineSchema(file?: string): CfnGraphQLSchema {
+    let definition;
+
+    if ( this.schemaMode == SchemaDefinition.FILE && !file) {
+      throw new Error('schemaDefinitionFile must be configured if using FILE definition mode.');
+    } else if ( this.schemaMode == SchemaDefinition.FILE && file ) {
+      definition = readFileSync(file).toString('UTF-8');
+    } else if ( this.schemaMode == SchemaDefinition.CODE && !file ) {
+      definition = '';
+    } else if ( this.schemaMode == SchemaDefinition.CODE && file) {
+      throw new Error('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
+    }
+
+    return new CfnGraphQLSchema(this, 'Schema', {
+      apiId: this.apiId,
+      definition,
+    });
+  }
+
+  /**
    * Sets schema defintiion to input if schema mode is configured with SchemaDefinition.CODE
    *
    * @param definition string that is the graphql representation of schema
@@ -679,9 +702,24 @@ export class GraphQLApi extends Construct {
    */
   public updateDefinition (definition: string): void{
     if ( this.schemaMode != SchemaDefinition.CODE ) {
-      throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
+      throw new Error('API cannot update schema because schema definition mode is not configured as CODE.');
     }
     this.schema.definition = definition;
+  }
+
+  /**
+   * Escape hatch to append to Schema as desired
+   *
+   * @param addition the addition to add to schema
+   * @param delimiter the delimiter between schema and addition
+   * @default - ' '
+   */
+  public appendToSchema(addition: string, delimiter?: string): void {
+    if ( this.schemaMode != SchemaDefinition.CODE ) {
+      throw new Error('API cannot append to schema because schema definition mode is not configured as CODE.');
+    }
+    const sep = delimiter ?? '';
+    this.schema.definition = `${this.schema.definition}${sep}${addition}\n`;
   }
 
   /**
@@ -735,18 +773,6 @@ export class GraphQLApi extends Construct {
   }
 
   /**
-   * Escape hatch to append to Schema as desired
-   *
-   * @param addition the addition to add to schema
-   * @param delimiter the delimiter between schema and addition
-   * @default - ' '
-   */
-  public appendToSchema(addition: string, delimiter?: string): void {
-    const sep = delimiter ?? '';
-    this.schema.definition = `${this.schema.definition}${sep}${addition}\n`;
-  }
-
-  /**
    * Generate string for attributes
    *
    * @param attribute - the attribute of a type
@@ -755,28 +781,5 @@ export class GraphQLApi extends Construct {
     const list = attribute.isList ? '[]' : '';
     const required = attribute.isRequired ? '!' : '';
     return `${attribute.name}: ${attribute.type}${list}${required}`;
-  }
-
-  /**
-   * Define schema based on props configuration
-   * @param file the file name/s3 location of Schema
-   */
-  private defineSchema(file?: string): CfnGraphQLSchema {
-    let definition;
-
-    if ( this.schemaMode == SchemaDefinition.FILE && !file) {
-      throw new Error('schemaDefinitionFile must be configured if using FILE definition mode.');
-    } else if ( this.schemaMode == SchemaDefinition.FILE && file ) {
-      definition = readFileSync(file).toString('UTF-8');
-    } else if ( this.schemaMode == SchemaDefinition.CODE && !file ) {
-      definition = '';
-    } else if ( this.schemaMode == SchemaDefinition.CODE && file) {
-      throw new Error('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
-    }
-
-    return new CfnGraphQLSchema(this, 'Schema', {
-      apiId: this.apiId,
-      definition,
-    });
   }
 }
