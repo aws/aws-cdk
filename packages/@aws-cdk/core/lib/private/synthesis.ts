@@ -3,6 +3,8 @@ import * as constructs from 'constructs';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { prepareApp } from './prepare-app';
+import { Stack } from '../stack';
+import { TreeMetadata } from './tree-metadata';
 
 export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
@@ -106,9 +108,7 @@ function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
     } else if (construct instanceof TreeMetadata) {
       construct._synthesizeTree(session);
     } else {
-      if (typeof((construct as any).synthesize) === 'function') {
-        throw new Error(`"synthesize" is no longer supported: ${construct.node.path}`);
-      }
+      construct.onSynthesize(session);
     }
   });
 }
@@ -134,9 +134,9 @@ function validateTree(root: IConstruct) {
 /**
  * Visit the given construct tree in either pre or post order, stopping at Assemblies
  */
-function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
+function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstructMethods) => void) {
   if (order === 'pre') {
-    cb(root);
+    cb(root as IProtectedConstructMethods);
   }
 
   for (const child of root.node.children) {
@@ -145,6 +145,38 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
   }
 
   if (order === 'post') {
-    cb(root);
+    cb(root as IProtectedConstructMethods);
   }
 }
+
+/**
+ * Interface which provides access to special methods of Construct
+ *
+ * @experimental
+ */
+interface IProtectedConstructMethods extends IConstruct {
+  /**
+   * Method that gets called when a construct should synthesize itself to an assembly
+   */
+  onSynthesize(session: constructs.ISynthesisSession): void;
+
+  /**
+   * Method that gets called to validate a construct
+   */
+  onValidate(): string[];
+
+  /**
+   * Method that gets called to prepare a construct
+   */
+  onPrepare(): void;
+}
+
+/**
+ * The constructs Node type, but with some aspects-related fields public.
+ *
+ * Hackery!
+ */
+type NodeWithAspectPrivatesHangingOut = Omit<constructs.Node, 'invokedAspects' | '_aspects'> & {
+  readonly invokedAspects: constructs.IAspect[];
+  readonly _aspects: constructs.IAspect[];
+};
