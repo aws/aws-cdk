@@ -2,7 +2,7 @@ import { expect } from '@aws-cdk/assert';
 import { Stack, Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
-import { KubernetesResourceAttribute } from '../lib/k8s-attribute';
+import { KubernetesGet } from '../lib/k8s-get';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
@@ -13,7 +13,7 @@ export = {
     const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
-    const attribute = new KubernetesResourceAttribute(stack, 'MyAttribute', {
+    const attribute = new KubernetesGet(stack, 'MyAttribute', {
       cluster: cluster,
       jsonPath: '.status',
       resourceName: 'mydeployment',
@@ -23,7 +23,7 @@ export = {
 
     const expectedCustomResourceId = 'MyAttributeF1E9B10D';
     test.deepEqual(expect(stack).value.Resources[expectedCustomResourceId], {
-      Type: 'Custom::AWSCDK-EKS-KubernetesResourceAttribute',
+      Type: 'Custom::AWSCDK-EKS-KubernetesGet',
       Properties: {
         ServiceToken: {
           'Fn::GetAtt': [

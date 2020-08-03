@@ -21,7 +21,7 @@ export = {
 
     // this makes sure the load balancer attribute is created correctly
     test.deepEqual(expect(stack).value.Resources[expectedCustomResourceId], {
-      Type: 'Custom::AWSCDK-EKS-KubernetesResourceAttribute',
+      Type: 'Custom::AWSCDK-EKS-KubernetesGet',
       Properties: {
         ServiceToken: {
           'Fn::GetAtt': [

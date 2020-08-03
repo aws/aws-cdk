@@ -1,11 +1,27 @@
 import { Construct, Duration } from '@aws-cdk/core';
 import { Cluster } from './cluster';
-import { KubernetesResourceAttribute } from './k8s-attribute';
+import { KubernetesGet as KubernetesGet } from './k8s-get';
+
+export interface DescribeServiceOptions {
+  /**
+   * The service name.
+   */
+  readonly serviceName: string;
+
+  /**
+   * Timeout for waiting on service attribute.
+   * For example, the external ip of a load balancer will not immediately available and needs to be waited for.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly timeout?: Duration;
+
+}
 
 /**
  * Properties for ServiceDescription.
  */
-export interface ServiceDescriptionProps {
+export interface ServiceDescriptionProps extends DescribeServiceOptions {
 
   /**
    * The Cluster that the service is deployed in.
@@ -14,10 +30,6 @@ export interface ServiceDescriptionProps {
    */
   readonly cluster: Cluster;
 
-  /**
-   * The service name.
-   */
-  readonly serviceName: string;
 }
 
 /**
@@ -37,12 +49,12 @@ export class ServiceDescription extends Construct {
   constructor(scope: Construct, id: string, props: ServiceDescriptionProps) {
     super(scope, id);
 
-    const loadBalancerAddress = new KubernetesResourceAttribute(this, 'LoadBalancerAttribute', {
+    const loadBalancerAddress = new KubernetesGet(this, 'LoadBalancerAttribute', {
       cluster: props.cluster,
       resourceType: 'service',
       resourceName: props.serviceName,
       jsonPath: '.status.loadBalancer.ingress[0].hostname',
-      timeout: Duration.minutes(5),
+      timeout: props.timeout ?? Duration.minutes(5),
     });
 
     this.loadBalancerAddress = loadBalancerAddress.value;

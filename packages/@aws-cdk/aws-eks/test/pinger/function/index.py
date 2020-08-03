@@ -16,7 +16,9 @@ def handler(event, context):
 
   if request_type in ['Create', 'Update']:
     logger.info(f'Sending request to {url}')
-    response = http.request('GET', url, timeout=10.0, retries=6)
+    # this should a substantial retry because it has to wait for the ELB to actually
+    # be functioning
+    response = http.request('GET', url, retries=urllib3.Retry(10, backoff_factor=1))
     if response.status != 200:
       raise RuntimeError(f'Request failed: {status} ({response.reason})')
     return {'Data': {'Value': response.data.decode('utf-8')}}

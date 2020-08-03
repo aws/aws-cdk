@@ -19,7 +19,7 @@ def handler(event, context):
   if resource_type == 'Custom::AWSCDK-EKS-KubernetesPatch':
     return patch_handler(event, context)
 
-  if resource_type == 'Custom::AWSCDK-EKS-KubernetesResourceAttribute':
+  if resource_type == 'Custom::AWSCDK-EKS-KubernetesGet':
     return get_handler(event, context)
 
   raise Exception("unknown resource type %s" % resource_type)

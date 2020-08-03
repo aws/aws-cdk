@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, CfnOutput } from '@aws-cdk/core';
 import * as eks from '../lib';
+// import { Pinger } from './pinger/pinger';
 import { Pinger } from './pinger/pinger';
 import { TestStack } from './util';
 
@@ -30,11 +31,11 @@ class EksClusterStack extends TestStack {
     const containerPort = 80;
     const servicePort = 9000;
 
-    // const sg = new ec2.SecurityGroup(this, 'WebServiceSecurityGroup', {
-    //   vpc: vpc,
-    // });
+    const pingerSecurityGroup = new ec2.SecurityGroup(this, 'WebServiceSecurityGroup', {
+      vpc: vpc,
+    });
 
-    // sg.addIngressRule(sg, ec2.Port.tcp(servicePort), `allow http ${servicePort} access from myself`);
+    pingerSecurityGroup.addIngressRule(pingerSecurityGroup, ec2.Port.tcp(servicePort), `allow http ${servicePort} access from myself`);
 
     cluster.addResource('simple-web-pod', {
       kind: 'Pod',
@@ -54,9 +55,11 @@ class EksClusterStack extends TestStack {
       apiVersion: 'v1',
       metadata: {
         name: serviceName,
-        // annotations: {
-        //   'service.beta.kubernetes.io/aws-load-balancer-security-groups': sg.securityGroupId,
-        // },
+        annotations: {
+          // this is furtile soil for cdk8s-plus! :)
+          'service.beta.kubernetes.io/aws-load-balancer-internal': 'true',
+          'service.beta.kubernetes.io/aws-load-balancer-extra-security-groups': pingerSecurityGroup.securityGroupId,
+        },
       },
       spec: {
         type: 'LoadBalancer',
@@ -65,7 +68,7 @@ class EksClusterStack extends TestStack {
       },
     });
 
-    const serviceDescription = cluster.describeService(serviceName);
+    const serviceDescription = cluster.describeService({serviceName: serviceName});
     // TODO is this really needed? If so, would be nice to do this automagically.
     serviceDescription.node.addDependency(service);
 
@@ -73,8 +76,8 @@ class EksClusterStack extends TestStack {
     // everything is wired properly.
     const pinger = new Pinger(this, 'ServicePinger', {
       url: `http://${serviceDescription.loadBalancerAddress}:${servicePort}`,
-      // securityGroup: sg,
-      // vpc: vpc,
+      securityGroup: pingerSecurityGroup,
+      vpc: vpc,
     });
 
     // this should display a proper nginx response

@@ -4,7 +4,7 @@ import { Cluster } from './cluster';
 /**
  * Properties for KubernetesResourceAttribute
  */
-export interface KubernetesResourceAttributeProps {
+export interface KubernetesGetProps {
   /**
    * The EKS cluster to fetch attributes from.
    *
@@ -40,21 +40,21 @@ export interface KubernetesResourceAttributeProps {
  * Represents an attribute of a resource deployed in the cluster.
  * Use this to fetch runtime information about resources.
  */
-export class KubernetesResourceAttribute extends Construct {
+export class KubernetesGet extends Construct {
   /**
    * The CloudFormation reosurce type.
    */
-  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesResourceAttribute';
+  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesGet';
 
   private _resource: CustomResource;
 
-  constructor(scope: Construct, id: string, props: KubernetesResourceAttributeProps) {
+  constructor(scope: Construct, id: string, props: KubernetesGetProps) {
     super(scope, id);
 
     const provider = props.cluster._attachKubectlResourceScope(this);
 
     this._resource = new CustomResource(this, 'Resource', {
-      resourceType: KubernetesResourceAttribute.RESOURCE_TYPE,
+      resourceType: KubernetesGet.RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
         ClusterName: props.cluster.clusterName,

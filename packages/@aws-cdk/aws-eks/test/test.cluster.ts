@@ -1385,7 +1385,7 @@ export = {
     const { stack } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION });
 
-    cluster.describeService('myservice');
+    cluster.describeService({serviceName: 'myservice'});
 
     new eks.ServiceDescription(stack, 'ExpectedService', {
       cluster: cluster,

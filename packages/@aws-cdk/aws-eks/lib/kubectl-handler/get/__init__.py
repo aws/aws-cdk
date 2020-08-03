@@ -2,12 +2,10 @@ import json
 import logging
 import os
 import subprocess
-import urllib3
 import time
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-http = urllib3.PoolManager()
 
 # these are coming from the kubectl layer
 os.environ['PATH'] = '/opt/kubectl:/opt/awscli:' + os.environ['PATH']
@@ -40,16 +38,14 @@ def get_handler(event, context):
     # json path should be surrouded with '{}'
     path = '{{{0}}}'.format(json_path)
     if request_type == 'Create' or request_type == 'Update':
-        output = waitForOutput(
-          ['get', resource_type, resource_name, "-o=jsonpath='{{{0}}}'".format(json_path)],
-          int(timeout_seconds))
+        output = wait_for_output(['get', resource_type, resource_name, "-o=jsonpath='{{{0}}}'".format(json_path)], int(timeout_seconds))
         return {'Data': {'Value': output}}
     elif request_type == 'Delete':
         pass
     else:
         raise Exception("invalid request type %s" % request_type)
 
-def waitForOutput(args, timeout_seconds):
+def wait_for_output(args, timeout_seconds):
 
   end_time = time.time() + timeout_seconds
 
