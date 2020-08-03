@@ -123,7 +123,7 @@ export interface HttpRouteIntegrationBindOptions {
 
   /**
    * The current scope in which the bind is occurring.
-   * If the `HttpRouteIntegration` being ound create additionaly constructs,
+   * If the `HttpRouteIntegration` being bound creates additional constructs,
    * this will be used as their parent scope.
    */
   readonly scope: Construct;
