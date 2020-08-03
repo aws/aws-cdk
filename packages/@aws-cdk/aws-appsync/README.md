@@ -63,7 +63,7 @@ const demoTable = new db.Table(stack, 'DemoTable', {
   },
 });
 
-const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos"', demoTable);
+const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos', demoTable);
 
 // Resolver for the Query "getDemos" that scans the DyanmoDb table and returns the entire list.
 demoDS.createResolver({
@@ -160,3 +160,58 @@ api.grantMutation(role, 'updateExample');
 // For custom types and granular design
 api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```
+
+### Code-First Schema
+
+CDK offers the ability to generate your schema in a code-first approach. 
+A code-first approach offers a developer workflow with:
+- **modularity**: organizing schema type definitions into different files
+- **reusability**: simplifying down boilerplate/repetitive code
+- **consistency**: resolvers and schema definition will always be synced
+
+#### Code-First Example
+
+We are going to reference the [example](#Example) through a code-first approach.
+
+```ts
+import * as appsync from '@aws-cdk/aws-appsync';
+import * as db from '@aws-cdk/aws-dynamodb';
+
+const api = new appsync.GraphQLApi(stack, 'Api', {
+  name: 'demo',
+  schemaDefinition: appsync.SchemaDefinition.FILE,
+  schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+  authorizationConfig: {
+    defaultAuthorization: {
+      authorizationType: appsync.AuthorizationType.IAM
+    },
+  },
+});
+
+const demoTable = new db.Table(stack, 'DemoTable', {
+  partitionKey: {
+    name: 'id',
+    type: AttributeType.STRING,
+  },
+});
+
+const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos', demoTable);
+
+// Schema Definition starts here
+
+const demo = api.addType('demo', {
+  definition: [
+    appsync.AttributeType.string('id').required(),
+    appsync.AttributeType.string('version').required(),
+  ],
+});
+
+```
+
+#### Attribute Types
+
+Attribute Types are the building blocks of types, whether they are object, 
+queries, mutations, etc. Attribute Types can be:
+- [**Scalar Types**](https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html): Id, Int, String, AWSDate, etc. 
+- **Object Types**: types that you generate (i.e. `demo` from the example above)
+

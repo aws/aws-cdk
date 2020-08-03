@@ -773,8 +773,10 @@ export class GraphQLApi extends Construct {
    * @param attribute - the attribute of a type
    */
   private generateAttribute(attribute: AttributeType): string {
-    const list = attribute.isList ? '[]' : '';
+    const listify = (type: string) => {
+      return attribute.isList ? `[${type}]` : type;
+    };
     const required = attribute.isRequired ? '!' : '';
-    return `${attribute.name}: ${attribute.type}${list}${required}`;
+    return `${attribute.name}: ${listify(attribute.type)}${required}`;
   }
 }
