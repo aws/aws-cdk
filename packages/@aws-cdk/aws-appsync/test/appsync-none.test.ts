@@ -17,14 +17,14 @@ beforeEach(() => {
 
 describe('DynamoDb Data Source configuration', () => {
 
-  test('default configuration produces name `NoneCDKDefault`', () => {
+  test('default configuration produces name `NoneCDKDataSource`', () => {
     // WHEN
     api.addNoneDataSource();
 
     // EXPECT
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'NONE',
-      Name: 'NoneCDKDefault',
+      Name: 'NoneCDKDataSource',
     });
   });
 
@@ -64,7 +64,7 @@ describe('DynamoDb Data Source configuration', () => {
     };
 
     // EXPECT
-    expect(when).toThrow('There is already a Construct with name \'NoneCDKDefault\' in GraphQLApi [baseApi]');
+    expect(when).toThrow('There is already a Construct with name \'NoneCDKDataSource\' in GraphQLApi [baseApi]');
   });
 });
 

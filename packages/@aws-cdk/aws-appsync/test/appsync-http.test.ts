@@ -19,14 +19,14 @@ beforeEach(() => {
 
 describe('Http Data Source configuration', () => {
 
-  test('default configuration produces name `HttpCDKDefault`', () => {
+  test('default configuration produces name `HttpCDKDataSource`', () => {
     // WHEN
     api.addHttpDataSource(endpoint);
 
     // EXPECT
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'HTTP',
-      Name: 'HttpCDKDefault',
+      Name: 'HttpCDKDataSource',
     });
   });
 
@@ -66,7 +66,7 @@ describe('Http Data Source configuration', () => {
     };
 
     // EXPECT
-    expect(when).toThrow('There is already a Construct with name \'HttpCDKDefault\' in GraphQLApi [baseApi]');
+    expect(when).toThrow('There is already a Construct with name \'HttpCDKDataSource\' in GraphQLApi [baseApi]');
   });
 });
 

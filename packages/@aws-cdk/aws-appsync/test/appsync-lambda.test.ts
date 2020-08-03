@@ -27,14 +27,14 @@ describe('Lambda Data Source configuration', () => {
     });
   });
 
-  test('default configuration produces name `TableCDKDefault`', () => {
+  test('default configuration produces name `TableCDKDataSource`', () => {
     // WHEN
     api.addLambdaDataSource(func);
 
     // EXPECT
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
-      Name: 'LambdaCDKDefault',
+      Name: 'LambdaCDKDataSource',
     });
   });
 
@@ -74,7 +74,7 @@ describe('Lambda Data Source configuration', () => {
     };
 
     // EXPECT
-    expect(when).toThrow('There is already a Construct with name \'LambdaCDKDefault\' in GraphQLApi [baseApi]');
+    expect(when).toThrow('There is already a Construct with name \'LambdaCDKDataSource\' in GraphQLApi [baseApi]');
   });
 });
 

@@ -49,7 +49,7 @@
   },
   {
     "Resources": {
-      "ApiTableCDKDefaultServiceRoleF54231AA": {
+      "ApiDynamoDbCDKDataSourceServiceRole9FB7AB05": {
         "Type": "AWS::IAM::Role",
         "Properties": {
           "AssumeRolePolicyDocument": {
@@ -66,7 +66,7 @@
           }
         }
       },
-      "ApiTableCDKDefaultServiceRoleDefaultPolicy745D6657": {
+      "ApiDynamoDbCDKDataSourceServiceRoleDefaultPolicy3E2B077A": {
         "Type": "AWS::IAM::Policy",
         "Properties": {
           "PolicyDocument": {
@@ -100,21 +100,21 @@
             ],
             "Version": "2012-10-17"
           },
-          "PolicyName": "ApiTableCDKDefaultServiceRoleDefaultPolicy745D6657",
+          "PolicyName": "ApiDynamoDbCDKDataSourceServiceRoleDefaultPolicy3E2B077A",
           "Roles": [
             {
-              "Ref": "ApiTableCDKDefaultServiceRoleF54231AA"
+              "Ref": "ApiDynamoDbCDKDataSourceServiceRole9FB7AB05"
             }
           ]
         }
       },
-      "ApiTableCDKDefault0035EEA0": {
+      "ApiDynamoDbCDKDataSource32962474": {
         "Type": "AWS::AppSync::DataSource",
         "Properties": {
           "ApiId": {
             "Fn::ImportValue": "baseStack:ExportsOutputFnGetAttbaseApiCDA4D43AApiId50287E68"
           },
-          "Name": "TableCDKDefault",
+          "Name": "DynamoDbCDKDataSource",
           "Type": "AMAZON_DYNAMODB",
           "DynamoDBConfig": {
             "AwsRegion": {
@@ -126,13 +126,13 @@
           },
           "ServiceRoleArn": {
             "Fn::GetAtt": [
-              "ApiTableCDKDefaultServiceRoleF54231AA",
+              "ApiDynamoDbCDKDataSourceServiceRole9FB7AB05",
               "Arn"
             ]
           }
         }
       },
-      "ApiTableCDKDefaultQuerygetTestsResolverCB3712E2": {
+      "ApiDynamoDbCDKDataSourceQuerygetTestsResolver9705E49C": {
         "Type": "AWS::AppSync::Resolver",
         "Properties": {
           "ApiId": {
@@ -140,16 +140,16 @@
           },
           "FieldName": "getTests",
           "TypeName": "Query",
-          "DataSourceName": "TableCDKDefault",
+          "DataSourceName": "DynamoDbCDKDataSource",
           "Kind": "UNIT",
           "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
           "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
         },
         "DependsOn": [
-          "ApiTableCDKDefault0035EEA0"
+          "ApiDynamoDbCDKDataSource32962474"
         ]
       },
-      "ApiTableCDKDefaultMutationaddTestResolver8087CE09": {
+      "ApiDynamoDbCDKDataSourceMutationaddTestResolver17820EE2": {
         "Type": "AWS::AppSync::Resolver",
         "Properties": {
           "ApiId": {
@@ -157,13 +157,13 @@
           },
           "FieldName": "addTest",
           "TypeName": "Mutation",
-          "DataSourceName": "TableCDKDefault",
+          "DataSourceName": "DynamoDbCDKDataSource",
           "Kind": "UNIT",
           "RequestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
           "ResponseMappingTemplate": "$util.toJson($ctx.result)"
         },
         "DependsOn": [
-          "ApiTableCDKDefault0035EEA0"
+          "ApiDynamoDbCDKDataSource32962474"
         ]
       },
       "TestTable5769773A": {
@@ -186,13 +186,13 @@
         "UpdateReplacePolicy": "Delete",
         "DeletionPolicy": "Delete"
       },
-      "api2NoneCDKDefaultCFB889A5": {
+      "api2NoneCDKDataSourceFEEDF6D1": {
         "Type": "AWS::AppSync::DataSource",
         "Properties": {
           "ApiId": {
             "Fn::ImportValue": "baseStack:ExportsOutputFnGetAttbaseApiCDA4D43AApiId50287E68"
           },
-          "Name": "NoneCDKDefault",
+          "Name": "NoneCDKDataSource",
           "Type": "NONE"
         }
       }

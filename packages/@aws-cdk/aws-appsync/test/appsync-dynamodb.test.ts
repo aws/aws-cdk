@@ -32,14 +32,14 @@ describe('DynamoDb Data Source configuration', () => {
     });
   });
 
-  test('default configuration produces name `TableCDKDefault`', () => {
+  test('default configuration produces name `DynamoDbCDKDataSource`', () => {
     // WHEN
     api.addDynamoDbDataSource(table);
 
     // EXPECT
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
-      Name: 'TableCDKDefault',
+      Name: 'DynamoDbCDKDataSource',
     });
   });
 
@@ -79,7 +79,7 @@ describe('DynamoDb Data Source configuration', () => {
     };
 
     // EXPECT
-    expect(when).toThrow('There is already a Construct with name \'TableCDKDefault\' in GraphQLApi [baseApi]');
+    expect(when).toThrow('There is already a Construct with name \'DynamoDbCDKDataSource\' in GraphQLApi [baseApi]');
   });
 });
 

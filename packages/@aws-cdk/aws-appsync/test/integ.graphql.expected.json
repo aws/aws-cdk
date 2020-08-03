@@ -121,7 +121,7 @@
         "Definition": "type ServiceVersion @aws_api_key {\n  version: String!\n}\n\ntype Customer @aws_api_key {\n  id: String!\n  name: String!\n}\n\ninput SaveCustomerInput {\n  name: String!\n}\n\ntype Order @aws_api_key {\n  customer: String!\n  order: String!\n}\n\ntype Payment @aws_api_key {\n  id: String!\n  amount: String!\n}\n\ninput PaymentInput {\n  amount: String!\n}\n\ntype Query @aws_api_key {\n  getServiceVersion: ServiceVersion\n  getCustomers: [Customer]\n  getCustomer(id: String): Customer\n  getCustomerOrdersEq(customer: String): Order\n  getCustomerOrdersLt(customer: String): Order\n  getCustomerOrdersLe(customer: String): Order\n  getCustomerOrdersGt(customer: String): Order\n  getCustomerOrdersGe(customer: String): Order\n  getCustomerOrdersFilter(customer: String, order: String): Order\n  getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n  getPayment(id: String): Payment\n}\n\ninput FirstOrderInput {\n  product: String!\n  quantity: Int!\n}\n\ntype Mutation @aws_api_key {\n  addCustomer(customer: SaveCustomerInput!): Customer\n  saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n  removeCustomer(id: String!): Customer\n  saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order\n  savePayment(payment: PaymentInput!): Payment\n  doPostOnAws: String!\n}\n"
       }
     },
-    "ApiNoneCDKDefault17ACBBC2": {
+    "ApiNoneCDKDataSourceDBC45994": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -130,11 +130,11 @@
             "ApiId"
           ]
         },
-        "Name": "NoneCDKDefault",
+        "Name": "NoneCDKDataSource",
         "Type": "NONE"
       }
     },
-    "ApiNoneCDKDefaultQuerygetServiceVersionResolverD7F3590D": {
+    "ApiNoneCDKDataSourceQuerygetServiceVersionResolverA5AD60E6": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -145,13 +145,13 @@
         },
         "FieldName": "getServiceVersion",
         "TypeName": "Query",
-        "DataSourceName": "NoneCDKDefault",
+        "DataSourceName": "NoneCDKDataSource",
         "Kind": "UNIT",
         "RequestMappingTemplate": "{\"version\":\"2017-02-28\"}",
         "ResponseMappingTemplate": "{\"version\":\"v1\"}"
       },
       "DependsOn": [
-        "ApiNoneCDKDefault17ACBBC2",
+        "ApiNoneCDKDataSourceDBC45994",
         "ApiSchema510EECD7"
       ]
     },
@@ -740,7 +740,7 @@
         "ApiSchema510EECD7"
       ]
     },
-    "ApiHttpCDKDefaultServiceRole0E0C2E53": {
+    "ApiHttpCDKDataSourceServiceRole992CDB9E": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -757,7 +757,7 @@
         }
       }
     },
-    "ApiHttpCDKDefault2B4C6D63": {
+    "ApiHttpCDKDataSourceA919CDB4": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -766,20 +766,20 @@
             "ApiId"
           ]
         },
-        "Name": "HttpCDKDefault",
+        "Name": "HttpCDKDataSource",
         "Type": "HTTP",
         "HttpConfig": {
           "Endpoint": "https://aws.amazon.com/"
         },
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "ApiHttpCDKDefaultServiceRole0E0C2E53",
+            "ApiHttpCDKDataSourceServiceRole992CDB9E",
             "Arn"
           ]
         }
       }
     },
-    "ApiHttpCDKDefaultMutationdoPostOnAwsResolver208308C9": {
+    "ApiHttpCDKDataSourceMutationdoPostOnAwsResolverBDE25968": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -790,13 +790,13 @@
         },
         "FieldName": "doPostOnAws",
         "TypeName": "Mutation",
-        "DataSourceName": "HttpCDKDefault",
+        "DataSourceName": "HttpCDKDataSource",
         "Kind": "UNIT",
         "RequestMappingTemplate": "{\n    \"version\": \"2018-05-29\",\n    \"method\": \"POST\",\n    # if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts\n    \"resourcePath\": \"/path/123\",\n    \"params\":{\n        \"body\": $util.toJson($ctx.args),\n        \"headers\":{\n            \"Content-Type\": \"application/json\",\n            \"Authorization\": \"$ctx.request.headers.Authorization\"\n        }\n    }\n  }",
         "ResponseMappingTemplate": "\n    ## Raise a GraphQL field error in case of a datasource invocation error\n    #if($ctx.error)\n      $util.error($ctx.error.message, $ctx.error.type)\n    #end\n    ## if the response status code is not 200, then return an error. Else return the body **\n    #if($ctx.result.statusCode == 200)\n        ## If response is 200, return the body.\n        $ctx.result.body\n    #else\n        ## If response is not 200, append the response to error block.\n        $utils.appendError($ctx.result.body, \"$ctx.result.statusCode\")\n    #end\n  "
       },
       "DependsOn": [
-        "ApiHttpCDKDefault2B4C6D63",
+        "ApiHttpCDKDataSourceA919CDB4",
         "ApiSchema510EECD7"
       ]
     },
