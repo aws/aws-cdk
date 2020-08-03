@@ -335,6 +335,21 @@ export class AllowedMethods {
 }
 
 /**
+ * The HTTP methods that the Behavior will cache requests on.
+ */
+export class CachedMethods {
+  /** HEAD and GET */
+  public static readonly CACHE_GET_HEAD = new CachedMethods(['GET', 'HEAD']);
+  /** HEAD, GET, and OPTIONS */
+  public static readonly CACHE_GET_HEAD_OPTIONS = new CachedMethods(['GET', 'HEAD', 'OPTIONS']);
+
+  /** HTTP methods supported */
+  public readonly methods: string[];
+
+  private constructor(methods: string[]) { this.methods = methods; }
+}
+
+/**
  * Options for configuring custom error responses.
  *
  * @experimental
@@ -419,9 +434,25 @@ export interface AddBehaviorOptions {
   /**
    * HTTP methods to allow for this behavior.
    *
-   * @default - GET and HEAD
+   * @default AllowedMethods.ALLOW_GET_HEAD
    */
   readonly allowedMethods?: AllowedMethods;
+
+  /**
+   * HTTP methods to cache for this behavior.
+   *
+   * @default CachedMethods.CACHE_GET_HEAD
+   */
+  readonly cachedMethods?: CachedMethods;
+
+  /**
+   * Whether you want CloudFront to automatically compress certain files for this cache behavior.
+   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html#compressed-content-cloudfront-file-types
+   * for file types CloudFront will compress.
+   *
+   * @default false
+   */
+  readonly compress?: boolean;
 
   /**
    * Whether CloudFront will forward query strings to the origin.
@@ -439,6 +470,20 @@ export interface AddBehaviorOptions {
    * @default []
    */
   readonly forwardQueryStringCacheKeys?: string[];
+
+  /**
+   * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.
+   *
+   * @default false
+   */
+  readonly smoothStreaming?: boolean;
+
+  /**
+   * The protocol that viewers can use to access the files controlled by this behavior.
+   *
+   * @default ViewerProtocolPolicy.ALLOW_ALL
+   */
+  readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
 
   /**
    * The Lambda@Edge functions to invoke before serving the contents.
