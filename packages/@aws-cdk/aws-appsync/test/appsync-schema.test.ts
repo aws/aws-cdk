@@ -85,7 +85,7 @@ describe('testing schema definition mode `file`', () => {
     const when = () => { api.updateDefinition('error'); };
 
     //THEN
-    expect(when).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
+    expect(when).toThrowError('API cannot update schema because schema definition mode is not configured as CODE.');
   });
 
   test('definition mode `file` errors when schemaDefinitionFile is not configured', () => {

@@ -30,25 +30,6 @@ export class Directive {
 }
 
 /**
- * Properties of a GraphQL Schema Type
- */
-export interface BaseTypeProps {
-  /**
-   * property declaring if this type is a list
-   *
-   * @default - false
-   */
-  readonly isList?: boolean;
-
-  /**
-   * property declaring if this type is required
-   *
-   * @default - false
-   */
-  readonly isRequired?: boolean;
-}
-
-/**
  * Properties for configuring an Object Type
  */
 export interface ObjectTypeProps {
@@ -100,32 +81,32 @@ export class AttributeType {
    *
    * Often used as a key for a cache and not intended to be human-readable.
    */
-  public static id(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.ID, name, props);
+  public static id(name: string): AttributeType {
+    return new AttributeType(Type.ID, name);
   }
   /**
    * `String` scalar type is a free-form human-readable text.
    */
-  public static string(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.STRING, name, props);
+  public static string(name: string): AttributeType {
+    return new AttributeType(Type.STRING, name);
   }
   /**
    * `Int` scalar type is a signed non-fractional numerical value.
    */
-  public static int(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.INT, name, props);
+  public static int(name: string): AttributeType {
+    return new AttributeType(Type.INT, name);
   }
   /**
    * `Float` scalar type is a signed double-precision fractional value.
    */
-  public static float(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.FLOAT, name, props);
+  public static float(name: string): AttributeType {
+    return new AttributeType(Type.FLOAT, name);
   }
   /**
    * `Boolean` scalar type is a boolean value: true or false.
    */
-  public static boolean(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.BOOLEAN, name, props);
+  public static boolean(name: string): AttributeType {
+    return new AttributeType(Type.BOOLEAN, name);
   }
 
   /**
@@ -135,8 +116,8 @@ export class AttributeType {
    *
    * @see https://en.wikipedia.org/wiki/ISO_8601#Calendar_dates
    */
-  public static awsDate(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.AWS_DATE, name, props);
+  public static awsDate(name: string): AttributeType {
+    return new AttributeType(Type.AWS_DATE, name);
   }
   /**
    * `AWSTime` scalar type represents a valid extended `ISO 8601 Time` string.
@@ -145,8 +126,8 @@ export class AttributeType {
    *
    * @see https://en.wikipedia.org/wiki/ISO_8601#Times
    */
-  public static awsTime(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.AWS_TIME, name, props);
+  public static awsTime(name: string): AttributeType {
+    return new AttributeType(Type.AWS_TIME, name);
   }
   /**
    * `AWSDateTime` scalar type represents a valid extended `ISO 8601 DateTime` string.
@@ -155,57 +136,57 @@ export class AttributeType {
    *
    * @see https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
    */
-  public static awsDateTime(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.AWS_DATE_TIME, name, props);
+  public static awsDateTime(name: string): AttributeType {
+    return new AttributeType(Type.AWS_DATE_TIME, name);
   }
   /**
    * `AWSTimestamp` scalar type represents the number of seconds since `1970-01-01T00:00Z`.
    *
    * Timestamps are serialized and deserialized as numbers.
    */
-  public static awsTimestamp(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.AWS_TIMESTAMP, name, props);
+  public static awsTimestamp(name: string): AttributeType {
+    return new AttributeType(Type.AWS_TIMESTAMP, name);
   }
   /**
    * `AWSEmail` scalar type represents an email address string (i.e.`username@example.com`)
    */
-  public static awsEmail(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.AWS_EMAIL, name, props);
+  public static awsEmail(name: string): AttributeType {
+    return new AttributeType(Type.AWS_EMAIL, name);
   }
   /**
    * `AWSJson` scalar type represents a JSON string.
    */
-  public static awsJSON(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.AWS_JSON, name, props);
+  public static awsJSON(name: string): AttributeType {
+    return new AttributeType(Type.AWS_JSON, name);
   }
   /**
    * `AWSURL` scalar type represetns a valid URL string.
    *
    * URLs wihtout schemes or contain double slashes are considered invalid.
    */
-  public static awsURL(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.AWS_URL, name, props);
+  public static awsURL(name: string): AttributeType {
+    return new AttributeType(Type.AWS_URL, name);
   }
   /**
    * `AWSPhone` scalar type represents a valid phone number. Phone numbers maybe be whitespace delimited or hyphenated.
    *
    * The number can specify a country code at the beginning, but is not required for US phone numbers.
    */
-  public static awsPhone(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.AWS_PHONE, name, props);
+  public static awsPhone(name: string): AttributeType {
+    return new AttributeType(Type.AWS_PHONE, name);
   }
   /**
    * `AWSIPAddress` scalar type respresents a valid `IPv4` of `IPv6` address string.
    */
-  public static awsIpAddress(name: string, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.AWS_IP_ADDRESS, name, props);
+  public static awsIpAddress(name: string): AttributeType {
+    return new AttributeType(Type.AWS_IP_ADDRESS, name);
   }
 
   /**
    * an object type to be added as an attribute
    */
-  public static object(type: ObjectType, props?: BaseTypeProps): AttributeType {
-    return new AttributeType(Type.OBJECT, type.name, props);
+  public static object(type: ObjectType): AttributeType {
+    return new AttributeType(Type.OBJECT, type.name);
   }
 
   /**
@@ -219,17 +200,33 @@ export class AttributeType {
   /**
    * property determining if this attribute is a list
    */
-  public readonly isList: boolean;
+  public isList: boolean;
   /**
    * property determining if this attribute is required
    */
-  public readonly isRequired: boolean;
+  public isRequired: boolean;
 
-  private constructor(type: Type, name: string, props?: BaseTypeProps) {
+  private constructor(type: Type, name: string) {
     this.type = type;
     this.name = name;
-    this.isList = props?.isList ?? false;
-    this.isRequired = props?.isRequired ?? false;
+    this.isList = false;
+    this.isRequired = false;
+  }
+
+  /**
+   * Set this attribute type as a list
+   */
+  public list(): AttributeType {
+    this.isList = true;
+    return this;
+  }
+
+  /**
+   * Set this attribute type to be required
+   */
+  public required(): AttributeType {
+    this.isRequired = true;
+    return this;
   }
 }
 

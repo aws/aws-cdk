@@ -1,0 +1,35 @@
+{
+  "Resources": {
+    "codefirstapi1A3CC7D2": {
+      "Type": "AWS::AppSync::GraphQLApi",
+      "Properties": {
+        "AuthenticationType": "API_KEY",
+        "Name": "api"
+      }
+    },
+    "codefirstapiDefaultAPIKeyApiKeyB73DF94B": {
+      "Type": "AWS::AppSync::ApiKey",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "codefirstapi1A3CC7D2",
+            "ApiId"
+          ]
+        },
+        "Description": "Default API Key created by CDK"
+      }
+    },
+    "codefirstapiSchema148B6CDE": {
+      "Type": "AWS::AppSync::GraphQLSchema",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "codefirstapi1A3CC7D2",
+            "ApiId"
+          ]
+        },
+        "Definition": "type test @aws_iam {\n  id: String!\n  version: String!\n}\n\ntype Query {\n  getTest(id: String!): test\n}\n"
+      }
+    }
+  }
+}

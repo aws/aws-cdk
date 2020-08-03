@@ -18,12 +18,8 @@ const api = new appsync.GraphQLApi(stack, 'code-first-api', {
 
 api.addType('test', {
   definition: [
-    appsync.AttributeType.string('id', {
-      isRequired: true,
-    }),
-    appsync.AttributeType.string('version', {
-      isRequired: true,
-    }),
+    appsync.AttributeType.string('id').required(),
+    appsync.AttributeType.string('version').required(),
   ],
   directives: [
     appsync.Directive.iam(),
