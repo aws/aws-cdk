@@ -1,6 +1,22 @@
 import { Construct, Duration, Token } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
 
+/**
+ * The failover configuration used for Origin Groups,
+ * returned in {@link OriginBindConfig.failoverConfig}.
+ */
+export interface OriginFailoverConfig {
+  /** The origin to use as the fallback origin. */
+  readonly failoverOrigin: IOrigin;
+
+  /**
+   * The HTTP status codes of the response that trigger querying the failover Origin.
+   *
+   * @default - 500, 502, 503 and 504
+   */
+  readonly statusCodes?: number[];
+}
+
 /** The struct returned from {@link IOrigin.bind}. */
 export interface OriginBindConfig {
   /**
@@ -9,6 +25,13 @@ export interface OriginBindConfig {
    * @default - nothing is returned
    */
   readonly originProperty?: CfnDistribution.OriginProperty;
+
+  /**
+   * The failover configuration for this Origin.
+   *
+   * @default - nothing is returned
+   */
+  readonly failoverConfig?: OriginFailoverConfig;
 }
 
 /**

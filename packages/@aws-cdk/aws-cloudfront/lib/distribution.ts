@@ -132,6 +132,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
   private readonly boundOrigins: BoundOrigin[] = [];
+  private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
 
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: acm.ICertificate;
@@ -160,6 +161,7 @@ export class Distribution extends Resource implements IDistribution {
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
       enabled: true,
       origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
+      originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
       defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
       cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
       viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
@@ -187,7 +189,7 @@ export class Distribution extends Resource implements IDistribution {
     this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
   }
 
-  private addOrigin(origin: IOrigin): string {
+  private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
     const existingOrigin = this.boundOrigins.find(boundOrigin => boundOrigin.origin === origin);
     if (existingOrigin) {
       return existingOrigin.originId;
@@ -197,8 +199,39 @@ export class Distribution extends Resource implements IDistribution {
       const originId = scope.node.uniqueId;
       const originBindConfig = origin.bind(scope, { originId });
       this.boundOrigins.push({ origin, originId, ...originBindConfig });
+      if (originBindConfig.failoverConfig) {
+        if (isFailoverOrigin) {
+          throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
+        }
+        const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
+        this.addOriginGroup(originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
+      }
       return originId;
     }
+  }
+
+  private addOriginGroup(statusCodes: number[] | undefined, originId: string, failoverOriginId: string): void {
+    statusCodes = statusCodes ?? [500, 502, 503, 504];
+    if (statusCodes.length === 0) {
+      throw new Error('fallbackStatusCodes cannot be empty');
+    }
+    const groupIndex = this.originGroups.length + 1;
+    this.originGroups.push({
+      failoverCriteria: {
+        statusCodes: {
+          items: statusCodes,
+          quantity: statusCodes.length,
+        },
+      },
+      id: new Construct(this, `OriginGroup${groupIndex}`).node.uniqueId,
+      members: {
+        items: [
+          { originId },
+          { originId: failoverOriginId },
+        ],
+        quantity: 2,
+      },
+    });
   }
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
@@ -209,6 +242,15 @@ export class Distribution extends Resource implements IDistribution {
       }
     });
     return renderedOrigins;
+  }
+
+  private renderOriginGroups(): CfnDistribution.OriginGroupsProperty | undefined {
+    return this.originGroups.length === 0
+      ? undefined
+      : {
+        items: this.originGroups,
+        quantity: this.originGroups.length,
+      };
   }
 
   private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {

@@ -1,0 +1,144 @@
+{
+  "Resources": {
+    "Bucket83908E77": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "BucketPolicyE9A3008A": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "Bucket83908E77"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "CanonicalUser": {
+                  "Fn::GetAtt": [
+                    "DistributionOrigin1S3Origin5F5C0696",
+                    "S3CanonicalUserId"
+                  ]
+                }
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "Bucket83908E77",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "Bucket83908E77",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "DistributionOrigin1S3Origin5F5C0696": {
+      "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+      "Properties": {
+        "CloudFrontOriginAccessIdentityConfig": {
+          "Comment": "Allows CloudFront to reach the bucket"
+        }
+      }
+    },
+    "DistributionCFDistribution882A7313": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "DefaultCacheBehavior": {
+            "ForwardedValues": {
+              "QueryString": false
+            },
+            "TargetOriginId": "cloudfrontorigingroupDistributionOrigin137659A54",
+            "ViewerProtocolPolicy": "allow-all"
+          },
+          "Enabled": true,
+          "OriginGroups": {
+            "Items": [
+              {
+                "FailoverCriteria": {
+                  "StatusCodes": {
+                    "Items": [
+                      500,
+                      502,
+                      503,
+                      504
+                    ],
+                    "Quantity": 4
+                  }
+                },
+                "Id": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
+                "Members": {
+                  "Items": [
+                    {
+                      "OriginId": "cloudfrontorigingroupDistributionOrigin137659A54"
+                    },
+                    {
+                      "OriginId": "cloudfrontorigingroupDistributionOrigin2CCE5D500"
+                    }
+                  ],
+                  "Quantity": 2
+                }
+              }
+            ],
+            "Quantity": 1
+          },
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "Bucket83908E77",
+                  "RegionalDomainName"
+                ]
+              },
+              "Id": "cloudfrontorigingroupDistributionOrigin137659A54",
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "origin-access-identity/cloudfront/",
+                      {
+                        "Ref": "DistributionOrigin1S3Origin5F5C0696"
+                      }
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "CustomOriginConfig": {
+                "OriginProtocolPolicy": "https-only"
+              },
+              "DomainName": "www.example.com",
+              "Id": "cloudfrontorigingroupDistributionOrigin2CCE5D500"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
