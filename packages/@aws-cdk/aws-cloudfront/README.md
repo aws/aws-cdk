@@ -133,12 +133,11 @@ const myWebDistribution = new cloudfront.Distribution(this, 'myDist', {
 
 Additional behaviors can be specified at creation, or added after the initial creation. Each additional behavior is associated with an origin,
 and enable customization for a specific set of resources based on a URL path pattern. For example, we can add a behavior to `myWebDistribution` to
-override the default time-to-live (TTL) for all of the images.
+override the default viewer protocol policy for all of the images.
 
 ```ts
 myWebDistribution.addBehavior('/images/*.jpg', new origins.S3Origin(myBucket), {
   viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-  defaultTtl: cdk.Duration.days(7),
 });
 ```
 
@@ -156,7 +155,6 @@ new cloudfront.Distribution(this, 'myDist', {
     '/images/*.jpg': {
       origin: bucketOrigin,
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      defaultTtl: cdk.Duration.days(7),
     },
   },
 });
