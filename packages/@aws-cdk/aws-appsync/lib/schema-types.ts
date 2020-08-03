@@ -215,6 +215,8 @@ export class AttributeType {
 
   /**
    * Set this attribute type as a list
+   * 
+   * // TODO: makeList or some alternative
    */
   public list(): AttributeType {
     this.isList = true;
