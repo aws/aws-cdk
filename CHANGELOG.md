@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.56.0](https://github.com/aws/aws-cdk/compare/v1.55.0...v1.56.0) (2020-07-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* **appsync:** **appsync** prop `schemaDefinition` no longer takes string, instead it is required to configure schema definition mode.
+- **appsync**: schemaDefinition takes param `SchemaDefinition.XXX` to declare how schema will be configured
+  - **SchemaDefinition.CODE** allows schema definition through CDK
+  - **SchemaDefinition.FILE** allows schema definition through schema.graphql file
+* **cloudfront:** Removed origin classes from the aws-cloudfront module.
+* **aws-cloudfront:** Removed S3Origin and HttpOrigin from the aws-cloudfront module. Use the S3Origin and HttpOrigin classes in the aws-cloudfront-origins module instead.
+* **aws-cloudfront:** Renamed Origin to OriginBase.
+* **cloudfront:** the property Origin.domainName has been removed
+
+### Features
+
+* **cfn-include:** add support for the Fn::Sub function ([#9275](https://github.com/aws/aws-cdk/issues/9275)) ([2a48495](https://github.com/aws/aws-cdk/commit/2a48495093dc33d88554aaa0a033338e798f9d5f))
+* **core:** make the CfnParameter class mutable ([#9365](https://github.com/aws/aws-cdk/issues/9365)) ([860966a](https://github.com/aws/aws-cdk/commit/860966a3945e1b667f92b19b49b92f7a1b1b8b33)), closes [#9364](https://github.com/aws/aws-cdk/issues/9364)
+
+
+### Bug Fixes
+
+* **certificatemanager:** DNS validation for wildcard certificates ([#9291](https://github.com/aws/aws-cdk/issues/9291)) ([419278b](https://github.com/aws/aws-cdk/commit/419278bf88c16d5519ba63c822e4af52157e8c67)), closes [#9248](https://github.com/aws/aws-cdk/issues/9248)
+* **pipelines:** reduce assets IAM policy size ([#9333](https://github.com/aws/aws-cdk/issues/9333)) ([88d563f](https://github.com/aws/aws-cdk/commit/88d563fab6971c20754d76c5d2eb9f4463aeae6c)), closes [#9316](https://github.com/aws/aws-cdk/issues/9316)
+
+
+* **appsync:** strongly type schema definition mode ([#9283](https://github.com/aws/aws-cdk/issues/9283)) ([b46aa99](https://github.com/aws/aws-cdk/commit/b46aa998ce3aedd3c5cfc5b4eef08859a6dc0d2a)), closes [#9301](https://github.com/aws/aws-cdk/issues/9301)
+* **cloudfront:** README updates and notes of breaking changes ([#9356](https://github.com/aws/aws-cdk/issues/9356)) ([fbb0418](https://github.com/aws/aws-cdk/commit/fbb04183ea77bcf630c39fa22893039865782a12)), closes [#9326](https://github.com/aws/aws-cdk/issues/9326)
+* **cloudfront:** small refactoring of the Origin API ([#9281](https://github.com/aws/aws-cdk/issues/9281)) ([cbfdc15](https://github.com/aws/aws-cdk/commit/cbfdc15959c5d5209d4fed6ac281f9897f44d4c5)), closes [#9109](https://github.com/aws/aws-cdk/issues/9109)
+
 ## [1.55.0](https://github.com/aws/aws-cdk/compare/v1.54.0...v1.55.0) (2020-07-28)
 
 
