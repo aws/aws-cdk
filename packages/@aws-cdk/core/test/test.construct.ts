@@ -1,6 +1,8 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Construct, ConstructOrder, IConstruct } from 'constructs';
 import { Test } from 'nodeunit';
-import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
+import { App as Root, Aws, Lazy } from '../lib';
+import { validateTree } from '../lib/private/synthesis';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -375,7 +377,7 @@ export = {
 
     const stack = new TestStack();
 
-    const errors = ConstructNode.validate(stack.node).map((v: ValidationError) => ({ path: v.source.node.path, message: v.message }));
+    const errors = validateTree(stack);
 
     // validate DFS
     test.deepEqual(errors, [
@@ -393,11 +395,11 @@ export = {
 
     class LockableConstruct extends Construct {
       public lockMe() {
-        (this.node._actualNode as any)._lock();
+        this.node.lock();
       }
 
       public unlockMe() {
-        (this.node._actualNode as any)._unlock();
+        this.node.lock();
       }
     }
 

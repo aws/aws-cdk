@@ -589,7 +589,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
+    Tag.add(this, NAME_TAG, this.node.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,

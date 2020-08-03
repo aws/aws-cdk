@@ -236,9 +236,9 @@ export class Grant implements cdk.IDependable {
     this.principalStatement = props.principalStatement;
     this.resourceStatement = props.resourceStatement;
 
-    cdk.DependableTrait.implement(this, {
-      get dependencyRoots() {
-        return props.policyDependable ? cdk.DependableTrait.get(props.policyDependable).dependencyRoots : [];
+    Dependable.implement(this, {
+      get dependencies() {
+        return props.policyDependable ? Dependable.of(props.policyDependable).dependencies : [];
       },
     });
   }
@@ -324,11 +324,11 @@ export interface AddToResourcePolicyResult {
  * inner dependables, as they may be mutable so we need to defer
  * the query.
  */
-export class CompositeDependable implements cdk.IDependable {
-  constructor(...dependables: cdk.IDependable[]) {
-    cdk.DependableTrait.implement(this, {
-      get dependencyRoots(): cdk.IConstruct[] {
-        return Array.prototype.concat.apply([], dependables.map(d => cdk.DependableTrait.get(d).dependencyRoots));
+export class CompositeDependable implements IDependable {
+  constructor(...dependables: IDependable[]) {
+    Dependable.implement(this, {
+      get dependencies(): IConstruct[] {
+        return Array.prototype.concat.apply([], dependables.map(d => Dependable.of(d).dependencies));
       },
     });
   }

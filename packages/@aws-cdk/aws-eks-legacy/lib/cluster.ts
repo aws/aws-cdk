@@ -640,7 +640,7 @@ export class Cluster extends Resource implements ICluster {
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, '1'));
+        Tag.add(subnet, tag, '1');
       }
     };
 

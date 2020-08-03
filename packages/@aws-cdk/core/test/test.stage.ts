@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, IConstruct } from 'constructs';
 import { Test } from 'nodeunit';
-import { App, CfnResource, Construct, IAspect, IConstruct, Stack, Stage } from '../lib';
+import { App, Aspects, CfnResource, IAspect, Stack, Stage } from '../lib';
 
 export = {
   'Stack inherits unspecified part of the env from Stage'(test: Test) {
@@ -148,7 +149,7 @@ export = {
 
     // WHEN
     const aspect = new TouchingAspect();
-    stack.node.applyAspect(aspect);
+    Aspects.of(stack).apply(aspect);
 
     // THEN
     app.synth();
@@ -168,7 +169,7 @@ export = {
 
     // WHEN
     const aspect = new TouchingAspect();
-    app.node.applyAspect(aspect);
+    Aspects.of(app).apply(aspect);
 
     // THEN
     app.synth();

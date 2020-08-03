@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, IConstruct } from './construct-compat';
+import { Construct, IConstruct } from 'constructs';
 import { Environment } from './environment';
 import { collectRuntimeInformation } from './private/runtime-info';
 import { synthesize } from './private/synthesis';

@@ -324,7 +324,8 @@ test('when specifying every property', () => {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+
+  Tag.add(table, 'Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table',
     {
@@ -357,7 +358,8 @@ test('when specifying sse with customer managed CMK', () => {
     encryption: TableEncryption.CUSTOMER_MANAGED,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+
+  Tag.add(table, 'Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -383,7 +385,8 @@ test('when specifying only encryptionKey', () => {
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+
+  Tag.add(table, 'Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -410,7 +413,8 @@ test('when specifying sse with customer managed CMK with encryptionKey provided 
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+
+  Tag.add(table, 'Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -1406,7 +1410,7 @@ test('error when validating construct if a local secondary index exists without 
     sortKey: LSI_SORT_KEY,
   });
 
-  const errors = ConstructNode.validate(table.node);
+  const errors = table.node.validate();
 
   expect(errors.length).toBe(1);
   expect(errors[0]?.message).toBe('a sort key of the table must be specified to add local secondary indexes');

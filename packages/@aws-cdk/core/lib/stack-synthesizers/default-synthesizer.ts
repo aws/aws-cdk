@@ -4,11 +4,10 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
-import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { addStackArtifactToAssembly, assertBound, contentHash } from './_shared';
-import { IStackSynthesizer } from './types';
+import { IStackSynthesizer, ISynthesisSession } from './types';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 

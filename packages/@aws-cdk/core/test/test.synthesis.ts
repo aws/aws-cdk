@@ -5,6 +5,8 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import * as cdk from '../lib';
+import { Construct } from 'constructs';
+import { synthesize } from '../lib/private/synthesis';
 
 function createModernApp() {
   return new cdk.App({
@@ -71,7 +73,7 @@ export = {
     const app = createModernApp();
     const stack = new cdk.Stack(app, 'one-stack');
 
-    class MyConstruct extends cdk.Construct {
+    class MyConstruct extends Construct {
       protected synthesize(s: cdk.ISynthesisSession) {
         writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
         s.assembly.addArtifact('my-random-construct', {
@@ -119,7 +121,7 @@ export = {
   'it should be possible to synthesize without an app'(test: Test) {
     const calls = new Array<string>();
 
-    class SynthesizeMe extends cdk.Construct {
+    class SynthesizeMe extends Construct {
       constructor() {
         super(undefined as any, 'id');
       }
@@ -153,7 +155,8 @@ export = {
     }
 
     const root = new SynthesizeMe();
-    const assembly = cdk.ConstructNode.synth(root.node, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
+
+    const assembly = synthesize(root, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
 
     test.deepEqual(calls, [ 'prepare', 'validate', 'synthesize' ]);
     const stack = assembly.getStackByName('art');

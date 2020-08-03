@@ -209,7 +209,7 @@ export class FileSystem extends Resource implements IFileSystem {
         securityGroups: [attrs.securityGroup],
         defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
       });
-      public readonly mountTargetsAvailable = new ConcreteDependable();
+      public readonly mountTargetsAvailable = new DependencyGroup();
     }
 
     return new Import(scope, id);
@@ -232,7 +232,7 @@ export class FileSystem extends Resource implements IFileSystem {
 
   public readonly mountTargetsAvailable: IDependable;
 
-  private readonly _mountTargetsAvailable = new ConcreteDependable();
+  private readonly _mountTargetsAvailable = new DependencyGroup();
 
   /**
    * Constructor for creating a new EFS FileSystem.

@@ -185,7 +185,7 @@ nodeunitShim({
     sg2.connections.allowFrom(sg1, Port.tcp(100));
 
     // THEN -- both rules are in Stack2
-    ConstructNode.prepare(app.node);
+    app.synth();
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
       GroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
@@ -216,7 +216,7 @@ nodeunitShim({
     sg2.connections.allowTo(sg1, Port.tcp(100));
 
     // THEN -- both rules are in Stack2
-    ConstructNode.prepare(app.node);
+    app.synth();
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
       GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
@@ -249,7 +249,7 @@ nodeunitShim({
     sg2.connections.allowFrom(sg1b, Port.tcp(100));
 
     // THEN -- both egress rules are in Stack2
-    ConstructNode.prepare(app.node);
+    app.synth();
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupAED40ADC5GroupId1D10C76A' },

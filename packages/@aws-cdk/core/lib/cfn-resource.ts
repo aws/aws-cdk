@@ -1,10 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, IConstruct } from 'constructs';
 import { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 /* eslint-disable import/order */
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
-import { Construct, IConstruct } from './construct-compat';
 import { addDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import { Reference } from './reference';

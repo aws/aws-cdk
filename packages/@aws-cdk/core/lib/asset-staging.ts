@@ -7,7 +7,7 @@ import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
 import { Stage } from './stage';
-import { Construct } from './construct-compat';
+import { Construct } from 'constructs';
 
 const STAGING_TMP = '.cdk.staging';
 

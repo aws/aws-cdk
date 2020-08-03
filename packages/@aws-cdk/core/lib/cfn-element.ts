@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Construct } from './construct-compat';
+import { Construct } from 'constructs';
 import { Lazy } from './lazy';
 import { Token } from './token';
 
@@ -61,7 +61,10 @@ export abstract class CfnElement extends Construct {
       displayHint: `${notTooLong(this.node.path)}.LogicalID`,
     });
 
-    this.node.addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, this.constructor);
+    this.node.addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, {
+      stackTrace: true,
+      traceFromFunction: this.constructor,
+    });
   }
 
   /**

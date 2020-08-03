@@ -190,7 +190,7 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
 /**
  * The base class for all task definitions.
  */
-export class TaskDefinition extends TaskDefinitionBase {
+export class TaskDefinition extends TaskDefinitionBase implements IValidation {
 
   /**
    * Imports a task definition from the specified task definition ARN.
@@ -451,8 +451,8 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Validates the task definition.
    */
-  protected validate(): string[] {
-    const ret = super.validate();
+  public validate(): string[] {
+    const ret = new Array<string>();
 
     if (isEc2Compatible(this.compatibility)) {
       // EC2 mode validations

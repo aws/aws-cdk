@@ -42,7 +42,7 @@ export class UnknownPrincipal implements IPrincipal {
     const repr = JSON.stringify(stack.resolve(statement));
     this.resource.node.addWarning(`Add statement to this resource's role: ${repr}`);
     // Pretend we did the work. The human will do it for us, eventually.
-    return { statementAdded: true, policyDependable: new ConcreteDependable() };
+    return { statementAdded: true, policyDependable: new DependencyGroup() };
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {

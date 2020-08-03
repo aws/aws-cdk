@@ -143,7 +143,7 @@ function toCfnClassName(resourceType: string) {
   return { namespace: namespace.toLocaleLowerCase(), className };
 }
 
-function getUniqueNamespaces(definitions: Array<ConstructDefinition>): String[] {
+function getUniqueNamespaces(definitions: ConstructDefinition[]): String[] {
   return [... new Set(definitions.map(definition => definition.namespace))];
 }
 

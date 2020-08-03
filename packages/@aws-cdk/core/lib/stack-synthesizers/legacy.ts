@@ -1,12 +1,12 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
-import { Construct, ISynthesisSession } from '../construct-compat';
 import { FileAssetParameters } from '../private/asset-parameters';
 import { Stack } from '../stack';
 import { addStackArtifactToAssembly, assertBound } from './_shared';
-import { IStackSynthesizer } from './types';
+import { IStackSynthesizer, ISynthesisSession } from './types';
 
 /**
  * The well-known name for the docker image asset ECR repository. All docker

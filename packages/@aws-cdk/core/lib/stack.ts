@@ -8,13 +8,20 @@ import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { Construct, IConstruct, ISynthesisSession } from './construct-compat';
+import { Construct, IConstruct } from 'constructs';
 import { ContextProvider } from './context-provider';
+import { addDependency } from './deps';
 import { Environment } from './environment';
-import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
+import * as cfnlang from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
+import { Reference } from './reference';
+import { IResolvable } from './resolvable';
+import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer } from './stack-synthesizers';
+import { Stage } from './stage';
+import { ITaggable, TagManager } from './tag-manager';
+import { Token } from './token';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -376,7 +383,7 @@ export class Stack extends Construct implements ITaggable {
     return resolve(obj, {
       scope: this,
       prefix: [],
-      resolver: CLOUDFORMATION_TOKEN_RESOLVER,
+      resolver: cfnlang.CLOUDFORMATION_TOKEN_RESOLVER,
       preparing: false,
     });
   }
@@ -385,7 +392,7 @@ export class Stack extends Construct implements ITaggable {
    * Convert an object, potentially containing tokens, to a JSON string
    */
   public toJsonString(obj: any, space?: number): string {
-    return CloudFormationLang.toJSON(obj, space).toString();
+    return cfnlang.CloudFormationLang.toJSON(obj, space).toString();
   }
 
   /**
@@ -701,6 +708,32 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Synthesizes the cloudformation template into a cloud assembly.
+   * @internal
+   */
+  public _synthesizeTemplate(session: ISynthesisSession): void {
+    // In principle, stack synthesis is delegated to the
+    // StackSynthesis object.
+    //
+    // However, some parts of synthesis currently use some private
+    // methods on Stack, and I don't really see the value in refactoring
+    // this right now, so some parts still happen here.
+    const builder = session.assembly;
+
+    // write the CloudFormation template as a JSON file
+    const outPath = path.join(builder.outdir, this.templateFile);
+    const text = JSON.stringify(this._toCloudFormation(), undefined, 2);
+    fs.writeFileSync(outPath, text);
+
+    for (const ctx of this._missingContext) {
+      builder.addMissing(ctx);
+    }
+
+    // Delegate adding artifacts to the Synthesizer
+    this.synthesizer.synthesizeStackArtifacts(session);
+  }
+
+  /**
    * Returns the naming scheme used to allocate logical IDs. By default, uses
    * the `HashedAddressingScheme` but this method can be overridden to customize
    * this behavior.
@@ -759,28 +792,6 @@ export class Stack extends Construct implements ITaggable {
     if (name && !VALID_STACK_NAME_REGEX.test(name)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
-  }
-
-  protected synthesize(session: ISynthesisSession): void {
-    // In principle, stack synthesis is delegated to the
-    // StackSynthesis object.
-    //
-    // However, some parts of synthesis currently use some private
-    // methods on Stack, and I don't really see the value in refactoring
-    // this right now, so some parts still happen here.
-    const builder = session.assembly;
-
-    // write the CloudFormation template as a JSON file
-    const outPath = path.join(builder.outdir, this.templateFile);
-    const text = JSON.stringify(this._toCloudFormation(), undefined, 2);
-    fs.writeFileSync(outPath, text);
-
-    for (const ctx of this._missingContext) {
-      builder.addMissing(ctx);
-    }
-
-    // Delegate adding artifacts to the Synthesizer
-    this.synthesizer.synthesizeStackArtifacts(session);
   }
 
   /**

@@ -1,5 +1,6 @@
+import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
-import { CfnElement, CfnResource, Construct, Stack } from '../lib';
+import { CfnElement, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 /**

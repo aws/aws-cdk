@@ -46,7 +46,8 @@ export = {
     });
 
     test.notDeepEqual(SynthUtils.toCloudFormation(stack), {});
-    test.deepEqual([], ConstructNode.validate(pipeline.node));
+    // TODO: this was ConstructNode.validate()
+    test.deepEqual([], pipeline.node.validate());
     test.done();
   },
 
@@ -276,7 +277,7 @@ export = {
       ],
     }));
 
-    test.deepEqual([], ConstructNode.validate(p.node));
+    test.deepEqual([], p.node.validate());
     test.done();
   },
 
@@ -367,7 +368,7 @@ export = {
       ],
     }));
 
-    test.deepEqual([], ConstructNode.validate(pipeline.node));
+    test.deepEqual([], pipeline.node.validate());
     test.done();
   },
 

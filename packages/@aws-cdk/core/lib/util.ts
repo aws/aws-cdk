@@ -1,4 +1,4 @@
-import { IConstruct } from './construct-compat';
+import { IConstruct } from 'constructs';
 import { Intrinsic } from './private/intrinsic';
 import { IPostProcessor, IResolveContext } from './resolvable';
 import { Stack } from './stack';
