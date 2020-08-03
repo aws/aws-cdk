@@ -88,11 +88,11 @@ export class ObjectType {
     this.definition = props.definition;
     this.directives = props?.directives;
   }
-
 }
 
 /**
- * The Scalar Types in AppSync's GraphQL
+ * The Attribute Types in AppSync's GraphQL. Attribute Types are the
+ * building blocks for object types, queries, mutations, etc.
  */
 export class AttributeType {
   /**
