@@ -86,8 +86,6 @@ export abstract class OriginBase implements IOrigin {
   private readonly connectionAttempts?: number;
   private readonly customHeaders?: Record<string, string>;
 
-  private originId?: string;
-
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
     validateIntInRangeOrUndefined('connectionAttempts', 1, 3, props.connectionAttempts, false);
@@ -100,21 +98,9 @@ export abstract class OriginBase implements IOrigin {
   }
 
   /**
-   * The unique id for this origin.
-   *
-   * Cannot be accesed until bind() is called.
-   */
-  public get id(): string {
-    if (!this.originId) { throw new Error('Cannot access originId until `bind` is called.'); }
-    return this.originId;
-  }
-
-  /**
    * Binds the origin to the associated Distribution. Can be used to grant permissions, create dependent resources, etc.
    */
   public bind(_scope: Construct, options: OriginBindOptions): OriginBindConfig {
-    this.originId = options.originId;
-
     const s3OriginConfig = this.renderS3OriginConfig();
     const customOriginConfig = this.renderCustomOriginConfig();
 
@@ -124,7 +110,7 @@ export abstract class OriginBase implements IOrigin {
 
     return { originProperty: {
       domainName: this.domainName,
-      id: this.id,
+      id: options.originId,
       originPath: this.originPath,
       connectionAttempts: this.connectionAttempts,
       connectionTimeout: this.connectionTimeout?.toSeconds(),
