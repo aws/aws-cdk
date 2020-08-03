@@ -6,6 +6,7 @@ import { IFunction } from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
+import { Directive, IType, ObjectType } from './schema';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -215,11 +216,6 @@ export enum SchemaDefinition {
    * Define schema in a file, i.e. schema.graphql
    */
   FILE = 'FILE',
-
-  /**
-   * Define schema in a S3 location
-   */
-  S3 = 'S3',
 }
 
 /**
@@ -250,7 +246,7 @@ export interface GraphQLApiProps {
    * GraphQL schema definition. Specify how you want to define your schema.
    *
    * SchemaDefinition.CODE allows schema definition through CDK
-   * SchemaDefinition.FILE allows schema definition through outside file
+   * SchemaDefinition.FILE allows schema definition through schema.graphql file
    *
    * @experimental
    */
@@ -324,6 +320,14 @@ export class IamResource {
 }
 
 /**
+ * The definition of an object type
+ */
+export interface TypeDefinition {
+  definition: IType[];
+  directives?: Directive[];
+}
+
+/**
  * An AppSync GraphQL API
  */
 export class GraphQLApi extends Construct {
@@ -356,6 +360,7 @@ export class GraphQLApi extends Construct {
   }
 
   private schemaMode: SchemaDefinition;
+  private types: ObjectType[];
   private api: CfnGraphQLApi;
   private _apiKey?: string;
 
@@ -414,6 +419,7 @@ export class GraphQLApi extends Construct {
     this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
     this.schemaMode = props.schemaDefinition;
+    this.types = [];
 
     if (
       defaultAuthorizationType === AuthorizationType.API_KEY ||
@@ -687,12 +693,26 @@ export class GraphQLApi extends Construct {
   }
 
   /**
+   * Add an object type to the schema
+   *
+   * @param name the name of the object type 
+   * @param props the definition
+   */
+  public addType(name: string, props: TypeDefinition): ObjectType {
+    const type = ObjectType.custom(name, {
+      definition: props.definition,
+      directives: props.directives,
+    });
+    this.types.push(type);
+    return type;
+  }
+
+  /**
    * Define schema based on props configuration
    * @param file the file name/s3 location of Schema
    */
   private defineSchema(file?: string): CfnGraphQLSchema {
     let definition;
-    let definitionS3Location;
 
     if ( this.schemaMode == SchemaDefinition.FILE && !file) {
       throw new Error('schemaDefinitionFile must be configured if using FILE definition mode.');
@@ -702,16 +722,11 @@ export class GraphQLApi extends Construct {
       definition = '';
     } else if ( this.schemaMode == SchemaDefinition.CODE && file) {
       throw new Error('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
-    } else if ( this.schemaMode == SchemaDefinition.S3 && !file) {
-      throw new Error('schemaDefinitionFile must be configured if using S3 definition mode.');
-    } else if ( this.schemaMode == SchemaDefinition.S3 && file ) {
-      definitionS3Location = file;
     }
 
     return new CfnGraphQLSchema(this, 'Schema', {
       apiId: this.apiId,
       definition,
-      definitionS3Location,
     });
   }
 }

@@ -109,7 +109,7 @@ export class Bundling {
       throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }
 
-    // Bundling image derived from runtime bundling image (lambci)
+    // Bundling image derived from runtime bundling image (AWS SAM docker image)
     const image = cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel'), {
       buildArgs: {
         ...options.buildArgs ?? {},
