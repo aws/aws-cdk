@@ -1,5 +1,5 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
-import { IConstruct, Token } from '@aws-cdk/core';
+import { Construct, IConstruct, Token } from '@aws-cdk/core';
 
 /**
  * Interface for scalable attributes
@@ -35,6 +35,9 @@ export interface UtilizationScalingOptions extends appscaling.BaseTargetTracking
  * A scalable lambda alias attribute
  */
 export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute {
+  constructor(scope: Construct, id: string, props: ScalableFunctionAttributeProps){
+    super(scope, id, props);
+  }
   /**
    * Scale out or in to keep utilization at a given level. The utilization is tracked by the
    * LambdaProvisionedConcurrencyUtilization metric, emitted by lambda. See:
@@ -59,6 +62,12 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
   public scaleOnSchedule(id: string, action: appscaling.ScalingSchedule) {
     super.doScaleOnSchedule(id, action);
   }
+}
+
+/**
+ * Properties of a scalable function attribute
+ */
+export interface ScalableFunctionAttributeProps extends appscaling.BaseScalableAttributeProps {
 }
 
 /**
