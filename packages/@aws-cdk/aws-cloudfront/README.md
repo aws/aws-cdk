@@ -36,7 +36,8 @@ for more complex use cases.
 
 CloudFront distributions deliver your content from one or more origins; an origin is the location where you store the original version of your
 content. Origins can be created from S3 buckets or a custom origin (HTTP server). Each distribution has a default behavior which applies to all
-requests to that distribution, and routes requests to a primary origin.
+requests to that distribution, and routes requests to a primary origin. Constructs to define origins are in the `@aws-cdk/aws-cloudfront-origins`
+module.
 
 #### From an S3 Bucket
 
@@ -45,11 +46,12 @@ documents.
 
 ```ts
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as origins from '@aws-cdk/aws-cloudfront-origins';
 
 // Creates a distribution for a S3 bucket.
 const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: cloudfront.Origin.fromBucket(myBucket) },
+  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
 });
 ```
 
@@ -59,14 +61,34 @@ CloudFront's redirect and error handling will be used. In the latter case, the O
 underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
 URLs and not S3 URLs directly.
 
-#### From an HTTP endpoint
+#### ELBv2 Load Balancer
 
-Origins can also be created from other resources (e.g., load balancers, API gateways), or from any accessible HTTP server, given the domain name.
+An Elastic Load Balancing (ELB) v2 load balancer may be used as an origin. In order for a load balancer to serve as an origin, it must be publicly
+accessible (`internetFacing` is true). Both Application and Network load balancers are supported.
 
 ```ts
-// Creates a distribution for an HTTP server.
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+
+const vpc = new ec2.Vpc(...);
+// Create an application load balancer in a VPC. 'internetFacing' must be 'true'
+// for CloudFront to access the load balancer and use it as an origin.
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true
+});
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: cloudfront.Origin.fromHttpServer({ domainName: 'www.example.com' }) },
+  defaultBehavior: { origin: new origins.LoadBalancerV2Origin(lb) },
+});
+```
+
+## From an HTTP endpoint
+
+Origins can also be created from any other HTTP endpoint, given the domain name, and optionally, other origin properties.
+
+```ts
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
 });
 ```
 
@@ -76,7 +98,8 @@ When you create a distribution, CloudFront assigns a domain name for the distrib
 be retrieved from `distribution.distributionDomainName`. CloudFront distributions use a default certificate (`*.cloudfront.net`) to support HTTPS by
 default. If you want to use your own domain name, such as `www.example.com`, you must associate a certificate with your distribution that contains
 your domain name. The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate
-may either be created by ACM, or created elsewhere and imported into ACM.
+may either be created by ACM, or created elsewhere and imported into ACM. When a certificate is used, the distribution will support HTTPS connections
+from SNI only and a minimum protocol version of TLSv1.2_2018.
 
 ```ts
 const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
@@ -84,7 +107,7 @@ const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
   hostedZone,
 });
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: cloudfront.Origin.fromBucket(myBucket) },
+  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
   certificate: myCertificate,
 });
 ```
@@ -101,7 +124,7 @@ methods and viewer protocol policy of the cache.
 ```ts
 const myWebDistribution = new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
-    origin: cloudfront.Origin.fromBucket(myBucket),
+    origin: new origins.S3Origin(myBucket),
     allowedMethods: AllowedMethods.ALLOW_ALL,
     viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
   }
@@ -110,19 +133,18 @@ const myWebDistribution = new cloudfront.Distribution(this, 'myDist', {
 
 Additional behaviors can be specified at creation, or added after the initial creation. Each additional behavior is associated with an origin,
 and enable customization for a specific set of resources based on a URL path pattern. For example, we can add a behavior to `myWebDistribution` to
-override the default time-to-live (TTL) for all of the images.
+override the default viewer protocol policy for all of the images.
 
 ```ts
-myWebDistribution.addBehavior('/images/*.jpg', cloudfront.Origin.fromBucket(myOtherBucket), {
+myWebDistribution.addBehavior('/images/*.jpg', new origins.S3Origin(myBucket), {
   viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-  defaultTtl: cdk.Duration.days(7),
 });
 ```
 
 These behaviors can also be specified at distribution creation time.
 
 ```ts
-const bucketOrigin = cloudfront.Origin.fromBucket(myBucket);
+const bucketOrigin = new origins.S3Origin(myBucket);
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
     origin: bucketOrigin,
@@ -133,9 +155,69 @@ new cloudfront.Distribution(this, 'myDist', {
     '/images/*.jpg': {
       origin: bucketOrigin,
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      defaultTtl: cdk.Duration.days(7),
     },
   },
+});
+```
+
+### Lambda@Edge
+
+Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute functions that customize the content that CloudFront delivers.
+You can author Node.js or Python functions in the US East (N. Virginia) region,
+and then execute them in AWS locations globally that are closer to the viewer,
+without provisioning or managing servers.
+Lambda@Edge functions are associated with a specific behavior and event type.
+Lambda@Edge can be used rewrite URLs,
+alter responses based on headers or cookies,
+or authorize requests based on headers or authorization tokens.
+
+The following shows a Lambda@Edge function added to the default behavior and triggered on every request:
+
+```typescript
+const myFunc = new lambda.Function(...);
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: new origins.S3Origin(myBucket),
+    edgeLambdas: [
+      {
+        functionVersion: myFunc.currentVersion,
+        eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+      }
+    ],
+  },
+});
+```
+
+Lambda@Edge functions can also be associated with additional behaviors,
+either at Distribution creation time,
+or after.
+
+```typescript
+// assigning at Distribution creation
+const myOrigin = new origins.S3Origin(myBucket);
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: myOrigin },
+  additionalBehaviors: {
+    'images/*': {
+      origin: myOrigin,
+      edgeLambdas: [
+        {
+          functionVersion: myFunc.currentVersion,
+          eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
+        },
+      ],
+    },
+  },
+});
+
+// assigning after creation
+myDistribution.addBehavior('images/*', myOrigin, {
+  edgeLambdas: [
+    {
+      functionVersion: myFunc.currentVersion,
+      eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
+    },
+  ],
 });
 ```
 
@@ -239,7 +321,6 @@ const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
 
 In case the origin source is not available and answers with one of the
 specified status code the failover origin source will be used.
-
 
 ```ts
 new CloudFrontWebDistribution(stack, 'ADistribution', {

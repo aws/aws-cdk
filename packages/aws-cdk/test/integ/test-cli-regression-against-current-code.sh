@@ -14,7 +14,7 @@ temp_dir=$(mktemp -d)
 
 function cleanup {
     # keep junit file to allow report creation
-    cp ${integ_under_test}/junit.xml .
+    cp ${integ_under_test}/coverage/junit.xml .
     rm -rf ${temp_dir}
     rm -rf ${integ_under_test}
 }

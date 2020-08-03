@@ -32,11 +32,11 @@ nodeunitShim({
         new Vpc(stack, 'TheVPC');
         expect(stack).to(
           haveResource('AWS::EC2::VPC',
-            hasTags( [ {Key: 'Name', Value: 'TheVPC'} ])),
+            hasTags( [ {Key: 'Name', Value: 'TestStack/TheVPC'} ])),
         );
         expect(stack).to(
           haveResource('AWS::EC2::InternetGateway',
-            hasTags( [ {Key: 'Name', Value: 'TheVPC'} ])),
+            hasTags( [ {Key: 'Name', Value: 'TestStack/TheVPC'} ])),
         );
         test.done();
       },
@@ -458,7 +458,7 @@ nodeunitShim({
       for (let i = 1; i < 4; i++) {
         expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
           Key: 'Name',
-          Value: `VPC/egressSubnet${i}`,
+          Value: `TestStack/VPC/egressSubnet${i}`,
         }, {
           Key: 'aws-cdk:subnet-name',
           Value: 'egress',
