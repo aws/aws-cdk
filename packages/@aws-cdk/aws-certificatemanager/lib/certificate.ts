@@ -238,7 +238,7 @@ function renderDomainValidation(validation: CertificateValidation, domainNames: 
 
   switch (validation.method) {
     case ValidationMethod.DNS:
-      for (const domainName of domainNames) {
+      for (const domainName of getUniqueDnsDomainNames(domainNames)) {
         const hostedZone = validation.props.hostedZones?.[domainName] ?? validation.props.hostedZone;
         if (hostedZone) {
           domainValidation.push({ domainName, hostedZoneId: hostedZone.hostedZoneId });
@@ -259,4 +259,15 @@ function renderDomainValidation(validation: CertificateValidation, domainNames: 
   }
 
   return domainValidation.length !== 0 ? domainValidation : undefined;
+}
+
+/**
+ * Removes wildcard domains (*.example.com) where the base domain (example.com) is present.
+ * This is because the DNS validation treats them as the same thing, and the automated CloudFormation
+ * DNS validation errors out with the duplicate records.
+ */
+function getUniqueDnsDomainNames(domainNames: string[]) {
+  return domainNames.filter(domain => {
+    return Token.isUnresolved(domain) || !domain.startsWith('*.') || !domainNames.includes(domain.replace('*.', ''));
+  });
 }
