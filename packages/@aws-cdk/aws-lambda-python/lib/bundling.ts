@@ -28,7 +28,7 @@ export function bundle(options: BundlingOptions): lambda.AssetCode {
 
   let depsCommand = chain([
     hasRequirements ? `${installer} install -r requirements.txt -t ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}` : '',
-    `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}`,
+    `cp -au . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}`,
   ]);
 
   return lambda.Code.fromAsset(options.entry, {
