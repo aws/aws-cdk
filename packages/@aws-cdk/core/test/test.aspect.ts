@@ -1,7 +1,7 @@
 import { Test } from 'nodeunit';
 import { App } from '../lib';
 import { IAspect } from '../lib/aspect';
-import { Construct, ConstructNode, IConstruct } from '../lib/construct-compat';
+import { Construct, IConstruct } from '../lib/construct-compat';
 
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
@@ -22,9 +22,9 @@ export = {
     const app = new App();
     const root = new MyConstruct(app, 'MyConstruct');
     root.node.applyAspect(new VisitOnce());
-    ConstructNode.prepare(root.node);
+    app.synth();
     test.deepEqual(root.visitCounter, 1);
-    ConstructNode.prepare(root.node);
+    app.synth();
     test.deepEqual(root.visitCounter, 1);
     test.done();
   },
