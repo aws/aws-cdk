@@ -82,7 +82,7 @@ test('assets are also published when using the lower-level addStackArtifactDeplo
       Name: 'Assets',
       Actions: [
         objectLike({
-          Name: FILE_ASSET_SOURCE_HASH,
+          Name: 'FileAsset1',
           RunOrder: 1,
         }),
       ],
@@ -173,6 +173,60 @@ test('can control fix/CLI version used in pipeline selfupdate', () => {
   });
 });
 
+describe('asset roles and policies', () => {
+  test('includes file publishing assets role for apps with file assets', () => {
+    pipeline.addApplicationStage(new FileAssetApp(app, 'App1'));
+
+    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'codebuild.amazonaws.com',
+            AWS: { 'Fn::Join': [ '', [
+              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+            ] ] },
+          },
+        }],
+      },
+    });
+    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
+      expectedAssetRolePolicy('arn:*:iam::*:role/*-file-publishing-role-*', 'CdkAssetsFileRole6BE17A07'));
+  });
+
+  test('includes image publishing assets role for apps with Docker assets', () => {
+    pipeline.addApplicationStage(new DockerAssetApp(app, 'App1'));
+
+    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'codebuild.amazonaws.com',
+            AWS: { 'Fn::Join': [ '', [
+              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+            ] ] },
+          },
+        }],
+      },
+    });
+    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
+      expectedAssetRolePolicy('arn:*:iam::*:role/*-image-publishing-role-*', 'CdkAssetsDockerRole484B6DD3'));
+  });
+
+  test('includes both roles for apps with both file and Docker assets', () => {
+    pipeline.addApplicationStage(new FileAssetApp(app, 'App1'));
+    pipeline.addApplicationStage(new DockerAssetApp(app, 'App2'));
+
+    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
+      expectedAssetRolePolicy('arn:*:iam::*:role/*-file-publishing-role-*', 'CdkAssetsFileRole6BE17A07'));
+    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
+      expectedAssetRolePolicy('arn:*:iam::*:role/*-image-publishing-role-*', 'CdkAssetsDockerRole484B6DD3'));
+  });
+});
+
 class PlainStackApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
@@ -211,4 +265,57 @@ class DockerAssetApp extends Stage {
       directory: path.join(__dirname, 'test-docker-asset'),
     });
   }
+}
+
+function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string) {
+  return {
+    PolicyDocument: {
+      Statement: [{
+        Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+        Effect: 'Allow',
+        Resource: {
+          'Fn::Join': ['', [
+            'arn:',
+            {Ref: 'AWS::Partition'},
+            `:logs:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:log-group:/aws/codebuild/*`,
+          ]],
+        },
+      },
+      {
+        Action: ['codebuild:CreateReportGroup', 'codebuild:CreateReport', 'codebuild:UpdateReport', 'codebuild:BatchPutTestCases'],
+        Effect: 'Allow',
+        Resource: {
+          'Fn::Join': ['', [
+            'arn:',
+            {Ref: 'AWS::Partition'},
+            `:codebuild:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:report-group/*`,
+          ]],
+        },
+      },
+      {
+        Action: ['codebuild:BatchGetBuilds', 'codebuild:StartBuild', 'codebuild:StopBuild'],
+        Effect: 'Allow',
+        Resource: '*',
+      },
+      {
+        Action: 'sts:AssumeRole',
+        Effect: 'Allow',
+        Resource: assumeRolePattern,
+      },
+      {
+        Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+        Effect: 'Allow',
+        Resource: [
+          { 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn' ] },
+          { 'Fn::Join': ['', [{'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn']}, '/*']] },
+        ],
+      },
+      {
+        Action: ['kms:Decrypt', 'kms:DescribeKey'],
+        Effect: 'Allow',
+        Resource: { 'Fn::GetAtt': [ 'CdkPipelineArtifactsBucketEncryptionKeyDDD3258C', 'Arn' ]},
+      }],
+    },
+    Roles: [ {Ref: attachedRole} ],
+  };
 }

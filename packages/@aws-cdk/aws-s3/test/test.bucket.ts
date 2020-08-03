@@ -1,9 +1,9 @@
-import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { EOL } from 'os';
+import { expect, haveResource, haveResourceLike, SynthUtils, arrayWith, objectLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { EOL } from 'os';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
@@ -1797,6 +1797,59 @@ export = {
       }, /The condition property cannot be an empty object/);
       test.done();
     },
+    'isWebsite set properly with': {
+      'only index doc'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'Website', {
+          websiteIndexDocument: 'index2.html',
+        });
+        test.equal(bucket.isWebsite, true);
+        test.done();
+      },
+      'error and index docs'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'Website', {
+          websiteIndexDocument: 'index2.html',
+          websiteErrorDocument: 'error.html',
+        });
+        test.equal(bucket.isWebsite, true);
+        test.done();
+      },
+      'redirects'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'Website', {
+          websiteRedirect: {
+            hostName: 'www.example.com',
+            protocol: s3.RedirectProtocol.HTTPS,
+          },
+        });
+        test.equal(bucket.isWebsite, true);
+        test.done();
+      },
+      'no website properties set'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'Website');
+        test.equal(bucket.isWebsite, false);
+        test.done();
+      },
+      'imported website buckets'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = s3.Bucket.fromBucketAttributes(stack, 'Website', {
+          bucketArn: 'arn:aws:s3:::my-bucket',
+          isWebsite: true,
+        });
+        test.equal(bucket.isWebsite, true);
+        test.done();
+      },
+      'imported buckets'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = s3.Bucket.fromBucketAttributes(stack, 'NotWebsite', {
+          bucketArn: 'arn:aws:s3:::my-bucket',
+        });
+        test.equal(bucket.isWebsite, false);
+        test.done();
+      },
+    },
   },
 
   'Bucket.fromBucketArn'(test: Test) {
@@ -1918,4 +1971,56 @@ export = {
 
     test.done();
   },
+
+  'Defaults for an inventory bucket'(test: Test) {
+    // Given
+    const stack = new cdk.Stack();
+
+    const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
+    new s3.Bucket(stack, 'MyBucket', {
+      inventories: [
+        {
+          destination: {
+            bucket: inventoryBucket,
+          },
+        },
+      ],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::S3::Bucket', {
+      InventoryConfigurations: [
+        {
+          Enabled: true,
+          IncludedObjectVersions: 'All',
+          ScheduleFrequency: 'Weekly',
+          Destination: {
+            Format: 'CSV',
+            BucketArn: { 'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'] },
+          },
+          Id: 'MyBucketInventory0',
+        },
+      ],
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::S3::BucketPolicy', {
+      Bucket: { Ref: 'InventoryBucketA869B8CB'},
+      PolicyDocument: {
+        Statement: arrayWith(objectLike({
+          Action: 's3:PutObject',
+          Principal: { Service: 's3.amazonaws.com' },
+          Resource: [
+            {
+              'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'],
+            },
+            {
+              'Fn::Join': ['', [{'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn']}, '/*']],
+            },
+          ],
+        })),
+      },
+    }));
+
+    test.done();
+  },
+
 };

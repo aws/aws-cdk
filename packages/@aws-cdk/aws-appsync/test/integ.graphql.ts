@@ -1,7 +1,7 @@
+import { join } from 'path';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { join } from 'path';
 import {
   AuthorizationType,
   GraphQLApi,
@@ -10,6 +10,7 @@ import {
   PrimaryKey,
   UserPoolDefaultAction,
   Values,
+  SchemaDefinition,
 } from '../lib';
 
 /*
@@ -35,7 +36,8 @@ const userPool = new UserPool(stack, 'Pool', {
 
 const api = new GraphQLApi(stack, 'Api', {
   name: 'demoapi',
-  schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+  schemaDefinition: SchemaDefinition.FILE,
+  schemaDefinitionFile: join(__dirname, 'integ.graphql.graphql'),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: AuthorizationType.USER_POOL,

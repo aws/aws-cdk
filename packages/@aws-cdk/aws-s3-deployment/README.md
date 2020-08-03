@@ -91,7 +91,7 @@ new BucketDeployment(this, 'BucketDeployment', {
 });
 
 new BucketDeployment(this, 'HTMLBucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['!index.html'] })],
+  sources: [Source.asset('./website', { exclude: ['*', '!index.html'] })],
   destinationBucket: bucket,
   cacheControl: [CacheControl.fromString('max-age=0,no-cache,no-store,must-revalidate')],
   prune: false,

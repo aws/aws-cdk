@@ -1,7 +1,7 @@
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Construct, Lazy } from '@aws-cdk/core';
 import { Action } from '../action';
 
 /**
@@ -177,17 +177,19 @@ export class CodeDeployEcsDeployAction extends Action {
     // the Action's Role needs to read from the Bucket to get artifacts
     options.bucket.grantRead(options.role);
 
+    const taskDefinitionTemplateArtifact = determineTaskDefinitionArtifact(this.actionProps);
+    const appSpecTemplateArtifact = determineAppSpecArtifact(this.actionProps);
     const actionConfig: codepipeline.ActionConfig = {
       configuration: {
         ApplicationName: this.actionProps.deploymentGroup.application.applicationName,
         DeploymentGroupName: this.actionProps.deploymentGroup.deploymentGroupName,
 
-        TaskDefinitionTemplateArtifact: determineTaskDefinitionArtifact(this.actionProps).artifactName,
+        TaskDefinitionTemplateArtifact: Lazy.stringValue({ produce: () => taskDefinitionTemplateArtifact.artifactName }),
         TaskDefinitionTemplatePath: this.actionProps.taskDefinitionTemplateFile
           ? this.actionProps.taskDefinitionTemplateFile.fileName
           : 'taskdef.json',
 
-        AppSpecTemplateArtifact: determineAppSpecArtifact(this.actionProps).artifactName,
+        AppSpecTemplateArtifact: Lazy.stringValue({ produce: () => appSpecTemplateArtifact.artifactName }),
         AppSpecTemplatePath: this.actionProps.appSpecTemplateFile
           ? this.actionProps.appSpecTemplateFile.fileName
           : 'appspec.yaml',
@@ -197,7 +199,7 @@ export class CodeDeployEcsDeployAction extends Action {
     if (this.actionProps.containerImageInputs) {
       for (let i = 1; i <= this.actionProps.containerImageInputs.length; i++) {
         const imageInput = this.actionProps.containerImageInputs[i - 1];
-        actionConfig.configuration[`Image${i}ArtifactName`] = imageInput.input.artifactName;
+        actionConfig.configuration[`Image${i}ArtifactName`] = Lazy.stringValue({ produce: () => imageInput.input.artifactName });
         actionConfig.configuration[`Image${i}ContainerName`] = imageInput.taskDefinitionPlaceholder
           ? imageInput.taskDefinitionPlaceholder
           : 'IMAGE';
