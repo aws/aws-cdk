@@ -712,7 +712,7 @@ export class GraphQLApi extends Construct {
    *
    * @param addition the addition to add to schema
    * @param delimiter the delimiter between schema and addition
-   * @default - ' '
+   * @default - ''
    */
   public appendToSchema(addition: string, delimiter?: string): void {
     if ( this.schemaMode != SchemaDefinition.CODE ) {
@@ -746,15 +746,13 @@ export class GraphQLApi extends Construct {
    *
    * @param directives the directives of a given type
    * @param delimiter the separator betweeen directives
+   * @default - ' '
    */
   private generateDirectives (directives?: Directive[], delimiter?: string): string{
-    if (!directives){
-      return '';
-    }
-    const sep = delimiter ?? ' ';
     let schemaAddition = '';
+    if (!directives){ return schemaAddition; }
     directives.map((directive) => {
-      schemaAddition = `${schemaAddition}${directive.statement}${sep}`;
+      schemaAddition = `${schemaAddition}${directive.statement}${delimiter ?? ' '}`;
     });
     return schemaAddition;
   }
