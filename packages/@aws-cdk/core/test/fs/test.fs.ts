@@ -29,7 +29,7 @@ export = {
 
     // check that tmpdir() is called either 0 times (in which case it was
     // proabably cached from before) or once (for this test).
-    test.ok(tmpdirStub.callCount < 2); // cached result
+    test.ok(tmpdirStub.callCount < 2);
 
     fs.unlinkSync(p);
     fs.unlinkSync(symlinkTmp);
