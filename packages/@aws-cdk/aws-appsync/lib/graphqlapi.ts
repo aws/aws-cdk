@@ -703,17 +703,17 @@ export class GraphQLApi extends Construct {
     let definition;
     let definitionS3Location;
 
-    if ( this.schemaMode == SchemaDefinition.FILE && !file) {
+    if ( this.schemaMode === SchemaDefinition.FILE && !file) {
       throw new Error('schemaDefinitionFile must be configured if using FILE definition mode.');
-    } else if ( this.schemaMode == SchemaDefinition.FILE && file ) {
+    } else if ( this.schemaMode === SchemaDefinition.FILE && file ) {
       definition = readFileSync(file).toString('UTF-8');
-    } else if ( this.schemaMode == SchemaDefinition.CODE && !file ) {
+    } else if ( this.schemaMode === SchemaDefinition.CODE && !file ) {
       definition = '';
-    } else if ( this.schemaMode == SchemaDefinition.CODE && file) {
+    } else if ( this.schemaMode === SchemaDefinition.CODE && file) {
       throw new Error('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
-    } else if ( this.schemaMode == SchemaDefinition.S3 && !file) {
+    } else if ( this.schemaMode === SchemaDefinition.S3 && !file) {
       throw new Error('schemaDefinitionFile must be configured if using S3 definition mode.');
-    } else if ( this.schemaMode == SchemaDefinition.S3 && file ) {
+    } else if ( this.schemaMode === SchemaDefinition.S3 && file ) {
       definitionS3Location = file;
     }
 

@@ -161,23 +161,19 @@ api.grantMutation(role, 'updateExample');
 api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```
 
-### s3-assets
+### s3 integration
 
-`aws-appsync` supports using s3 location for schema definition.
+`aws-appsync` supports using s3 location for schema definition. You can use a 
+s3 bucket to host your schema.grapqhl file. If you already have a s3 bucket 
+that contains your schema.graqphl file, or utilize external tooling in conjunction 
+with your schema.graphql file, use the SchemaDefinition S3.
 
 ```ts
 import * as appsync from '@aws-cdk/aws-appsync';
-import * as assets from '@aws-cdk/aws-s3-assets';
-
-const asset = new assets.Asset(stack, 'asset', {
-  path: path.join(__dirname, 'appsync.test.graphql'),
-});
 
 const api = new appsync.GraphQLApi(stack, 'api' {
   name: 'api',
   schemaDefinition: appsync.SchemaDefinition.S3,
-  schemaDefinitionFile: asset.s3ObjectUrl,
+  schemaDefinitionFile: s3LocationURL,
 });
 ```
-
-Use `s3-assets` when `schema.graphql` file is too large for CloudFormations.

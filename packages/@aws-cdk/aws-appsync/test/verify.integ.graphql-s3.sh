@@ -16,6 +16,6 @@ if [[ -z $1 || -z $2 ]]; then
   exit 1
 fi
 
-echo THIS TEST SHOULD SUCCEED
+echo "This should return { getTests: [] }: indicating that the data source is linked to the api"
 curl -XPOST -H "Content-Type:application/graphql" -H "x-api-key:$1" -d '{ "query": "query { getTests { version } }" }" }' $2
 echo ""
