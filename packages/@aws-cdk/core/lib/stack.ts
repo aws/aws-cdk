@@ -930,7 +930,7 @@ export class Stack extends Construct implements ITaggable {
     // In unit tests our Stack (which is the only component) may not have an
     // id, so in that case just pretend it's "Stack".
     if (ids.length === 1 && !ids[0]) {
-      throw new Error('unexpected: stack id must always be defined (it will be "Stack" by default)');
+      throw new Error('unexpected: stack id must always be defined');
     }
 
     return makeStackName(ids);
