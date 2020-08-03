@@ -2,6 +2,70 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.56.0](https://github.com/aws/aws-cdk/compare/v1.55.0...v1.56.0) (2020-07-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* **appsync:** **appsync** prop `schemaDefinition` no longer takes string, instead it is required to configure schema definition mode.
+- **appsync**: schemaDefinition takes param `SchemaDefinition.XXX` to declare how schema will be configured
+  - **SchemaDefinition.CODE** allows schema definition through CDK
+  - **SchemaDefinition.FILE** allows schema definition through schema.graphql file
+* **cloudfront:** Removed origin classes from the aws-cloudfront module.
+* **aws-cloudfront:** Removed S3Origin and HttpOrigin from the aws-cloudfront module. Use the S3Origin and HttpOrigin classes in the aws-cloudfront-origins module instead.
+* **aws-cloudfront:** Renamed Origin to OriginBase.
+* **cloudfront:** the property Origin.domainName has been removed
+
+### Features
+
+* **cfn-include:** add support for the Fn::Sub function ([#9275](https://github.com/aws/aws-cdk/issues/9275)) ([2a48495](https://github.com/aws/aws-cdk/commit/2a48495093dc33d88554aaa0a033338e798f9d5f))
+* **core:** make the CfnParameter class mutable ([#9365](https://github.com/aws/aws-cdk/issues/9365)) ([860966a](https://github.com/aws/aws-cdk/commit/860966a3945e1b667f92b19b49b92f7a1b1b8b33)), closes [#9364](https://github.com/aws/aws-cdk/issues/9364)
+
+
+### Bug Fixes
+
+* **certificatemanager:** DNS validation for wildcard certificates ([#9291](https://github.com/aws/aws-cdk/issues/9291)) ([419278b](https://github.com/aws/aws-cdk/commit/419278bf88c16d5519ba63c822e4af52157e8c67)), closes [#9248](https://github.com/aws/aws-cdk/issues/9248)
+* **pipelines:** reduce assets IAM policy size ([#9333](https://github.com/aws/aws-cdk/issues/9333)) ([88d563f](https://github.com/aws/aws-cdk/commit/88d563fab6971c20754d76c5d2eb9f4463aeae6c)), closes [#9316](https://github.com/aws/aws-cdk/issues/9316)
+
+
+* **appsync:** strongly type schema definition mode ([#9283](https://github.com/aws/aws-cdk/issues/9283)) ([b46aa99](https://github.com/aws/aws-cdk/commit/b46aa998ce3aedd3c5cfc5b4eef08859a6dc0d2a)), closes [#9301](https://github.com/aws/aws-cdk/issues/9301)
+* **cloudfront:** README updates and notes of breaking changes ([#9356](https://github.com/aws/aws-cdk/issues/9356)) ([fbb0418](https://github.com/aws/aws-cdk/commit/fbb04183ea77bcf630c39fa22893039865782a12)), closes [#9326](https://github.com/aws/aws-cdk/issues/9326)
+* **cloudfront:** small refactoring of the Origin API ([#9281](https://github.com/aws/aws-cdk/issues/9281)) ([cbfdc15](https://github.com/aws/aws-cdk/commit/cbfdc15959c5d5209d4fed6ac281f9897f44d4c5)), closes [#9109](https://github.com/aws/aws-cdk/issues/9109)
+
+## [1.55.0](https://github.com/aws/aws-cdk/compare/v1.54.0...v1.55.0) (2020-07-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **lambda:** the `bundlingDockerImage` prop of a `Runtime` now points to the AWS SAM build image (`amazon/aws-sam-cli-build-image-<runtime>`) instead of the LambCI build image (`lambci/lambda:build-<runtime>`)
+* **appsync:** `pipelineConfig` is now an array of `string` instead of `CfnResolver.PipelineConfigProperty` for usability.
+- **appsync**: `pipelineConfig` parameter takes in `string []`
+
+### Features
+
+* **appsync:** grant APIs for managing permissions ([#8993](https://github.com/aws/aws-cdk/issues/8993)) ([e6dca52](https://github.com/aws/aws-cdk/commit/e6dca529098e54c91f0706019b9ee06522ddb025)), closes [#6772](https://github.com/aws/aws-cdk/issues/6772) [#7871](https://github.com/aws/aws-cdk/issues/7871) [#7313](https://github.com/aws/aws-cdk/issues/7313)
+* **aws-codepipeline:** experimental support for ServiceCatalog deploy action ([#9214](https://github.com/aws/aws-cdk/issues/9214)) ([950e51f](https://github.com/aws/aws-cdk/commit/950e51f1edab335a3fd323b6d51f7444738bb9dc))
+* **cfn-include:** handle resources not in the CloudFormation schema ([#9199](https://github.com/aws/aws-cdk/issues/9199)) ([d287525](https://github.com/aws/aws-cdk/commit/d28752513175c94fb2bc4da43374d7f2e66d6550)), closes [#9197](https://github.com/aws/aws-cdk/issues/9197)
+* **cfnspec:** cloudformation spec v16.1.0 ([#9074](https://github.com/aws/aws-cdk/issues/9074)) ([d1ca04f](https://github.com/aws/aws-cdk/commit/d1ca04f7a136be437a0538d7606803bdf0a73f98))
+* **cfnspec:** cloudformation spec v16.1.0 ([#9216](https://github.com/aws/aws-cdk/issues/9216)) ([d4b68d3](https://github.com/aws/aws-cdk/commit/d4b68d3040a96451f2b708c512af5afa8fa33bb8))
+* **cloudfront:** new aws-cloudfront-origins module, support for ALB/NLB origins ([#9209](https://github.com/aws/aws-cdk/issues/9209)) ([27ee332](https://github.com/aws/aws-cdk/commit/27ee332cba66ec9bd2ac369c657c4f94464f1f4c)), closes [#9207](https://github.com/aws/aws-cdk/issues/9207)
+* **cloudfront:** support Lambda@Edge for behaviors ([#9220](https://github.com/aws/aws-cdk/issues/9220)) ([d3e5533](https://github.com/aws/aws-cdk/commit/d3e553348d93a0a8aa1617391772e4883e6c52c1)), closes [#9108](https://github.com/aws/aws-cdk/issues/9108)
+* **lambda:** official lambda build docker images ([#9211](https://github.com/aws/aws-cdk/issues/9211)) ([ae0cf2a](https://github.com/aws/aws-cdk/commit/ae0cf2a3fa936771e66fa45f24af5efec52a3f21)), closes [#9205](https://github.com/aws/aws-cdk/issues/9205)
+* **lambda-python:** introducing LambdaPython ([#9182](https://github.com/aws/aws-cdk/issues/9182)) ([4cc2834](https://github.com/aws/aws-cdk/commit/4cc2834e0ef2683b99c4a6258cf104f8a714479f))
+* **route53-patterns:** the route53-patterns module is now stable ([#9232](https://github.com/aws/aws-cdk/issues/9232)) ([add23bf](https://github.com/aws/aws-cdk/commit/add23bf3331f73830c918953566e1d772da34cc0))
+
+
+### Bug Fixes
+
+* **appsync:** resolver unable to set pipelineConfig ([#9093](https://github.com/aws/aws-cdk/issues/9093)) ([dac9bb3](https://github.com/aws/aws-cdk/commit/dac9bb312f5b0a9c83d929c862e30b49f3b8654a)), closes [#6923](https://github.com/aws/aws-cdk/issues/6923)
+* **cloudfront:** Set MinimumProtocolVersion and SslSupportMethod when specifying distribution certificate ([#9200](https://github.com/aws/aws-cdk/issues/9200)) ([f99c327](https://github.com/aws/aws-cdk/commit/f99c3271ed2b4c68f3cd2970a1b38571f5ddc911))
+* **cloudtrail:** missing sns publish permissions ([#9239](https://github.com/aws/aws-cdk/issues/9239)) ([b4339a1](https://github.com/aws/aws-cdk/commit/b4339a19c3fbada5b9407871ccb59461102081fc))
+* **codepipeline-actions:** CodeDeployEcsDeployAction does not properly handle unnamed Artifacts ([#9147](https://github.com/aws/aws-cdk/issues/9147)) ([ac612c6](https://github.com/aws/aws-cdk/commit/ac612c6b70c01162761f6a51bdb25445da1cbf0d)), closes [#8971](https://github.com/aws/aws-cdk/issues/8971)
+* **pipelines:** Reduce template size by combining IAM roles and policies ([#9243](https://github.com/aws/aws-cdk/issues/9243)) ([1ac6863](https://github.com/aws/aws-cdk/commit/1ac686384a84afae6c3254f787f2f23542b2a948)), closes [#9066](https://github.com/aws/aws-cdk/issues/9066) [#9225](https://github.com/aws/aws-cdk/issues/9225) [#9237](https://github.com/aws/aws-cdk/issues/9237)
+* **rds:** SQL Server instance engine uses incorrect major version ([#9215](https://github.com/aws/aws-cdk/issues/9215)) ([eee8689](https://github.com/aws/aws-cdk/commit/eee86899f6836ceca608fb5a1f867d0062f4e5b9)), closes [#9171](https://github.com/aws/aws-cdk/issues/9171)
+* **route53-targets:** Add China Partition Support for CloudFrontTarget ([#9174](https://github.com/aws/aws-cdk/issues/9174)) ([52a966a](https://github.com/aws/aws-cdk/commit/52a966a2fa6b72fefc73859a1253b36a235cd631))
+* **stepfunctions-tasks:** EvaluateExpression error when key specified multiple times ([#8858](https://github.com/aws/aws-cdk/issues/8858)) ([6506327](https://github.com/aws/aws-cdk/commit/65063275b64f647c570a06f7a28d37c5d403113b)), closes [#8856](https://github.com/aws/aws-cdk/issues/8856)
+
 ## [1.54.0](https://github.com/aws/aws-cdk/compare/v1.53.0...v1.54.0) (2020-07-22)
 
 
