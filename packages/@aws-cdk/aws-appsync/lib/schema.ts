@@ -1,5 +1,3 @@
-import { AuthorizationType } from './graphqlapi';
-
 /**
  * Enum containing the Types that can be used to define ObjectTypes
  */
@@ -88,6 +86,23 @@ export enum Type {
   object = 'OBJECT',
 }
 
+export class Directive {
+  public static iam(): Directive{
+    return new Directive('@aws_iam');
+  }
+
+  private constructor(public readonly statement: string) {}
+}
+
+export interface IType {
+  type: Type
+  name: string;
+  isList: boolean;
+  isRequired: boolean;
+  definition?: IType[];
+  directives?: Directive[];
+}
+
 /**
  * Properties of a GraphQL Schema Type
  */
@@ -95,7 +110,7 @@ export interface TypeProps {
   isList?: boolean;
   isRequired?: boolean;
   definition?: BaseType[];
-  authorization?: AuthorizationType;
+  directives?: Directive[];
 }
 
 /**
@@ -170,12 +185,12 @@ export class ObjectType extends BaseType {
   }
 
   public readonly definition?: BaseType[];
-  public readonly authorization?: AuthorizationType;
+  public readonly directives?: Directive[];
 
   private constructor( type: Type, name: string, props?: TypeProps ) {
     super(type, name, props);
     this.definition = props?.definition;
-    this.authorization = props?.authorization;
+    this.directives = props?.directives;
   }
 
 }
