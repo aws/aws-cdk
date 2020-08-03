@@ -6,7 +6,13 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
-import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
+import {TriggerConfiguration} from '../trigger-configuration';
+import {
+  arnForDeploymentGroup,
+  renderAlarmConfiguration,
+  renderAutoRollbackConfiguration,
+  renderTriggerConfiguration,
+} from '../utils';
 import { IServerApplication, ServerApplication } from './application';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
 import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
@@ -230,6 +236,9 @@ export interface ServerDeploymentGroupProps {
    * @default - default AutoRollbackConfig.
    */
   readonly autoRollback?: AutoRollbackConfig;
+
+
+  readonly triggerConfigurations?: TriggerConfiguration[];
 }
 
 /**
@@ -257,6 +266,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly role?: iam.IRole;
   public readonly deploymentGroupArn: string;
   public readonly deploymentGroupName: string;
+  public readonly triggerConfigurations: TriggerConfiguration[];
 
   private readonly _autoScalingGroups: autoscaling.AutoScalingGroup[];
   private readonly installAgent: boolean;
@@ -281,6 +291,12 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     for (const asg of this._autoScalingGroups) {
       this.addCodeDeployAgentInstallUserData(asg);
     }
+    this.triggerConfigurations = props.triggerConfigurations || [];
+    for(const tc of this.triggerConfigurations) {
+      if(tc.triggerEvents.length === 0){
+        throw new Error(`'${tc.triggerName}' trigger must specify at least one trigger event`);
+      }
+    }
 
     this.alarms = props.alarms || [];
 
@@ -301,6 +317,9 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
       alarmConfiguration: cdk.Lazy.anyValue({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
       autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      triggerConfigurations: cdk.Lazy.anyValue(
+        { produce: () => this.triggerConfigurations.map(tc => renderTriggerConfiguration(tc)) },
+        { omitEmptyArray: true}),
     });
 
     this.deploymentGroupName = this.getResourceNameAttribute(resource.ref);
