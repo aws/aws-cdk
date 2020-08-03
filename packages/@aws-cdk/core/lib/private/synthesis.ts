@@ -95,10 +95,22 @@ function prepareTree(root: IConstruct) {
  * Stop at Assembly boundaries.
  */
 function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
-  visit(root, 'post', construct => construct.onSynthesize({
-    outdir: builder.outdir,
-    assembly: builder,
-  }));
+  visit(root, 'post', construct => {
+    const session = {
+      outdir: builder.outdir,
+      assembly: builder,
+    };
+
+    if (construct instanceof Stack) {
+      construct._synthesizeTemplate(session);
+    } else if (construct instanceof TreeMetadata) {
+      construct._synthesizeTree(session);
+    } else {
+      if (typeof((construct as any).synthesize) === 'function') {
+        throw new Error(`"synthesize" is no longer supported: ${construct.node.path}`);
+      }
+    }
+  });
 }
 
 /**
@@ -122,9 +134,9 @@ function validateTree(root: IConstruct) {
 /**
  * Visit the given construct tree in either pre or post order, stopping at Assemblies
  */
-function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstructMethods) => void) {
+function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
   if (order === 'pre') {
-    cb(root as IProtectedConstructMethods);
+    cb(root);
   }
 
   for (const child of root.node.children) {
@@ -133,38 +145,6 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstr
   }
 
   if (order === 'post') {
-    cb(root as IProtectedConstructMethods);
+    cb(root);
   }
 }
-
-/**
- * Interface which provides access to special methods of Construct
- *
- * @experimental
- */
-interface IProtectedConstructMethods extends IConstruct {
-  /**
-   * Method that gets called when a construct should synthesize itself to an assembly
-   */
-  onSynthesize(session: constructs.ISynthesisSession): void;
-
-  /**
-   * Method that gets called to validate a construct
-   */
-  onValidate(): string[];
-
-  /**
-   * Method that gets called to prepare a construct
-   */
-  onPrepare(): void;
-}
-
-/**
- * The constructs Node type, but with some aspects-related fields public.
- *
- * Hackery!
- */
-type NodeWithAspectPrivatesHangingOut = Omit<constructs.Node, 'invokedAspects' | '_aspects'> & {
-  readonly invokedAspects: constructs.IAspect[];
-  readonly _aspects: constructs.IAspect[];
-};
