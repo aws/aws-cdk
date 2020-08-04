@@ -995,7 +995,7 @@ of these properties and potential confusion.
 
 By default, `SpecRestApi` will create an edge optimized endpoint.
 
-It is possible to modify this by providing the endpointConfiguration as shown here:
+This can be modified as shown below:
 
 ```ts
 const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
