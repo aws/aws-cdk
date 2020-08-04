@@ -576,41 +576,95 @@ export default class CodeGenerator {
       }
 
       public visitList(itemType: genspec.CodeName): string {
-        const arg = `prop${this.depth}`;
         return itemType.className === 'string'
           // an array of strings is a special case,
           // because it might need to be encoded as a Token directly
           // (and not an array of tokens), for example,
           // when a Ref expression references a parameter of type CommaDelimitedList
           ? `${CFN_PARSE}.FromCloudFormation.getStringArray(${this.baseExpression})`
-          : `${CFN_PARSE}.FromCloudFormation.getArray(${this.baseExpression}, (${arg}: any) => ` +
-            `${this.deeperCopy(arg).visitAtom(itemType)})`;
+          : `${CFN_PARSE}.FromCloudFormation.getArray(${this.baseExpression}, ${this.renderVisitAtomLambdaExpression(itemType)})`;
       }
 
       public visitMap(itemType: genspec.CodeName): string {
+        return `${CFN_PARSE}.FromCloudFormation.getMap(${this.baseExpression}, ${this.renderVisitAtomLambdaExpression(itemType)})`;
+      }
+
+      public visitAtomUnion(types: genspec.CodeName[]): string {
+        const validatorNames = types.map(type => genspec.validatorName(type).fqn).join(', ');
+
+        const mappers = types
+          .map(type => this.renderVisitAtomLambdaExpression(type))
+          .join(', ');
+
+        return `${CFN_PARSE}.FromCloudFormation.getTypeUnion([${validatorNames}], [${mappers}], ${this.baseExpression})`;
+      }
+
+      public visitUnionList(itemTypes: genspec.CodeName[]): string {
+        const validatorNames = itemTypes.map(type => genspec.validatorName(type).fqn).join(', ');
+
         const arg = `prop${this.depth}`;
-        return `${CFN_PARSE}.FromCloudFormation.getMap(${this.baseExpression}, (${arg}: any) => ` +
-          `${this.deeperCopy(arg).visitAtom(itemType)})`;
+        // we need a deeper copy here, as 'mappers' is used in a lambda expression below
+        const deeperVisitor = this.deeperCopy();
+        const mappers = itemTypes
+          .map(type => deeperVisitor.renderVisitAtomLambdaExpression(type))
+          .join(', ');
+
+        return `${CFN_PARSE}.FromCloudFormation.getArray(${this.baseExpression}, ` +
+          `(${arg}: any) => ${CFN_PARSE}.FromCloudFormation.getTypeUnion([${validatorNames}], [${mappers}], ${arg})` +
+          ')';
       }
 
-      public visitAtomUnion(_types: genspec.CodeName[]): string {
-        return this.baseExpression;
+      public visitUnionMap(itemTypes: genspec.CodeName[]): string {
+        const validatorNames = itemTypes.map(type => genspec.validatorName(type).fqn).join(', ');
+
+        const arg = `prop${this.depth}`;
+        // we need a deeper copy here, as 'mappers' is used in a lambda expression below
+        const deeperVisitor = this.deeperCopy();
+        const mappers = itemTypes
+          .map(type => deeperVisitor.renderVisitAtomLambdaExpression(type))
+          .join(', ');
+
+        return `${CFN_PARSE}.FromCloudFormation.getMap(${this.baseExpression}, ` +
+          `(${arg}: any) => ${CFN_PARSE}.FromCloudFormation.getTypeUnion([${validatorNames}], [${mappers}], ${arg})` +
+          ')';
       }
 
-      public visitListOrAtom(_scalarTypes: genspec.CodeName[], _itemTypes: genspec.CodeName[]): any {
-        return this.baseExpression;
+      public visitListOrAtom(scalarTypes: genspec.CodeName[], itemTypes: genspec.CodeName[]): any {
+        const scalarValidatorNames = scalarTypes.map(type => genspec.validatorName(type).fqn).join(', ');
+        const itemValidatorNames = itemTypes.map(type => genspec.validatorName(type).fqn).join(', ');
+
+        const arg1 = `prop${this.depth}`;
+        // we need a deeper copy here, as 'scalarTypesMappers' is used in a lambda expression in 'scalarMapper'
+        const secondLevelVisitor = this.deeperCopy();
+        const scalarTypesMappers = scalarTypes
+          .map(type => secondLevelVisitor.renderVisitAtomLambdaExpression(type))
+          .join(', ');
+        const scalarMapper = `(${arg1}: any) => ${CFN_PARSE}.FromCloudFormation.getTypeUnion([${scalarValidatorNames}], [${scalarTypesMappers}], ${arg1})`;
+
+        const arg2 = `prop${this.depth + 1}`;
+        // we need a third-level copy here, as 'itemTypeMappers' is used in a nested lambda expression in 'listMapper'
+        const thirdLevelVisitor = secondLevelVisitor.deeperCopy();
+        const itemTypeMappers = itemTypes
+          .map(type => thirdLevelVisitor.renderVisitAtomLambdaExpression(type))
+          .join(', ');
+        const listMapper = `(${arg1}: any) => ${CFN_PARSE}.FromCloudFormation.getArray(${arg1}, ` +
+          `(${arg2}: any) => ${CFN_PARSE}.FromCloudFormation.getTypeUnion([${itemValidatorNames}], [${itemTypeMappers}], ${arg2})` +
+          ')';
+
+        const scalarValidator = `${CORE}.unionValidator(${scalarValidatorNames})`;
+        const listValidator = `${CORE}.listValidator(${CORE}.unionValidator(${itemValidatorNames}))`;
+
+        return `${CFN_PARSE}.FromCloudFormation.getTypeUnion([${scalarValidator}, ${listValidator}], [${scalarMapper}, ${listMapper}], ${this.baseExpression})`;
       }
 
-      public visitUnionList(_itemTypes: genspec.CodeName[]): string {
-        return this.baseExpression;
+      private renderVisitAtomLambdaExpression(type: genspec.CodeName) {
+        const arg = `prop${this.depth}`;
+        // call visitAtom on a deeper copy, guaranteeing that the argument names of any lambdas used in it don't conflict
+        return `(${arg}: any) => ${this.deeperCopy(arg).visitAtom(type)}`;
       }
 
-      public visitUnionMap(_itemTypes: genspec.CodeName[]): string {
-        return this.baseExpression;
-      }
-
-      private deeperCopy(baseExpression: string): FromCloudFormationFactoryVisitor {
-        return new FromCloudFormationFactoryVisitor(baseExpression, false, this.cfnPropName, this.depth + 1);
+      private deeperCopy(baseExpression?: string): FromCloudFormationFactoryVisitor {
+        return new FromCloudFormationFactoryVisitor(baseExpression ?? this.baseExpression, false, this.cfnPropName, this.depth + 1);
       }
     }
 

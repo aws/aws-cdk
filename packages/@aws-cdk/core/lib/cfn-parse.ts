@@ -9,6 +9,7 @@ import { CfnTag } from './cfn-tag';
 import { ICfnFinder } from './from-cfn';
 import { CfnReference } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
+import { Mapper, Validator } from './runtime';
 import { isResolvableObject, Token } from './token';
 
 /**
@@ -116,6 +117,18 @@ export class FromCloudFormation {
         key: tag.Key,
         value: tag.Value,
       };
+  }
+
+  public static getTypeUnion(validators: Validator[], mappers: Mapper[], value: any): any {
+    for (let i = 0; i < validators.length; i++) {
+      const candidate = mappers[i](value);
+      if (validators[i](candidate).isSuccess) {
+        return candidate;
+      }
+    }
+
+    // if nothing matches, just return the input unchanged, and let validators catch it
+    return value;
   }
 }
 
