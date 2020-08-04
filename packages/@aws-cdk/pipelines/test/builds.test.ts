@@ -92,6 +92,32 @@ test.each([['npm'], ['yarn']])('%s assumes no build step by default', (npmYarn) 
   });
 });
 
+test.each([['npm'], ['yarn']])('%s can have its install command overridden', (npmYarn) => {
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: npmYarnBuild(npmYarn)({
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      installCommand: '/bin/true',
+    }),
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Source: {
+      BuildSpec: encodedJson(deepObjectLike({
+        phases: {
+          pre_build: {
+            commands: ['/bin/true'],
+          },
+        },
+      })),
+    },
+  });
+});
+
 test('Standard (NPM) synth can output additional artifacts', () => {
   // WHEN
   sourceArtifact = new codepipeline.Artifact();

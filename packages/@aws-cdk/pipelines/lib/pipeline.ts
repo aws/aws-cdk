@@ -1,6 +1,7 @@
-import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { App, CfnOutput, Construct, Stack, Stage } from '@aws-cdk/core';
 import * as path from 'path';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
+import { App, CfnOutput, Construct, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
@@ -241,9 +242,11 @@ interface AssetPublishingProps {
  */
 class AssetPublishing extends Construct {
   private readonly publishers: Record<string, PublishAssetsAction> = {};
+  private readonly assetRoles: Record<string, iam.IRole> = {};
   private readonly myCxAsmRoot: string;
 
   private readonly stage: codepipeline.IStage;
+  private readonly pipeline: codepipeline.Pipeline;
   private _fileAssetCtr = 1;
   private _dockerAssetCtr = 1;
 
@@ -254,6 +257,7 @@ class AssetPublishing extends Construct {
     // We MUST add the Stage immediately here, otherwise it will be in the wrong place
     // in the pipeline!
     this.stage = this.props.pipeline.addStage({ stageName: 'Assets' });
+    this.pipeline = this.props.pipeline;
   }
 
   /**
@@ -267,6 +271,11 @@ class AssetPublishing extends Construct {
     // FIXME: this is silly, we need the relative path here but no easy way to get it
     const relativePath = path.relative(this.myCxAsmRoot, command.assetManifestPath);
 
+    // Late-binding here (rather than in the constructor) to prevent creating the role in cases where no asset actions are created.
+    if (!this.assetRoles[command.assetType]) {
+      this.generateAssetRole(command.assetType);
+    }
+
     let action = this.publishers[command.assetId];
     if (!action) {
       // The asset ID would be a logical candidate for the construct path and project names, but if the asset
@@ -275,14 +284,17 @@ class AssetPublishing extends Construct {
       //
       // FIXME: The ultimate best solution is probably to generate a single Project per asset type
       // and reuse that for all assets.
-
       const id = command.assetType === AssetType.FILE ? `FileAsset${this._fileAssetCtr++}` : `DockerAsset${this._dockerAssetCtr++}`;
 
+      // NOTE: It's important that asset changes don't force a pipeline self-mutation.
+      // This can cause an infinite loop of updates (see https://github.com/aws/aws-cdk/issues/9080).
+      // For that reason, we use the id as the actionName below, rather than the asset hash.
       action = this.publishers[command.assetId] = new PublishAssetsAction(this, id, {
-        actionName: command.assetId,
+        actionName: id,
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
+        role: this.assetRoles[command.assetType],
       });
       this.stage.addAction(action);
     }
@@ -304,6 +316,75 @@ class AssetPublishing extends Construct {
         stages.splice(ix, 1);
       }
     }
+  }
+
+  /**
+   * This role is used by both the CodePipeline build action and related CodeBuild project. Consolidating these two
+   * roles into one, and re-using across all assets, saves significant size of the final synthesized output.
+   * Modeled after the CodePipeline role and 'CodePipelineActionRole' roles.
+   * Generates one role per asset type to separate file and Docker/image-based permissions.
+   */
+  private generateAssetRole(assetType: AssetType) {
+    if (this.assetRoles[assetType]) { return this.assetRoles[assetType]; }
+
+    const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
+    const assetRole = new iam.Role(this, `${rolePrefix}Role`, {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+      assumedBy: new iam.CompositePrincipal(new iam.ServicePrincipal('codebuild.amazonaws.com'), new iam.AccountPrincipal(Stack.of(this).account)),
+    });
+
+    // Logging permissions
+    const logGroupArn = Stack.of(this).formatArn({
+      service: 'logs',
+      resource: 'log-group',
+      sep: ':',
+      resourceName: '/aws/codebuild/*',
+    });
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      resources: [logGroupArn],
+      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+    }));
+
+    // CodeBuild report groups
+    const codeBuildArn = Stack.of(this).formatArn({
+      service: 'codebuild',
+      resource: 'report-group',
+      resourceName: '*',
+    });
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      actions: [
+        'codebuild:CreateReportGroup',
+        'codebuild:CreateReport',
+        'codebuild:UpdateReport',
+        'codebuild:BatchPutTestCases',
+      ],
+      resources: [codeBuildArn],
+    }));
+
+    // CodeBuild start/stop
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        'codebuild:BatchGetBuilds',
+        'codebuild:StartBuild',
+        'codebuild:StopBuild',
+      ],
+    }));
+
+    // Publishing role access
+    const rolePattern = assetType === AssetType.DOCKER_IMAGE
+      ? 'arn:*:iam::*:role/*-image-publishing-role-*'
+      : 'arn:*:iam::*:role/*-file-publishing-role-*';
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      resources: [rolePattern],
+    }));
+
+    // Artifact access
+    this.pipeline.artifactBucket.grantRead(assetRole);
+
+    this.assetRoles[assetType] = assetRole.withoutPolicyUpdates();
+    return this.assetRoles[assetType];
   }
 }
 
