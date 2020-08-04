@@ -83,7 +83,7 @@ export interface ApiKeyProps extends ApiKeyOptions {
 export class ApiKey extends Resource implements IApiKey {
 
   /**
-   * Import an ApiKey by it's Id
+   * Import an ApiKey by its Id
    */
   public static fromApiKeyId(scope: Construct, id: string, apiKeyId: string): IApiKey {
     class Import extends Resource implements IApiKey {
