@@ -707,6 +707,25 @@ export = {
 
     test.done();
   },
+
+  'subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included'(test: Test) {
+    // GIVEN
+    class MyResource extends CfnResource {
+      protected shouldSynthesize() {
+        return false;
+      }
+    }
+
+    const stack = new Stack();
+
+    // WHEN
+    new MyResource(stack, 'R1', { type: 'Foo::R1' });
+    new CfnResource(stack, 'R2', { type: 'Foo::R2' });
+
+    // THEN - only R2 is synthesized
+    test.deepEqual(toCloudFormation(stack), { Resources: { R2: { Type: 'Foo::R2' } } });
+    test.done();
+  },
 };
 
 interface CounterProps {

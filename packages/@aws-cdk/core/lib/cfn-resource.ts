@@ -278,6 +278,10 @@ export class CfnResource extends CfnRefElement {
    * @internal
    */
   public _toCloudFormation(): object {
+    if (!this.shouldSynthesize()) {
+      return { };
+    }
+
     try {
       const ret = {
         Resources: {
@@ -361,6 +365,17 @@ export class CfnResource extends CfnRefElement {
 
   protected validateProperties(_properties: any) {
     // Nothing
+  }
+
+  /**
+   * Can be overridden by subclasses to determine if this resource will be rendered
+   * into the cloudformation template.
+   *
+   * @returns `true` if the resource should be included or `false` is the resource
+   * should be omitted.
+   */
+  protected shouldSynthesize() {
+    return true;
   }
 }
 
