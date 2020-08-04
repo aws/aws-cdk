@@ -223,7 +223,7 @@ export interface ClusterOptions {
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
    *
-   * @default EndpointAccess.publicAndPrivate()
+   * @default EndpointAccess.PUBLIC_AND_PRIVATE
    */
   readonly endpointAccess?: EndpointAccess;
 
