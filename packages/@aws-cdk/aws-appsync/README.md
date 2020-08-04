@@ -46,7 +46,7 @@ CDK stack file `app-stack.ts`:
 ```ts
 import * as appsync from '@aws-cdk/aws-appsync';
 import * as db from '@aws-cdk/aws-dynamodb';
-import { DatabaseSecret, DatabaseCluster, DatabaseClusterEngine, AuroraMysqlEngineVersion } from '@aws-cdk/aws-rds';
+import * as rds from '@aws-cdk/aws-rds';
 
 const api = new appsync.GraphQLApi(stack, 'Api', {
   name: 'demo',
