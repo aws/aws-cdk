@@ -203,19 +203,7 @@ const key = api.addApiKey('ApiKey', {
 Existing API keys can also be imported into a CDK app using its id.
 
 ```ts
-const api = new apigateway.RestApi(this, 'hello-api', { });
-api.root.addMethod('GET'); // api must have atleast one method.
-
-const importedKey = apigateway.ApiKey.fromApiKeyId(this, 'imported-key', '<api-key-id>');
-
-const plan = api.addUsagePlan('UsagePlan', {
-  name: 'Easy',
-  apiKey: importedKey,
-  throttle: {
-    rateLimit: 10,
-    burstLimit: 2
-  }
-});
+const importedKey = ApiKey.fromApiKeyId(this, 'imported-key', '<api-key-id>');
 ```
 
 In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
