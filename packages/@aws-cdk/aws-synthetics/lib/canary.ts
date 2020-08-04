@@ -137,9 +137,9 @@ export interface CanaryProps {
   readonly canaryName?: string;
 
   /**
-   * Specify the runtime version to use for the canary. Currently, the only valid value is `Runtime.SYN_1.0`.
+   * Specify the runtime version to use for the canary. Currently, the only valid value is `Runtime.SYNTHETICS_1.0`.
    *
-   * @default Runtime.SYN_1_0
+   * @default Runtime.SYNTHETICS_1_0
    */
   readonly runtime?: Runtime;
 
