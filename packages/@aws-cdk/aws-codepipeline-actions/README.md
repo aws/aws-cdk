@@ -572,15 +572,15 @@ pipeline.addStage({
 To use CodeDeploy for blue-green Lambda deployments in a Pipeline:
 
 ```typescript
-const lambdaCode = lambda.Code.fromCfnParameters();
-const func = new lambda.Function(lambdaStack, 'Lambda', {
+const lambdaCode = awslambda.Code.fromCfnParameters();
+const func = new awslambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: awslambda.Runtime.NODEJS_10_X,
 });
 // used to make sure each CDK synthesis produces a different Version
 const version = func.addVersion('NewVersion');
-const alias = new lambda.Alias(lambdaStack, 'LambdaAlias', {
+const alias = new awslambda.Alias(lambdaStack, 'LambdaAlias', {
   aliasName: 'Prod',
   version,
 });
@@ -724,7 +724,7 @@ a new SNS Topic will be created
 This module contains an Action that allows you to invoke a Lambda function in a Pipeline:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
@@ -763,14 +763,14 @@ API with the `outputVariables` property filled with the map of variables
 Example:
 
 ```typescript
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 
 const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
-  lambda: new lambda.Function(this, 'Func', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+  lambda: new awslambda.Function(this, 'Func', {
+    runtime: awslambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.fromInline(`
+    code: awslambda.Code.fromInline(`
         const AWS = require('aws-sdk');
 
         exports.handler = async function(event, context) {

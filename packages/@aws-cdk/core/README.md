@@ -352,13 +352,13 @@ response to the CloudFormation service and handle various error cases.
 Set `serviceToken` to `lambda.functionArn` to use this provider:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 import { CustomResource } from '@aws-cdk/core';
 
-const fn = new lambda.Function(this, 'MyProvider');
+const fn = new awslambda.Function(this, 'MyProvider');
 
 new CustomResource(this, 'MyResource', {
-  serviceToken: lambda.functionArn
+  serviceToken: fn.functionArn
 });
 ```
 
@@ -547,13 +547,13 @@ response to the CloudFormation service and handle various error cases.
 Set `serviceToken` to `lambda.functionArn` to use this provider:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 import { CustomResource } from '@aws-cdk/core';
 
-const fn = new lambda.Function(this, 'MyProvider');
+const fn = new awslambda.Function(this, 'MyProvider');
 
 new CustomResource(this, 'MyResource', {
-  serviceToken: lambda.functionArn
+  serviceToken: fn.functionArn
 });
 ```
 

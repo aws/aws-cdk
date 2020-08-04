@@ -13,7 +13,7 @@ functions directly. Lambda provides event source mappings for the following serv
 event sources [here](https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html).
 
 This module includes classes that allow using various AWS services as event
-sources for AWS Lambda via the high-level `lambda.addEventSource(source)` API.
+sources for AWS Lambda via the high-level `awslambda.addEventSource(source)` API.
 
 NOTE: In most cases, it is also possible to use the resource APIs to invoke an
 AWS Lambda function. This library provides a uniform API for all Lambda event
@@ -22,7 +22,7 @@ sources regardless of the underlying mechanism they use.
 The following code sets up a lambda function with an SQS queue event source -
 
 ```ts
-const fn = new lambda.Function(this, 'MyFunction', { /* ... */ });
+const fn = new awslambda.Function(this, 'MyFunction', { /* ... */ });
 
 const queue = new sqs.Queue(this, 'MyQueue');
 const eventSource = fn.addEventSource(new SqsEventSource(queue));
@@ -62,7 +62,7 @@ const queue = new sqs.Queue(this, 'MyQueue', {
   receiveMessageWaitTime: Duration.seconds(20) // default
 });
 
-lambda.addEventSource(new SqsEventSource(queue, {
+awslambda.addEventSource(new SqsEventSource(queue, {
   batchSize: 10 // default
 });
 ```
@@ -84,7 +84,7 @@ import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const bucket = new s3.Bucket(...);
 
-lambda.addEventSource(new S3EventSource(bucket, {
+awslambda.addEventSource(new S3EventSource(bucket, {
   events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
   filters: [ { prefix: 'subdir/' } ] // optional
 }));
@@ -114,7 +114,7 @@ import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const topic = new sns.Topic(...);
 
-lambda.addEventSource(new SnsEventSource(topic));
+awslambda.addEventSource(new SnsEventSource(topic));
 ```
 
 When a user calls the SNS Publish API on a topic that your Lambda function is
@@ -144,7 +144,7 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 
 ```ts
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { DynamoEventSource, SqsDlq } from '@aws-cdk/aws-lambda-event-sources';
 
@@ -155,9 +155,9 @@ const table = new dynamodb.Table(..., {
 
 const deadLetterQueue = new sqs.Queue(this, 'deadLetterQueue');
 
-const function = new lambda.Function(...);
+const function = new awslambda.Function(...);
 function.addEventSource(new DynamoEventSource(table, {
-  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  startingPosition: awslambda.StartingPosition.TRIM_HORIZON,
   batchSize: 5,
   bisectBatchOnError: true,
   onFailure: new SqsDlq(deadLetterQueue),
@@ -186,7 +186,7 @@ behavior:
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import { KinesisEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
@@ -194,7 +194,7 @@ const stream = new kinesis.Stream(this, 'MyStream');
 
 myFunction.addEventSource(new KinesisEventSource(queue, {
   batchSize: 100, // default
-  startingPosition: lambda.StartingPosition.TRIM_HORIZON
+  startingPosition: awslambda.StartingPosition.TRIM_HORIZON
 });
 ```
 

@@ -1362,6 +1362,34 @@ export class JestSetup extends ValidationRule {
   }
 }
 
+export class AvoidLambdaKeyword extends ValidationRule {
+  public readonly name = 'readme/lambda-keyword';
+  private readonly keywords = [ / as lambda /, /[^\w'"`]lambda\./ ];
+
+  public validate(pkg: PackageJson): void {
+    const file = path.join(pkg.packageRoot, 'README.md');
+    const contents = fs.readFileSync(file, { encoding: 'utf8' });
+
+    const codeblocks = tsCodeBlocks(contents);
+    if (codeblocks) {
+      codeblocks.forEach((cb) => {
+        this.keywords.forEach((kw) => {
+          if (cb.match(kw) !== null) {
+            pkg.report({
+              ruleName: this.name,
+              message: 'avoid the Python keyword "lambda" in typescript code blocks',
+            });
+          }
+        });
+      });
+    }
+  }
+}
+
+function tsCodeBlocks(content: string) {
+  return content.match(/`{3,}ts((.*?|\n)+?)`{3,}/g);
+}
+
 /**
  * Determine whether this is a JSII package
  *

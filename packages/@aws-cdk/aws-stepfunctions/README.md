@@ -22,10 +22,10 @@ example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 
-const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
-const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
+const submitLambda = new awslambda.Function(this, 'SubmitLambda', { ... });
+const getStatusLambda = new awslambda.Function(this, 'CheckLambda', { ... });
 
 const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
   lambdaFunction: submitLambda,

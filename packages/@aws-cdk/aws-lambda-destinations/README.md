@@ -22,13 +22,13 @@ The following destinations are supported
 Example with a SNS topic for sucessful invocations:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 import * as destinations from '@aws-cdk/aws-lambda-destinations';
 import * as sns from '@aws-cdk/aws-sns';
 
 const myTopic = new sns.Topic(this, 'Topic');
 
-const myFn = new lambda.Function(this, 'Fn', {
+const myFn = new awslambda.Function(this, 'Fn', {
   // other props
   onSuccess: new destinations.SnsDestination(myTopic)
 })
@@ -107,14 +107,14 @@ The `responseOnly` option of `LambdaDestination` allows to auto-extract the resp
 invocation record:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 import * as destinations from '@aws-cdk/aws-lambda-destinations';
 
-const destinationFn = new lambda.Function(this, 'Destination', {
+const destinationFn = new awslambda.Function(this, 'Destination', {
   // props
 });
 
-const sourceFn = new lambda.Function(this, 'Source', {
+const sourceFn = new awslambda.Function(this, 'Source', {
   // other props
   onSuccess: new destinations.LambdaDestination(destinationFn, {
     responseOnly: true // auto-extract

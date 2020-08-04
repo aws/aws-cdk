@@ -203,12 +203,12 @@ To create a new CodeDeploy Deployment Group that deploys to a Lambda function:
 
 ```ts
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 
 const myApplication = new codedeploy.LambdaApplication(..);
-const func = new lambda.Function(..);
+const func = new awslambda.Function(..);
 const version = func.addVersion('1');
-const version1Alias = new lambda.Alias(this, 'alias', {
+const version1Alias = new awslambda.Alias(this, 'alias', {
   aliasName: 'prod',
   version
 });
@@ -260,8 +260,8 @@ With either hook, you have the opportunity to run logic that determines whether 
 For example, with PreTraffic hook you could run integration tests against the newly created Lambda version (but not serving traffic). With PostTraffic hook, you could run end-to-end validation checks.
 
 ```ts
-const warmUpUserCache = new lambda.Function(..);
-const endToEndValidation = new lambda.Function(..);
+const warmUpUserCache = new awslambda.Function(..);
+const endToEndValidation = new awslambda.Function(..);
 
 // pass a hook whe creating the deployment group
 const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {

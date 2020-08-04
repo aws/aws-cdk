@@ -174,7 +174,7 @@ const convertToSeconds = new tasks.EvaluateExpression(this, 'Convert to seconds'
 const createMessage = new tasks.EvaluateExpression(this, 'Create message', {
   // Note: this is a string inside a string.
     expression: '`Now waiting ${$.waitSeconds} seconds...`',
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: awslambda.Runtime.NODEJS_10_X,
   resultPath: '$.message',
 });
 
@@ -198,7 +198,7 @@ new sfn.StateMachine(this, 'StateMachine', {
 
 The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, the only runtime
-supported is `lambda.Runtime.NODEJS_10_X`.
+supported is `awslambda.Runtime.NODEJS_10_X`.
 
 ## Batch
 
@@ -570,11 +570,11 @@ The following snippet invokes a Lambda Function with the state input as the payl
 by referencing the `$` path.
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
-const myLambda = new lambda.Function(this, 'my sample lambda', {
+const myLambda = new awslambda.Function(this, 'my sample lambda', {
   code: Code.fromInline(`exports.handler = async () => {
     return {
       statusCode: '200',

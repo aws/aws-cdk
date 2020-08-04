@@ -71,13 +71,13 @@ reading the initial message from the queue and visiting the link found in it.
 Subscribe an AWS Lambda function to your topic:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
 
-const myFunction = new lambda.Function(this, 'Echo', {
+const myFunction = new awslambda.Function(this, 'Echo', {
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
-  code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
+  runtime: awslambda.Runtime.NODEJS_10_X,
+  code: awslambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
 });
 
 myTopic.addSubscription(new subscriptions.LambdaSubscription(myFunction));

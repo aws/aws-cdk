@@ -218,11 +218,11 @@ To use a Lambda Function as a target, use the integration class in the
 `@aws-cdk/aws-elasticloadbalancingv2-targets` package:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as awslambda from '@aws-cdk/aws-lambda';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as targets from '@aws-cdk/aws-elasticloadbalancingv2-targets';
 
-const lambdaFunction = new lambda.Function(...);
+const lambdaFunction = new awslambda.Function(...);
 const lb = new elbv2.ApplicationLoadBalancer(...);
 
 const listener = lb.addListener('Listener', { port: 80 });
