@@ -38,6 +38,7 @@ running on AWS Lambda, or any web application.
 - [Private Integrations](#private-integrations)
 - [Gateway Response](#gateway-response)
 - [OpenAPI Definition](#openapi-definition)
+  - [Endpoint configuration](#endpoint-configuration)
 - [APIGateway v2](#apigateway-v2)
 
 ## Defining APIs
