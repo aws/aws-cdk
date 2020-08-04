@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
+import { EncodedAwsSdkCall } from './lambda-handler-types';
 
 // don't use "require" since the typescript compiler emits errors since this
 // file is not listed in tsconfig.json.
@@ -122,10 +123,6 @@ export interface AwsSdkCall {
    * @default - no role to assume
    */
   readonly assumedRole?: iam.IRole;
-}
-
-export type EncodedAwsSdkCall = Omit<AwsSdkCall, 'assumedRole'> & {
-  readonly assumedRole?: string;
 }
 
 /**
@@ -333,7 +330,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
               resources: [call.assumedRole.roleArn],
             }),
           );
-        }else if (call) {
+        } else if (call) {
           provider.addToRolePolicy(new iam.PolicyStatement({
             actions: [awsSdkToIamAction(call.service, call.action)],
             resources: props.policy.resources,

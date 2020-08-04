@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
-import { EncodedAwsSdkCall } from '../aws-custom-resource';
+import { EncodedAwsSdkCall } from '../lambda-handler-types';
 
 /**
  * Flattens a nested object
