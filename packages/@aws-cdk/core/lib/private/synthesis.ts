@@ -1,9 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
+import { Stack } from '../stack';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { prepareApp } from './prepare-app';
-import { Stack } from '../stack';
 import { TreeMetadata } from './tree-metadata';
 
 export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
@@ -115,9 +115,11 @@ function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
       construct._synthesizeTemplate(session);
     } else if (construct instanceof TreeMetadata) {
       construct._synthesizeTree(session);
-    } else {
-      construct.onSynthesize(session);
     }
+
+    // this will soon be deprecated and removed in 2.x
+    // see https://github.com/aws/aws-cdk-rfcs/issues/192
+    construct.onSynthesize(session);
   });
 }
 

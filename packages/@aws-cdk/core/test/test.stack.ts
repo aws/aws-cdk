@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, Tag, validateString } from '../lib';
+  CfnResource, Construct, Lazy, ScopedAws, Stack, Tag, validateString, ISynthesisSession } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
@@ -868,6 +868,25 @@ export = {
 
     test.done();
   },
+
+  'users can (still) override "synthesize()" in stack'(test: Test) {
+    let called = false;
+
+    class MyStack extends Stack {
+      synthesize(session: ISynthesisSession) {
+        called = true;
+        test.ok(session.outdir);
+        test.equal(session.assembly.outdir, session.outdir);
+      }
+    }
+
+    const app = new App();
+    new MyStack(app, 'my-stack');
+
+    app.synth();
+    test.ok(called, 'synthesize() not called for Stack');
+    test.done();
+  }
 };
 
 class StackWithPostProcessor extends Stack {
