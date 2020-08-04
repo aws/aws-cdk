@@ -1004,7 +1004,10 @@ const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
 });
 ```
 
-**Note:** For private endpoints you will still need to provide the [`x-amazon-apigateway-policy`](https://docs.aws.amazon.com/apigateway/latest/developerguide/openapi-extensions-policy.html) and [`x-amazon-apigateway-endpoint-configuration`](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-endpoint-configuration.html) in your openApi file. 
+**Note:** For private endpoints you will still need to provide the 
+[`x-amazon-apigateway-policy`](https://docs.aws.amazon.com/apigateway/latest/developerguide/openapi-extensions-policy.html) and 
+[`x-amazon-apigateway-endpoint-configuration`](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-endpoint-configuration.html) 
+in your openApi file. 
 
 ## APIGateway v2
 
