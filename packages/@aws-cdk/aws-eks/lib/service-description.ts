@@ -2,6 +2,9 @@ import { Construct, Duration } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 import { KubernetesGet as KubernetesGet } from './k8s-get';
 
+/**
+ * Options for `cluster.describeService` operation.
+ */
 export interface DescribeServiceOptions {
   /**
    * The service name.

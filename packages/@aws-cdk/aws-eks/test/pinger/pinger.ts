@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, CustomResource, Token } from '@aws-cdk/core';
+import { Construct, CustomResource, Token, Duration } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 
 export interface PingerProps {
@@ -22,6 +22,7 @@ export class Pinger extends Construct {
       vpc: props.vpc,
       // vpcSubnets: props.vpc ? { subnetType: ec2.SubnetType.PRIVATE } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
+      timeout: Duration.minutes(10),
     });
 
     const provider = new cr.Provider(this, 'Provider', {
