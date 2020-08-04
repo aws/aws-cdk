@@ -201,6 +201,12 @@ const key = api.addApiKey('ApiKey', {
 });
 ```
 
+Existing API keys can also be imported into a CDK app using its id.
+
+```ts
+const importedKey = ApiKey.fromApiKeyId(this, 'imported-key', '<api-key-id>');
+```
+
 In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
 This construct lets you specify rate limiting properties which should be applied only to the api key being created.
 The API key created has the specified rate limits, such as quota and throttles, applied.
