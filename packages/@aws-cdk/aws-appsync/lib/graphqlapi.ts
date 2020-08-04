@@ -389,7 +389,7 @@ export class GraphQLApi extends Construct {
           )
           : undefined,
       additionalAuthenticationProviders: this.formatAdditionalAuthenticationProviders(props),
-      xrayEnabled: props.xrayEnabled || false,
+      xrayEnabled: props.xrayEnabled,
     });
 
     this.apiId = this.api.attrApiId;
