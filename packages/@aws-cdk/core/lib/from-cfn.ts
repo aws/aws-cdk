@@ -42,4 +42,10 @@ export interface FromCloudFormationOptions {
    * The finder interface used to resolve references across the template.
    */
   readonly finder: ICfnFinder;
+
+  /**
+   * The parameters and the values to replace them with at build time.
+   * @default {}
+   */
+  readonly parameters?: { [parameterName: string]: any };
 }

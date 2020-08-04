@@ -25,6 +25,14 @@ export interface CfnIncludeProps {
    * template creation will fail and an error will be thrown.
    */
   readonly nestedStacks?: { [stackName: string]: CfnIncludeProps };
+
+  /**
+   * Specifies parameters to be replaced by the values in this mapping.
+   * Any parameters in the template that aren't specified here will be left unmodified.
+   * If you include a parameter here with an ID that isn't in the template,
+   * template creation will fail and an error will be thrown.
+   */
+  readonly parameterValues?: { [parameterName: string]: any };
 }
 
 /**
@@ -60,6 +68,7 @@ export class CfnInclude extends core.CfnElement {
   private readonly nestedStacksToInclude: { [name: string]: CfnIncludeProps };
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
+  private visitedParameterValues: string[] = [];
 
   constructor(scope: core.Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
@@ -72,7 +81,15 @@ export class CfnInclude extends core.CfnElement {
 
     // instantiate all parameters
     for (const logicalId of Object.keys(this.template.Parameters || {})) {
-      this.createParameter(logicalId);
+      this.createParameter(logicalId, props.parameterValues);
+    }
+
+    // check if all user specified parameters have been used
+    for (const logicalId of Object.keys(props.parameterValues || {})) {
+      if (!(logicalId in this.template.Parameters)) {
+        throw new Error(`Parameter with logical ID '${logicalId}' was not found in the template`)
+      }
+
     }
 
     // instantiate the conditions
@@ -85,7 +102,7 @@ export class CfnInclude extends core.CfnElement {
 
     // instantiate all resources as CDK L1 objects
     for (const logicalId of Object.keys(this.template.Resources || {})) {
-      this.getOrCreateResource(logicalId);
+      this.getOrCreateResource(logicalId, props.parameterValues);
     }
 
     // verify that all nestedStacks have been instantiated
@@ -100,6 +117,9 @@ export class CfnInclude extends core.CfnElement {
     for (const logicalId of Object.keys(this.template.Outputs || {})) {
       this.createOutput(logicalId, outputScope);
     }
+
+    // throw error in same cases as nested stacks with the "if it's in the js obj but not the temaplte, error or not", etc
+    // instantiate after everything else, since other loops above need the params to exist
   }
 
   /**
@@ -213,7 +233,12 @@ export class CfnInclude extends core.CfnElement {
     return ret;
   }
 
-  private createParameter(logicalId: string): void {
+  private createParameter(logicalId: string, parameters?: { [parameterName: string]: any }): void {
+    if (logicalId in (parameters || {})) {
+      this.visitedParameterValues.push(logicalId);
+      return;
+    }
+
     const expression = new cfn_parse.CfnParser({
       finder: {
         findResource() { throw new Error('Using GetAtt expressions in Parameter definitions is not allowed'); },
@@ -304,7 +329,7 @@ export class CfnInclude extends core.CfnElement {
     return cfnCondition;
   }
 
-  private getOrCreateResource(logicalId: string): core.CfnResource {
+  private getOrCreateResource(logicalId: string, parameters?: { [parameterName: string]: any }): core.CfnResource {
     const ret = this.resources[logicalId];
     if (ret) {
       return ret;
@@ -347,7 +372,8 @@ export class CfnInclude extends core.CfnElement {
     };
     const cfnParser = new cfn_parse.CfnParser({
       finder,
-    });
+    }, parameters);
+
 
     let l1Instance: core.CfnResource;
     if (this.nestedStacksToInclude[logicalId]) {
@@ -357,6 +383,7 @@ export class CfnInclude extends core.CfnElement {
       if (l1ClassFqn) {
         const options: core.FromCloudFormationOptions = {
           finder,
+          parameters,
         };
         const [moduleName, ...className] = l1ClassFqn.split('.');
         const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports

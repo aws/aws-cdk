@@ -649,6 +649,96 @@ describe('CDK Include', () => {
       cfnTemplate.getOutput('FakeOutput');
     }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);
   });
+
+  test('parameters are replaced only when specified', () => {
+    new inc.CfnInclude(stack, 'includeTemplate', { 
+      templateFile: testTemplateFilePath('bucket-with-parameters.json'),
+      parameterValues: {
+        BucketName: 'my-s3-bucket',
+      }
+    });
+
+    expect(stack).toMatchTemplate({
+      "Parameters": {
+        "CorsMaxAge": {
+          "Default": "3",
+          "Description": "the time in seconds that a browser will cache the preflight response",
+          "MaxValue": "300",
+          "MinValue": "0",
+          "Type": "Number",
+          "NoEcho": "true",
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": "my-s3-bucket",
+            "CorsConfiguration": {
+              "CorsRules": [{
+                "AllowedMethods": [
+                  "GET",
+                  "POST",
+                ],
+                "AllowedOrigins": [
+                  "origin1",
+                  "origin2",
+                ],
+                "MaxAge": {
+                  "Ref": "CorsMaxAge",
+                },
+              }],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('can replace parameters of non string types', () => {
+    new inc.CfnInclude(stack, 'includeTemplate', { 
+      templateFile: testTemplateFilePath('bucket-with-parameters.json'),
+      parameterValues: {
+        CorsMaxAge: 5,
+        BucketName: 'my-s3-bucket',
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": "my-s3-bucket",
+            "CorsConfiguration": {
+              "CorsRules": [{
+                "AllowedMethods": [
+                  "GET",
+                  "POST",
+                ],
+                "AllowedOrigins": [
+                  "origin1",
+                  "origin2",
+                ],
+                "MaxAge": 5,
+              }],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('throws an exception when provided a parameter not in the template', () => {
+    expect(() => {
+      new inc.CfnInclude(stack, 'includeTemplate', { 
+        templateFile: testTemplateFilePath('bucket-with-parameters.json'),
+        parameterValues: {
+          FakeParameter: 'DoesNotExist',
+        },
+      });
+    }).toThrow(/Parameter with logical ID 'FakeParameter' was not found in the template/);
+  });
 });
 
 interface IncludeTestTemplateProps {
@@ -658,15 +748,15 @@ interface IncludeTestTemplateProps {
 
 function includeTestTemplate(scope: core.Construct, testTemplate: string, _props: IncludeTestTemplateProps = {}): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
-    templateFile: _testTemplateFilePath(testTemplate),
+    templateFile: testTemplateFilePath(testTemplate),
     // preserveLogicalIds: props.preserveLogicalIds,
   });
 }
 
 function loadTestFileToJsObject(testTemplate: string): any {
-  return futils.readJsonSync(_testTemplateFilePath(testTemplate));
+  return futils.readJsonSync(testTemplateFilePath(testTemplate));
 }
 
-function _testTemplateFilePath(testTemplate: string) {
+function testTemplateFilePath(testTemplate: string) {
   return path.join(__dirname, 'test-templates', testTemplate);
 }

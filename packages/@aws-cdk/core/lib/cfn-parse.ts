@@ -165,9 +165,19 @@ export interface ParseCfnOptions {
  */
 export class CfnParser {
   private readonly options: ParseCfnOptions;
+  public readonly parameterValues?: { [parameterName: string]: any };
 
-  constructor(options: ParseCfnOptions) {
+  constructor(options: ParseCfnOptions, parameterValues?: { [parameterName: string]: any }) {
     this.options = options;
+    this.parameterValues = parameterValues;
+
+    if (parameterValues) {
+      /*console.log('mwins')
+      console.log(this.parameters)
+
+      console.log(Object.keys(this.parameters || {}))
+      console.log('BucketName' in (this.parameters || {}))*/
+    }
   }
 
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
@@ -334,6 +344,10 @@ export class CfnParser {
         return undefined;
       case 'Ref': {
         const refTarget = object[key];
+        if (refTarget in (this.parameterValues || {})) {
+          // console.log('bigwins');
+          return this.parameterValues![refTarget];
+        }
         const specialRef = specialCaseRefs(refTarget);
         if (specialRef) {
           return specialRef;
