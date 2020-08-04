@@ -372,6 +372,18 @@ In addition to specifying an execution policy or a role that applies to all reso
 specify a role (via `assumedRole`) that should be assumed prior to issuing the sdk call.
 Remember that the role must be assumable by the lambda handler of the custom resource.
 
+```ts
+const awsCustom = new AwsCustomResource(this, 'Custom', {
+  onCreate: {
+    service: '...',
+    action: '...',
+    physicalResourceId: PhysicalResourceId.of('...'),
+    assumedRole: iam.Role.fromRoleArn("...")
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
+});
+```
+
 ### Error Handling
 
 Every error produced by the API call is treated as is and will cause a "FAILED" response to be submitted to CloudFormation.
