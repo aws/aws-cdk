@@ -200,7 +200,7 @@ const key = api.addApiKey('ApiKey', {
 });
 ```
 
-You can also import an API Key by it's Id to use with a usage plan.
+Existing API keys can also be imported into a CDK app using its id.
 
 ```ts
 const api = new apigateway.RestApi(this, 'hello-api', { });
