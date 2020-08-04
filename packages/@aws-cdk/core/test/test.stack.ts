@@ -886,7 +886,7 @@ export = {
     app.synth();
     test.ok(called, 'synthesize() not called for Stack');
     test.done();
-  }
+  },
 };
 
 class StackWithPostProcessor extends Stack {
