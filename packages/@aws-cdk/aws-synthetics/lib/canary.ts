@@ -144,8 +144,7 @@ export interface CanaryProps {
   readonly runtime?: Runtime;
 
   /**
-   * The type of test that you want your canary to run. Right now, you can only use `Test.custom()`.
-   * In the future, a more robust `Test` class will offer more options.
+   * The type of test that you want your canary to run. Use `Test.custom()` to specify the test to run.
    */
   readonly test: Test;
 
