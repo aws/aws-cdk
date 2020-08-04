@@ -1,8 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
+import { Stack } from '../stack';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { prepareApp } from './prepare-app';
+import { TreeMetadata } from './tree-metadata';
 
 export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
@@ -103,10 +105,22 @@ function prepareTree(root: IConstruct) {
  * Stop at Assembly boundaries.
  */
 function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
-  visit(root, 'post', construct => construct.onSynthesize({
-    outdir: builder.outdir,
-    assembly: builder,
-  }));
+  visit(root, 'post', construct => {
+    const session = {
+      outdir: builder.outdir,
+      assembly: builder,
+    };
+
+    if (construct instanceof Stack) {
+      construct._synthesizeTemplate(session);
+    } else if (construct instanceof TreeMetadata) {
+      construct._synthesizeTree(session);
+    }
+
+    // this will soon be deprecated and removed in 2.x
+    // see https://github.com/aws/aws-cdk-rfcs/issues/192
+    construct.onSynthesize(session);
+  });
 }
 
 /**
