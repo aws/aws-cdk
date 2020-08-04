@@ -52,11 +52,11 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 ```typescript
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_16,
-  endpointAccess: eks.EndpointAccess.private() // No access outside of your VPC.
+  endpointAccess: eks.EndpointAccess.PRIVATE // No access outside of your VPC.
 });
 ```
 
-The default value is `eks.EndpointAccess.publicAndPrivate()`. Which means the cluster endpoint is accessible from outside of your VPC, and worker node traffic to the endpoint will stay within your VPC.
+The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, and worker node traffic to the endpoint will stay within your VPC.
 
 
 ### Capacity
@@ -360,6 +360,20 @@ new KubernetesResource(this, 'hello-kub', {
 
 // or, option2: use `addResource`
 cluster.addResource('hello-kub', service, deployment);
+```
+
+##### Kubectl Environment
+
+The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can useful in order to configure an http proxy:
+
+```typescript
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_16,
+  kubectlEnvironment: {
+    'http_proxy': 'http://proxy.myproxy.com'
+  }
+});
+
 ```
 
 #### Adding resources from a URL
