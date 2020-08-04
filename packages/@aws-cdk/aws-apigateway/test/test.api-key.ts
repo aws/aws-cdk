@@ -43,6 +43,7 @@ export = {
 
     test.done();
   },
+
   'use an imported api key'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
