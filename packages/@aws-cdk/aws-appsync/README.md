@@ -84,7 +84,7 @@ demoDS.createResolver({
 });
 
 // Create username and password secret for DB Cluster
-const secret = new DatabaseSecret(stack, 'AuroraSecret', {
+const secret = new rds.DatabaseSecret(stack, 'AuroraSecret', {
   username: 'clusteradmin',
 });
 
