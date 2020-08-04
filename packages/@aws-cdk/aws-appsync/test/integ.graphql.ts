@@ -12,6 +12,7 @@ import {
   PrimaryKey,
   UserPoolDefaultAction,
   Values,
+  SchemaDefinition,
 } from '../lib';
 
 /*
@@ -37,6 +38,7 @@ const userPool = new UserPool(stack, 'Pool', {
 
 const api = new GraphQLApi(stack, 'Api', {
   name: 'demoapi',
+  schemaDefinition: SchemaDefinition.FILE,
   schemaDefinitionFile: join(__dirname, 'integ.graphql.graphql'),
   authorizationConfig: {
     defaultAuthorization: {

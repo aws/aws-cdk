@@ -50,6 +50,7 @@ import * as rds from '@aws-cdk/aws-rds';
 
 const api = new appsync.GraphQLApi(stack, 'Api', {
   name: 'demo',
+  schemaDefinition: appsync.SchemaDefinition.FILE,
   schemaDefinitionFile: join(__dirname, 'schema.graphql'),
   authorizationConfig: {
     defaultAuthorization: {
