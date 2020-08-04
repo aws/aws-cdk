@@ -669,7 +669,7 @@ export interface EndpointConfiguration {
   /**
    * A list of endpoint types of an API or its custom domain name.
    *
-   * @default - EndpointType.EDGE.
+   * @default EndpointType.EDGE
    */
   readonly types: EndpointType[];
 
