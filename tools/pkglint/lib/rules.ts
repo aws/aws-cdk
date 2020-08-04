@@ -1387,7 +1387,7 @@ export class AvoidLambdaKeyword extends ValidationRule {
 }
 
 function tsCodeBlocks(content: string) {
-  return content.match(/`{3,}ts((.*?|\n)+?)`{3,}/g);
+  return content.match(/`{3,}(ts|typescript)((.*?|\n)+?)`{3,}/g);
 }
 
 /**
