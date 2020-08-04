@@ -869,6 +869,25 @@ export = {
 
     test.done();
   },
+
+  'users can (still) override "synthesize()" in stack'(test: Test) {
+    let called = false;
+
+    class MyStack extends Stack {
+      synthesize(session: ISynthesisSession) {
+        called = true;
+        test.ok(session.outdir);
+        test.equal(session.assembly.outdir, session.outdir);
+      }
+    }
+
+    const app = new App();
+    new MyStack(app, 'my-stack');
+
+    app.synth();
+    test.ok(called, 'synthesize() not called for Stack');
+    test.done();
+  },
 };
 
 class StackWithPostProcessor extends Stack {

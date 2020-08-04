@@ -336,9 +336,9 @@ export class Function extends FunctionBase {
     // hash of the function itself, so a new version resource is created when
     // the function configuration changes.
     const cfn = this._currentVersion.node.defaultChild as CfnResource;
+    const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
 
-    cfn.overrideLogicalId(Lazy.stringValue({ produce: ctx => {
-      const originalLogicalId: string = ctx.resolve(cfn.logicalId);
+    cfn.overrideLogicalId(Lazy.stringValue({ produce: _ => {
       const hash = calculateFunctionHash(this);
       const logicalId = trimFromStart(originalLogicalId, 255 - 32);
       return `${logicalId}${hash}`;
