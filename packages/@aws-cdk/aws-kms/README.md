@@ -103,10 +103,10 @@ stack-2 (lambda that operates on bucket and key)
 ```ts
 // ... snip
 
-const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+const fn = new awslambda.Function(this, 'MyFunction', {
+  runtime: awslambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
-  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  code: awslambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
 
 const bucket = s3.Bucket.fromBucketName(this, 'BucketId', 'myEncryptedBucket');
