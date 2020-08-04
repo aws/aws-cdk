@@ -89,9 +89,9 @@ const secret = new rds.DatabaseSecret(stack, 'AuroraSecret', {
 });
 
 // Create the DB cluster, provide all values needed to customise the database.
-const cluster = new DatabaseCluster(stack, 'AuroraCluster', {
-  engine: DatabaseClusterEngine.auroraMysql({
-    version: AuroraMysqlEngineVersion.VER_2_07_1,
+const cluster = new rds.DatabaseCluster(stack, 'AuroraCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_2_07_1,
   }),
   masterUser: {
     username: 'clusteradmin',
