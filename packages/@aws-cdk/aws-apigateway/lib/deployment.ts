@@ -1,7 +1,7 @@
-import { CfnResource, Construct, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import * as crypto from 'crypto';
+import { Construct, Lazy, RemovalPolicy, Resource } from '@aws-cdk/core';
 import { CfnDeployment } from './apigateway.generated';
-import { IRestApi, RestApi, SpecRestApi } from './restapi';
+import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
 
 export interface DeploymentProps  {
   /**
@@ -77,6 +77,10 @@ export class Deployment extends Resource {
 
     this.api = props.api;
     this.deploymentId = Lazy.stringValue({ produce: () => this.resource.ref });
+
+    if (props.api instanceof RestApiBase) {
+      props.api._attachDeployment(this);
+    }
   }
 
   /**
@@ -90,30 +94,6 @@ export class Deployment extends Resource {
   public addToLogicalId(data: any) {
     this.resource.addToLogicalId(data);
   }
-
-  /**
-   * Hook into synthesis before it occurs and make any final adjustments.
-   */
-  protected prepare() {
-    if (this.api instanceof RestApi) {
-      // Ignore IRestApi that are imported
-
-      /*
-       * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-deployment.html
-       * Quoting from CloudFormation's docs - "If you create an AWS::ApiGateway::RestApi resource and its methods (using AWS::ApiGateway::Method) in
-       * the same template as your deployment, the deployment must depend on the RestApi's methods. To create a dependency, add a DependsOn attribute
-       * to the deployment. If you don't, AWS CloudFormation creates the deployment right after it creates the RestApi resource that doesn't contain
-       * any methods, and AWS CloudFormation encounters the following error: The REST API doesn't contain any methods."
-       */
-
-      /*
-       * Adding a dependency between LatestDeployment and Method construct, using ConstructNode.addDependencies(), creates additional dependencies
-       * between AWS::ApiGateway::Deployment and the AWS::Lambda::Permission nodes (children under Method), causing cyclic dependency errors. Hence,
-       * falling back to declaring dependencies between the underlying CfnResources.
-       */
-      this.api.methods.map(m => m.node.defaultChild as CfnResource).forEach(m => this.resource.addDependsOn(m));
-    }
-  }
 }
 
 interface LatestDeploymentResourceProps {
@@ -122,9 +102,9 @@ interface LatestDeploymentResourceProps {
 }
 
 class LatestDeploymentResource extends CfnDeployment {
-  private hashComponents = new Array<any>();
-
-  private api: IRestApi;
+  private readonly hashComponents = new Array<any>();
+  private readonly originalLogicalId: string;
+  private readonly api: IRestApi;
 
   constructor(scope: Construct, id: string, props: LatestDeploymentResourceProps) {
     super(scope, id, {
@@ -133,31 +113,8 @@ class LatestDeploymentResource extends CfnDeployment {
     });
 
     this.api = props.restApi;
-
-    const originalLogicalId = Stack.of(this).getLogicalId(this);
-
-    this.overrideLogicalId(Lazy.stringValue({ produce: ctx => {
-      const hash = [ ...this.hashComponents ];
-
-      if (this.api instanceof RestApi || this.api instanceof SpecRestApi) { // Ignore IRestApi that are imported
-
-        // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.
-        const cfnRestApiCF = (this.api.node.defaultChild as any)._toCloudFormation();
-        hash.push(ctx.resolve(cfnRestApiCF));
-      }
-
-      let lid = originalLogicalId;
-
-      // if hash components were added to the deployment, we use them to calculate
-      // a logical ID for the deployment resource.
-      if (hash.length > 0) {
-        const md5 = crypto.createHash('md5');
-        hash.map(x => ctx.resolve(x)).forEach(c => md5.update(JSON.stringify(c)));
-        lid += md5.digest('hex');
-      }
-
-      return lid;
-    }}));
+    this.originalLogicalId = this.stack.getLogicalId(this);
+    this.overrideLogicalId(Lazy.stringValue({ produce: () => this.calculateLogicalId() }));
   }
 
   /**
@@ -172,5 +129,28 @@ class LatestDeploymentResource extends CfnDeployment {
     }
 
     this.hashComponents.push(data);
+  }
+
+  private calculateLogicalId() {
+    const hash = [ ...this.hashComponents ];
+
+    if (this.api instanceof RestApi || this.api instanceof SpecRestApi) { // Ignore IRestApi that are imported
+
+      // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.
+      const cfnRestApiCF = (this.api.node.defaultChild as any)._toCloudFormation();
+      hash.push(this.stack.resolve(cfnRestApiCF));
+    }
+
+    let lid = this.originalLogicalId;
+
+    // if hash components were added to the deployment, we use them to calculate
+    // a logical ID for the deployment resource.
+    if (hash.length > 0) {
+      const md5 = crypto.createHash('md5');
+      hash.map(x => this.stack.resolve(x)).forEach(c => md5.update(JSON.stringify(c)));
+      lid += md5.digest('hex');
+    }
+
+    return lid;
   }
 }

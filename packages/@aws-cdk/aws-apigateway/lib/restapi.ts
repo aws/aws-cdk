@@ -1,6 +1,6 @@
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack, CfnResource } from '@aws-cdk/core';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
@@ -248,7 +248,6 @@ export interface SpecRestApiProps extends RestApiBaseProps {
  * Base implementation that are common to various implementations of IRestApi
  */
 export abstract class RestApiBase extends Resource implements IRestApi {
-
   /**
    * Checks if the given object is an instance of RestApiBase.
    * @internal
@@ -382,6 +381,15 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    */
   public _attachMethod(method: Method) {
     ignore(method);
+  }
+
+  /**
+   * Associates a Deployment resource with this REST API.
+   *
+   * @internal
+   */
+  public _attachDeployment(deployment: Deployment) {
+    ignore(deployment);
   }
 
   protected configureCloudWatchRole(apiResource: CfnRestApi) {
@@ -550,6 +558,11 @@ export class RestApi extends RestApiBase {
    */
   public readonly methods = new Array<Method>();
 
+  /**
+   * This list of deployments bound to this RestApi
+   */
+  private readonly deployments = new Array<Deployment>();
+
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id, props);
 
@@ -627,6 +640,29 @@ export class RestApi extends RestApiBase {
    */
   public _attachMethod(method: Method) {
     this.methods.push(method);
+
+    // add this method as a dependency to all deployments defined for this api
+    // when additional deployments are added, _attachDeployment is called and
+    // this method will be added there.
+    for (const dep of this.deployments) {
+      dep.node.addDependency(method.node.defaultChild as CfnResource);
+    }
+  }
+
+  /**
+   * Attaches a deployment to this REST API.
+   *
+   * @internal
+   */
+  public _attachDeployment(deployment: Deployment) {
+    this.deployments.push(deployment);
+
+    // add all methods that were already defined as dependencies of this deployment
+    // when additional methods are added, _attachMethod is called and it will be
+    // added as a dependency to this deployment.
+    for (const method of this.methods) {
+      deployment.node.addDependency(method.node.defaultChild as CfnResource);
+    }
   }
 
   /**
