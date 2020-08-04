@@ -124,12 +124,14 @@ export class Policy extends Resource implements IPolicy {
         Lazy.stringValue({ produce: () => generatePolicyName(scope, resource.logicalId) }),
     });
 
-    // this function returns `true` if the CFN resource should be included in
-    // the cloudformation template unless `force` is `true`, if the policy
-    // document is empty, the resource will not be included.
     const self = this;
 
     class CfnPolicyConditional extends CfnPolicy {
+      /**
+       * This function returns `true` if the CFN resource should be included in
+       * the cloudformation template unless `force` is `true`, if the policy
+       * document is empty, the resource will not be included.
+       */
       protected shouldSynthesize() {
         return self.force || self.referenceTaken || (!self.document.isEmpty && self.isAttached);
       }
