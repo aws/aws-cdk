@@ -58,6 +58,7 @@ function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions)
  * twice for the same construct.
  */
 function invokeAspects(root: IConstruct) {
+  let nestedAspectWarning = false;
   recurse(root, []);
 
   function recurse(construct: IConstruct, inheritedAspects: constructs.IAspect[]) {
@@ -65,10 +66,17 @@ function invokeAspects(root: IConstruct) {
     const node: NodeWithAspectPrivatesHangingOut = construct.node._actualNode as any;
 
     const allAspectsHere = [...inheritedAspects ?? [], ...node._aspects];
-
+    const nodeAspectsCount = node._aspects.length;
     for (const aspect of allAspectsHere) {
       if (node.invokedAspects.includes(aspect)) { continue; }
+
       aspect.visit(construct);
+      // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
+      // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
+      if (!nestedAspectWarning && nodeAspectsCount !== node._aspects.length) {
+        construct.node.addWarning('We detected an Aspect was added via another Aspect, and will not be applied');
+        nestedAspectWarning = true;
+      }
       node.invokedAspects.push(aspect);
     }
 
