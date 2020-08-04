@@ -226,7 +226,7 @@ export interface RestApiProps extends RestApiOptions {
    * The EndpointConfiguration property type specifies the endpoint types of a REST API
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
    *
-   * @default - EndpointType.EDGE.
+   * @default EndpointType.EDGE
    */
   readonly endpointConfiguration?: EndpointConfiguration;
 }
