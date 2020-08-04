@@ -48,8 +48,7 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Chatbot",
-    "jest": true
+    "cloudformation": "AWS::Chatbot"
   },
   "keywords": [
     "aws",
@@ -67,8 +66,11 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@types/nodeunit": "^0.0.31",
+    "nodeunit": "^0.11.3"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
