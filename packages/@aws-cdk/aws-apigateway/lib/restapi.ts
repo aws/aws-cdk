@@ -164,7 +164,7 @@ export interface RestApiBaseProps {
    * A list of the endpoint types of the API. Use this property when creating
    * an API.
    *
-   * @default - EndpointType.EDGE.
+   * @default EndpointType.EDGE
    */
   readonly endpointTypes?: EndpointType[];
 }
