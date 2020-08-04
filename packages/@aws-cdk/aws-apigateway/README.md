@@ -1000,7 +1000,7 @@ This can be modified as shown below:
 
 ```ts
 const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
-  apiDefinition: apigateway.ApiDefinition.fromInline(replacedSwagger),
+  // ...
   endpointTypes: [apigateway.EndpointType.PRIVATE]
 });
 ```
