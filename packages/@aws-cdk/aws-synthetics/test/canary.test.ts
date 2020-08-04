@@ -97,7 +97,6 @@ test('An existing role can be specified instead of auto-created', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'mycanary',
     role,
     test: synthetics.Test.custom({
       handler: 'index.handler',
@@ -118,7 +117,6 @@ test('An existing bucket can be specified instead of auto-created', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'mycanary',
     artifactsBucketLocation: { bucket, prefix },
     test: synthetics.Test.custom({
       handler: 'index.handler',
@@ -132,10 +130,41 @@ test('An existing bucket can be specified instead of auto-created', () => {
   });
 });
 
+test('Runtime can be specified', () => {
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    RuntimeVersion: 'syn-1.0',
+  });
+});
+
+test('Runtime can be customized', () => {
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: new synthetics.Runtime('syn-1.0'),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('foo'),
+    }),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    RuntimeVersion: 'syn-1.0',
+  });
+});
+
 test('Schedule can be set with Rate', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'mycanary',
     schedule: synthetics.Schedule.rate(Duration.minutes(3)),
     test: synthetics.Test.custom({
       handler: 'index.handler',
@@ -152,7 +181,6 @@ test('Schedule can be set with Rate', () => {
 test('Schedule can be set with Expression', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'mycanary',
     schedule: synthetics.Schedule.expression('rate(1 hour)'),
     test: synthetics.Test.custom({
       handler: 'index.handler',
@@ -169,7 +197,6 @@ test('Schedule can be set with Expression', () => {
 test('Schedule can be set to run once', () => {
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'mycanary',
     schedule: synthetics.Schedule.once(),
     test: synthetics.Test.custom({
       handler: 'index.handler',
