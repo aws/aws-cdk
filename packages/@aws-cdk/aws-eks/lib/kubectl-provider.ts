@@ -47,7 +47,7 @@ export class KubectlProvider extends NestedStack {
    */
   public readonly role: iam.IRole;
 
-  public constructor(scope: Construct, id: string, props: KubectlProviderProps) {
+  public constructor(scope: Construct, id: string, props: KubectlProviderProps = { }) {
     super(scope, id);
 
     const handler = new lambda.Function(this, 'Handler', {

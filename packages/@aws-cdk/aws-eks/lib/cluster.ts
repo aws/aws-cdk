@@ -228,13 +228,35 @@ export interface ClusterOptions {
   readonly endpointAccess?: EndpointAccess;
 
   /**
-   * Environment for the kubectl execution. Only relevant for kubectl enabled clusters.
+   * Environment variables for the kubectl execution. Only relevant for kubectl enabled clusters.
    *
-   * These variables will be injected to the handler executing kubectl/helm commands.
-   *
-   * @default - No environment.
+   * @default - No environment variables.
    */
-  readonly kubectlEnvironment?: { [key: string]: string }
+  readonly kubectlEnvironment?: { [key: string]: string };
+}
+
+/**
+ * Group access configuration together.
+ */
+export interface EndpointAccessConfig {
+
+  /**
+   * Indicates if private access is enabled.
+   */
+  readonly privateAccess: boolean;
+
+  /**
+   * Indicates if public access is enabled.
+   */
+  readonly publicAccess: boolean;
+  /**
+   * Public access is allowed only from these CIDR blocks.
+   * An empty array means access is open to any address.
+   *
+   * @default - No restrictions.
+   */
+  readonly publicCidrs?: string[];
+
 }
 
 /**
@@ -253,13 +275,13 @@ export class EndpointAccess {
    *
    * @param cidr The CIDR blocks.
    */
-  public static readonly PUBLIC = new EndpointAccess(false, true);
+  public static readonly PUBLIC = new EndpointAccess({privateAccess: false, publicAccess: true});
 
   /**
    * The cluster endpoint is only accessible through your VPC.
    * Worker node traffic to the endpoint will stay within your VPC.
    */
-  public static readonly PRIVATE = new EndpointAccess(true, false);
+  public static readonly PRIVATE = new EndpointAccess({privateAccess: true, publicAccess: false});
 
   /**
    * The cluster endpoint is accessible from outside of your VPC.
@@ -272,24 +294,14 @@ export class EndpointAccess {
    *
    * @param cidr The CIDR blocks.
    */
-  public static readonly PUBLIC_AND_PRIVATE = new EndpointAccess(true, true);
+  public static readonly PUBLIC_AND_PRIVATE = new EndpointAccess({privateAccess: true, publicAccess: true});
 
   private constructor(
     /**
-     * Indicates if private access is enabled.
+     * Configuration properties.
      */
-    public readonly privateAccess: boolean,
-
-    /**
-     * Indicates if public access is enabled.
-     */
-    public readonly publicAccess: boolean,
-    /**
-     * Public access is allowed only from these CIDR blocks.
-     * An empty array means access is open to any address.
-     */
-    public readonly publicCidrs?: string[]) {
-    if (!publicAccess && publicCidrs && publicCidrs.length > 0) {
+    public readonly config: EndpointAccessConfig) {
+    if (!config.publicAccess && config.publicCidrs && config.publicCidrs.length > 0) {
       throw new Error('CIDR blocks can only be configured when public access is enabled');
     }
   }
@@ -302,7 +314,11 @@ export class EndpointAccess {
    * @param cidr CIDR blocks.
    */
   public onlyFrom(...cidr: string[]) {
-    return new EndpointAccess(this.privateAccess, this.publicAccess, cidr);
+    return new EndpointAccess({
+      ...this.config,
+      // override CIDR
+      publicCidrs: cidr,
+    });
   }
 }
 
@@ -583,7 +599,7 @@ export class Cluster extends Resource implements ICluster {
       defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
-    this.vpcSubnets = props.vpcSubnets || [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
+    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
 
     // Get subnetIds for all selected subnets
     const subnetIds = [...new Set(Array().concat(...this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds)))];
@@ -605,7 +621,7 @@ export class Cluster extends Resource implements ICluster {
       this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
       this.kubectlProviderEnv = props.kubectlEnvironment;
 
-      if (this.endpointAccess.privateAccess && this.vpc instanceof ec2.Vpc) {
+      if (this.endpointAccess.config.privateAccess && this.vpc instanceof ec2.Vpc) {
         // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
         if (!this.vpc.dnsHostnamesEnabled || !this.vpc.dnsSupportEnabled) {
           throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
@@ -622,9 +638,9 @@ export class Cluster extends Resource implements ICluster {
 
       resource = new ClusterResource(this, 'Resource', {
         ...clusterProps,
-        endpointPrivateAccess: this.endpointAccess.privateAccess,
-        endpointPublicAccess: this.endpointAccess.publicAccess,
-        publicAccessCidrs: this.endpointAccess.publicCidrs,
+        endpointPrivateAccess: this.endpointAccess.config.privateAccess,
+        endpointPublicAccess: this.endpointAccess.config.publicAccess,
+        publicAccessCidrs: this.endpointAccess.config.publicCidrs,
       });
       this._clusterResource = resource;
 
@@ -1049,7 +1065,12 @@ export class Cluster extends Resource implements ICluster {
         env: this.kubectlProviderEnv,
       };
 
-      if (!this.endpointAccess!.publicAccess) {
+      if (!this.endpointAccess) {
+        // this should have been set on cluster instantiation for kubectl enabled clusters
+        throw new Error("Expected 'endpointAccess' to be defined for kubectl enabled clusters");
+      }
+
+      if (!this.endpointAccess.config.publicAccess) {
         // endpoint access is private only, we need to attach the
         // provider to the VPC so that it can access the cluster.
         providerProps = {
