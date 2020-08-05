@@ -159,6 +159,14 @@ export interface RestApiBaseProps {
    * @default - when no export name is given, output will be created without export
    */
   readonly endpointExportName?: string;
+
+  /**
+   * A list of the endpoint types of the API. Use this property when creating
+   * an API.
+   *
+   * @default EndpointType.EDGE
+   */
+  readonly endpointTypes?: EndpointType[];
 }
 
 /**
@@ -218,18 +226,9 @@ export interface RestApiProps extends RestApiOptions {
    * The EndpointConfiguration property type specifies the endpoint types of a REST API
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
    *
-   * @default - No endpoint configuration
+   * @default EndpointType.EDGE
    */
   readonly endpointConfiguration?: EndpointConfiguration;
-
-  /**
-   * A list of the endpoint types of the API. Use this property when creating
-   * an API.
-   *
-   * @default - No endpoint types.
-   * @deprecated this property is deprecated, use endpointConfiguration instead
-   */
-  readonly endpointTypes?: EndpointType[];
 }
 
 /**
@@ -431,6 +430,25 @@ export abstract class RestApiBase extends Resource implements IRestApi {
       }
     }
   }
+
+  /**
+   * @internal
+   */
+  protected _configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
+    if (props.endpointTypes && props.endpointConfiguration) {
+      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
+    }
+    if (props.endpointConfiguration) {
+      return {
+        types: props.endpointConfiguration.types,
+        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
+      };
+    }
+    if (props.endpointTypes) {
+      return { types: props.endpointTypes };
+    }
+    return undefined;
+  }
 }
 
 /**
@@ -471,6 +489,7 @@ export class SpecRestApi extends RestApiBase {
       failOnWarnings: props.failOnWarnings,
       body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
+      endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
     });
     this.node.defaultChild = resource;
@@ -573,7 +592,7 @@ export class RestApi extends RestApiBase {
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
-      endpointConfiguration: this.configureEndpoints(props),
+      endpointConfiguration: this._configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters,
@@ -675,22 +694,6 @@ export class RestApi extends RestApiBase {
 
     return [];
   }
-
-  private configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
-    if (props.endpointTypes && props.endpointConfiguration) {
-      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
-    }
-    if (props.endpointConfiguration) {
-      return {
-        types: props.endpointConfiguration.types,
-        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
-      };
-    }
-    if (props.endpointTypes) {
-      return { types: props.endpointTypes };
-    }
-    return undefined;
-  }
 }
 
 /**
@@ -702,7 +705,7 @@ export interface EndpointConfiguration {
   /**
    * A list of endpoint types of an API or its custom domain name.
    *
-   * @default - no endpoint types.
+   * @default EndpointType.EDGE
    */
   readonly types: EndpointType[];
 
