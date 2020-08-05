@@ -111,11 +111,12 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
   public abstract readonly arn: string;
 
   /**
-   * add a new none data source to this API. Useful for pipeline resolvers
+   * add a new dummy data source to this API. Useful for pipeline resolvers
    * and for backend changes that don't require a data source.
    *
+   * @param id The data source's id
    * @param options The optional configuration for this data source
-   * @default name - 'NoneCDKDataSource'
+   * @default name - the id
    * description - No description
    */
   public addNoneDataSource(id: string, options?: DataSourceOptions): NoneDataSource {
@@ -129,9 +130,10 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
   /**
    * add a new DynamoDB data source to this API
    *
+   * @param id The data source's id
    * @param table The DynamoDB table backing this data source
    * @param options The optional configuration for this data source
-   * @default name - 'DynamoDbCDKDataSource'
+   * @default name - the id
    * description - No description
    */
   public addDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions): DynamoDbDataSource {
@@ -146,9 +148,10 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
   /**
    * add a new http data source to this API
    *
+   * @param id The data source's id
    * @param endpoint The http endpoint
    * @param options The optional configuration for this data source
-   * @default name - 'HttpCDKDataSource'
+   * @default name - 'the id
    * description - No description
    */
   public addHttpDataSource(id: string, endpoint: string, options?: DataSourceOptions): HttpDataSource {
@@ -163,9 +166,10 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
   /**
    * add a new Lambda data source to this API
    *
+   * @param id The data source's id
    * @param lambdaFunction The Lambda function to call to interact with this data source
    * @param options The optional configuration for this data source
-   * @default name - 'LambdaCDKDataSource'
+   * @default name - the id
    * description - No description
    */
   public addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource {
