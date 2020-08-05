@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { CfnResolver } from './appsync.generated';
 import { BaseDataSource } from './data-source';
-import { IGraphQLApi } from './graphqlapi-base';
+import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 
 /**
@@ -44,7 +44,7 @@ export interface ResolverProps extends BaseResolverProps {
   /**
    * The API this resolver is attached to
    */
-  readonly api: IGraphQLApi;
+  readonly api: IGraphqlApi;
   /**
    * The data source this resolver is using
    *

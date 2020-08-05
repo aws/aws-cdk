@@ -3,7 +3,7 @@ import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { CfnResource, Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
 import { CfnApiKey,  CfnGraphQLApi,  CfnGraphQLSchema } from './appsync.generated';
-import { IGraphQLApi, GraphQLApiBase } from './graphqlapi-base';
+import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -318,7 +318,7 @@ export class IamResource {
 /**
  * Attributes for GraphQL imports
  */
-export interface GraphQLApiAttributes {
+export interface GraphqlApiAttributes {
   /**
    * an unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
@@ -337,7 +337,7 @@ export interface GraphQLApiAttributes {
  *
  * @resource AWS::AppSync::GraphQLApi
  */
-export class GraphQLApi extends GraphQLApiBase {
+export class GraphQLApi extends GraphqlApiBase {
   /**
    * Import a GraphQL API through this function
    *
@@ -345,12 +345,12 @@ export class GraphQLApi extends GraphQLApiBase {
    * @param id id
    * @param attrs GraphQL API Attributes of an API
    */
-  public static fromGraphqlApiAttributes(scope: Construct, id: string, attrs: GraphQLApiAttributes): IGraphQLApi {
+  public static fromGraphqlApiAttributes(scope: Construct, id: string, attrs: GraphqlApiAttributes): IGraphqlApi {
     const arn = attrs.graphqlApiArn ?? Stack.of(scope).formatArn({
       service: 'appsync',
       resource: `apis/${attrs.graphqlApiId}`,
     });
-    class Import extends GraphQLApiBase {
+    class Import extends GraphqlApiBase {
       public readonly apiId = attrs.graphqlApiId;
       public readonly arn = arn;
       constructor (s: Construct, i: string){

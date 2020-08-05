@@ -25,7 +25,7 @@ export interface DataSourceOptions {
 /**
  * Interface for GraphQL
  */
-export interface IGraphQLApi extends IResource {
+export interface IGraphqlApi extends IResource {
 
   /**
    * an unique AWS AppSync GraphQL API identifier
@@ -97,7 +97,7 @@ export interface IGraphQLApi extends IResource {
 /**
  * Base Class for GraphQL API
  */
-export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
+export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
 
   /**
    * an unique AWS AppSync GraphQL API identifier
