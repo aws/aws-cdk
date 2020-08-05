@@ -23,9 +23,11 @@ export class Schedule {
 
   /**
    * Construct a schedule from an interval. Allowed values: 0 (for a single run) or between 1 and 60 minutes.
+   *
+   * @param interval The interval at which to run the canary
    */
-  public static rate(duration: Duration): Schedule {
-    const minutes = duration.toMinutes();
+  public static rate(interval: Duration): Schedule {
+    const minutes = interval.toMinutes();
     if (minutes === 0) {
       return Schedule.once();
     }

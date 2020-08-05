@@ -12,29 +12,36 @@ export abstract class Code {
   /**
    * Specify code inline.
    *
-   * @returns `InlineCode` with inline code.
    * @param code The actual handler code (limited to 4KiB)
+   *
+   * @returns `InlineCode` with inline code.
    */
   public static fromInline(code: string): InlineCode {
     return new InlineCode(code);
   }
+
   /**
-   * Specify code from a local path. Path must include the folder structure `nodejs/node_modules`
+   * Specify code from a local path. Path must include the folder structure `nodejs/node_modules/myCanaryFilename.js`.
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch
+   *
+   * @param assetPath Either a directory or a .zip file
    *
    * @returns `AssetCode` associated with the specified path.
-   * @param assetPath Either a directory or a .zip file
    */
   public static fromAsset(assetPath: string, options?: s3_assets.AssetOptions): AssetCode {
     return new AssetCode(assetPath, options);
   }
 
   /**
-   * Specify code from an s3 bucket.
+   * Specify code from an s3 bucket. The object in the s3 bucket must be a .zip file that contains
+   * the structure `nodejs/node_modules/myCanaryFilename.js`.
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch
    *
-   * @returns `S3Code` associated with the specified S3 object.
    * @param bucket The S3 bucket
    * @param key The object key
    * @param objectVersion Optional S3 object version
+   *
+   * @returns `S3Code` associated with the specified S3 object.
    */
   public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
     return new S3Code(bucket, key, objectVersion);
@@ -45,7 +52,9 @@ export abstract class Code {
    * to the stack, add resources and have fun.
    *
    * @param scope The binding scope. Don't be smart about trying to down-cast or
-   * assume it's initialized. You may just use it as a construct scope.
+   *              assume it's initialized. You may just use it as a construct scope.
+   *
+   * @returns a bound `CodeConfig`.
    */
   public abstract bind(scope: Construct, handler: string): CodeConfig;
 }
@@ -57,14 +66,14 @@ export interface CodeConfig {
   /**
    * The location of the code in S3 (mutually exclusive with `inlineCode`).
    *
-   * @default - mutually exclusive with `inlineCode`
+   * @default - none
    */
   readonly s3Location?: s3.Location;
 
   /**
    * Inline code (mutually exclusive with `s3Location`).
    *
-   * @default - mutually exclusive with `s3Location`
+   * @default - none
    */
   readonly inlineCode?: string;
 }
@@ -78,7 +87,7 @@ export class AssetCode extends Code {
   /**
    * @param assetPath The path to the asset file or directory.
    */
-  constructor(private assetPath: string, private options?: s3_assets.AssetOptions){
+  public constructor(private assetPath: string, private options?: s3_assets.AssetOptions) {
     super();
   }
 
@@ -113,32 +122,28 @@ export class AssetCode extends Code {
    *
    * @param handler the canary handler
    */
-  private validateCanaryAsset(handler: string){
-    if(path.extname(this.assetPath) !== '.zip'){
-      if(path.extname(this.assetPath) !== ''){
+  private validateCanaryAsset(handler: string) {
+    if(path.extname(this.assetPath) !== '.zip') {
+      if(path.extname(this.assetPath) !== '') {
         throw new Error(`Asset must be a .zip file or a directory (${this.assetPath})`);
       }
-      const filename = handler.substring(0,handler.indexOf('.')) + '.js';
-      if(!fs.existsSync(path.join(this.assetPath,'nodejs', 'node_modules', filename))){
-        throw new Error(`The canary resource requires that the directory contains nodejs${path.sep}node_modules${path.sep}<filename> and that <filename> matches the handler (${filename})`);
+      const filename = `${handler.substring(0,handler.indexOf('.'))}.js`;
+      if(!fs.existsSync(path.join(this.assetPath,'nodejs', 'node_modules', filename))) {
+        throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${filename}" (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch)`);
       }
     }
   }
 }
 
 /**
- * Canary code from an inline string (limited to 4KiB).
+ * Canary code from an inline string.
  */
 export class InlineCode extends Code {
-  constructor(private code: string) {
+  public constructor(private code: string) {
     super();
 
     if (code.length === 0) {
       throw new Error('Canary inline code cannot be empty');
-    }
-
-    if (code.length > 460800) {
-      throw new Error('Canary source is too large, must be <= 460800 but is ' + code.length);
     }
   }
 
@@ -155,12 +160,8 @@ export class InlineCode extends Code {
 export class S3Code extends Code {
   private bucketName: string;
 
-  constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
+  public constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
     super();
-
-    if (!bucket.bucketName) {
-      throw new Error('bucketName is undefined for the provided bucket');
-    }
 
     this.bucketName = bucket.bucketName;
   }

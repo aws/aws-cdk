@@ -27,11 +27,11 @@ export class Runtime {
    */
   public static readonly SYNTHETICS_1_0 = new Runtime('syn-1.0');
 
-  public constructor(
-    /**
-     * The name of the runtime version
-     */
-    public readonly name: string){}
+  /**
+   * @param name The name of the runtime version
+   */
+  public constructor(public readonly name: string){
+  }
 }
 
 /**
@@ -166,7 +166,7 @@ export class Canary extends cdk.Resource {
   public readonly canaryId: string;
 
   /**
-   * The state of the canary. For example, RUNNING.
+   * The state of the canary. For example, RUNNING, STOPPED, NOT STARTED, or ERROR.
    * @attribute
    */
   public readonly canaryState: string;
@@ -182,6 +182,13 @@ export class Canary extends cdk.Resource {
    */
   private readonly artifactsBucket: s3.IBucket;
 
+  /**
+   * Construct a new canary resource.
+   *
+   * @param scope The construct within which this construct is defined
+   * @param id A unique identifier
+   * @param props Canary props
+   */
   public constructor(scope: cdk.Construct, id: string, props: CanaryProps) {
     if (props.canaryName && !cdk.Token.isUnresolved(props.canaryName)) {
       validateName(props.canaryName);
@@ -202,7 +209,7 @@ export class Canary extends cdk.Resource {
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
-      startCanaryAfterCreation: props.startAfterCreation !== false,
+      startCanaryAfterCreation: props.startAfterCreation ?? true,
       runtimeVersion: props.runtime?.name ?? Runtime.SYNTHETICS_1_0.name,
       name: this.physicalName,
       schedule: this.createSchedule(props),
@@ -214,23 +221,6 @@ export class Canary extends cdk.Resource {
     this.canaryId = resource.attrId;
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
-  }
-
-  /**
-   * @param metricName - the name of the metric
-   * @param options - configuration options for the metric
-   *
-   * @returns a CloudWatch metric associated with the canary.
-   * @default avg over 5 minutes
-   */
-  private metric(metricName: string, options?: MetricOptions): Metric {
-    return new Metric({
-      metricName,
-      namespace: 'CloudWatchSynthetics',
-      dimensions: { CanaryName: this.canaryName },
-      statistic: 'avg',
-      ...options,
-    }).attachTo(this);
   }
 
   /**
@@ -264,6 +254,23 @@ export class Canary extends cdk.Resource {
    */
   public metricFailed(options?: MetricOptions): Metric {
     return this.metric('Failed', options);
+  }
+
+  /**
+   * @param metricName - the name of the metric
+   * @param options - configuration options for the metric
+   *
+   * @returns a CloudWatch metric associated with the canary.
+   * @default avg over 5 minutes
+   */
+  private metric(metricName: string, options?: MetricOptions): Metric {
+    return new Metric({
+      metricName,
+      namespace: 'CloudWatchSynthetics',
+      dimensions: { CanaryName: this.canaryName },
+      statistic: 'avg',
+      ...options,
+    }).attachTo(this);
   }
 
   /**
@@ -313,6 +320,7 @@ export class Canary extends cdk.Resource {
         ...props.test.customCode.code.bind(this, props.test.customCode.handler),
       };
     } else {
+      // testCode and customCode are mutually exclusive, so testCode must exist here
       codeConfig = props.test.testCode!;
     }
     return {
@@ -342,7 +350,7 @@ export class Canary extends cdk.Resource {
     if (name.length <= 21){
       return name;
     } else {
-      return name.substring(0,15) + nameHash(name.substring(15));
+      return name.substring(0,15) + nameHash(name);
     }
   }
 }
@@ -353,11 +361,11 @@ export class Canary extends cdk.Resource {
  * @param name the name to be hashed
  */
 function nameHash(name: string): string {
-  const md5 = crypto.createHash('md5').update(name).digest('hex');
+  const md5 = crypto.createHash('sha256').update(name).digest('hex');
   return md5.slice(0,6);
 }
 
-const nameRegex: RegExp = new RegExp('^[0-9a-z_\-]+$');
+const nameRegex: RegExp = /^[0-9a-z_\-]+$/;
 
 /**
  * Verifies that the name fits the regex expression: ^[0-9a-z_\-]+$.
@@ -366,9 +374,9 @@ const nameRegex: RegExp = new RegExp('^[0-9a-z_\-]+$');
  */
 function validateName(name: string) {
   if (name.length > 21) {
-    throw new Error('Canary name is too large, must be <= 21 characters, but is ' + name.length);
+    throw new Error(`Canary name is too large, must be between 1 and 21 characters, but is ${name.length}`);
   }
   if (!nameRegex.test(name)) {
-    throw new Error(`Canary name must be lowercase, numbers, hyphens, or underscores (no spaces) (${name})`);
+    throw new Error(`Canary name must be lowercase, numbers, hyphens, or underscores (got "${name}")`);
   }
 }
