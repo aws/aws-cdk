@@ -1,18 +1,7 @@
 {
   "Resources": {
-    "MyCanaryServiceBucketE50F48B7": {
+    "mytestbucket8DC16178": {
       "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketEncryption": {
-          "ServerSideEncryptionConfiguration": [
-            {
-              "ServerSideEncryptionByDefault": {
-                "SSEAlgorithm": "aws:kms"
-              }
-            }
-          ]
-        }
-      },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
@@ -52,7 +41,7 @@
                       [
                         {
                           "Fn::GetAtt": [
-                            "MyCanaryServiceBucketE50F48B7",
+                            "mytestbucket8DC16178",
                             "Arn"
                           ]
                         },
@@ -97,14 +86,15 @@
             [
               "s3://",
               {
-                "Ref": "MyCanaryServiceBucketE50F48B7"
-              }
+                "Ref": "mytestbucket8DC16178"
+              },
+              "/canarybucket"
             ]
           ]
         },
         "Code": {
           "Handler": "index.handler",
-          "Script": "exports.handler = async () => {\nconsole.log('hello world');\n};"
+          "Script": "\n      exports.handler = async () => {\n        console.log('hello world');\n      };"
         },
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
@@ -112,11 +102,11 @@
             "Arn"
           ]
         },
-        "Name": "canary-one",
+        "Name": "canary-custom",
         "RuntimeVersion": "syn-1.0",
         "Schedule": {
           "DurationInSeconds": "0",
-          "Expression": "rate(5 minutes)"
+          "Expression": "rate(1 minute)"
         },
         "StartCanaryAfterCreation": true
       }

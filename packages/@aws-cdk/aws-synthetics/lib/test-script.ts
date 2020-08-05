@@ -25,7 +25,9 @@ export class Test {
    *
    * 🚧 TODO: implement
    */
-  // public static heartBeat(url: string){}
+  // public static heartBeat(url: string) {
+  //   throw new Error('Not Implemented');
+  // }
 
   /**
    * Use this method to access the template for api Endpoint monitoring. This test will hit the endpoint specified and report
@@ -36,7 +38,9 @@ export class Test {
    *
    * 🚧 TODO: implement
    */
-  // public static apiEndpoint(url: string, options: apiOptions){}
+  // public static apiEndpoint(url: string, options: apiOptions) {
+  //   throw new Error('Not Implemented');
+  // }
 
   /**
    * Use this method to access the template for a broken link checker. This test will check a specified number of links and report
@@ -47,7 +51,9 @@ export class Test {
    *
    * 🚧 TODO: implement
    */
-  // public static brokenLink(url: string, options: linkOptions){}
+  // public static brokenLink(url: string, options: linkOptions) {
+  //   throw new Error('Not Implemented');
+  // }
 
   /**
    * Verifies that the given handler ends in '.handler'. Returns the handler if successful and
@@ -57,22 +63,22 @@ export class Test {
    */
   private static validateHandler(handler: string) {
     if (!handler.endsWith('.handler')) {
-      throw new Error('Canary Handler must end in \'.handler\'');
+      throw new Error(`Canary Handler must end in '.handler' (${handler})`);
     }
     if (handler.length > 21) {
-      throw new Error('Canary Handler must be less than 21 characters');
+      throw new Error(`Canary Handler must be less than 21 characters (${handler})`);
     }
   }
 
-  private constructor(
-    /**
-     * Properties for test templates (mutually exclusive with `customCode`).
-     */
-    public readonly testCode?: TestOptions,
-    /**
-     * Properties for custom code (mutually exclusive with `testCode`).
-     */
-    public readonly customCode?: CustomOptions){}
+  /**
+   * Construct a Test property
+   *
+   * @param testCode Properties for test templates (mutually exclusive with `customCode`)
+
+   * @param customCode Properties for custom code (mutually exclusive with `testCode`)
+   */
+  private constructor(public readonly testCode?: TestOptions, public readonly customCode?: CustomOptions){
+  }
 }
 
 /**

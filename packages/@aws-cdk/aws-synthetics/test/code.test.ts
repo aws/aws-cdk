@@ -1,57 +1,38 @@
 import '@aws-cdk/assert/jest';
 import * as path from 'path';
+import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack } from '@aws-cdk/core';
 import * as synthetics from '../lib';
 
-let stack: Stack;
-let app: App;
-beforeEach(() => {
-  app = new App();
-  stack = new Stack(app, 'canaries');
-});
+describe(synthetics.Code.fromInline, () => {
+  test('fromInline works', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
 
-describe('Code.fromInline', () => {
-  test('basic use case', () => {
     // WHEN
-    new synthetics.Canary(stack, 'Canary', {
-      test: synthetics.Test.custom({
-        handler: 'index.handler',
-        code: synthetics.Code.fromInline('exports.handler = async () => {\nconsole.log(\'hello world\');\n};'),
-      }),
-    });
+    const inline = synthetics.Code.fromInline(`
+      exports.handler = async () => {
+        console.log(\'hello world\');
+      };`);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-      Code: {
-        Handler: 'index.handler',
-        Script: 'exports.handler = async () => {\nconsole.log(\'hello world\');\n};',
-      },
-    });
-  });
-
-  test('fails if size exceeds 460800 bytes', () => {
-    expect(() => new synthetics.Canary(stack, 'Canary', {
-      test: synthetics.Test.custom({
-        handler: 'index.handler',
-        code: synthetics.Code.fromInline(generateRandomString(460801)),
-      }),
-    }))
-      .toThrowError('Canary source is too large, must be <= 460800 but is 460801');
+    expect(inline.bind(stack, 'index.handler').inlineCode).toEqual(`
+      exports.handler = async () => {
+        console.log(\'hello world\');
+      };`);
   });
 
   test('fails if empty', () => {
-    expect(() => new synthetics.Canary(stack, 'Canary', {
-      test: synthetics.Test.custom({
-        handler: 'index.handler',
-        code: synthetics.Code.fromInline(''),
-      }),
-    }))
+    expect(() => synthetics.Code.fromInline(''))
       .toThrowError('Canary inline code cannot be empty');
   });
 });
 
-describe('Code.fromAsset', () => {
-  test('basic use case', () => {
+describe(synthetics.Code.fromAsset, () => {
+  test('fromAsset works', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+
     // WHEN
     const directoryAsset = synthetics.Code.fromAsset(path.join(__dirname, 'canaries'));
     new synthetics.Canary(stack, 'Canary', {
@@ -72,6 +53,10 @@ describe('Code.fromAsset', () => {
   });
 
   test('only one Asset object gets created even if multiple canaries use the same AssetCode', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'canaries');
+
     // WHEN
     const directoryAsset = synthetics.Code.fromAsset(path.join(__dirname, 'canaries'));
     new synthetics.Canary(stack, 'Canary1', {
@@ -95,30 +80,49 @@ describe('Code.fromAsset', () => {
   });
 
   test('fails if non-zip asset is used', () => {
-    expect(() => new synthetics.Canary(stack, 'Canary', {
-      test: synthetics.Test.custom({
-        handler: 'canary.handler',
-        code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries', 'nodejs', 'node_modules', 'canary.js')),
-      }),
-    }))
-      .toThrowError(`Asset must be a .zip file or a directory (${path.join(__dirname, 'canaries', 'nodejs', 'node_modules', 'canary.js')})`);
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+
+    // THEN
+    const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules', 'canary.js');
+    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler'))
+      .toThrowError(`Asset must be a .zip file or a directory (${assetPath})`);
   });
 
-  test(`fails if \'nodejs${path.sep}node_modules\' folder structure not used`, () => {
-    expect(() => new synthetics.Canary(stack, 'Canary', {
-      test: synthetics.Test.custom({
-        handler: 'canary.handler',
-        code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries', 'nodejs', 'node_modules')),
-      }),
-    }))
-      .toThrowError(`The canary resource requires that the directory contains nodejs${path.sep}node_modules${path.sep}<filename> and that <filename> matches the handler (canary.js)`);
+  test('fails if "nodejs/node_modules" folder structure not used', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+
+    // THEN
+    const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
+    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler'))
+      .toThrowError('The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch)');
+  });
+
+  test('fails if handler is specified incorrectly', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+
+    // THEN
+    const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
+    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'incorrect.handler'))
+      .toThrowError('The canary resource requires that the handler is present at "nodejs/node_modules/incorrect.js" (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch)');
   });
 });
 
-function generateRandomString(bytes: number) {
-  let s = '';
-  for (let i = 0; i < bytes; ++i) {
-    s += String.fromCharCode(Math.round(Math.random() * 256));
-  }
-  return s;
-}
+
+describe(synthetics.Code.fromBucket, () => {
+  test('fromBucket works', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+    const bucket = new s3.Bucket(stack, 'CodeBucket');
+
+    // WHEN
+    const code = synthetics.Code.fromBucket(bucket, 'code.js');
+    const codeConfig = code.bind(stack, 'code.handler');
+
+    // THEN
+    expect(codeConfig.s3Location?.bucketName).toEqual(bucket.bucketName);
+    expect(codeConfig.s3Location?.objectKey).toEqual('code.js');
+  });
+});

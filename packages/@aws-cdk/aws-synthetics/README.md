@@ -66,8 +66,8 @@ The `test` property represents the test the canary executes. You can supply you 
 This will allow you to specify a custom script and handler for the canary. To specify the script in the `code` property, use one of the following static methods:
 
   - `code.fromInline()` - specify an inline script.
-  - `code.fromAsset()` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 before deployment. Due to restrictions from the Canary resource, the asset must have the folder structure `nodejs/node_modules` and the canary file must be immediately inside the `node_modules` folder. The file must have the same name as the handler, for example, `index.js` and `index.handler`.
-  - `code.fromBucket()` - specify an S3 object that contains the archive of your runtime code.
+  - `code.fromAsset()` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 before deployment. The canary resource requires the handler is present at `nodejs/node_modules/<handlerName>.js`.
+  - `code.fromBucket()` - specify an S3 object that contains the archive of your runtime code. The object must be a .zip file and the handler must be present at `nodejs/node_modules/<handlerName>.js`.
 
 ```ts
 const canary = new Canary(this, 'MyCanary', {

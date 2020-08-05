@@ -1,14 +1,11 @@
 import '@aws-cdk/assert/jest';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import * as synthetics from '../lib';
-
-let stack: Stack;
-beforeEach(() => {
-  stack = new Stack();
-});
 
 test('.metricXxx() methods can be used to obtain Metrics for the canary', () => {
   // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+
   const canary = new synthetics.Canary(stack, 'mycanary', {
     test: synthetics.Test.custom({
       handler: 'index.handler',
@@ -49,6 +46,8 @@ test('.metricXxx() methods can be used to obtain Metrics for the canary', () => 
 
 test('Metric can specify statistic', () => {
   // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+
   const canary = new synthetics.Canary(stack, 'mycanary', {
     test: synthetics.Test.custom({
       handler: 'index.handler',

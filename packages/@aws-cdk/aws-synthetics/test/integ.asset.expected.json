@@ -147,7 +147,7 @@
             "Arn"
           ]
         },
-        "Name": "assetcanary1",
+        "Name": "assetcanary-two",
         "RuntimeVersion": "syn-1.0",
         "Schedule": {
           "DurationInSeconds": "0",
@@ -303,7 +303,7 @@
             "Arn"
           ]
         },
-        "Name": "assetcanary2",
+        "Name": "assetcanary-one",
         "RuntimeVersion": "syn-1.0",
         "Schedule": {
           "DurationInSeconds": "0",
