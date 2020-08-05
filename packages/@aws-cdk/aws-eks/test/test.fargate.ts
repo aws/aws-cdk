@@ -327,20 +327,6 @@ export = {
     test.done();
   },
 
-  'cannot be added to a cluster without kubectl enabled'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { kubectlEnabled: false, version: CLUSTER_VERSION });
-
-    // WHEN
-    test.throws(() => new eks.FargateProfile(stack, 'MyFargateProfile', {
-      cluster,
-      selectors: [ { namespace: 'default' } ],
-    }), /unsupported/);
-
-    test.done();
-  },
-
   'allow cluster creation role to iam:PassRole on fargate pod execution role'(test: Test) {
     // GIVEN
     const stack = new Stack();
