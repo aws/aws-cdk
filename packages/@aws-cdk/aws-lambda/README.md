@@ -302,7 +302,7 @@ from lambda function, the Amazon EFS access point will be required.
 The following sample allows the lambda function to mount the Amazon EFS access point to `/mnt/msg` in the runtime environment and access the filesystem with the POSIX identity defined in `posixUser`.
 
 ```ts
-// create a new Amaozn EFS filesystem
+// create a new Amazon EFS filesystem
 const fileSystem = new efs.FileSystem(stack, 'Efs', { vpc });
 
 // create a new access point from the filesystem
