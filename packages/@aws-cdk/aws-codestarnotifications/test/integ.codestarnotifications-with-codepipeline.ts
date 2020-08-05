@@ -77,7 +77,7 @@ class CodestarnotificationsWithCodepipelineInteg extends cdk.Stack {
       notificationRuleName: 'MyNotificationRule',
       status: Status.ENABLED,
       detailType: DetailType.FULL,
-      eventTypeIds: [
+      events: [
         PipelineEvent.PIPELINE_EXECUTION_SUCCEEDED,
         PipelineEvent.PIPELINE_EXECUTION_FAILED,
       ],
@@ -85,7 +85,7 @@ class CodestarnotificationsWithCodepipelineInteg extends cdk.Stack {
         new SlackNotificationTarget(slackChannel),
         new SNSTopicNotificationTarget(topic1),
       ],
-      resourceArn: pipeline.pipelineArn,
+      resource: pipeline.pipelineArn,
     });
 
     notificationRule.addTarget(new SNSTopicNotificationTarget(topic2));

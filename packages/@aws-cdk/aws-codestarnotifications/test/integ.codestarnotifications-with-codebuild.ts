@@ -32,7 +32,7 @@ class CodestarnotificationsWithCodebuildInteg extends cdk.Stack {
       notificationRuleName: 'MyNotificationRule',
       status: Status.ENABLED,
       detailType: DetailType.FULL,
-      eventTypeIds: [
+      events: [
         ProjectEvent.BUILD_STATE_SUCCEEDED,
         ProjectEvent.BUILD_STATE_FAILED,
         ProjectEvent.BUILD_PHASE_SUCCESS,
@@ -44,7 +44,7 @@ class CodestarnotificationsWithCodebuildInteg extends cdk.Stack {
         new SlackNotificationTarget(slackChannel),
         new SNSTopicNotificationTarget(topic1),
       ],
-      resourceArn: codebuildProject.projectArn,
+      resource: codebuildProject.projectArn,
     });
 
     notificationRule.addTarget(new SNSTopicNotificationTarget(topic2));
