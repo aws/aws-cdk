@@ -47,12 +47,12 @@ cluster.addResource('mypod', {
 });
 ```
 
-In order to interact with your cluster through `kubectl`, your CDK stack will
-include a CloudFormation output with the prefix `ClusterConfigCommand` which
-contains the [AWS CLI](https://aws.amazon.com/cli/) command to run in order in
-order to update your local kubeconfig for interacting with this cluster.
+In order to interact with your cluster through `kubectl`, you can use the `aws
+eks update-kubeconfig` [AWS CLI](https://aws.amazon.com/cli/) command in order
+to configure your local kubeconfig.
 
-For example:
+The EKS module will define a CloudFormation output in your stack which contains
+the command to run. For example:
 
 ```
 Outputs:
@@ -64,13 +64,17 @@ ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-xxxxx --
 > super-user to the cluster. You can specify this role using the `mastersRole`
 > option, or otherwise a role will be automatically created for you.
 
-You can use the "`aws eks update-kubeconfig ...`" command to your terminal in
-order to update your local kubeconfig so kubectl can connect to this cluster:
+Execute the `aws eks update-kubeconfig ...` command in your terminal to create a
+local kubeconfig:
 
 ```console
 $ aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
-Added new context arn:aws:eks:eu-west-2:112233445566:cluster/cluster-xxxxx to /home/boom/.kube/config
+Added new context arn:aws:eks:rrrrr:112233445566:cluster/cluster-xxxxx to /home/boom/.kube/config
+```
 
+And now you can simply use `kubectl`:
+
+```console
 $ kubectl get all -n kube-system
 NAME                           READY   STATUS    RESTARTS   AGE
 pod/aws-node-fpmwv             1/1     Running   0          21m
