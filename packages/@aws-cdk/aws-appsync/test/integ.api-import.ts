@@ -42,7 +42,7 @@ const testTable = new db.Table(stack, 'TestTable', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const testDS = api.addDynamoDbDataSource(testTable);
+const testDS = api.addDynamoDbDataSource('ds', testTable);
 
 testDS.createResolver({
   typeName: 'Query',
@@ -60,9 +60,9 @@ testDS.createResolver({
 
 const api2 = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'api2', {
   graphqlApiId: baseApi.apiId,
-  graphqlArn: baseApi.arn,
+  graphqlApiArn: baseApi.arn,
 });
 
-api2.addNoneDataSource();
+api2.addNoneDataSource('none');
 
 app.synth();

@@ -15,22 +15,22 @@ beforeEach(() => {
   });
 });
 
-describe('DynamoDb Data Source configuration', () => {
+describe('None Data Source configuration', () => {
 
   test('default configuration produces name `NoneCDKDataSource`', () => {
     // WHEN
-    api.addNoneDataSource();
+    api.addNoneDataSource('ds');
 
     // EXPECT
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'NONE',
-      Name: 'NoneCDKDataSource',
+      Name: 'ds',
     });
   });
 
   test('appsync configures name correctly', () => {
     // WHEN
-    api.addNoneDataSource({
+    api.addNoneDataSource('ds', {
       name: 'custom',
     });
 
@@ -43,7 +43,7 @@ describe('DynamoDb Data Source configuration', () => {
 
   test('appsync configures name and description correctly', () => {
     // WHEN
-    api.addNoneDataSource({
+    api.addNoneDataSource('ds', {
       name: 'custom',
       description: 'custom description',
     });
@@ -59,12 +59,23 @@ describe('DynamoDb Data Source configuration', () => {
   test('appsync errors when creating multiple none data sources with no configuration', () => {
     // WHEN
     const when = () => {
-      api.addNoneDataSource();
-      api.addNoneDataSource();
+      api.addNoneDataSource('ds');
+      api.addNoneDataSource('ds');
     };
 
     // EXPECT
-    expect(when).toThrow('There is already a Construct with name \'NoneCDKDataSource\' in GraphQLApi [baseApi]');
+    expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
+  });
+
+  test('appsync errors when creating multiple none data sources with same name configuration', () => {
+    // WHEN
+    const when = () => {
+      api.addNoneDataSource('ds1', { name: 'custom' });
+      api.addNoneDataSource('ds2', { name: 'custom' });
+    };
+
+    // EXPECT
+    expect(when).not.toThrowError();
   });
 });
 
@@ -74,7 +85,7 @@ describe('adding none data source from imported api', () => {
     const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
     });
-    importedApi.addNoneDataSource();
+    importedApi.addNoneDataSource('none');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
@@ -88,9 +99,9 @@ describe('adding none data source from imported api', () => {
     // WHEN
     const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
-      graphqlArn: api.arn,
+      graphqlApiArn: api.arn,
     });
-    importedApi.addNoneDataSource();
+    importedApi.addNoneDataSource('none');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {

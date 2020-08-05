@@ -21,18 +21,18 @@ describe('Http Data Source configuration', () => {
 
   test('default configuration produces name `HttpCDKDataSource`', () => {
     // WHEN
-    api.addHttpDataSource(endpoint);
+    api.addHttpDataSource('ds', endpoint);
 
     // EXPECT
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'HTTP',
-      Name: 'HttpCDKDataSource',
+      Name: 'ds',
     });
   });
 
   test('appsync configures name correctly', () => {
     // WHEN
-    api.addHttpDataSource(endpoint, {
+    api.addHttpDataSource('ds', endpoint, {
       name: 'custom',
     });
 
@@ -45,7 +45,7 @@ describe('Http Data Source configuration', () => {
 
   test('appsync configures name and description correctly', () => {
     // WHEN
-    api.addHttpDataSource(endpoint, {
+    api.addHttpDataSource('ds', endpoint, {
       name: 'custom',
       description: 'custom description',
     });
@@ -61,12 +61,12 @@ describe('Http Data Source configuration', () => {
   test('appsync errors when creating multiple http data sources with no configuration', () => {
     // WHEN
     const when = () => {
-      api.addHttpDataSource(endpoint);
-      api.addHttpDataSource(endpoint);
+      api.addHttpDataSource('ds', endpoint);
+      api.addHttpDataSource('ds', endpoint);
     };
 
     // EXPECT
-    expect(when).toThrow('There is already a Construct with name \'HttpCDKDataSource\' in GraphQLApi [baseApi]');
+    expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
   });
 });
 
@@ -76,7 +76,7 @@ describe('adding http data source from imported api', () => {
     const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
     });
-    importedApi.addHttpDataSource(endpoint);
+    importedApi.addHttpDataSource('ds', endpoint);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
@@ -90,9 +90,9 @@ describe('adding http data source from imported api', () => {
     // WHEN
     const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
-      graphqlArn: api.arn,
+      graphqlApiArn: api.arn,
     });
-    importedApi.addHttpDataSource(endpoint);
+    importedApi.addHttpDataSource('ds', endpoint);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {

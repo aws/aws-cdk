@@ -16,8 +16,10 @@ export interface BaseDataSourceProps {
   readonly api: IGraphQLApi;
   /**
    * The name of the data source
+   *
+   * @default - id of data source
    */
-  readonly name: string;
+  readonly name?: string;
   /**
    * the description of the data source
    *
@@ -100,15 +102,15 @@ export abstract class BaseDataSource extends Construct {
     if (extended.type !== 'NONE') {
       this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
     }
-
+    const name = props.name ?? id;
     this.ds = new CfnDataSource(this, 'Resource', {
       apiId: props.api.apiId,
-      name: props.name,
+      name: name,
       description: props.description,
       serviceRoleArn: this.serviceRole?.roleArn,
       ...extended,
     });
-    this.name = props.name;
+    this.name = name;
     this.api = props.api;
   }
 

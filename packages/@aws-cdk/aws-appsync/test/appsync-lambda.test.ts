@@ -29,18 +29,18 @@ describe('Lambda Data Source configuration', () => {
 
   test('default configuration produces name `TableCDKDataSource`', () => {
     // WHEN
-    api.addLambdaDataSource(func);
+    api.addLambdaDataSource('ds', func);
 
     // EXPECT
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
-      Name: 'LambdaCDKDataSource',
+      Name: 'ds',
     });
   });
 
   test('appsync configures name correctly', () => {
     // WHEN
-    api.addLambdaDataSource(func, {
+    api.addLambdaDataSource('ds', func, {
       name: 'custom',
     });
 
@@ -53,7 +53,7 @@ describe('Lambda Data Source configuration', () => {
 
   test('appsync configures name and description correctly', () => {
     // WHEN
-    api.addLambdaDataSource(func, {
+    api.addLambdaDataSource('ds', func, {
       name: 'custom',
       description: 'custom description',
     });
@@ -69,12 +69,12 @@ describe('Lambda Data Source configuration', () => {
   test('appsync errors when creating multiple lambda data sources with no configuration', () => {
     // WHEN
     const when = () => {
-      api.addLambdaDataSource(func);
-      api.addLambdaDataSource(func);
+      api.addLambdaDataSource('ds', func);
+      api.addLambdaDataSource('ds', func);
     };
 
     // EXPECT
-    expect(when).toThrow('There is already a Construct with name \'LambdaCDKDataSource\' in GraphQLApi [baseApi]');
+    expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
   });
 });
 
@@ -93,7 +93,7 @@ describe('adding lambda data source from imported api',() => {
     const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
     });
-    importedApi.addLambdaDataSource(func);
+    importedApi.addLambdaDataSource('ds', func);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
@@ -107,9 +107,9 @@ describe('adding lambda data source from imported api',() => {
     // WHEN
     const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
-      graphqlArn: api.arn,
+      graphqlApiArn: api.arn,
     });
-    importedApi.addLambdaDataSource(func);
+    importedApi.addLambdaDataSource('ds', func);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {

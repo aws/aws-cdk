@@ -8,10 +8,9 @@ import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } 
  */
 export interface DataSourceOptions {
   /**
-   * The name of the data source
+   * The name of the data source, overrides the id given by cdk
    *
-   * @default - Automatically generated name '<DataSourceType>CDKDataSource'
-   * i.e. (LambdaCDKDataSource)
+   * @default - the id provisioned
    */
   readonly name?: string;
 
@@ -47,41 +46,45 @@ export interface IGraphQLApi extends IResource {
    * add a new dummy data source to this API. Useful for pipeline resolvers
    * and for backend changes that don't require a data source.
    *
+   * @param id The data source's id
    * @param options The optional configuration for this data source
-   * @default name - 'NoneCDKDataSource'
+   * @default name - the id
    * description - No description
    */
-  addNoneDataSource(options?: DataSourceOptions): NoneDataSource;
+  addNoneDataSource(id: string, options?: DataSourceOptions): NoneDataSource;
 
   /**
    * add a new DynamoDB data source to this API
    *
+   * @param id The data source's id
    * @param table The DynamoDB table backing this data source
    * @param options The optional configuration for this data source
-   * @default name - 'DynamoDbCDKDataSource'
+   * @default name - the id
    * description - No description
    */
-  addDynamoDbDataSource(table: ITable, options?: DataSourceOptions): DynamoDbDataSource;
+  addDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions): DynamoDbDataSource;
 
   /**
    * add a new http data source to this API
    *
+   * @param id The data source's id
    * @param endpoint The http endpoint
    * @param options The optional configuration for this data source
-   * @default name - 'HttpCDKDataSource'
+   * @default name - 'the id
    * description - No description
    */
-  addHttpDataSource(endpoint: string, options?: DataSourceOptions): HttpDataSource;
+  addHttpDataSource(id: string, endpoint: string, options?: DataSourceOptions): HttpDataSource;
 
   /**
    * add a new Lambda data source to this API
    *
+   * @param id The data source's id
    * @param lambdaFunction The Lambda function to call to interact with this data source
    * @param options The optional configuration for this data source
-   * @default name - 'LambdaCDKDataSource'
+   * @default name - the id
    * description - No description
    */
-  addLambdaDataSource(lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource;
+  addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource;
 
   /**
    * Add schema dependency if not imported
@@ -115,11 +118,10 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
    * @default name - 'NoneCDKDataSource'
    * description - No description
    */
-  public addNoneDataSource(options?: DataSourceOptions): NoneDataSource {
-    const name = options?.name ?? 'NoneCDKDataSource';
-    return new NoneDataSource(this, name, {
+  public addNoneDataSource(id: string, options?: DataSourceOptions): NoneDataSource {
+    return new NoneDataSource(this, id, {
       api: this,
-      name: name,
+      name: options?.name,
       description: options?.description,
     });
   }
@@ -132,12 +134,11 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
    * @default name - 'DynamoDbCDKDataSource'
    * description - No description
    */
-  public addDynamoDbDataSource(table: ITable, options?: DataSourceOptions): DynamoDbDataSource {
-    const name = options?.name ?? 'DynamoDbCDKDataSource';
-    return new DynamoDbDataSource(this, name, {
+  public addDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions): DynamoDbDataSource {
+    return new DynamoDbDataSource(this, id, {
       api: this,
       table,
-      name,
+      name: options?.name,
       description: options?.description,
     });
   }
@@ -150,12 +151,11 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
    * @default name - 'HttpCDKDataSource'
    * description - No description
    */
-  public addHttpDataSource(endpoint: string, options?: DataSourceOptions): HttpDataSource {
-    const name = options?.name ?? 'HttpCDKDataSource';
-    return new HttpDataSource(this, name, {
+  public addHttpDataSource(id: string, endpoint: string, options?: DataSourceOptions): HttpDataSource {
+    return new HttpDataSource(this, id, {
       api: this,
       endpoint,
-      name,
+      name: options?.name,
       description: options?.description,
     });
   }
@@ -168,12 +168,11 @@ export abstract class GraphQLApiBase extends Resource implements IGraphQLApi {
    * @default name - 'LambdaCDKDataSource'
    * description - No description
    */
-  public addLambdaDataSource(lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource {
-    const name = options?.name ?? 'LambdaCDKDataSource';
-    return new LambdaDataSource(this, name, {
+  public addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource {
+    return new LambdaDataSource(this, id, {
       api: this,
       lambdaFunction,
-      name,
+      name: options?.name,
       description: options?.description,
     });
   }

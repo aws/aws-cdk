@@ -34,18 +34,18 @@ describe('DynamoDb Data Source configuration', () => {
 
   test('default configuration produces name `DynamoDbCDKDataSource`', () => {
     // WHEN
-    api.addDynamoDbDataSource(table);
+    api.addDynamoDbDataSource('ds', table);
 
     // EXPECT
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
-      Name: 'DynamoDbCDKDataSource',
+      Name: 'ds',
     });
   });
 
   test('appsync configures name correctly', () => {
     // WHEN
-    api.addDynamoDbDataSource(table, {
+    api.addDynamoDbDataSource('ds', table, {
       name: 'custom',
     });
 
@@ -58,7 +58,7 @@ describe('DynamoDb Data Source configuration', () => {
 
   test('appsync configures name and description correctly', () => {
     // WHEN
-    api.addDynamoDbDataSource(table, {
+    api.addDynamoDbDataSource('ds', table, {
       name: 'custom',
       description: 'custom description',
     });
@@ -74,12 +74,12 @@ describe('DynamoDb Data Source configuration', () => {
   test('appsync errors when creating multiple dynamo db data sources with no configuration', () => {
     // WHEN
     const when = () => {
-      api.addDynamoDbDataSource(table);
-      api.addDynamoDbDataSource(table);
+      api.addDynamoDbDataSource('ds', table);
+      api.addDynamoDbDataSource('ds', table);
     };
 
     // EXPECT
-    expect(when).toThrow('There is already a Construct with name \'DynamoDbCDKDataSource\' in GraphQLApi [baseApi]');
+    expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
   });
 });
 
@@ -167,7 +167,7 @@ describe('adding DynamoDb data source from imported api', () => {
     const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
     });
-    importedApi.addDynamoDbDataSource(table);
+    importedApi.addDynamoDbDataSource('ds', table);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
@@ -181,9 +181,9 @@ describe('adding DynamoDb data source from imported api', () => {
     // WHEN
     const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
-      graphqlArn: api.arn,
+      graphqlApiArn: api.arn,
     });
-    importedApi.addDynamoDbDataSource(table);
+    importedApi.addDynamoDbDataSource('ds', table);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
