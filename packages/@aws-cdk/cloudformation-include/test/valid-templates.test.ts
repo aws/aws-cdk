@@ -695,38 +695,72 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can replace parameters of non string types', () => {
+  test('can replace parameters referenced in conditions and metadata', () => {
     new inc.CfnInclude(stack, 'includeTemplate', { 
-      templateFile: testTemplateFilePath('bucket-with-parameters.json'),
+      templateFile: testTemplateFilePath('parameter-references.json'),
       parameterValues: {
-        CorsMaxAge: 5,
-        BucketName: 'my-s3-bucket',
+        MyParam: 'my-s3-bucket',
       },
     });
 
+    expect(stack).toMatchTemplate({
+      "Transform": {
+        "Name": "AWS::Include",
+        "Parameters": {
+          "Location": "my-s3-bucket",
+        },
+      },
+      "Metadata": {
+        "Field": "my-s3-bucket",
+      },
+      "Conditions": {
+        "AlwaysFalse": {
+          "Fn::Equals": [ "my-s3-bucket", "Invalid?BucketName"],
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Metadata": {
+            "Field": "my-s3-bucket",
+          },
+        },
+      },
+      "Outputs": {
+        "MyOutput": {
+          "Value": "my-s3-bucket",
+        },
+      },
+    });
+  });
+
+  test('can replace parameters in Fn::Sub', () => {
+    new inc.CfnInclude(stack, 'includeTemplate', { 
+      templateFile: testTemplateFilePath('fn-sub-parameters.json'),
+      parameterValues: {
+        MyParam: 'my-s3-bucket',
+      },
+    });
+ 
     expect(stack).toMatchTemplate({
       "Resources": {
         "Bucket": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
-            "BucketName": "my-s3-bucket",
-            "CorsConfiguration": {
-              "CorsRules": [{
-                "AllowedMethods": [
-                  "GET",
-                  "POST",
-                ],
-                "AllowedOrigins": [
-                  "origin1",
-                  "origin2",
-                ],
-                "MaxAge": 5,
-              }],
-            },
-          },
-        },
-      },
+            "BucketName": { 
+              "Fn::Sub": [ 
+                "${MyParameter}-my-s3-bucket", 
+                { 
+                  "MyParameter": "my-s3-bucket"
+                } 
+              ]
+            }
+          }
+        }
+      }
+
     });
+
   });
 
   test('throws an exception when provided a parameter not in the template', () => {

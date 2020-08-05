@@ -234,7 +234,6 @@ export default class CodeGenerator {
     this.code.line(' */');
     // eslint-disable-next-line max-len
     this.code.openBlock(`public static fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CORE}.FromCloudFormationOptions): ` +
-    //this.code.openBlock(`public static fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, cfnParser: cfn_parse.CfnParser): ` +
       `${resourceName.className}`);
     this.code.line('resourceAttributes = resourceAttributes || {};');
     this.code.indent('const cfnParser = new cfn_parse.CfnParser({');
@@ -254,7 +253,6 @@ export default class CodeGenerator {
     // handle all non-property attributes
     // (retention policies, conditions, metadata, etc.)
     this.code.line('cfnParser.handleAttributes(ret, resourceAttributes, id);');
-
     this.code.line('return ret;');
     this.code.closeBlock();
 

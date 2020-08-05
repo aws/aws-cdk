@@ -170,14 +170,6 @@ export class CfnParser {
   constructor(options: ParseCfnOptions, parameterValues?: { [parameterName: string]: any }) {
     this.options = options;
     this.parameterValues = parameterValues;
-
-    if (parameterValues) {
-      /*console.log('mwins')
-      console.log(this.parameters)
-
-      console.log(Object.keys(this.parameters || {}))
-      console.log('BucketName' in (this.parameters || {}))*/
-    }
   }
 
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
@@ -345,7 +337,6 @@ export class CfnParser {
       case 'Ref': {
         const refTarget = object[key];
         if (refTarget in (this.parameterValues || {})) {
-          // console.log('bigwins');
           return this.parameterValues![refTarget];
         }
         const specialRef = specialCaseRefs(refTarget);
@@ -492,7 +483,9 @@ export class CfnParser {
 
     // lookup in map
     if (refTarget in map) {
-      return leftHalf + '${' + refTarget + '}' + this.parseFnSubString(rightHalf, map);
+      return leftHalf
+        + (refTarget in (this.parameterValues || {}) ? this.parameterValues![refTarget] : '${' + refTarget + '}')
+        + this.parseFnSubString(rightHalf, map);;
     }
 
     // since it's not in the map, check if it's a pseudo parameter
@@ -506,17 +499,25 @@ export class CfnParser {
     if (isRef) {
       const refElement = this.options.finder.findRefTarget(refTarget);
       if (!refElement) {
-        throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
+        if  (!(refTarget in (this.parameterValues || {}))) {
+          throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
+        }
       }
-      return leftHalf + CfnReference.for(refElement, 'Ref', true).toString() + this.parseFnSubString(rightHalf, map);
+      return leftHalf
+        + (refTarget in (this.parameterValues || {}) ? this.parameterValues![refTarget] : CfnReference.for(refElement!, 'Ref', true).toString())
+        + this.parseFnSubString(rightHalf, map);
     } else {
       const targetId = refTarget.substring(0, dotIndex);
       const refResource = this.options.finder.findResource(targetId);
       if (!refResource) {
-        throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
+        if  (!(refTarget in (this.parameterValues || {}))) {
+          throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
+        }
       }
       const attribute = refTarget.substring(dotIndex + 1);
-      return leftHalf + CfnReference.for(refResource, attribute, true).toString() + this.parseFnSubString(rightHalf, map);
+      return leftHalf
+        + (refTarget in (this.parameterValues || {}) ? this.parameterValues![refTarget] : CfnReference.for(refResource!, attribute, true).toString())
+        + this.parseFnSubString(rightHalf, map);
     }
   }
 }

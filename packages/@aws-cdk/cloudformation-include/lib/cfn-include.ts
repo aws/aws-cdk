@@ -63,15 +63,17 @@ export class CfnInclude extends core.CfnElement {
   private readonly conditionsScope: core.Construct;
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
   private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
+  private readonly parameterValues?: { [parameterName: string]: any };
   private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
   private readonly nestedStacks: { [logicalId: string]: IncludedNestedStack } = {};
   private readonly nestedStacksToInclude: { [name: string]: CfnIncludeProps };
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
-  private visitedParameterValues: string[] = [];
 
   constructor(scope: core.Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
+
+    this.parameterValues = props.parameterValues;
 
     // read the template into a JS object
     this.template = futils.readYamlSync(props.templateFile);
@@ -79,17 +81,16 @@ export class CfnInclude extends core.CfnElement {
     // ToDo implement preserveLogicalIds=false
     this.preserveLogicalIds = true;
 
-    // instantiate all parameters
-    for (const logicalId of Object.keys(this.template.Parameters || {})) {
-      this.createParameter(logicalId, props.parameterValues);
-    }
-
-    // check if all user specified parameters have been used
+    // check if all user specified parameter values exist in the template
     for (const logicalId of Object.keys(props.parameterValues || {})) {
       if (!(logicalId in this.template.Parameters)) {
         throw new Error(`Parameter with logical ID '${logicalId}' was not found in the template`)
       }
+    }
 
+    // instantiate all parameters
+    for (const logicalId of Object.keys(this.template.Parameters || {})) {
+      this.createParameter(logicalId);
     }
 
     // instantiate the conditions
@@ -117,9 +118,6 @@ export class CfnInclude extends core.CfnElement {
     for (const logicalId of Object.keys(this.template.Outputs || {})) {
       this.createOutput(logicalId, outputScope);
     }
-
-    // throw error in same cases as nested stacks with the "if it's in the js obj but not the temaplte, error or not", etc
-    // instantiate after everything else, since other loops above need the params to exist
   }
 
   /**
@@ -221,6 +219,8 @@ export class CfnInclude extends core.CfnElement {
   /** @internal */
   public _toCloudFormation(): object {
     const ret: { [section: string]: any } = {};
+    // Parameters cannot be referenced from the Mappings, Description, or AWSTemplateFormatVersion sections.
+    this.createTransformAndMetadata();
 
     for (const section of Object.keys(this.template)) {
       // render all sections of the template unchanged,
@@ -233,9 +233,8 @@ export class CfnInclude extends core.CfnElement {
     return ret;
   }
 
-  private createParameter(logicalId: string, parameters?: { [parameterName: string]: any }): void {
-    if (logicalId in (parameters || {})) {
-      this.visitedParameterValues.push(logicalId);
+  private createParameter(logicalId: string): void {
+    if (logicalId in (this.parameterValues || {})) {
       return;
     }
 
@@ -277,7 +276,7 @@ export class CfnInclude extends core.CfnElement {
           return undefined;
         },
       },
-    }).parseValue(this.template.Outputs[logicalId]);
+    }, this.parameterValues).parseValue(this.template.Outputs[logicalId]);
     const cfnOutput = new core.CfnOutput(scope, logicalId, {
       value: outputAttributes.Value,
       description: outputAttributes.Description,
@@ -318,7 +317,7 @@ export class CfnInclude extends core.CfnElement {
         },
       },
       context: cfn_parse.CfnParsingContext.CONDITIONS,
-    });
+    }, this.parameterValues);
     const cfnCondition = new core.CfnCondition(this.conditionsScope, conditionName, {
       expression: cfnParser.parseValue(this.template.Conditions[conditionName]),
     });
@@ -373,7 +372,6 @@ export class CfnInclude extends core.CfnElement {
     const cfnParser = new cfn_parse.CfnParser({
       finder,
     }, parameters);
-
 
     let l1Instance: core.CfnResource;
     if (this.nestedStacksToInclude[logicalId]) {
@@ -441,5 +439,36 @@ export class CfnInclude extends core.CfnElement {
     this.nestedStacks[nestedStackId] = includedStack;
 
     return nestedStackResource;
+  }
+
+  private createTransformAndMetadata() {
+    const self = this;
+    const finder: core.ICfnFinder = {
+      findCondition(conditionName: string): core.CfnCondition | undefined {
+        return self.conditions[conditionName];
+      },
+
+      findResource(lId: string): core.CfnResource | undefined {
+        if (!(lId in (self.template.Resources || {}))) {
+          return undefined;
+        }
+        return self.getOrCreateResource(lId);
+      },
+ 
+      findRefTarget(elementName: string): core.CfnElement | undefined {
+        if (elementName in self.parameters) {
+          return self.parameters[elementName];
+        }
+
+        return this.findResource(elementName);
+      },
+    };
+
+    const cfnParser = new cfn_parse.CfnParser({
+      finder,
+    }, this.parameterValues);
+
+    this.template.Metadata = cfnParser.parseValue(this.template.Metadata);
+    this.template.Transform = cfnParser.parseValue(this.template.Transform);
   }
 }
