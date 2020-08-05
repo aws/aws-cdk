@@ -187,6 +187,9 @@ export interface CommonClusterOptions {
   readonly outputConfigCommand?: boolean;
 }
 
+/**
+ * Options for EKS clusters.
+ */
 export interface ClusterOptions extends CommonClusterOptions {
   /**
    * An IAM role that will be added to the `system:masters` Kubernetes RBAC
@@ -331,22 +334,25 @@ export class EndpointAccess {
  */
 export interface ClusterProps extends ClusterOptions {
   /**
-   * DEPRECATED: This option is in a deprecation path and due to be removed in
-   * an upcoming release. We no longer allow disabling kubectl-support in the
-   * `eks.Cluster` resource.
+   * NOT SUPPORTED: We no longer allow disabling kubectl-support. Setting this
+   * option to `false` will throw an error.
    *
-   * Setting this option to `false` will throw an exception during synthesis.
+   * To temporary allow you to retain existing clusters created with
+   * `kubectlEnabled: false`, you can use `eks.LegacyCluster` class, which is a
+   * drop-in replacement for `eks.Cluster` with `kubectlEnabled: false`.
    *
-   * To allow you to retain existing installations, in the meantime, you can use
-   * `eks.LegacyCluster`, which is a drop-in replacement for `eks.Cluster` with
-   * `kubectlEnabled: false`. We have plans to remove this class as well. If you
-   * have a use case for using `eks.LegacyCluster`, please add a comment here
-   * https://github.com/aws/aws-cdk/issues/9332 and let us know so we can make
-   * sure to continue to support your use case with `eks.Cluster`. This issue
-   * also includes additional context into why this class is being removed.
+   * Bear in mind that this is a temporary workaround. We have plans to remove
+   * `eks.LegacyCluster`. If you have a use case for using `eks.LegacyCluster`,
+   * please add a comment here https://github.com/aws/aws-cdk/issues/9332 and
+   * let us know so we can make sure to continue to support your use case with
+   * `eks.Cluster`. This issue also includes additional context into why this
+   * class is being removed.
    *
    * @deprecated `eks.LegacyCluster` is __temporarily__ provided as a drop-in
    * replacement until you are able to migrate to `eks.Cluster`.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/9332
+   * @default true
    */
   readonly kubectlEnabled?: boolean;
 

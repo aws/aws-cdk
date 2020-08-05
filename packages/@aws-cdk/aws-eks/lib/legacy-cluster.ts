@@ -50,6 +50,8 @@ export interface LegacyClusterProps extends CommonClusterOptions {
  *
  * This is a fully managed cluster of API Servers (control-plane)
  * The user is still required to create the worker nodes.
+ *
+ * @resource AWS::EKS::Cluster
  */
 export class LegacyCluster extends Resource implements ICluster {
   /**
