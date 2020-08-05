@@ -1,6 +1,6 @@
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack, CfnResource } from '@aws-cdk/core';
+import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
@@ -645,7 +645,7 @@ export class RestApi extends RestApiBase {
     // when additional deployments are added, _attachDeployment is called and
     // this method will be added there.
     for (const dep of this.deployments) {
-      dep.node.addDependency(method.node.defaultChild as CfnResource);
+      dep._addMethodDependency(method);
     }
   }
 
@@ -657,11 +657,11 @@ export class RestApi extends RestApiBase {
   public _attachDeployment(deployment: Deployment) {
     this.deployments.push(deployment);
 
-    // add all methods that were already defined as dependencies of this deployment
-    // when additional methods are added, _attachMethod is called and it will be
-    // added as a dependency to this deployment.
+    // add all methods that were already defined as dependencies of this
+    // deployment when additional methods are added, _attachMethod is called and
+    // it will be added as a dependency to this deployment.
     for (const method of this.methods) {
-      deployment.node.addDependency(method.node.defaultChild as CfnResource);
+      deployment._addMethodDependency(method);
     }
   }
 

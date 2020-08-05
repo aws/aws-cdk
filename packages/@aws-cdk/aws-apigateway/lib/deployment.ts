@@ -1,7 +1,8 @@
 import * as crypto from 'crypto';
-import { Construct, Lazy, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { Construct, Lazy, RemovalPolicy, Resource, CfnResource } from '@aws-cdk/core';
 import { CfnDeployment } from './apigateway.generated';
 import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
+import { Method } from './method';
 
 export interface DeploymentProps  {
   /**
@@ -93,6 +94,31 @@ export class Deployment extends Resource {
    */
   public addToLogicalId(data: any) {
     this.resource.addToLogicalId(data);
+  }
+
+  /**
+   * Quoting from CloudFormation's docs:
+   *
+   *   If you create an AWS::ApiGateway::RestApi resource and its methods (using
+   *   AWS::ApiGateway::Method) in the same template as your deployment, the
+   *   deployment must depend on the RestApi's methods. To create a dependency,
+   *   add a DependsOn attribute to the deployment. If you don't, AWS
+   *   CloudFormation creates the deployment right after it creates the RestApi
+   *   resource that doesn't contain any methods, and AWS CloudFormation
+   *   encounters the following error: The REST API doesn't contain any methods.
+   *
+   * @param method The method to add as a dependency of the deployment
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-deployment.html
+   * @see https://github.com/aws/aws-cdk/pull/6165
+   * @internal
+   */
+  public _addMethodDependency(method: Method) {
+    // adding a dependency between the constructs using `node.addDependency()`
+    // will create additional dependencies between `AWS::ApiGateway::Deployment`
+    // and the `AWS::Lambda::Permission` resources (children under Method),
+    // causing cyclic dependency errors. Hence, falling back to declaring
+    // dependencies between the underlying CfnResources.
+    this.node.addDependency(method.node.defaultChild as CfnResource);
   }
 }
 
