@@ -793,10 +793,5 @@
         "Status": "ENABLED"
       }
     }
-  },
-  "Outputs": {
-    "Test": {
-      "Value": "luckily"
-    }
   }
 }

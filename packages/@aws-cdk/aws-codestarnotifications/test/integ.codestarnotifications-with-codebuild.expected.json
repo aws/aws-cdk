@@ -1,9 +1,4 @@
 {
-  "Outputs": {
-    "Test": {
-      "Value": "luckily"
-    }
-  },
   "Resources": {
     "MyCodebuildRoleAE6D63FB": {
       "Type": "AWS::IAM::Role",
