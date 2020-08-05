@@ -350,7 +350,6 @@ export interface ClusterProps extends ClusterOptions {
    *
    *
    * @default true The cluster can be managed by the AWS CDK application.
-   * @deprecated Omit this property as kubectl will be enabled to all clusters.
    */
   readonly kubectlEnabled?: boolean;
 
@@ -493,7 +492,6 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Indicates if `kubectl` related operations can be performed on this cluster.
    *
-   * @deprecated Will always be true in future releases.
    */
   public readonly kubectlEnabled: boolean;
 
@@ -570,11 +568,6 @@ export class Cluster extends Resource implements ICluster {
     super(scope, id, {
       physicalName: props.clusterName,
     });
-
-    if (props.kubectlEnabled !== undefined) {
-      const depractionNotice = "'kubectlEnabled' property is depracated. In future releases, all clusters will have kubectl support enabled, please consider omitting this property.";
-      this.node.addWarning(depractionNotice);
-    }
 
     const stack = Stack.of(this);
 
