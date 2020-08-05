@@ -895,6 +895,8 @@ export = {
               { Ref: 'MyClusterDefaultVpcPrivateSubnet1SubnetE1D0DCDB' },
               { Ref: 'MyClusterDefaultVpcPrivateSubnet2Subnet11FEA8D0' },
             ],
+            endpointPrivateAccess: true,
+            endpointPublicAccess: true,
           },
         },
       }));
@@ -1378,5 +1380,313 @@ export = {
       }
       test.done();
     },
+
+  },
+
+  'kubectl provider passes environment to lambda'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+      kubectlEnvironment: {
+        Foo: 'Bar',
+      },
+    });
+
+    cluster.addResource('resource', {
+      kind: 'ConfigMap',
+      apiVersion: 'v1',
+      data: {
+        hello: 'world',
+      },
+      metadata: {
+        name: 'config-map',
+      },
+    });
+
+    // the kubectl provider is inside a nested stack.
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    expect(nested).to(haveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          Foo: 'Bar',
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'endpoint access': {
+
+    'can configure private endpoint access'(test: Test) {
+      // GIVEN
+      const { stack } = testFixture();
+      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE });
+
+      expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          roleArn: { 'Fn::GetAtt': ['Cluster1RoleE88C32AD', 'Arn'] },
+          version: '1.16',
+          resourcesVpcConfig: {
+            securityGroupIds: [{ 'Fn::GetAtt': ['Cluster1ControlPlaneSecurityGroupF9C67C32', 'GroupId'] }],
+            subnetIds: [
+              { Ref: 'Cluster1DefaultVpcPublicSubnet1SubnetBEABA6ED' },
+              { Ref: 'Cluster1DefaultVpcPublicSubnet2Subnet947A5158' },
+              { Ref: 'Cluster1DefaultVpcPrivateSubnet1Subnet4E30ECA1' },
+              { Ref: 'Cluster1DefaultVpcPrivateSubnet2Subnet707FCD37' },
+            ],
+            endpointPrivateAccess: true,
+            endpointPublicAccess: false,
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'can configure cidr blocks in public endpoint access'(test: Test) {
+      // GIVEN
+      const { stack } = testFixture();
+      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PUBLIC.onlyFrom('1.2.3.4/5') });
+
+      expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          roleArn: { 'Fn::GetAtt': ['Cluster1RoleE88C32AD', 'Arn'] },
+          version: '1.16',
+          resourcesVpcConfig: {
+            securityGroupIds: [{ 'Fn::GetAtt': ['Cluster1ControlPlaneSecurityGroupF9C67C32', 'GroupId'] }],
+            subnetIds: [
+              { Ref: 'Cluster1DefaultVpcPublicSubnet1SubnetBEABA6ED' },
+              { Ref: 'Cluster1DefaultVpcPublicSubnet2Subnet947A5158' },
+              { Ref: 'Cluster1DefaultVpcPrivateSubnet1Subnet4E30ECA1' },
+              { Ref: 'Cluster1DefaultVpcPrivateSubnet2Subnet707FCD37' },
+            ],
+            endpointPrivateAccess: false,
+            endpointPublicAccess: true,
+            publicAccessCidrs: ['1.2.3.4/5'],
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'kubectl provider chooses only private subnets'(test: Test) {
+
+      const { stack } = testFixture();
+
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 1,
+        subnetConfiguration: [
+          {
+            subnetType: ec2.SubnetType.PRIVATE,
+            name: 'Private1',
+          },
+          {
+            subnetType: ec2.SubnetType.PUBLIC,
+            name: 'Public1',
+          },
+        ],
+      });
+
+      const cluster = new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+        vpc,
+      });
+
+      cluster.addResource('resource', {
+        kind: 'ConfigMap',
+        apiVersion: 'v1',
+        data: {
+          hello: 'world',
+        },
+        metadata: {
+          name: 'config-map',
+        },
+      });
+
+      // the kubectl provider is inside a nested stack.
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      expect(nested).to(haveResource('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            {
+              Ref: 'referencetoStackCluster1KubectlProviderSecurityGroupDF05D03AGroupId',
+            },
+          ],
+          SubnetIds: [
+            {
+              Ref: 'referencetoStackVpcPrivate1Subnet1Subnet6764A0F6Ref',
+            },
+            {
+              Ref: 'referencetoStackVpcPrivate1Subnet2SubnetDFD49645Ref',
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'kubectl provider limits number of subnets to 16'(test: Test) {
+
+      const { stack } = testFixture();
+
+      const subnetConfiguration: ec2.SubnetConfiguration[] = [];
+
+      for (let i = 0; i < 20; i++) {
+        subnetConfiguration.push(        {
+          subnetType: ec2.SubnetType.PRIVATE,
+          name: `Private${i}`,
+        },
+        );
+      }
+
+      subnetConfiguration.push(          {
+        subnetType: ec2.SubnetType.PUBLIC,
+        name: 'Public1',
+      });
+
+      const vpc2 = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 1,
+        subnetConfiguration,
+      });
+
+      const cluster = new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+        vpc: vpc2,
+      });
+
+      cluster.addResource('resource', {
+        kind: 'ConfigMap',
+        apiVersion: 'v1',
+        data: {
+          hello: 'world',
+        },
+        metadata: {
+          name: 'config-map',
+        },
+      });
+
+      // the kubectl provider is inside a nested stack.
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      test.equal(16, expect(nested).value.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length);
+
+      test.done();
+    },
+
+    'kubectl provider considers vpc subnet selection'(test: Test) {
+
+      const { stack } = testFixture();
+
+      const subnetConfiguration: ec2.SubnetConfiguration[] = [];
+
+      for (let i = 0; i < 20; i++) {
+        subnetConfiguration.push(        {
+          subnetType: ec2.SubnetType.PRIVATE,
+          name: `Private${i}`,
+        },
+        );
+      }
+
+      subnetConfiguration.push(          {
+        subnetType: ec2.SubnetType.PUBLIC,
+        name: 'Public1',
+      });
+
+      const vpc2 = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 1,
+        subnetConfiguration,
+      });
+
+      const cluster = new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+        vpc: vpc2,
+        vpcSubnets: [{subnetGroupName: 'Private1'}, {subnetGroupName: 'Private2'}],
+      });
+
+      cluster.addResource('resource', {
+        kind: 'ConfigMap',
+        apiVersion: 'v1',
+        data: {
+          hello: 'world',
+        },
+        metadata: {
+          name: 'config-map',
+        },
+      });
+
+      // the kubectl provider is inside a nested stack.
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      expect(nested).to(haveResource('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            {
+              Ref: 'referencetoStackCluster1KubectlProviderSecurityGroupDF05D03AGroupId',
+            },
+          ],
+          SubnetIds: [
+            {
+              Ref: 'referencetoStackVpcPrivate1Subnet1Subnet6764A0F6Ref',
+            },
+            {
+              Ref: 'referencetoStackVpcPrivate1Subnet2SubnetDFD49645Ref',
+            },
+            {
+              Ref: 'referencetoStackVpcPrivate2Subnet1Subnet586AD392Ref',
+            },
+            {
+              Ref: 'referencetoStackVpcPrivate2Subnet2SubnetE42148C0Ref',
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'throw when private access is configured without dns support enabled for the VPC'(test: Test) {
+
+      const { stack } = testFixture();
+
+      test.throws(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          vpc: new ec2.Vpc(stack, 'Vpc', {
+            enableDnsSupport: false,
+          }),
+          version: CLUSTER_VERSION,
+        });
+      }, /Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
+      test.done();
+    },
+
+    'throw when private access is configured without dns hostnames enabled for the VPC'(test: Test) {
+
+      const { stack } = testFixture();
+
+      test.throws(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          vpc: new ec2.Vpc(stack, 'Vpc', {
+            enableDnsHostnames: false,
+          }),
+          version: CLUSTER_VERSION,
+        });
+      }, /Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
+      test.done();
+    },
+
+    'throw when cidrs are configured without public access endpoint'(test: Test) {
+
+      test.throws(() => {
+        eks.EndpointAccess.PRIVATE.onlyFrom('1.2.3.4/5');
+      }, /CIDR blocks can only be configured when public access is enabled/);
+      test.done();
+    },
+
   },
 };

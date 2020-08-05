@@ -261,7 +261,22 @@ export class ClusterResourceHandler extends ResourceHandler {
 }
 
 function parseProps(props: any): aws.EKS.CreateClusterRequest {
-  return props?.Config ?? { };
+
+  const parsed = props?.Config ?? { };
+
+  // this is weird but these boolean properties are passed by CFN as a string, and we need them to be booleanic for the SDK.
+  // Otherwise it fails with 'Unexpected Parameter: params.resourcesVpcConfig.endpointPrivateAccess is expected to be a boolean'
+
+  if (typeof(parsed.resourcesVpcConfig?.endpointPrivateAccess) === 'string') {
+    parsed.resourcesVpcConfig.endpointPrivateAccess = parsed.resourcesVpcConfig.endpointPrivateAccess === 'true';
+  }
+
+  if (typeof(parsed.resourcesVpcConfig?.endpointPublicAccess) === 'string') {
+    parsed.resourcesVpcConfig.endpointPublicAccess = parsed.resourcesVpcConfig.endpointPublicAccess === 'true';
+  }
+
+  return parsed;
+
 }
 
 interface UpdateMap {
@@ -280,6 +295,9 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
   const newVpcProps = newProps.resourcesVpcConfig || { };
   const oldVpcProps = oldProps.resourcesVpcConfig || { };
 
+  const oldPublicAccessCidrs = new Set(oldVpcProps.publicAccessCidrs ?? []);
+  const newPublicAccessCidrs = new Set(newVpcProps.publicAccessCidrs ?? []);
+
   return {
     replaceName: newProps.name !== oldProps.name,
     replaceVpc:
@@ -287,9 +305,14 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
       JSON.stringify(newVpcProps.securityGroupIds) !== JSON.stringify(oldVpcProps.securityGroupIds),
     updateAccess:
       newVpcProps.endpointPrivateAccess !== oldVpcProps.endpointPrivateAccess ||
-      newVpcProps.endpointPublicAccess !== oldVpcProps.endpointPublicAccess,
+      newVpcProps.endpointPublicAccess !== oldVpcProps.endpointPublicAccess ||
+      !setsEqual(newPublicAccessCidrs, oldPublicAccessCidrs),
     replaceRole: newProps.roleArn !== oldProps.roleArn,
     updateVersion: newProps.version !== oldProps.version,
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
   };
+}
+
+function setsEqual(first: Set<string>, second: Set<string>) {
+  return first.size === second.size || [...first].every((e: string) => second.has(e));
 }
