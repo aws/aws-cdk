@@ -161,6 +161,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
       this.targetGroup = this.listener.addTargets('ECS', {
         targets: [this.service],
         port: this.taskDefinition.defaultContainer.portMappings[0].containerPort,
+        protocol: this.taskDefinition.defaultContainer.portMappings[0].containerProtocol
       });
     }
   }
