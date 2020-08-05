@@ -48,7 +48,7 @@ cluster.addResource('mypod', {
 ```
 
 In order to interact with your cluster through `kubectl`, you can use the `aws
-eks update-kubeconfig` [AWS CLI](https://aws.amazon.com/cli/) command in order
+eks update-kubeconfig` [AWS CLI](https://docs.aws.amazon.com/cli/latest/reference/eks/update-kubeconfig.html) command
 to configure your local kubeconfig.
 
 The EKS module will define a CloudFormation output in your stack which contains
