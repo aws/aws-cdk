@@ -63,7 +63,7 @@ const demoTable = new db.Table(stack, 'DemoTable', {
   },
 });
 
-const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos"', demoTable);
+const demoDS = api.addDynamoDbDataSource('demoDataSource', demoTable);
 
 // Resolver for the Query "getDemos" that scans the DyanmoDb table and returns the entire list.
 demoDS.createResolver({
@@ -93,7 +93,7 @@ const importedApi = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'IApi', {
   graphqlApiId: api.apiId,
   graphqlArn: api.arn,
 });
-importedApi.addDynamoDbDataSource('TableDataSource', 'Table', table);
+importedApi.addDynamoDbDataSource('TableDataSource', table);
 ```
 
 If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
