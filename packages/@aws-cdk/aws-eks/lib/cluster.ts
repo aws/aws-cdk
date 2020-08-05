@@ -175,11 +175,8 @@ export interface ClusterOptions {
    *
    * @see https://kubernetes.io/docs/reference/access-authn-authz/rbac/#default-roles-and-role-bindings
    *
-   * @default - By default, it will only possible to update this Kubernetes
-   *            system by adding resources to this cluster via `addResource` or
-   *            by defining `KubernetesResource` resources in your AWS CDK app.
-   *            Use this if you wish to grant cluster administration privileges
-   *            to another role.
+   * @default - a role that assumable by anyone with permissions in the same
+   * account will automatically be defined
    */
   readonly mastersRole?: iam.IRole;
 
@@ -689,19 +686,25 @@ export class Cluster extends Resource implements ICluster {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
     }
 
-    // map the IAM role to the `system:masters` group.
-    if (props.mastersRole) {
-      if (!this.kubectlEnabled) {
+    if (!this.kubectlEnabled) {
+      if (props.mastersRole) {
         throw new Error('Cannot specify a "masters" role if kubectl is disabled');
       }
+    } else {
+      // if an explicit role is not configured, define a masters role that can
+      // be assumed by anyone in the account (with sts:AssumeRole permissions of
+      // course)
+      const mastersRole = props.mastersRole ?? new iam.Role(this, 'MastersRole', {
+        assumedBy: new iam.AccountRootPrincipal(),
+      });
 
-      this.awsAuth.addMastersRole(props.mastersRole);
+      this.awsAuth.addMastersRole(mastersRole);
 
       if (props.outputMastersRoleArn) {
-        new CfnOutput(this, 'MastersRoleArn', { value: props.mastersRole.roleArn });
+        new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
       }
 
-      commonCommandOptions.push(`--role-arn ${props.mastersRole.roleArn}`);
+      commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
     }
 
     // allocate default capacity if non-zero (or default).
