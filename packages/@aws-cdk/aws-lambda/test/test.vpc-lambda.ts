@@ -212,14 +212,29 @@ export = {
     test.done();
   },
 
-  'picking public subnets is not allowed'(test: Test) {
+  'picking any subnet type is allowed'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC', {
+      subnetConfiguration: [
+        {
+          name: 'Public',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          name: 'Private',
+          subnetType: ec2.SubnetType.PRIVATE,
+        },
+        {
+          name: 'Isolated',
+          subnetType: ec2.SubnetType.ISOLATED,
+        },
+      ],
+    });
 
     // WHEN
-    test.throws(() => {
-      new lambda.Function(stack, 'Lambda', {
+    test.doesNotThrow(() => {
+      new lambda.Function(stack, 'PublicLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_10_X,
@@ -228,6 +243,25 @@ export = {
       });
     });
 
+    test.doesNotThrow(() => {
+      new lambda.Function(stack, 'PrivateLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      });
+    });
+
+    test.doesNotThrow(() => {
+      new lambda.Function(stack, 'IsolatedLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+      });
+    });
     test.done();
   },
 };
