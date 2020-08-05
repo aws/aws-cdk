@@ -13,7 +13,7 @@ import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
-import { KubectlProvider } from './kubectl-provider';
+import { KubectlProvider, KubectlProviderProps } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
@@ -120,7 +120,7 @@ export interface ClusterAttributes {
  */
 export interface ClusterOptions {
   /**
-   * The VPC in which to create the Cluster
+   * The VPC in which to create the Cluster.
    *
    * @default - a VPC with default configuration will be created and can be accessed through `cluster.vpc`.
    */
@@ -216,6 +216,112 @@ export interface ClusterOptions {
    * @default true
    */
   readonly outputConfigCommand?: boolean;
+
+  /**
+   * Configure access to the Kubernetes API server endpoint.
+   * This feature is only available for kubectl enabled clusters, i.e `kubectlEnabled: true`.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
+   *
+   * @default EndpointAccess.PUBLIC_AND_PRIVATE
+   */
+  readonly endpointAccess?: EndpointAccess;
+
+  /**
+   * Environment variables for the kubectl execution. Only relevant for kubectl enabled clusters.
+   *
+   * @default - No environment variables.
+   */
+  readonly kubectlEnvironment?: { [key: string]: string };
+}
+
+/**
+ * Group access configuration together.
+ */
+interface EndpointAccessConfig {
+
+  /**
+   * Indicates if private access is enabled.
+   */
+  readonly privateAccess: boolean;
+
+  /**
+   * Indicates if public access is enabled.
+   */
+  readonly publicAccess: boolean;
+  /**
+   * Public access is allowed only from these CIDR blocks.
+   * An empty array means access is open to any address.
+   *
+   * @default - No restrictions.
+   */
+  readonly publicCidrs?: string[];
+
+}
+
+/**
+ * Endpoint access characteristics.
+ */
+export class EndpointAccess {
+
+  /**
+   * The cluster endpoint is accessible from outside of your VPC.
+   * Worker node traffic will leave your VPC to connect to the endpoint.
+   *
+   * By default, the endpoint is exposed to all adresses. You can optionally limit the CIDR blocks that can access the public endpoint using the `PUBLIC.onlyFrom` method.
+   * If you limit access to specific CIDR blocks, you must ensure that the CIDR blocks that you
+   * specify include the addresses that worker nodes and Fargate pods (if you use them)
+   * access the public endpoint from.
+   *
+   * @param cidr The CIDR blocks.
+   */
+  public static readonly PUBLIC = new EndpointAccess({privateAccess: false, publicAccess: true});
+
+  /**
+   * The cluster endpoint is only accessible through your VPC.
+   * Worker node traffic to the endpoint will stay within your VPC.
+   */
+  public static readonly PRIVATE = new EndpointAccess({privateAccess: true, publicAccess: false});
+
+  /**
+   * The cluster endpoint is accessible from outside of your VPC.
+   * Worker node traffic to the endpoint will stay within your VPC.
+   *
+   * By default, the endpoint is exposed to all adresses. You can optionally limit the CIDR blocks that can access the public endpoint using the `PUBLIC_AND_PRIVATE.onlyFrom` method.
+   * If you limit access to specific CIDR blocks, you must ensure that the CIDR blocks that you
+   * specify include the addresses that worker nodes and Fargate pods (if you use them)
+   * access the public endpoint from.
+   *
+   * @param cidr The CIDR blocks.
+   */
+  public static readonly PUBLIC_AND_PRIVATE = new EndpointAccess({privateAccess: true, publicAccess: true});
+
+  private constructor(
+    /**
+     * Configuration properties.
+     *
+     * @internal
+     */
+    public readonly _config: EndpointAccessConfig) {
+    if (!_config.publicAccess && _config.publicCidrs && _config.publicCidrs.length > 0) {
+      throw new Error('CIDR blocks can only be configured when public access is enabled');
+    }
+  }
+
+
+  /**
+   * Restrict public access to specific CIDR blocks.
+   * If public access is disabled, this method will result in an error.
+   *
+   * @param cidr CIDR blocks.
+   */
+  public onlyFrom(...cidr: string[]) {
+    return new EndpointAccess({
+      ...this._config,
+      // override CIDR
+      publicCidrs: cidr,
+    });
+  }
 }
 
 /**
@@ -232,14 +338,16 @@ export interface ClusterProps extends ClusterOptions {
    * - `addRoleMapping`
    * - `addUserMapping`
    * - `addMastersRole` and `props.mastersRole`
+   * - `endpointAccess`
    *
    * If this is disabled, the cluster can only be managed by issuing `kubectl`
    * commands from a session that uses the IAM role/user that created the
    * account.
    *
-   * _NOTE_: changing this value will destoy the cluster. This is because a
+   * _NOTE_: changing this value will destroy the cluster. This is because a
    * managable cluster must be created using an AWS CloudFormation custom
    * resource which executes with an IAM role owned by the CDK app.
+   *
    *
    * @default true The cluster can be managed by the AWS CDK application.
    */
@@ -383,6 +491,7 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * Indicates if `kubectl` related operations can be performed on this cluster.
+   *
    */
   public readonly kubectlEnabled: boolean;
 
@@ -423,6 +532,14 @@ export class Cluster extends Resource implements ICluster {
   private _spotInterruptHandler?: HelmChart;
 
   private _neuronDevicePlugin?: KubernetesResource;
+
+  private readonly endpointAccess?: EndpointAccess;
+
+  private readonly kubctlProviderSecurityGroup?: ec2.ISecurityGroup;
+
+  private readonly vpcSubnets: ec2.SubnetSelection[];
+
+  private readonly kubectlProviderEnv?: { [key: string]: string };
 
   private readonly version: KubernetesVersion;
 
@@ -477,9 +594,10 @@ export class Cluster extends Resource implements ICluster {
       defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
+    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
+
     // Get subnetIds for all selected subnets
-    const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
-    const subnetIds = [...new Set(Array().concat(...placements.map(s => this.vpc.selectSubnets(s).subnetIds)))];
+    const subnetIds = [...new Set(Array().concat(...this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds)))];
 
     const clusterProps: CfnClusterProps = {
       name: this.physicalName,
@@ -494,8 +612,36 @@ export class Cluster extends Resource implements ICluster {
     let resource;
     this.kubectlEnabled = props.kubectlEnabled === undefined ? true : props.kubectlEnabled;
     if (this.kubectlEnabled) {
-      resource = new ClusterResource(this, 'Resource', clusterProps);
+
+      this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
+      this.kubectlProviderEnv = props.kubectlEnvironment;
+
+      if (this.endpointAccess._config.privateAccess && this.vpc instanceof ec2.Vpc) {
+        // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
+        if (!this.vpc.dnsHostnamesEnabled || !this.vpc.dnsSupportEnabled) {
+          throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
+        }
+      }
+
+      this.kubctlProviderSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
+        vpc: this.vpc,
+        description: 'Comminication between KubectlProvider and EKS Control Plane',
+      });
+
+      // grant the kubectl provider access to the cluster control plane.
+      this.connections.allowFrom(this.kubctlProviderSecurityGroup, this.connections.defaultPort!);
+
+      resource = new ClusterResource(this, 'Resource', {
+        ...clusterProps,
+        endpointPrivateAccess: this.endpointAccess._config.privateAccess,
+        endpointPublicAccess: this.endpointAccess._config.publicAccess,
+        publicAccessCidrs: this.endpointAccess._config.publicCidrs,
+      });
       this._clusterResource = resource;
+
+      // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
+      // this ensures that.
+      this._clusterResource.node.addDependency(this.kubctlProviderSecurityGroup, this.vpc);
 
       // see https://github.com/aws/aws-cdk/issues/9027
       this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
@@ -519,6 +665,11 @@ export class Cluster extends Resource implements ICluster {
       // add the cluster resource itself as a dependency of the barrier
       this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
     } else {
+
+      if (props.endpointAccess) {
+        throw new Error("'endpointAccess' is not supported for clusters without kubectl enabled.");
+      }
+
       resource = new CfnCluster(this, 'Resource', clusterProps);
     }
 
@@ -904,7 +1055,29 @@ export class Cluster extends Resource implements ICluster {
     let provider = this.stack.node.tryFindChild(uid) as KubectlProvider;
     if (!provider) {
       // create the provider.
-      provider = new KubectlProvider(this.stack, uid);
+
+      let providerProps: KubectlProviderProps = {
+        env: this.kubectlProviderEnv,
+      };
+
+      if (!this.endpointAccess) {
+        // this should have been set on cluster instantiation for kubectl enabled clusters
+        throw new Error("Expected 'endpointAccess' to be defined for kubectl enabled clusters");
+      }
+
+      if (!this.endpointAccess._config.publicAccess) {
+        // endpoint access is private only, we need to attach the
+        // provider to the VPC so that it can access the cluster.
+        providerProps = {
+          ...providerProps,
+          vpc: this.vpc,
+          // lambda can only be accociated with max 16 subnets and they all need to be private.
+          vpcSubnets: {subnets: this.selectPrivateSubnets().slice(0, 16)},
+          securityGroups: [this.kubctlProviderSecurityGroup!],
+        };
+      }
+
+      provider = new KubectlProvider(this.stack, uid, providerProps);
     }
 
     // allow the kubectl provider to assume the cluster creation role.
@@ -917,6 +1090,17 @@ export class Cluster extends Resource implements ICluster {
     resourceScope.node.addDependency(this._kubectlReadyBarrier);
 
     return provider;
+  }
+
+  private selectPrivateSubnets(): ec2.ISubnet[] {
+
+    const privateSubnets: ec2.ISubnet[] = [];
+
+    for (const placement of this.vpcSubnets) {
+      privateSubnets.push(...this.vpc.selectSubnets(placement).subnets.filter(s => s instanceof ec2.PrivateSubnet));
+    }
+
+    return privateSubnets;
   }
 
   /**
