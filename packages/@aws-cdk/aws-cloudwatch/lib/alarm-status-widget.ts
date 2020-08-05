@@ -1,5 +1,5 @@
-import { Alarm } from "./alarm";
-import { ConcreteWidget } from "./widget";
+import { Alarm } from './alarm';
+import { ConcreteWidget } from './widget';
 
 /**
  * Properties for an Alarm Status Widget
@@ -12,7 +12,7 @@ export interface AlarmStatusWidgetProps {
   /**
    * The title of the widget
    *
-   * @default "Alarm Status"
+   * @default 'Alarm Status'
    */
   readonly title?: string;
   /**
@@ -48,7 +48,7 @@ export class AlarmStatusWidget extends ConcreteWidget {
   public toJson(): any[] {
     return [
       {
-        type: "alarm",
+        type: 'alarm',
         width: this.width,
         height: this.height,
         x: this.x,

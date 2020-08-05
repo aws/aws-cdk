@@ -1,12 +1,12 @@
-import { Stack } from "@aws-cdk/core";
-import { Test } from "nodeunit";
-import { Metric, Alarm, AlarmStatusWidget } from "../lib";
+import { Stack } from '@aws-cdk/core';
+import { Test } from 'nodeunit';
+import { Metric, Alarm, AlarmStatusWidget } from '../lib';
 export = {
-  "alarm status widget"(test: Test) {
+  'alarm status widget'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const metric = new Metric({ namespace: "CDK", metricName: "Test" });
-    const alarm = new Alarm(stack, "TestAlarm", {
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+    const alarm = new Alarm(stack, 'TestAlarm', {
       metric,
       threshold: 1,
       evaluationPeriods: 1,
@@ -20,11 +20,11 @@ export = {
     // THEN
     test.deepEqual(stack.resolve(widget.toJson()), [
       {
-        type: "alert",
+        type: 'alert',
         width: 6,
         height: 3,
         properties: {
-          title: "Alarm Status",
+          title: 'Alarm Status',
           alarms: [alarm.alarmArn],
         },
       },
