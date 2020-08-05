@@ -60,9 +60,12 @@ ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-xxxxx --
 ```
 
 > The IAM role specified in this command is called the "**masters role**". This is
-> an IAM role that is associated with the `system:masters` [RBAC] group and has
-> super-user to the cluster. You can specify this role using the `mastersRole`
-> option, or otherwise a role will be automatically created for you.
+> an IAM role that is associated with the `system:masters` [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) 
+> group and has super-user access to the cluster.
+>
+> You can specify this role using the `mastersRole` option, or otherwise a role will be 
+> automatically created for you. This role can be assumed by anyone in the account with
+> `sts:AssumeRole` permissions for this role.
 
 Execute the `aws eks update-kubeconfig ...` command in your terminal to create a
 local kubeconfig:
@@ -83,8 +86,6 @@ pod/coredns-5cb4fb54c7-q222j   1/1     Running   0          23m
 pod/coredns-5cb4fb54c7-v9nxx   1/1     Running   0          23m
 ...
 ```
-
-[RBAC]: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
 
 ### Endpoint Access
 
