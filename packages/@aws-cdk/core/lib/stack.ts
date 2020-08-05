@@ -80,7 +80,7 @@ export interface StackProps {
    *   }
    * });
    *
-   * // both of these stavks will use the stage's account/region:
+   * // both of these stacks will use the stage's account/region:
    * // `.account` and `.region` will resolve to the concrete values as above
    * new MyStack(myStage, 'Stack1');
    * new YourStack(myStage, 'Stack1');
