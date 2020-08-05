@@ -112,7 +112,7 @@ export class BundlingDockerImage {
       ...options.user
         ? ['-u', options.user]
         : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:z,${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
