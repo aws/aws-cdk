@@ -390,9 +390,9 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
 
   public abstract autoScalingGroupName: string;
   public abstract autoScalingGroupArn: string;
+  public abstract readonly osType: ec2.OperatingSystemType;
   protected albTargetGroup?: elbv2.ApplicationTargetGroup;
   public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
-  public readonly operatingSystemType?: ec2.OperatingSystemType = undefined;
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
@@ -524,6 +524,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         resource: 'autoScalingGroup:*:autoScalingGroupName',
         resourceName: this.autoScalingGroupName,
       });
+      public readonly osType = ec2.OperatingSystemType.UNKNOWN;
     }
 
     return new Import(scope, id);
@@ -533,8 +534,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * The type of OS instances of this fleet are running.
    */
   public readonly osType: ec2.OperatingSystemType;
-
-  public readonly operatingSystemType?: ec2.OperatingSystemType;
 
   /**
    * Allows specify security group connections for instances of this fleet.
@@ -710,7 +709,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = imageConfig.osType;
-    this.operatingSystemType = imageConfig.osType;
     this.autoScalingGroupName = this.getResourceNameAttribute(this.autoScalingGroup.ref),
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
@@ -1140,10 +1138,9 @@ export interface IAutoScalingGroup extends IResource, iam.IGrantable {
 
   /**
    * The operating system family that the instances in this auto-scaling group belong to.
-   * Can be undefined for imported groups,
-   * is never undefined for new ASGs created by the CDK.
+   * Is 'UNKNOWN' for imported ASGs.
    */
-  readonly operatingSystemType?: ec2.OperatingSystemType;
+  readonly osType: ec2.OperatingSystemType;
 
   /**
    * Add command to the startup script of fleet instances.

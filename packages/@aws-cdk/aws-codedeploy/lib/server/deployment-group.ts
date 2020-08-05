@@ -344,7 +344,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this.codeDeployBucket.grantRead(asg, 'latest/*');
 
-    switch (asg.operatingSystemType) {
+    switch (asg.osType) {
       case ec2.OperatingSystemType.LINUX:
         asg.addUserData(
           'PKG_CMD=`which yum 2>/dev/null`',
