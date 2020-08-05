@@ -233,6 +233,11 @@ export class CfnResource extends CfnRefElement {
    * and the dependency will automatically be transferred to the relevant scope.
    */
   public addDependsOn(target: CfnResource) {
+    // skip this dependency if the target is not part of the output
+    if (!target.shouldSynthesize()) {
+      return;
+    }
+
     addDependency(this, target, `"${this.node.path}" depends on "${target.node.path}"`);
   }
 
