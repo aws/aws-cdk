@@ -16,13 +16,63 @@ const api = new appsync.GraphQLApi(stack, 'code-first-api', {
   schemaDefinition: appsync.SchemaDefinition.CODE,
 });
 
-api.addType('test', {
+const t_id = appsync.AttributeType.id('id').required();
+
+// Planet Props
+const t_name = appsync.AttributeType.string('name');
+const t_diameter = appsync.AttributeType.int('diameter');
+const t_rotationPeriod = appsync.AttributeType.int('rotationPeriod');
+const t_orbitalPeriod = appsync.AttributeType.int('orbitalPeriod');
+const t_gravity = appsync.AttributeType.string('gravity');
+const t_population = appsync.AttributeType.float('population');
+const t_climates= appsync.AttributeType.string('climates').list();
+const t_terrains = appsync.AttributeType.string('terrains').list();
+const t_surfaceWater = appsync.AttributeType.float('surfaceWater');
+const t_created = appsync.AttributeType.string('created');
+const t_edited = appsync.AttributeType.string('edited');
+
+// Species Props
+const t_classification = appsync.AttributeType.string('classification');
+const t_designation = appsync.AttributeType.string('designation');
+const t_averageHeight = appsync.AttributeType.float('averageHeight');
+const t_averageLifespan = appsync.AttributeType.int('averageLifespan');
+const t_eyeColors = appsync.AttributeType.string('eyeColors').list();
+const t_hairColors = appsync.AttributeType.string('hairColors').list();
+const t_skinColors = appsync.AttributeType.string('skinColors').list();
+const t_language = appsync.AttributeType.string('language');
+
+const t_planet = api.addType('Planet', {
   definition: [
-    appsync.AttributeType.string('id').required(),
-    appsync.AttributeType.string('version').required(),
+    t_name,
+    t_diameter,
+    t_rotationPeriod,
+    t_orbitalPeriod,
+    t_gravity,
+    t_population,
+    t_climates,
+    t_terrains,
+    t_surfaceWater,
+    t_created,
+    t_edited,
+    t_id,
   ],
-  directives: [
-    appsync.Directive.iam(),
+});
+
+api.addType('Species', {
+  definition: [
+    t_name,
+    t_classification,
+    t_designation,
+    t_averageHeight,
+    t_averageLifespan,
+    t_eyeColors,
+    t_hairColors,
+    t_skinColors,
+    t_language,
+    appsync.AttributeType.object('homeworld', t_planet),
+    t_created,
+    t_edited,
+    t_id,
   ],
 });
 

@@ -1,0 +1,33 @@
+type Planet {
+  name: String
+  diameter: Int
+  rotationPeriod: Int
+  orbitalPeriod: Int
+  gravity: String
+  population: Float
+  climates: [String]
+  terrains: [String]
+  surfaceWater: Float
+  created: String
+  edited: String
+  id: ID!
+}
+type Species {
+  name: String
+  classification: String
+  designation: String
+  averageHeight: Float
+  averageLifespan: Int
+  eyeColors: [String]
+  hairColors: [String]
+  skinColors: [String]
+  language: String
+  homeworld: Planet
+  created: String
+  edited: String
+  id: ID!
+}
+
+type Query {
+  getTests: [test]
+}

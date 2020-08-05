@@ -50,6 +50,16 @@ export interface ObjectTypeProps {
  */
 export class ObjectType {
   /**
+   *  A method to define Object Types from an interface
+   *  TODO: implement interface class
+   */
+  public static extendInterface(name: string, typeInterface: ObjectType, props: ObjectTypeProps): ObjectType {
+    // check to make sure interface is properly scoped out
+    typeInterface;
+    return new ObjectType(name, props);
+  }
+
+  /**
    * the name of this object type
    */
   public readonly name: string;
@@ -185,8 +195,8 @@ export class AttributeType {
   /**
    * an object type to be added as an attribute
    */
-  public static object(type: ObjectType): AttributeType {
-    return new AttributeType(Type.OBJECT, type.name);
+  public static object(name: string, type: ObjectType): AttributeType {
+    return new AttributeType(Type.OBJECT, name, type);
   }
 
   /**
@@ -205,12 +215,19 @@ export class AttributeType {
    * property determining if this attribute is required
    */
   public isRequired: boolean;
+  /**
+   * the object type linked to this attribute
+   * @default - no object type
+   */
+  public objectType?: ObjectType;
 
-  private constructor(type: Type, name: string) {
+
+  private constructor(type: Type, name: string, object?: ObjectType) {
     this.type = type;
     this.name = name;
     this.isList = false;
     this.isRequired = false;
+    this.objectType = object;
   }
 
   /**

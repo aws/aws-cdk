@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFileSync, writeFile } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
@@ -718,6 +718,11 @@ export class GraphQLApi extends Construct {
     }
     const sep = delimiter ?? '';
     this.schema.definition = `${this.schema.definition}${sep}${addition}\n`;
+    writeFile('generated.graphql', this.schema.definition, (err) => {
+      if (err) {
+        throw new Error(err.message);
+      }
+    });
   }
 
   /**
@@ -773,10 +778,9 @@ export class GraphQLApi extends Construct {
    * @param attribute - the attribute of a type
    */
   private generateAttribute(attribute: AttributeType): string {
-    const listify = (type: string) => {
-      return attribute.isList ? `[${type}]` : type;
-    };
+    let type = attribute.objectType ? attribute.objectType?.name : attribute.type;
+    type = attribute.isList ? `[${type}]` : type;
     const required = attribute.isRequired ? '!' : '';
-    return `${attribute.name}: ${listify(attribute.type)}${required}`;
+    return `${attribute.name}: ${type}${required}`;
   }
 }
