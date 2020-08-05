@@ -43,6 +43,7 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
+This must be disabled when the function is meant to be used as a lambda@edge.
 
 Use the `containerEnvironment` prop to pass environments variables to the Docker container
 running Parcel:
