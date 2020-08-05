@@ -105,6 +105,11 @@ export class ClusterResourceHandler extends ResourceHandler {
     const updates = analyzeUpdate(this.oldProps, this.newProps);
     console.log('onUpdate:', JSON.stringify({ updates }, undefined, 2));
 
+    // updates to encryption config is not supported
+    if (updates.updateEncryption) {
+      throw new Error('Cannot update cluster encryption configuration');
+    }
+
     // if there is an update that requires replacement, go ahead and just create
     // a new cluster with the new config. The old cluster will automatically be
     // deleted by cloudformation upon success.
@@ -283,9 +288,11 @@ interface UpdateMap {
   replaceName: boolean;     // name
   replaceVpc: boolean;      // resourcesVpcConfig.subnetIds and securityGroupIds
   replaceRole: boolean;     // roleArn
-  updateVersion: boolean;   // version
-  updateLogging: boolean;   // logging
-  updateAccess: boolean;    // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
+
+  updateVersion: boolean;    // version
+  updateLogging: boolean;    // logging
+  updateEncryption: boolean; // encryption (cannot be updated)
+  updateAccess: boolean;     // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
 }
 
 function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps: aws.EKS.CreateClusterRequest): UpdateMap {
@@ -294,6 +301,10 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
 
   const newVpcProps = newProps.resourcesVpcConfig || { };
   const oldVpcProps = oldProps.resourcesVpcConfig || { };
+
+  const newEnc = newProps.encryptionConfig || {};
+  const oldEnc = oldProps.encryptionConfig || {};
+
 
   const oldPublicAccessCidrs = new Set(oldVpcProps.publicAccessCidrs ?? []);
   const newPublicAccessCidrs = new Set(newVpcProps.publicAccessCidrs ?? []);
@@ -307,6 +318,7 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
       newVpcProps.endpointPrivateAccess !== oldVpcProps.endpointPrivateAccess ||
       newVpcProps.endpointPublicAccess !== oldVpcProps.endpointPublicAccess ||
       !setsEqual(newPublicAccessCidrs, oldPublicAccessCidrs),
+    updateEncryption: JSON.stringify(newEnc) !== JSON.stringify(oldEnc),
     replaceRole: newProps.roleArn !== oldProps.roleArn,
     updateVersion: newProps.version !== oldProps.version,
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),

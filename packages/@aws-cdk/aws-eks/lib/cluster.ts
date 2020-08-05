@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import * as YAML from 'yaml';
@@ -233,6 +234,11 @@ export interface ClusterOptions {
    * @default - No environment variables.
    */
   readonly kubectlEnvironment?: { [key: string]: string };
+
+  /**
+   * KMS secret for envelope encryption for Kubernetes secrets.
+   */
+  readonly secretsEncryptionKey?: kms.IKey;
 }
 
 /**
@@ -603,6 +609,9 @@ export class Cluster extends Resource implements ICluster {
       name: this.physicalName,
       roleArn: this.role.roleArn,
       version: props.version.version,
+      encryptionConfig: props.secretsEncryptionKey
+        ? [ { provider: { keyArn: props.secretsEncryptionKey.keyArn }, resources: [ 'secrets' ] } ]
+        : undefined,
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,

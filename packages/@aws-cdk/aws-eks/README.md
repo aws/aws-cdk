@@ -680,6 +680,19 @@ mypod.node.addDependency(sa);
 new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
 ```
 
-### Roadmap
+### Encryption for Kubernetes Secrets with KMS
 
-- [ ] AutoScaling (combine EC2 and Kubernetes scaling)
+The option `secretsEncryptionKey` will configure the cluster to use a KMS key
+for encrypting Kubernetes secrets.
+
+NOTE: this setting can only be specified when the cluster is created and cannot
+be updated due to a limitation in Amazon EKS.
+
+```ts
+const secretsKey = new kms.Key(this, 'SecretsKey');
+
+const cluster = new eks.Cluster(this, 'MyCluster', {
+  secretsEncryptionKey: secretsKey,
+  // ...
+});
+```

@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { countResources, expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
@@ -1687,6 +1688,30 @@ export = {
       }, /CIDR blocks can only be configured when public access is enabled/);
       test.done();
     },
+  },
 
+  'secretsEncryptionKey can be used to enable secrets encryption with kms'(test: Test) {
+    // GIVEN
+    const { stack } = testFixture();
+
+    const key = new kms.Key(stack, 'MyKey');
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: eks.KubernetesVersion.V1_17,
+      secretsEncryptionKey: key,
+    });
+
+    // THEN
+    const template = SynthUtils.toCloudFormation(stack);
+
+    test.deepEqual(template.Resources.Cluster9EE0221C.Properties.Config.encryptionConfig, [
+      {
+        provider: { keyArn: { 'Fn::GetAtt': [ 'MyKey6AB29FA6', 'Arn' ] } },
+        resources: [ 'secrets' ],
+      },
+    ]);
+
+    test.done();
   },
 };

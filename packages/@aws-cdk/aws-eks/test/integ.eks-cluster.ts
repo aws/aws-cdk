@@ -1,6 +1,7 @@
 /// !cdk-integ pragma:ignore-assets
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { App, CfnOutput, Duration, Token } from '@aws-cdk/core';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
@@ -15,6 +16,8 @@ class EksClusterStack extends TestStack {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
+    const secrets = new kms.Key(this, 'SecretsKey');
+
     // just need one nat gateway to simplify the test
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
@@ -23,6 +26,7 @@ class EksClusterStack extends TestStack {
       vpc,
       mastersRole,
       defaultCapacity: 2,
+      secretsEncryptionKey: secrets,
       version: eks.KubernetesVersion.V1_16,
     });
 
