@@ -1,4 +1,5 @@
 ## Amazon EKS Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -29,6 +30,7 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_16,
 });
 
+// apply a kubernetes manifest to the cluster
 cluster.addResource('mypod', {
   apiVersion: 'v1',
   kind: 'Pod',
@@ -45,6 +47,41 @@ cluster.addResource('mypod', {
 });
 ```
 
+In order to interact with your cluster through `kubectl`, your CDK stack will
+include a CloudFormation output with the prefix `ClusterConfigCommand` which
+contains the [AWS CLI](https://aws.amazon.com/cli/) command to run in order in
+order to update your local kubeconfig for interacting with this cluster.
+
+For example:
+
+```
+Outputs:
+ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
+```
+
+> The IAM role specified in this command is called the "**masters role**". This is
+> an IAM role that is associated with the `system:masters` [RBAC] group and has
+> super-user to the cluster. You can specify this role using the `mastersRole`
+> option, or otherwise a role will be automatically created for you.
+
+You can use the "`aws eks update-kubeconfig ...`" command to your terminal in
+order to update your local kubeconfig so kubectl can connect to this cluster:
+
+```console
+$ aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
+Added new context arn:aws:eks:eu-west-2:112233445566:cluster/cluster-xxxxx to /home/boom/.kube/config
+
+$ kubectl get all -n kube-system
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/aws-node-fpmwv             1/1     Running   0          21m
+pod/aws-node-m9htf             1/1     Running   0          21m
+pod/coredns-5cb4fb54c7-q222j   1/1     Running   0          23m
+pod/coredns-5cb4fb54c7-v9nxx   1/1     Running   0          23m
+...
+```
+
+[RBAC]: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+
 ### Endpoint Access
 
 You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html) by using the `endpointAccess` property:
@@ -57,7 +94,6 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 ```
 
 The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, and worker node traffic to the endpoint will stay within your VPC.
-
 
 ### Capacity
 
@@ -208,7 +244,6 @@ When adding capacity, you can specify options for
 which is responsible for associating the node to the EKS cluster. For example,
 you can use `kubeletExtraArgs` to add custom node labels or taints.
 
-
 ```ts
 // up to ten spot instances
 cluster.addCapacity('spot', {
@@ -229,8 +264,7 @@ the capacity.
 The Amazon EKS construct library allows you to specify an IAM role that will be
 granted `system:masters` privileges on your cluster.
 
-Without specifying a `mastersRole`, you will not be able to interact manually
-with the cluster.
+If `mastersRole` is not specified, a role will be automatically defined for you.
 
 The following example defines an IAM role that can be assumed by all users
 in the account and shows how to use the `mastersRole` property to map this
