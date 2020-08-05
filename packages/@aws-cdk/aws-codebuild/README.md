@@ -498,3 +498,38 @@ new codebuild.Project(stack, 'MyProject', {
 Here's a CodeBuild project with a simple example that creates a project mounted on AWS EFS:
 
 [Minimal Example](./test/integ.project-file-system-location.ts)
+
+
+## Notification
+
+CodeBuild Projects allow you  to set notification with SNS topic or AWS Chatbot.
+ 
+For example:
+
+```ts
+    const codebuildProject = new codebuild.Project(this, 'MyCodebuild', {
+      buildSpec: codebuild.BuildSpec.fromObject({
+        // ...
+      }),
+    });
+
+    const slackChannel = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel', {
+      slackChannelConfigurationName: 'my-slack-channel',
+      slackWorkspaceId: 'YOUR SLACK WORKSPACE ID',
+      slackChannelId: 'YOUR SLACK CHANNEL ID',
+    });
+
+    codebuildProject.addNotification({
+      notificationRuleName: 'MySlackNotification',
+      status: notifications.Status.ENABLED,
+      detailType: notifications.DetailType.FULL,
+      events: [
+        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
+        notifications.ProjectEvent.BUILD_STATE_FAILED,
+        notifications.ProjectEvent.BUILD_STATE_IN_PROGRESS,
+      ],
+      targets: [
+        new notifications.SlackNotificationTarget(slackChannel),
+      ],
+    });
+```

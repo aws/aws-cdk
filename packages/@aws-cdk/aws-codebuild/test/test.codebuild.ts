@@ -1,11 +1,11 @@
 import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import * as chatbot from '@aws-cdk/aws-chatbot';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
-import * as chatbot from '@aws-cdk/aws-chatbot';
-import * as sns from '@aws-cdk/aws-sns';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as codebuild from '../lib';
@@ -1174,61 +1174,70 @@ export = {
 
   'notification': {
     'added notification to codebuild project'(test: Test) {
-    const stack = new cdk.Stack();
-    
-    const slackConfig = chatbot.SlackChannelConfiguration.fromConfigurationArn(stack, 'MySlackBot', 'arn:aws:iam::1234567890:chat-configuration/slack-channel/my-slack-chatbot');
-    const topic = sns.Topic.fromTopicArn(stack, 'MyTopic', 'arn:aws:sns::1234567890:my-topic');
-    
-    const slackTarget = new notifications.SlackNotificationTarget(slackConfig);
-    const topicTarget = new notifications.SNSTopicNotificationTarget(topic);
+      const stack = new cdk.Stack();
 
-    const project = new codebuild.Project(stack, 'MyProject', {});
+      const slackConfig = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackBot', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+      const topic = sns.Topic.fromTopicArn(stack, 'MyTopic', 'arn:aws:sns::1234567890:my-topic');
 
-    project.addNotification({
-      name: 'MyNotificationRule',
-      detailType: notifications.DetailType.FULL,
-      targets: [slackTarget, topicTarget],
-      eventTypeIds: [
-        notifications.ProjectEvent.BUILD_PHASE_FAILRE,
-        notifications.ProjectEvent.BUILD_PHASE_SUCCESS,
-        notifications.ProjectEvent.BUILD_STATE_FAILED,
-        notifications.ProjectEvent.BUILD_STATE_IN_PROGRESS,
-        notifications.ProjectEvent.BUILD_STATE_STOPPED,
-        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
-      ],
-    });
+      const slackTarget = new notifications.SlackNotificationTarget(slackConfig);
+      const topicTarget = new notifications.SNSTopicNotificationTarget(topic);
 
-    expect(stack).to(haveResource('AWS::CodeStarNotifications::NotificationRule', {
-      "DetailType": "FULL",
-      "EventTypeIds": [
-        "codebuild-project-build-phase-failure",
-        "codebuild-project-build-phase-success",
-        "codebuild-project-build-state-failed",
-        "codebuild-project-build-state-in-progress",
-        "codebuild-project-build-state-stopped",
-        "codebuild-project-build-state-succeeded",
-      ],
-      "Name": "MyNotificationRule",
-      "Resource": {
-        "Fn::GetAtt": [
-          "MyProject",
-          "Arn"
-        ]
-      },
-      "Targets": [
-        {
-          "TargetAddress": "arn:aws:iam::1234567890:chat-configuration/slack-channel/my-slack-chatbot",
-          "TargetType": "AWSChatbotSlack"
+      const project = new codebuild.Project(stack, 'MyProject', {
+        buildSpec: codebuild.BuildSpec.fromObject({
+          version: '0.2',
+          phases: {
+            build: {
+              commands: ['echo "Nothing to do!"'],
+            },
+          },
+        }),
+      });
+
+      project.addNotification({
+        notificationRuleName: 'MyNotificationRule',
+        detailType: notifications.DetailType.FULL,
+        targets: [slackTarget, topicTarget],
+        events: [
+          notifications.ProjectEvent.BUILD_PHASE_FAILRE,
+          notifications.ProjectEvent.BUILD_PHASE_SUCCESS,
+          notifications.ProjectEvent.BUILD_STATE_FAILED,
+          notifications.ProjectEvent.BUILD_STATE_IN_PROGRESS,
+          notifications.ProjectEvent.BUILD_STATE_STOPPED,
+          notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
+        ],
+      });
+
+      expect(stack).to(haveResource('AWS::CodeStarNotifications::NotificationRule', {
+        'DetailType': 'FULL',
+        'EventTypeIds': [
+          'codebuild-project-build-phase-failure',
+          'codebuild-project-build-phase-success',
+          'codebuild-project-build-state-failed',
+          'codebuild-project-build-state-in-progress',
+          'codebuild-project-build-state-stopped',
+          'codebuild-project-build-state-succeeded',
+        ],
+        'Name': 'MyNotificationRule',
+        'Resource': {
+          'Fn::GetAtt': [
+            'MyProject39F7B0AE',
+            'Arn',
+          ],
         },
-        {
-          "TargetAddress": "arn:aws:sns::1234567890:my-topic",
-          "TargetType": "SNS"
-        }
-      ],
-      "Status": "ENABLED"
-    }));
-
-    test.done();
+        'Targets': [
+          {
+            'TargetAddress': 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack',
+            'TargetType': 'AWSChatbotSlack',
+          },
+          {
+            'TargetAddress': 'arn:aws:sns::1234567890:my-topic',
+            'TargetType': 'SNS',
+          },
+        ],
+        'Status': 'ENABLED',
+      }));
+      test.done();
+    },
   },
 
   'artifacts': {

@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as notifications from '@aws-cdk/aws-codestarnotifications';
+import { NotificationRule, AddNotificationRuleOptions } from '@aws-cdk/aws-codestarnotifications';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
@@ -585,8 +585,6 @@ export interface BindToCodePipelineOptions {
   readonly artifactBucket: s3.IBucket;
 }
 
-export interface NotificationRuleOptions extends Omit<notifications.NotificationRuleProps, 'resourceArn'> {}
-
 /**
  * A representation of a CodeBuild Project.
  */
@@ -844,14 +842,18 @@ export class Project extends ProjectBase {
     this._secondaryArtifacts.push(secondaryArtifact.bind(this, this).artifactsProperty);
   }
 
-  public addNotification(options: NotificationRuleOptions) {
-    return new notifications.NotificationRule(this, options.name, {
-      name: options.name,
+  /**
+   * Adds a notification to the Project such as AWS Chatbot or SNS topic.
+   * @param options The options for notification rule
+   */
+  public addNotification(options: AddNotificationRuleOptions): NotificationRule {
+    return new NotificationRule(this, `${options.notificationRuleName}NotificationRule`, {
+      notificationRuleName: options.notificationRuleName,
       status: options.status,
       detailType: options.detailType,
       targets: options.targets,
-      eventTypeIds: options.eventTypeIds,
-      resourceArn: this.projectArn,
+      events: options.events,
+      resource: this.projectArn,
     });
   }
 
