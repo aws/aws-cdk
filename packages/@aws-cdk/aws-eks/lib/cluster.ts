@@ -238,7 +238,7 @@ export interface ClusterOptions {
 /**
  * Group access configuration together.
  */
-export interface EndpointAccessConfig {
+interface EndpointAccessConfig {
 
   /**
    * Indicates if private access is enabled.
@@ -299,9 +299,11 @@ export class EndpointAccess {
   private constructor(
     /**
      * Configuration properties.
+     *
+     * @internal
      */
-    public readonly config: EndpointAccessConfig) {
-    if (!config.publicAccess && config.publicCidrs && config.publicCidrs.length > 0) {
+    public readonly _config: EndpointAccessConfig) {
+    if (!_config.publicAccess && _config.publicCidrs && _config.publicCidrs.length > 0) {
       throw new Error('CIDR blocks can only be configured when public access is enabled');
     }
   }
@@ -315,7 +317,7 @@ export class EndpointAccess {
    */
   public onlyFrom(...cidr: string[]) {
     return new EndpointAccess({
-      ...this.config,
+      ...this._config,
       // override CIDR
       publicCidrs: cidr,
     });
@@ -621,7 +623,7 @@ export class Cluster extends Resource implements ICluster {
       this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
       this.kubectlProviderEnv = props.kubectlEnvironment;
 
-      if (this.endpointAccess.config.privateAccess && this.vpc instanceof ec2.Vpc) {
+      if (this.endpointAccess._config.privateAccess && this.vpc instanceof ec2.Vpc) {
         // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
         if (!this.vpc.dnsHostnamesEnabled || !this.vpc.dnsSupportEnabled) {
           throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
@@ -638,9 +640,9 @@ export class Cluster extends Resource implements ICluster {
 
       resource = new ClusterResource(this, 'Resource', {
         ...clusterProps,
-        endpointPrivateAccess: this.endpointAccess.config.privateAccess,
-        endpointPublicAccess: this.endpointAccess.config.publicAccess,
-        publicAccessCidrs: this.endpointAccess.config.publicCidrs,
+        endpointPrivateAccess: this.endpointAccess._config.privateAccess,
+        endpointPublicAccess: this.endpointAccess._config.publicAccess,
+        publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       });
       this._clusterResource = resource;
 
@@ -1070,7 +1072,7 @@ export class Cluster extends Resource implements ICluster {
         throw new Error("Expected 'endpointAccess' to be defined for kubectl enabled clusters");
       }
 
-      if (!this.endpointAccess.config.publicAccess) {
+      if (!this.endpointAccess._config.publicAccess) {
         // endpoint access is private only, we need to attach the
         // provider to the VPC so that it can access the cluster.
         providerProps = {
