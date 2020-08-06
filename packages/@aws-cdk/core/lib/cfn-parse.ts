@@ -78,36 +78,40 @@ export class FromCloudFormation {
     }
 
     // in all other cases, delegate to the standard mapping logic
-    return this.getArray(value, this.getString);
+    return this.getArray(this.getString)(value);
   }
 
-  public static getArray<T>(value: any, mapper: (arg: any) => T): T[] {
-    if (!Array.isArray(value)) {
-      // break the type system, and just return the given value,
-      // which hopefully will be reported as invalid by the validator
-      // of the property we're transforming
-      // (unless it's a deploy-time value,
-      // which we can't map over at build time anyway)
-      return value;
-    }
+  public static getArray<T>(mapper: (arg: any) => T): (x: any) => T[] {
+    return (value: any) => {
+      if (!Array.isArray(value)) {
+        // break the type system, and just return the given value,
+        // which hopefully will be reported as invalid by the validator
+        // of the property we're transforming
+        // (unless it's a deploy-time value,
+        // which we can't map over at build time anyway)
+        return value;
+      }
 
-    return value.map(mapper);
+      return value.map(mapper);
+    };
   }
 
-  public static getMap<T>(value: any, mapper: (arg: any) => T): { [key: string]: T } {
-    if (typeof value !== 'object') {
-      // if the input is not a map (= object in JS land),
-      // just return it, and let the validator of this property handle it
-      // (unless it's a deploy-time value,
-      // which we can't map over at build time anyway)
-      return value;
-    }
+  public static getMap<T>(mapper: (arg: any) => T): (x: any) => { [key: string]: T } {
+    return (value: any) => {
+      if (typeof value !== 'object') {
+        // if the input is not a map (= object in JS land),
+        // just return it, and let the validator of this property handle it
+        // (unless it's a deploy-time value,
+        // which we can't map over at build time anyway)
+        return value;
+      }
 
-    const ret: { [key: string]: T } = {};
-    for (const [key, val] of Object.entries(value)) {
-      ret[key] = mapper(val);
-    }
-    return ret;
+      const ret: { [key: string]: T } = {};
+      for (const [key, val] of Object.entries(value)) {
+        ret[key] = mapper(val);
+      }
+      return ret;
+    };
   }
 
   public static getCfnTag(tag: any): CfnTag {
@@ -119,16 +123,21 @@ export class FromCloudFormation {
       };
   }
 
-  public static getTypeUnion(validators: Validator[], mappers: Mapper[], value: any): any {
-    for (let i = 0; i < validators.length; i++) {
-      const candidate = mappers[i](value);
-      if (validators[i](candidate).isSuccess) {
-        return candidate;
+  /**
+   * Return a function that, when applied to a value, will return the first validly deserialized one
+   */
+  public static getTypeUnion(validators: Validator[], mappers: Mapper[]): (x: any) => any {
+    return (value: any): any => {
+      for (let i = 0; i < validators.length; i++) {
+        const candidate = mappers[i](value);
+        if (validators[i](candidate).isSuccess) {
+          return candidate;
+        }
       }
-    }
 
-    // if nothing matches, just return the input unchanged, and let validators catch it
-    return value;
+      // if nothing matches, just return the input unchanged, and let validators catch it
+      return value;
+    };
   }
 }
 
