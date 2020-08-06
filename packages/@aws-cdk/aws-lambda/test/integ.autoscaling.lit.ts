@@ -10,31 +10,31 @@ import * as lambda from '../lib';
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
-    
+
     const fn = new lambda.Function(this, 'MyLambda', {
       code: new lambda.InlineCode('exports.handler = async () => {\nconsole.log(\'hello world\');\n};'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
     });
-    
+
     const version = fn.addVersion('1', undefined, 'integ-test');
-    
+
     const alias = new lambda.Alias(this, 'Alias', {
       aliasName: 'prod',
       version,
     });
 
     const scalingTarget = alias.addAutoScaling({ minCapacity: 3, maxCapacity: 50 });
-    
+
     scalingTarget.scaleOnUtilization({
       utilizationTarget: 0.5,
     });
-    
+
     scalingTarget.scaleOnSchedule('ScaleUpInTheMorning', {
       schedule: appscaling.Schedule.cron({ hour: '8', minute: '0'}),
       minCapacity: 20,
     });
-    
+
     scalingTarget.scaleOnSchedule('ScaleDownAtNight', {
       schedule: appscaling.Schedule.cron({ hour: '20', minute: '0'}),
       maxCapacity: 20,
