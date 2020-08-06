@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveOutput, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect as expectCDK, haveOutput, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 
@@ -22,12 +22,31 @@ describe('DatabaseInstance', () => {
     // THEN
     expectCDK(stack).to(haveResource('AWS::DocDB::DBInstance', {
       Properties: {
+        AutoMinorVersionUpgrade: true,
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
         DBInstanceClass: EXPECTED_SYNTH_INSTANCE_TYPE,
       },
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
     }, ResourcePart.CompleteDefinition));
+  });
+
+  test('check that autoMinorVersionUpgrade property works', () => {
+    // GIVEN
+    const stack = testStack();
+    const autoMinorVersionUpgrade = false;
+
+    // WHEN
+    new DatabaseInstance(stack, 'Instance', {
+      autoMinorVersionUpgrade,
+      cluster: stack.cluster,
+      instanceClass: SINGLE_INSTANCE_TYPE,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResourceLike('AWS::DocDB::DBInstance', {
+      AutoMinorVersionUpgrade: autoMinorVersionUpgrade,
+    }));
   });
 
   test('check that the endpoint works', () => {
