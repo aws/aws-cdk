@@ -10,8 +10,7 @@ test('should not throw an Error', () => {
   // WHEN
   const when = () => {
     new appsync.GraphQLApi(stack, 'api', {
-      authorizationConfig: {}, 
-      schemaDefinition: appsync.SchemaDefinition.FILE, 
+      authorizationConfig: {},
       schemaDefinition: appsync.SchemaDefinition.FILE,
       name: 'api',
       schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
@@ -105,6 +104,7 @@ test('when xray is enabled should not throw an Error', () => {
   new appsync.GraphQLApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
+    schemaDefinition: appsync.SchemaDefinition.FILE, 
     schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
     xrayEnabled: true,
   });
