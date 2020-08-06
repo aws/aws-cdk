@@ -765,8 +765,9 @@ export class GraphQLApi extends Construct {
   private generateObjectType(type: ObjectType): void {
     const directives = this.generateDirectives(type.directives);
     let schemaAddition = `type ${type.name} ${directives}{\n`;
-    type.definition.map((def) => {
-      const attribute = this.generateAttribute(def);
+    Object.keys(type.definition).forEach( (key) => {
+      const def = type.definition[key];
+      const attribute = this.generateAttribute(key, def);
       schemaAddition = `${schemaAddition}  ${attribute}\n`;
     });
     this.appendToSchema(`${schemaAddition}}`);
@@ -777,10 +778,13 @@ export class GraphQLApi extends Construct {
    *
    * @param attribute - the attribute of a type
    */
-  private generateAttribute(attribute: AttributeType): string {
+  private generateAttribute(name: string, attribute: AttributeType): string {
+    if (!attribute) {
+      throw new Error(`Key ${name} missing attribute.`);
+    }
     let type = attribute.objectType ? attribute.objectType?.name : attribute.type;
     type = attribute.isList ? `[${type}]` : type;
     const required = attribute.isRequired ? '!' : '';
-    return `${attribute.name}: ${type}${required}`;
+    return `${name}: ${type}${required}`;
   }
 }

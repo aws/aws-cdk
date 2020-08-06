@@ -36,7 +36,7 @@ export interface ObjectTypeProps {
   /**
    * the attributes of this object type
    */
-  readonly definition: AttributeType[];
+  readonly definition: { [key: string]: AttributeType };
   /**
    * the directives for this object type
    *
@@ -66,7 +66,7 @@ export class ObjectType {
   /**
    * the attributes of this object type
    */
-  public readonly definition: AttributeType[];
+  public readonly definition: { [key: string]: AttributeType };
   /**
    * the directives for this object type
    *
@@ -91,32 +91,32 @@ export class AttributeType {
    *
    * Often used as a key for a cache and not intended to be human-readable.
    */
-  public static id(name: string): AttributeType {
-    return new AttributeType(Type.ID, name);
+  public static id(): AttributeType {
+    return new AttributeType(Type.ID);
   }
   /**
    * `String` scalar type is a free-form human-readable text.
    */
-  public static string(name: string): AttributeType {
-    return new AttributeType(Type.STRING, name);
+  public static string(): AttributeType {
+    return new AttributeType(Type.STRING);
   }
   /**
    * `Int` scalar type is a signed non-fractional numerical value.
    */
-  public static int(name: string): AttributeType {
-    return new AttributeType(Type.INT, name);
+  public static int(): AttributeType {
+    return new AttributeType(Type.INT);
   }
   /**
    * `Float` scalar type is a signed double-precision fractional value.
    */
-  public static float(name: string): AttributeType {
-    return new AttributeType(Type.FLOAT, name);
+  public static float(): AttributeType {
+    return new AttributeType(Type.FLOAT);
   }
   /**
    * `Boolean` scalar type is a boolean value: true or false.
    */
-  public static boolean(name: string): AttributeType {
-    return new AttributeType(Type.BOOLEAN, name);
+  public static boolean(): AttributeType {
+    return new AttributeType(Type.BOOLEAN);
   }
 
   /**
@@ -126,8 +126,8 @@ export class AttributeType {
    *
    * @see https://en.wikipedia.org/wiki/ISO_8601#Calendar_dates
    */
-  public static awsDate(name: string): AttributeType {
-    return new AttributeType(Type.AWS_DATE, name);
+  public static awsDate(): AttributeType {
+    return new AttributeType(Type.AWS_DATE);
   }
   /**
    * `AWSTime` scalar type represents a valid extended `ISO 8601 Time` string.
@@ -136,8 +136,8 @@ export class AttributeType {
    *
    * @see https://en.wikipedia.org/wiki/ISO_8601#Times
    */
-  public static awsTime(name: string): AttributeType {
-    return new AttributeType(Type.AWS_TIME, name);
+  public static awsTime(): AttributeType {
+    return new AttributeType(Type.AWS_TIME);
   }
   /**
    * `AWSDateTime` scalar type represents a valid extended `ISO 8601 DateTime` string.
@@ -146,67 +146,63 @@ export class AttributeType {
    *
    * @see https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
    */
-  public static awsDateTime(name: string): AttributeType {
-    return new AttributeType(Type.AWS_DATE_TIME, name);
+  public static awsDateTime(): AttributeType {
+    return new AttributeType(Type.AWS_DATE_TIME);
   }
   /**
    * `AWSTimestamp` scalar type represents the number of seconds since `1970-01-01T00:00Z`.
    *
    * Timestamps are serialized and deserialized as numbers.
    */
-  public static awsTimestamp(name: string): AttributeType {
-    return new AttributeType(Type.AWS_TIMESTAMP, name);
+  public static awsTimestamp(): AttributeType {
+    return new AttributeType(Type.AWS_TIMESTAMP);
   }
   /**
    * `AWSEmail` scalar type represents an email address string (i.e.`username@example.com`)
    */
-  public static awsEmail(name: string): AttributeType {
-    return new AttributeType(Type.AWS_EMAIL, name);
+  public static awsEmail(): AttributeType {
+    return new AttributeType(Type.AWS_EMAIL);
   }
   /**
    * `AWSJson` scalar type represents a JSON string.
    */
-  public static awsJSON(name: string): AttributeType {
-    return new AttributeType(Type.AWS_JSON, name);
+  public static awsJSON(): AttributeType {
+    return new AttributeType(Type.AWS_JSON);
   }
   /**
    * `AWSURL` scalar type represetns a valid URL string.
    *
    * URLs wihtout schemes or contain double slashes are considered invalid.
    */
-  public static awsURL(name: string): AttributeType {
-    return new AttributeType(Type.AWS_URL, name);
+  public static awsURL(): AttributeType {
+    return new AttributeType(Type.AWS_URL);
   }
   /**
    * `AWSPhone` scalar type represents a valid phone number. Phone numbers maybe be whitespace delimited or hyphenated.
    *
    * The number can specify a country code at the beginning, but is not required for US phone numbers.
    */
-  public static awsPhone(name: string): AttributeType {
-    return new AttributeType(Type.AWS_PHONE, name);
+  public static awsPhone(): AttributeType {
+    return new AttributeType(Type.AWS_PHONE);
   }
   /**
    * `AWSIPAddress` scalar type respresents a valid `IPv4` of `IPv6` address string.
    */
-  public static awsIpAddress(name: string): AttributeType {
-    return new AttributeType(Type.AWS_IP_ADDRESS, name);
+  public static awsIpAddress(): AttributeType {
+    return new AttributeType(Type.AWS_IP_ADDRESS);
   }
 
   /**
    * an object type to be added as an attribute
    */
-  public static object(name: string, type: ObjectType): AttributeType {
-    return new AttributeType(Type.OBJECT, name, type);
+  public static object(type: ObjectType): AttributeType {
+    return new AttributeType(Type.OBJECT, type);
   }
 
   /**
    * the type of attribute
    */
   public readonly type: Type;
-  /**
-   * the name of this attribute type
-   */
-  public readonly name: string;
   /**
    * property determining if this attribute is a list
    */
@@ -222,9 +218,8 @@ export class AttributeType {
   public objectType?: ObjectType;
 
 
-  private constructor(type: Type, name: string, object?: ObjectType) {
+  private constructor(type: Type, object?: ObjectType) {
     this.type = type;
-    this.name = name;
     this.isList = false;
     this.isRequired = false;
     this.objectType = object;
