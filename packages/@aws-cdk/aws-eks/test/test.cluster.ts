@@ -204,7 +204,7 @@ export = {
   'adding capacity creates an ASG with tags'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.LegacyCluster(stack, 'Cluster', {
+    const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
@@ -219,7 +219,7 @@ export = {
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
-          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' }]] },
+          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'Cluster9EE0221C' }]] },
           PropagateAtLaunch: true,
           Value: 'owned',
         },
