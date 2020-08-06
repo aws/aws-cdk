@@ -63,7 +63,7 @@ const demoTable = new db.Table(stack, 'DemoTable', {
   },
 });
 
-const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos', demoTable);
+const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos"', demoTable);
 
 // Resolver for the Query "getDemos" that scans the DyanmoDb table and returns the entire list.
 demoDS.createResolver({
