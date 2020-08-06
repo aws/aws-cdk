@@ -7,6 +7,7 @@ import {
 } from './cfn-resource-policy';
 import { CfnTag } from './cfn-tag';
 import { ICfnFinder } from './from-cfn';
+import { Lazy } from './lazy';
 import { CfnReference } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
 import { isResolvableObject, Token } from './token';
@@ -359,7 +360,11 @@ export class CfnParser {
         // where the first element is the delimiter,
         // and the second is the list of elements to join
         const value = this.parseValue(object[key]);
-        return Fn.join(value[0], value[1]);
+        // wrap the array as a Token,
+        // as otherwise Fn.join() will try to concatenate
+        // the non-token parts,
+        // causing a diff with the original template
+        return Fn.join(value[0], Lazy.listValue({ produce: () => value[1] }));
       }
       case 'Fn::Cidr': {
         const value = this.parseValue(object[key]);
