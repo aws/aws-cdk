@@ -31,7 +31,7 @@ describe('Lambda Data Source configuration', () => {
     // WHEN
     api.addLambdaDataSource('ds', func);
 
-    // EXPECT
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
       Name: 'ds',
@@ -44,7 +44,7 @@ describe('Lambda Data Source configuration', () => {
       name: 'custom',
     });
 
-    // EXPECT
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
       Name: 'custom',
@@ -58,7 +58,7 @@ describe('Lambda Data Source configuration', () => {
       description: 'custom description',
     });
 
-    // EXPECT
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
       Name: 'custom',
@@ -73,7 +73,7 @@ describe('Lambda Data Source configuration', () => {
       api.addLambdaDataSource('ds', func);
     };
 
-    // EXPECT
+    // THEN
     expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
   });
 });

@@ -23,7 +23,7 @@ describe('Http Data Source configuration', () => {
     // WHEN
     api.addHttpDataSource('ds', endpoint);
 
-    // EXPECT
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'HTTP',
       Name: 'ds',
@@ -36,7 +36,7 @@ describe('Http Data Source configuration', () => {
       name: 'custom',
     });
 
-    // EXPECT
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'HTTP',
       Name: 'custom',
@@ -50,7 +50,7 @@ describe('Http Data Source configuration', () => {
       description: 'custom description',
     });
 
-    // EXPECT
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'HTTP',
       Name: 'custom',
@@ -65,7 +65,7 @@ describe('Http Data Source configuration', () => {
       api.addHttpDataSource('ds', endpoint);
     };
 
-    // EXPECT
+    // THEN
     expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
   });
 });

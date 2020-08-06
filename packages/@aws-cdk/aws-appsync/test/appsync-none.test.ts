@@ -21,7 +21,7 @@ describe('None Data Source configuration', () => {
     // WHEN
     api.addNoneDataSource('ds');
 
-    // EXPECT
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'NONE',
       Name: 'ds',
@@ -34,7 +34,7 @@ describe('None Data Source configuration', () => {
       name: 'custom',
     });
 
-    // EXPECT
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'NONE',
       Name: 'custom',
@@ -48,7 +48,7 @@ describe('None Data Source configuration', () => {
       description: 'custom description',
     });
 
-    // EXPECT
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'NONE',
       Name: 'custom',
@@ -63,7 +63,7 @@ describe('None Data Source configuration', () => {
       api.addNoneDataSource('ds');
     };
 
-    // EXPECT
+    // THEN
     expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
   });
 
@@ -74,7 +74,7 @@ describe('None Data Source configuration', () => {
       api.addNoneDataSource('ds2', { name: 'custom' });
     };
 
-    // EXPECT
+    // THEN
     expect(when).not.toThrowError();
   });
 });

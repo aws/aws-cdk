@@ -36,7 +36,7 @@ describe('DynamoDb Data Source configuration', () => {
     // WHEN
     api.addDynamoDbDataSource('ds', table);
 
-    // EXPECT
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       Name: 'ds',
@@ -49,7 +49,7 @@ describe('DynamoDb Data Source configuration', () => {
       name: 'custom',
     });
 
-    // EXPECT
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       Name: 'custom',
@@ -63,7 +63,7 @@ describe('DynamoDb Data Source configuration', () => {
       description: 'custom description',
     });
 
-    // EXPECT
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       Name: 'custom',
@@ -78,7 +78,7 @@ describe('DynamoDb Data Source configuration', () => {
       api.addDynamoDbDataSource('ds', table);
     };
 
-    // EXPECT
+    // THEN
     expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
   });
 });
