@@ -93,7 +93,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       public readonly grantPrincipal = attrs.aliasVersion.grantPrincipal;
       public readonly role = attrs.aliasVersion.role;
 
-      protected readonly canCreatePermissions = true;
+      protected readonly canCreatePermissions = this._checkAccountIdFromArn();
       protected readonly qualifier = attrs.aliasName;
     }
     return new Imported(scope, id);
