@@ -220,8 +220,7 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly outputMastersRoleArn?: boolean;
 
   /**
-   * Configure access to the Kubernetes API server endpoint.
-   * This feature is only available for kubectl enabled clusters, i.e `kubectlEnabled: true`.
+   * Configure access to the Kubernetes API server endpoint..
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
    *
