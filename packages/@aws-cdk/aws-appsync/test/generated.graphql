@@ -4,7 +4,7 @@ type Planet {
   rotationPeriod: Int
   orbitalPeriod: Int
   gravity: String
-  population: Float
+  population: [String]
   climates: [String]
   terrains: [String]
   surfaceWater: Float
@@ -29,5 +29,5 @@ type Species {
 }
 
 type Query {
-  getTests: [test]
+  getPlanets: [Planet]
 }
