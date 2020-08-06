@@ -971,18 +971,30 @@ function mergeSection(section: string, val1: any, val2: any): any {
         throw new Error(`Conflicting CloudFormation template versions provided: '${val1}' and '${val2}`);
       }
       return val1 ?? val2;
+    case 'Transform':
+      return mergeSets(val1, val2);
     case 'Resources':
     case 'Conditions':
     case 'Parameters':
     case 'Outputs':
     case 'Mappings':
     case 'Metadata':
-    case 'Transform':
       return mergeObjectsWithoutDuplicates(section, val1, val2);
     default:
       throw new Error(`CDK doesn't know how to merge two instances of the CFN template section '${section}' - ` +
         'please remove one of them from your code');
   }
+}
+
+function mergeSets(val1: any, val2: any): any {
+  const array1 = val1 == null ? [] : (Array.isArray(val1) ? val1 : [val1]);
+  const array2 = val2 == null ? [] : (Array.isArray(val2) ? val2 : [val2]);
+  for (const value of array2) {
+    if (!array1.includes(value)) {
+      array1.push(value);
+    }
+  }
+  return array1.length === 1 ? array1[0] : array1;
 }
 
 function mergeObjectsWithoutDuplicates(section: string, dest: any, src: any): any {
