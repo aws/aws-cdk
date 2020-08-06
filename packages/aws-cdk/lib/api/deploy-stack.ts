@@ -154,6 +154,16 @@ export interface DeployStackOptions {
   usePreviousParameters?: boolean;
 
   /**
+   * Whether to truncate stack events to display only the
+   * resource currently being deployed
+   *
+   * If not set, the stack history with all stack events will be displayed
+   *
+   * @default false
+   */
+  trunc?: boolean;
+
+  /**
    * Deploy even if the deployed template is identical to the one we are about to deploy.
    * @default false
    */

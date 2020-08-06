@@ -89,11 +89,13 @@ async function parseCommandLineArguments() {
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
-      .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
+      .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' })
+      .option('trunc', { type: 'boolean', desc: 'Display only stack activity events for the resource currently being updated', default: false}),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
+    .option('trunc', { type: 'boolean', desc: 'Display only stack activity events for the resource currently being updated', default: false})
     .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
@@ -279,6 +281,7 @@ async function initCommandLine() {
           parameters: parameterMap,
           usePreviousParameters: args['previous-parameters'],
           outputsFile: args.outputsFile,
+          trunc: args.trunc,
         });
 
       case 'destroy':

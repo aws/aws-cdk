@@ -190,6 +190,7 @@ export class CdkToolkit {
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
+          trunc: options.trunc,
         });
 
         const message = result.noOp
@@ -577,6 +578,16 @@ export interface DeployOptions {
    * @default true
    */
   usePreviousParameters?: boolean;
+
+  /**
+   * Whether to truncate stack events to display only the
+   * resource currently being deployed
+   *
+   * If not set, the stack history with all stack events will be displayed
+   *
+   * @default false
+   */
+  trunc?: boolean;
 
   /**
    * Path to file where stack outputs will be written after a successful deploy as JSON

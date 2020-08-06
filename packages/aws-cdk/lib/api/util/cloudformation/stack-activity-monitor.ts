@@ -35,6 +35,16 @@ export interface StackActivityMonitorProps {
    * @default - Use value from logging.logLevel
    */
   readonly logLevel?: LogLevel;
+
+  /**
+   * Whether to truncate stack events to display only the
+   * resource currently being deployed
+   *
+   * If not set, the stack history with all stack events will be displayed
+   *
+   * @default false
+   */
+  trunc?: boolean;
 }
 
 export class StackActivityMonitor {
@@ -80,8 +90,9 @@ export class StackActivityMonitor {
     const isWindows = process.platform === 'win32';
     const verbose = options.logLevel ?? logLevel;
     const fancyOutputAvailable = !isWindows && stream.isTTY;
+    const trunc = options.trunc ?? false;
 
-    this.printer = fancyOutputAvailable && !verbose
+    this.printer = fancyOutputAvailable && !trunc && !verbose
       ? new CurrentActivityPrinter(props)
       : new HistoryActivityPrinter(props);
   }
