@@ -169,9 +169,8 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', {
+    const cluster = new eks.LegacyCluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: false,
       defaultCapacity: 2,
       version: CLUSTER_VERSION,
     });
@@ -239,7 +238,6 @@ export = {
     const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
     const cluster = new eks.Cluster(stack1, 'Cluster', {
       vpc,
-      kubectlEnabled: false,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
