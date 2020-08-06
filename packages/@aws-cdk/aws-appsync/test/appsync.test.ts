@@ -104,7 +104,7 @@ test('when xray is enabled should not throw an Error', () => {
   new appsync.GraphQLApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.FILE, 
+    schemaDefinition: appsync.SchemaDefinition.FILE,
     schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
     xrayEnabled: true,
   });
