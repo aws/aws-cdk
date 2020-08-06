@@ -212,7 +212,7 @@ export = {
     test.done();
   },
 
-  'picking any subnet type is allowed'(test: Test) {
+  'picking any subnet type is allowed if overriding allowPublicSubnet'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
@@ -235,6 +235,7 @@ export = {
     // WHEN
     test.doesNotThrow(() => {
       new lambda.Function(stack, 'PublicLambda', {
+        allowPublicSubnet: true,
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_10_X,
@@ -260,6 +261,39 @@ export = {
         runtime: lambda.Runtime.NODEJS_10_X,
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+      });
+    });
+    test.done();
+  },
+
+  'picking public subnet type is not allowed if not overriding allowPublicSubnet'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', {
+      subnetConfiguration: [
+        {
+          name: 'Public',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          name: 'Private',
+          subnetType: ec2.SubnetType.PRIVATE,
+        },
+        {
+          name: 'Isolated',
+          subnetType: ec2.SubnetType.ISOLATED,
+        },
+      ],
+    });
+
+    // WHEN
+    test.throws(() => {
+      new lambda.Function(stack, 'PublicLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
     });
     test.done();

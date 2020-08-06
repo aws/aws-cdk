@@ -299,6 +299,14 @@ export interface FunctionProps extends FunctionOptions {
    * @default - will not mount any filesystem
    */
   readonly filesystem?: FileSystem;
+
+  /**
+   * Whether to override the error when trying to place a Function into a public subnet. Lambda functions in Public
+   * subnets cannot access the internet, so only do this if you need to.
+   *
+   * @default - false
+   */
+  readonly allowPublicSubnet?: boolean;
 }
 
 /**
@@ -824,7 +832,14 @@ export class Function extends FunctionBase {
       }
     }
 
+    const allowPublicSubnet = props.allowPublicSubnet ?? false;
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
+    for (const subnetId of subnetIds) {
+      if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
+        throw new Error('Lambda Functions in a Public subnet won\'t have internet access. If you need to do this, set `allowPublicSubnet` to true');
+      }
+    }
 
     // List can't be empty here, if we got this far you intended to put your Lambda
     // in subnets. We're going to guarantee that we get the nice error message by
