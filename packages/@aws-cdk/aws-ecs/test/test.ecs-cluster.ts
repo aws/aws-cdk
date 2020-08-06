@@ -392,6 +392,16 @@ export = {
               ],
               Effect: 'Allow',
               Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
             },
             {
               Action: [

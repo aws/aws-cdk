@@ -243,7 +243,17 @@
                 "ecs:DescribeTasks"
               ],
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": "*",
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "Ec2ClusterEE43E89D",
+                      "Arn"
+                    ]
+                  }
+                }
+              }
             },
             {
               "Action": [
