@@ -163,7 +163,6 @@ export interface NodegroupOptions {
 export interface NodegroupProps extends NodegroupOptions {
   /**
    * Cluster resource
-   * [disable-awslint:ref-via-interface]"
    */
   readonly cluster: ICluster;
 }
