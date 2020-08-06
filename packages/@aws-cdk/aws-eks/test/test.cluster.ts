@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { countResources, expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -481,6 +481,20 @@ export = {
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
                 'ClusterdefaultInstanceRoleF20A29CD',
                 'Arn',
               ],
@@ -510,7 +524,30 @@ export = {
     });
 
     // THEN
-    expect(stack).to(not(haveResource(eks.KubernetesResource.RESOURCE_TYPE)));
+    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+      Manifest: {
+        'Fn::Join': [
+          '',
+          [
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+          ],
+        ],
+      },
+    }));
     test.done();
   },
 
@@ -526,8 +563,8 @@ export = {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1']] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1']] } },
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'ClusterMastersRole9AA35625', 'Arn' ] } ] ] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'ClusterMastersRole9AA35625', 'Arn' ] } ] ] } },
       });
       test.done();
     },

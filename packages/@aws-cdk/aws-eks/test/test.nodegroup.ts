@@ -75,6 +75,20 @@ export = {
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
                 'NodegroupNodeGroupRole038A128B',
                 'Arn',
               ],
