@@ -212,18 +212,38 @@ export class Cluster extends Resource implements ICluster {
 
     // ECS instances must be able to do these things
     // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
+    // But, scoped down to minimal permissions required.
+    //  Notes:
+    //   - 'ecs:CreateCluster' removed. The cluster already exists.
+    //   - 'logs:CreateLogStream' & 'logs:PutLogEvents' removed. The AwsLogDriver grants permissions to the task execution role to do these.
     autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
       actions: [
-        'ecs:CreateCluster',
         'ecs:DeregisterContainerInstance',
-        'ecs:DiscoverPollEndpoint',
-        'ecs:Poll',
         'ecs:RegisterContainerInstance',
-        'ecs:StartTelemetrySession',
         'ecs:Submit*',
+      ],
+      resources: [
+        this.clusterArn,
+      ],
+    }));
+    autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
+        // These act on a cluster instance, and the instance doesn't exist until the service starts.
+        // Thus, scope to the cluster using a condition key.
+        // See: https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazonelasticcontainerservice.html
+        'ecs:Poll',
+        'ecs:StartTelemetrySession',
+      ],
+      resources: ['*'],
+      conditions: {
+        ArnEquals: { 'ecs:cluster': this.clusterArn },
+      },
+    }));
+    autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
+        // These do not support resource constraints, and must be resource '*'
+        'ecs:DiscoverPollEndpoint',
         'ecr:GetAuthorizationToken',
-        'logs:CreateLogStream',
-        'logs:PutLogEvents',
       ],
       resources: ['*'],
     }));
