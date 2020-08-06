@@ -1,7 +1,7 @@
+import * as path from 'path';
 import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as core from '@aws-cdk/core';
-import * as path from 'path';
 import * as inc from '../lib';
 
 describe('CDK Include', () => {
@@ -47,10 +47,28 @@ describe('CDK Include', () => {
     }).toThrow(/Resource 'Bucket2' depends on 'Bucket1' that doesn't exist/);
   });
 
+  test("throws a validation exception for a template referencing a Condition in the Conditions section that doesn't exist", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'non-existent-condition-in-conditions.json');
+    }).toThrow(/Referenced Condition with name 'AlwaysFalse' was not found in the template/);
+  });
+
+  test('throws a validation exception for a template using Fn::GetAtt in the Conditions section', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'getatt-in-conditions.json');
+    }).toThrow(/Using GetAtt in Condition definitions is not allowed/);
+  });
+
   test("throws a validation exception for a template referencing a Condition resource attribute that doesn't exist", () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-condition.json');
     }).toThrow(/Resource 'Bucket' uses Condition 'AlwaysFalseCond' that doesn't exist/);
+  });
+
+  test("throws a validation exception for a template referencing a Condition in an If expression that doesn't exist", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'non-existent-condition-in-if.json');
+    }).toThrow(/Condition 'AlwaysFalse' used in an Fn::If expression does not exist in the template/);
   });
 
   test("throws an exception when encountering a CFN function it doesn't support", () => {
@@ -81,6 +99,18 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'output-referencing-nonexistant-condition.json');
     }).toThrow(/Output with name 'SomeOutput' refers to a Condition with name 'NonexistantCondition' which was not found in this template/);
+  });
+
+  test("throws a validation exception when Fn::Sub in string form uses a key that isn't in the template", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'fn-sub-key-not-in-template-string.json');
+    }).toThrow(/Element referenced in Fn::Sub expression with logical ID: 'AFakeResource' was not found in the template/);
+  });
+
+  test('throws a validation exception when Fn::Sub has an empty ${} reference', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'fn-sub-${}-only.json');
+    }).toThrow(/Element referenced in Fn::Sub expression with logical ID: '' was not found in the template/);
   });
 });
 

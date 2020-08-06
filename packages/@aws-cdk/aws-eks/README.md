@@ -45,6 +45,20 @@ cluster.addResource('mypod', {
 });
 ```
 
+### Endpoint Access
+
+You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html) by using the `endpointAccess` property:
+
+```typescript
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_16,
+  endpointAccess: eks.EndpointAccess.PRIVATE // No access outside of your VPC.
+});
+```
+
+The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, and worker node traffic to the endpoint will stay within your VPC.
+
+
 ### Capacity
 
 By default, `eks.Cluster` is created with a managed nodegroup with x2 `m5.large` instances. You must specify the kubernetes version for the cluster with the `version` property.
@@ -78,7 +92,7 @@ new eks.Cluster(this, 'cluster', {
 To disable the default capacity, simply set `defaultCapacity` to `0`:
 
 ```ts
-new eks.Cluster(this, 'cluster-with-no-capacity', { 
+new eks.Cluster(this, 'cluster-with-no-capacity', {
   defaultCapacity: 0,
   version: eks.KubernetesVersion.V1_16,
 });
@@ -105,8 +119,8 @@ cluster.addCapacity('frontend-nodes', {
 
 ### Managed Node Groups
 
-Amazon EKS managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) 
-for Amazon EKS Kubernetes clusters. By default, `eks.Nodegroup` create a nodegroup with x2 `t3.medium` instances. 
+Amazon EKS managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances)
+for Amazon EKS Kubernetes clusters. By default, `eks.Nodegroup` create a nodegroup with x2 `t3.medium` instances.
 
 ```ts
 new eks.Nodegroup(stack, 'nodegroup', { cluster });
@@ -128,7 +142,7 @@ AWS Fargate is a technology that provides on-demand, right-sized compute
 capacity for containers. With AWS Fargate, you no longer have to provision,
 configure, or scale groups of virtual machines to run containers. This removes
 the need to choose server types, decide when to scale your node groups, or
-optimize cluster packing. 
+optimize cluster packing.
 
 You can control which pods start on Fargate and how they run with Fargate
 Profiles, which are defined as part of your Amazon EKS cluster.
@@ -346,6 +360,20 @@ new KubernetesResource(this, 'hello-kub', {
 
 // or, option2: use `addResource`
 cluster.addResource('hello-kub', service, deployment);
+```
+
+##### Kubectl Environment
+
+The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can useful in order to configure an http proxy:
+
+```typescript
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_16,
+  kubectlEnvironment: {
+    'http_proxy': 'http://proxy.myproxy.com'
+  }
+});
+
 ```
 
 #### Adding resources from a URL
