@@ -297,7 +297,7 @@ as.scaleOnSchedule('ScaleUpInTheMorning', {
 });
 ```
 
-[Example of Lambda AutoScaling usage](test/integ.autoscaling.ts)
+[Example of Lambda AutoScaling usage](test/integ.autoscaling.lit.ts)
 
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-scaling.html) on autoscaling lambda functions.
 

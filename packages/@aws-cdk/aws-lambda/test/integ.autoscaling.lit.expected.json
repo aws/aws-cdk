@@ -153,5 +153,12 @@
         }
       }
     }
+  },
+  "Outputs": {
+    "Output": {
+      "Value": {
+        "Ref": "MyLambdaCCE802FB"
+      }
+    }
   }
 }
