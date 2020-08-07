@@ -62,7 +62,7 @@ export = {
           notifications.ProjectEvent.BUILD_STATE_FAILED,
         ],
         targets: [
-          new notifications.SNSTopicNotificationTarget(topic),
+          new notifications.SnsTopicNotificationTarget(topic),
         ],
         resource: codebuildProjectArn,
       });
@@ -110,8 +110,8 @@ export = {
         resource: codebuildProjectArn,
       });
 
-      notifier.addTarget(new notifications.SNSTopicNotificationTarget(target1));
-      notifier.addTarget(new notifications.SNSTopicNotificationTarget(target2));
+      notifier.addTarget(new notifications.SnsTopicNotificationTarget(target1));
+      notifier.addTarget(new notifications.SnsTopicNotificationTarget(target2));
       notifier.addTarget(new notifications.SlackNotificationTarget(target3));
 
       expect(stack).to(haveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
