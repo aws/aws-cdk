@@ -1,9 +1,9 @@
-import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { EOL } from 'os';
+import { expect, haveResource, haveResourceLike, SynthUtils, arrayWith, objectLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { EOL } from 'os';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
@@ -610,13 +610,20 @@ export = {
       test.done();
     },
 
-    'import can also be used to import arbitrary ARNs'(test: Test) {
+    'import does not create any resources'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
       bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
       // at this point we technically didn't create any resources in the consuming stack.
       expect(stack).toMatch({});
+      test.done();
+    },
+
+    'import can also be used to import arbitrary ARNs'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
+      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
       // but now we can reference the bucket
       // you can even use the bucket name, which will be extracted from the arn provided.
@@ -867,7 +874,7 @@ export = {
           'MyBucketKeyC17130CF': {
             'Type': 'AWS::KMS::Key',
             'Properties': {
-              'Description': 'Created by MyBucket',
+              'Description': 'Created by Default/MyBucket',
               'KeyPolicy': {
                 'Statement': [
                   {
@@ -1971,4 +1978,56 @@ export = {
 
     test.done();
   },
+
+  'Defaults for an inventory bucket'(test: Test) {
+    // Given
+    const stack = new cdk.Stack();
+
+    const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
+    new s3.Bucket(stack, 'MyBucket', {
+      inventories: [
+        {
+          destination: {
+            bucket: inventoryBucket,
+          },
+        },
+      ],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::S3::Bucket', {
+      InventoryConfigurations: [
+        {
+          Enabled: true,
+          IncludedObjectVersions: 'All',
+          ScheduleFrequency: 'Weekly',
+          Destination: {
+            Format: 'CSV',
+            BucketArn: { 'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'] },
+          },
+          Id: 'MyBucketInventory0',
+        },
+      ],
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::S3::BucketPolicy', {
+      Bucket: { Ref: 'InventoryBucketA869B8CB'},
+      PolicyDocument: {
+        Statement: arrayWith(objectLike({
+          Action: 's3:PutObject',
+          Principal: { Service: 's3.amazonaws.com' },
+          Resource: [
+            {
+              'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'],
+            },
+            {
+              'Fn::Join': ['', [{'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn']}, '/*']],
+            },
+          ],
+        })),
+      },
+    }));
+
+    test.done();
+  },
+
 };
