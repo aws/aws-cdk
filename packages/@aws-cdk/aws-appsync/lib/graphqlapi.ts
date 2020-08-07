@@ -6,7 +6,7 @@ import { IFunction } from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
-import { ObjectType, ObjectTypeProps, Directive, AttributeType } from './schema-types';
+import { ObjectType, ObjectTypeProps } from './schema-types';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -701,20 +701,8 @@ export class GraphQLApi extends Construct {
   }
 
   /**
-   * Sets schema defintiion to input if schema mode is configured with SchemaDefinition.CODE
-   *
-   * @param definition string that is the graphql representation of schema
-   * @experimental temporary
-   */
-  public updateDefinition (definition: string): void{
-    if ( this.schemaMode != SchemaDefinition.CODE ) {
-      throw new Error('API cannot update schema because schema definition mode is not configured as CODE.');
-    }
-    this.schema.definition = definition;
-  }
-
-  /**
-   * Escape hatch to append to Schema as desired
+   * Escape hatch to append to Schema as desired. Will always result
+   * in a newline.
    *
    * @param addition the addition to add to schema
    * @param delimiter the delimiter between schema and addition
@@ -747,52 +735,7 @@ export class GraphQLApi extends Construct {
       definition: props.definition,
       directives: props.directives,
     });
-    this.generateObjectType(type);
+    this.appendToSchema(type.toString());
     return type;
-  }
-
-  /**
-   * Utility function to generate directives
-   *
-   * @param directives the directives of a given type
-   * @param delimiter the separator betweeen directives
-   * @default - ' '
-   */
-  private generateDirectives (directives?: Directive[], delimiter?: string): string{
-    let schemaAddition = '';
-    if (!directives){ return schemaAddition; }
-    directives.map((directive) => {
-      schemaAddition = `${schemaAddition}${directive.statement}${delimiter ?? ' '}`;
-    });
-    return schemaAddition;
-  }
-
-  /**
-   * Generate object type
-   */
-  private generateObjectType(type: ObjectType): void {
-    const directives = this.generateDirectives(type.directives);
-    let schemaAddition = `type ${type.name} ${directives}{\n`;
-    Object.keys(type.definition).forEach( (key) => {
-      const def = type.definition[key];
-      const attribute = this.generateAttribute(key, def);
-      schemaAddition = `${schemaAddition}  ${attribute}\n`;
-    });
-    this.appendToSchema(`${schemaAddition}}`);
-  }
-
-  /**
-   * Generate string for attributes
-   *
-   * @param attribute - the attribute of a type
-   */
-  private generateAttribute(name: string, attribute: AttributeType): string {
-    if (!attribute) {
-      throw new Error(`Key ${name} missing attribute.`);
-    }
-    let type = attribute.objectType ? attribute.objectType?.name : attribute.type;
-    type = attribute.isList ? `[${type}]` : type;
-    const required = attribute.isRequired ? '!' : '';
-    return `${name}: ${type}${required}`;
   }
 }

@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
+import * as t from './schema-type-defintions';
 
 /*
  * Creates an Appsync GraphQL API and schema in a code-first approach.
@@ -16,44 +17,40 @@ const api = new appsync.GraphQLApi(stack, 'code-first-api', {
   schemaDefinition: appsync.SchemaDefinition.CODE,
 });
 
-const t_id_r = appsync.AttributeType.id().required();
-const t_string = appsync.AttributeType.string();
-const t_int = appsync.AttributeType.int();
-const t_float = appsync.AttributeType.float();
-const t_string_l = appsync.AttributeType.string().list();
-
 const planet = api.addType('Planet', {
   definition: {
-    name: t_string,
-    diameter: t_int,
-    rotationPeriod: t_int,
-    orbitalPeriod: t_int,
-    gravity: t_string,
-    population: t_string_l,
-    climates: t_string_l,
-    terrains: t_string_l,
-    surfaceWater: t_float,
-    created: t_string,
-    edited: t_string,
-    id: t_id_r,
+    name: t.string,
+    diameter: t.int,
+    rotationPeriod: t.int,
+    orbitalPeriod: t.int,
+    gravity: t.string,
+    population: t.list_string,
+    climates: t.list_string,
+    terrains: t.list_string,
+    surfaceWater: t.float,
+    created: t.string,
+    edited: t.string,
+    id: t.required_id,
   },
 });
 
+const t_planet = planet.attribute();
+
 api.addType('Species', {
   definition: {
-    name: t_string,
-    classification: t_string,
-    designation: t_string,
-    averageHeight: t_float,
-    averageLifespan: t_int,
-    eyeColors: t_string_l,
-    hairColors: t_string_l,
-    skinColors: t_string_l,
-    language: t_string,
-    homeworld: appsync.AttributeType.object(planet),
-    created: t_string,
-    edited: t_string,
-    id: t_id_r,
+    name: t.string,
+    classification: t.string,
+    designation: t.string,
+    averageHeight: t.float,
+    averageLifespan: t.int,
+    eyeColors: t.list_string,
+    hairColors: t.list_string,
+    skinColors: t.list_string,
+    language: t.string,
+    homeworld: t_planet,
+    created: t.string,
+    edited: t.string,
+    id: t.required_id,
   },
 });
 
