@@ -413,9 +413,14 @@ test('flatten correctly flattens a nested object', () => {
 
 test('installs the latest SDK', async () => {
   const tmpPath = '/tmp/node_modules/aws-sdk';
+
+  // Symlink to normal SDK to be able to call AWS.setSDK()
+  await fs.ensureDir('/tmp/node_modules');
+  await fs.symlink(require.resolve('aws-sdk'), tmpPath);
   AWS.setSDK(tmpPath);
 
-  await fs.remove(tmpPath);
+  // Now remove the symlink and let the handler install it
+  await fs.unlink(tmpPath);
 
   const publishFake = sinon.fake.resolves({});
 
