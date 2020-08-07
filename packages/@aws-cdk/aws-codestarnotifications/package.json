@@ -89,6 +89,11 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
+  "awslint": {
+    "exclude": [
+      "no-unused-type:@aws-cdk/aws-codestarnotifications.AddNotificationRuleOptions"
+    ]
+  },
   "stability": "experimental",
   "maturity": "cfn-only",
   "awscdkio": {
