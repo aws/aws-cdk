@@ -1,6 +1,22 @@
 import { Construct, Duration, Token } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
 
+/**
+ * The failover configuration used for Origin Groups,
+ * returned in {@link OriginBindConfig.failoverConfig}.
+ */
+export interface OriginFailoverConfig {
+  /** The origin to use as the fallback origin. */
+  readonly failoverOrigin: IOrigin;
+
+  /**
+   * The HTTP status codes of the response that trigger querying the failover Origin.
+   *
+   * @default - 500, 502, 503 and 504
+   */
+  readonly statusCodes?: number[];
+}
+
 /** The struct returned from {@link IOrigin.bind}. */
 export interface OriginBindConfig {
   /**
@@ -9,6 +25,13 @@ export interface OriginBindConfig {
    * @default - nothing is returned
    */
   readonly originProperty?: CfnDistribution.OriginProperty;
+
+  /**
+   * The failover configuration for this Origin.
+   *
+   * @default - nothing is returned
+   */
+  readonly failoverConfig?: OriginFailoverConfig;
 }
 
 /**
@@ -86,8 +109,6 @@ export abstract class OriginBase implements IOrigin {
   private readonly connectionAttempts?: number;
   private readonly customHeaders?: Record<string, string>;
 
-  private originId?: string;
-
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
     validateIntInRangeOrUndefined('connectionAttempts', 1, 3, props.connectionAttempts, false);
@@ -100,21 +121,9 @@ export abstract class OriginBase implements IOrigin {
   }
 
   /**
-   * The unique id for this origin.
-   *
-   * Cannot be accesed until bind() is called.
-   */
-  public get id(): string {
-    if (!this.originId) { throw new Error('Cannot access originId until `bind` is called.'); }
-    return this.originId;
-  }
-
-  /**
    * Binds the origin to the associated Distribution. Can be used to grant permissions, create dependent resources, etc.
    */
   public bind(_scope: Construct, options: OriginBindOptions): OriginBindConfig {
-    this.originId = options.originId;
-
     const s3OriginConfig = this.renderS3OriginConfig();
     const customOriginConfig = this.renderCustomOriginConfig();
 
@@ -124,7 +133,7 @@ export abstract class OriginBase implements IOrigin {
 
     return { originProperty: {
       domainName: this.domainName,
-      id: this.id,
+      id: options.originId,
       originPath: this.originPath,
       connectionAttempts: this.connectionAttempts,
       connectionTimeout: this.connectionTimeout?.toSeconds(),

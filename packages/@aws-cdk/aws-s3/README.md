@@ -224,6 +224,54 @@ const bucket = new Bucket(this, 'MyBucket', {
 
 [S3 Server access logging]: https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
 
+### S3 Inventory
+
+An [inventory](https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html) contains a list of the objects in the source bucket and metadata for each object. The inventory lists are stored in the destination bucket as a CSV file compressed with GZIP, as an Apache optimized row columnar (ORC) file compressed with ZLIB, or as an Apache Parquet (Parquet) file compressed with Snappy.
+
+You can configure multiple inventory lists for a bucket. You can configure what object metadata to include in the inventory, whether to list all object versions or only current versions, where to store the inventory list file output, and whether to generate the inventory on a daily or weekly basis.
+
+```ts
+const inventoryBucket = new s3.Bucket(this, 'InventoryBucket');
+
+const dataBucket = new s3.Bucket(this, 'DataBucket', {
+  inventories: [
+    {
+      frequency: s3.InventoryFrequency.DAILY,
+      includeObjectVersions: s3.InventoryObjectVersion.CURRENT,
+      destination: {
+        bucket: inventoryBucket,
+      },
+    },
+    {
+      frequency: s3.InventoryFrequency.WEEKLY,
+      includeObjectVersions: s3.InventoryObjectVersion.ALL,
+      destination: {
+        bucket: inventoryBucket,
+        prefix: 'with-all-versions',
+      },
+    }
+  ]
+});
+```
+
+If the destination bucket is created as part of the same CDK application, the necessary permissions will be automatically added to the bucket policy.
+However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to make sure it contains the following policy document:
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InventoryAndAnalyticsExamplePolicy",
+      "Effect": "Allow",
+      "Principal": { "Service": "s3.amazonaws.com" },
+      "Action": "s3:PutObject",
+      "Resource": ["arn:aws:s3:::destinationBucket/*"]
+    }
+  ]
+}
+```
+
 ### Website redirection
 
 You can use the two following properties to specify the bucket [redirection policy]. Please note that these methods cannot both be applied to the same bucket.

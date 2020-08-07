@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { arrayWith, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -1044,6 +1044,60 @@ export = {
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
       LoadBalancerArn: alb.loadBalancerArn,
       Port: 80,
+    }));
+
+    test.done();
+  },
+
+  'test ECS loadbalanced construct default/open security group'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryReservationMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    // THEN - Stack contains no ingress security group rules
+    expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [{
+        CidrIp: '0.0.0.0/0',
+        FromPort: 80,
+        IpProtocol: 'tcp',
+        ToPort: 80,
+      }],
+    }));
+
+    test.done();
+  },
+
+  'test ECS loadbalanced construct closed security group'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryReservationMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      openListener: false,
+    });
+
+    // THEN - Stack contains no ingress security group rules
+    expect(stack).notTo(haveResourceLike('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: arrayWith(objectLike({})),
     }));
 
     test.done();

@@ -38,12 +38,15 @@ export class CacheBehavior {
     return {
       pathPattern: this.props.pathPattern,
       targetOriginId: this.originId,
-      allowedMethods: this.props.allowedMethods?.methods ?? undefined,
+      allowedMethods: this.props.allowedMethods?.methods,
+      cachedMethods: this.props.cachedMethods?.methods,
+      compress: this.props.compress,
       forwardedValues: {
         queryString: this.props.forwardQueryString ?? false,
         queryStringCacheKeys: this.props.forwardQueryStringCacheKeys,
       },
-      viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+      smoothStreaming: this.props.smoothStreaming,
+      viewerProtocolPolicy: this.props.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL,
       lambdaFunctionAssociations: this.props.edgeLambdas
         ? this.props.edgeLambdas.map(edgeLambda => {
           if (edgeLambda.functionVersion.version === '$LATEST') {

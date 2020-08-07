@@ -1,8 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
+import { Stack } from '../stack';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { prepareApp } from './prepare-app';
+import { TreeMetadata } from './tree-metadata';
 
 export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
@@ -58,6 +60,7 @@ function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions)
  * twice for the same construct.
  */
 function invokeAspects(root: IConstruct) {
+  let nestedAspectWarning = false;
   recurse(root, []);
 
   function recurse(construct: IConstruct, inheritedAspects: constructs.IAspect[]) {
@@ -65,10 +68,17 @@ function invokeAspects(root: IConstruct) {
     const node: NodeWithAspectPrivatesHangingOut = construct.node._actualNode as any;
 
     const allAspectsHere = [...inheritedAspects ?? [], ...node._aspects];
-
+    const nodeAspectsCount = node._aspects.length;
     for (const aspect of allAspectsHere) {
       if (node.invokedAspects.includes(aspect)) { continue; }
+
       aspect.visit(construct);
+      // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
+      // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
+      if (!nestedAspectWarning && nodeAspectsCount !== node._aspects.length) {
+        construct.node.addWarning('We detected an Aspect was added via another Aspect, and will not be applied');
+        nestedAspectWarning = true;
+      }
       node.invokedAspects.push(aspect);
     }
 
@@ -95,10 +105,22 @@ function prepareTree(root: IConstruct) {
  * Stop at Assembly boundaries.
  */
 function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
-  visit(root, 'post', construct => construct.onSynthesize({
-    outdir: builder.outdir,
-    assembly: builder,
-  }));
+  visit(root, 'post', construct => {
+    const session = {
+      outdir: builder.outdir,
+      assembly: builder,
+    };
+
+    if (construct instanceof Stack) {
+      construct._synthesizeTemplate(session);
+    } else if (construct instanceof TreeMetadata) {
+      construct._synthesizeTree(session);
+    }
+
+    // this will soon be deprecated and removed in 2.x
+    // see https://github.com/aws/aws-cdk-rfcs/issues/192
+    construct.onSynthesize(session);
+  });
 }
 
 /**

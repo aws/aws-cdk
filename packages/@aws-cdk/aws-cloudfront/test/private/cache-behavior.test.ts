@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { App, Stack } from '@aws-cdk/core';
-import { AllowedMethods } from '../../lib';
+import { AllowedMethods, CachedMethods, ViewerProtocolPolicy } from '../../lib';
 import { CacheBehavior } from '../../lib/private/cache-behavior';
 
 let app: App;
@@ -29,18 +29,25 @@ test('renders with all properties specified', () => {
   const behavior = new CacheBehavior('origin_id', {
     pathPattern: '*',
     allowedMethods: AllowedMethods.ALLOW_ALL,
+    cachedMethods: CachedMethods.CACHE_GET_HEAD_OPTIONS,
+    compress: true,
     forwardQueryString: true,
     forwardQueryStringCacheKeys: ['user_id', 'auth'],
+    smoothStreaming: true,
+    viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
   });
 
   expect(behavior._renderBehavior()).toEqual({
     targetOriginId: 'origin_id',
     pathPattern: '*',
     allowedMethods: ['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE'],
+    cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
+    compress: true,
     forwardedValues: {
       queryString: true,
       queryStringCacheKeys: ['user_id', 'auth'],
     },
-    viewerProtocolPolicy: 'allow-all',
+    smoothStreaming: true,
+    viewerProtocolPolicy: 'https-only',
   });
 });

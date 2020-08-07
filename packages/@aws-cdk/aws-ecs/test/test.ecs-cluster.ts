@@ -26,7 +26,7 @@ export = {
         Tags: [
           {
             Key: 'Name',
-            Value: 'EcsCluster/Vpc',
+            Value: 'Default/EcsCluster/Vpc',
           },
         ],
       }));
@@ -74,7 +74,7 @@ export = {
           {
             Key: 'Name',
             PropagateAtLaunch: true,
-            Value: 'EcsCluster/DefaultAutoScalingGroup',
+            Value: 'Default/EcsCluster/DefaultAutoScalingGroup',
           },
         ],
         VPCZoneIdentifier: [
@@ -88,7 +88,7 @@ export = {
       }));
 
       expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
+        GroupDescription: 'Default/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
         SecurityGroupEgress: [
           {
             CidrIp: '0.0.0.0/0',
@@ -99,7 +99,7 @@ export = {
         Tags: [
           {
             Key: 'Name',
-            Value: 'EcsCluster/DefaultAutoScalingGroup',
+            Value: 'Default/EcsCluster/DefaultAutoScalingGroup',
           },
         ],
         VpcId: {
@@ -127,13 +127,39 @@ export = {
           Statement: [
             {
               Action: [
-                'ecs:CreateCluster',
                 'ecs:DeregisterContainerInstance',
-                'ecs:DiscoverPollEndpoint',
-                'ecs:Poll',
                 'ecs:RegisterContainerInstance',
-                'ecs:StartTelemetrySession',
                 'ecs:Submit*',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'EcsCluster97242B84',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
+                'ecs:Poll',
+                'ecs:StartTelemetrySession',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              Action: [
+                'ecs:DiscoverPollEndpoint',
                 'ecr:GetAuthorizationToken',
                 'logs:CreateLogStream',
                 'logs:PutLogEvents',
@@ -171,7 +197,7 @@ export = {
         Tags: [
           {
             Key: 'Name',
-            Value: 'MyVpc',
+            Value: 'Default/MyVpc',
           },
         ],
       }));
@@ -219,7 +245,7 @@ export = {
           {
             Key: 'Name',
             PropagateAtLaunch: true,
-            Value: 'EcsCluster/DefaultAutoScalingGroup',
+            Value: 'Default/EcsCluster/DefaultAutoScalingGroup',
           },
         ],
         VPCZoneIdentifier: [
@@ -233,7 +259,7 @@ export = {
       }));
 
       expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
+        GroupDescription: 'Default/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
         SecurityGroupEgress: [
           {
             CidrIp: '0.0.0.0/0',
@@ -244,7 +270,7 @@ export = {
         Tags: [
           {
             Key: 'Name',
-            Value: 'EcsCluster/DefaultAutoScalingGroup',
+            Value: 'Default/EcsCluster/DefaultAutoScalingGroup',
           },
         ],
         VpcId: {
@@ -272,13 +298,39 @@ export = {
           Statement: [
             {
               Action: [
-                'ecs:CreateCluster',
                 'ecs:DeregisterContainerInstance',
-                'ecs:DiscoverPollEndpoint',
-                'ecs:Poll',
                 'ecs:RegisterContainerInstance',
-                'ecs:StartTelemetrySession',
                 'ecs:Submit*',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'EcsCluster97242B84',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
+                'ecs:Poll',
+                'ecs:StartTelemetrySession',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              Action: [
+                'ecs:DiscoverPollEndpoint',
                 'ecr:GetAuthorizationToken',
                 'logs:CreateLogStream',
                 'logs:PutLogEvents',
@@ -392,6 +444,16 @@ export = {
               ],
               Effect: 'Allow',
               Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
             },
             {
               Action: [
@@ -471,7 +533,7 @@ export = {
         Tags: [
           {
             Key: 'Name',
-            Value: 'MyVpc',
+            Value: 'Default/MyVpc',
           },
         ],
       }));
@@ -519,7 +581,7 @@ export = {
           {
             Key: 'Name',
             PropagateAtLaunch: true,
-            Value: 'EcsCluster/DefaultAutoScalingGroup',
+            Value: 'Default/EcsCluster/DefaultAutoScalingGroup',
           },
         ],
         VPCZoneIdentifier: [
@@ -533,7 +595,7 @@ export = {
       }));
 
       expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
+        GroupDescription: 'Default/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
         SecurityGroupEgress: [
           {
             CidrIp: '0.0.0.0/0',
@@ -544,7 +606,7 @@ export = {
         Tags: [
           {
             Key: 'Name',
-            Value: 'EcsCluster/DefaultAutoScalingGroup',
+            Value: 'Default/EcsCluster/DefaultAutoScalingGroup',
           },
         ],
         VpcId: {
@@ -572,13 +634,39 @@ export = {
           Statement: [
             {
               Action: [
-                'ecs:CreateCluster',
                 'ecs:DeregisterContainerInstance',
-                'ecs:DiscoverPollEndpoint',
-                'ecs:Poll',
                 'ecs:RegisterContainerInstance',
-                'ecs:StartTelemetrySession',
                 'ecs:Submit*',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'EcsCluster97242B84',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
+                'ecs:Poll',
+                'ecs:StartTelemetrySession',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              Action: [
+                'ecs:DiscoverPollEndpoint',
                 'ecr:GetAuthorizationToken',
                 'logs:CreateLogStream',
                 'logs:PutLogEvents',
@@ -1228,7 +1316,7 @@ export = {
       Tags: [
         {
           Key: 'Name',
-          Value: 'MyPublicVpc',
+          Value: 'Default/MyPublicVpc',
         },
       ],
     }));
@@ -1277,7 +1365,7 @@ export = {
         {
           Key: 'Name',
           PropagateAtLaunch: true,
-          Value: 'EcsCluster/DefaultAutoScalingGroup',
+          Value: 'Default/EcsCluster/DefaultAutoScalingGroup',
         },
       ],
       VPCZoneIdentifier: [
@@ -1291,7 +1379,7 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-      GroupDescription: 'EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
+      GroupDescription: 'Default/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
       SecurityGroupEgress: [
         {
           CidrIp: '0.0.0.0/0',
@@ -1302,7 +1390,7 @@ export = {
       Tags: [
         {
           Key: 'Name',
-          Value: 'EcsCluster/DefaultAutoScalingGroup',
+          Value: 'Default/EcsCluster/DefaultAutoScalingGroup',
         },
       ],
       VpcId: {

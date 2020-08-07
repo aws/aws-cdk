@@ -21,7 +21,7 @@ test('Bundling', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'rsync -r . /asset-output',
+        'cp -au . /asset-output',
       ],
     }),
   });
@@ -48,7 +48,7 @@ test('Bundling with requirements.txt installed', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'pip3 install -r requirements.txt -t /asset-output && rsync -r . /asset-output',
+        'pip3 install -r requirements.txt -t /asset-output && cp -au . /asset-output',
       ],
     }),
   });
@@ -72,7 +72,7 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'pip install -r requirements.txt -t /asset-output && rsync -r . /asset-output',
+        'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output',
       ],
     }),
   });

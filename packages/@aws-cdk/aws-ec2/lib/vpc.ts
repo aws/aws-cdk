@@ -1108,6 +1108,16 @@ export class Vpc extends VpcBase {
   public readonly internetConnectivityEstablished: IDependable;
 
   /**
+   * Indicates if instances launched in this VPC will have public DNS hostnames.
+   */
+  public readonly dnsHostnamesEnabled: boolean;
+
+  /**
+   * Indicates if DNS support is enabled for this VPC.
+   */
+  public readonly dnsSupportEnabled: boolean;
+
+  /**
    * The VPC resource
    */
   private readonly resource: CfnVPC;
@@ -1147,16 +1157,16 @@ export class Vpc extends VpcBase {
 
     this.networkBuilder = new NetworkBuilder(cidrBlock);
 
-    const enableDnsHostnames = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
-    const enableDnsSupport = props.enableDnsSupport == null ? true : props.enableDnsSupport;
+    this.dnsHostnamesEnabled = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
+    this.dnsSupportEnabled = props.enableDnsSupport == null ? true : props.enableDnsSupport;
     const instanceTenancy = props.defaultInstanceTenancy || 'default';
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
 
     // Define a VPC using the provided CIDR range
     this.resource = new CfnVPC(this, 'Resource', {
       cidrBlock,
-      enableDnsHostnames,
-      enableDnsSupport,
+      enableDnsHostnames: this.dnsHostnamesEnabled,
+      enableDnsSupport: this.dnsSupportEnabled,
       instanceTenancy,
     });
 

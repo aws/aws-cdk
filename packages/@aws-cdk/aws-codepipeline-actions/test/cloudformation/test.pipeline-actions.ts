@@ -26,7 +26,7 @@ export = nodeunit.testCase({
         actions: [action],
       });
 
-      cdk.ConstructNode.prepare(stack.node);
+      app.synth();
 
       _assertPermissionGranted(test, stack, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
 
