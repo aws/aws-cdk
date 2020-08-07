@@ -1,6 +1,5 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as chatbot from '@aws-cdk/aws-chatbot';
-import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -10,16 +9,7 @@ export = {
   'codestar notification tests': {
     'codebuild send notification to slack'(test: Test) {
       const stack = new cdk.Stack();
-      const project = new codebuild.Project(stack, 'MyCodebuild', {
-        buildSpec: codebuild.BuildSpec.fromObject({
-          version: '0.2',
-          phases: {
-            build: {
-              commands: ['echo "Nothing to do!"'],
-            },
-          },
-        }),
-      });
+      const codebuildProjectArn = 'arn:aws:codebuild:::project/MyCodebuildProject';
       const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
         slackChannelConfigurationName: 'MySlackChannel',
         slackWorkspaceId: 'ABC123',
@@ -35,7 +25,7 @@ export = {
         targets: [
           new notifications.SlackNotificationTarget(slackChannel),
         ],
-        resource: project.projectArn,
+        resource: codebuildProjectArn,
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
@@ -45,12 +35,7 @@ export = {
           'codebuild-project-build-state-failed',
         ],
         Name: 'MyNotificationRule',
-        Resource: {
-          'Fn::GetAtt': [
-            'MyCodebuild72A60299',
-            'Arn',
-          ],
-        },
+        Resource: 'arn:aws:codebuild:::project/MyCodebuildProject',
         Targets: [
           {
             TargetAddress: {
@@ -67,16 +52,7 @@ export = {
 
     'codebuild send notification to sns'(test: Test) {
       const stack = new cdk.Stack();
-      const project = new codebuild.Project(stack, 'MyCodebuild', {
-        buildSpec: codebuild.BuildSpec.fromObject({
-          version: '0.2',
-          phases: {
-            build: {
-              commands: ['echo "Nothing to do!"'],
-            },
-          },
-        }),
-      });
+      const codebuildProjectArn = 'arn:aws:codebuild:::project/MyCodebuildProject';
       const topic = new sns.Topic(stack, 'MyTopic', {});
 
       new notifications.NotificationRule(stack, 'MyNotificationRule', {
@@ -88,7 +64,7 @@ export = {
         targets: [
           new notifications.SNSTopicNotificationTarget(topic),
         ],
-        resource: project.projectArn,
+        resource: codebuildProjectArn,
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
@@ -98,12 +74,7 @@ export = {
           'codebuild-project-build-state-failed',
         ],
         Name: 'MyNotificationRule',
-        Resource: {
-          'Fn::GetAtt': [
-            'MyCodebuild72A60299',
-            'Arn',
-          ],
-        },
+        Resource: 'arn:aws:codebuild:::project/MyCodebuildProject',
         Targets: [
           {
             TargetAddress: {
@@ -120,16 +91,7 @@ export = {
 
     'notification added targets'(test: Test) {
       const stack = new cdk.Stack();
-      const project = new codebuild.Project(stack, 'MyCodebuild', {
-        buildSpec: codebuild.BuildSpec.fromObject({
-          version: '0.2',
-          phases: {
-            build: {
-              commands: ['echo "Nothing to do!"'],
-            },
-          },
-        }),
-      });
+      const codebuildProjectArn = 'arn:aws:codebuild:::project/MyCodebuildProject';
       const target1 = new sns.Topic(stack, 'MyTopic1', {});
       const target2 = new sns.Topic(stack, 'MyTopic2', {});
       const target3 = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
@@ -145,7 +107,7 @@ export = {
           notifications.ProjectEvent.BUILD_STATE_FAILED,
         ],
         targets: [],
-        resource: project.projectArn,
+        resource: codebuildProjectArn,
       });
 
       notifier.addTarget(new notifications.SNSTopicNotificationTarget(target1));
@@ -159,12 +121,7 @@ export = {
           'codebuild-project-build-state-failed',
         ],
         Name: 'MyNotificationRule',
-        Resource: {
-          'Fn::GetAtt': [
-            'MyCodebuild72A60299',
-            'Arn',
-          ],
-        },
+        Resource: 'arn:aws:codebuild:::project/MyCodebuildProject',
         Targets: [
           {
             TargetAddress: {
