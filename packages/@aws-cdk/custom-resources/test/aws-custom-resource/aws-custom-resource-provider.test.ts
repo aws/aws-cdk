@@ -8,8 +8,6 @@ import { flatten, handler, forceSdkInstallation } from '../../lib/aws-custom-res
 
 /* eslint-disable no-console */
 
-AWS.setSDK(require.resolve('aws-sdk'));
-
 console.log = jest.fn();
 
 const eventCommon = {
@@ -28,13 +26,12 @@ function createRequest(bodyPredicate: (body: AWSLambda.CloudFormationCustomResou
 }
 
 beforeEach(() => {
-  process.env.USE_NORMAL_SDK = 'true';
+  AWS.setSDK(require.resolve('aws-sdk'));
 });
 
 afterEach(() => {
   AWS.restore();
   nock.cleanAll();
-  delete process.env.USE_NORMAL_SDK;
 });
 
 test('create event with physical resource id path', async () => {
@@ -416,6 +413,7 @@ test('flatten correctly flattens a nested object', () => {
 
 test('installs the latest SDK', async () => {
   const tmpPath = '/tmp/node_modules/aws-sdk';
+  AWS.setSDK(tmpPath);
 
   await fs.remove(tmpPath);
 
@@ -437,6 +435,7 @@ test('installs the latest SDK', async () => {
         },
         physicalResourceId: PhysicalResourceId.of('id'),
       } as AwsSdkCall,
+      InstallLatestAwsSdk: 'true',
     },
   };
 

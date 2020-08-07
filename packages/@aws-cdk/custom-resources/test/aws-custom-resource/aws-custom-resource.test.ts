@@ -52,6 +52,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
         'logGroupName': '/aws/lambda/loggroup',
       },
     },
+    'InstallLatestAwsSdk': true,
   });
 
   expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -519,5 +520,26 @@ test('can specify log retention', () => {
       ],
     },
     RetentionInDays: 7,
+  });
+});
+
+test('disable AWS SDK installation', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    installLatestAwsSdk: false,
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  expect(stack).toHaveResource('Custom::AWS', {
+    'InstallLatestAwsSdk': false,
   });
 });
