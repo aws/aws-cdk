@@ -338,7 +338,7 @@ export class SNSTopicNotificationTarget implements INotificationTarget {
 }
 
 /**
- * The options for AWS Codebuild、AWS Codepipeline and AWS Codecommit notification integration
+ * The options for AWS Codebuild and AWS Codepipeline notification integration
  */
 export interface AddNotificationRuleOptions {
 
