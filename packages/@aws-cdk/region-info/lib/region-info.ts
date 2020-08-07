@@ -82,4 +82,12 @@ export class RegionInfo {
   public get elbv2Account(): string | undefined {
     return Fact.find(this.name, FactName.ELBV2_ACCOUNT);
   }
+
+  /**
+   * The ID of the AWS account that owns the public ECR repository containing the
+   * AWS Deep Learning Containers images in this region.
+   */
+  public get dlcRepositoryAccount(): string | undefined {
+    return Fact.find(this.name, FactName.DLC_REPOSITORY_ACCOUNT);
+  }
 }

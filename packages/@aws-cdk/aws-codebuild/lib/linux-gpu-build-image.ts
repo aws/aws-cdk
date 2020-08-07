@@ -1,5 +1,6 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as core from '@aws-cdk/core';
+import { RegionInfo } from '@aws-cdk/region-info';
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
 import { BuildEnvironment, BuildImageConfig, ComputeType, IBuildImage, IBuildImageBinder, ImagePullPrincipalType, IProject } from './project';
@@ -99,32 +100,16 @@ export class LinuxGpuBuildImage implements IBuildImage {
           // Unfortunately, the account IDs of the DLC repositories are not the same in all regions.
           // Because of that, use a (singleton) Mapping to find the correct account
           if (!scopeStack.node.tryFindChild(mappingName)) {
-            new core.CfnMapping(scopeStack, mappingName, {
-              mapping: {
-                'us-east-1': { account: '763104351884' },
-                'us-east-2': { account: '763104351884' },
-                'us-west-1': { account: '763104351884' },
-                'us-west-2': { account: '763104351884' },
-                'ca-central-1': { account: '763104351884' },
-                'eu-west-1': { account: '763104351884' },
-                'eu-west-2': { account: '763104351884' },
-                'eu-west-3': { account: '763104351884' },
-                'eu-central-1': { account: '763104351884' },
-                'eu-north-1': { account: '763104351884' },
-                'sa-east-1': { account: '763104351884' },
-                'ap-south-1': { account: '763104351884' },
-                'ap-northeast-1': { account: '763104351884' },
-                'ap-northeast-2': { account: '763104351884' },
-                'ap-southeast-1': { account: '763104351884' },
-                'ap-southeast-2': { account: '763104351884' },
-
-                'ap-east-1': { account: '871362719292' },
-                'me-south-1': { account: '217643126080' },
-
-                'cn-north-1': { account: '727897471807' },
-                'cn-northwest-1': { account: '727897471807' },
-              },
-            });
+            const mapping: { [k1: string]: { [k2: string]: any } } = {};
+            // get the accounts from the region-info module
+            for (const regionInfo of RegionInfo.regions) {
+              if (regionInfo.dlcRepositoryAccount) {
+                mapping[regionInfo.name] = {
+                  account: regionInfo.dlcRepositoryAccount,
+                };
+              }
+            }
+            new core.CfnMapping(scopeStack, mappingName, { mapping });
           }
         }
 
