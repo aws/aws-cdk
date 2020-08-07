@@ -16,9 +16,6 @@
 
 Amazon CloudWatch Synthetics allow you to monitor your application by generating **synthetic** traffic. The traffic is produced by a **canary**: a configurable script that runs on a schedule. You configure the canary script to follow the same routes and perform the same actions as a user, which allows you to continually verify your user experience even when you don't have any traffic on your applications.
 
-# Note - Under construction 🚧
-Sections marked with 🚧 are not yet implemented and are mentioned here for the sake of completeness  
-
 ## Canary
 
 To illustrate how to use a canary, assume your application defines the following endpoint:
@@ -59,7 +56,7 @@ The canary will automatically produce a CloudWatch Dashboard:
 
 ### Canary Test
 
-The `test` property represents the test the canary executes. You can supply you own code using the `Test.custom()` method, or you can use a blueprint 🚧 e.g `Test.heartbeat()`.
+The `test` property represents the test the canary executes. You can supply you own code using the `Test.custom()` method.
 
 #### Custom
 
@@ -78,10 +75,6 @@ const canary = new Canary(this, 'MyCanary', {
 });
 ```
 
-#### Blueprints 🚧
-
-TODO add description
-
 ### Alarms
 
 You can configure a CloudWatch Alarm on canary metrics. Metrics are emitted by CloudWatch automatically and can be accessed by the following APIs:
@@ -99,3 +92,8 @@ new cloudwatch.Alarm(this, 'CanaryAlarm', {
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
 });
 ```
+### Future Work
+
+- Add blueprints to the `Test` class.
+- Automatically add `nodejs/node_modules` prefix to the asset file before zipping to S3.
+- Add support for the `runConfig` property.
