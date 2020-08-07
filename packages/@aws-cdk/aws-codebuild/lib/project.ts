@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { NotificationRule, AddNotificationRuleOptions } from '@aws-cdk/aws-codestarnotifications';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
@@ -586,6 +586,50 @@ export interface BindToCodePipelineOptions {
 }
 
 /**
+ * The options for AWS Codebuild、AWS Codepipeline and AWS Codecommit notification integration
+ */
+export interface AddNotificationRuleOptions {
+
+  /**
+   * The name for the notification rule.
+   * Notification rule names must be unique in your AWS account.
+   */
+  readonly notificationRuleName: string;
+
+  /**
+   * The status of the notification rule.
+   * If the status is set to DISABLED, notifications aren't sent for the notification rule.
+   *
+   * @default Status.ENABLED
+   */
+  readonly status?: notifications.Status;
+
+  /**
+   * The level of detail to include in the notifications for this resource.
+   * BASIC will include only the contents of the event as it would appear in AWS CloudWatch.
+   * FULL will include any supplemental information provided by AWS CodeStar Notifications and/or the service for the resource for which the notification is created.
+   *
+   * @default DetailType.FULL
+   */
+  readonly detailType?: notifications.DetailType;
+
+  /**
+   * A list of Amazon Resource Names (ARNs) of Amazon SNS topics and AWS Chatbot clients to associate with the notification rule.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codestarnotifications-notificationrule-target.html
+   */
+  readonly targets: notifications.INotificationTarget[];
+
+  /**
+   * A list of event types associated with this notification rule.
+   * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
+   *
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
+   */
+  readonly events: notifications.Events[];
+}
+
+/**
  * A representation of a CodeBuild Project.
  */
 export class Project extends ProjectBase {
@@ -846,8 +890,8 @@ export class Project extends ProjectBase {
    * Adds a notification to the Project such as AWS Chatbot or SNS topic.
    * @param options The options for notification rule
    */
-  public addNotification(options: AddNotificationRuleOptions): NotificationRule {
-    return new NotificationRule(this, `${options.notificationRuleName}NotificationRule`, {
+  public addNotification(options: AddNotificationRuleOptions): notifications.NotificationRule {
+    return new notifications.NotificationRule(this, `${options.notificationRuleName}NotificationRule`, {
       notificationRuleName: options.notificationRuleName,
       status: options.status,
       detailType: options.detailType,
