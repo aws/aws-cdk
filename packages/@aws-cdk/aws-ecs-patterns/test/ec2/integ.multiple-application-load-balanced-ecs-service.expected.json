@@ -632,7 +632,17 @@
                 "ecs:DescribeTasks"
               ],
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": "*",
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "ClusterEB0386A7",
+                      "Arn"
+                    ]
+                  }
+                }
+              }
             },
             {
               "Action": [
