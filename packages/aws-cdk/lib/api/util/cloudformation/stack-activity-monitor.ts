@@ -79,7 +79,8 @@ export class StackActivityMonitor {
 
     const isWindows = process.platform === 'win32';
     const verbose = options.logLevel ?? logLevel;
-    const fancyOutputAvailable = !isWindows && stream.isTTY;
+    const isCI = process.env.CI;
+    const fancyOutputAvailable = !isWindows && stream.isTTY && !isCI;
 
     this.printer = fancyOutputAvailable && !verbose
       ? new CurrentActivityPrinter(props)
