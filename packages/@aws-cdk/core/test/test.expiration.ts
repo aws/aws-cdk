@@ -28,7 +28,7 @@ export = nodeunit.testCase({
 
   'asEpoch returns correct value'(test: nodeunit.Test) {
     const date = new Date('Sun, 26 Jan 2020 00:53:20 GMT');
-    test.equal(Expiration.atDate(date).asEpoch(), 1579996800);
+    test.equal(Expiration.atDate(date).asEpoch(), 1580000000);
     test.done();
   },
 
