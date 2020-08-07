@@ -305,7 +305,8 @@ export class Stage extends Resource implements IStage {
       const { httpMethod, resourcePath } = parseMethodOptionsPath(path);
 
       return {
-        httpMethod, resourcePath,
+        httpMethod,
+        resourcePath,
         cacheDataEncrypted: options.cacheDataEncrypted,
         cacheTtlInSeconds: options.cacheTtl && options.cacheTtl.toSeconds(),
         cachingEnabled: options.cachingEnabled,

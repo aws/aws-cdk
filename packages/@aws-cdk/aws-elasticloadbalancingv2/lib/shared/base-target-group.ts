@@ -253,9 +253,11 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
       }),
       healthyThresholdCount: cdk.Lazy.numberValue({ produce: () => this.healthCheck && this.healthCheck.healthyThresholdCount }),
       unhealthyThresholdCount: cdk.Lazy.numberValue({ produce: () => this.healthCheck && this.healthCheck.unhealthyThresholdCount }),
-      matcher: cdk.Lazy.anyValue({ produce: () => this.healthCheck && this.healthCheck.healthyHttpCodes !== undefined ? {
-        httpCode: this.healthCheck.healthyHttpCodes,
-      } : undefined }),
+      matcher: cdk.Lazy.anyValue({
+        produce: () => this.healthCheck && this.healthCheck.healthyHttpCodes !== undefined ? {
+          httpCode: this.healthCheck.healthyHttpCodes,
+        } : undefined,
+      }),
 
       ...additionalProps,
     });

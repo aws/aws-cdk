@@ -2,7 +2,8 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, Tag, validateString, ISynthesisSession } from '../lib';
+  CfnResource, Construct, Lazy, ScopedAws, Stack, Tag, validateString, ISynthesisSession,
+} from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
@@ -110,13 +111,21 @@ export = {
       },
     });
 
-    test.deepEqual(stack._toCloudFormation(), { Resources:
-      { myResource:
-         { Type: 'AWS::MyResource',
+    test.deepEqual(stack._toCloudFormation(), {
+      Resources:
+      {
+        myResource:
+         {
+           Type: 'AWS::MyResource',
            Properties:
-          { MyProp1: 'hello',
+          {
+            MyProp1: 'hello',
             MyProp2: 'howdy',
-            Environment: { key: 'value' } } } } });
+            Environment: { key: 'value' },
+          },
+         },
+      },
+    });
 
     test.done();
   },
@@ -228,9 +237,12 @@ export = {
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN - used in another resource
-    new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
-      someProperty: new Intrinsic(resource1.ref),
-    } });
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::Some::Resource',
+      properties: {
+        someProperty: new Intrinsic(resource1.ref),
+      },
+    });
 
     // THEN
     const assembly = app.synth();
@@ -452,9 +464,11 @@ export = {
     const assembly = app.synth();
     test.deepEqual(assembly.getStackByName(parentStack.stackName).template, {
       Resources: { MyParentResource: { Type: 'Resource::Parent' } },
-      Outputs: { ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E: {
-        Value: { 'Fn::GetAtt': ['MyParentResource', 'AttOfParentResource'] },
-        Export: { Name: 'parent:ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E' } },
+      Outputs: {
+        ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E: {
+          Value: { 'Fn::GetAtt': ['MyParentResource', 'AttOfParentResource'] },
+          Export: { Name: 'parent:ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E' },
+        },
       },
     });
     test.deepEqual(assembly.getStackByName(childStack.stackName).template, {
@@ -501,8 +515,7 @@ export = {
     });
 
     test.deepEqual(assembly.getStackByName(childStack.stackName).template, {
-      Resources: {
-        MyChildResource: { Type: 'Resource::Child' } },
+      Resources: { MyChildResource: { Type: 'Resource::Child' } },
       Outputs: {
         ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264: {
           Value: { 'Fn::GetAtt': ['MyChildResource', 'AttributeOfChildResource'] },
@@ -604,21 +617,32 @@ export = {
     const bonjour = new CfnResource(stack, 'BonjourResource', { type: 'Resource::Type' });
 
     // { Ref } and { GetAtt }
-    new CfnResource(stack, 'RefToBonjour', { type: 'Other::Resource', properties: {
-      RefToBonjour: bonjour.ref,
-      GetAttBonjour: bonjour.getAtt('TheAtt').toString(),
-    } });
+    new CfnResource(stack, 'RefToBonjour', {
+      type: 'Other::Resource',
+      properties: {
+        RefToBonjour: bonjour.ref,
+        GetAttBonjour: bonjour.getAtt('TheAtt').toString(),
+      },
+    });
 
     bonjour.overrideLogicalId('BOOM');
 
     // THEN
-    test.deepEqual(toCloudFormation(stack), { Resources:
-      { BOOM: { Type: 'Resource::Type' },
+    test.deepEqual(toCloudFormation(stack), {
+      Resources:
+      {
+        BOOM: { Type: 'Resource::Type' },
         RefToBonjour:
-         { Type: 'Other::Resource',
+         {
+           Type: 'Other::Resource',
            Properties:
-            { RefToBonjour: { Ref: 'BOOM' },
-              GetAttBonjour: { 'Fn::GetAtt': ['BOOM', 'TheAtt'] } } } } });
+            {
+              RefToBonjour: { Ref: 'BOOM' },
+              GetAttBonjour: { 'Fn::GetAtt': ['BOOM', 'TheAtt'] },
+            },
+         },
+      },
+    });
     test.done();
   },
 

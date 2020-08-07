@@ -38,7 +38,8 @@ export class ToolkitInfo {
     const outputs = stack.outputs;
 
     return new ToolkitInfo({
-      sdk, environment,
+      sdk,
+      environment,
       bucketName: requireOutput(BUCKET_NAME_OUTPUT),
       bucketEndpoint: requireOutput(BUCKET_DOMAIN_NAME_OUTPUT),
       version: parseInt(outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10),

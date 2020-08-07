@@ -93,7 +93,8 @@ export = {
     test.throws(() => stack.formatArn({
       service: 'foo',
       resource: 'bar',
-      sep: 'x' }));
+      sep: 'x',
+    }));
     test.done();
   },
 
@@ -249,7 +250,8 @@ export = {
         SomeValue: {
           Value: {
             // Look ma, no Fn::ImportValue!
-            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':bla:us-turbo-5:12345678:thing/thong']] },
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':bla:us-turbo-5:12345678:thing/thong']],
+          },
         },
       },
     });

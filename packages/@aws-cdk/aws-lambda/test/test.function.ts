@@ -451,7 +451,8 @@ export = testCase({
               ],
             },
             LocalMountPath: '/mnt/msg',
-          }],
+          },
+        ],
       }));
       test.done();
     },

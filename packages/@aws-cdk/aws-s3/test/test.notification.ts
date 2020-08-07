@@ -85,7 +85,8 @@ export = {
             'Arn',
           ],
         },
-      }, DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
+      },
+      DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
         'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC'],
     }, ResourcePart.CompleteDefinition ) );
 

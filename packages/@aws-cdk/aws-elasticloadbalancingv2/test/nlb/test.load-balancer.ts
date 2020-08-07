@@ -306,8 +306,7 @@ export = {
         cidrMask: 28,
         name: 'Isolated',
         subnetType: ec2.SubnetType.ISOLATED,
-      },
-      ],
+      }],
     });
 
     // WHEN
@@ -344,8 +343,7 @@ export = {
         cidrMask: 28,
         name: 'Isolated',
         subnetType: ec2.SubnetType.ISOLATED,
-      },
-      ],
+      }],
     });
 
     // WHEN
@@ -406,8 +404,7 @@ export = {
         cidrMask: 28,
         name: 'Isolated',
         subnetType: ec2.SubnetType.ISOLATED,
-      },
-      ],
+      }],
     });
 
     // WHEN

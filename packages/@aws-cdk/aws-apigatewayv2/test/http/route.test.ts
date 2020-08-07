@@ -1,7 +1,9 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { HttpApi, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
-  PayloadFormatVersion } from '../../lib';
+import {
+  HttpApi, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
+  PayloadFormatVersion,
+} from '../../lib';
 
 describe('HttpRoute', () => {
   test('default', () => {

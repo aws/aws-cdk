@@ -158,16 +158,18 @@ export class Distribution extends Resource implements IDistribution {
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
 
-    const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
-      enabled: true,
-      origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
-      originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
-      defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
-      cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
-      viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
-      customErrorResponses: this.renderErrorResponses(),
-      priceClass: props.priceClass ?? undefined,
-    } });
+    const distribution = new CfnDistribution(this, 'CFDistribution', {
+      distributionConfig: {
+        enabled: true,
+        origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
+        originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
+        defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
+        cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
+        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
+        customErrorResponses: this.renderErrorResponses(),
+        priceClass: props.priceClass ?? undefined,
+      },
+    });
 
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;

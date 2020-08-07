@@ -247,8 +247,11 @@ function _assertActionMatches(
     ? `, configuration including ${JSON.stringify(stack.resolve(configuration), null, 2)}`
     : '';
   const actionsStr = JSON.stringify(actions.map(a =>
-    ({ owner: a.actionProperties.owner, provider: a.actionProperties.provider,
-      category: a.actionProperties.category, configuration: stack.resolve(a.actionConfig.configuration),
+    ({
+      owner: a.actionProperties.owner,
+      provider: a.actionProperties.provider,
+      category: a.actionProperties.category,
+      configuration: stack.resolve(a.actionConfig.configuration),
     }),
   ), null, 2);
   test.ok(_hasAction(stack, actions, provider, category, configuration),

@@ -342,7 +342,8 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.deepEqual(stack.resolve(api.url), { 'Fn::Join':
+    test.deepEqual(stack.resolve(api.url), {
+      'Fn::Join':
     ['',
       ['https://',
         { Ref: 'apiC8550315' },
@@ -352,8 +353,10 @@ export = {
         { Ref: 'AWS::URLSuffix' },
         '/',
         { Ref: 'apiDeploymentStageprod896C8101' },
-        '/']] });
-    test.deepEqual(stack.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
+        '/']],
+    });
+    test.deepEqual(stack.resolve(api.urlForPath('/foo/bar')), {
+      'Fn::Join':
     ['',
       ['https://',
         { Ref: 'apiC8550315' },
@@ -363,7 +366,8 @@ export = {
         { Ref: 'AWS::URLSuffix' },
         '/',
         { Ref: 'apiDeploymentStageprod896C8101' },
-        '/foo/bar']] });
+        '/foo/bar']],
+    });
     test.done();
   },
 
@@ -400,7 +404,8 @@ export = {
     const arn = api.arnForExecuteApi('method', '/path', 'stage');
 
     // THEN
-    test.deepEqual(stack.resolve(arn), { 'Fn::Join':
+    test.deepEqual(stack.resolve(arn), {
+      'Fn::Join':
     ['',
       ['arn:',
         { Ref: 'AWS::Partition' },
@@ -410,7 +415,8 @@ export = {
         { Ref: 'AWS::AccountId' },
         ':',
         { Ref: 'apiC8550315' },
-        '/stage/method/path']] });
+        '/stage/method/path']],
+    });
     test.done();
   },
 
@@ -433,7 +439,8 @@ export = {
     const method = api.root.addMethod('ANY');
 
     // THEN
-    test.deepEqual(stack.resolve(method.methodArn), { 'Fn::Join':
+    test.deepEqual(stack.resolve(method.methodArn), {
+      'Fn::Join':
     ['',
       ['arn:',
         { Ref: 'AWS::Partition' },
@@ -445,7 +452,8 @@ export = {
         { Ref: 'apiC8550315' },
         '/',
         { Ref: 'apiDeploymentStageprod896C8101' },
-        '/*/']] });
+        '/*/']],
+    });
     test.done();
   },
 

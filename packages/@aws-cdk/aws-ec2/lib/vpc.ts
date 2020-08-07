@@ -1,10 +1,13 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-  IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import {
+  ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
+  IDependable, IResource, Lazy, Resource, Stack, Tag, Token,
+} from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
-  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation } from './ec2.generated';
+  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
+} from './ec2.generated';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
@@ -526,18 +529,21 @@ abstract class VpcBase extends Resource implements IVpc {
         return {
           subnetType: SubnetType.PRIVATE,
           onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones };
+          availabilityZones: placement.availabilityZones,
+        };
       }
       if (this.isolatedSubnets.length > 0) {
         return {
           subnetType: SubnetType.ISOLATED,
           onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones };
+          availabilityZones: placement.availabilityZones,
+        };
       }
       return {
         subnetType: SubnetType.PUBLIC,
         onePerAz: placement.onePerAz,
-        availabilityZones: placement.availabilityZones };
+        availabilityZones: placement.availabilityZones,
+      };
     }
 
     return placement;

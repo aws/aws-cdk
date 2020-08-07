@@ -35,13 +35,15 @@ beforeEach(() => {
       // First call, no stacks exist
       .mockImplementationOnce(() => ({ Stacks: [] }))
       // Second call, stack has been created
-      .mockImplementationOnce(() => ({ Stacks: [
-        {
-          StackStatus: 'CREATE_COMPLETE',
-          StackStatusReason: 'It is magic',
-          EnableTerminationProtection: false,
-        },
-      ] })),
+      .mockImplementationOnce(() => ({
+        Stacks: [
+          {
+            StackStatus: 'CREATE_COMPLETE',
+            StackStatusReason: 'It is magic',
+            EnableTerminationProtection: false,
+          },
+        ],
+      })),
     createChangeSet: jest.fn((_o) => ({})),
     describeChangeSet: jest.fn((_o) => ({
       Status: 'CREATE_COMPLETE',

@@ -152,7 +152,8 @@ export default class CodeGenerator {
         context: resource,
         propName,
         spec: propSpec,
-        additionalDocs: quoteCode(additionalDocs) },
+        additionalDocs: quoteCode(additionalDocs),
+      },
       container,
       );
       propertyMap[propName] = newName;

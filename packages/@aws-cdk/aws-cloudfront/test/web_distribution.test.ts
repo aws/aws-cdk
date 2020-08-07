@@ -821,7 +821,8 @@ nodeunitShim({
           s3OriginSource: { s3BucketSource: sourceBucket },
           behaviors: [
             {
-              isDefaultBehavior: true, lambdaFunctionAssociations: [
+              isDefaultBehavior: true,
+              lambdaFunctionAssociations: [
                 {
                   eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
                   lambdaFunction: lambdaVersion,
@@ -871,7 +872,8 @@ nodeunitShim({
           s3OriginSource: { s3BucketSource: sourceBucket },
           behaviors: [
             {
-              isDefaultBehavior: true, lambdaFunctionAssociations: [
+              isDefaultBehavior: true,
+              lambdaFunctionAssociations: [
                 {
                   eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
                   lambdaFunction: lambdaVersion,

@@ -351,8 +351,7 @@ export = {
             'application/json': apigw.Model.EMPTY_MODEL,
             'text/plain': apigw.Model.ERROR_MODEL,
           },
-        },
-        ],
+        }],
       },
     });
 
@@ -375,8 +374,7 @@ export = {
           'application/json': 'Empty',
           'text/plain': 'Error',
         },
-      },
-      ],
+      }],
     }));
 
     test.done();
@@ -516,8 +514,7 @@ export = {
             'text/plain': apigw.Model.ERROR_MODEL,
             'text/html': htmlModel,
           },
-        },
-        ],
+        }],
       },
     });
 
@@ -541,8 +538,7 @@ export = {
           'text/plain': 'Error',
           'text/html': { Ref: stack.getLogicalId(htmlModel.node.findChild('Resource') as cdk.CfnElement) },
         },
-      },
-      ],
+      }],
     }));
 
     test.done();

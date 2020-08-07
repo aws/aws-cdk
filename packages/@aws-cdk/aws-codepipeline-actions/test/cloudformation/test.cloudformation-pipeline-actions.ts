@@ -86,17 +86,19 @@ export = {
           'Ref': 'MagicPipelineArtifactsBucket212FE7BF',
         },
         'Type': 'S3',
-      }, 'RoleArn': {
+      },
+      'RoleArn': {
         'Fn::GetAtt': ['MagicPipelineRoleFB2BD6DE',
-          'Arn',
-        ],
+          'Arn'],
       },
       'Stages': [{
         'Actions': [
           {
             'ActionTypeId': {
               'Category': 'Source',
-              'Owner': 'AWS', 'Provider': 'CodeCommit', 'Version': '1',
+              'Owner': 'AWS',
+              'Provider': 'CodeCommit',
+              'Version': '1',
             },
             'Configuration': {
               'RepositoryName': {
@@ -191,8 +193,7 @@ export = {
           },
         ],
         'Name': 'prod',
-      },
-      ],
+      }],
     }));
 
     test.done();
@@ -359,11 +360,13 @@ export = {
           'Actions': [
             {
               'Configuration': {
-                'ParameterOverrides': { 'Fn::Join': ['', [
-                  '{"RepoName":"',
-                  { 'Fn::GetAtt': ['MyVeryImportantRepo11BC3EBD', 'Name'] },
-                  '"}',
-                ]] },
+                'ParameterOverrides': {
+                  'Fn::Join': ['', [
+                    '{"RepoName":"',
+                    { 'Fn::GetAtt': ['MyVeryImportantRepo11BC3EBD', 'Name'] },
+                    '"}',
+                  ]],
+                },
               },
               'Name': 'CreateUpdate',
             },
@@ -604,15 +607,14 @@ export = {
             'Actions': [
               {
                 'Name': 'CFN',
-                'RoleArn': { 'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' },
-                  ':iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50',
-                ]],
+                'RoleArn': {
+                  'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' },
+                    ':iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50']],
                 },
                 'Configuration': {
                   'RoleArn': {
                     'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' },
-                      ':iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508',
-                    ]],
+                      ':iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508']],
                   },
                 },
               },
@@ -635,8 +637,7 @@ export = {
               'Principal': {
                 'AWS': {
                   'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' },
-                    ':iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508',
-                  ]],
+                    ':iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508']],
                 },
               },
             },
@@ -650,8 +651,7 @@ export = {
               'Principal': {
                 'AWS': {
                   'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' },
-                    ':iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50',
-                  ]],
+                    ':iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50']],
                 },
               },
             },

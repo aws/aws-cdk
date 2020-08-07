@@ -50,7 +50,8 @@ test('when notification are added, you can tag the lambda', () => {
   expect(stack).toHaveResource('AWS::S3::Bucket');
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Tags: [{ Key: 'Lambda', Value: 'AreTagged' }],
-    Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)' });
+    Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
+  });
   expect(stack).toHaveResource('Custom::S3BucketNotifications');
 });
 

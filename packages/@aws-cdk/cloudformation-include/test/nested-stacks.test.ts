@@ -246,20 +246,28 @@ describe('CDK Include', () => {
                 "/",
                 { "Ref": assetParam },
                 "/",
-                { "Fn::Select": [
-                  0,
-                  { "Fn::Split": [
-                    "||",
-                    { "Ref": assetParamKey },
-                  ] },
-                ] },
-                { "Fn::Select": [
-                  1,
-                  { "Fn::Split": [
-                    "||",
-                    { "Ref": assetParamKey },
-                  ] },
-                ] },
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        { "Ref": assetParamKey },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        { "Ref": assetParamKey },
+                      ],
+                    },
+                  ],
+                },
               ]],
             },
             "Parameters": {
@@ -499,20 +507,28 @@ describe('CDK Include', () => {
                   "/",
                   { "Ref": childBucketParam },
                   "/",
-                  { "Fn::Select": [
-                    0,
-                    { "Fn::Split": [
-                      "||",
-                      { "Ref": childKeyParam },
-                    ] },
-                  ] },
-                  { "Fn::Select": [
-                    1,
-                    { "Fn::Split": [
-                      "||",
-                      { "Ref": childKeyParam },
-                    ] },
-                  ] },
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          { "Ref": childKeyParam },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          { "Ref": childKeyParam },
+                        ],
+                      },
+                    ],
+                  },
                 ]],
               },
               "Parameters": {
@@ -557,20 +573,26 @@ describe('CDK Include', () => {
                   "/",
                   { "Ref": grandChildBucketParam },
                   "/",
-                  { "Fn::Select": [
-                    0,
-                    { "Fn::Split": [
-                      "||",
-                      { "Ref": grandChildKeyParam },
-                    ] },
-                  ] },
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          { "Ref": grandChildKeyParam },
+                        ],
+                      },
+                    ],
+                  },
                   {
                     "Fn::Select": [
                       1,
-                      { "Fn::Split": [
-                        "||",
-                        { "Ref": grandChildKeyParam },
-                      ] },
+                      {
+                        "Fn::Split": [
+                          "||",
+                          { "Ref": grandChildKeyParam },
+                        ],
+                      },
                     ],
                   },
                 ]],

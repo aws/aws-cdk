@@ -19,22 +19,28 @@ describe('IAM policy document', () => {
     p.addAwsAccountPrincipal(`my${Token.asString({ account: 'account' })}name`);
     p.addAccountCondition('12221121221');
 
-    expect(stack.resolve(p.toStatementJson())).toEqual({ Action:
+    expect(stack.resolve(p.toStatementJson())).toEqual({
+      Action:
       ['sqs:SendMessage',
         'dynamodb:CreateTable',
         'dynamodb:DeleteTable'],
-    Resource: ['myQueue', 'yourQueue', '*'],
-    Effect: 'Allow',
-    Principal:
-      { AWS:
-         { 'Fn::Join':
+      Resource: ['myQueue', 'yourQueue', '*'],
+      Effect: 'Allow',
+      Principal:
+      {
+        AWS:
+         {
+           'Fn::Join':
           ['',
             ['arn:',
               { Ref: 'AWS::Partition' },
               ':iam::my',
               { account: 'account' },
-              'name:root']] } },
-    Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
+              'name:root']],
+         },
+      },
+      Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } },
+    });
   });
 
   test('the PolicyDocument class is a dom for iam policy documents', () => {
@@ -67,7 +73,8 @@ describe('IAM policy document', () => {
         [{ Effect: 'Allow', Action: 'sqs:SendMessage', NotResource: 'arn:aws:sqs:us-east-1:123456789012:forbidden_queue' },
           { Effect: 'Deny', Action: 'cloudformation:CreateStack' },
           { Effect: 'Allow', NotAction: 'cloudformation:UpdateTerminationProtection' },
-          { Effect: 'Deny', NotPrincipal: { CanonicalUser: 'OnlyAuthorizedUser' } }] });
+          { Effect: 'Deny', NotPrincipal: { CanonicalUser: 'OnlyAuthorizedUser' } }],
+    });
   });
 
   test('Cannot combine Actions and NotActions', () => {
@@ -131,7 +138,8 @@ describe('IAM policy document', () => {
     expect(stack.resolve(perm.toStatementJson())).toEqual({
       Effect: 'Allow',
       Action: ['Action1', 'Action2', 'Action3'],
-      Resource: 'MyResource' });
+      Resource: 'MyResource',
+    });
   });
 
   test('PolicyDoc resolves to undefined if there are no permissions', () => {

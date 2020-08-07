@@ -181,7 +181,9 @@ export function synthesizeBlockDeviceMappings(construct: Construct, blockDevices
     }
 
     return {
-      deviceName, ebs, virtualName,
+      deviceName,
+      ebs,
+      virtualName,
       noDevice: mappingEnabled === false ? {} : undefined,
     };
   });

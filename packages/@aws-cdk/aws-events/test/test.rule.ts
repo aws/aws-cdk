@@ -249,7 +249,8 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: '',
-        arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+        arn: 'ARN1',
+        kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
         input: RuleTargetInput.fromText(cdk.Fn.join('', ['a', 'b']).toString()),
       }),
     });
@@ -742,7 +743,8 @@ class SomeTarget implements IRuleTarget {
   public bind(): RuleTargetConfig {
     return {
       id: this.id || '',
-      arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+      arn: 'ARN1',
+      kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
       targetResource: this.resource,
     };
   }

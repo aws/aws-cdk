@@ -1,6 +1,8 @@
 import * as cdk from '@aws-cdk/core';
-import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts } from './principals';
+import {
+  AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
+  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
+} from './principals';
 import { mergePrincipal } from './util';
 
 const ensureArrayOrUndefined = (field: any) => {

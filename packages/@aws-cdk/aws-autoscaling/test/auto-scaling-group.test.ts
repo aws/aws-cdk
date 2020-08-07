@@ -489,7 +489,8 @@ nodeunitShim({
             'GroupId',
           ],
         },
-        'most-secure'],
+        'most-secure',
+      ],
     }));
     test.done();
   },
@@ -1216,7 +1217,8 @@ nodeunitShim({
             'autoscaling:EC2_INSTANCE_TERMINATE',
           ],
         },
-      ] },
+      ],
+    },
     ));
 
     test.done();
@@ -1273,7 +1275,8 @@ nodeunitShim({
             'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
           ],
         },
-      ] },
+      ],
+    },
     ));
 
     test.done();
@@ -1305,7 +1308,8 @@ nodeunitShim({
             'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
           ],
         },
-      ] },
+      ],
+    },
     ));
 
     test.done();

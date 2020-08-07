@@ -202,13 +202,15 @@ export = {
         metrics: [
           ['CDK', 'Test'],
         ],
-        annotations: { horizontal: [{
-          yAxis: 'left',
-          value: 1000,
-          color: '667788',
-          fill: 'below',
-          label: 'this is the annotation',
-        }] },
+        annotations: {
+          horizontal: [{
+            yAxis: 'left',
+            value: 1000,
+            color: '667788',
+            fill: 'below',
+            label: 'this is the annotation',
+          }],
+        },
         yAxis: {},
       },
     }]);
@@ -296,7 +298,8 @@ export = {
         ],
         yAxis: {
           left: { label: 'Left yAxis', max: 100 },
-          right: { label: 'Right yAxis', min: 10, showUnits: false } },
+          right: { label: 'Right yAxis', min: 10, showUnits: false },
+        },
       },
     }]);
 

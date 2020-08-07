@@ -35,7 +35,8 @@ test.each([
   [false, false],
   [false, true],
   [true, false],
-  [true, true]])('given override, always use the override (parameter has a default: %p, parameter previously supplied: %p)',
+  [true, true],
+])('given override, always use the override (parameter has a default: %p, parameter previously supplied: %p)',
   (haveDefault, havePrevious) => {
     expect(makeParams(haveDefault, havePrevious, true)).toEqual({
       apiParameters: [USE_OVERRIDE],

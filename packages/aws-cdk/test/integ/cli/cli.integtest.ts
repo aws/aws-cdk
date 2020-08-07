@@ -2,8 +2,10 @@ import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { cloudFormation, iam, lambda, retry, sleep, sns, sts, testEnv } from './aws-helpers';
-import { cdk, cdkDeploy, cdkDestroy, cleanup, cloneDirectory, fullStackName,
-  INTEG_TEST_DIR, log, prepareAppFixture, shell, STACK_NAME_PREFIX } from './cdk-helpers';
+import {
+  cdk, cdkDeploy, cdkDestroy, cleanup, cloneDirectory, fullStackName,
+  INTEG_TEST_DIR, log, prepareAppFixture, shell, STACK_NAME_PREFIX,
+} from './cdk-helpers';
 import { integTest } from './test-helpers';
 
 jest.setTimeout(600 * 1000);
@@ -74,8 +76,7 @@ integTest('cdk synth', async () => {
 integTest('ssm parameter provider error', async () => {
   await expect(cdk(['synth',
     fullStackName('missing-ssm-parameter'),
-    '-c', 'test:ssm-parameter-name=/does/not/exist',
-  ], {
+    '-c', 'test:ssm-parameter-name=/does/not/exist'], {
     allowErrExit: true,
   })).resolves.toContain('SSM parameter not available in account');
 });
@@ -626,7 +627,8 @@ integTest('can still load old assemblies', async () => {
     const output = await cdk([
       '--app', cxAsmDir,
       '-v',
-      'synth']);
+      'synth',
+    ]);
 
     // Assert that there was no providerError in CDK's stderr
     // Because we rely on the app/framework to actually error in case the

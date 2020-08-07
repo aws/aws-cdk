@@ -179,7 +179,8 @@ describe('CLI compatible credentials loading', () => {
     });
 
     // WHEN
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions,
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({
+      ...defaultCredOptions,
       profile: 'assumable',
       httpOptions: {
         proxyAddress: 'http://DOESNTMATTER/',

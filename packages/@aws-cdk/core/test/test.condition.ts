@@ -23,10 +23,15 @@ export = {
         Condition1: { 'Fn::Equals': ['a', 'b'] },
         Condition2: { 'Fn::Contains': [['a', 'b', 'c'], 'c'] },
         Condition3: { 'Fn::Equals': [{ Ref: 'Param1' }, 'hello'] },
-        Condition4: { 'Fn::Or': [
-          { Condition: 'Condition1' },
-          { Condition: 'Condition2' },
-          { 'Fn::Not': [{ Condition: 'Condition3' }] }] } } });
+        Condition4: {
+          'Fn::Or': [
+            { Condition: 'Condition1' },
+            { Condition: 'Condition2' },
+            { 'Fn::Not': [{ Condition: 'Condition3' }] },
+          ],
+        },
+      },
+    });
 
     test.done();
   },

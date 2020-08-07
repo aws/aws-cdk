@@ -95,7 +95,8 @@ describe('FSx for Lustre File System', () => {
     const maintenanceTime = new LustreMaintenanceTime({
       day: Weekday.SUNDAY,
       hour: 12,
-      minute: 34 });
+      minute: 34,
+    });
     lustreConfiguration = {
       deploymentType: LustreDeploymentType.SCRATCH_2,
       weeklyMaintenanceStartTime: maintenanceTime,
@@ -116,7 +117,8 @@ describe('FSx for Lustre File System', () => {
     expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
       LustreConfiguration: {
         DeploymentType: 'SCRATCH_2',
-        WeeklyMaintenanceStartTime: '0:12:34' },
+        WeeklyMaintenanceStartTime: '0:12:34',
+      },
     }));
     expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
   });

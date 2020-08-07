@@ -84,7 +84,8 @@ export = {
     'metric attached to stack1 will not render region and account in stack1'(test: Test) {
       // GIVEN
       new Alarm(stack1, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: a.attachTo(stack1),
       });
 
@@ -104,7 +105,8 @@ export = {
       // GIVEN
       test.throws(() => {
         new Alarm(stack2, 'Alarm', {
-          threshold: 1, evaluationPeriods: 1,
+          threshold: 1,
+          evaluationPeriods: 1,
           metric: a.attachTo(stack1),
         });
       }, /Cannot create an Alarm in region 'mars' based on metric 'ACount' in 'pluto'/);
@@ -120,8 +122,11 @@ function graphMetricsAre(test: Test, stack: Stack, w: IWidget, metrics: any[]) {
     width: 6,
     height: 6,
     properties:
-    { view: 'timeSeries',
+    {
+      view: 'timeSeries',
       region: { Ref: 'AWS::Region' },
       metrics,
-      yAxis: {} } }]);
+      yAxis: {},
+    },
+  }]);
 }

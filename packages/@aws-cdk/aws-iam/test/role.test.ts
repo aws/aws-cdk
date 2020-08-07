@@ -10,16 +10,28 @@ describe('IAM role', () => {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
     });
 
-    expect(stack).toMatchTemplate({ Resources:
-      { MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
+    expect(stack).toMatchTemplate({
+      Resources:
+      {
+        MyRoleF48FFE04:
+         {
+           Type: 'AWS::IAM::Role',
            Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [{ Action: 'sts:AssumeRole',
+          {
+            AssumeRolePolicyDocument:
+           {
+             Statement:
+            [{
+              Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' } }],
-           Version: '2012-10-17' } } } } });
+              Principal: { Service: 'sns.amazonaws.com' },
+            }],
+             Version: '2012-10-17',
+           },
+          },
+         },
+      },
+    });
   });
 
   test('a role can grant PassRole permissions', () => {
@@ -170,17 +182,29 @@ describe('IAM role', () => {
     });
 
     role.addManagedPolicy({ managedPolicyArn: 'managed3' });
-    expect(stack).toMatchTemplate({ Resources:
-      { MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
+    expect(stack).toMatchTemplate({
+      Resources:
+      {
+        MyRoleF48FFE04:
+         {
+           Type: 'AWS::IAM::Role',
            Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [{ Action: 'sts:AssumeRole',
+          {
+            AssumeRolePolicyDocument:
+           {
+             Statement:
+            [{
+              Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'test.service' } }],
-           Version: '2012-10-17' },
-          ManagedPolicyArns: ['managed1', 'managed2', 'managed3'] } } } });
+              Principal: { Service: 'test.service' },
+            }],
+             Version: '2012-10-17',
+           },
+            ManagedPolicyArns: ['managed1', 'managed2', 'managed3'],
+          },
+         },
+      },
+    });
 
   });
 
@@ -354,17 +378,29 @@ describe('IAM role', () => {
       description: 'This is a role description.',
     });
 
-    expect(stack).toMatchTemplate({ Resources:
-      { MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
+    expect(stack).toMatchTemplate({
+      Resources:
+      {
+        MyRoleF48FFE04:
+         {
+           Type: 'AWS::IAM::Role',
            Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [{ Action: 'sts:AssumeRole',
+          {
+            AssumeRolePolicyDocument:
+           {
+             Statement:
+            [{
+              Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' } }],
-           Version: '2012-10-17' },
-          Description: 'This is a role description.' } } } });
+              Principal: { Service: 'sns.amazonaws.com' },
+            }],
+             Version: '2012-10-17',
+           },
+            Description: 'This is a role description.',
+          },
+         },
+      },
+    });
   });
 
   test('should not have an empty description', () => {
@@ -375,16 +411,28 @@ describe('IAM role', () => {
       description: '',
     });
 
-    expect(stack).toMatchTemplate({ Resources:
-      { MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
+    expect(stack).toMatchTemplate({
+      Resources:
+      {
+        MyRoleF48FFE04:
+         {
+           Type: 'AWS::IAM::Role',
            Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [{ Action: 'sts:AssumeRole',
+          {
+            AssumeRolePolicyDocument:
+           {
+             Statement:
+            [{
+              Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' } }],
-           Version: '2012-10-17' } } } } });
+              Principal: { Service: 'sns.amazonaws.com' },
+            }],
+             Version: '2012-10-17',
+           },
+          },
+         },
+      },
+    });
   });
 
   test('description can only be 1000 characters long', () => {

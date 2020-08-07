@@ -49,13 +49,14 @@ export = nodeunit.testCase({
         'd',
       ]);
 
-      test.deepEqual(stack.resolve(obj), { 'Fn::Join': ['',
-        [
-          'a',
-          { 'Fn::GetAtt': ['a', 'bc'] },
-          'cd',
-        ],
-      ] });
+      test.deepEqual(stack.resolve(obj), {
+        'Fn::Join': ['',
+          [
+            'a',
+            { 'Fn::GetAtt': ['a', 'bc'] },
+            'cd',
+          ]],
+      });
 
       test.done();
     },

@@ -326,7 +326,8 @@ export = {
     'MathExpressions can be used for an alarm'(test: Test) {
       // GIVEN
       new Alarm(stack, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'a + b',
           usingMetrics: { a, b },
@@ -372,7 +373,8 @@ export = {
     'can nest MathExpressions in an alarm'(test: Test) {
       // GIVEN
       new Alarm(stack, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'a + e',
           usingMetrics: {
@@ -440,7 +442,8 @@ export = {
     'MathExpression controls period of metrics transitively used in it with alarms'(test: Test) {
       // GIVEN
       new Alarm(stack, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'a + e',
           usingMetrics: {
@@ -510,7 +513,8 @@ export = {
     'MathExpression without inner metrics emits its own period'(test: Test) {
       // WHEN
       new Alarm(stack, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'INSIGHT_RULE_METRIC("SomeId", UniqueContributors)',
           usingMetrics: {},
@@ -532,7 +536,8 @@ export = {
     'annotation for a mathexpression alarm is calculated based upon constituent metrics'(test: Test) {
       // GIVEN
       const alarm = new Alarm(stack, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: new MathExpression({
           period: Duration.minutes(10),
           expression: 'a + b',
@@ -552,7 +557,8 @@ export = {
     'can use percentiles in expression metrics in alarms'(test: Test) {
       // GIVEN
       new Alarm(stack, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'a + b99',
           usingMetrics: { a, b99 },
@@ -602,10 +608,13 @@ function graphMetricsAre(test: Test, w: IWidget, metrics: any[]) {
     width: 6,
     height: 6,
     properties:
-    { view: 'timeSeries',
+    {
+      view: 'timeSeries',
       region: { Ref: 'AWS::Region' },
       metrics,
-      yAxis: {} } }]);
+      yAxis: {},
+    },
+  }]);
 }
 
 function alarmMetricsAre(metrics: any[]) {

@@ -206,8 +206,7 @@ class WindowsUserData extends UserData {
     return `<powershell>${
       [...(this.renderOnExitLines()),
         ...this.lines,
-        ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] ),
-      ].join('\n')
+        ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] )].join('\n')
     }</powershell>`;
   }
 

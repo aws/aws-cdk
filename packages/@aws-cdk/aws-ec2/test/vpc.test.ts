@@ -1,9 +1,11 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
+import {
+  AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
   InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, Peer, Port, PrivateSubnet, PublicSubnet,
-  RouterType, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
+  RouterType, Subnet, SubnetType, TrafficDirection, Vpc,
+} from '../lib';
 
 nodeunitShim({
   'When creating a VPC': {

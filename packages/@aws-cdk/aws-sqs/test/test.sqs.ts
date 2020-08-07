@@ -160,8 +160,10 @@ export = {
 
       // "import" returns an IQueue bound to `Fn::ImportValue`s.
       test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-east-1:123456789012:queue1');
-      test.deepEqual(stack.resolve(imports.queueUrl), { 'Fn::Join':
-        ['', ['https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1']] });
+      test.deepEqual(stack.resolve(imports.queueUrl), {
+        'Fn::Join':
+        ['', ['https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1']],
+      });
       test.deepEqual(stack.resolve(imports.queueName), 'queue1');
       test.done();
     },

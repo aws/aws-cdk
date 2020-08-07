@@ -362,8 +362,7 @@ describe('CDK Include', () => {
             "BucketName": {
               "Fn::If": ["TotallyFalse",
                 { "Ref": "Param" },
-                { "Ref": "AWS::NoValue" },
-              ],
+                { "Ref": "AWS::NoValue" }],
             },
           },
         },

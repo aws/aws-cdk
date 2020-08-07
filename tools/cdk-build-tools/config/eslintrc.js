@@ -48,7 +48,10 @@ module.exports = {
     'comma-spacing': ['error', { before: false, after: true }], // space after, no space before
     'no-multi-spaces': ['error', { ignoreEOLComments: false }], // no multi spaces
     'array-bracket-spacing': ['error', 'never'], // [1, 2, 3]
+    'array-bracket-newline': ['error', 'consistent'], // enforce consistent line breaks between brackets
     'object-curly-spacing': ['error', 'always'], // { key: 'value' }
+    'object-curly-newline': ['error', { multiline: true, consistent: true }], // enforce consistent line breaks between braces
+    'object-property-newline': ['error', { allowAllPropertiesOnSameLine: true }], // enforce "same line" or "multiple line" on object properties
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [

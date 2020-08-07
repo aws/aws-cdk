@@ -328,21 +328,37 @@ test('allows specifying the subnet group name tag', async () => {
   mockVpcLookup({
     subnets: [
       {
-        SubnetId: 'pri-sub-in-1b', AvailabilityZone: 'us-west-1b', MapPublicIpOnLaunch: false, Tags: [
+        SubnetId: 'pri-sub-in-1b',
+        AvailabilityZone: 'us-west-1b',
+        MapPublicIpOnLaunch: false,
+        Tags: [
           { Key: 'Tier', Value: 'restricted' },
-        ] },
+        ],
+      },
       {
-        SubnetId: 'pub-sub-in-1c', AvailabilityZone: 'us-west-1c', MapPublicIpOnLaunch: true, Tags: [
+        SubnetId: 'pub-sub-in-1c',
+        AvailabilityZone: 'us-west-1c',
+        MapPublicIpOnLaunch: true,
+        Tags: [
           { Key: 'Tier', Value: 'connectivity' },
-        ] },
+        ],
+      },
       {
-        SubnetId: 'pub-sub-in-1b', AvailabilityZone: 'us-west-1b', MapPublicIpOnLaunch: true, Tags: [
+        SubnetId: 'pub-sub-in-1b',
+        AvailabilityZone: 'us-west-1b',
+        MapPublicIpOnLaunch: true,
+        Tags: [
           { Key: 'Tier', Value: 'connectivity' },
-        ] },
+        ],
+      },
       {
-        SubnetId: 'pub-sub-in-1a', AvailabilityZone: 'us-west-1a', MapPublicIpOnLaunch: true, Tags: [
+        SubnetId: 'pub-sub-in-1a',
+        AvailabilityZone: 'us-west-1a',
+        MapPublicIpOnLaunch: true,
+        Tags: [
           { Key: 'Tier', Value: 'connectivity' },
-        ] },
+        ],
+      },
     ],
     routeTables: [
       { Associations: [{ Main: true }], RouteTableId: 'rtb-123' },

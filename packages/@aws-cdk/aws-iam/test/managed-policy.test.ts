@@ -405,7 +405,8 @@ describe('managed policy', () => {
                     ':iam::aws:policy/AnAWSManagedPolicy',
                   ],
                 ],
-              }],
+              },
+            ],
           },
         },
         MyGroupCBA54B1B: {
@@ -421,7 +422,8 @@ describe('managed policy', () => {
                     ':iam::aws:policy/AnAWSManagedPolicy',
                   ],
                 ],
-              }],
+              },
+            ],
           },
         },
         MyRoleF48FFE04: {
@@ -437,7 +439,8 @@ describe('managed policy', () => {
                     ':iam::aws:policy/AnAWSManagedPolicy',
                   ],
                 ],
-              }],
+              },
+            ],
             AssumeRolePolicyDocument: {
               Statement:
                 [{
@@ -478,7 +481,8 @@ describe('managed policy', () => {
                     ':iam::1234:policy/ACustomerManagedPolicyName',
                   ],
                 ],
-              }],
+              },
+            ],
           },
         },
         MyGroupCBA54B1B: {
@@ -494,7 +498,8 @@ describe('managed policy', () => {
                     ':iam::1234:policy/ACustomerManagedPolicyName',
                   ],
                 ],
-              }],
+              },
+            ],
           },
         },
         MyRoleF48FFE04: {
@@ -510,7 +515,8 @@ describe('managed policy', () => {
                     ':iam::1234:policy/ACustomerManagedPolicyName',
                   ],
                 ],
-              }],
+              },
+            ],
             AssumeRolePolicyDocument: {
               Statement:
                 [{
@@ -540,10 +546,16 @@ describe('managed policy', () => {
 
     expect(stack.resolve(mp.managedPolicyName)).toEqual({
       'Fn::Select': [1,
-        { 'Fn::Split': ['/',
-          { 'Fn::Select': [5,
-            { 'Fn::Split': [':',
-              { Ref: 'Policy23B91518' }] }] }] }],
+        {
+          'Fn::Split': ['/',
+            {
+              'Fn::Select': [5,
+                {
+                  'Fn::Split': [':',
+                    { Ref: 'Policy23B91518' }],
+                }],
+            }],
+        }],
     });
   });
 

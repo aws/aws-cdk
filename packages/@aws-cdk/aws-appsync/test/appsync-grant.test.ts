@@ -175,7 +175,8 @@ describe('grant Permissions', () => {
                   ':apis/',
                   { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
                   '/I',
-                ]] },
+                ]],
+              },
               {
                 'Fn::Join': ['', [
                   'arn:',
@@ -187,7 +188,8 @@ describe('grant Permissions', () => {
                   ':apis/',
                   { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
                   '/am',
-                ]] },
+                ]],
+              },
               {
                 'Fn::Join': ['', [
                   'arn:',
@@ -199,7 +201,8 @@ describe('grant Permissions', () => {
                   ':apis/',
                   { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
                   '/custom',
-                ]] },
+                ]],
+              },
             ],
           },
         ],
@@ -229,7 +232,8 @@ describe('grant Permissions', () => {
                   ':apis/',
                   { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
                   '/types/I/fields/am',
-                ]] },
+                ]],
+              },
               {
                 'Fn::Join': ['', [
                   'arn:',
@@ -241,7 +245,8 @@ describe('grant Permissions', () => {
                   ':apis/',
                   { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
                   '/types/I/fields/custom',
-                ]] },
+                ]],
+              },
             ],
           },
         ],
@@ -332,7 +337,8 @@ describe('grantMutation Permissions', () => {
                   ':apis/',
                   { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
                   '/types/Mutation/fields/addTest',
-                ]] },
+                ]],
+              },
               {
                 'Fn::Join': ['', [
                   'arn:',
@@ -344,7 +350,8 @@ describe('grantMutation Permissions', () => {
                   ':apis/',
                   { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
                   '/types/Mutation/fields/removeTest',
-                ]] },
+                ]],
+              },
             ],
           },
         ],
@@ -435,7 +442,8 @@ describe('grantQuery Permissions', () => {
                   ':apis/',
                   { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
                   '/types/Query/fields/getTests',
-                ]] },
+                ]],
+              },
               {
                 'Fn::Join': ['', [
                   'arn:',
@@ -447,7 +455,8 @@ describe('grantQuery Permissions', () => {
                   ':apis/',
                   { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
                   '/types/Query/fields/getTest',
-                ]] },
+                ]],
+              },
             ],
           },
         ],
@@ -537,7 +546,8 @@ describe('grantSubscription Permissions', () => {
                   ':apis/',
                   { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
                   '/types/Subscription/fields/subscribe',
-                ]] },
+                ]],
+              },
               {
                 'Fn::Join': ['', [
                   'arn:',
@@ -549,7 +559,8 @@ describe('grantSubscription Permissions', () => {
                   ':apis/',
                   { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
                   '/types/Subscription/fields/custom',
-                ]] },
+                ]],
+              },
             ],
           },
         ],

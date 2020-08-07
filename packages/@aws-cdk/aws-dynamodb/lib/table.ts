@@ -714,8 +714,7 @@ abstract class TableBase extends Resource implements ITable {
         ...this.regionalArns,
         ...this.regionalArns.map(arn => Lazy.stringValue({
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
-      ];
+        }))];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.tableActions,

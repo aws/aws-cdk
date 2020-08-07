@@ -520,15 +520,14 @@ export = {
 
       test.deepEqual(stack.resolve(metric.dimensions), {
         TargetGroup: { 'Fn::GetAtt': ['TargetGroup3D7CD9B8', 'TargetGroupFullName'] },
-        LoadBalancer: { 'Fn::Join':
+        LoadBalancer: {
+          'Fn::Join':
             ['',
               [{ 'Fn::Select': [1, { 'Fn::Split': ['/', loadBalancerArn] }] },
                 '/',
                 { 'Fn::Select': [2, { 'Fn::Split': ['/', loadBalancerArn] }] },
                 '/',
-                { 'Fn::Select': [3, { 'Fn::Split': ['/', loadBalancerArn] }] },
-              ],
-            ],
+                { 'Fn::Select': [3, { 'Fn::Split': ['/', loadBalancerArn] }] }]],
         },
       });
     }

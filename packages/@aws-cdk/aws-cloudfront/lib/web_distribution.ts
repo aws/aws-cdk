@@ -887,7 +887,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         }
       }
     } else {
-      distributionConfig = { ...distributionConfig,
+      distributionConfig = {
+        ...distributionConfig,
         viewerCertificate: { cloudFrontDefaultCertificate: true },
       };
     }

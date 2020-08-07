@@ -180,7 +180,8 @@ export = {
     // WHEN: Individual weight too high
     test.throws(() => {
       new lambda.Alias(stack, 'Alias1', {
-        aliasName: 'prod', version,
+        aliasName: 'prod',
+        version,
         additionalVersions: [{ version, weight: 5 }],
       });
     });
@@ -188,7 +189,8 @@ export = {
     // WHEN: Sum too high
     test.throws(() => {
       new lambda.Alias(stack, 'Alias2', {
-        aliasName: 'prod', version,
+        aliasName: 'prod',
+        version,
         additionalVersions: [{ version, weight: 0.5 }, { version, weight: 0.6 }],
       });
     });

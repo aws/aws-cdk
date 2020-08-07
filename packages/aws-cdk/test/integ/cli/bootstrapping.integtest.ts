@@ -76,8 +76,7 @@ integTest('deploy new style synthesis to new style bootstrap', async () => {
   await cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
     '--qualifier', QUALIFIER,
-    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess',
-  ], {
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess'], {
     modEnv: {
       CDK_NEW_BOOTSTRAP: '1',
     },
@@ -99,8 +98,7 @@ integTest('deploy new style synthesis to new style bootstrap (with docker image)
   await cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
     '--qualifier', QUALIFIER,
-    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess',
-  ], {
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess'], {
     modEnv: {
       CDK_NEW_BOOTSTRAP: '1',
     },
@@ -122,8 +120,7 @@ integTest('deploy old style synthesis to new style bootstrap', async () => {
   await cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
     '--qualifier', QUALIFIER,
-    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess',
-  ], {
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess'], {
     modEnv: {
       CDK_NEW_BOOTSTRAP: '1',
     },

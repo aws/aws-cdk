@@ -519,7 +519,8 @@ test('Create Cluster without Roles', () => {
       Version: '2012-10-17',
       Statement: [
         {
-          Principal: { Service:
+          Principal: {
+            Service:
             {
               'Fn::Join': [
                 '',

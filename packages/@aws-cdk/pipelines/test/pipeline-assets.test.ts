@@ -184,9 +184,11 @@ describe('asset roles and policies', () => {
           Effect: 'Allow',
           Principal: {
             Service: 'codebuild.amazonaws.com',
-            AWS: { 'Fn::Join': ['', [
-              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-            ]] },
+            AWS: {
+              'Fn::Join': ['', [
+                'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+              ]],
+            },
           },
         }],
       },
@@ -205,9 +207,11 @@ describe('asset roles and policies', () => {
           Effect: 'Allow',
           Principal: {
             Service: 'codebuild.amazonaws.com',
-            AWS: { 'Fn::Join': ['', [
-              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-            ]] },
+            AWS: {
+              'Fn::Join': ['', [
+                'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+              ]],
+            },
           },
         }],
       },

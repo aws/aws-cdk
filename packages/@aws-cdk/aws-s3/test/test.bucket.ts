@@ -630,7 +630,8 @@ export = {
       const user = new iam.User(stack, 'MyUser');
       user.addToPolicy(new iam.PolicyStatement({
         resources: [bucket.arnForObjects(`my/folder/${bucket.bucketName}`)],
-        actions: ['s3:*'] }));
+        actions: ['s3:*'],
+      }));
 
       expect(stack).toMatch({
         'Resources': {

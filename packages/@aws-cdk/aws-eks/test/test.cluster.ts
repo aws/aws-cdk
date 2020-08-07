@@ -1368,7 +1368,8 @@ export = {
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster1', {
-      version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+      version: CLUSTER_VERSION,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
       kubectlEnvironment: {
         Foo: 'Bar',
       },
@@ -1473,7 +1474,8 @@ export = {
       });
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
-        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc,
       });
 
@@ -1537,7 +1539,8 @@ export = {
       });
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
-        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc: vpc2,
       });
 
@@ -1585,7 +1588,8 @@ export = {
       });
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
-        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc: vpc2,
         vpcSubnets: [{ subnetGroupName: 'Private1' }, { subnetGroupName: 'Private2' }],
       });

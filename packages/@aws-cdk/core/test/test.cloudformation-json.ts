@@ -208,10 +208,12 @@ export = {
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN
-    new CfnOutput(stack2, 'Stack1Id', { value: stack2.toJsonString({
-      Stack1Id: stack1.stackId,
-      Stack2Id: stack2.stackId,
-    }) });
+    new CfnOutput(stack2, 'Stack1Id', {
+      value: stack2.toJsonString({
+        Stack1Id: stack1.stackId,
+        Stack2Id: stack2.stackId,
+      }),
+    });
 
     // THEN
     const asm = app.synth();

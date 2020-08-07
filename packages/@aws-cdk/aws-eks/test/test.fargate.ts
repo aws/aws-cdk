@@ -279,10 +279,12 @@ export = {
     }));
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-FargateProfile', {
       Properties: {
-        ServiceToken: { 'Fn::GetAtt': [
-          'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
-          'Outputs.awscdkawseksClusterResourceProviderframeworkonEventEA97AA31Arn',
-        ] },
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
+            'Outputs.awscdkawseksClusterResourceProviderframeworkonEventEA97AA31Arn',
+          ],
+        },
         AssumeRoleArn: { 'Fn::GetAtt': ['MyClusterCreationRoleB5FA4FF3', 'Arn'] },
         Config: {
           clusterName: { Ref: 'MyCluster8AD82BF8' },

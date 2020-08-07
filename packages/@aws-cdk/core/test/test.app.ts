@@ -59,9 +59,13 @@ export = {
     test.deepEqual(stack1.environment.account, 12345);
     test.deepEqual(stack1.environment.region, 'us-east-1');
     test.deepEqual(stack1.environment.name, 'aws://12345/us-east-1');
-    test.deepEqual(stack1.template, { Resources:
-      { s1c1: { Type: 'DummyResource', Properties: { Prop1: 'Prop1' } },
-        s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } } } });
+    test.deepEqual(stack1.template, {
+      Resources:
+      {
+        s1c1: { Type: 'DummyResource', Properties: { Prop1: 'Prop1' } },
+        s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } },
+      },
+    });
     test.deepEqual(stack1.manifest.metadata, {
       '/stack1': [{ type: 'meta', data: 111 }],
       '/stack1/s1c1': [{ type: 'aws:cdk:logicalId', data: 's1c1' }],
@@ -75,10 +79,14 @@ export = {
     test.deepEqual(stack2.stackName, 'stack2');
     test.deepEqual(stack2.id, 'stack2');
     test.deepEqual(stack2.environment.name, 'aws://unknown-account/unknown-region');
-    test.deepEqual(stack2.template, { Resources:
-      { s2c1: { Type: 'DummyResource', Properties: { Prog2: 'Prog2' } },
+    test.deepEqual(stack2.template, {
+      Resources:
+      {
+        s2c1: { Type: 'DummyResource', Properties: { Prog2: 'Prog2' } },
         s1c2r1D1791C01: { Type: 'ResourceType1' },
-        s1c2r25F685FFF: { Type: 'ResourceType2' } } });
+        s1c2r25F685FFF: { Type: 'ResourceType2' },
+      },
+    });
     test.deepEqual(stack2.manifest.metadata, {
       '/stack2/s2c1': [{ type: 'aws:cdk:logicalId', data: 's2c1' }],
       '/stack2/s1c2': [{ type: 'meta', data: { key: 'value' } }],

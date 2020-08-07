@@ -1,6 +1,8 @@
 import * as os from 'os';
-import { AssetManifest, AssetPublishing, ClientOptions, DestinationPattern, EventType, IAws,
-  IPublishProgress, IPublishProgressListener } from '../lib';
+import {
+  AssetManifest, AssetPublishing, ClientOptions, DestinationPattern, EventType, IAws,
+  IPublishProgress, IPublishProgressListener,
+} from '../lib';
 import { Account } from '../lib/aws';
 import { log, LogLevel, VERSION } from './logging';
 
