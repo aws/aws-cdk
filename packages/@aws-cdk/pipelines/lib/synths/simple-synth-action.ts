@@ -245,7 +245,7 @@ export class SimpleSynthAction implements codepipeline.IAction {
       },
     });
 
-    if (this.props.rolePolicyStatements != undefined) {
+    if (this.props.rolePolicyStatements !== undefined) {
       this.props.rolePolicyStatements.forEach(policyStatement => {
         project.addToRolePolicy(policyStatement);
       });
