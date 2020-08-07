@@ -966,16 +966,8 @@ function mergeSection(section: string, val1: any, val2: any): any {
       return val1 ?? val2;
     case 'Transform':
       return mergeSets(val1, val2);
-    case 'Resources':
-    case 'Conditions':
-    case 'Parameters':
-    case 'Outputs':
-    case 'Mappings':
-    case 'Metadata':
-      return mergeObjectsWithoutDuplicates(section, val1, val2);
     default:
-      throw new Error(`CDK doesn't know how to merge two instances of the CFN template section '${section}' - ` +
-        'please remove one of them from your code');
+      return mergeObjectsWithoutDuplicates(section, val1, val2);
   }
 }
 
