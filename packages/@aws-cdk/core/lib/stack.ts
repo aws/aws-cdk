@@ -582,7 +582,7 @@ export class Stack extends Construct implements ITaggable {
    * If they are not available in the context, returns a set of dummy values and
    * reports them as missing, and let the CLI resolve them by calling EC2
    * `DescribeAvailabilityZones` on the target environment.
-   * 
+   *
    * To specify a different strategy for selecting availability zones override this method.
    */
   public get availabilityZones(): string[] {
