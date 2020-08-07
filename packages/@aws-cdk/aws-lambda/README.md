@@ -362,7 +362,7 @@ new lambda.Function(this, 'Function', {
       command: [
         'bash', '-c', `
         pip install -r requirements.txt -t /asset-output &&
-        rsync -r . /asset-output
+        cp -au . /asset-output
         `,
       ],
     },
