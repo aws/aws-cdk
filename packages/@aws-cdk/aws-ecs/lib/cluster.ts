@@ -215,7 +215,6 @@ export class Cluster extends Resource implements ICluster {
     // But, scoped down to minimal permissions required.
     //  Notes:
     //   - 'ecs:CreateCluster' removed. The cluster already exists.
-    //   - 'logs:CreateLogStream' & 'logs:PutLogEvents' removed. The AwsLogDriver grants permissions to the task execution role to do these.
     autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
       actions: [
         'ecs:DeregisterContainerInstance',
@@ -229,7 +228,7 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
       actions: [
         // These act on a cluster instance, and the instance doesn't exist until the service starts.
-        // Thus, scope to the cluster using a condition key.
+        // Thus, scope to the cluster using a condition.
         // See: https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazonelasticcontainerservice.html
         'ecs:Poll',
         'ecs:StartTelemetrySession',
@@ -244,6 +243,12 @@ export class Cluster extends Resource implements ICluster {
         // These do not support resource constraints, and must be resource '*'
         'ecs:DiscoverPollEndpoint',
         'ecr:GetAuthorizationToken',
+        // Preserved for backwards compatibility.
+        // Users are able to enable cloudwatch agent using CDK. Existing
+        // customers might be installing CW agent as part of user-data so if we
+        // remove these permissions we will break that customer use cases.
+        'logs:CreateLogStream',
+        'logs:PutLogEvents',
       ],
       resources: ['*'],
     }));

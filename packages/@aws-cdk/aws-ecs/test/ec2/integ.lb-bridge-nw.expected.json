@@ -474,7 +474,9 @@
             {
               "Action": [
                 "ecs:DiscoverPollEndpoint",
-                "ecr:GetAuthorizationToken"
+                "ecr:GetAuthorizationToken",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
               ],
               "Effect": "Allow",
               "Resource": "*"

@@ -161,6 +161,8 @@ export = {
               Action: [
                 'ecs:DiscoverPollEndpoint',
                 'ecr:GetAuthorizationToken',
+                'logs:CreateLogStream',
+                'logs:PutLogEvents',
               ],
               Effect: 'Allow',
               Resource: '*',
@@ -330,6 +332,8 @@ export = {
               Action: [
                 'ecs:DiscoverPollEndpoint',
                 'ecr:GetAuthorizationToken',
+                'logs:CreateLogStream',
+                'logs:PutLogEvents',
               ],
               Effect: 'Allow',
               Resource: '*',
@@ -654,6 +658,8 @@ export = {
               Action: [
                 'ecs:DiscoverPollEndpoint',
                 'ecr:GetAuthorizationToken',
+                'logs:CreateLogStream',
+                'logs:PutLogEvents',
               ],
               Effect: 'Allow',
               Resource: '*',
