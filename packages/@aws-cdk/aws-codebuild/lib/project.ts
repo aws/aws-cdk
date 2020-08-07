@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { NotificationRule, AddNotificationRuleOptions } from '@aws-cdk/aws-codestarnotifications';
+import { NotificationRule, RuleOptions } from '@aws-cdk/aws-codestarnotifications';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
@@ -846,7 +846,7 @@ export class Project extends ProjectBase {
    * Adds a notification to the Project such as AWS Chatbot or SNS topic.
    * @param options The options for notification rule
    */
-  public addNotification(options: AddNotificationRuleOptions): NotificationRule {
+  public addNotification(options: RuleOptions): NotificationRule {
     return new NotificationRule(this, `${options.notificationRuleName}NotificationRule`, {
       notificationRuleName: options.notificationRuleName,
       status: options.status,
