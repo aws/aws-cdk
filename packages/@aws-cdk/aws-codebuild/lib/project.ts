@@ -796,7 +796,7 @@ export class Project extends ProjectBase {
     }
 
     // bind
-    this.buildImage.bind?.bind(this, this, {});
+    this.buildImage.binder?.bind(this, this, {});
   }
 
   /**
@@ -1139,18 +1139,18 @@ export interface BuildEnvironment {
   readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 }
 
-/** Optional arguments to {@link IBuildImage.bind} - currently empty. */
+/** Optional arguments to {@link IBuildImage.binder} - currently empty. */
 export interface BuildImageBindOptions {}
 
-/** The return type from {@link IBuildImage.bind} - currently empty. */
+/** The return type from {@link IBuildImage.binder} - currently empty. */
 export interface BuildImageConfig {}
 
 // Normally, I would just have IBuildImage have an optional bind property
 // of a function type,
 // but JSII doesn't allow that, hence this workaround
 
-/** The type of the optional {@link IBuildImage.bind} property. */
-export interface IBuildImageBind {
+/** The type of the optional {@link IBuildImage.binder} property. */
+export interface IBuildImageBinder {
   /**
    * Function that allows the image access to the construct tree.
    */
@@ -1203,7 +1203,7 @@ export interface IBuildImage {
   readonly repository?: ecr.IRepository;
 
   /** Optional bind function. */
-  readonly bind?: IBuildImageBind;
+  readonly binder?: IBuildImageBinder;
 
   /**
    * Allows the image a chance to validate whether the passed configuration is correct.

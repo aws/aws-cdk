@@ -2,7 +2,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as core from '@aws-cdk/core';
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, BuildImageConfig, ComputeType, IBuildImage, IBuildImageBind, ImagePullPrincipalType, IProject } from './project';
+import { BuildEnvironment, BuildImageConfig, ComputeType, IBuildImage, IBuildImageBinder, ImagePullPrincipalType, IProject } from './project';
 
 /**
  * A CodeBuild GPU image running Linux.
@@ -86,13 +86,13 @@ export class LinuxGpuBuildImage implements IBuildImage {
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType = ImagePullPrincipalType.SERVICE_ROLE;
-  public readonly bind?: IBuildImageBind;
+  public readonly binder?: IBuildImageBinder;
 
   private constructor(repositoryName: string, tag: string, account: string | undefined) {
     const mappingName = 'AwsDeepLearningContainersRepositoriesAccounts';
     const accountExpression = account ?? core.Fn.findInMap(mappingName, core.Aws.REGION, 'account');
     this.imageId = `${accountExpression}.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
-    this.bind = {
+    this.binder = {
       bind(scope: core.Construct, project: IProject): BuildImageConfig {
         if (!account) {
           const scopeStack = core.Stack.of(scope);
@@ -133,6 +133,7 @@ export class LinuxGpuBuildImage implements IBuildImage {
           repositoryArn: ecr.Repository.arnForLocalRepository(repositoryName, scope, accountExpression),
         });
         repository.grantPull(project);
+
         return {
         };
       },
