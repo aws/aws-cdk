@@ -49,7 +49,7 @@ export class Expiration {
    * Exipration Value in a formatted Unix Epoch Time in seconds
    */
   public asEpoch(): number {
-    return Math.floor( this.date.getTime() / 86400000) * 86400;
+    return Math.round( this.date.getTime() / 1000);
   }
   /**
    * Check if Exipiration expires before input
