@@ -1,4 +1,6 @@
-import { expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResourceLike, ResourcePart, haveResource } from '@aws-cdk/assert';
+import * as chatbot from '@aws-cdk/aws-chatbot';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -387,6 +389,82 @@ export = {
           }));
         }, /Pipeline stack which uses cross-environment actions must have an explicitly set account/);
 
+        test.done();
+      },
+    },
+
+    'notification': {
+      'added notification to codepipeline'(test: Test) {
+        const app = new cdk.App();
+        const pipelineStack = new cdk.Stack(app, 'PipelineStack', {
+          env: { region: 'us-west-2', account: '123456789012' },
+        });
+        const sourceOutput = new codepipeline.Artifact();
+        const pipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({
+                actionName: 'Source',
+                output: sourceOutput,
+              })],
+            },
+            {
+              stageName: 'Build',
+              actions: [new FakeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+                region: 'eu-south-1',
+              })],
+            },
+          ],
+        });
+        const slackConfig = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(pipelineStack, 'MySlackBot', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+
+        const slackTarget = new notifications.SlackNotificationTarget(slackConfig);
+
+        pipeline.addNotification({
+          notificationRuleName: 'MyNotificationRule',
+          detailType: notifications.DetailType.FULL,
+          targets: [slackTarget],
+          events: [
+            notifications.PipelineEvent.PIPELINE_EXECUTION_STARTED,
+            notifications.PipelineEvent.PIPELINE_EXECUTION_SUCCEEDED,
+            notifications.PipelineEvent.PIPELINE_EXECUTION_FAILED,
+          ],
+        });
+
+        expect(pipelineStack).to(haveResource('AWS::CodeStarNotifications::NotificationRule', {
+          'DetailType': 'FULL',
+          'EventTypeIds': [
+            notifications.PipelineEvent.PIPELINE_EXECUTION_STARTED,
+            notifications.PipelineEvent.PIPELINE_EXECUTION_SUCCEEDED,
+            notifications.PipelineEvent.PIPELINE_EXECUTION_FAILED,
+          ],
+          'Name': 'MyNotificationRule',
+          'Resource': {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':codepipeline:us-west-2:123456789012:',
+                {
+                  Ref: 'PipelineC660917D',
+                },
+              ],
+            ],
+          },
+          'Targets': [
+            {
+              'TargetAddress': 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack',
+              'TargetType': 'AWSChatbotSlack',
+            },
+          ],
+          'Status': 'ENABLED',
+        }));
         test.done();
       },
     },

@@ -1,3 +1,4 @@
+import { NotificationRule, AddNotificationRuleOptions } from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -315,6 +316,21 @@ export class Pipeline extends PipelineBase {
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPolicy(statement);
+  }
+
+  /**
+   * Adds a notification to the Project such as AWS Chatbot or SNS topic.
+   * @param options The options for notification rule
+   */
+  public addNotification(options: AddNotificationRuleOptions): NotificationRule {
+    return new NotificationRule(this, `${options.notificationRuleName}NotificationRule`, {
+      notificationRuleName: options.notificationRuleName,
+      status: options.status,
+      detailType: options.detailType,
+      targets: options.targets,
+      events: options.events,
+      resource: this.pipelineArn,
+    });
   }
 
   /**
