@@ -127,13 +127,39 @@ export = {
           Statement: [
             {
               Action: [
-                'ecs:CreateCluster',
                 'ecs:DeregisterContainerInstance',
-                'ecs:DiscoverPollEndpoint',
-                'ecs:Poll',
                 'ecs:RegisterContainerInstance',
-                'ecs:StartTelemetrySession',
                 'ecs:Submit*',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'EcsCluster97242B84',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
+                'ecs:Poll',
+                'ecs:StartTelemetrySession',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              Action: [
+                'ecs:DiscoverPollEndpoint',
                 'ecr:GetAuthorizationToken',
                 'logs:CreateLogStream',
                 'logs:PutLogEvents',
@@ -272,13 +298,39 @@ export = {
           Statement: [
             {
               Action: [
-                'ecs:CreateCluster',
                 'ecs:DeregisterContainerInstance',
-                'ecs:DiscoverPollEndpoint',
-                'ecs:Poll',
                 'ecs:RegisterContainerInstance',
-                'ecs:StartTelemetrySession',
                 'ecs:Submit*',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'EcsCluster97242B84',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
+                'ecs:Poll',
+                'ecs:StartTelemetrySession',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              Action: [
+                'ecs:DiscoverPollEndpoint',
                 'ecr:GetAuthorizationToken',
                 'logs:CreateLogStream',
                 'logs:PutLogEvents',
@@ -582,13 +634,39 @@ export = {
           Statement: [
             {
               Action: [
-                'ecs:CreateCluster',
                 'ecs:DeregisterContainerInstance',
-                'ecs:DiscoverPollEndpoint',
-                'ecs:Poll',
                 'ecs:RegisterContainerInstance',
-                'ecs:StartTelemetrySession',
                 'ecs:Submit*',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'EcsCluster97242B84',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
+                'ecs:Poll',
+                'ecs:StartTelemetrySession',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              Action: [
+                'ecs:DiscoverPollEndpoint',
                 'ecr:GetAuthorizationToken',
                 'logs:CreateLogStream',
                 'logs:PutLogEvents',
