@@ -90,6 +90,9 @@ export class InstanceDrainHook extends cdk.Construct {
     fn.addToRolePolicy(new iam.PolicyStatement({
       actions: ['ecs:DescribeContainerInstances', 'ecs:DescribeTasks'],
       resources: ['*'],
+      conditions: {
+        ArnEquals: { 'ecs:cluster': props.cluster.clusterArn },
+      },
     }));
 
     // Restrict to the ECS Cluster
