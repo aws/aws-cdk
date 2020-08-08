@@ -33,7 +33,7 @@ export = {
         RoleArn: { 'Fn::GetAtt': [ 'MyClusterCreationRoleB5FA4FF3', 'Arn' ] },
         ResourceType: 'service',
         ResourceName: 'myservice',
-        JsonPath: '.status.loadBalancer.hostname',
+        JsonPath: '.status.loadBalancer.ingress[0].hostname',
         TimeoutSeconds: 300,
       },
       DependsOn: [ 'MyClusterKubectlReadyBarrier7547948A' ],
