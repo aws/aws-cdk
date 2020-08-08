@@ -32,11 +32,11 @@ nodeunitShim({
         new Vpc(stack, 'TheVPC');
         expect(stack).to(
           haveResource('AWS::EC2::VPC',
-            hasTags( [ {Key: 'Name', Value: 'TheVPC'} ])),
+            hasTags( [ {Key: 'Name', Value: 'TestStack/TheVPC'} ])),
         );
         expect(stack).to(
           haveResource('AWS::EC2::InternetGateway',
-            hasTags( [ {Key: 'Name', Value: 'TheVPC'} ])),
+            hasTags( [ {Key: 'Name', Value: 'TestStack/TheVPC'} ])),
         );
         test.done();
       },
@@ -60,6 +60,46 @@ nodeunitShim({
       }));
       test.done();
     },
+
+    'dns getters correspond to CFN properties': (() => {
+
+      const tests: any = { };
+
+      const inputs = [
+        {dnsSupport: false, dnsHostnames: false},
+        // {dnsSupport: false, dnsHostnames: true} - this configuration is illegal so its not part of the permutations.
+        {dnsSupport: true, dnsHostnames: false},
+        {dnsSupport: true, dnsHostnames: true},
+      ];
+
+      for (const input of inputs) {
+
+        tests[`[dnsSupport=${input.dnsSupport},dnsHostnames=${input.dnsHostnames}]`] = (test: Test) => {
+
+          const stack = getTestStack();
+          const vpc = new Vpc(stack, 'TheVPC', {
+            cidr: '192.168.0.0/16',
+            enableDnsHostnames: input.dnsHostnames,
+            enableDnsSupport: input.dnsSupport,
+            defaultInstanceTenancy: DefaultInstanceTenancy.DEDICATED,
+          });
+
+          expect(stack).to(haveResource('AWS::EC2::VPC', {
+            CidrBlock: '192.168.0.0/16',
+            EnableDnsHostnames: input.dnsHostnames,
+            EnableDnsSupport: input.dnsSupport,
+            InstanceTenancy: DefaultInstanceTenancy.DEDICATED,
+          }));
+
+          test.equal(input.dnsSupport, vpc.dnsSupportEnabled);
+          test.equal(input.dnsHostnames, vpc.dnsHostnamesEnabled);
+          test.done();
+
+        };
+      }
+
+      return tests;
+    })(),
 
     'contains the correct number of subnets'(test: Test) {
       const stack = getTestStack();
@@ -458,7 +498,7 @@ nodeunitShim({
       for (let i = 1; i < 4; i++) {
         expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
           Key: 'Name',
-          Value: `VPC/egressSubnet${i}`,
+          Value: `TestStack/VPC/egressSubnet${i}`,
         }, {
           Key: 'aws-cdk:subnet-name',
           Value: 'egress',

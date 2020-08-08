@@ -54,6 +54,7 @@ const api = new appsync.GraphQLApi(stack, 'Api', {
       authorizationType: appsync.AuthorizationType.IAM
     },
   },
+  xrayEnabled: true,
 });
 
 const demoTable = new db.Table(stack, 'DemoTable', {
@@ -200,10 +201,10 @@ const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos', de
 // Schema Definition starts here
 
 const demo = api.addType('demo', {
-  definition: [
-    appsync.AttributeType.string('id').required(),
-    appsync.AttributeType.string('version').required(),
-  ],
+  definition: {
+    id: appsync.AttributeType.string({ isRequired: true }),
+    version: appsync.AttributeType.string({ isRequired: true }),
+  },
 });
 
 ```

@@ -257,6 +257,12 @@ export interface GraphQLApiProps {
    * @default - Use schemaDefinition
    */
   readonly schemaDefinitionFile?: string;
+  /**
+   * A flag indicating whether or not X-Ray tracing is enabled for the GraphQL API.
+   *
+   * @default - false
+   */
+  readonly xrayEnabled?: boolean;
 
 }
 
@@ -403,6 +409,7 @@ export class GraphQLApi extends Construct {
           )
           : undefined,
       additionalAuthenticationProviders: this.formatAdditionalAuthenticationProviders(props),
+      xrayEnabled: props.xrayEnabled,
     });
 
     this.apiId = this.api.attrApiId;

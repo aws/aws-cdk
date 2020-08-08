@@ -746,7 +746,7 @@ CloudFormation [mappings][cfn-mappings] are created and queried using the
 `CfnMappings` class:
 
 ```ts
-const mapping = new CfnMapping(this, 'MappingTable', {
+const regionTable = new CfnMapping(this, 'RegionTable', {
   mapping: {
     regionName: {
       'us-east-1': 'US East (N. Virginia)',
@@ -757,7 +757,17 @@ const mapping = new CfnMapping(this, 'MappingTable', {
   }
 });
 
-mapping.findInMap('regionName', Aws.REGION);
+regionTable.findInMap('regionName', Aws.REGION);
+```
+
+This will yield the following template:
+
+```yaml
+Mappings:
+  RegionTable:
+    regionName:
+      us-east-1: US East (N. Virginia)
+      us-east-2: US East (Ohio)
 ```
 
 [cfn-mappings]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
