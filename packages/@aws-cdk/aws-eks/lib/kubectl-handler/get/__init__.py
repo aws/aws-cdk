@@ -51,9 +51,7 @@ def wait_for_output(args, timeout_seconds):
 
   while time.time() < end_time:
     # the output is surrounded with '', so we unquote
-    logger.info(f'Running kubectl command to fetch value: {args}')
     output = kubectl(args).decode('utf-8')[1:-1]
-    logger.info(f'Value is: {output} ')
     if output:
       return output
     time.sleep(10)
