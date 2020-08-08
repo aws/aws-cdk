@@ -1409,14 +1409,14 @@ export = {
           vpc: new ec2.Vpc(stack, 'Vpc'),
           version: CLUSTER_VERSION,
           endpointAccess: eks.EndpointAccess.PRIVATE,
-          vpcSubnets: [{subnetType: ec2.SubnetType.PUBLIC}],
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         });
       }, /Vpc must contain private subnets to configure private endpoint access/);
 
       test.done();
     },
 
-    'private endpoint access can select private subnets from looked up vpc'(test: Test) {
+    'private endpoint access selects only private subnets from looked up vpc'(test: Test) {
 
       const vpcId = 'vpc-12345';
       // can't use the regular fixture because it also adds a VPC to the stack, which prevents
@@ -1432,11 +1432,11 @@ export = {
         vpcCidrBlock: '10.0.0.0/16',
         subnetGroups: [
           {
-            name: 'Private1',
+            name: 'Private',
             type: 'Private',
             subnets: [
               {
-                subnetId: 'subnet-in-us-east-1a',
+                subnetId: 'subnet-private-in-us-east-1a',
                 cidr: '10.0.1.0/24',
                 availabilityZone: 'us-east-1a',
                 routeTableId: 'rtb-06068e4c4049921ef',
@@ -1444,14 +1444,14 @@ export = {
             ],
           },
           {
-            name: 'Private2',
-            type: 'Private',
+            name: 'Public',
+            type: 'Public',
             subnets: [
               {
-                subnetId: 'subnet-in-us-east-1b',
-                cidr: '10.0.1.0/24',
-                availabilityZone: 'us-east-1b',
-                routeTableId: 'rtb-06068e4c4049921ef',
+                subnetId: 'subnet-public-in-us-east-1c',
+                cidr: '10.0.0.0/24',
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rtb-0ff08e62195198dbb',
               },
             ],
           },
@@ -1465,16 +1465,13 @@ export = {
         vpc,
         version: CLUSTER_VERSION,
         endpointAccess: eks.EndpointAccess.PRIVATE,
-        // to make sure we consider the subnet selection and not simply attach all private
-        // subnets in the vpc.
-        vpcSubnets: [{availabilityZones: ['us-east-1a']}],
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
       const template = expect(nested).value;
 
       test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
-        'subnet-in-us-east-1a',
+        'subnet-private-in-us-east-1a',
       ]);
 
       test.done();

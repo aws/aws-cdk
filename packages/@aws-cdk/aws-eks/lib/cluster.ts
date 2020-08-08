@@ -1057,17 +1057,25 @@ export class Cluster extends Resource implements ICluster {
 
     for (const placement of this.vpcSubnets) {
 
-      if (placement.subnets) {
-        // when the user select specific subnets, we don't actually perform any selection,
-        // but rather return the specified subnets. this means we have no way of knowing if the subnet
-        // is private or public. we assume its private, and let it fail at deploy time if not :\
-        privateSubnets.push(...placement.subnets);
-      } else {
-        // in this case, the subnets are actually selected from the vpc. the subnets in the vpc
-        // do contain private/public differentiation, so we select them, and make sure they are private by checking all private subnets
-        // of the vpc.
-        privateSubnets.push(...this.vpc.selectSubnets(placement).subnets.filter(s => this.vpc.privateSubnets.includes(s)));
+      for (const subnet of this.vpc.selectSubnets(placement).subnets) {
+
+        if (this.vpc.privateSubnets.includes(subnet)) {
+          // definitely private, take it.
+          privateSubnets.push(subnet);
+          continue;
+        }
+
+        if (this.vpc.publicSubnets.includes(subnet)) {
+          // definitely public, skip it.
+          continue;
+        }
+
+        // not public and not private - what is it then? this means its a subnet instance that was explicitly passed
+        // in the subnet selection. since ISubnet doesn't contain information on type, we have to assume its private and let it
+        // fail at deploy time :\ (its better than filtering it out and preventing a possibly succefull deployment)
+        privateSubnets.push(subnet);
       }
+
     }
 
     return privateSubnets;
