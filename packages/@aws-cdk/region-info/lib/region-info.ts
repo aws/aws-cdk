@@ -13,6 +13,25 @@ export class RegionInfo {
   }
 
   /**
+   * Retrieves a collection of all fact values for all regions that fact is defined in.
+   *
+   * @param factName the name of the fact to retrieve values for.
+   *   For a list of common fact names, see the FactName class
+   * @returns a mapping with AWS region codes as the keys,
+   *   and the fact in the given region as the value for that key
+   */
+  public static regionMap(factName: string): { [region: string]: string } {
+    const ret: { [region: string]: string } = {};
+    for (const regionInfo of RegionInfo.regions) {
+      const fact = Fact.find(regionInfo.name, factName);
+      if (fact) {
+        ret[regionInfo.name] = fact;
+      }
+    }
+    return ret;
+  }
+
+  /**
    * Obtain region info for a given region name.
    *
    * @param name the name of the region (e.g: us-east-1)

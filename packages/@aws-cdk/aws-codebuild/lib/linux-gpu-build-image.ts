@@ -1,6 +1,6 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as core from '@aws-cdk/core';
-import { RegionInfo } from '@aws-cdk/region-info';
+import { FactName, RegionInfo } from '@aws-cdk/region-info';
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
 import {
@@ -92,6 +92,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType = ImagePullPrincipalType.SERVICE_ROLE;
+
   private readonly accountExpression: string;
 
   private constructor(private readonly repositoryName: string, tag: string, private readonly account: string | undefined) {
@@ -107,12 +108,9 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
       if (!scopeStack.node.tryFindChild(mappingName)) {
         const mapping: { [k1: string]: { [k2: string]: any } } = {};
         // get the accounts from the region-info module
-        for (const regionInfo of RegionInfo.regions) {
-          if (regionInfo.dlcRepositoryAccount) {
-            mapping[regionInfo.name] = {
-              account: regionInfo.dlcRepositoryAccount,
-            };
-          }
+        const region2Accounts = RegionInfo.regionMap(FactName.DLC_REPOSITORY_ACCOUNT);
+        for (const [region, account] of Object.entries(region2Accounts)) {
+          mapping[region] = { account };
         }
         new core.CfnMapping(scopeStack, mappingName, { mapping });
       }
