@@ -2,7 +2,7 @@ import { Construct, CustomResource, Token, Duration } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
- * Properties for KubernetesResourceAttribute
+ * Properties for KubernetesGet.
  */
 export interface KubernetesGetProps {
   /**
@@ -30,7 +30,7 @@ export interface KubernetesGetProps {
   readonly jsonPath: string;
 
   /**
-   * Timeout for waiting on a value for the attribute.
+   * Timeout for waiting on a value.
    */
   readonly timeout: Duration;
 
@@ -69,7 +69,7 @@ export class KubernetesGet extends Construct {
   }
 
   /**
-   * The value of this attribute as a string token.
+   * The value as a string token.
    */
   public get value(): string {
     return Token.asString(this._resource.getAtt('Value'));
