@@ -112,6 +112,14 @@ describe('CDK Include', () => {
       includeTestTemplate(stack, 'fn-sub-${}-only.json');
     }).toThrow(/Element referenced in Fn::Sub expression with logical ID: '' was not found in the template/);
   });
+
+  test('throws an error when a template supplies an invalid string to a number parameter', () => {
+    includeTestTemplate(stack, 'invalid-string-passed-to-number.json');
+
+    expect(() => {
+      SynthUtils.synthesize(stack);
+    }).toThrow(/"abc" should be a number/);
+  });
 });
 
 function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {
