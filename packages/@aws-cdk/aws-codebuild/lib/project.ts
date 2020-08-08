@@ -796,7 +796,10 @@ export class Project extends ProjectBase {
     }
 
     // bind
-    this.buildImage.binder?.bind(this, this, {});
+    const bindFunction = (this.buildImage as any).bind;
+    if (bindFunction) {
+      bindFunction.call(this.buildImage, this, this, {});
+    }
   }
 
   /**
@@ -1139,24 +1142,6 @@ export interface BuildEnvironment {
   readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 }
 
-/** Optional arguments to {@link IBuildImage.binder} - currently empty. */
-export interface BuildImageBindOptions {}
-
-/** The return type from {@link IBuildImage.binder} - currently empty. */
-export interface BuildImageConfig {}
-
-// Normally, I would just have IBuildImage have an optional bind property
-// of a function type,
-// but JSII doesn't allow that, hence this workaround
-
-/** The type of the optional {@link IBuildImage.binder} property. */
-export interface IBuildImageBinder {
-  /**
-   * Function that allows the image access to the construct tree.
-   */
-  bind(scope: Construct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
-}
-
 /**
  * Represents a Docker image used for the CodeBuild Project builds.
  * Use the concrete subclasses, either:
@@ -1202,9 +1187,6 @@ export interface IBuildImage {
    */
   readonly repository?: ecr.IRepository;
 
-  /** Optional bind function. */
-  readonly binder?: IBuildImageBinder;
-
   /**
    * Allows the image a chance to validate whether the passed configuration is correct.
    *
@@ -1216,6 +1198,21 @@ export interface IBuildImage {
    * Make a buildspec to run the indicated script
    */
   runScriptBuildspec(entrypoint: string): BuildSpec;
+}
+
+/** Optional arguments to {@link IBuildImage.binder} - currently empty. */
+export interface BuildImageBindOptions {}
+
+/** The return type from {@link IBuildImage.binder} - currently empty. */
+export interface BuildImageConfig {}
+
+// @deprecated(not in tsdoc on purpose): add bind() to IBuildImage
+// and get rid of IBindableBuildImage
+
+/** A variant of {@link IBuildImage} that allows binding to the project. */
+export interface IBindableBuildImage extends IBuildImage {
+  /** Function that allows the build image access to the construct tree. */
+  bind(scope: Construct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
 }
 
 class ArmBuildImage implements IBuildImage {

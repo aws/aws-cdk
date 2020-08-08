@@ -3,7 +3,12 @@ import * as core from '@aws-cdk/core';
 import { RegionInfo } from '@aws-cdk/region-info';
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, BuildImageConfig, ComputeType, IBuildImage, IBuildImageBinder, ImagePullPrincipalType, IProject } from './project';
+import {
+  BuildEnvironment, BuildImageBindOptions, BuildImageConfig, ComputeType, IBindableBuildImage, IBuildImage,
+  ImagePullPrincipalType, IProject,
+} from './project';
+
+const mappingName = 'AwsDeepLearningContainersRepositoriesAccounts';
 
 /**
  * A CodeBuild GPU image running Linux.
@@ -13,7 +18,7 @@ import { BuildEnvironment, BuildImageConfig, ComputeType, IBuildImage, IBuildIma
  *
  * @see https://aws.amazon.com/releasenotes/available-deep-learning-containers-images
  */
-export class LinuxGpuBuildImage implements IBuildImage {
+export class LinuxGpuBuildImage implements IBindableBuildImage {
   /** Tensorflow 1.14.0 GPU image from AWS Deep Learning Containers. */
   public static readonly DLC_TENSORFLOW_1_14_0 = LinuxGpuBuildImage.awsDeepLearningContainersImage('tensorflow-training',
     '1.14.0-gpu-py36-cu100-ubuntu16.04');
@@ -87,48 +92,46 @@ export class LinuxGpuBuildImage implements IBuildImage {
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType = ImagePullPrincipalType.SERVICE_ROLE;
-  public readonly binder?: IBuildImageBinder;
+  private readonly accountExpression: string;
 
-  private constructor(repositoryName: string, tag: string, account: string | undefined) {
-    const mappingName = 'AwsDeepLearningContainersRepositoriesAccounts';
-    const accountExpression = account ?? core.Fn.findInMap(mappingName, core.Aws.REGION, 'account');
-    this.imageId = `${accountExpression}.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
-    this.binder = {
-      bind(scope: core.Construct, project: IProject): BuildImageConfig {
-        if (!account) {
-          const scopeStack = core.Stack.of(scope);
-          // Unfortunately, the account IDs of the DLC repositories are not the same in all regions.
-          // Because of that, use a (singleton) Mapping to find the correct account
-          if (!scopeStack.node.tryFindChild(mappingName)) {
-            const mapping: { [k1: string]: { [k2: string]: any } } = {};
-            // get the accounts from the region-info module
-            for (const regionInfo of RegionInfo.regions) {
-              if (regionInfo.dlcRepositoryAccount) {
-                mapping[regionInfo.name] = {
-                  account: regionInfo.dlcRepositoryAccount,
-                };
-              }
-            }
-            new core.CfnMapping(scopeStack, mappingName, { mapping });
+  private constructor(private readonly repositoryName: string, tag: string, private readonly account: string | undefined) {
+    this.accountExpression = account ?? core.Fn.findInMap(mappingName, core.Aws.REGION, 'account');
+    this.imageId = `${this.accountExpression}.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
+  }
+
+  public bind(scope: core.Construct, project: IProject, _options: BuildImageBindOptions): BuildImageConfig {
+    if (!this.account) {
+      const scopeStack = core.Stack.of(scope);
+      // Unfortunately, the account IDs of the DLC repositories are not the same in all regions.
+      // Because of that, use a (singleton) Mapping to find the correct account
+      if (!scopeStack.node.tryFindChild(mappingName)) {
+        const mapping: { [k1: string]: { [k2: string]: any } } = {};
+        // get the accounts from the region-info module
+        for (const regionInfo of RegionInfo.regions) {
+          if (regionInfo.dlcRepositoryAccount) {
+            mapping[regionInfo.name] = {
+              account: regionInfo.dlcRepositoryAccount,
+            };
           }
         }
+        new core.CfnMapping(scopeStack, mappingName, { mapping });
+      }
+    }
 
-        const repository = ecr.Repository.fromRepositoryAttributes(scope, 'AwsDlcRepositoryCodeBuild', {
-          repositoryName,
-          repositoryArn: ecr.Repository.arnForLocalRepository(repositoryName, scope, accountExpression),
-        });
-        repository.grantPull(project);
+    const repository = ecr.Repository.fromRepositoryAttributes(scope, 'AwsDlcRepositoryCodeBuild', {
+      repositoryName: this.repositoryName,
+      repositoryArn: ecr.Repository.arnForLocalRepository(this.repositoryName, scope, this.accountExpression),
+    });
+    repository.grantPull(project);
 
-        return {
-        };
-      },
+    return {
     };
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
     if (buildEnvironment.computeType &&
-      buildEnvironment.computeType !== ComputeType.LARGE) {
+        buildEnvironment.computeType !== ComputeType.LARGE) {
       ret.push(`GPU images only support ComputeType '${ComputeType.LARGE}' - ` +
         `'${buildEnvironment.computeType}' was given`);
     }
