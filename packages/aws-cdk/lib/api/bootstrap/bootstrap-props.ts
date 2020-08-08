@@ -79,6 +79,19 @@ export interface BootstrappingParameters {
   readonly publicAccessBlockConfiguration?: boolean;
 
   /**
+   * Name of S3 Bucket where server access logs for the CDK toolkit bucket will be stored
+   *
+   * @default - None. Server access logging is not configured on the CDK toolkit bucket
+   */
+  readonly accessLogsBucketName?: string;
+
+  /**
+   * Prefix for S3 server access log files that are delivered to the CDK toolkit bucket
+   *
+   * @default 'cdk-toolkit-logs''
+   */
+  readonly accessLogsPrefix?: string;
+  /**
    * Whether the stacks created by the bootstrap process should be protected from termination.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-protect-stacks.html
    * @default true

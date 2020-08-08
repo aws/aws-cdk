@@ -63,6 +63,8 @@ export async function bootstrapEnvironment2(
       CloudFormationExecutionPolicies: params.cloudFormationExecutionPolicies?.join(','),
       Qualifier: params.qualifier,
       PublicAccessBlockConfiguration: params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
+      ServerAccessLogsBucketName: params.accessLogsBucketName,
+      ServerAccessLogsPrefix: params.accessLogsPrefix,
     },
     environment,
     sdkProvider,

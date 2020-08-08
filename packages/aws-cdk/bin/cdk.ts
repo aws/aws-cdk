@@ -76,7 +76,9 @@ async function parseCommandLineArguments() {
       .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
       .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false })
-      .option('termination-protection', { type: 'boolean', default: false, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' }),
+      .option('termination-protection', { type: 'boolean', default: false, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
+      .option('access-logs-bucket-name', { type: 'string', desc: 'Name of the bucket to store S3 server access logs of the CDK toolkit bucket', default: undefined })
+      .option('access-logs-prefix', { type: 'string', desc: 'prefix for log files delivered by S3 server access logs of the CDK toolkit bucket', default: 'cdk-toolkit-logs' }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
@@ -255,6 +257,8 @@ async function initCommandLine() {
             trustedAccounts: args.trust,
             cloudFormationExecutionPolicies: args.cloudformationExecutionPolicies,
             terminationProtection: args.terminationProtection,
+            accessLogsBucketName: args.accessLogsBucketName,
+            accessLogsPrefix: args.accessLogsPrefix,
           });
 
       case 'deploy':

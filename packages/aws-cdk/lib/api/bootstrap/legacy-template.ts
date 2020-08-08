@@ -9,6 +9,11 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
           params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
           'true',
         ]},
+      ConfigureServerAccessLogs: {
+        'Fn::Equals': [
+          params.accessLogsBucketName ? 'true' : 'false',
+          'true',
+        ]},
     },
     Resources: {
       StagingBucket: {
@@ -32,6 +37,15 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
                 BlockPublicPolicy: true,
                 IgnorePublicAcls: true,
                 RestrictPublicBuckets: true,
+              },
+              { Ref: 'AWS::NoValue' },
+            ]},
+          LoggingConfiguration: {
+            'Fn::If': [
+              'ConfigureServerAccessLogs',
+              {
+                DestinationBucketName: params.accessLogsBucketName,
+                LogFilePrefix: params.accessLogsPrefix ?? 'cdk-toolkit-logs',
               },
               { Ref: 'AWS::NoValue' },
             ]},

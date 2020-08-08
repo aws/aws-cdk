@@ -75,6 +75,26 @@ describe('Bootstrapping v2', () => {
     }));
   });
 
+  test('configures server access logs when logging bucket is supplied', async () => {
+    // GIVEN
+    const logBucketName = 'cdk-toolkit-logging-bucket';
+
+    // WHEN
+    await bootstrapEnvironment2(env, sdk, {
+      parameters: {
+        accessLogsBucketName: logBucketName,
+      },
+    });
+
+    // THEN
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      parameters: {
+        ServerAccessLogsBucketName: logBucketName,
+        PublicAccessBlockConfiguration: 'true',
+      },
+    }));
+  });
+
   test('passing trusted accounts without CFN managed policies results in an error', async () => {
     await expect(bootstrapEnvironment2(env, sdk, {
       parameters: {

@@ -67,6 +67,7 @@ test('do bootstrap', async () => {
   expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
     .toBeUndefined();
   expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
+  expect(changeSetTemplate.Conditions.ConfigureServerAccessLogs['Fn::Equals'][0]).toEqual('false');
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
@@ -124,6 +125,25 @@ test('bootstrap disable bucket Public Access Block Configuration', async () => {
   expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
     .toBeUndefined();
   expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('false');
+  expect(ret.noOp).toBeFalsy();
+  expect(executed).toBeTruthy();
+});
+
+test('bootstrap with server access logging enabled', async () => {
+  // WHEN
+  const ret = await bootstrapEnvironment(env, sdk, {
+    toolkitStackName: 'mockStack',
+    parameters: {
+      accessLogsBucketName: 'cdk-toolkit-logging-bucket',
+    },
+  });
+
+  // THEN
+  const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
+  expect(bucketProperties.BucketName).toBeUndefined();
+  expect(changeSetTemplate.Conditions.ConfigureServerAccessLogs['Fn::Equals'][0]).toBe('true');
+  expect(bucketProperties.LoggingConfiguration['Fn::If'][0]).toEqual('ConfigureServerAccessLogs');
+  expect(bucketProperties.LoggingConfiguration['Fn::If'][1]).toEqual({DestinationBucketName: 'cdk-toolkit-logging-bucket', LogFilePrefix: 'cdk-toolkit-logs'});
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });

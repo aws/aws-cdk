@@ -33,6 +33,14 @@ Parameters:
     Default: 'true'
     Type: 'String'
     AllowedValues: ['true', 'false']
+  ServerAccessLogsBucketName:
+    Description: The name of the S3 bucket that S3 server access logs will be sent
+    Default: ''
+    Type: String
+  ServerAccessLogsPrefix:
+    Description: A prefix for all log object keys
+    Default: 'cdk-toolkit-logs'
+    Type: String
 Conditions:
   HasTrustedAccounts:
     Fn::Not:
@@ -66,6 +74,11 @@ Conditions:
     Fn::Equals:
       - 'true'
       - Ref: PublicAccessBlockConfiguration  
+  ConfigureServerAccessLogging:
+    Fn::Not:
+      - Fn::Equals:
+          - ''
+          - Ref: ServerAccessLoggingBucketName
 Resources:
   FileAssetsBucketEncryptionKey:
     Type: AWS::KMS::Key
@@ -143,7 +156,13 @@ Resources:
             BlockPublicPolicy: true
             IgnorePublicAcls: true
             RestrictPublicBuckets: true
-          - Ref: AWS::NoValue       
+          - Ref: AWS::NoValue
+      LoggingConfiguration:
+        Fn::If:
+          - ConfigureServerAccessLogging
+          - DestinationBucketName: { Ref: 'ServerAccessLoggingBucketName' }
+            LogFilePrefix: { Ref: 'ServerAccessLogFilePrefix' }
+          - Ref: AWS::NoValue
     UpdateReplacePolicy: Retain
   StagingBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
