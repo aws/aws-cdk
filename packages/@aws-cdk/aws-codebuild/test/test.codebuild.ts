@@ -1180,7 +1180,7 @@ export = {
       const topic = sns.Topic.fromTopicArn(stack, 'MyTopic', 'arn:aws:sns::1234567890:my-topic');
 
       const slackTarget = new notifications.SlackNotificationTarget(slackConfig);
-      const topicTarget = new notifications.SNSTopicNotificationTarget(topic);
+      const topicTarget = new notifications.SnsTopicNotificationTarget(topic);
 
       const project = new codebuild.Project(stack, 'MyProject', {
         buildSpec: codebuild.BuildSpec.fromObject({
