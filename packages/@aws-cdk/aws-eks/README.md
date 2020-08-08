@@ -60,10 +60,10 @@ ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-xxxxx --
 ```
 
 > The IAM role specified in this command is called the "**masters role**". This is
-> an IAM role that is associated with the `system:masters` [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) 
+> an IAM role that is associated with the `system:masters` [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)
 > group and has super-user access to the cluster.
 >
-> You can specify this role using the `mastersRole` option, or otherwise a role will be 
+> You can specify this role using the `mastersRole` option, or otherwise a role will be
 > automatically created for you. This role can be assumed by anyone in the account with
 > `sts:AssumeRole` permissions for this role.
 
@@ -384,7 +384,7 @@ and will be applied sequentially (the standard behavior in `kubectl`).
 
 ### Patching Kubernetes Resources
 
-The KubernetesPatch construct can be used to update existing kubernetes
+The `KubernetesPatch` construct can be used to update existing kubernetes
 resources. The following example can be used to patch the `hello-kubernetes`
 deployment from the example above with 5 replicas.
 
@@ -396,6 +396,46 @@ new KubernetesPatch(this, 'hello-kub-deployment-label', {
   restorePatch: { spec: { replicas: 3 } }
 })
 ```
+
+### Querying Kubernetes Resources
+
+The `KubernetesGet` construct can be used to query for information about kubernetes resources,
+and use that as part of your CDK application.
+
+For example, you can fetch the address of a [`LoadBalancer`](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) type service:
+
+```typescript
+// query the load balancer address
+const myServiceAddress = new KubernetesGet(this, 'LoadBalancerAttribute', {
+  cluster: cluster,
+  resourceType: 'service',
+  resourceName: 'my-service',
+  jsonPath: '.status.loadBalancer.ingress[0].hostname', // https://kubernetes.io/docs/reference/kubectl/jsonpath/
+});
+
+// pass the address to a lambda function
+const proxyFunction = new lambda.Function(this, 'ProxyFunction', {
+  ...
+  environment: {
+    myServiceAddress: myServiceAddress.value
+  },
+})
+```
+
+#### Service Description
+
+The `ServiceDescription` construct can be used to quickly access information about services. Internally, it uses the `KubernetesGet` resource for all its attributes.
+
+```typescript
+const service = new eks.ServiceDescription(stack, 'MyServiceDescription', {
+  cluster: cluster,
+  serviceName: 'my-service',
+});
+
+const loadBalancerAddress = service.loadBalancerAddress
+```
+
+> You can also fetch the service description from a specific cluster with the `cluster.describeService` method
 
 ### AWS IAM Mapping
 
