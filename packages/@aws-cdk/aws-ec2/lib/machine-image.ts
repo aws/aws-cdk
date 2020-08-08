@@ -411,6 +411,11 @@ export class GenericWindowsImage implements IMachineImage {
 export enum OperatingSystemType {
   LINUX,
   WINDOWS,
+  /**
+   * Used when the type of the operating system is not known
+   * (for example, for imported Auto-Scaling Groups).
+   */
+  UNKNOWN,
 }
 
 /**
