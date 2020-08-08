@@ -1060,7 +1060,7 @@ export class Cluster extends Resource implements ICluster {
       if (placement.subnets) {
         // when the user select specific subnets, we don't actually perform any selection,
         // but rather return the specified subnets. this means we have no way of knowing if the subnet
-        // is private or public. we assume it private, and let it fail at deploy time :\
+        // is private or public. we assume its private, and let it fail at deploy time if not :\
         privateSubnets.push(...placement.subnets);
       } else {
         // in this case, the subnets are actually selected from the vpc. the subnets in the vpc
