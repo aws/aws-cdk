@@ -84,7 +84,7 @@ export class CfnInclude extends core.CfnElement {
     // check if all user specified parameter values exist in the template
     for (const logicalId of Object.keys(props.parameterValues || {})) {
       if (!(logicalId in this.template.Parameters)) {
-        throw new Error(`Parameter with logical ID '${logicalId}' was not found in the template`)
+        throw new Error(`Parameter with logical ID '${logicalId}' was not found in the template`);
       }
     }
 
@@ -455,7 +455,7 @@ export class CfnInclude extends core.CfnElement {
         }
         return self.getOrCreateResource(lId);
       },
- 
+
       findRefTarget(elementName: string): core.CfnElement | undefined {
         if (elementName in self.parameters) {
           return self.parameters[elementName];

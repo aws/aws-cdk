@@ -659,11 +659,11 @@ describe('CDK Include', () => {
   });
 
   test('parameters are replaced only when specified', () => {
-    new inc.CfnInclude(stack, 'includeTemplate', { 
+    new inc.CfnInclude(stack, 'includeTemplate', {
       templateFile: testTemplateFilePath('bucket-with-parameters.json'),
       parameterValues: {
         BucketName: 'my-s3-bucket',
-      }
+      },
     });
 
     expect(stack).toMatchTemplate({
@@ -673,6 +673,7 @@ describe('CDK Include', () => {
           "Description": "the time in seconds that a browser will cache the preflight response",
           "MaxValue": "300",
           "MinValue": "0",
+          "AllowedValues": [1, 2, 3, 10, 100, 300],
           "Type": "Number",
           "NoEcho": "true",
         },
@@ -704,7 +705,7 @@ describe('CDK Include', () => {
   });
 
   test('can replace parameters referenced in conditions and metadata', () => {
-    new inc.CfnInclude(stack, 'includeTemplate', { 
+    new inc.CfnInclude(stack, 'includeTemplate', {
       templateFile: testTemplateFilePath('parameter-references.json'),
       parameterValues: {
         MyParam: 'my-s3-bucket',
@@ -743,37 +744,35 @@ describe('CDK Include', () => {
   });
 
   test('can replace parameters in Fn::Sub', () => {
-    new inc.CfnInclude(stack, 'includeTemplate', { 
+    new inc.CfnInclude(stack, 'includeTemplate', {
       templateFile: testTemplateFilePath('fn-sub-parameters.json'),
       parameterValues: {
         MyParam: 'my-s3-bucket',
       },
     });
- 
+
     expect(stack).toMatchTemplate({
       "Resources": {
         "Bucket": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
-            "BucketName": { 
-              "Fn::Sub": [ 
-                "${MyParameter}-my-s3-bucket", 
-                { 
-                  "MyParameter": "my-s3-bucket"
-                } 
-              ]
-            }
-          }
-        }
-      }
-
+            "BucketName": {
+              "Fn::Sub": [
+                "${MyParameter}-my-s3-bucket",
+                {
+                  "MyParameter": "my-s3-bucket",
+                },
+              ],
+            },
+          },
+        },
+      },
     });
-
   });
 
   test('throws an exception when provided a parameter not in the template', () => {
     expect(() => {
-      new inc.CfnInclude(stack, 'includeTemplate', { 
+      new inc.CfnInclude(stack, 'includeTemplate', {
         templateFile: testTemplateFilePath('bucket-with-parameters.json'),
         parameterValues: {
           FakeParameter: 'DoesNotExist',
