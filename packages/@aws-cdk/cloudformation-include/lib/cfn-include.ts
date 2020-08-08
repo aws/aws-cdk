@@ -249,6 +249,7 @@ export class CfnInclude extends core.CfnElement {
       type: expression.Type,
       default: expression.Default,
       allowedPattern: expression.AllowedPattern,
+      allowedValues: expression.AllowedValues,
       constraintDescription: expression.ConstraintDescription,
       description: expression.Description,
       maxLength: expression.MaxLength,
