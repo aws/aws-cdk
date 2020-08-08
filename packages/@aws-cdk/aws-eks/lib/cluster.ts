@@ -1018,13 +1018,20 @@ export class Cluster extends Resource implements ICluster {
       };
 
       if (!this.endpointAccess._config.publicAccess) {
+
+        const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+
+        if (privateSubents.length === 0) {
+          throw new Error('Vpc must contain private subnets to configure private endpoint access');
+        }
+
         // endpoint access is private only, we need to attach the
         // provider to the VPC so that it can access the cluster.
         providerProps = {
           ...providerProps,
           vpc: this.vpc,
           // lambda can only be accociated with max 16 subnets and they all need to be private.
-          vpcSubnets: {subnets: this.selectPrivateSubnets().slice(0, 16)},
+          vpcSubnets: {subnets: privateSubents},
           securityGroups: [this.kubctlProviderSecurityGroup],
         };
       }
@@ -1049,7 +1056,18 @@ export class Cluster extends Resource implements ICluster {
     const privateSubnets: ec2.ISubnet[] = [];
 
     for (const placement of this.vpcSubnets) {
-      privateSubnets.push(...this.vpc.selectSubnets(placement).subnets.filter(s => s instanceof ec2.PrivateSubnet));
+
+      if (placement.subnets) {
+        // when the user select specific subnets, we don't actually perform any selection,
+        // but rather return the specified subnets. this means we have no way of knowing if the subnet
+        // is private or public. we assume it private, and let it fail at deploy time :\
+        privateSubnets.push(...placement.subnets);
+      } else {
+        // in this case, the subnets are actually selected from the vpc. the subnets in the vpc
+        // do contain private/public differentiation, so we select them, and make sure they are private by checking all private subnets
+        // of the vpc.
+        privateSubnets.push(...this.vpc.selectSubnets(placement).subnets.filter(s => this.vpc.privateSubnets.includes(s)));
+      }
     }
 
     return privateSubnets;
