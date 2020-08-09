@@ -269,7 +269,17 @@
                 "ecs:DescribeTasks"
               ],
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": "*",
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "FargateCluster7CCD5F93",
+                      "Arn"
+                    ]
+                  }
+                }
+              }
             },
             {
               "Action": [
