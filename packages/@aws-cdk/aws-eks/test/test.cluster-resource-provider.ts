@@ -95,7 +95,7 @@ export = {
         await handler.isComplete();
         test.ok(false, 'expected error to be thrown');
       } catch (err) {
-        test.equal(err.message, 'Cluster is in a FAILED state');
+        test.equal(err.message, 'Cluster is in a FAILED status');
       }
       test.done();
     },
@@ -107,7 +107,7 @@ export = {
         await handler.isComplete();
         test.ok(false, 'expected error to be thrown');
       } catch (err) {
-        test.equal(err.message, 'Cluster is in a FAILED state');
+        test.equal(err.message, 'Cluster is in a FAILED status');
       }
       test.done();
     },
