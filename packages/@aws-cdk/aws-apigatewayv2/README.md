@@ -106,7 +106,6 @@ The `corsPreflight` option lets you specify a CORS configuration for an API.
 ```ts
 new HttpApi(stack, 'HttpProxyApi', {
   corsPreflight: {
-    allowCredentials: true,
     allowHeaders: ['Authorization'],
     allowMethods: [HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS, HttpMethod.POST],
     allowOrigins: ['*'],
@@ -135,8 +134,6 @@ If you omit the `stageName` will create a `$default` stage. A `$default` stage i
 the API's URL - `https://{api_id}.execute-api.{region}.amazonaws.com/`.
 
 Note that, `HttpApi` will always creates a `$default` stage, unless the `createDefaultStage` property is unset.
-
-
 
 ### Custom Domain
 

@@ -29,4 +29,20 @@ export = {
 
     test.done();
   },
+
+  'a template can contain multiple Rules'(test: Test) {
+    const stack = new Stack();
+
+    new CfnRule(stack, 'Rule1');
+    new CfnRule(stack, 'Rule2');
+
+    test.deepEqual(toCloudFormation(stack), {
+      Rules: {
+        Rule1: {},
+        Rule2: {},
+      },
+    });
+
+    test.done();
+  },
 };
