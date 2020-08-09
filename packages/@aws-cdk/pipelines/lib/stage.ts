@@ -193,7 +193,7 @@ export class CdkStage extends Construct {
         output: artifact,
         outputFileName: artifact ? 'outputs.json' : undefined,
         prepareRunOrder,
-        executeRunOrder
+        executeRunOrder,
       }));
     }
   }

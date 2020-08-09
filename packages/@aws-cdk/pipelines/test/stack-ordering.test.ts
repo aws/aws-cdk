@@ -58,7 +58,7 @@ test('multiple independent stacks go in parallel', () => {
 test('manual approval is inserted in correct location', () => {
   // WHEN
   pipeline.addApplicationStage(new TwoStackApp(app, 'MyApp'), {
-    manualApprovals: true
+    manualApprovals: true,
   });
 
   // THEN
@@ -70,7 +70,7 @@ test('manual approval is inserted in correct location', () => {
         objectLike({ Name: 'ManualApproval' }),
         objectLike({ Name: 'Stack1.Deploy' }),
         objectLike({ Name: 'Stack2.Prepare' }),
-        objectLike({ Name: 'ManualApproval1' }),
+        objectLike({ Name: 'ManualApproval2' }),
         objectLike({ Name: 'Stack2.Deploy' }),
       ]),
     }),
