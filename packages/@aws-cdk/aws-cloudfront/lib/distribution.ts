@@ -303,18 +303,19 @@ export class Distribution extends Resource implements IDistribution {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
-        this.addOriginGroup(originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
+        return this.addOriginGroup(originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
       }
       return originId;
     }
   }
 
-  private addOriginGroup(statusCodes: number[] | undefined, originId: string, failoverOriginId: string): void {
+  private addOriginGroup(statusCodes: number[] | undefined, originId: string, failoverOriginId: string): string {
     statusCodes = statusCodes ?? [500, 502, 503, 504];
     if (statusCodes.length === 0) {
       throw new Error('fallbackStatusCodes cannot be empty');
     }
     const groupIndex = this.originGroups.length + 1;
+    const originGroupId = new Construct(this, `OriginGroup${groupIndex}`).node.uniqueId;
     this.originGroups.push({
       failoverCriteria: {
         statusCodes: {
@@ -322,7 +323,7 @@ export class Distribution extends Resource implements IDistribution {
           quantity: statusCodes.length,
         },
       },
-      id: new Construct(this, `OriginGroup${groupIndex}`).node.uniqueId,
+      id: originGroupId,
       members: {
         items: [
           { originId },
@@ -331,6 +332,7 @@ export class Distribution extends Resource implements IDistribution {
         quantity: 2,
       },
     });
+    return originGroupId
   }
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {

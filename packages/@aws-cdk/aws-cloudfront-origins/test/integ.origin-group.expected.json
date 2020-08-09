@@ -72,7 +72,7 @@
             "ForwardedValues": {
               "QueryString": false
             },
-            "TargetOriginId": "cloudfrontorigingroupDistributionOrigin137659A54",
+            "TargetOriginId": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
             "ViewerProtocolPolicy": "allow-all"
           },
           "Enabled": true,
