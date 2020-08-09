@@ -111,10 +111,10 @@ class EksClusterStack extends TestStack {
   }
   private assertInferenceInstances() {
     // inference instances
-    // this.cluster.addCapacity('InferenceInstances', {
-    //   instanceType: new ec2.InstanceType('inf1.2xlarge'),
-    //   minCapacity: 1,
-    // });
+    this.cluster.addCapacity('InferenceInstances', {
+      instanceType: new ec2.InstanceType('inf1.2xlarge'),
+      minCapacity: 1,
+    });
   }
   private assertSpotCapacity() {
     // spot instances (up to 10)
