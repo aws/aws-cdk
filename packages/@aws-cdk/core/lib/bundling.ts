@@ -5,7 +5,7 @@ import { spawnSync, SpawnSyncOptions } from 'child_process';
  *
  * @experimental
  */
-export interface IBundlingOptions {
+export interface BundlingOptions {
   /**
    * The Docker image where the command will run.
    */
@@ -55,10 +55,12 @@ export interface IBundlingOptions {
   readonly user?: string;
 
   /**
-   * A user function to indicate if bundling should run locally instead
-   * of running in a Docker container.
+   * Whether bundling should run locally instead of running in a Docker
+   * container.
+   *
+   * @default false
    */
-  runLocally?(): boolean;
+  readonly runLocally?: boolean;
 }
 
 /**
@@ -108,7 +110,7 @@ export class BundlingDockerImage {
    *
    * @internal
    */
-  public _run(options: IDockerRunOptions = {}) {
+  public _run(options: DockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
     const command = options.command || [];
@@ -121,7 +123,7 @@ export class BundlingDockerImage {
       ],
     };
 
-    if (!options.runLocally || options.runLocally() === false) {
+    if (!options.runLocally) {
       const dockerArgs: string[] = [
         'run', '--rm',
         ...options.user
@@ -202,7 +204,7 @@ export enum DockerVolumeConsistency {
 /**
  * Docker run options
  */
-interface IDockerRunOptions {
+interface DockerRunOptions {
   /**
    * The command to run in the container.
    *
@@ -238,7 +240,7 @@ interface IDockerRunOptions {
    */
   readonly user?: string;
 
-  runLocally?(): boolean;
+  readonly runLocally?: boolean;
 }
 
 /**

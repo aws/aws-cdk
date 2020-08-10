@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions } from './assets';
-import { IBundlingOptions } from './bundling';
+import { BundlingOptions } from './bundling';
 import { Construct } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
 import { Stage } from './stage';
@@ -145,7 +145,7 @@ export class AssetStaging extends Construct {
     }
   }
 
-  private bundle(options: IBundlingOptions): string {
+  private bundle(options: BundlingOptions): string {
     // Temp staging directory in the working directory
     const stagingTmp = path.join('.', STAGING_TMP);
     fs.ensureDirSync(stagingTmp);

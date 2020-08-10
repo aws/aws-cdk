@@ -1,4 +1,4 @@
-import { IBundlingOptions } from './bundling';
+import { BundlingOptions } from './bundling';
 
 /**
  * Common interface for all assets.
@@ -55,7 +55,7 @@ export interface AssetOptions {
    *
    * @experimental
    */
-  readonly bundling?: IBundlingOptions;
+  readonly bundling?: BundlingOptions;
 }
 
 /**
