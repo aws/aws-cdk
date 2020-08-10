@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, Tag, validateString, ISynthesisSession } from '../lib';
+  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
@@ -840,7 +840,7 @@ export = {
     const stack2 = new Stack(stack1, 'stack2');
 
     // WHEN
-    Tag.add(app, 'foo', 'bar');
+    Tags.of(app).add('foo', 'bar');
 
     // THEN
     const asm = app.synth();
