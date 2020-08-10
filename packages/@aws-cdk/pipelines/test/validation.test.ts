@@ -75,6 +75,9 @@ test('can use stack outputs as validation inputs', () => {
   });
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -113,6 +116,9 @@ test('can use additional files from source', () => {
     }),
   });
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -149,6 +155,9 @@ test('can use additional files from build', () => {
     }),
   });
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {

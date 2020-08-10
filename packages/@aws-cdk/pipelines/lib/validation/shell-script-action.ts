@@ -134,6 +134,7 @@ export class ShellScriptAction implements codepipeline.IAction {
     }
 
     this._project = new codebuild.PipelineProject(scope, 'Project', {
+      environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0 },
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
         phases: {
