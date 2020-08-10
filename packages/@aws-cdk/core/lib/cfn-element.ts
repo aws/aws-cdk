@@ -58,10 +58,10 @@ export abstract class CfnElement extends Construct {
     this.stack = Stack.of(this);
 
     this.logicalId = Lazy.stringValue({ produce: () => this.synthesizeLogicalId() }, {
-      displayHint: `${notTooLong(this.node.path)}.LogicalID`,
+      displayHint: `${notTooLong(this.construct.path)}.LogicalID`,
     });
 
-    this.node.addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, this.constructor);
+    this.construct.addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, this.constructor);
   }
 
   /**
@@ -78,7 +78,7 @@ export abstract class CfnElement extends Construct {
    *      node +internal+ entries filtered.
    */
   public get creationStack(): string[] {
-    const trace = this.node.metadata.find(md => md.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID)!.trace;
+    const trace = this.construct.metadata.find(md => md.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID)!.trace;
     if (!trace) {
       return [];
     }

@@ -203,7 +203,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
     const instance = new CfnDBInstance(this, 'Resource', {
       dbClusterIdentifier: props.cluster.clusterIdentifier,
       dbInstanceClass: `db.${props.instanceClass}`,
-      autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
+      autoMinorVersionUpgrade: props.autoMinorVersionUpgrade ?? true,
       availabilityZone: props.availabilityZone,
       dbInstanceIdentifier: props.dbInstanceName,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
