@@ -1,13 +1,14 @@
 import * as cdk from '@aws-cdk/core';
 import * as db from '@aws-cdk/aws-dynamodb';
 import * as appsync from '../lib';
-import * as t from './schema-type-defintions';
+import * as ObjectType from './object-type-definitions';
+import * as ScalarType from './scalar-type-defintions';
 
 /*
  * Creates an Appsync GraphQL API and schema in a code-first approach.
  *
  * Stack verification steps:
- * Deploy stack, get api key and endpoint. Check if schema connects to data source.
+ * Deploy stack, get api key and endpoinScalarType. Check if schema connects to data source.
  *
  * -- bash verify.integ.graphql-schema.sh --start                 -- start                    --
  * -- aws appsync list-graphql-apis                               -- obtain apiId & endpoint  --
@@ -23,20 +24,24 @@ const api = new appsync.GraphQLApi(stack, 'code-first-api', {
   schemaDefinition: appsync.SchemaDefinition.CODE,
 });
 
-api.addType('Planet', {
+const planet = ObjectType.planet;
+planet.appendToSchema(api);
+
+api.addType('Species', {
   definition: {
-    name: t.string,
-    diameter: t.int,
-    rotationPeriod: t.int,
-    orbitalPeriod: t.int,
-    gravity: t.string,
-    population: t.list_string,
-    climates: t.list_string,
-    terrains: t.list_string,
-    surfaceWater: t.float,
-    created: t.string,
-    edited: t.string,
-    id: t.required_id,
+    name: ScalarType.string,
+    classification: ScalarType.string,
+    designation: ScalarType.string,
+    averageHeight: ScalarType.float,
+    averageLifespan: ScalarType.int,
+    eyeColors: ScalarType.list_string,
+    hairColors: ScalarType.list_string,
+    skinColors: ScalarType.list_string,
+    language: ScalarType.string,
+    homeworld: planet.attribute(),
+    created: ScalarType.string,
+    edited: ScalarType.string,
+    id: ScalarType.required_id,
   },
 });
 

@@ -28,7 +28,7 @@
             "ApiId"
           ]
         },
-        "Definition": "type Planet {\n  name: String\n  diameter: Int\n  rotationPeriod: Int\n  orbitalPeriod: Int\n  gravity: String\n  population: [String]\n  climates: [String]\n  terrains: [String]\n  surfaceWater: Float\n  created: String\n  edited: String\n  id: ID!\n}\n\ntype Query {\n  getPlanets: [Planet]\n}\n"
+        "Definition": "type Planet {\n  name: String\n  diameter: Int\n  rotationPeriod: Int\n  orbitalPeriod: Int\n  gravity: String\n  population: [String]\n  climates: [String]\n  terrains: [String]\n  surfaceWater: Float\n  created: String\n  edited: String\n  id: ID!\n}\ntype Species {\n  name: String\n  classification: String\n  designation: String\n  averageHeight: Float\n  averageLifespan: Int\n  eyeColors: [String]\n  hairColors: [String]\n  skinColors: [String]\n  language: String\n  homeworld: Planet\n  created: String\n  edited: String\n  id: ID!\n}\n\ntype Query {\n  getPlanets: [Planet]\n}\n"
       }
     },
     "codefirstapiplanetsDSServiceRoleCC9B598D": {
