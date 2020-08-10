@@ -316,7 +316,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsJSON(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static awsJson(options?: BaseGraphqlTypeOptions): GraphqlType {
     return new GraphqlType(Type.AWS_JSON, options);
   }
   /**
@@ -329,7 +329,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsURL(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static awsUrl(options?: BaseGraphqlTypeOptions): GraphqlType {
     return new GraphqlType(Type.AWS_URL, options);
   }
   /**
@@ -504,7 +504,7 @@ export enum Type {
    *
    * URLs wihtout schemes or contain double slashes are considered invalid.
    */
-  AWS_URL = 'AWSUrl',
+  AWS_URL = 'AWSURL',
   /**
    * `AWSPhone` scalar type represents a valid phone number. Phone numbers maybe be whitespace delimited or hyphenated.
    *

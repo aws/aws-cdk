@@ -62,39 +62,6 @@ describe('basic testing schema definition mode `code`', () => {
 
 });
 
-describe('testing addType for schema definition mode `code`', () => {
-  let api: appsync.GraphQLApi;
-  beforeEach(() => {
-    // GIVEN
-    api = new appsync.GraphQLApi(stack, 'api', {
-      name: 'api',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
-    });
-  });
-
-  test('addType', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.id,
-        lid: t.list_id,
-        rid: t.required_id,
-        rlid: t.required_list_id,
-        rlrid: t.required_list_required_id,
-        dupid: t.dup_id,
-      },
-    });
-
-    const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-});
-
 describe('testing schema definition mode `file`', () => {
 
   test('definition mode `file` produces correct output', () => {
