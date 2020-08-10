@@ -56,21 +56,27 @@ The canary will automatically produce a CloudWatch Dashboard:
 
 ### Canary Test
 
-The `test` property represents the test the canary executes. You can supply you own code using the `Test.custom()` method.
+The canary resource creates a lambda function that executes the canary script. To specify the script, use the `test` property. 
 
-#### Custom
+#### Custom Test
+
+You can bring your own code by using `Test.custom()`, which exposes a `code` property. 
 
 This will allow you to specify a custom script and handler for the canary. To specify the script in the `code` property, use one of the following static methods:
 
   - `code.fromInline()` - specify an inline script.
-  - `code.fromAsset()` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 before deployment. The canary resource requires the handler is present at `nodejs/node_modules/<handlerName>.js`.
-  - `code.fromBucket()` - specify an S3 object that contains the archive of your runtime code. The object must be a .zip file and the handler must be present at `nodejs/node_modules/<handlerName>.js`.
+  - `code.fromAsset()` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment.
+  - `code.fromBucket()` - specify an S3 object that contains the .zip file of your runtime code.
+
+> **Note:** For `code.fromAsset()` and `code.fromBucket()`, the canary resource requires the following folder structure: `nodejs/node_modules/<handlerFile>`. 
+
+To supply the code from your local filesystem:
 
 ```ts
 const canary = new Canary(this, 'MyCanary', {
   test: Test.custom({
     code: Code.fromAsset(path.join(__dirname, 'canary'))),
-    handler: 'index.handler',
+    handler: 'index.handler', // must end with '.handler'
   }),
 });
 ```
