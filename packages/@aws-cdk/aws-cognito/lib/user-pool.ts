@@ -858,10 +858,9 @@ export class UserPool extends UserPoolBase {
       return undefined;
     }
 
-    const mfaEnabled = props.mfa && props.mfa !== Mfa.OFF;
-    const mfaSms = !props.mfaSecondFactor || props.mfaSecondFactor.sms; // mfaSecondFactor.sms is true, by default if MFA is 'on'
+    const mfaConfiguration = this.mfaConfiguration(props);
     const phoneVerification = props.signInAliases?.phone === true || props.autoVerify?.phone === true;
-    const roleRequired = (mfaEnabled && mfaSms) || phoneVerification;
+    const roleRequired = mfaConfiguration?.includes('SMS_MFA') || phoneVerification;
     if (!roleRequired && props.enableSmsRole === undefined) {
       return undefined;
     }
