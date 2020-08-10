@@ -34,7 +34,8 @@ export interface UtilizationScalingOptions extends appscaling.BaseTargetTracking
 /**
  * A scalable lambda alias attribute
  */
-export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute {
+
+  export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute implements IScalableFunctionAttribute{
   constructor(scope: Construct, id: string, props: ScalableFunctionAttributeProps){
     super(scope, id, props);
   }
