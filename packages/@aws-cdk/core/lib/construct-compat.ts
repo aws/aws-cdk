@@ -10,9 +10,9 @@
  * This file, in its entirety, is expected to be removed in v2.0.
  */
 
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
+import { Annotations } from './annotations';
 import { IAspect, Aspects } from './aspect';
 import { IDependable } from './dependency';
 import { Token } from './token';
@@ -426,31 +426,34 @@ export class ConstructNode {
   public addMetadata(type: string, data: any, fromFunction?: any): void { this._actualNode.addMetadata(type, data, fromFunction); }
 
   /**
-   * Adds a { "info": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds a { "info": <message> } metadata entry to this construct.
    * The toolkit will display the info message when apps are synthesized.
    * @param message The info message.
+   * @deprecated use `Annotations.of(construct).addInfo()`
    */
   public addInfo(message: string): void {
-    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.INFO, message);
+    Annotations.of(this.host).addInfo(message);
   }
 
   /**
-   * Adds a { "warning": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds a { "warning": <message> } metadata entry to this construct.
    * The toolkit will display the warning when an app is synthesized, or fail
    * if run in --strict mode.
    * @param message The warning message.
+   * @deprecated use `Annotations.of(construct).addWarning()`
    */
   public addWarning(message: string): void {
-    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.WARN, message);
+    Annotations.of(this.host).addWarning(message);
   }
 
   /**
-   * Adds an { "error": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds an { "error": <message> } metadata entry to this construct.
    * The toolkit will fail synthesis when errors are reported.
    * @param message The error message.
+   * @deprecated use `Annotations.of(construct).addError()`
    */
   public addError(message: string) {
-    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.ERROR, message);
+    Annotations.of(this.host).addError(message);
   }
 
   /**
