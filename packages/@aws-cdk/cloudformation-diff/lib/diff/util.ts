@@ -34,7 +34,6 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
     }
     return true;
   }
-
   // Neither object, nor array: I deduce this is primitive type
   // Primitive type and not ===, so I deduce not deepEqual
   return false;
