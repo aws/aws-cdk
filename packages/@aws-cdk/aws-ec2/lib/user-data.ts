@@ -89,6 +89,7 @@ export abstract class UserData {
     switch (os) {
       case OperatingSystemType.LINUX: return UserData.forLinux();
       case OperatingSystemType.WINDOWS: return UserData.forWindows();
+      case OperatingSystemType.UNKNOWN: throw new Error('Cannot determine UserData for unknown operating system type');
     }
   }
 
