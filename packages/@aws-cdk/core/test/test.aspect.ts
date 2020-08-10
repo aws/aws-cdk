@@ -21,7 +21,7 @@ class VisitOnce implements IAspect {
 
 class MyAspect implements IAspect {
   public visit(node: IConstruct): void {
-    node.node.addMetadata('foo', 'bar');
+    node.construct.addMetadata('foo', 'bar');
   }
 }
 
@@ -29,7 +29,7 @@ export = {
   'Aspects are invoked only once'(test: Test) {
     const app = new App();
     const root = new MyConstruct(app, 'MyConstruct');
-    root.node.applyAspect(new VisitOnce());
+    root.construct.applyAspect(new VisitOnce());
     app.synth();
     test.deepEqual(root.visitCounter, 1);
     app.synth();
@@ -41,20 +41,20 @@ export = {
     const app = new App();
     const root = new MyConstruct(app, 'MyConstruct');
     const child = new MyConstruct(root, 'ChildConstruct');
-    root.node.applyAspect({
+    root.construct.applyAspect({
       visit(construct: IConstruct) {
-        construct.node.applyAspect({
+        construct.construct.applyAspect({
           visit(inner: IConstruct) {
-            inner.node.addMetadata('test', 'would-be-ignored');
+            inner.construct.addMetadata('test', 'would-be-ignored');
           },
         });
       },
     });
     app.synth();
-    test.deepEqual(root.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-    test.deepEqual(root.node.metadata[0].data, 'We detected an Aspect was added via another Aspect, and will not be applied');
+    test.deepEqual(root.construct.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
+    test.deepEqual(root.construct.metadata[0].data, 'We detected an Aspect was added via another Aspect, and will not be applied');
     // warning is not added to child construct
-    test.equal(child.node.metadata.length, 0);
+    test.equal(child.construct.metadata.length, 0);
     test.done();
   },
 
@@ -62,15 +62,15 @@ export = {
     const app = new App();
     const root = new MyConstruct(app, 'Construct');
     const child = new MyConstruct(root, 'ChildConstruct');
-    root.node.applyAspect(new MyAspect());
+    root.construct.applyAspect(new MyAspect());
     app.synth();
-    test.deepEqual(root.node.metadata[0].type, 'foo');
-    test.deepEqual(root.node.metadata[0].data, 'bar');
-    test.deepEqual(root.node.metadata[0].type, 'foo');
-    test.deepEqual(child.node.metadata[0].data, 'bar');
+    test.deepEqual(root.construct.metadata[0].type, 'foo');
+    test.deepEqual(root.construct.metadata[0].data, 'bar');
+    test.deepEqual(root.construct.metadata[0].type, 'foo');
+    test.deepEqual(child.construct.metadata[0].data, 'bar');
     // no warning is added
-    test.equal(root.node.metadata.length, 1);
-    test.equal(child.node.metadata.length, 1);
+    test.equal(root.construct.metadata.length, 1);
+    test.equal(child.construct.metadata.length, 1);
     test.done();
   },
 

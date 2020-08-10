@@ -148,11 +148,11 @@ export = {
 
     // WHEN
     const aspect = new TouchingAspect();
-    stack.node.applyAspect(aspect);
+    stack.construct.applyAspect(aspect);
 
     // THEN
     app.synth();
-    test.deepEqual(aspect.visits.map(c => c.node.path), [
+    test.deepEqual(aspect.visits.map(c => c.construct.path), [
       'MyStage/Stack',
       'MyStage/Stack/Resource',
     ]);
@@ -168,11 +168,11 @@ export = {
 
     // WHEN
     const aspect = new TouchingAspect();
-    app.node.applyAspect(aspect);
+    app.construct.applyAspect(aspect);
 
     // THEN
     app.synth();
-    test.deepEqual(aspect.visits.map(c => c.node.path), [
+    test.deepEqual(aspect.visits.map(c => c.construct.path), [
       '',
       'Tree',
     ]);
