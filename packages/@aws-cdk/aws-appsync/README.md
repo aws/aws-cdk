@@ -246,7 +246,7 @@ You can create Object Types in two ways:
 
     api.appendToSchema(object);
     ```
-    This method allows for reusability and modularity, ideal for larger projects. 
+    > This method allows for reusability and modularity, ideal for larger projects. 
     For example, imagine moving all Object Type definition outside the stack.
 
     `scalar-types.ts` - a file for scalar type definitions
@@ -284,5 +284,5 @@ You can create Object Types in two ways:
       },
     });
     ```
-    This method provides easy use and is ideal for smaller projects.
+    > This method provides easy use and is ideal for smaller projects.
     
