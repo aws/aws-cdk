@@ -1,3 +1,5 @@
+import { GraphQLApi } from './graphqlapi';
+
 /**
  * Directives for types
  *
@@ -34,6 +36,12 @@ export class Directive {
  */
 export interface ObjectTypeProps {
   /**
+   * the api linked to this object type
+   *
+   * @default - no linked GraphQL Api
+   */
+  readonly api?: GraphQLApi;
+  /**
    * the attributes of this object type
    */
   readonly definition: { [key: string]: GraphqlType };
@@ -64,6 +72,12 @@ export class ObjectType {
    */
   public readonly name: string;
   /**
+   * the api linked to this object type
+   *
+   * @defualt - no linked GraphQL Api
+   */
+  public readonly api?: GraphQLApi;
+  /**
    * the attributes of this object type
    */
   public readonly definition: { [key: string]: GraphqlType };
@@ -76,8 +90,13 @@ export class ObjectType {
 
   public constructor(name: string, props: ObjectTypeProps) {
     this.name = name;
+    this.api = props.api;
     this.definition = props.definition;
-    this.directives = props?.directives;
+    this.directives = props.directives;
+
+    if (this.api) {
+      this.appendToSchema(this.api);
+    }
   }
 
   /**
@@ -117,13 +136,24 @@ export class ObjectType {
    * @param delimiter the separator betweeen directives
    * @default - ' '
    */
-  private generateDirectives (directives?: Directive[], delimiter?: string): string{
+  private generateDirectives(directives?: Directive[], delimiter?: string): string{
     let schemaAddition = '';
     if (!directives){ return schemaAddition; }
     directives.map((directive) => {
       schemaAddition = `${schemaAddition}${directive.statement}${delimiter ?? ' '}`;
     });
     return schemaAddition;
+  }
+
+  /**
+   * Add object type definition to a linked api.
+   *
+   * @param api - the GraphQL Api to append to
+   * @param delimiter the delimiter between schema and addition
+   * @default - ''
+   */
+  public appendToSchema(api: GraphQLApi, delimiter?: string): void{
+    api.appendToSchema(this.toString(), delimiter);
   }
 }
 

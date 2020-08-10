@@ -732,12 +732,11 @@ export class GraphQLApi extends Construct {
   public addType(name: string, props: ObjectTypeProps): ObjectType {
     if ( this.schemaMode != SchemaDefinition.CODE ) {
       throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
-    }
-    const type = new ObjectType(name, {
+    };
+    return new ObjectType(name, {
+      api: this,
       definition: props.definition,
       directives: props.directives,
     });
-    this.appendToSchema(type.toString());
-    return type;
   }
 }
