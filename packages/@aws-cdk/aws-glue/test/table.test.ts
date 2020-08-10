@@ -385,7 +385,7 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
       ],
       Version: '2012-10-17',
     },
-    Description: 'Created by Table/Bucket',
+    Description: 'Created by Default/Table/Bucket',
   }));
 
   cdkExpect(stack).to(haveResource('AWS::S3::Bucket', {

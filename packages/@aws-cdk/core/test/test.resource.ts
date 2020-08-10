@@ -1,8 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { App, App as Root, CfnCondition,
-  CfnDeletionPolicy, CfnResource, Construct, ConstructNode,
+  CfnDeletionPolicy, CfnResource, Construct,
   Fn, RemovalPolicy, Stack } from '../lib';
+import { synthesize } from '../lib/private/synthesis';
 import { toCloudFormation } from './util';
 
 export = {
@@ -128,10 +129,11 @@ export = {
     const r1 = new Counter(stack, 'Counter1', { Count: 1 });
     const r2 = new Counter(stack, 'Counter2', { Count: 1 });
     const r3 = new CfnResource(stack, 'Resource3', { type: 'MyResourceType' });
-    r2.node.addDependency(r1);
-    r2.node.addDependency(r3);
+    r2.construct.addDependency(r1);
+    r2.construct.addDependency(r3);
 
-    ConstructNode.prepare(stack.node);
+    synthesize(stack);
+
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         Counter1: {
@@ -355,10 +357,11 @@ export = {
     const c3 = new C3(stack, 'MyC3');
 
     const dependingResource = new CfnResource(stack, 'MyResource', { type: 'R' });
-    dependingResource.node.addDependency(c1, c2);
-    dependingResource.node.addDependency(c3);
+    dependingResource.construct.addDependency(c1, c2);
+    dependingResource.construct.addDependency(c3);
 
-    ConstructNode.prepare(stack.node);
+    synthesize(stack);
+
     test.deepEqual(toCloudFormation(stack), { Resources:
       { MyC1R1FB2A562F: { Type: 'T1' },
         MyC1R2AE2B5066: { Type: 'T2' },
@@ -639,7 +642,7 @@ export = {
 
   '"aws:cdk:path" metadata is added if "aws:cdk:path-metadata" context is set to true'(test: Test) {
     const stack = new Stack();
-    stack.node.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, true);
+    stack.construct.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, true);
 
     const parent = new Construct(stack, 'Parent');
 
@@ -650,7 +653,7 @@ export = {
     test.deepEqual(toCloudFormation(stack), { Resources:
       { ParentMyResource4B1FDBCC:
          { Type: 'MyResourceType',
-           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Parent/MyResource' } } } });
+           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Default/Parent/MyResource' } } } });
 
     test.done();
   },
@@ -664,7 +667,7 @@ export = {
     const resB = new CfnResource(stackB, 'Resource', { type: 'R' });
 
     // WHEN
-    resB.node.addDependency(resA);
+    resB.construct.addDependency(resA);
 
     // THEN
     const assembly = app.synth();
@@ -678,7 +681,7 @@ export = {
         },
       },
     });
-    test.deepEqual(stackB.dependencies.map(s => s.node.id), ['StackA']);
+    test.deepEqual(stackB.dependencies.map(s => s.construct.id), ['StackA']);
 
     test.done();
   },
