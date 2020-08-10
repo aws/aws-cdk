@@ -299,6 +299,65 @@ export = {
 
     test.done();
   },
+
+  'with local bundling'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    let dir: string | undefined;
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        docker: {
+          image: BundlingDockerImage.fromRegistry('alpine'),
+          command: ['my-command'],
+        },
+        local: {
+          tryBundle(bundleDir: string): boolean {
+            dir = bundleDir;
+            return true;
+          },
+        },
+      },
+    });
+
+    // THEN
+    test.ok(dir && /asset-bundle-/.test(dir));
+    test.throws(() => readDockerStubInput());
+
+    test.done();
+  },
+
+  'with local bundling returning false'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        docker: {
+          image: BundlingDockerImage.fromRegistry('alpine'),
+          command: [DockerStubCommand.SUCCESS],
+        },
+        local: {
+          tryBundle(_bundleDir: string): boolean {
+            return false;
+          },
+        },
+      },
+    });
+
+    // THEN
+    test.ok(readDockerStubInput());
+
+    test.done();
+  },
 };
 
 function readDockerStubInput() {
