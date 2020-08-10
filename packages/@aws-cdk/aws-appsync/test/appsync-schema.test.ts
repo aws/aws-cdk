@@ -2,7 +2,7 @@ import { join } from 'path';
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
-import * as t from './schema-type-defintions';
+import * as t from './scalar-type-defintions';
 
 // Schema Definitions
 const type = 'type test {\n  version: String!\n}\n\n';
