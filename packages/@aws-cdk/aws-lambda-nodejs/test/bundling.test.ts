@@ -39,15 +39,17 @@ test('Parcel bundling', () => {
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.BUNDLE,
     bundling: expect.objectContaining({
-      environment: {
-        KEY: 'value',
-      },
-      volumes: [{ containerPath: '/parcel-cache', hostPath: '/cache-dir' }],
-      workingDirectory: '/asset-input/folder',
-      command: [
-        'bash', '-c',
-        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist --cache-dir /parcel-cache && mv /asset-output/entry.js /asset-output/index.js',
-      ],
+      docker: expect.objectContaining({
+        environment: {
+          KEY: 'value',
+        },
+        volumes: [{ containerPath: '/parcel-cache', hostPath: '/cache-dir' }],
+        workingDirectory: '/asset-input/folder',
+        command: [
+          'bash', '-c',
+          '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist --cache-dir /parcel-cache && mv /asset-output/entry.js /asset-output/index.js',
+        ],
+      }),
     }),
   });
 
@@ -84,9 +86,11 @@ test('Parcel with Windows paths', () => {
 
   expect(Code.fromAsset).toHaveBeenCalledWith('C:\\my-project', expect.objectContaining({
     bundling: expect.objectContaining({
-      command: expect.arrayContaining([
-        expect.stringContaining('/lib/entry.ts'),
-      ]),
+      docker: expect.objectContaining({
+        command: expect.arrayContaining([
+          expect.stringContaining('/lib/entry.ts'),
+        ]),
+      }),
     }),
   }));
 });
@@ -104,10 +108,12 @@ test('Parcel bundling with externals and dependencies', () => {
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.BUNDLE,
     bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist && mv /asset-output/entry.js /asset-output/index.js && mv /asset-input/.package.json /asset-output/package.json && cd /asset-output && npm install',
-      ],
+      docker: expect.objectContaining({
+        command: [
+          'bash', '-c',
+          '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist && mv /asset-output/entry.js /asset-output/index.js && mv /asset-input/.package.json /asset-output/package.json && cd /asset-output && npm install',
+        ],
+      }),
     }),
   });
 
@@ -152,9 +158,11 @@ test('Detects yarn.lock', () => {
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.BUNDLE,
     bundling: expect.objectContaining({
-      command: expect.arrayContaining([
-        expect.stringMatching(/yarn\.lock.+yarn install/),
-      ]),
+      docker: expect.objectContaining({
+        command: expect.arrayContaining([
+          expect.stringMatching(/yarn\.lock.+yarn install/),
+        ]),
+      }),
     }),
   });
 });
