@@ -81,6 +81,13 @@ export interface BootstrappingParameters {
   /**
    * Name of S3 Bucket where server access logs for the CDK toolkit bucket will be stored
    *
+   * The target bucket should grant the Amazon S3 Log Delivery group write permission.
+   * In Amazon S3, you can grant permission to deliver access logs through bucket access
+   * control lists (ACLs).
+   *
+   * Adding deny conditions to a bucket policy might prevent Amazon S3 from delivering
+   * access logs.
+   *
    * @default - None. Server access logging is not configured on the CDK toolkit bucket
    */
   readonly accessLogsBucketName?: string;
@@ -88,7 +95,7 @@ export interface BootstrappingParameters {
   /**
    * Prefix for S3 server access log files that are delivered to the CDK toolkit bucket
    *
-   * @default 'cdk-toolkit-logs''
+   * @default cdk-toolkit-logs
    */
   readonly accessLogsPrefix?: string;
   /**
