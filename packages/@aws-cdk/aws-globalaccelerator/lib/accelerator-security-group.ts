@@ -65,4 +65,6 @@ export class AcceleratorSecurityGroup {
     lookupAcceleratorSGCustomResource.node.addDependency(endpointGroup);
     return sg;
   }
+
+  private constructor() {}
 }

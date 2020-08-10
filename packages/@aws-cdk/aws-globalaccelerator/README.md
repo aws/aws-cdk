@@ -99,7 +99,7 @@ endpointGroup.addEndpoint('InstanceEndpoint2', instances[1].instanceId);
 When using certain AGA features (client IP address preservation), AGA creates elastic network interfaces (ENI) in your AWS account which are
 associated with a Security Group, and which are reused for all AGAs associated with that VPC. Per the 
 [best practices](https://docs.aws.amazon.com/global-accelerator/latest/dg/best-practices-aga.html) page, AGA creates a specific security group 
-called `GlobalAccelerator` for each VPC it has an ENI in. You can use the security groups created by AGA as a source group in other security 
+called `GlobalAccelerator` for each VPC it has an ENI in. You can use the security group created by AGA as a source group in other security 
 groups, such as those for EC2 instances or Elastic Load Balancers, in order to implement least-privilege security group rules.
 
 CloudFormation doesn't support referencing the security group created by AGA. CDK has a library that enables you to reference the AGA security group
