@@ -17,14 +17,16 @@ class TestStack extends Stack {
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromAsset(assetPath, {
         bundling: {
-          image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
-          command: [
-            'bash', '-c', [
-              'cp -au . /asset-output',
-              'cd /asset-output',
-              'pip install -r requirements.txt -t .',
-            ].join(' && '),
-          ],
+          docker: {
+            image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
+            command: [
+              'bash', '-c', [
+                'cp -au . /asset-output',
+                'cd /asset-output',
+                'pip install -r requirements.txt -t .',
+              ].join(' && '),
+            ],
+          },
         },
       }),
       runtime: lambda.Runtime.PYTHON_3_6,

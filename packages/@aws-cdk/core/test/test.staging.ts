@@ -114,8 +114,10 @@ export = {
     new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        docker: {
+          image: BundlingDockerImage.fromRegistry('alpine'),
+          command: [ DockerStubCommand.SUCCESS ],
+        },
       },
     });
 
@@ -155,8 +157,10 @@ export = {
     test.throws(() => new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS_NO_OUTPUT ],
+        docker: {
+          image: BundlingDockerImage.fromRegistry('alpine'),
+          command: [ DockerStubCommand.SUCCESS_NO_OUTPUT ],
+        },
       },
     }), /Bundling did not produce any output/);
 
@@ -177,8 +181,10 @@ export = {
     const asset = new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        docker: {
+          image: BundlingDockerImage.fromRegistry('alpine'),
+          command: [ DockerStubCommand.SUCCESS ],
+        },
       },
       assetHashType: AssetHashType.BUNDLE,
     });
@@ -222,8 +228,10 @@ export = {
     test.throws(() => new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        docker: {
+          image: BundlingDockerImage.fromRegistry('alpine'),
+          command: [ DockerStubCommand.SUCCESS ],
+        },
       },
       assetHash: 'my-custom-hash',
       assetHashType: AssetHashType.BUNDLE,
@@ -278,8 +286,10 @@ export = {
     test.throws(() => new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('this-is-an-invalid-docker-image'),
-        command: [ DockerStubCommand.FAIL ],
+        docker: {
+          image: BundlingDockerImage.fromRegistry('this-is-an-invalid-docker-image'),
+          command: [ DockerStubCommand.FAIL ],
+        },
       },
     }), /Failed to run bundling Docker image for asset stack\/Asset/);
     test.equal(
