@@ -67,9 +67,9 @@ export class FromCloudFormation {
       return Token.asNumber(value);
     }
 
-    // in all other cases, just return the input,
-    // and let a validator handle it if it's not a number
-    return isNaN(parseInt(value)) ? value : parseInt(value);
+    // return a number, if the input can be parsed as one;
+    // otherwise, return the input.
+    return isNaN(parseFloat(value)) ? value : parseFloat(value);
   }
 
   public static getStringArray(value: any): string[] {
