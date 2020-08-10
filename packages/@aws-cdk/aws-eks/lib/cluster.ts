@@ -1018,13 +1018,20 @@ export class Cluster extends Resource implements ICluster {
       };
 
       if (!this.endpointAccess._config.publicAccess) {
+
+        const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+
+        if (privateSubents.length === 0) {
+          throw new Error('Vpc must contain private subnets to configure private endpoint access');
+        }
+
         // endpoint access is private only, we need to attach the
         // provider to the VPC so that it can access the cluster.
         providerProps = {
           ...providerProps,
           vpc: this.vpc,
           // lambda can only be accociated with max 16 subnets and they all need to be private.
-          vpcSubnets: {subnets: this.selectPrivateSubnets().slice(0, 16)},
+          vpcSubnets: {subnets: privateSubents},
           securityGroups: [this.kubctlProviderSecurityGroup],
         };
       }
@@ -1049,7 +1056,26 @@ export class Cluster extends Resource implements ICluster {
     const privateSubnets: ec2.ISubnet[] = [];
 
     for (const placement of this.vpcSubnets) {
-      privateSubnets.push(...this.vpc.selectSubnets(placement).subnets.filter(s => s instanceof ec2.PrivateSubnet));
+
+      for (const subnet of this.vpc.selectSubnets(placement).subnets) {
+
+        if (this.vpc.privateSubnets.includes(subnet)) {
+          // definitely private, take it.
+          privateSubnets.push(subnet);
+          continue;
+        }
+
+        if (this.vpc.publicSubnets.includes(subnet)) {
+          // definitely public, skip it.
+          continue;
+        }
+
+        // neither public and nor private - what is it then? this means its a subnet instance that was explicitly passed
+        // in the subnet selection. since ISubnet doesn't contain information on type, we have to assume its private and let it
+        // fail at deploy time :\ (its better than filtering it out and preventing a possibly successful deployment)
+        privateSubnets.push(subnet);
+      }
+
     }
 
     return privateSubnets;
