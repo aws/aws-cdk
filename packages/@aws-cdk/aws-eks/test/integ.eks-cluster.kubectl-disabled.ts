@@ -9,9 +9,8 @@ class EksClusterStack extends TestStack {
 
     const vpc = new ec2.Vpc(this, 'VPC');
 
-    const cluster = new eks.Cluster(this, 'EKSCluster', {
+    const cluster = new eks.LegacyCluster(this, 'EKSCluster', {
       vpc,
-      kubectlEnabled: false,
       defaultCapacity: 0,
       version: eks.KubernetesVersion.V1_16,
     });
