@@ -73,7 +73,7 @@ export class Stage extends Construct {
    * @experimental
    */
   public static of(construct: IConstruct): Stage | undefined {
-    return construct.node.scopes.reverse().slice(1).find(Stage.isStage);
+    return construct.construct.scopes.reverse().slice(1).find(Stage.isStage);
   }
 
   /**
@@ -144,6 +144,13 @@ export class Stage extends Construct {
   }
 
   /**
+   * The cloud assembly output directory.
+   */
+  public get outdir() {
+    return this._assemblyBuilder.outdir;
+  }
+
+  /**
    * Artifact ID of the assembly if it is a nested stage. The root stage (app)
    * will return an empty string.
    *
@@ -152,8 +159,8 @@ export class Stage extends Construct {
    * @experimental
    */
   public get artifactId() {
-    if (!this.node.path) { return ''; }
-    return `assembly-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
+    if (!this.construct.path) { return ''; }
+    return `assembly-${this.construct.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
   }
 
   /**
@@ -163,8 +170,8 @@ export class Stage extends Construct {
    * calls will return the same assembly.
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
-    if (!this.assembly) {
-      const runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
+    if (!this.assembly || options.force) {
+      const runtimeInfo = this.construct.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         runtimeInfo,
@@ -184,7 +191,7 @@ export class Stage extends Construct {
     // to write sub-assemblies (which must happen before we actually get to this app's
     // synthesize() phase).
     return this.parentStage
-      ? this.parentStage._assemblyBuilder.createNestedAssembly(this.artifactId, this.node.path)
+      ? this.parentStage._assemblyBuilder.createNestedAssembly(this.artifactId, this.construct.path)
       : new cxapi.CloudAssemblyBuilder(outdir);
   }
 }
@@ -198,4 +205,12 @@ export interface StageSynthesisOptions {
    * @default - false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * Force a re-synth, even if the stage has already been synthesized.
+   * This is used by tests to allow for incremental verification of the output.
+   * Do not use in production.
+   * @default false
+   */
+  readonly force?: boolean;
 }

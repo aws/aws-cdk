@@ -152,6 +152,21 @@ export class WindowsImage implements IMachineImage  {
 }
 
 /**
+ * CPU type
+ */
+export enum AmazonLinuxCpuType {
+  /**
+   * arm64 CPU type
+   */
+  ARM_64 = 'arm64',
+
+  /**
+   * x86_64 CPU type
+   */
+  X86_64 = 'x86_64',
+}
+
+/**
  * Amazon Linux image properties
  */
 export interface AmazonLinuxImageProps {
@@ -189,6 +204,13 @@ export interface AmazonLinuxImageProps {
    * @default - Empty UserData for Linux machines
    */
   readonly userData?: UserData;
+
+  /**
+   * CPU Type
+   *
+   * @default X86_64
+   */
+  readonly cpuType?: AmazonLinuxCpuType;
 }
 
 /**
@@ -206,12 +228,14 @@ export class AmazonLinuxImage implements IMachineImage {
   private readonly edition: AmazonLinuxEdition;
   private readonly virtualization: AmazonLinuxVirt;
   private readonly storage: AmazonLinuxStorage;
+  private readonly cpu: AmazonLinuxCpuType;
 
   constructor(private readonly props: AmazonLinuxImageProps = {}) {
     this.generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
     this.edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
     this.virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
     this.storage = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
+    this.cpu = (props && props.cpuType) || AmazonLinuxCpuType.X86_64;
   }
 
   /**
@@ -223,7 +247,7 @@ export class AmazonLinuxImage implements IMachineImage {
       'ami',
       this.edition !== AmazonLinuxEdition.STANDARD ? this.edition : undefined,
       this.virtualization,
-      'x86_64', // No 32-bits images vended through this
+      this.cpu,
       this.storage,
     ].filter(x => x !== undefined); // Get rid of undefineds
 
@@ -387,6 +411,11 @@ export class GenericWindowsImage implements IMachineImage  {
 export enum OperatingSystemType {
   LINUX,
   WINDOWS,
+  /**
+   * Used when the type of the operating system is not known
+   * (for example, for imported Auto-Scaling Groups).
+   */
+  UNKNOWN,
 }
 
 /**

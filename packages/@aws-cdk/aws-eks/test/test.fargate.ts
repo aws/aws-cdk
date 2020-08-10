@@ -315,6 +315,20 @@ export = {
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
+                'FargateClusterMastersRole50BAF9FD',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'FargateClusterMastersRole50BAF9FD',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
                 'FargateClusterfargateprofiledefaultPodExecutionRole66F2610E',
                 'Arn',
               ],
@@ -324,20 +338,6 @@ export = {
         ],
       },
     }));
-    test.done();
-  },
-
-  'cannot be added to a cluster without kubectl enabled'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { kubectlEnabled: false, version: CLUSTER_VERSION });
-
-    // WHEN
-    test.throws(() => new eks.FargateProfile(stack, 'MyFargateProfile', {
-      cluster,
-      selectors: [ { namespace: 'default' } ],
-    }), /unsupported/);
-
     test.done();
   },
 

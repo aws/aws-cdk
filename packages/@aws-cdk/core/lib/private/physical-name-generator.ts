@@ -8,16 +8,16 @@ import { TokenMap } from './token-map';
 export function generatePhysicalName(resource: IResource): string {
   const stack = Stack.of(resource);
   const stackPart = new PrefixNamePart(stack.stackName, 25);
-  const idPart = new SuffixNamePart(resource.node.uniqueId, 24);
+  const idPart = new SuffixNamePart(resource.construct.uniqueId, 24);
 
   const region: string = stack.region;
   if (Token.isUnresolved(region) || !region) {
-    throw new Error(`Cannot generate a physical name for ${resource.node.path}, because the region is un-resolved or missing`);
+    throw new Error(`Cannot generate a physical name for ${resource.construct.path}, because the region is un-resolved or missing`);
   }
 
   const account: string = stack.account;
   if (Token.isUnresolved(account) || !account) {
-    throw new Error(`Cannot generate a physical name for ${resource.node.path}, because the account is un-resolved or missing`);
+    throw new Error(`Cannot generate a physical name for ${resource.construct.path}, because the account is un-resolved or missing`);
   }
 
   const parts = [stackPart, idPart]

@@ -209,7 +209,7 @@ export = {
     const ref = c1.ref;
 
     const c2 = new CfnResource(stack, 'Construct2', { type: 'R2', properties: { ReferenceToR1: ref } });
-    c2.node.addDependency(c1);
+    c2.construct.addDependency(c1);
 
     // THEN
     test.deepEqual(toCloudFormation(stack), {
@@ -229,8 +229,8 @@ export = {
   'customize logical id allocation behavior by overriding `Stack.allocateLogicalId`'(test: Test) {
     class MyStack extends Stack {
       protected allocateLogicalId(element: CfnElement): string {
-        if (element.node.id === 'A') { return 'LogicalIdOfA'; }
-        if (element.node.id === 'B') { return 'LogicalIdOfB'; }
+        if (element.construct.id === 'A') { return 'LogicalIdOfA'; }
+        if (element.construct.id === 'B') { return 'LogicalIdOfB'; }
         throw new Error('Invalid element ID');
       }
     }

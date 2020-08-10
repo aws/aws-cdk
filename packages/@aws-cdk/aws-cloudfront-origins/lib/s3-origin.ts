@@ -42,7 +42,6 @@ export class S3Origin implements cloudfront.IOrigin {
   public bind(scope: cdk.Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     return this.origin.bind(scope, options);
   }
-
 }
 
 /**

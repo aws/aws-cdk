@@ -279,9 +279,9 @@ export = {
     const treeArtifact = assembly.tree();
     test.ok(treeArtifact);
 
-    const treenode = app.node.findChild('Tree');
+    const treenode = app.construct.findChild('Tree');
 
-    const warn = treenode.node.metadata.find((md) => {
+    const warn = treenode.construct.metadata.find((md) => {
       return md.type === cxschema.ArtifactMetadataEntryType.WARN
         && /Forcing an inspect error/.test(md.data as string)
         && /mycfnresource/.test(md.data as string);

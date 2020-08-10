@@ -1,7 +1,7 @@
 // FIXME: copied from `ckd-assets`, because this tool needs to read the asset manifest aswell.
-import { AssetManifest, DockerImageDestination, DockerImageSource, FileDestination, FileSource, Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as path from 'path';
+import { AssetManifest, DockerImageDestination, DockerImageSource, FileDestination, FileSource, Manifest } from '@aws-cdk/cloud-assembly-schema';
 
 /**
  * A manifest of assets

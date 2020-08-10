@@ -338,7 +338,7 @@ describe('Kinesis data streams', () => {
         MyStreamKey76F3300E: {
           Type: 'AWS::KMS::Key',
           Properties: {
-            Description: 'Created by MyStream',
+            Description: 'Created by Default/MyStream',
             KeyPolicy: {
               Statement: [
                 {
@@ -555,7 +555,7 @@ describe('Kinesis data streams', () => {
               ],
               Version: '2012-10-17',
             },
-            Description: 'Created by MyStream',
+            Description: 'Created by Default/MyStream',
           },
           UpdateReplacePolicy: 'Retain',
           DeletionPolicy: 'Retain',
@@ -684,7 +684,7 @@ describe('Kinesis data streams', () => {
               ],
               Version: '2012-10-17',
             },
-            Description: 'Created by MyStream',
+            Description: 'Created by Default/MyStream',
           },
           UpdateReplacePolicy: 'Retain',
           DeletionPolicy: 'Retain',
@@ -753,7 +753,7 @@ describe('Kinesis data streams', () => {
         MyStreamKey76F3300E: {
           Type: 'AWS::KMS::Key',
           Properties: {
-            Description: 'Created by MyStream',
+            Description: 'Created by Default/MyStream',
             KeyPolicy: {
               Statement: [
                 {

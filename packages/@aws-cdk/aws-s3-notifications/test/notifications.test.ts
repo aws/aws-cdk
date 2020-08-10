@@ -290,8 +290,6 @@ test('a notification destination can specify a set of dependencies that must be 
 
   bucket.addObjectCreatedNotification(dest);
 
-  cdk.ConstructNode.prepare(stack.node);
-
   expect(SynthUtils.synthesize(stack).template.Resources.BucketNotifications8F2E257D).toEqual({
     Type: 'Custom::S3BucketNotifications',
     Properties: {

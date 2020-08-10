@@ -183,7 +183,7 @@
         },
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
-          "Image": "aws/codebuild/standard:1.0",
+          "Image": "aws/codebuild/standard:4.0",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },
@@ -344,7 +344,7 @@
               "Principal": {
                 "AWS": {
                   "Fn::GetAtt": [
-                    "PipelineAssetsRole9B011B83",
+                    "PipelineAssetsFileRole59943A77",
                     "Arn"
                   ]
                 }
@@ -362,7 +362,7 @@
               "Principal": {
                 "AWS": {
                   "Fn::GetAtt": [
-                    "PipelineAssetsRole9B011B83",
+                    "PipelineAssetsFileRole59943A77",
                     "Arn"
                   ]
                 }
@@ -561,7 +561,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "PipelineAssetsRole9B011B83",
+                  "PipelineAssetsFileRole59943A77",
                   "Arn"
                 ]
               }
@@ -723,7 +723,7 @@
                 "Name": "FileAsset1",
                 "RoleArn": {
                   "Fn::GetAtt": [
-                    "PipelineAssetsRole9B011B83",
+                    "PipelineAssetsFileRole59943A77",
                     "Arn"
                   ]
                 },
@@ -749,7 +749,7 @@
                 "Name": "FileAsset2",
                 "RoleArn": {
                   "Fn::GetAtt": [
-                    "PipelineAssetsRole9B011B83",
+                    "PipelineAssetsFileRole59943A77",
                     "Arn"
                   ]
                 },
@@ -1087,7 +1087,7 @@
         },
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
-          "Image": "aws/codebuild/standard:1.0",
+          "Image": "aws/codebuild/standard:4.0",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },
@@ -1391,7 +1391,7 @@
         },
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
-          "Image": "aws/codebuild/standard:1.0",
+          "Image": "aws/codebuild/standard:4.0",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },
@@ -1413,7 +1413,7 @@
         }
       }
     },
-    "PipelineAssetsRole9B011B83": {
+    "PipelineAssetsFileRole59943A77": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -1442,7 +1442,7 @@
         }
       }
     },
-    "PipelineAssetsRoleDefaultPolicyB41726CA": {
+    "PipelineAssetsFileRoleDefaultPolicy14DB8755": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1454,39 +1454,18 @@
                 "logs:PutLogEvents"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":logs:test-region:12345678:log-group:/aws/codebuild/",
-                      {
-                        "Ref": "PipelineAssetsFileAsset185A67CB4"
-                      }
-                    ]
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":logs:test-region:12345678:log-group:/aws/codebuild/*"
                   ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":logs:test-region:12345678:log-group:/aws/codebuild/",
-                      {
-                        "Ref": "PipelineAssetsFileAsset185A67CB4"
-                      },
-                      ":*"
-                    ]
-                  ]
-                }
-              ]
+                ]
+              }
             },
             {
               "Action": [
@@ -1504,19 +1483,10 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":codebuild:test-region:12345678:report-group/",
-                    {
-                      "Ref": "PipelineAssetsFileAsset185A67CB4"
-                    },
-                    "-*"
+                    ":codebuild:test-region:12345678:report-group/*"
                   ]
                 ]
               }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": "arn:*:iam::*:role/*-file-publishing-role-*"
             },
             {
               "Action": [
@@ -1525,12 +1495,12 @@
                 "codebuild:StopBuild"
               ],
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineAssetsFileAsset185A67CB4",
-                  "Arn"
-                ]
-              }
+              "Resource": "*"
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": "arn:*:iam::*:role/*-file-publishing-role-*"
             },
             {
               "Action": [
@@ -1574,109 +1544,14 @@
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":logs:test-region:12345678:log-group:/aws/codebuild/",
-                      {
-                        "Ref": "PipelineAssetsFileAsset24D2D639B"
-                      }
-                    ]
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":logs:test-region:12345678:log-group:/aws/codebuild/",
-                      {
-                        "Ref": "PipelineAssetsFileAsset24D2D639B"
-                      },
-                      ":*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
-                "codebuild:BatchPutTestCases"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":codebuild:test-region:12345678:report-group/",
-                    {
-                      "Ref": "PipelineAssetsFileAsset24D2D639B"
-                    },
-                    "-*"
-                  ]
-                ]
-              }
-            },
-            {
-              "Action": [
-                "codebuild:BatchGetBuilds",
-                "codebuild:StartBuild",
-                "codebuild:StopBuild"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineAssetsFileAsset24D2D639B",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "PipelineAssetsRoleDefaultPolicyB41726CA",
+        "PolicyName": "PipelineAssetsFileRoleDefaultPolicy14DB8755",
         "Roles": [
           {
-            "Ref": "PipelineAssetsRole9B011B83"
+            "Ref": "PipelineAssetsFileRole59943A77"
           }
         ]
       }
@@ -1689,13 +1564,13 @@
         },
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
-          "Image": "aws/codebuild/standard:1.0",
+          "Image": "aws/codebuild/standard:4.0",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },
         "ServiceRole": {
           "Fn::GetAtt": [
-            "PipelineAssetsRole9B011B83",
+            "PipelineAssetsFileRole59943A77",
             "Arn"
           ]
         },
@@ -1719,13 +1594,13 @@
         },
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
-          "Image": "aws/codebuild/standard:1.0",
+          "Image": "aws/codebuild/standard:4.0",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },
         "ServiceRole": {
           "Fn::GetAtt": [
-            "PipelineAssetsRole9B011B83",
+            "PipelineAssetsFileRole59943A77",
             "Arn"
           ]
         },

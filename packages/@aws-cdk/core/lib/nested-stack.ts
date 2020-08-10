@@ -110,7 +110,7 @@ export class NestedStack extends Stack {
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
 
     // this is the file name of the synthesized template file within the cloud assembly
-    this.templateFile = `${this.node.uniqueId}.nested.template.json`;
+    this.templateFile = `${this.construct.uniqueId}.nested.template.json`;
 
     this.parameters = props.parameters || {};
 
@@ -187,7 +187,7 @@ export class NestedStack extends Stack {
       return false;
     }
 
-    const cfn = JSON.stringify((this as any)._toCloudFormation());
+    const cfn = JSON.stringify(this._toCloudFormation());
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 
     const templateLocation = this._parentStack.addFileAsset({
@@ -223,7 +223,7 @@ function findParentStack(scope: Construct): Stack {
     throw new Error('Nested stacks cannot be defined as a root construct');
   }
 
-  const parentStack = scope.node.scopes.reverse().find(p => Stack.isStack(p));
+  const parentStack = scope.construct.scopes.reverse().find(p => Stack.isStack(p));
   if (!parentStack) {
     throw new Error('Nested stacks must be defined within scope of another non-nested stack');
   }

@@ -47,12 +47,14 @@ import * as db from '@aws-cdk/aws-dynamodb';
 
 const api = new appsync.GraphQLApi(stack, 'Api', {
   name: 'demo',
+  schemaDefinition: appsync.SchemaDefinition.FILE,
   schemaDefinitionFile: join(__dirname, 'schema.graphql'),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: appsync.AuthorizationType.IAM
     },
   },
+  xrayEnabled: true,
 });
 
 const demoTable = new db.Table(stack, 'DemoTable', {

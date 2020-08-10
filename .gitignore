@@ -40,3 +40,5 @@ yarn-error.log
 # Parcel default cache directory
 .parcel-cache
 
+# Cloud9
+.c9

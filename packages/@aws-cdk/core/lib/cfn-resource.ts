@@ -92,8 +92,8 @@ export class CfnResource extends CfnRefElement {
     // if aws:cdk:enable-path-metadata is set, embed the current construct's
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
-    if (this.node.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
-      this.addMetadata(cxapi.PATH_METADATA_KEY, this.node.path);
+    if (this.construct.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
+      this.addMetadata(cxapi.PATH_METADATA_KEY, this.construct.path);
     }
   }
 
@@ -233,7 +233,12 @@ export class CfnResource extends CfnRefElement {
    * and the dependency will automatically be transferred to the relevant scope.
    */
   public addDependsOn(target: CfnResource) {
-    addDependency(this, target, `"${this.node.path}" depends on "${target.node.path}"`);
+    // skip this dependency if the target is not part of the output
+    if (!target.shouldSynthesize()) {
+      return;
+    }
+
+    addDependency(this, target, `"${this.construct.path}" depends on "${target.construct.path}"`);
   }
 
   /**
@@ -278,6 +283,10 @@ export class CfnResource extends CfnRefElement {
    * @internal
    */
   public _toCloudFormation(): object {
+    if (!this.shouldSynthesize()) {
+      return { };
+    }
+
     try {
       const ret = {
         Resources: {
@@ -303,7 +312,7 @@ export class CfnResource extends CfnRefElement {
       return ret;
     } catch (e) {
       // Change message
-      e.message = `While synthesizing ${this.node.path}: ${e.message}`;
+      e.message = `While synthesizing ${this.construct.path}: ${e.message}`;
       // Adjust stack trace (make it look like node built it, too...)
       const trace = this.creationStack;
       if (trace) {
@@ -321,7 +330,7 @@ export class CfnResource extends CfnRefElement {
     function renderDependsOn(dependsOn: Set<CfnResource>) {
       return Array
         .from(dependsOn)
-        .sort((x, y) => x.node.path.localeCompare(y.node.path))
+        .sort((x, y) => x.construct.path.localeCompare(y.construct.path))
         .map(r => r.logicalId);
     }
 
@@ -361,6 +370,17 @@ export class CfnResource extends CfnRefElement {
 
   protected validateProperties(_properties: any) {
     // Nothing
+  }
+
+  /**
+   * Can be overridden by subclasses to determine if this resource will be rendered
+   * into the cloudformation template.
+   *
+   * @returns `true` if the resource should be included or `false` is the resource
+   * should be omitted.
+   */
+  protected shouldSynthesize() {
+    return true;
   }
 }
 

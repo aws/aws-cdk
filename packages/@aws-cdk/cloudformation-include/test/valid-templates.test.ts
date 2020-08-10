@@ -184,11 +184,96 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a UserData script, and output it unchanged', () => {
+    includeTestTemplate(stack, 'user-data.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('user-data.json'),
+    );
+  });
+
   test('can ingest a template with intrinsic functions and conditions, and output it unchanged', () => {
     includeTestTemplate(stack, 'functions-and-conditions.json');
 
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('functions-and-conditions.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub in string form with escaped and unescaped references and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-string.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-string.json'),
+    );
+  });
+
+  test('can parse the string argument Fn::Sub with escaped references that contain whitespace', () => {
+    includeTestTemplate(stack, 'fn-sub-escaping.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-escaping.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub in map form and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-map-dotted-attributes.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-map-dotted-attributes.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub shadowing a logical ID from the template and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-shadow.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub attribute expression shadowing a logical ID from the template, and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow-attribute.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-shadow-attribute.json'),
+    );
+  });
+
+  test('can modify resources used in Fn::Sub in map form references and see the changes in the template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'fn-sub-shadow.json');
+
+    cfnTemplate.getResource('AnotherBucket').overrideLogicalId('NewBucket');
+
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "BucketName": {
+        "Fn::Sub": [
+          "${AnotherBucket}",
+          {
+            "AnotherBucket": { "Ref": "NewBucket" },
+          },
+        ],
+      },
+    });
+  });
+
+  test('can modify resources used in Fn::Sub in string form and see the changes in the template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'fn-sub-override.json');
+
+    cfnTemplate.getResource('Bucket').overrideLogicalId('NewBucket');
+
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "BucketName": {
+        "Fn::Sub": "${NewBucket}-${!Bucket}-${NewBucket.DomainName}",
+      },
+    });
+  });
+
+  test('can ingest a template with Fn::Sub with brace edge cases and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-brace-edges.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-brace-edges.json'),
     );
   });
 
@@ -318,6 +403,52 @@ describe('CDK Include', () => {
     expect(() => {
       cfnTemplate.getParameter('FakeBucketNameThatDoesNotExist');
     }).toThrow(/Parameter with name 'FakeBucketNameThatDoesNotExist' was not found in the template/);
+  });
+
+  test('reflects changes to a retrieved CfnParameter object in the resulting template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
+    const stringParam = cfnTemplate.getParameter('BucketName');
+    const numberParam = cfnTemplate.getParameter('CorsMaxAge');
+
+    stringParam.default = 'MyDefault';
+    stringParam.allowedPattern = '[0-9]*$';
+    stringParam.allowedValues = ['123123', '456789'];
+    stringParam.constraintDescription = 'MyNewConstraint';
+    stringParam.description = 'a string of numeric characters';
+    stringParam.maxLength = 6;
+    stringParam.minLength = 2;
+
+    numberParam.maxValue = 100;
+    numberParam.minValue = 4;
+    numberParam.noEcho = false;
+    numberParam.type = "NewType";
+    const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        ...originalTemplate.Resources,
+      },
+      "Parameters": {
+        ...originalTemplate.Parameters,
+        "BucketName": {
+          ...originalTemplate.Parameters.BucketName,
+          "Default": "MyDefault",
+          "AllowedPattern": "[0-9]*$",
+          "AllowedValues": [ "123123", "456789" ],
+          "ConstraintDescription": "MyNewConstraint",
+          "Description": "a string of numeric characters",
+          "MaxLength": 6,
+          "MinLength": 2,
+        },
+        "CorsMaxAge": {
+          ...originalTemplate.Parameters.CorsMaxAge,
+          "MaxValue": 100,
+          "MinValue": 4,
+          "NoEcho": false,
+          "Type": "NewType",
+        },
+      },
+    });
   });
 
   test('reflects changes to a retrieved CfnCondition object in the resulting template', () => {
