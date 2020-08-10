@@ -11,7 +11,7 @@
  */
 export function deepEqual(lvalue: any, rvalue: any): boolean {
   if (lvalue === rvalue) { return true; }
-  if (parseInt(lvalue) === parseInt(rvalue)) {
+  if (parseFloat(lvalue) === parseFloat(rvalue)) {
     return true;
   }
   if (typeof lvalue !== typeof rvalue) { return false; }
