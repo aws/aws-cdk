@@ -322,7 +322,7 @@ test('resource replacement is tracked through references', () => {
   expect(differences.resources.differenceCount).toBe(3);
 });
 
-test('adding/removing quotes from a numeric property causes no changes', () => {
+test('adding and removing quotes from a numeric property causes no changes', () => {
   const currentTemplate = {
     Resources: {
       Bucket: {
@@ -368,7 +368,9 @@ test('adding/removing quotes from a numeric property causes no changes', () => {
       },
     },
   };
-  const differences = diffTemplate(currentTemplate, newTemplate);
+  let differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.resources.differenceCount).toBe(0);
 
+  differences = diffTemplate(newTemplate, currentTemplate);
   expect(differences.resources.differenceCount).toBe(0);
 });
