@@ -3,6 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { CfnResource, Construct, Stack, StackProps } from '../lib';
 import { App, AppProps } from '../lib/app';
+import { Logging } from '../lib/logging';
 
 function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {
   const app = new App({
@@ -28,8 +29,8 @@ function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
 
     // add some metadata
     stack1.node.addMetadata('meta', 111);
-    r2.node.addWarning('warning1');
-    r2.node.addWarning('warning2');
+    Logging.of(r2).addWarning('warning1');
+    Logging.of(r2).addWarning('warning2');
     c1.node.addMetadata('meta', { key: 'value' });
     app.node.addMetadata('applevel', 123); // apps can also have metadata
   });

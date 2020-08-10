@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
+import { Logging } from '../logging';
 import { Stack } from '../stack';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { prepareApp } from './prepare-app';
@@ -76,7 +77,7 @@ function invokeAspects(root: IConstruct) {
       // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
       // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
       if (!nestedAspectWarning && nodeAspectsCount !== node._aspects.length) {
-        construct.node.addWarning('We detected an Aspect was added via another Aspect, and will not be applied');
+        Logging.of(construct).addWarning('We detected an Aspect was added via another Aspect, and will not be applied');
         nestedAspectWarning = true;
       }
       node.invokedAspects.push(aspect);

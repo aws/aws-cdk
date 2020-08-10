@@ -1,6 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Test } from 'nodeunit';
 import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
+import { Logging } from '../lib/logging';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -288,7 +289,7 @@ export = {
     const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
-    con.node.addWarning('This construct is deprecated, use the other one instead');
+    Logging.of(con).addWarning('This construct is deprecated, use the other one instead');
     restoreStackTraceColection(previousValue);
 
     test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
