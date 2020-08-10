@@ -114,7 +114,7 @@ describe('CDK Include', () => {
   });
 
   test('throws an error when a template supplies an invalid string to a number parameter', () => {
-    includeTestTemplate(stack, 'invalid-string-passed-to-number.json');
+    includeTestTemplate(stack, 'alphabetical-string-passed-to-number.json');
 
     expect(() => {
       SynthUtils.synthesize(stack);

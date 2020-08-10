@@ -67,9 +67,17 @@ export class FromCloudFormation {
       return Token.asNumber(value);
     }
 
-    // return a number, if the input can be parsed as one;
-    // otherwise, return the input.
-    return isNaN(parseFloat(value)) ? value : parseFloat(value);
+    // return a number, if the input can be parsed as one
+    let parsedValue;
+    if (typeof value === 'string') {
+      parsedValue = parseFloat(value);
+      if (!isNaN(parsedValue)) {
+        return parsedValue;
+      }
+    }
+
+    // otherwise, return the input
+    return value;
   }
 
   public static getStringArray(value: any): string[] {

@@ -6,12 +6,8 @@
         "CorsConfiguration": {
           "CorsRules": [
             {
-              "AllowedMethods": [
-                "GET"
-              ],
-              "AllowedOrigins": [
-                "*"
-              ],
+              "AllowedMethods": ["GET"],
+              "AllowedOrigins": ["*"],
               "MaxAge": "10"
             }
           ]
