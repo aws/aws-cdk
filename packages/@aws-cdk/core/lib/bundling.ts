@@ -5,7 +5,7 @@ import { spawnSync, SpawnSyncOptions } from 'child_process';
  *
  * @experimental
  */
-export interface BundlingOptions {
+export interface IBundlingOptions {
   /**
    * The Docker image where the command will run.
    */
@@ -53,6 +53,12 @@ export interface BundlingOptions {
    * @default - uid:gid of the current user or 1000:1000 on Windows
    */
   readonly user?: string;
+
+  /**
+   * A user function to indicate if bundling should run locally instead
+   * of running in a Docker container.
+   */
+  runLocally?(): boolean;
 }
 
 /**
@@ -83,7 +89,7 @@ export class BundlingDockerImage {
       path,
     ];
 
-    const docker = dockerExec(dockerArgs);
+    const docker = exec(process.env.CDK_DOCKER ?? 'docker', dockerArgs);
 
     const match = docker.stdout.toString().match(/sha256:([a-z0-9]+)/);
 
@@ -102,32 +108,53 @@ export class BundlingDockerImage {
    *
    * @internal
    */
-  public _run(options: DockerRunOptions = {}) {
+  public _run(options: IDockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
     const command = options.command || [];
 
-    const dockerArgs: string[] = [
-      'run', '--rm',
-      ...options.user
-        ? ['-u', options.user]
-        : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
-      ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
-      ...options.workingDirectory
-        ? ['-w', options.workingDirectory]
-        : [],
-      this.image,
-      ...command,
-    ];
-
-    dockerExec(dockerArgs, {
-      stdio: [ // show Docker output
+    const spawnSyncOptions: SpawnSyncOptions = {
+      stdio: [ // show output
         'ignore', // ignore stdio
         process.stderr, // redirect stdout to stderr
         'inherit', // inherit stderr
       ],
-    });
+    };
+
+    if (!options.runLocally || options.runLocally() === false) {
+      const dockerArgs: string[] = [
+        'run', '--rm',
+        ...options.user
+          ? ['-u', options.user]
+          : [],
+        ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
+        ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
+        ...options.workingDirectory
+          ? ['-w', options.workingDirectory]
+          : [],
+        this.image,
+        ...command,
+      ];
+
+      exec(process.env.CDK_DOCKER ?? 'docker', dockerArgs, spawnSyncOptions);
+    }
+    else {
+      const [prog, ...args] = command.map(comm => {
+        let newCommand = comm;
+        for (const volume of volumes) {
+          newCommand = newCommand.replace(new RegExp(volume.containerPath, 'g'), volume.hostPath);
+        }
+        return newCommand;
+      });
+
+      exec(prog, args, {
+        env: {
+          ...process.env,
+          ...environment,
+        },
+        ...spawnSyncOptions,
+      });
+    }
   }
 }
 
@@ -175,7 +202,7 @@ export enum DockerVolumeConsistency {
 /**
  * Docker run options
  */
-interface DockerRunOptions {
+interface IDockerRunOptions {
   /**
    * The command to run in the container.
    *
@@ -210,6 +237,8 @@ interface DockerRunOptions {
    * @default - root or image default
    */
   readonly user?: string;
+
+  runLocally?(): boolean;
 }
 
 /**
@@ -228,8 +257,7 @@ function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
 }
 
-function dockerExec(args: string[], options?: SpawnSyncOptions) {
-  const prog = process.env.CDK_DOCKER ?? 'docker';
+function exec(prog: string, args: string[], options?: SpawnSyncOptions) {
   const proc = spawnSync(prog, args, options);
 
   if (proc.error) {

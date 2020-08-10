@@ -4,10 +4,10 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions } from './assets';
-import { BundlingOptions } from './bundling';
+import { IBundlingOptions } from './bundling';
+import { Construct } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
 import { Stage } from './stage';
-import { Construct } from './construct-compat';
 
 const STAGING_TMP = '.cdk.staging';
 
@@ -145,7 +145,7 @@ export class AssetStaging extends Construct {
     }
   }
 
-  private bundle(options: BundlingOptions): string {
+  private bundle(options: IBundlingOptions): string {
     // Temp staging directory in the working directory
     const stagingTmp = path.join('.', STAGING_TMP);
     fs.ensureDirSync(stagingTmp);
@@ -186,6 +186,7 @@ export class AssetStaging extends Construct {
         volumes,
         environment: options.environment,
         workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
+        runLocally: options.runLocally,
       });
     } catch (err) {
       throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}: ${err}`);
