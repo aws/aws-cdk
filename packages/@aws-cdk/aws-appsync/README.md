@@ -201,18 +201,24 @@ const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos', de
 // Schema Definition starts here
 
 const demo = api.addType('demo', {
-  definition: [
-    appsync.GraphqlType.string('id').required(),
-    appsync.GraphqlType.string('version').required(),
-  ],
+  definition: {
+    id: appsync.GraphqlType.string({ isRequired: true }),
+    version: appsync.GraphqlType.string({ isRequired: true }),
+  },
 });
 
 ```
 
 #### GraphQL Types
 
+One of the benefits of GraphQL is its strongly typed nature. We define the 
+types within an object, query, mutation, interface, etc. as **GraphQL Types**. 
+
 GraphQL Types are the building blocks of types, whether they are object, 
 queries, mutations, etc. GraphQL Types can be:
 - [**Scalar Types**](https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html): Id, Int, String, AWSDate, etc. 
 - **Object Types**: types that you generate (i.e. `demo` from the example above)
 
+More concretely, GraphQL Types are simply the types appended to variables. 
+Referencing the object type Author in the previous example, the GraphQL Types 
+is `String!` and is applied to both the names `id` and `version`.
