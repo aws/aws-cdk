@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Test } from 'nodeunit';
 import { App } from '../lib';
-import { IAspect } from '../lib/aspect';
+import { IAspect, Aspects } from '../lib/aspect';
 import { Construct, IConstruct } from '../lib/construct-compat';
 
 class MyConstruct extends Construct {
@@ -29,7 +29,7 @@ export = {
   'Aspects are invoked only once'(test: Test) {
     const app = new App();
     const root = new MyConstruct(app, 'MyConstruct');
-    root.node.applyAspect(new VisitOnce());
+    Aspects.of(root).add(new VisitOnce());
     app.synth();
     test.deepEqual(root.visitCounter, 1);
     app.synth();
@@ -41,9 +41,9 @@ export = {
     const app = new App();
     const root = new MyConstruct(app, 'MyConstruct');
     const child = new MyConstruct(root, 'ChildConstruct');
-    root.node.applyAspect({
+    Aspects.of(root).add({
       visit(construct: IConstruct) {
-        construct.node.applyAspect({
+        Aspects.of(construct).add({
           visit(inner: IConstruct) {
             inner.node.addMetadata('test', 'would-be-ignored');
           },
@@ -62,7 +62,7 @@ export = {
     const app = new App();
     const root = new MyConstruct(app, 'Construct');
     const child = new MyConstruct(root, 'ChildConstruct');
-    root.node.applyAspect(new MyAspect());
+    Aspects.of(root).add(new MyAspect());
     app.synth();
     test.deepEqual(root.node.metadata[0].type, 'foo');
     test.deepEqual(root.node.metadata[0].data, 'bar');
