@@ -63,22 +63,30 @@ function invokeAspects(root: IConstruct) {
 
   recurse(root, []);
 
-  function recurse(construct: IConstruct, inheritedAspects: IAspect[]) {
+  function recurse(construct: IConstruct, inheritedAspects: constructs.IAspect[]) {
     const node = construct.node;
-
-    const allAspectsHere = [...inheritedAspects ?? [], ...node._aspects];
-    const nodeAspectsCount = node._aspects.length;
+    const aspects = Aspects.of(construct);
+    const allAspectsHere = [...inheritedAspects ?? [], ...aspects.aspects];
+    const nodeAspectsCount = aspects.aspects.length;
     for (const aspect of allAspectsHere) {
-      if (node.invokedAspects.includes(aspect)) { continue; }
+      let invoked = invokedByPath[node.path];
+      if (!invoked) {
+        invoked = invokedByPath[node.path] = [];
+      }
+
+      if (invoked.includes(aspect)) { continue; }
 
       aspect.visit(construct);
+
       // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
       // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
-      if (!nestedAspectWarning && nodeAspectsCount !== node._aspects.length) {
+      if (!nestedAspectWarning && nodeAspectsCount !== aspects.aspects.length) {
         construct.node.addWarning('We detected an Aspect was added via another Aspect, and will not be applied');
         nestedAspectWarning = true;
       }
-      node.invokedAspects.push(aspect);
+
+      // mark as invoked for this node
+      invoked.push(aspect);
     }
 
     for (const child of construct.node.children) {
@@ -145,3 +153,4 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
     cb(root);
   }
 }
+

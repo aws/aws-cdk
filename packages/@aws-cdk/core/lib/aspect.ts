@@ -1,5 +1,7 @@
 import { IConstruct } from 'constructs';
 
+const ASPECTS_SYMBOL = Symbol('cdk-aspects');
+
 /**
  * Represents an Aspect
  */
@@ -9,8 +11,6 @@ export interface IAspect {
    */
   visit(node: IConstruct): void;
 }
-
-const ASPECTS_SYMBOL = Symbol('cdk-aspects');
 
 /**
  * Aspects can be applied to CDK tree scopes and can operate on the tree before
@@ -25,8 +25,10 @@ export class Aspects {
   public static of(scope: IConstruct): Aspects {
     let aspects = (scope as any)[ASPECTS_SYMBOL];
     if (!aspects) {
-      aspects = Object.defineProperty(scope, ASPECTS_SYMBOL, {
-        value: new Aspects(scope),
+      aspects = new Aspects(scope);
+
+      Object.defineProperty(scope, ASPECTS_SYMBOL, {
+        value: aspects,
         configurable: false,
         enumerable: false,
       });
@@ -36,13 +38,13 @@ export class Aspects {
 
   private readonly _aspects = new Array<IAspect>();
 
-  private constructor(_construct: IConstruct) { }
+  private constructor(private readonly scope: IConstruct) { }
 
   /**
-   * Apply an aspect on this scope.
-   * @param aspect The aspect to apply.
+   * Adds an aspect to apply this scope before synthesis.
+   * @param aspect The aspect to add.
    */
-  public apply(aspect: IAspect) {
+  public add(aspect: IAspect) {
     this._aspects.push(aspect);
   }
 

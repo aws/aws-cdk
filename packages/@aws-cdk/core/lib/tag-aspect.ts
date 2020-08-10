@@ -86,17 +86,21 @@ abstract class TagBase implements IAspect {
 export class Tag extends TagBase {
 
   /**
-   * add tags to the node of a construct and all its the taggable children
+   * DEPRECATED: add tags to the node of a construct and all its the taggable children
+   *
+   * @deprecated use `Tags.of(scope).add()`
    */
   public static add(scope: Construct, key: string, value: string, props: TagProps = {}) {
-    Aspects.of(scope).apply(new Tag(key, value, props));
+    Tags.of(scope).add(key, value, props);
   }
 
   /**
-   * remove tags to the node of a construct and all its the taggable children
+   * DEPRECATED: remove tags to the node of a construct and all its the taggable children
+   *
+   * @deprecated use `Tags.of(scope).remove()`
    */
   public static remove(scope: Construct, key: string, props: TagProps = {}) {
-    Aspects.of(scope).apply(new RemoveTag(key, props));
+    Tags.of(scope).remove(key, props);
   }
 
   /**
@@ -123,6 +127,35 @@ export class Tag extends TagBase {
         this.props.applyToLaunchedInstances !== false,
       );
     }
+  }
+}
+
+/**
+ * Manages AWS tags for all resources within a construct scope.
+ */
+export class Tags {
+  /**
+   * Returns the tags API for this scope.
+   * @param scope The scope
+   */
+  public static of(scope: IConstruct): Tags {
+    return new Tags(scope);
+  }
+
+  private constructor(private readonly scope: IConstruct) { }
+
+  /**
+   * add tags to the node of a construct and all its the taggable children
+   */
+  public add(key: string, value: string, props: TagProps = {}) {
+    Aspects.of(this.scope).add(new Tag(key, value, props));
+  }
+
+  /**
+   * remove tags to the node of a construct and all its the taggable children
+   */
+  public remove(key: string, props: TagProps = {}) {
+    Aspects.of(this.scope).add(new RemoveTag(key, props));
   }
 }
 

@@ -841,7 +841,7 @@ export = {
     const stack2 = new Stack(stack1, 'stack2');
 
     // WHEN
-    Tag.add(app, 'foo', 'bar');
+    Tags.of(app).add('foo', 'bar');
 
     // THEN
     const asm = app.synth();
