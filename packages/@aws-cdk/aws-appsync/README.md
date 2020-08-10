@@ -222,3 +222,67 @@ queries, mutations, etc. GraphQL Types can be:
 More concretely, GraphQL Types are simply the types appended to variables. 
 Referencing the object type Author in the previous example, the GraphQL Types 
 is `String!` and is applied to both the names `id` and `version`.
+
+#### Object Types
+
+**Object Types** are types that you declare. For example, in the [code-first example](#code-first-example)
+the `demo` variable is an **Object Type**. **Object Types** are defined by 
+GraphQL Types and are only usable when linked to a GraphQL Api.
+
+You can create Object Types in two ways:
+
+1. Object Types can be created ***externally*** from a GraphQL API.
+    ```ts
+    const api = new appsync.GraphQLApi(stack, 'Api', {
+      name: 'demo',
+      schemaDefinition: appsync.SchemaDefinition.CODE,
+    });
+    const demo = new appsync.ObjectType('Demo', {
+      defintion: {
+        id: appsync.GraphqlType.string({ isRequired: true }),
+        version: appsync.GraphqlType.string({ isRequired: true }),
+      },
+    });
+
+    api.appendToSchema(object);
+    ```
+    This method allows for reusability and modularity, ideal for larger projects. 
+    For example, imagine moving all Object Type definition outside the stack.
+
+    `scalar-types.ts` - a file for scalar type definitions
+    ```ts
+    export const required_string = new appsync.GraphqlType.string({ isRequired: true });
+    ```
+
+    `object-types.ts` - a file for object type definitions
+    ```ts
+    import { required_string } from './scalar-types';
+    export const demo = new appsync.ObjectType('Demo', {
+      defintion: {
+        id: required_string,
+        version: required_string,
+      },
+    });
+    ```
+
+    `cdk-stack.ts` - a file containing our cdk stack
+    ```ts
+    import * as gqlType from './object-types';
+    const demo = gqlType.demo;
+    api.appendToSchema(demo);
+    ```
+2. Object Types can be created ***internally*** within the GraphQL API.
+    ```ts
+    const api = new appsync.GraphQLApi(stack, 'Api', {
+      name: 'demo',
+      schemaDefinition: appsync.SchemaDefinition.CODE,
+    });
+    api.addType('Demo', {
+      defintion: {
+        id: appsync.GraphqlType.string({ isRequired: true }),
+        version: appsync.GraphqlType.string({ isRequired: true }),
+      },
+    });
+    ```
+    This method provides easy use and is ideal for smaller projects.
+    
