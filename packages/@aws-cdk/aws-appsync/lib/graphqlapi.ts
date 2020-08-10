@@ -1,4 +1,4 @@
-import { readFileSync, writeFile } from 'fs';
+import { readFileSync } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
@@ -714,11 +714,6 @@ export class GraphQLApi extends Construct {
     }
     const sep = delimiter ?? '';
     this.schema.definition = `${this.schema.definition}${sep}${addition}\n`;
-    writeFile('generated.graphql', this.schema.definition, (err) => {
-      if (err) {
-        throw new Error(err.message);
-      }
-    });
   }
 
   /**

@@ -36,7 +36,7 @@ export interface ObjectTypeProps {
   /**
    * the attributes of this object type
    */
-  readonly definition: { [key: string]: AttributeType };
+  readonly definition: { [key: string]: GraphqlType };
   /**
    * the directives for this object type
    *
@@ -66,7 +66,7 @@ export class ObjectType {
   /**
    * the attributes of this object type
    */
-  public readonly definition: { [key: string]: AttributeType };
+  public readonly definition: { [key: string]: GraphqlType };
   /**
    * the directives for this object type
    *
@@ -81,15 +81,15 @@ export class ObjectType {
   }
 
   /**
-   * Create an Attribute Type representing this Object Type
+   * Create an GraphQL Type representing this Object Type
    *
    * @param options the options to configure this attribute
    * - isList
    * - isRequired
    * - isRequiredList
    */
-  public attribute(options?: BaseAttributeTypeOptions): AttributeType{
-    return AttributeType.object({
+  public attribute(options?: BaseGraphqlTypeOptions): GraphqlType{
+    return GraphqlType.graphqlObject({
       isList: options?.isList,
       isRequired: options?.isRequired,
       isRequiredList: options?.isRequiredList,
@@ -128,13 +128,13 @@ export class ObjectType {
 }
 
 /**
- * Base options for Attribute Types
+ * Base options for GraphQL Types
  *
  * @option isList - is this attribute a list
  * @option isRequired - is this attribute non-nullable
  * @option isRequiredList - is this attribute a non-nullable list
  */
-export interface BaseAttributeTypeOptions {
+export interface BaseGraphqlTypeOptions {
   /**
    * property determining if this attribute is a list
    * i.e. if true, attribute would be [Type]
@@ -162,14 +162,14 @@ export interface BaseAttributeTypeOptions {
 }
 
 /**
- * Options for Attribute Types
+ * Options for GraphQL Types
  *
  * @option isList - is this attribute a list
  * @option isRequired - is this attribute non-nullable
  * @option isRequiredList - is this attribute a non-nullable list
  * @option objectType - the object type linked to this attribute
  */
-export interface AttributeTypeOptions extends BaseAttributeTypeOptions {
+export interface GraphqlTypeOptions extends BaseGraphqlTypeOptions {
   /**
    * the object type linked to this attribute
    * @default - no object type
@@ -178,15 +178,15 @@ export interface AttributeTypeOptions extends BaseAttributeTypeOptions {
 }
 
 /**
- * The Attribute Types in AppSync's GraphQL. Attribute Types are the
+ * The GraphQL Types in AppSync's GraphQL. GraphQL Types are the
  * building blocks for object types, queries, mutations, etc. They are
  * types like String, Int, Id or even Object Types you create.
  *
  * i.e. `String`, `String!`, `[String]`, `[String!]`, `[String]!`
  *
- * Attribute Types are used to define the entirety of schema.
+ * GraphQL Types are used to define the entirety of schema.
  */
-export class AttributeType {
+export class GraphqlType {
   /**
    * `ID` scalar type is a unique identifier. `ID` type is serialized similar to `String`.
    *
@@ -197,8 +197,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static id(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.ID, options);
+  public static id(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.ID, options);
   }
   /**
    * `String` scalar type is a free-form human-readable text.
@@ -208,8 +208,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static string(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.STRING, options);
+  public static string(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.STRING, options);
   }
   /**
    * `Int` scalar type is a signed non-fractional numerical value.
@@ -219,8 +219,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static int(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.INT, options);
+  public static int(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.INT, options);
   }
   /**
    * `Float` scalar type is a signed double-precision fractional value.
@@ -230,8 +230,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static float(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.FLOAT, options);
+  public static float(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.FLOAT, options);
   }
   /**
    * `Boolean` scalar type is a boolean value: true or false.
@@ -241,8 +241,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static boolean(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.BOOLEAN, options);
+  public static boolean(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.BOOLEAN, options);
   }
 
   /**
@@ -255,8 +255,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsDate(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.AWS_DATE, options);
+  public static awsDate(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.AWS_DATE, options);
   }
   /**
    * `AWSTime` scalar type represents a valid extended `ISO 8601 Time` string.
@@ -268,8 +268,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsTime(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.AWS_TIME, options);
+  public static awsTime(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.AWS_TIME, options);
   }
   /**
    * `AWSDateTime` scalar type represents a valid extended `ISO 8601 DateTime` string.
@@ -281,8 +281,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsDateTime(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.AWS_DATE_TIME, options);
+  public static awsDateTime(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.AWS_DATE_TIME, options);
   }
   /**
    * `AWSTimestamp` scalar type represents the number of seconds since `1970-01-01T00:00Z`.
@@ -294,8 +294,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsTimestamp(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.AWS_TIMESTAMP, options);
+  public static awsTimestamp(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.AWS_TIMESTAMP, options);
   }
   /**
    * `AWSEmail` scalar type represents an email address string (i.e.`username@example.com`)
@@ -305,8 +305,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsEmail(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.AWS_EMAIL, options);
+  public static awsEmail(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.AWS_EMAIL, options);
   }
   /**
    * `AWSJson` scalar type represents a JSON string.
@@ -316,8 +316,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsJSON(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.AWS_JSON, options);
+  public static awsJSON(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.AWS_JSON, options);
   }
   /**
    * `AWSURL` scalar type represetns a valid URL string.
@@ -329,8 +329,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsURL(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.AWS_URL, options);
+  public static awsURL(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.AWS_URL, options);
   }
   /**
    * `AWSPhone` scalar type represents a valid phone number. Phone numbers maybe be whitespace delimited or hyphenated.
@@ -342,8 +342,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsPhone(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.AWS_PHONE, options);
+  public static awsPhone(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.AWS_PHONE, options);
   }
   /**
    * `AWSIPAddress` scalar type respresents a valid `IPv4` of `IPv6` address string.
@@ -353,8 +353,8 @@ export class AttributeType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsIpAddress(options?: BaseAttributeTypeOptions): AttributeType {
-    return new AttributeType(Type.AWS_IP_ADDRESS, options);
+  public static awsIpAddress(options?: BaseGraphqlTypeOptions): GraphqlType {
+    return new GraphqlType(Type.AWS_IP_ADDRESS, options);
   }
 
   /**
@@ -366,11 +366,11 @@ export class AttributeType {
    * - isRequiredList
    * - objectType
    */
-  public static object(options?: AttributeTypeOptions): AttributeType {
+  public static graphqlObject(options?: GraphqlTypeOptions): GraphqlType {
     if (!options?.objectType) {
-      throw new Error('Attribute Type of object must be configured with corresponding Object Type');
+      throw new Error('GraphQL Type of object must be configured with corresponding Object Type');
     }
-    return new AttributeType(Type.OBJECT, options);
+    return new GraphqlType(Type.OBJECT, options);
   }
 
   /**
@@ -410,7 +410,7 @@ export class AttributeType {
    */
   public readonly objectType?: ObjectType;
 
-  private constructor(type: Type, options?: AttributeTypeOptions) {
+  private constructor(type: Type, options?: GraphqlTypeOptions) {
     this.type = type;
     this.isList = options?.isList ?? false;
     this.isRequired = options?.isRequired ?? false;
@@ -424,9 +424,9 @@ export class AttributeType {
   public toString(): string{
     // If an Object Type, we use the name of the Object Type
     let type = this.objectType ? this.objectType?.name : this.type;
-    // If configured as required, the Attribute Type becomes required
+    // If configured as required, the GraphQL Type becomes required
     type = this.isRequired ? `${type}!` : type;
-    // If configured with isXxxList, the Attribute Type becomes a list
+    // If configured with isXxxList, the GraphQL Type becomes a list
     type = this.isList || this.isRequiredList ? `[${type}]` : type;
     // If configured with isRequiredList, the list becomes required
     type = this.isRequiredList ? `${type}!` : type;

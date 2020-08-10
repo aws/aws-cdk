@@ -59,7 +59,7 @@ const api = new appsync.GraphQLApi(stack, 'Api', {
 const demoTable = new db.Table(stack, 'DemoTable', {
   partitionKey: {
     name: 'id',
-    type: AttributeType.STRING,
+    type: db.AttributeType.STRING,
   },
 });
 
@@ -191,7 +191,7 @@ const api = new appsync.GraphQLApi(stack, 'Api', {
 const demoTable = new db.Table(stack, 'DemoTable', {
   partitionKey: {
     name: 'id',
-    type: AttributeType.STRING,
+    type: db.AttributeType.STRING,
   },
 });
 
@@ -201,17 +201,17 @@ const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos', de
 
 const demo = api.addType('demo', {
   definition: [
-    appsync.AttributeType.string('id').required(),
-    appsync.AttributeType.string('version').required(),
+    appsync.GraphqlType.string('id').required(),
+    appsync.GraphqlType.string('version').required(),
   ],
 });
 
 ```
 
-#### Attribute Types
+#### GraphQL Types
 
-Attribute Types are the building blocks of types, whether they are object, 
-queries, mutations, etc. Attribute Types can be:
+GraphQL Types are the building blocks of types, whether they are object, 
+queries, mutations, etc. GraphQL Types can be:
 - [**Scalar Types**](https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html): Id, Int, String, AWSDate, etc. 
 - **Object Types**: types that you generate (i.e. `demo` from the example above)
 
