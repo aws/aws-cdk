@@ -313,7 +313,7 @@ export = {
       bundling: {
         docker: {
           image: BundlingDockerImage.fromRegistry('alpine'),
-          command: ['my-command'],
+          command: [DockerStubCommand.SUCCESS],
         },
         local: {
           tryBundle(bundleDir: string): boolean {
