@@ -951,7 +951,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         lambdaFunctionAssociations: input.lambdaFunctionAssociations
           .map(fna => {
             if (fna.lambdaFunction.lambda.removeEnvironment()) {
-              fna.lambdaFunction.lambda.node.addWarning(`Removed environment variables from function ${fna.lambdaFunction.node.path} because Lambda@Edge does not support environment variables`);
+              fna.lambdaFunction.lambda.node.addWarning(`Removed environment variables from function ${fna.lambdaFunction.lambda.node.path} because Lambda@Edge does not support environment variables`);
             }
             return {
               eventType: fna.eventType,

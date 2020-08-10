@@ -515,7 +515,7 @@ nodeunitShim({
     }));
 
     test.equal(lambdaFunction.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-    test.equal(lambdaFunction.node.metadata[0].data, 'Removed environment variables from function Default/Lambda/$LATEST because Lambda@Edge does not support environment variables');
+    test.equal(lambdaFunction.node.metadata[0].data, 'Removed environment variables from function Default/Lambda because Lambda@Edge does not support environment variables');
 
     test.done();
   },

@@ -54,7 +54,7 @@ export class CacheBehavior {
           }
 
           if (edgeLambda.functionVersion.lambda.removeEnvironment()) {
-            edgeLambda.functionVersion.node.addWarning(`Removed environment variables from function ${edgeLambda.functionVersion.node.path} because Lambda@Edge does not support environment variables`);
+            edgeLambda.functionVersion.lambda.node.addWarning(`Removed environment variables from function ${edgeLambda.functionVersion.lambda.node.path} because Lambda@Edge does not support environment variables`);
           }
 
           return {

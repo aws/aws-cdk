@@ -398,8 +398,8 @@ describe('with Lambda@Edge functions', () => {
       },
     });
 
-    expect(envLambdaFunction.currentVersion.node.metadata[0].type).toBe(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(envLambdaFunction.currentVersion.node.metadata[0].data).toBe('Removed environment variables from function Stack/EnvFunction/CurrentVersion because Lambda@Edge does not support environment variables');
+    expect(envLambdaFunction.node.metadata[0].type).toBe(cxschema.ArtifactMetadataEntryType.WARN);
+    expect(envLambdaFunction.node.metadata[0].data).toBe('Removed environment variables from function Stack/EnvFunction because Lambda@Edge does not support environment variables');
   });
 });
 
