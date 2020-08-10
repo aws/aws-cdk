@@ -1,8 +1,12 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
+import { Annotations } from '../annotations';
+import { Aspects, IAspect } from '../aspect';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
+import { Stack } from '../stack';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { prepareApp } from './prepare-app';
+import { TreeMetadata } from './tree-metadata';
 
 export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
@@ -42,7 +46,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
  * (They will in turn recurse again)
  */
 function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions) {
-  for (const child of root.node.children) {
+  for (const child of root.construct.children) {
     if (Stage.isStage(child)) {
       child.synth(options);
     } else {
@@ -58,29 +62,38 @@ function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions)
  * twice for the same construct.
  */
 function invokeAspects(root: IConstruct) {
+  const invokedByPath: { [nodePath: string]: IAspect[] } = { };
+
   let nestedAspectWarning = false;
   recurse(root, []);
 
   function recurse(construct: IConstruct, inheritedAspects: constructs.IAspect[]) {
-    // hackery to be able to access some private members with strong types (yack!)
-    const node: NodeWithAspectPrivatesHangingOut = construct.node._actualNode as any;
-
-    const allAspectsHere = [...inheritedAspects ?? [], ...node._aspects];
-    const nodeAspectsCount = node._aspects.length;
+    const node = construct.construct;
+    const aspects = Aspects.of(construct);
+    const allAspectsHere = [...inheritedAspects ?? [], ...aspects.aspects];
+    const nodeAspectsCount = aspects.aspects.length;
     for (const aspect of allAspectsHere) {
-      if (node.invokedAspects.includes(aspect)) { continue; }
+      let invoked = invokedByPath[node.path];
+      if (!invoked) {
+        invoked = invokedByPath[node.path] = [];
+      }
+
+      if (invoked.includes(aspect)) { continue; }
 
       aspect.visit(construct);
+
       // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
       // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
-      if (!nestedAspectWarning && nodeAspectsCount !== node._aspects.length) {
-        construct.node.addWarning('We detected an Aspect was added via another Aspect, and will not be applied');
+      if (!nestedAspectWarning && nodeAspectsCount !== aspects.aspects.length) {
+        Annotations.of(construct).addWarning('We detected an Aspect was added via another Aspect, and will not be applied');
         nestedAspectWarning = true;
       }
-      node.invokedAspects.push(aspect);
+
+      // mark as invoked for this node
+      invoked.push(aspect);
     }
 
-    for (const child of construct.node.children) {
+    for (const child of construct.construct.children) {
       if (!Stage.isStage(child)) {
         recurse(child, allAspectsHere);
       }
@@ -103,10 +116,22 @@ function prepareTree(root: IConstruct) {
  * Stop at Assembly boundaries.
  */
 function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
-  visit(root, 'post', construct => construct.onSynthesize({
-    outdir: builder.outdir,
-    assembly: builder,
-  }));
+  visit(root, 'post', construct => {
+    const session = {
+      outdir: builder.outdir,
+      assembly: builder,
+    };
+
+    if (construct instanceof Stack) {
+      construct._synthesizeTemplate(session);
+    } else if (construct instanceof TreeMetadata) {
+      construct._synthesizeTree(session);
+    }
+
+    // this will soon be deprecated and removed in 2.x
+    // see https://github.com/aws/aws-cdk-rfcs/issues/192
+    construct.onSynthesize(session);
+  });
 }
 
 /**
@@ -122,7 +147,7 @@ function validateTree(root: IConstruct) {
   });
 
   if (errors.length > 0) {
-    const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
+    const errorList = errors.map(e => `[${e.source.construct.path}] ${e.message}`).join('\n  ');
     throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
   }
 }
@@ -135,7 +160,7 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstr
     cb(root as IProtectedConstructMethods);
   }
 
-  for (const child of root.node.children) {
+  for (const child of root.construct.children) {
     if (Stage.isStage(child)) { continue; }
     visit(child, order, cb);
   }
@@ -166,13 +191,3 @@ interface IProtectedConstructMethods extends IConstruct {
    */
   onPrepare(): void;
 }
-
-/**
- * The constructs Node type, but with some aspects-related fields public.
- *
- * Hackery!
- */
-type NodeWithAspectPrivatesHangingOut = Omit<constructs.Node, 'invokedAspects' | '_aspects'> & {
-  readonly invokedAspects: constructs.IAspect[];
-  readonly _aspects: constructs.IAspect[];
-};

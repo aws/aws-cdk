@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, Tag, validateString } from '../lib';
+  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
@@ -129,9 +129,9 @@ export = {
     const o = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
     const c = new CfnCondition(stack, 'MyCondition');
 
-    test.equal(stack.node.findChild(p.node.id), p);
-    test.equal(stack.node.findChild(o.node.id), o);
-    test.equal(stack.node.findChild(c.node.id), c);
+    test.equal(stack.construct.findChild(p.construct.id), p);
+    test.equal(stack.construct.findChild(o.construct.id), o);
+    test.equal(stack.construct.findChild(c.construct.id), c);
 
     test.done();
   },
@@ -546,7 +546,7 @@ export = {
     app.synth();
 
     // THEN
-    test.deepEqual(stack2.dependencies.map(s => s.node.id), ['Stack1']);
+    test.deepEqual(stack2.dependencies.map(s => s.construct.id), ['Stack1']);
 
     test.done();
   },
@@ -822,7 +822,7 @@ export = {
     const child = new Stack(parent, 'child');
 
     // WHEN
-    child.node.addMetadata('foo', 'bar');
+    child.construct.addMetadata('foo', 'bar');
 
     // THEN
     const asm = app.synth();
@@ -840,7 +840,7 @@ export = {
     const stack2 = new Stack(stack1, 'stack2');
 
     // WHEN
-    Tag.add(app, 'foo', 'bar');
+    Tags.of(app).add('foo', 'bar');
 
     // THEN
     const asm = app.synth();
@@ -866,6 +866,25 @@ export = {
 
     test.equals(artifact.terminationProtection, true);
 
+    test.done();
+  },
+
+  'users can (still) override "synthesize()" in stack'(test: Test) {
+    let called = false;
+
+    class MyStack extends Stack {
+      synthesize(session: ISynthesisSession) {
+        called = true;
+        test.ok(session.outdir);
+        test.equal(session.assembly.outdir, session.outdir);
+      }
+    }
+
+    const app = new App();
+    new MyStack(app, 'my-stack');
+
+    app.synth();
+    test.ok(called, 'synthesize() not called for Stack');
     test.done();
   },
 };
