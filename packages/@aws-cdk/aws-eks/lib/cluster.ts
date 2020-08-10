@@ -1070,9 +1070,9 @@ export class Cluster extends Resource implements ICluster {
           continue;
         }
 
-        // not public and not private - what is it then? this means its a subnet instance that was explicitly passed
+        // neither public and nor private - what is it then? this means its a subnet instance that was explicitly passed
         // in the subnet selection. since ISubnet doesn't contain information on type, we have to assume its private and let it
-        // fail at deploy time :\ (its better than filtering it out and preventing a possibly succefull deployment)
+        // fail at deploy time :\ (its better than filtering it out and preventing a possibly successful deployment)
         privateSubnets.push(subnet);
       }
 
