@@ -578,7 +578,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Returnst the list of AZs that are availability in the AWS environment
+   * Returns the list of AZs that are available in the AWS environment
    * (account/region) associated with this stack.
    *
    * If the stack is environment-agnostic (either account and/or region are
@@ -589,6 +589,8 @@ export class Stack extends Construct implements ITaggable {
    * If they are not available in the context, returns a set of dummy values and
    * reports them as missing, and let the CLI resolve them by calling EC2
    * `DescribeAvailabilityZones` on the target environment.
+   *
+   * To specify a different strategy for selecting availability zones override this method.
    */
   public get availabilityZones(): string[] {
     // if account/region are tokens, we can't obtain AZs through the context
