@@ -54,6 +54,7 @@ const api = new appsync.GraphQLApi(stack, 'Api', {
       authorizationType: appsync.AuthorizationType.IAM
     },
   },
+  xrayEnabled: true,
 });
 
 const demoTable = new db.Table(stack, 'DemoTable', {
