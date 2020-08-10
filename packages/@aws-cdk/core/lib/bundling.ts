@@ -12,9 +12,12 @@ export interface BundlingOptions {
   readonly docker: DockerBundling;
 
   /**
-   * Local bundling
+   * Local bundling provider. 
+   * 
+   * The provider implements a method `tryBundle()` which should returns `true` if local bundling was
+   * performed. If `false` is returned, docker bundling will be done.
    *
-   * @default - bundling is performed in a Docker container
+   * @default - bundling will only be performed in a Docker container based on the settings in `docker`.
    */
   readonly local?: ILocalBundling;
 }
