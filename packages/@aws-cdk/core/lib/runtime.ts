@@ -218,9 +218,7 @@ export function validateString(x: any): ValidationResult {
 
 export function validateNumber(x: any): ValidationResult {
   if (canInspect(x) && typeof x !== 'number') {
-    if (typeof x === 'string' && isNaN(parseInt(x))) {
-      return new ValidationResult(`${JSON.stringify(x)} should be a number`);
-    }
+    return new ValidationResult(`${JSON.stringify(x)} should be a number`);
   }
 
   return VALIDATION_SUCCESS;

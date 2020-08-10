@@ -69,7 +69,7 @@ export class FromCloudFormation {
 
     // in all other cases, just return the input,
     // and let a validator handle it if it's not a number
-    return value;
+    return isNaN(parseInt(value)) ? value : parseInt(value);
   }
 
   public static getStringArray(value: any): string[] {

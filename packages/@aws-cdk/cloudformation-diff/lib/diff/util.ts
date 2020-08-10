@@ -11,6 +11,9 @@
  */
 export function deepEqual(lvalue: any, rvalue: any): boolean {
   if (lvalue === rvalue) { return true; }
+  if (parseInt(lvalue) === parseInt(rvalue)) {
+    return true;
+  }
   if (typeof lvalue !== typeof rvalue) { return false; }
   if (Array.isArray(lvalue) !== Array.isArray(rvalue)) { return false; }
   if (Array.isArray(lvalue) /* && Array.isArray(rvalue) */) {
@@ -33,6 +36,7 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
     }
     return true;
   }
+
   // Neither object, nor array: I deduce this is primitive type
   // Primitive type and not ===, so I deduce not deepEqual
   return false;
