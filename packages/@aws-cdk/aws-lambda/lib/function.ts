@@ -301,10 +301,11 @@ export interface FunctionProps extends FunctionOptions {
   readonly filesystem?: FileSystem;
 
   /**
-   * Whether to override the error when trying to place a Function into a public subnet. Lambda functions in Public
-   * subnets cannot access the internet, so only do this if you need to.
+   * Lambda Functions in a public subnet can NOT access the internet.
+   * Use this property to acknowledge this limitation and still place the function in a public subnet.
+   * @see https://stackoverflow.com/questions/52992085/why-cant-an-aws-lambda-function-inside-a-public-subnet-in-a-vpc-connect-to-the/52994841#52994841
    *
-   * @default - false
+   * @default false
    */
   readonly allowPublicSubnet?: boolean;
 }
@@ -837,7 +838,8 @@ export class Function extends FunctionBase {
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
     for (const subnetId of subnetIds) {
       if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
-        throw new Error('Lambda Functions in a Public subnet won\'t have internet access. If you need to do this, set `allowPublicSubnet` to true');
+        throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
+          'If you are aware of this limitation and would still like to place the function int a public subnet, set `allowPublicSubnet` to true');
       }
     }
 

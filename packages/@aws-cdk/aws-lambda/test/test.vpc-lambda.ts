@@ -212,7 +212,7 @@ export = {
     test.done();
   },
 
-  'picking any subnet type is allowed if overriding allowPublicSubnet'(test: Test) {
+  'picking any subnet type is allowed by default'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
@@ -295,7 +295,7 @@ export = {
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
-    });
+    }, /Lambda Functions in a public subnet/);
     test.done();
   },
 };
