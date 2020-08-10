@@ -54,6 +54,9 @@ export interface InitBindOptions {
 /**
  * A return type for a configured InitElement. Both its CloudFormation representation, and any
  * additional metadata needed to create the CloudFormation::Init.
+ *
+ * Marked internal so as not to leak the underlying L1 representation.
+ *
  * @internal
  */
 export interface InitElementConfig {

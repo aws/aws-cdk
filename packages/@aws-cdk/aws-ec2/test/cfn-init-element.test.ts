@@ -49,7 +49,7 @@ describe('InitCommand', () => {
       key: 'command_0',
       env: { SECRETS_FILE: '/tmp/secrets' },
       cwd: '/home/myUser',
-      test: 'test -d /home/myUser',
+      testCmd: 'test -d /home/myUser',
       ignoreErrors: false,
       waitAfterCompletion: ec2.InitCommandWaitDuration.of(Duration.hours(2)),
     });
@@ -76,7 +76,7 @@ describe('InitCommand', () => {
       key: 'command_0',
       env: { SECRETS_FILE: '/tmp/secrets' },
       cwd: '/home/myUser',
-      test: 'test -d /home/myUser',
+      testCmd: 'test -d /home/myUser',
       ignoreErrors: false,
       waitAfterCompletion: ec2.InitCommandWaitDuration.of(Duration.hours(2)),
     });
@@ -103,7 +103,7 @@ describe('InitCommand', () => {
       key: 'command_0',
       env: { SECRETS_FILE: '/tmp/secrets' },
       cwd: '/home/myUser',
-      test: 'test -d /home/myUser',
+      testCmd: 'test -d /home/myUser',
       ignoreErrors: false,
       waitAfterCompletion: ec2.InitCommandWaitDuration.of(Duration.hours(2)),
     });

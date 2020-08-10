@@ -279,9 +279,9 @@ const igwId = vpc.internetGatewayId;
 
 For a VPC with only `ISOLATED` subnets, this value will be undefined.
 
-This is only supported for VPC's created in the stack - currently you're 
+This is only supported for VPC's created in the stack - currently you're
 unable to get the ID for imported VPC's. To do that you'd have to specifically
-look up the Internet Gateway by name, which would require knowing the name 
+look up the Internet Gateway by name, which would require knowing the name
 beforehand.
 
 This can be useful for configuring routing using a combination of gateways:
@@ -648,10 +648,6 @@ new ec2.Instance(this, 'Instance', {
     // Optional, how long the installation is expected to take (5 minutes by default)
     timeout: Duration.minutes(30),
   },
-
-  // Optional but recommended: starts a new instance with the new config
-  // if the config changes.
-  userDataCausesReplacement: true,
 });
 ```
 
@@ -676,7 +672,7 @@ ec2.CloudFormationInit.fromElements(
 
 A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.
 You can use bastion hosts using a standard SSH connection targetting port 22 on the host. As an alternative, you can connect the SSH connection
-feature of AWS Systems Manager Session Manager, which does not need an opened security group. (<https://aws.amazon.com/about-aws/whats-new/2019/07/session-manager-launches-tunneling-support-for-ssh-and-scp/>)
+feature of AWS Systems Manager Session Manager, which does not need an opened security group. (https://aws.amazon.com/about-aws/whats-new/2019/07/session-manager-launches-tunneling-support-for-ssh-and-scp/)
 
 A default bastion host for use via SSM can be configured like:
 

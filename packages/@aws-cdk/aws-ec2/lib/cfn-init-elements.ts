@@ -4,9 +4,21 @@ import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } fro
 /**
  * An object that represents reasons to restart an InitService
  *
- * Pass an instance of this object to all the `InitFile`, `InitCommand`,
- * `InitSource` and `InitPackage` objects that you want to restart
- * a service, and finally to the `InitService` itself as well.
+ * Pass an instance of this object to the `InitFile`, `InitCommand`,
+ * `InitSource` and `InitPackage` objects, and finally to an `InitService`
+ * itself to cause the actions (files, commands, sources, and packages)
+ * to trigger a restart of the service.
+ *
+ * For example, the following will run a custom command to install Nginx,
+ * and trigger the nginx service to be restarted after the command has run.
+ *
+ * ```ts
+ * const handle = new ec2.InitServiceRestartHandle();
+ * ec2.CloudFormationInit.fromElements(
+ *   ec2.InitCommand.shellCommand('/usr/bin/custom-nginx-install.sh', { serviceRestartHandles: [handle] }),
+ *   ec2.InitService.enable('nginx', { serviceRestartHandle: handle }),
+ * );
+ * ```
  */
 export class InitServiceRestartHandle {
   private readonly commands = new Array<string>();
@@ -96,7 +108,7 @@ export interface InitCommandOptions {
    *
    * Commands are executed in lexicographical order of their key names.
    *
-   * @default - Automatically generated
+   * @default - Automatically generated based on index
    */
   readonly key?: string;
 
@@ -121,9 +133,9 @@ export interface InitCommandOptions {
    *
    * If the test passes (exits with error code of 0), the command is run.
    *
-   * @default - Always run this command
+   * @default - Always run the command
    */
-  readonly test?: string;
+  readonly testCmd?: string;
 
   /**
    * Continue running if this command fails
@@ -191,7 +203,8 @@ export class InitCommand extends InitElement {
   /**
    * Run a shell command
    *
-   * You must escape the string appropriately.
+   * Remember that some characters like `&`, `|`, `;`, `>` etc. have special meaning in a shell and
+   * need to be preceded by a `\` if you want to treat them as part of a filename.
    */
   public static shellCommand(shellCommand: string, options: InitCommandOptions = {}): InitCommand {
     return new InitCommand([shellCommand], options);
@@ -233,7 +246,7 @@ export class InitCommand extends InitElement {
           command: this.command,
           env: this.options.env,
           cwd: this.options.cwd,
-          test: this.options.test,
+          test: this.options.testCmd,
           ignoreErrors: this.options.ignoreErrors,
           waitAfterCompletion: this.options.waitAfterCompletion?._render(),
         },

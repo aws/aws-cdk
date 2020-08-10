@@ -156,7 +156,7 @@ export interface InstanceProps {
    * UserData, which will cause CloudFormation to replace it if the UserData
    * changes.
    *
-   * @default false
+   * @default - true iff `initOptions` is specified, false otherwise.
    */
   readonly userDataCausesReplacement?: boolean;
 
@@ -292,8 +292,6 @@ export class Instance extends Resource implements IInstance {
 
   private readonly securityGroup: ISecurityGroup;
   private readonly securityGroups: ISecurityGroup[] = [];
-  private readonly originalLogicalId: string;
-  private readonly userDataReplacement: boolean;
 
   constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
@@ -384,8 +382,18 @@ export class Instance extends Resource implements IInstance {
     }
 
     this.applyUpdatePolicies(props);
-    this.originalLogicalId = Stack.of(this).getLogicalId(this.instance);
-    this.userDataReplacement = props.userDataCausesReplacement ?? false;
+
+    // Trigger replacement (via new logical ID) on user data change, if specified or cfn-init is being used.
+    const originalLogicalId = Stack.of(this).getLogicalId(this.instance);
+    this.instance.overrideLogicalId(Lazy.stringValue({ produce: () => {
+      let logicalId = originalLogicalId;
+      if (props.userDataCausesReplacement ?? props.initOptions) {
+        const md5 = crypto.createHash('md5');
+        md5.update(this.userData.render());
+        logicalId += md5.digest('hex').substr(0, 16);
+      }
+      return logicalId;
+    }}));
   }
 
   /**
@@ -454,15 +462,6 @@ export class Instance extends Resource implements IInstance {
         timeout: (oldResourceSignal?.timeout ? Duration.parse(oldResourceSignal?.timeout).plus(timeout) : timeout).toIsoString(),
       },
     };
-  }
-
-  protected prepare() {
-    if (this.userDataReplacement) {
-      const md5 = crypto.createHash('md5');
-      md5.update(this.userData.render());
-      this.instance.overrideLogicalId(this.originalLogicalId + md5.digest('hex').substr(0, 16));
-    }
-    super.prepare();
   }
 
   /**
