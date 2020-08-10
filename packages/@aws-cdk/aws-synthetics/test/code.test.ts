@@ -26,6 +26,15 @@ describe(synthetics.Code.fromInline, () => {
     expect(() => synthetics.Code.fromInline(''))
       .toThrowError('Canary inline code cannot be empty');
   });
+
+  test('fails if handler is not "index.handler"', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+
+    // THEN
+    expect(() => synthetics.Code.fromInline('code').bind(stack, 'canary.handler'))
+      .toThrowError('The handler for inline code must be "index.handler"');
+  });
 });
 
 describe(synthetics.Code.fromAsset, () => {

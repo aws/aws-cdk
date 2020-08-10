@@ -60,9 +60,7 @@ The canary resource creates a lambda function that executes the canary script. T
 
 #### Custom Test
 
-You can bring your own code by using `Test.custom()`, which exposes a `code` property. 
-
-This will allow you to specify a custom script and handler for the canary. To specify the script in the `code` property, use one of the following static methods:
+You can bring your own code by using `Test.custom()`, which allows you to specify a custom script and handler for the canary. To specify the script in the `code` property, use one of the following static methods:
 
   - `code.fromInline()` - specify an inline script.
   - `code.fromAsset()` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment.
