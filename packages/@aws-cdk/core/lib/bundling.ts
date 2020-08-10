@@ -7,15 +7,14 @@ import { spawnSync, SpawnSyncOptions } from 'child_process';
  */
 export interface BundlingOptions {
   /**
-   * Docker bundling options
+   * Docker bundling
    */
   readonly docker: DockerBundling;
 
   /**
-   * Whether bundling should run locally instead of running in a Docker
-   * container.
+   * Local bundling
    *
-   * @default false
+   * @default - bundling is performed in a Docker container
    */
   readonly local?: ILocalBundling;
 }
