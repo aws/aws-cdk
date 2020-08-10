@@ -28,48 +28,8 @@ describe('User Pool', () => {
         EmailSubject: 'Verify your new account',
         SmsMessage: 'The verification code to your new account is {####}',
       },
-      SmsConfiguration: {
-        SnsCallerArn: {
-          'Fn::GetAtt': [ 'PoolsmsRoleC3352CE6', 'Arn' ],
-        },
-        ExternalId: 'Pool',
-      },
+      SmsConfiguration: ABSENT,
       lambdaTriggers: ABSENT,
-    });
-
-    expect(stack).toHaveResource('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Condition: {
-              StringEquals: {
-                'sts:ExternalId': 'Pool',
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              Service: 'cognito-idp.amazonaws.com',
-            },
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      Policies: [
-        {
-          PolicyDocument: {
-            Statement: [
-              {
-                Action: 'sns:Publish',
-                Effect: 'Allow',
-                Resource: '*',
-              },
-            ],
-            Version: '2012-10-17',
-          },
-          PolicyName: 'sns-publish',
-        },
-      ],
     });
   });
 
