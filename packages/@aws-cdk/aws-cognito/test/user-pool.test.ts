@@ -28,7 +28,48 @@ describe('User Pool', () => {
         EmailSubject: 'Verify your new account',
         SmsMessage: 'The verification code to your new account is {####}',
       },
+      SmsConfiguration: {
+        SnsCallerArn: {
+          'Fn::GetAtt': [ 'PoolsmsRoleC3352CE6', 'Arn' ],
+        },
+        ExternalId: 'Pool',
+      },
       lambdaTriggers: ABSENT,
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Condition: {
+              StringEquals: {
+                'sts:ExternalId': 'Pool',
+              },
+            },
+            Effect: 'Allow',
+            Principal: {
+              Service: 'cognito-idp.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Policies: [
+        {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: 'sns:Publish',
+                Effect: 'Allow',
+                Resource: '*',
+              },
+            ],
+            Version: '2012-10-17',
+          },
+          PolicyName: 'sns-publish',
+        },
+      ],
     });
   });
 
@@ -856,6 +897,195 @@ describe('User Pool', () => {
     });
   });
 
+  test('addClient', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const userpool = new UserPool(stack, 'Pool');
+    userpool.addClient('UserPoolClient', {
+      userPoolClientName: 'userpoolclient',
+    });
+    const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
+    imported.addClient('UserPoolImportedClient', {
+      userPoolClientName: 'userpoolimportedclient',
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'userpoolclient',
+      UserPoolId: stack.resolve(userpool.userPoolId),
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'userpoolimportedclient',
+      UserPoolId: stack.resolve(imported.userPoolId),
+    });
+  });
+
+  test('addDomain', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const userpool = new UserPool(stack, 'Pool');
+    userpool.addDomain('UserPoolDomain', {
+      cognitoDomain: {
+        domainPrefix: 'userpooldomain',
+      },
+    });
+    const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
+    imported.addDomain('UserPoolImportedDomain', {
+      cognitoDomain: {
+        domainPrefix: 'userpoolimporteddomain',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
+      Domain: 'userpooldomain',
+      UserPoolId: stack.resolve(userpool.userPoolId),
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
+      Domain: 'userpoolimporteddomain',
+      UserPoolId: stack.resolve(imported.userPoolId),
+    });
+  });
+
+  test('registered identity providers', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userPool = new UserPool(stack, 'pool');
+    const provider1 = UserPoolIdentityProvider.fromProviderName(stack, 'provider1', 'provider1');
+    const provider2 = UserPoolIdentityProvider.fromProviderName(stack, 'provider2', 'provider2');
+
+    // WHEN
+    userPool.registerIdentityProvider(provider1);
+    userPool.registerIdentityProvider(provider2);
+
+    // THEN
+    expect(userPool.identityProviders).toEqual([provider1, provider2]);
+  });
+
+  describe('AccountRecoverySetting should be configured correctly', () => {
+    test('EMAIL_AND_PHONE_WITHOUT_MFA', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: {
+          RecoveryMechanisms: [
+            { Name: 'verified_email', Priority: 1 },
+            { Name: 'verified_phone_number', Priority: 2 },
+          ],
+        },
+      });
+    });
+
+    test('PHONE_WITHOUT_MFA_AND_EMAIL', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: {
+          RecoveryMechanisms: [
+            { Name: 'verified_phone_number', Priority: 1 },
+            { Name: 'verified_email', Priority: 2 },
+          ],
+        },
+      });
+    });
+
+    test('EMAIL_ONLY', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_ONLY });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: {
+          RecoveryMechanisms: [
+            { Name: 'verified_email', Priority: 1 },
+          ],
+        },
+      });
+    });
+
+    test('PHONE_ONLY_WITHOUT_MFA', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_ONLY_WITHOUT_MFA });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: {
+          RecoveryMechanisms: [
+            { Name: 'verified_phone_number', Priority: 1 },
+          ],
+        },
+      });
+    });
+
+    test('NONE', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.NONE });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: {
+          RecoveryMechanisms: [
+            { Name: 'admin_only', Priority: 1 },
+          ],
+        },
+      });
+    });
+
+    test('PHONE_AND_EMAIL', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_AND_EMAIL });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: ABSENT,
+      });
+    });
+
+    test('default', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool');
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: {
+          RecoveryMechanisms: [
+            { Name: 'verified_phone_number', Priority: 1 },
+            { Name: 'verified_email', Priority: 2 },
+          ],
+        },
+      });
+    });
+  });
+
   describe('sms roles', () => {
     test('default', () => {
       // GIVEN
@@ -1082,74 +1312,6 @@ describe('User Pool', () => {
   });
 });
 
-test('addClient', () => {
-  // GIVEN
-  const stack = new Stack();
-
-  // WHEN
-  const userpool = new UserPool(stack, 'Pool');
-  userpool.addClient('UserPoolClient', {
-    userPoolClientName: 'userpoolclient',
-  });
-  const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
-  imported.addClient('UserPoolImportedClient', {
-    userPoolClientName: 'userpoolimportedclient',
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
-    ClientName: 'userpoolclient',
-    UserPoolId: stack.resolve(userpool.userPoolId),
-  });
-  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
-    ClientName: 'userpoolimportedclient',
-    UserPoolId: stack.resolve(imported.userPoolId),
-  });
-});
-
-test('addDomain', () => {
-  // GIVEN
-  const stack = new Stack();
-
-  // WHEN
-  const userpool = new UserPool(stack, 'Pool');
-  userpool.addDomain('UserPoolDomain', {
-    cognitoDomain: {
-      domainPrefix: 'userpooldomain',
-    },
-  });
-  const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
-  imported.addDomain('UserPoolImportedDomain', {
-    cognitoDomain: {
-      domainPrefix: 'userpoolimporteddomain',
-    },
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
-    Domain: 'userpooldomain',
-    UserPoolId: stack.resolve(userpool.userPoolId),
-  });
-  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
-    Domain: 'userpoolimporteddomain',
-    UserPoolId: stack.resolve(imported.userPoolId),
-  });
-});
-
-test('registered identity providers', () => {
-  // GIVEN
-  const stack = new Stack();
-  const userPool = new UserPool(stack, 'pool');
-  const provider1 = UserPoolIdentityProvider.fromProviderName(stack, 'provider1', 'provider1');
-  const provider2 = UserPoolIdentityProvider.fromProviderName(stack, 'provider2', 'provider2');
-
-  // WHEN
-  userPool.registerIdentityProvider(provider1);
-  userPool.registerIdentityProvider(provider2);
-
-  // THEN
-  expect(userPool.identityProviders).toEqual([provider1, provider2]);
-});
 
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {
@@ -1159,123 +1321,3 @@ function fooFunction(scope: Construct, name: string): lambda.IFunction {
     handler: 'index.handler',
   });
 }
-
-describe('AccountRecoverySetting should be configured correctly', () => {
-  test('EMAIL_AND_PHONE_WITHOUT_MFA', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: {
-        RecoveryMechanisms: [
-          { Name: 'verified_email', Priority: 1 },
-          { Name: 'verified_phone_number', Priority: 2 },
-        ],
-      },
-    });
-  });
-
-  test('PHONE_WITHOUT_MFA_AND_EMAIL', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: {
-        RecoveryMechanisms: [
-          { Name: 'verified_phone_number', Priority: 1 },
-          { Name: 'verified_email', Priority: 2 },
-        ],
-      },
-    });
-  });
-
-  test('EMAIL_ONLY', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_ONLY });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: {
-        RecoveryMechanisms: [
-          { Name: 'verified_email', Priority: 1 },
-        ],
-      },
-    });
-  });
-
-  test('PHONE_ONLY_WITHOUT_MFA', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_ONLY_WITHOUT_MFA });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: {
-        RecoveryMechanisms: [
-          { Name: 'verified_phone_number', Priority: 1 },
-        ],
-      },
-    });
-  });
-
-  test('NONE', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.NONE });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: {
-        RecoveryMechanisms: [
-          { Name: 'admin_only', Priority: 1 },
-        ],
-      },
-    });
-  });
-
-  test('PHONE_AND_EMAIL', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_AND_EMAIL });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: ABSENT,
-    });
-  });
-
-  test('default', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool');
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: {
-        RecoveryMechanisms: [
-          { Name: 'verified_phone_number', Priority: 1 },
-          { Name: 'verified_email', Priority: 2 },
-        ],
-      },
-    });
-  });
-});
