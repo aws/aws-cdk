@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
+import { Annotations } from '../annotations';
 import { Construct, IConstruct, ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { IInspectable, TreeInspector } from '../tree';
@@ -20,15 +21,19 @@ export class TreeMetadata extends Construct {
     super(scope, 'Tree');
   }
 
-  protected synthesize(session: ISynthesisSession) {
+  /**
+   * Create tree.json
+   * @internal
+   */
+  public _synthesizeTree(session: ISynthesisSession) {
     const lookup: { [path: string]: Node } = { };
 
     const visit = (construct: IConstruct): Node => {
-      const children = construct.node.children.map((c) => {
+      const children = construct.construct.children.map((c) => {
         try {
           return visit(c);
         } catch (e) {
-          this.node.addWarning(`Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
+          Annotations.of(this).addWarning(`Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
           return undefined;
         }
       });
@@ -37,8 +42,8 @@ export class TreeMetadata extends Construct {
         .reduce((map, child) => Object.assign(map, { [child!.id]: child }), {});
 
       const node: Node = {
-        id: construct.node.id || 'App',
-        path: construct.node.path,
+        id: construct.construct.id || 'App',
+        path: construct.construct.path,
         children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
         attributes: this.synthAttributes(construct),
       };
@@ -50,7 +55,7 @@ export class TreeMetadata extends Construct {
 
     const tree = {
       version: 'tree-0.1',
-      tree: visit(this.node.root),
+      tree: visit(this.construct.root),
     };
 
     const builder = session.assembly;

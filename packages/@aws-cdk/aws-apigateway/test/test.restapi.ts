@@ -1018,5 +1018,29 @@ export = {
       }));
       test.done();
     },
+
+    '"endpointTypes" can be used to specify endpoint configuration for SpecRestApi'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.SpecRestApi(stack, 'api', {
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+        endpointTypes: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ],
+      });
+
+      api.root.addMethod('GET');
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+        EndpointConfiguration: {
+          Types: [
+            'EDGE',
+            'PRIVATE',
+          ],
+        },
+      }));
+      test.done();
+    },
   },
 };
