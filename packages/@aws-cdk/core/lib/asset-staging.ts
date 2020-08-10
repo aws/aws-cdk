@@ -156,8 +156,8 @@ export class AssetStaging extends Construct {
     fs.chmodSync(bundleDir, 0o777);
 
     let user: string;
-    if (options.user) {
-      user = options.user;
+    if (options.docker.user) {
+      user = options.docker.user;
     } else { // Default to current user
       const userInfo = os.userInfo();
       user = userInfo.uid !== -1 // uid is -1 on Windows
@@ -175,18 +175,22 @@ export class AssetStaging extends Construct {
         hostPath: bundleDir,
         containerPath: AssetStaging.BUNDLING_OUTPUT_DIR,
       },
-      ...options.volumes ?? [],
+      ...options.docker.volumes ?? [],
     ];
 
     try {
       process.stderr.write(`Bundling asset ${this.node.path}...\n`);
-      options.image._run({
-        command: options.command,
+
+      if (options.local?.tryBundle(bundleDir)) {
+        return bundleDir;
+      }
+
+      options.docker.image._run({
+        command: options.docker.command,
         user,
         volumes,
-        environment: options.environment,
-        workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
-        runLocally: options.runLocally,
+        environment: options.docker.environment,
+        workingDirectory: options.docker.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
       });
     } catch (err) {
       throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}: ${err}`);

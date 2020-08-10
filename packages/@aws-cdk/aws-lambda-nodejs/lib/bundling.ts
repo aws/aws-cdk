@@ -198,15 +198,6 @@ export class Bundling {
       ]);
     }
 
-    let runLocally: boolean;
-    try {
-      require.resolve('parcel');
-      const { version } = require('parcel/package.json'); // eslint-disable-line import/no-extraneous-dependencies, @typescript-eslint/no-require-imports
-      runLocally = /^2/.test(version);
-    } catch (err) {
-      runLocally = false;
-    }
-
     return lambda.Code.fromAsset(projectRoot, {
       assetHashType: cdk.AssetHashType.BUNDLE,
       bundling: {
@@ -217,7 +208,6 @@ export class Bundling {
           ? [{ containerPath: '/parcel-cache', hostPath: options.cacheDir }]
           : [],
         workingDirectory: path.dirname(containerEntryPath).replace(/\\/g, '/'), // Always use POSIX paths in the container
-        runLocally,
       },
     });
   }

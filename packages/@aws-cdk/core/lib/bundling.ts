@@ -7,6 +7,26 @@ import { spawnSync, SpawnSyncOptions } from 'child_process';
  */
 export interface BundlingOptions {
   /**
+   * Docker bundling options
+   */
+  readonly docker: DockerBundling;
+
+  /**
+   * Whether bundling should run locally instead of running in a Docker
+   * container.
+   *
+   * @default false
+   */
+  readonly local?: ILocalBundling;
+}
+
+/**
+ * Docker bundling options
+ *
+ * @experimental
+ */
+export interface DockerBundling {
+  /**
    * The Docker image where the command will run.
    */
   readonly image: BundlingDockerImage;
@@ -53,14 +73,20 @@ export interface BundlingOptions {
    * @default - uid:gid of the current user or 1000:1000 on Windows
    */
   readonly user?: string;
+}
 
+/**
+ * Local bundling
+ *
+ * @experimental
+ */
+export interface ILocalBundling {
   /**
-   * Whether bundling should run locally instead of running in a Docker
-   * container.
-   *
-   * @default false
+   * This method is called before attempting docker bundling to allow the
+   * bundler to be executed locally. If the local bundler exists, and bundling
+   * was performed locally, return `true`. Otherwise, return `false`.
    */
-  readonly runLocally?: boolean;
+  tryBundle(bundleDir: string): boolean;
 }
 
 /**
@@ -91,7 +117,7 @@ export class BundlingDockerImage {
       path,
     ];
 
-    const docker = exec(process.env.CDK_DOCKER ?? 'docker', dockerArgs);
+    const docker = dockerExec(dockerArgs);
 
     const match = docker.stdout.toString().match(/sha256:([a-z0-9]+)/);
 
@@ -115,48 +141,27 @@ export class BundlingDockerImage {
     const environment = options.environment || {};
     const command = options.command || [];
 
-    const spawnSyncOptions: SpawnSyncOptions = {
-      stdio: [ // show output
+    const dockerArgs: string[] = [
+      'run', '--rm',
+      ...options.user
+        ? ['-u', options.user]
+        : [],
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
+      ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
+      ...options.workingDirectory
+        ? ['-w', options.workingDirectory]
+        : [],
+      this.image,
+      ...command,
+    ];
+
+    dockerExec(dockerArgs, {
+      stdio: [ // show Docker output
         'ignore', // ignore stdio
         process.stderr, // redirect stdout to stderr
         'inherit', // inherit stderr
       ],
-    };
-
-    if (!options.runLocally) {
-      const dockerArgs: string[] = [
-        'run', '--rm',
-        ...options.user
-          ? ['-u', options.user]
-          : [],
-        ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
-        ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
-        ...options.workingDirectory
-          ? ['-w', options.workingDirectory]
-          : [],
-        this.image,
-        ...command,
-      ];
-
-      exec(process.env.CDK_DOCKER ?? 'docker', dockerArgs, spawnSyncOptions);
-    }
-    else {
-      const [prog, ...args] = command.map(comm => {
-        let newCommand = comm;
-        for (const volume of volumes) {
-          newCommand = newCommand.replace(new RegExp(volume.containerPath, 'g'), volume.hostPath);
-        }
-        return newCommand;
-      });
-
-      exec(prog, args, {
-        env: {
-          ...process.env,
-          ...environment,
-        },
-        ...spawnSyncOptions,
-      });
-    }
+    });
   }
 }
 
@@ -239,8 +244,6 @@ interface DockerRunOptions {
    * @default - root or image default
    */
   readonly user?: string;
-
-  readonly runLocally?: boolean;
 }
 
 /**
@@ -259,7 +262,8 @@ function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
 }
 
-function exec(prog: string, args: string[], options?: SpawnSyncOptions) {
+function dockerExec(args: string[], options?: SpawnSyncOptions) {
+  const prog = process.env.CDK_DOCKER ?? 'docker';
   const proc = spawnSync(prog, args, options);
 
   if (proc.error) {
