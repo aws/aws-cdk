@@ -221,7 +221,7 @@ export class CfnParser {
       if (!depResource) {
         throw new Error(`Resource '${logicalId}' depends on '${dep}' that doesn't exist`);
       }
-      resource.node.addDependency(depResource);
+      resource.construct.addDependency(depResource);
     }
   }
 

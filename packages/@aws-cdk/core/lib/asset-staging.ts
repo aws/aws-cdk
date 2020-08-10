@@ -95,7 +95,7 @@ export class AssetStaging extends Construct {
 
     this.assetHash = this.calculateHash(props);
 
-    const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
+    const stagingDisabled = this.construct.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
     if (stagingDisabled) {
       this.stagedPath = this.bundleDir ?? this.sourcePath;
     } else {
@@ -179,7 +179,7 @@ export class AssetStaging extends Construct {
     ];
 
     try {
-      process.stderr.write(`Bundling asset ${this.node.path}...\n`);
+      process.stderr.write(`Bundling asset ${this.construct.path}...\n`);
 
       if (options.local?.tryBundle(bundleDir)) {
         return bundleDir;
@@ -193,7 +193,7 @@ export class AssetStaging extends Construct {
         workingDirectory: options.docker.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
       });
     } catch (err) {
-      throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}: ${err}`);
+      throw new Error(`Failed to run bundling Docker image for asset ${this.construct.path}: ${err}`);
     }
 
     if (FileSystem.isEmpty(bundleDir)) {

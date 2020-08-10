@@ -1,5 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
+import { Annotations } from '../annotations';
 import { Aspects, IAspect } from '../aspect';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
 import { Stack } from '../stack';
@@ -45,7 +46,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
  * (They will in turn recurse again)
  */
 function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions) {
-  for (const child of root.node.children) {
+  for (const child of root.construct.children) {
     if (Stage.isStage(child)) {
       child.synth(options);
     } else {
@@ -67,7 +68,7 @@ function invokeAspects(root: IConstruct) {
   recurse(root, []);
 
   function recurse(construct: IConstruct, inheritedAspects: constructs.IAspect[]) {
-    const node = construct.node;
+    const node = construct.construct;
     const aspects = Aspects.of(construct);
     const allAspectsHere = [...inheritedAspects ?? [], ...aspects.aspects];
     const nodeAspectsCount = aspects.aspects.length;
@@ -84,7 +85,7 @@ function invokeAspects(root: IConstruct) {
       // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
       // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
       if (!nestedAspectWarning && nodeAspectsCount !== aspects.aspects.length) {
-        construct.node.addWarning('We detected an Aspect was added via another Aspect, and will not be applied');
+        Annotations.of(construct).addWarning('We detected an Aspect was added via another Aspect, and will not be applied');
         nestedAspectWarning = true;
       }
 
@@ -92,7 +93,7 @@ function invokeAspects(root: IConstruct) {
       invoked.push(aspect);
     }
 
-    for (const child of construct.node.children) {
+    for (const child of construct.construct.children) {
       if (!Stage.isStage(child)) {
         recurse(child, allAspectsHere);
       }
@@ -146,7 +147,7 @@ function validateTree(root: IConstruct) {
   });
 
   if (errors.length > 0) {
-    const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
+    const errorList = errors.map(e => `[${e.source.construct.path}] ${e.message}`).join('\n  ');
     throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
   }
 }
@@ -159,7 +160,7 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstr
     cb(root as IProtectedConstructMethods);
   }
 
-  for (const child of root.node.children) {
+  for (const child of root.construct.children) {
     if (Stage.isStage(child)) { continue; }
     visit(child, order, cb);
   }
