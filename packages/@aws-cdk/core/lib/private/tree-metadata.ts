@@ -29,7 +29,7 @@ export class TreeMetadata extends Construct {
     const lookup: { [path: string]: Node } = { };
 
     const visit = (construct: IConstruct): Node => {
-      const children = construct.node.children.map((c) => {
+      const children = construct.construct.children.map((c) => {
         try {
           return visit(c);
         } catch (e) {
@@ -42,8 +42,8 @@ export class TreeMetadata extends Construct {
         .reduce((map, child) => Object.assign(map, { [child!.id]: child }), {});
 
       const node: Node = {
-        id: construct.node.id || 'App',
-        path: construct.node.path,
+        id: construct.construct.id || 'App',
+        path: construct.construct.path,
         children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
         attributes: this.synthAttributes(construct),
       };
@@ -55,7 +55,7 @@ export class TreeMetadata extends Construct {
 
     const tree = {
       version: 'tree-0.1',
-      tree: visit(this.node.root),
+      tree: visit(this.construct.root),
     };
 
     const builder = session.assembly;

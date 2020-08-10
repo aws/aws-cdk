@@ -28,11 +28,11 @@ function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
     const c1 = new MyConstruct(stack2, 's1c2');
 
     // add some metadata
-    stack1.node.addMetadata('meta', 111);
+    stack1.construct.addMetadata('meta', 111);
     Annotations.of(r2).addWarning('warning1');
     Annotations.of(r2).addWarning('warning2');
-    c1.node.addMetadata('meta', { key: 'value' });
-    app.node.addMetadata('applevel', 123); // apps can also have metadata
+    c1.construct.addMetadata('meta', { key: 'value' });
+    app.construct.addMetadata('applevel', 123); // apps can also have metadata
   });
 }
 
@@ -98,8 +98,8 @@ export = {
       key2: 'val2',
     });
     const prog = new App();
-    test.deepEqual(prog.node.tryGetContext('key1'), 'val1');
-    test.deepEqual(prog.node.tryGetContext('key2'), 'val2');
+    test.deepEqual(prog.construct.tryGetContext('key1'), 'val1');
+    test.deepEqual(prog.construct.tryGetContext('key2'), 'val2');
     test.done();
   },
 
@@ -114,8 +114,8 @@ export = {
         key2: 'val4',
       },
     });
-    test.deepEqual(prog.node.tryGetContext('key1'), 'val1');
-    test.deepEqual(prog.node.tryGetContext('key2'), 'val2');
+    test.deepEqual(prog.construct.tryGetContext('key1'), 'val1');
+    test.deepEqual(prog.construct.tryGetContext('key2'), 'val2');
     test.done();
   },
 
@@ -150,14 +150,14 @@ export = {
         foo: 'bar',
       },
     });
-    test.deepEqual(prog.node.tryGetContext('foo'), 'bar');
+    test.deepEqual(prog.construct.tryGetContext('foo'), 'bar');
     test.done();
   },
 
   'setContext(k,v) cannot be called after stacks have been added because stacks may use the context'(test: Test) {
     const prog = new App();
     new Stack(prog, 's1');
-    test.throws(() => prog.node.setContext('foo', 'bar'));
+    test.throws(() => prog.construct.setContext('foo', 'bar'));
     test.done();
   },
 
@@ -165,7 +165,7 @@ export = {
 
     class Child extends Construct {
       protected validate() {
-        return [`Error from ${this.node.id}`];
+        return [`Error from ${this.construct.id}`];
       }
     }
 
@@ -361,9 +361,9 @@ export = {
       },
     });
 
-    test.ok(app.node.tryGetContext('isString') === 'string');
-    test.ok(app.node.tryGetContext('isNumber') === 10);
-    test.deepEqual(app.node.tryGetContext('isObject'), { isString: 'string', isNumber: 10 });
+    test.ok(app.construct.tryGetContext('isString') === 'string');
+    test.ok(app.construct.tryGetContext('isNumber') === 10);
+    test.deepEqual(app.construct.tryGetContext('isObject'), { isString: 'string', isNumber: 10 });
 
     test.done();
   },
@@ -374,6 +374,6 @@ class MyConstruct extends Construct {
     super(scope, id);
 
     new CfnResource(this, 'r1', { type: 'ResourceType1' });
-    new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.tryGetContext('ctx1') } });
+    new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.construct.tryGetContext('ctx1') } });
   }
 }
