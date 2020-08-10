@@ -2,16 +2,15 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { IConstruct } from './construct-compat';
 
 /**
- * Includes API for attaching log messages that will be printed by the CLI
- * during synthesis to construct scopes.
+ * Includes API for attaching annotations such as warning messages to constructs.
  */
-export class Logging {
+export class Annotations {
   /**
-   * Returns the logging API for a construct scope.
+   * Returns the annotations API for a construct scope.
    * @param scope The scope
    */
   public static of(scope: IConstruct) {
-    return new Logging(scope);
+    return new Annotations(scope);
   }
 
   private constructor(private readonly scope: IConstruct) {

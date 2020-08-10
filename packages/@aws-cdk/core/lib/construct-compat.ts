@@ -12,9 +12,9 @@
 
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
+import { Annotations } from './annotations';
 import { IAspect, Aspects } from './aspect';
 import { IDependable } from './dependency';
-import { Logging } from './logging';
 import { Token } from './token';
 
 const ORIGINAL_CONSTRUCT_NODE_SYMBOL = Symbol.for('@aws-cdk/core.ConstructNode');
@@ -414,10 +414,10 @@ export class ConstructNode {
    * DEPRECATED: Adds a { "info": <message> } metadata entry to this construct.
    * The toolkit will display the info message when apps are synthesized.
    * @param message The info message.
-   * @deprecated use `Logging.of(construct).addInfo()`
+   * @deprecated use `Annotations.of(construct).addInfo()`
    */
   public addInfo(message: string): void {
-    Logging.of(this.host).addInfo(message);
+    Annotations.of(this.host).addInfo(message);
   }
 
   /**
@@ -425,20 +425,20 @@ export class ConstructNode {
    * The toolkit will display the warning when an app is synthesized, or fail
    * if run in --strict mode.
    * @param message The warning message.
-   * @deprecated use `Logging.of(construct).addWarning()`
+   * @deprecated use `Annotations.of(construct).addWarning()`
    */
   public addWarning(message: string): void {
-    Logging.of(this.host).addWarning(message);
+    Annotations.of(this.host).addWarning(message);
   }
 
   /**
    * DEPRECATED: Adds an { "error": <message> } metadata entry to this construct.
    * The toolkit will fail synthesis when errors are reported.
    * @param message The error message.
-   * @deprecated use `Logging.of(construct).addError()`
+   * @deprecated use `Annotations.of(construct).addError()`
    */
   public addError(message: string) {
-    Logging.of(this.host).addError(message);
+    Annotations.of(this.host).addError(message);
   }
 
   /**

@@ -1,9 +1,9 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Annotations } from './annotations';
 import { Construct } from './construct-compat';
 import { Stack } from './stack';
 import { Token } from './token';
-import { Logging } from './logging';
 
 /**
  * @experimental
@@ -108,7 +108,7 @@ export class ContextProvider {
       });
 
       if (providerError !== undefined) {
-        Logging.of(scope).addError(providerError);
+        Annotations.of(scope).addError(providerError);
       }
       return { value: options.dummyValue };
     }
