@@ -129,7 +129,7 @@ test('bootstrap disable bucket Public Access Block Configuration', async () => {
   expect(executed).toBeTruthy();
 });
 
-test('bootstrap with server access logging enabled', async () => {
+test('bootstrap with server access logging enabled and default prefix', async () => {
   // WHEN
   const ret = await bootstrapEnvironment(env, sdk, {
     toolkitStackName: 'mockStack',
@@ -144,6 +144,26 @@ test('bootstrap with server access logging enabled', async () => {
   expect(changeSetTemplate.Conditions.ConfigureServerAccessLogs['Fn::Equals'][0]).toBe('true');
   expect(bucketProperties.LoggingConfiguration['Fn::If'][0]).toEqual('ConfigureServerAccessLogs');
   expect(bucketProperties.LoggingConfiguration['Fn::If'][1]).toEqual({DestinationBucketName: 'cdk-toolkit-logging-bucket', LogFilePrefix: 'cdk-toolkit-logs'});
+  expect(ret.noOp).toBeFalsy();
+  expect(executed).toBeTruthy();
+});
+
+test('bootstrap with server access logging enabled and custom prefix', async () => {
+  // WHEN
+  const ret = await bootstrapEnvironment(env, sdk, {
+    toolkitStackName: 'mockStack',
+    parameters: {
+      accessLogsBucketName: 'cdk-toolkit-logging-bucket',
+      accessLogsPrefix: 'my-server-access-logs',
+    },
+  });
+
+  // THEN
+  const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
+  expect(bucketProperties.BucketName).toBeUndefined();
+  expect(changeSetTemplate.Conditions.ConfigureServerAccessLogs['Fn::Equals'][0]).toBe('true');
+  expect(bucketProperties.LoggingConfiguration['Fn::If'][0]).toEqual('ConfigureServerAccessLogs');
+  expect(bucketProperties.LoggingConfiguration['Fn::If'][1]).toEqual({DestinationBucketName: 'cdk-toolkit-logging-bucket', LogFilePrefix: 'my-server-access-logs'});
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
