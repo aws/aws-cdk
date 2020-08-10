@@ -184,6 +184,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a UserData script, and output it unchanged', () => {
+    includeTestTemplate(stack, 'user-data.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('user-data.json'),
+    );
+  });
+
   test('can ingest a template with intrinsic functions and conditions, and output it unchanged', () => {
     includeTestTemplate(stack, 'functions-and-conditions.json');
 
