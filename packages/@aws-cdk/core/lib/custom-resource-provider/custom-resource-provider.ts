@@ -91,7 +91,7 @@ export class CustomResourceProvider extends Construct {
   public static getOrCreate(scope: Construct, uniqueid: string, props: CustomResourceProviderProps) {
     const id = `${uniqueid}CustomResourceProvider`;
     const stack = Stack.of(scope);
-    const provider = stack.node.tryFindChild(id) as CustomResourceProvider
+    const provider = stack.construct.tryFindChild(id) as CustomResourceProvider
       ?? new CustomResourceProvider(stack, id, props);
 
     return provider.serviceToken;

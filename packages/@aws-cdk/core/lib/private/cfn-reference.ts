@@ -102,11 +102,6 @@ export class CfnReference extends Reference {
     const consumingStack = Stack.of(context.scope);
     const token = this.replacementTokens.get(consumingStack);
 
-    // if (!token && this.isCrossStackReference(consumingStack) && !context.preparing) {
-    // eslint-disable-next-line max-len
-    //   throw new Error(`Cross-stack reference (${context.scope.node.path} -> ${this.target.node.path}) has not been assigned a value--call prepare() first`);
-    // }
-
     if (token) {
       return token.resolve(context);
     } else {
@@ -138,7 +133,7 @@ export class CfnReference extends Reference {
    */
   public toString(): string {
     return Token.asString(this, {
-      displayHint: `${this.target.node.id}.${this.displayName}`,
+      displayHint: `${this.target.construct.id}.${this.displayName}`,
     });
   }
 }

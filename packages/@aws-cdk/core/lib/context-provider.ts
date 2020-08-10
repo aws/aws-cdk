@@ -94,7 +94,7 @@ export class ContextProvider {
     }
 
     const { key, props } = this.getKey(scope, options);
-    const value = scope.node.tryGetContext(key);
+    const value = scope.construct.tryGetContext(key);
     const providerError = extractProviderError(value);
 
     // if context is missing or an error occurred during context retrieval,
@@ -107,7 +107,7 @@ export class ContextProvider {
       });
 
       if (providerError !== undefined) {
-        scope.node.addError(providerError);
+        scope.construct.addError(providerError);
       }
       return { value: options.dummyValue };
     }

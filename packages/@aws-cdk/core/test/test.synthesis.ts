@@ -153,7 +153,7 @@ export = {
     }
 
     const root = new SynthesizeMe();
-    const assembly = cdk.ConstructNode.synth(root.node, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
+    const assembly = cdk.ConstructNode.synth(root.construct, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
 
     test.deepEqual(calls, [ 'prepare', 'validate', 'synthesize' ]);
     const stack = assembly.getStackByName('art');

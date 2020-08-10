@@ -26,6 +26,7 @@ export = {
       hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
       stack,
       node: stack.node,
+      construct: stack.construct,
     });
 
     // THEN
@@ -45,6 +46,7 @@ export = {
       hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
       stack,
       node: stack.node,
+      construct: stack.construct,
     });
 
     // THEN
@@ -64,6 +66,7 @@ export = {
       hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
       stack,
       node: stack.node,
+      construct: stack.construct,
     });
 
     // THEN
@@ -83,6 +86,7 @@ export = {
       hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
       stack,
       node: stack.node,
+      construct: stack.construct,
     });
 
     // THEN

@@ -129,8 +129,8 @@ export = {
     const r1 = new Counter(stack, 'Counter1', { Count: 1 });
     const r2 = new Counter(stack, 'Counter2', { Count: 1 });
     const r3 = new CfnResource(stack, 'Resource3', { type: 'MyResourceType' });
-    r2.node.addDependency(r1);
-    r2.node.addDependency(r3);
+    r2.construct.addDependency(r1);
+    r2.construct.addDependency(r3);
 
     synthesize(stack);
 
@@ -357,8 +357,8 @@ export = {
     const c3 = new C3(stack, 'MyC3');
 
     const dependingResource = new CfnResource(stack, 'MyResource', { type: 'R' });
-    dependingResource.node.addDependency(c1, c2);
-    dependingResource.node.addDependency(c3);
+    dependingResource.construct.addDependency(c1, c2);
+    dependingResource.construct.addDependency(c3);
 
     synthesize(stack);
 
@@ -642,7 +642,7 @@ export = {
 
   '"aws:cdk:path" metadata is added if "aws:cdk:path-metadata" context is set to true'(test: Test) {
     const stack = new Stack();
-    stack.node.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, true);
+    stack.construct.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, true);
 
     const parent = new Construct(stack, 'Parent');
 
@@ -667,7 +667,7 @@ export = {
     const resB = new CfnResource(stackB, 'Resource', { type: 'R' });
 
     // WHEN
-    resB.node.addDependency(resA);
+    resB.construct.addDependency(resA);
 
     // THEN
     const assembly = app.synth();
@@ -681,7 +681,7 @@ export = {
         },
       },
     });
-    test.deepEqual(stackB.dependencies.map(s => s.node.id), ['StackA']);
+    test.deepEqual(stackB.dependencies.map(s => s.construct.id), ['StackA']);
 
     test.done();
   },
