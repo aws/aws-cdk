@@ -136,6 +136,6 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
       ],
       Version: '2012-10-17',
     },
-    Description: 'Created by Queue',
+    Description: 'Created by Default/Queue',
   });
 });

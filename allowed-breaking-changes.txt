@@ -19,3 +19,6 @@ removed:@aws-cdk/cdk-assets-schema.FileDestination
 removed:@aws-cdk/cdk-assets-schema.FileSource
 removed:@aws-cdk/cdk-assets-schema.ManifestFile
 removed:@aws-cdk/cdk-assets-schema.FileAssetPackaging
+
+changed-type:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.autoScalingGroups
+changed-type:@aws-cdk/aws-codedeploy.ServerDeploymentGroup.autoScalingGroups

@@ -2,7 +2,7 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Lazy, Resource, Stack, Token, Duration } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
-import { Origin } from './origin';
+import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
 
 /**
@@ -51,6 +51,10 @@ export interface DistributionAttributes {
    * @attribute
    */
   readonly distributionId: string;
+}
+
+interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
+  readonly origin: IOrigin;
 }
 
 /**
@@ -127,7 +131,8 @@ export class Distribution extends Resource implements IDistribution {
 
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
-  private readonly origins: Set<Origin> = new Set<Origin>();
+  private readonly boundOrigins: BoundOrigin[] = [];
+  private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
 
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: acm.ICertificate;
@@ -142,8 +147,8 @@ export class Distribution extends Resource implements IDistribution {
       }
     }
 
-    this.defaultBehavior = new CacheBehavior({ pathPattern: '*', ...props.defaultBehavior });
-    this.addOrigin(this.defaultBehavior.origin);
+    const originId = this.addOrigin(props.defaultBehavior.origin);
+    this.defaultBehavior = new CacheBehavior(originId, { pathPattern: '*', ...props.defaultBehavior });
     if (props.additionalBehaviors) {
       Object.entries(props.additionalBehaviors).forEach(([pathPattern, behaviorOptions]) => {
         this.addBehavior(pathPattern, behaviorOptions.origin, behaviorOptions);
@@ -156,6 +161,7 @@ export class Distribution extends Resource implements IDistribution {
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
       enabled: true,
       origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
+      originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
       defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
       cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
       viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
@@ -172,27 +178,79 @@ export class Distribution extends Resource implements IDistribution {
    * Adds a new behavior to this distribution for the given pathPattern.
    *
    * @param pathPattern the path pattern (e.g., 'images/*') that specifies which requests to apply the behavior to.
+   * @param origin the origin to use for this behavior
    * @param behaviorOptions the options for the behavior at this path.
    */
-  public addBehavior(pathPattern: string, origin: Origin, behaviorOptions: AddBehaviorOptions = {}) {
+  public addBehavior(pathPattern: string, origin: IOrigin, behaviorOptions: AddBehaviorOptions = {}) {
     if (pathPattern === '*') {
       throw new Error('Only the default behavior can have a path pattern of \'*\'');
     }
-    this.additionalBehaviors.push(new CacheBehavior({ pathPattern, origin, ...behaviorOptions }));
-    this.addOrigin(origin);
+    const originId = this.addOrigin(origin);
+    this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
   }
 
-  private addOrigin(origin: Origin) {
-    if (!this.origins.has(origin)) {
-      this.origins.add(origin);
-      origin.bind(this, { originIndex: this.origins.size });
+  private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
+    const existingOrigin = this.boundOrigins.find(boundOrigin => boundOrigin.origin === origin);
+    if (existingOrigin) {
+      return existingOrigin.originId;
+    } else {
+      const originIndex = this.boundOrigins.length + 1;
+      const scope = new Construct(this, `Origin${originIndex}`);
+      const originId = scope.node.uniqueId;
+      const originBindConfig = origin.bind(scope, { originId });
+      this.boundOrigins.push({ origin, originId, ...originBindConfig });
+      if (originBindConfig.failoverConfig) {
+        if (isFailoverOrigin) {
+          throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
+        }
+        const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
+        this.addOriginGroup(originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
+      }
+      return originId;
     }
+  }
+
+  private addOriginGroup(statusCodes: number[] | undefined, originId: string, failoverOriginId: string): void {
+    statusCodes = statusCodes ?? [500, 502, 503, 504];
+    if (statusCodes.length === 0) {
+      throw new Error('fallbackStatusCodes cannot be empty');
+    }
+    const groupIndex = this.originGroups.length + 1;
+    this.originGroups.push({
+      failoverCriteria: {
+        statusCodes: {
+          items: statusCodes,
+          quantity: statusCodes.length,
+        },
+      },
+      id: new Construct(this, `OriginGroup${groupIndex}`).node.uniqueId,
+      members: {
+        items: [
+          { originId },
+          { originId: failoverOriginId },
+        ],
+        quantity: 2,
+      },
+    });
   }
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
     const renderedOrigins: CfnDistribution.OriginProperty[] = [];
-    this.origins.forEach(origin => renderedOrigins.push(origin.renderOrigin()));
+    this.boundOrigins.forEach(boundOrigin => {
+      if (boundOrigin.originProperty) {
+        renderedOrigins.push(boundOrigin.originProperty);
+      }
+    });
     return renderedOrigins;
+  }
+
+  private renderOriginGroups(): CfnDistribution.OriginGroupsProperty | undefined {
+    return this.originGroups.length === 0
+      ? undefined
+      : {
+        items: this.originGroups,
+        quantity: this.originGroups.length,
+      };
   }
 
   private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
@@ -229,7 +287,6 @@ export class Distribution extends Resource implements IDistribution {
       minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2018,
     };
   }
-
 }
 
 /**
@@ -312,6 +369,21 @@ export class AllowedMethods {
   public static readonly ALLOW_GET_HEAD_OPTIONS = new AllowedMethods(['GET', 'HEAD', 'OPTIONS']);
   /** All supported HTTP methods */
   public static readonly ALLOW_ALL = new AllowedMethods(['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE']);
+
+  /** HTTP methods supported */
+  public readonly methods: string[];
+
+  private constructor(methods: string[]) { this.methods = methods; }
+}
+
+/**
+ * The HTTP methods that the Behavior will cache requests on.
+ */
+export class CachedMethods {
+  /** HEAD and GET */
+  public static readonly CACHE_GET_HEAD = new CachedMethods(['GET', 'HEAD']);
+  /** HEAD, GET, and OPTIONS */
+  public static readonly CACHE_GET_HEAD_OPTIONS = new CachedMethods(['GET', 'HEAD', 'OPTIONS']);
 
   /** HTTP methods supported */
   public readonly methods: string[];
@@ -404,9 +476,25 @@ export interface AddBehaviorOptions {
   /**
    * HTTP methods to allow for this behavior.
    *
-   * @default - GET and HEAD
+   * @default AllowedMethods.ALLOW_GET_HEAD
    */
   readonly allowedMethods?: AllowedMethods;
+
+  /**
+   * HTTP methods to cache for this behavior.
+   *
+   * @default CachedMethods.CACHE_GET_HEAD
+   */
+  readonly cachedMethods?: CachedMethods;
+
+  /**
+   * Whether you want CloudFront to automatically compress certain files for this cache behavior.
+   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html#compressed-content-cloudfront-file-types
+   * for file types CloudFront will compress.
+   *
+   * @default false
+   */
+  readonly compress?: boolean;
 
   /**
    * Whether CloudFront will forward query strings to the origin.
@@ -426,6 +514,20 @@ export interface AddBehaviorOptions {
   readonly forwardQueryStringCacheKeys?: string[];
 
   /**
+   * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.
+   *
+   * @default false
+   */
+  readonly smoothStreaming?: boolean;
+
+  /**
+   * The protocol that viewers can use to access the files controlled by this behavior.
+   *
+   * @default ViewerProtocolPolicy.ALLOW_ALL
+   */
+  readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
+
+  /**
    * The Lambda@Edge functions to invoke before serving the contents.
    *
    * @default - no Lambda functions will be invoked
@@ -443,5 +545,5 @@ export interface BehaviorOptions extends AddBehaviorOptions {
   /**
    * The origin that you want CloudFront to route requests to when they match this behavior.
    */
-  readonly origin: Origin;
+  readonly origin: IOrigin;
 }
