@@ -184,7 +184,7 @@ export class CdkStage extends Construct {
     if (this._prepared) { return; }
     this._prepared = true;
 
-    for (const { prepareRunOrder: runOrder, stackArtifact } of this.stacksToDeploy) {
+    for (const { prepareRunOrder, stackArtifact, executeRunOrder } of this.stacksToDeploy) {
       const artifact = this.host.stackOutputArtifact(stackArtifact.id);
 
       this.pipelineStage.addAction(DeployCdkStackAction.fromStackArtifact(this, stackArtifact, {
@@ -192,7 +192,8 @@ export class CdkStage extends Construct {
         cloudAssemblyInput: this.cloudAssemblyArtifact,
         output: artifact,
         outputFileName: artifact ? 'outputs.json' : undefined,
-        prepareRunOrder: runOrder,
+        prepareRunOrder,
+        executeRunOrder,
       }));
     }
   }
