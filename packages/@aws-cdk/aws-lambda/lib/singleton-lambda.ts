@@ -81,6 +81,10 @@ export class SingletonFunction extends FunctionBase {
     down.node.addDependency(this.lambdaFunction);
   }
 
+  public removeEnvironment() {
+    return this.lambdaFunction.removeEnvironment();
+  }
+
   /**
    * Returns the construct tree node that corresponds to the lambda function.
    * @internal

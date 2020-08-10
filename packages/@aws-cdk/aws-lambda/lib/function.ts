@@ -504,7 +504,7 @@ export class Function extends FunctionBase {
   /**
    * Environment variables for this function
    */
-  private readonly environment: { [key: string]: string };
+  private environment: { [key: string]: string };
 
   private readonly currentVersionOptions?: VersionOptions;
   private _currentVersion?: Version;
@@ -749,6 +749,14 @@ export class Function extends FunctionBase {
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
     }
     return this._logGroup;
+  }
+
+  public removeEnvironment(): boolean {
+    if (Object.keys(this.environment).length !== 0) {
+      this.environment = {};
+      return true;
+    }
+    return false;
   }
 
   private renderEnvironment() {

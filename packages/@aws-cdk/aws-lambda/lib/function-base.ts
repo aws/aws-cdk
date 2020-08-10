@@ -112,6 +112,13 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * Configures options for asynchronous invocation.
    */
   configureAsyncInvoke(options: EventInvokeConfigOptions): void;
+
+  /**
+   * Removes environment variables (useful when working with Lambda@Edge).
+   *
+   * This is a no-op for imported functions.
+   */
+  removeEnvironment(): boolean;
 }
 
 /**
@@ -316,6 +323,10 @@ export abstract class FunctionBase extends Resource implements IFunction {
       function: this,
       ...options,
     });
+  }
+
+  public removeEnvironment(): boolean {
+    return false;
   }
 
   /**

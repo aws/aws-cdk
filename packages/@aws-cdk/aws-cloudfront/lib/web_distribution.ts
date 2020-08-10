@@ -949,10 +949,15 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     if (input.lambdaFunctionAssociations) {
       toReturn = Object.assign(toReturn, {
         lambdaFunctionAssociations: input.lambdaFunctionAssociations
-          .map(fna => ({
-            eventType: fna.eventType,
-            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.functionArn,
-          })),
+          .map(fna => {
+            if (fna.lambdaFunction.lambda.removeEnvironment()) {
+              fna.lambdaFunction.lambda.node.addWarning(`Removed environment variables from function ${fna.lambdaFunction.node.path} because Lambda@Edge does not support environment variables`);
+            }
+            return {
+              eventType: fna.eventType,
+              lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.functionArn,
+            };
+          }),
       });
 
       // allow edgelambda.amazonaws.com to assume the functions' execution role.

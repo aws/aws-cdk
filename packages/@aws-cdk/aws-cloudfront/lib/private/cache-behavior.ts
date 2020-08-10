@@ -52,6 +52,11 @@ export class CacheBehavior {
           if (edgeLambda.functionVersion.version === '$LATEST') {
             throw new Error('$LATEST function version cannot be used for Lambda@Edge');
           }
+
+          if (edgeLambda.functionVersion.lambda.removeEnvironment()) {
+            edgeLambda.functionVersion.node.addWarning(`Removed environment variables from function ${edgeLambda.functionVersion.node.path} because Lambda@Edge does not support environment variables`);
+          }
+
           return {
             lambdaFunctionArn: edgeLambda.functionVersion.functionArn,
             eventType: edgeLambda.eventType.toString(),

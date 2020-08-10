@@ -1,7 +1,8 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
@@ -472,6 +473,49 @@ nodeunitShim({
         },
       },
     }));
+
+    test.done();
+  },
+
+  'a warning is added when env vars of associated lambda are removed'(test: Test) {
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    const lambdaFunction = new lambda.SingletonFunction(stack, 'Lambda', {
+      uuid: 'xxxx-xxxx-xxxx-xxxx',
+      code: lambda.Code.inline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      environment: {
+        KEY: 'value',
+      },
+    });
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket,
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+              lambdaFunctionAssociations: [{
+                eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+                lambdaFunction: lambdaFunction.latestVersion,
+              }],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::Lambda::Function', {
+      Environment: ABSENT,
+    }));
+
+    test.equal(lambdaFunction.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
+    test.equal(lambdaFunction.node.metadata[0].data, 'Removed environment variables from function Default/Lambda/$LATEST because Lambda@Edge does not support environment variables');
 
     test.done();
   },

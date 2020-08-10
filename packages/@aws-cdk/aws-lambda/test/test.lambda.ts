@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -1522,6 +1522,48 @@ export = {
       },
       MaximumRetryAttempts: 0,
     }));
+
+    test.done();
+  },
+
+  'can remove env vars'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_12_X,
+      environment: {
+        KEY: 'value',
+      },
+    });
+
+    // WHEN
+    const removed = fn.removeEnvironment();
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Environment: ABSENT,
+    }));
+    test.ok(removed);
+
+    test.done();
+  },
+
+  'removeEnvironment returns false without env vars'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_12_X,
+    });
+
+    // WHEN
+    const removed = fn.removeEnvironment();
+
+    // THEN
+    test.equal(removed, false);
 
     test.done();
   },
