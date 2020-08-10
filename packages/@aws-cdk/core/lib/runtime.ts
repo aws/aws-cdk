@@ -220,7 +220,6 @@ export function validateNumber(x: any): ValidationResult {
   if (canInspect(x) && typeof x !== 'number') {
     return new ValidationResult(`${JSON.stringify(x)} should be a number`);
   }
-
   return VALIDATION_SUCCESS;
 }
 
