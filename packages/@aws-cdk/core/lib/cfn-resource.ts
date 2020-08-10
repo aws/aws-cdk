@@ -233,11 +233,17 @@ export class CfnResource extends CfnRefElement {
    * and the dependency will automatically be transferred to the relevant scope.
    */
   public addDependsOn(target: CfnResource) {
+    // skip this dependency if the target is not part of the output
+    if (!target.shouldSynthesize()) {
+      return;
+    }
+
     addDependency(this, target, `"${this.node.path}" depends on "${target.node.path}"`);
   }
 
   /**
    * Add a value to the CloudFormation Resource Metadata
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
    *
    * Note that this is a different set of metadata from CDK node metadata; this
    * metadata ends up in the stack template under the resource, whereas CDK
@@ -277,6 +283,10 @@ export class CfnResource extends CfnRefElement {
    * @internal
    */
   public _toCloudFormation(): object {
+    if (!this.shouldSynthesize()) {
+      return { };
+    }
+
     try {
       const ret = {
         Resources: {
@@ -360,6 +370,17 @@ export class CfnResource extends CfnRefElement {
 
   protected validateProperties(_properties: any) {
     // Nothing
+  }
+
+  /**
+   * Can be overridden by subclasses to determine if this resource will be rendered
+   * into the cloudformation template.
+   *
+   * @returns `true` if the resource should be included or `false` is the resource
+   * should be omitted.
+   */
+  protected shouldSynthesize() {
+    return true;
   }
 }
 

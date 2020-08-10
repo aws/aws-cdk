@@ -89,6 +89,24 @@ itself to 2 Availability Zones.
 Therefore, to get the VPC to spread over 3 or more availability zones, you
 must specify the environment where the stack will be deployed.
 
+You can gain full control over the availability zones selection strategy by overriding the Stack's [`get availabilityZones()`](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/core/lib/stack.ts) method:
+
+```ts
+class MyStack extends Stack {
+
+  get availabilityZones(): string[] {
+    return ['us-west-2a', 'us-west-2b'];
+  }
+
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+    ...
+  }
+}
+```
+
+Note that overriding the `get availabilityZones()` method will override the default behavior for all constructs defined within the Stack.
+
 ### Choosing subnets for resources
 
 When creating resources that create Elastic Network Interfaces (such as
@@ -250,6 +268,51 @@ ApplicationSubnet3|`PRIVATE` |`10.0.5.0/24` |#3|Route to NAT in IngressSubnet3
 DatabaseSubnet1   |`ISOLATED`|`10.0.6.0/28` |#1|Only routes within the VPC
 DatabaseSubnet2   |`ISOLATED`|`10.0.6.16/28`|#2|Only routes within the VPC
 DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
+
+### Accessing the Internet Gateway
+
+If you need access to the internet gateway, you can get it's ID like so:
+
+```ts
+const igwId = vpc.internetGatewayId;
+```
+
+For a VPC with only `ISOLATED` subnets, this value will be undefined.
+
+This is only supported for VPC's created in the stack - currently you're 
+unable to get the ID for imported VPC's. To do that you'd have to specifically
+look up the Internet Gateway by name, which would require knowing the name 
+beforehand.
+
+This can be useful for configuring routing using a combination of gateways:
+for more information see [Routing](#routing) below.
+
+#### Routing
+
+It's possible to add routes to any subnets using the `addRoute()` method. If for
+example you want an isolated subnet to have a static route via the default
+Internet Gateway created for the public subnet - perhaps for routing a VPN
+connection - you can do so like this:
+
+```ts
+const vpc = ec2.Vpc(this, "VPC", {
+  subnetConfiguration: [{
+      subnetType: SubnetType.PUBLIC,
+      name: 'Public',
+    },{
+      subnetType: SubnetType.ISOLATED,
+      name: 'Isolated',
+    }]
+})
+(vpc.isolatedSubnets[0] as Subnet).addRoute("StaticRoute", {
+    routerId: vpc.internetGatewayId,
+    routerType: RouterType.GATEWAY,
+    destinationCidrBlock: "8.8.8.8/32",
+})
+```
+
+*Note that we cast to `Subnet` here because the list of subnets only returns an
+`ISubnet`.*
 
 ### Reserving subnet IP space
 

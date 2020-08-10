@@ -11,6 +11,9 @@ describe('Condition Variables', () => {
   test('Condition variables can start with $[', () => {
     expect(() => stepfunctions.Condition.stringEquals('$[0]', 'a')).not.toThrow();
   }),
+  test('Condition variables can reference the state input $', () => {
+    expect(() => stepfunctions.Condition.stringEquals('$', 'a')).not.toThrow();
+  }),
   test('NotConditon must render properly', () => {
     assertRendersTo(stepfunctions.Condition.not(stepfunctions.Condition.stringEquals('$.a', 'b')), { Not: { Variable: '$.a', StringEquals: 'b' } });
   }),

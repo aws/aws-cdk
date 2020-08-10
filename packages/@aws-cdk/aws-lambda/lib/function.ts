@@ -332,6 +332,18 @@ export class Function extends FunctionBase {
       ...this.currentVersionOptions,
     });
 
+    // override the version's logical ID with a lazy string which includes the
+    // hash of the function itself, so a new version resource is created when
+    // the function configuration changes.
+    const cfn = this._currentVersion.node.defaultChild as CfnResource;
+    const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
+
+    cfn.overrideLogicalId(Lazy.stringValue({ produce: _ => {
+      const hash = calculateFunctionHash(this);
+      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+      return `${logicalId}${hash}`;
+    }}));
+
     return this._currentVersion;
   }
 
@@ -737,23 +749,6 @@ export class Function extends FunctionBase {
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
     }
     return this._logGroup;
-  }
-
-  protected prepare() {
-    super.prepare();
-
-    // if we have a current version resource, override it's logical id
-    // so that it includes the hash of the function code and it's configuration.
-    if (this._currentVersion) {
-      const stack = Stack.of(this);
-      const cfn = this._currentVersion.node.defaultChild as CfnResource;
-      const originalLogicalId: string = stack.resolve(cfn.logicalId);
-
-      const hash = calculateFunctionHash(this);
-
-      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
-      cfn.overrideLogicalId(`${logicalId}${hash}`);
-    }
   }
 
   private renderEnvironment() {

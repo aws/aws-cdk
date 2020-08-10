@@ -1,8 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { App, App as Root, CfnCondition,
-  CfnDeletionPolicy, CfnResource, Construct, ConstructNode,
+  CfnDeletionPolicy, CfnResource, Construct,
   Fn, RemovalPolicy, Stack } from '../lib';
+import { synthesize } from '../lib/private/synthesis';
 import { toCloudFormation } from './util';
 
 export = {
@@ -131,7 +132,8 @@ export = {
     r2.node.addDependency(r1);
     r2.node.addDependency(r3);
 
-    ConstructNode.prepare(stack.node);
+    synthesize(stack);
+
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         Counter1: {
@@ -358,7 +360,8 @@ export = {
     dependingResource.node.addDependency(c1, c2);
     dependingResource.node.addDependency(c3);
 
-    ConstructNode.prepare(stack.node);
+    synthesize(stack);
+
     test.deepEqual(toCloudFormation(stack), { Resources:
       { MyC1R1FB2A562F: { Type: 'T1' },
         MyC1R2AE2B5066: { Type: 'T2' },
@@ -650,7 +653,7 @@ export = {
     test.deepEqual(toCloudFormation(stack), { Resources:
       { ParentMyResource4B1FDBCC:
          { Type: 'MyResourceType',
-           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Parent/MyResource' } } } });
+           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Default/Parent/MyResource' } } } });
 
     test.done();
   },

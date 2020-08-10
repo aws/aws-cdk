@@ -282,7 +282,7 @@ The `logRetention` property can be used to set a different expiration period.
 It is possible to obtain the function's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
 `Function` construct.
 
-By default, CDK uses the AWS SDK retry options when creating a log group. The `logRetentionRetryOptions` property 
+By default, CDK uses the AWS SDK retry options when creating a log group. The `logRetentionRetryOptions` property
 allows you to customize the maximum number of retries and base backoff duration.
 
 *Note* that, if either `logRetention` is set or `logGroup` property is called, a [CloudFormation custom
@@ -297,12 +297,12 @@ the log retention to never expire even if it was configured with a different val
 
 You can configure a function to mount an Amazon Elastic File System (Amazon EFS) to a
 directory in your runtime environment with the `filesystem` property. To access Amazon EFS
-from lambda function, the Amazon EFS access point will be required. 
+from lambda function, the Amazon EFS access point will be required.
 
 The following sample allows the lambda function to mount the Amazon EFS access point to `/mnt/msg` in the runtime environment and access the filesystem with the POSIX identity defined in `posixUser`.
 
 ```ts
-// create a new Amaozn EFS filesystem
+// create a new Amazon EFS filesystem
 const fileSystem = new efs.FileSystem(stack, 'Efs', { vpc });
 
 // create a new access point from the filesystem
@@ -362,7 +362,7 @@ new lambda.Function(this, 'Function', {
       command: [
         'bash', '-c', `
         pip install -r requirements.txt -t /asset-output &&
-        rsync -r . /asset-output
+        cp -au . /asset-output
         `,
       ],
     },
@@ -371,7 +371,7 @@ new lambda.Function(this, 'Function', {
   handler: 'index.handler',
 });
 ```
-Runtimes expose a `bundlingDockerImage` property that points to the [lambci/lambda](https://hub.docker.com/r/lambci/lambda/) build image.
+Runtimes expose a `bundlingDockerImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
 
 Use `cdk.BundlingDockerImage.fromRegistry(image)` to use an existing image or
 `cdk.BundlingDockerImage.fromAsset(path)` to build a specific image:
@@ -398,3 +398,4 @@ new lambda.Function(this, 'Function', {
 Language-specific higher level constructs are provided in separate modules:
 
 * Node.js: [`@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs)
+* Python: [`@aws-cdk/aws-lambda-python`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-python)
