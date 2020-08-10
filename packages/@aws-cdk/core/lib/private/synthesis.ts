@@ -65,7 +65,7 @@ function invokeAspects(root: IConstruct) {
 
   function recurse(construct: IConstruct, inheritedAspects: constructs.IAspect[]) {
     // hackery to be able to access some private members with strong types (yack!)
-    const node: NodeWithAspectPrivatesHangingOut = construct.construct as any;
+    const node: NodeWithAspectPrivatesHangingOut = construct.construct._actualNode as any;
 
     const allAspectsHere = [...inheritedAspects ?? [], ...node._aspects];
     const nodeAspectsCount = node._aspects.length;
