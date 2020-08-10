@@ -425,10 +425,19 @@ export class Cluster extends ClusterBase {
     }
 
     const clusterType = props.clusterType || ClusterType.MULTI_NODE;
-    const nodeCount = props.numberOfNodes !== undefined ? props.numberOfNodes : (clusterType === ClusterType.MULTI_NODE ? 2 : 1);
 
-    if (clusterType === ClusterType.MULTI_NODE && nodeCount < 2) {
-      throw new Error('Number of nodes for cluster type multi-node must be at least 2');
+    let numberOfNodes;
+
+    if (clusterType === ClusterType.MULTI_NODE) {
+      if (props.numberOfNodes ===  undefined || props.numberOfNodes < 2) {
+        throw new Error('Number of nodes for cluster type multi-node must be at least 2');
+      }
+      numberOfNodes = props.numberOfNodes;
+    } else {
+      // SINGLE_NODE
+      if (props.numberOfNodes !==  undefined) {
+        throw new Error('Number of nodes for cluster type single-node must not be set2');
+      }
     }
 
     if (props.encrypted === false && props.encryptionKey !== undefined) {
@@ -465,6 +474,7 @@ export class Cluster extends ClusterBase {
           : 'default'),
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       nodeType: props.nodeType || NodeType.DC2_LARGE,
+      numberOfNodes,
       loggingProperties,
       iamRoles: props.roles ? props.roles.map(role => role.roleArn) : undefined,
       dbName: props.defaultDatabaseName || 'default_db',
@@ -473,10 +483,6 @@ export class Cluster extends ClusterBase {
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
       encrypted: props.encrypted !== undefined ? props.encrypted : true,
     });
-
-    if (clusterType === ClusterType.MULTI_NODE) {
-      cluster.numberOfNodes = nodeCount;
-    }
 
     cluster.applyRemovalPolicy(removalPolicy, {
       applyToUpdateReplacePolicy: true,
