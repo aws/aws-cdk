@@ -13,7 +13,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
-import { IAspect } from './aspect';
+import { IAspect, Aspects } from './aspect';
 import { IDependable } from './dependency';
 import { Token } from './token';
 
@@ -267,7 +267,13 @@ export class ConstructNode {
    */
   public readonly _actualNode: constructs.Node;
 
+  /**
+   * The Construct class that hosts this API.
+   */
+  private readonly host: Construct;
+
   constructor(host: Construct, scope: IConstruct, id: string) {
+    this.host = host;
     this._actualNode = new constructs.Node(host, scope, id);
 
     // store a back reference on _actualNode so we can our ConstructNode from it
@@ -433,9 +439,12 @@ export class ConstructNode {
   }
 
   /**
-   * Applies the aspect to this Constructs node
+   * DEPRECATED: Applies the aspect to this Constructs node
+   *
+   * @deprecated This API is going to be removed in the next major version of
+   * the AWS CDK. Please use `Aspects.of(scope).add()` instead.
    */
-  public applyAspect(aspect: IAspect): void { this._actualNode.applyAspect(aspect); }
+  public applyAspect(aspect: IAspect): void { Aspects.of(this.host).add(aspect); }
 
   /**
    * All parent scopes of this construct.
