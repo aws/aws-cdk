@@ -2,9 +2,9 @@ import { Construct, CustomResource, Token, Duration } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
- * Properties for KubernetesGet.
+ * Properties for KubernetesResourceAttribute.
  */
-export interface KubernetesGetProps {
+export interface KubernetesResourceAttributeProps {
   /**
    * The EKS cluster to fetch attributes from.
    *
@@ -50,21 +50,21 @@ export interface KubernetesGetProps {
  * Represents an attribute of a resource deployed in the cluster.
  * Use this to fetch runtime information about resources.
  */
-export class KubernetesGet extends Construct {
+export class KubernetesResourceAttribute extends Construct {
   /**
    * The CloudFormation reosurce type.
    */
-  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesGet';
+  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesResourceAttribute';
 
   private _resource: CustomResource;
 
-  constructor(scope: Construct, id: string, props: KubernetesGetProps) {
+  constructor(scope: Construct, id: string, props: KubernetesResourceAttributeProps) {
     super(scope, id);
 
     const provider = props.cluster._attachKubectlResourceScope(this);
 
     this._resource = new CustomResource(this, 'Resource', {
-      resourceType: KubernetesGet.RESOURCE_TYPE,
+      resourceType: KubernetesResourceAttribute.RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
         ClusterName: props.cluster.clusterName,

@@ -2911,7 +2911,7 @@
       "DeletionPolicy": "Delete"
     },
     "ClusterServicewebserviceDescriptionLoadBalancerAttributeD48F498E": {
-      "Type": "Custom::AWSCDK-EKS-KubernetesGet",
+      "Type": "Custom::AWSCDK-EKS-KubernetesResourceAttribute",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [

@@ -11,9 +11,9 @@ import { clusterArnComponents, ClusterResource } from './cluster-resource';
 import { CfnClusterProps } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
-import { KubernetesGet } from './k8s-get';
+import { KubernetesManifest } from './k8s-manifest';
 import { KubernetesPatch } from './k8s-patch';
-import { KubernetesResource } from './k8s-resource';
+import { KubernetesResourceAttribute } from './k8s-resource-attribute';
 import { KubectlProvider, KubectlProviderProps } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
@@ -417,7 +417,10 @@ export class KubernetesVersion {
   private constructor(public readonly version: string) { }
 }
 
-export interface ServiceLoadBalancerOptions {
+/**
+ * Options for fetching a ServiceLoadBalancerAddress.
+ */
+export interface ServiceLoadBalancerAddressOptions {
 
   /**
    * Timeout for waiting on the load balancer address.
@@ -543,7 +546,7 @@ export class Cluster extends Resource implements ICluster {
 
   private _spotInterruptHandler?: HelmChart;
 
-  private _neuronDevicePlugin?: KubernetesResource;
+  private _neuronDevicePlugin?: KubernetesManifest;
 
   private readonly endpointAccess: EndpointAccess;
 
@@ -739,9 +742,9 @@ export class Cluster extends Resource implements ICluster {
    * @param serviceName The name of the service.
    * @param options Additional operation options.
    */
-  public getServiceLoadBalancerAddress(serviceName: string, options: ServiceLoadBalancerOptions = {}): string {
+  public getServiceLoadBalancerAddress(serviceName: string, options: ServiceLoadBalancerAddressOptions = {}): string {
 
-    const loadBalancerAddress = new KubernetesGet(this, `${serviceName}LoadBalancerAddress`, {
+    const loadBalancerAddress = new KubernetesResourceAttribute(this, `${serviceName}LoadBalancerAddress`, {
       cluster: this,
       resourceType: 'service',
       resourceName: serviceName,
@@ -962,7 +965,7 @@ export class Cluster extends Resource implements ICluster {
    * @returns a `KubernetesResource` object.
    */
   public addResource(id: string, ...manifest: any[]) {
-    return new KubernetesResource(this, `manifest-${id}`, { cluster: this, manifest });
+    return new KubernetesManifest(this, `manifest-${id}`, { cluster: this, manifest });
   }
 
   /**
