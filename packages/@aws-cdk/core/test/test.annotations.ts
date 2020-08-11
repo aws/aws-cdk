@@ -53,15 +53,15 @@ export = {
     test.deepEqual(getWarnings(app.synth()), [
       {
         path: '/MyStack1/Hello',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-cdk.Construct.construct instead. This API should will be removed in the next major version of the AWS CDK',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-cdk.Construct.construct instead. This API will be removed in the next major release',
       },
       {
         path: '/MyStack1/World',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-cdk.Construct.construct instead. This API should will be removed in the next major version of the AWS CDK',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-cdk.Construct.construct instead. This API will be removed in the next major release',
       },
       {
         path: '/MyStack2/FooBar',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-cdk.Construct.construct instead. This API should will be removed in the next major version of the AWS CDK',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-cdk.Construct.construct instead. This API will be removed in the next major release',
       },
     ]);
     test.done();
@@ -75,7 +75,7 @@ export = {
 
     // THEN
     process.env.CDK_BLOCK_DEPRECATIONS = '1';
-    test.throws(() => Annotations.of(c1).addDeprecation('foo', 'bar'), /MyStack\/Hello: The API foo is deprecated: bar\. This API should will be removed in the next major version of the AWS CDK/);
+    test.throws(() => Annotations.of(c1).addDeprecation('foo', 'bar'), /MyStack\/Hello: The API foo is deprecated: bar\. This API will be removed in the next major release/);
     test.done();
   },
 };
