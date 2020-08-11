@@ -89,7 +89,7 @@ import { Rule, Schedule } from '@aws-cdk/aws-events';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
 ...
 
-const ecsTaskTarget = new EcsTask({ cluster, taskDefinition });
+const ecsTaskTarget = new EcsTask({ cluster, taskDefinition, role });
 
 new Rule(this, 'ScheduleRule', {
  schedule: Schedule.cron({ minute: '0', hour: '4' }),
