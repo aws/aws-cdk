@@ -130,7 +130,10 @@
               ]
             ]
           }
-        }
+        },
+        "CompatibleRuntimes": [
+          "python3.8"
+        ]
       }
     }
   },

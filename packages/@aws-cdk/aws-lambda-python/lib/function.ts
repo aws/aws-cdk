@@ -88,6 +88,7 @@ export class PythonFunction extends lambda.Function {
 
     if (installDependencies && useDependencyLayer && fs.existsSync(path.join(entry, 'requirements.txt'))) {
       this.addLayers(new lambda.LayerVersion(this, 'Dependencies', {
+        compatibleRuntimes: [runtime],
         code: bundleDependencies({
           entry,
           runtime,
