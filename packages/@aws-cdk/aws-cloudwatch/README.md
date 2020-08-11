@@ -230,6 +230,7 @@ The following widgets are available:
 - `AlarmWidget` -- shows the graph and alarm line for a single alarm.
 - `SingleValueWidget` -- shows the current value of a set of metrics.
 - `TextWidget` -- shows some static Markdown.
+- `AlarmStatusWidget` -- shows the status of your alarms in a grid view.
 
 ### Graph widget
 
@@ -317,6 +318,19 @@ to your dashboard:
 dashboard.addWidgets(new TextWidget({
   markdown: '# Key Performance Indicators'
 }));
+```
+
+### Alarm Status widget
+
+An alarm status widget displays instantly the status of any type of alarms and gives the
+ability to aggregate one or more alarms together in a small surface.
+
+```ts
+dashboard.addWidgets(
+  new AlarmStatusWidget({
+    alarms: [errorAlarm],
+  })
+);
 ```
 
 ### Query results widget
