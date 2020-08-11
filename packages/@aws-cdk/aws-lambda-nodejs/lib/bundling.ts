@@ -1,9 +1,11 @@
+import { spawnSync } from 'child_process';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { PackageJsonManager } from './package-json-manager';
-import { findUp } from './util';
+import { exec, findUp } from './util';
 
 /**
  * Base options for Parcel bundling
@@ -78,6 +80,15 @@ export interface ParcelBaseOptions {
    * @default - no build arguments are passed
    */
   readonly buildArgs?: { [key:string] : string };
+
+  /**
+   * Force bundling in a Docker container even if local bundling is
+   * possible. This is useful when installing node modules with
+   * native dependencies.
+   *
+   * @default false
+   */
+  readonly forceDockerBundling?: boolean;
 }
 
 /**
@@ -108,15 +119,7 @@ export class Bundling {
     if (!projectRoot) {
       throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }
-
-    // Bundling image derived from runtime bundling image (AWS SAM docker image)
-    const image = cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel'), {
-      buildArgs: {
-        ...options.buildArgs ?? {},
-        IMAGE: options.runtime.bundlingDockerImage.image,
-        PARCEL_VERSION: options.parcelVersion ?? '2.0.0-beta.1',
-      },
-    });
+    const relativeEntryPath = path.relative(projectRoot, path.resolve(options.entry));
 
     const packageJsonManager = new PackageJsonManager(path.dirname(options.entry));
 
@@ -150,67 +153,184 @@ export class Bundling {
       },
     });
 
-    // Entry file path relative to container path
-    const containerEntryPath = path.join(cdk.AssetStaging.BUNDLING_INPUT_DIR, path.relative(projectRoot, path.resolve(options.entry)));
-    const distFile = path.basename(options.entry).replace(/\.ts$/, '.js');
-    const parcelCommand = chain([
-      [
-        '$(node -p "require.resolve(\'parcel\')")', // Parcel is not globally installed, find its "bin"
-        'build', containerEntryPath.replace(/\\/g, '/'), // Always use POSIX paths in the container
-        '--target', 'cdk-lambda',
-        '--dist-dir', cdk.AssetStaging.BUNDLING_OUTPUT_DIR, // Output bundle in /asset-output (will have the same name as the entry)
-        '--no-autoinstall',
-        '--no-scope-hoist',
-        ...options.cacheDir
-          ? ['--cache-dir', '/parcel-cache']
-          : [],
-      ].join(' '),
-      // Always rename dist file to index.js because Lambda doesn't support filenames
-      // with multiple dots and we can end up with multiple dots when using automatic
-      // entry lookup
-      `mv ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${distFile} ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/index.js`,
-    ]);
-
-    let installer = Installer.NPM;
-    let lockfile: string | undefined;
-    let depsCommand = '';
-
-    if (dependencies) {
-      // Create a dummy package.json for dependencies that we need to install
-      fs.writeFileSync(
-        path.join(projectRoot, '.package.json'),
-        JSON.stringify({ dependencies }),
-      );
-
-      // Use npm unless we have a yarn.lock.
-      if (fs.existsSync(path.join(projectRoot, LockFile.YARN))) {
-        installer = Installer.YARN;
-        lockfile = LockFile.YARN;
-      } else if (fs.existsSync(path.join(projectRoot, LockFile.NPM))) {
-        lockfile = LockFile.NPM;
-      }
-
-      // Move dummy package.json and lock file then install
-      depsCommand = chain([
-        `mv ${cdk.AssetStaging.BUNDLING_INPUT_DIR}/.package.json ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/package.json`,
-        lockfile ? `cp ${cdk.AssetStaging.BUNDLING_INPUT_DIR}/${lockfile} ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${lockfile}` : '',
-        `cd ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR} && ${installer} install`,
-      ]);
+    // Local
+    let localBundler: cdk.ILocalBundling | undefined;
+    if (!options.forceDockerBundling) {
+      localBundler = new LocalBundler({
+        projectRoot,
+        relativeEntryPath,
+        parcelOptions: options,
+        dependencies,
+      });
     }
+
+    // Docker
+    const dockerBundler = new DockerBundler({
+      relativeEntryPath,
+      parcelOptions: options,
+      dependencies,
+    });
 
     return lambda.Code.fromAsset(projectRoot, {
       assetHashType: cdk.AssetHashType.BUNDLE,
       bundling: {
-        image,
-        command: ['bash', '-c', chain([parcelCommand, depsCommand])],
-        environment: options.parcelEnvironment,
-        volumes: options.cacheDir
-          ? [{ containerPath: '/parcel-cache', hostPath: options.cacheDir }]
-          : [],
-        workingDirectory: path.dirname(containerEntryPath).replace(/\\/g, '/'), // Always use POSIX paths in the container
+        local: localBundler,
+        ...dockerBundler.bundlingOptions,
       },
     });
   }
+}
+
+interface BundlerProps {
+  relativeEntryPath: string;
+  parcelOptions: ParcelOptions;
+  dependencies?: { [key: string]: string };
+}
+
+interface LocalBundlerProps extends BundlerProps {
+  projectRoot: string;
+}
+
+/**
+ * Local Parcel bundler
+ */
+class LocalBundler implements cdk.ILocalBundling {
+  public static get runsLocally(): boolean {
+    if (LocalBundler._runsLocally !== undefined) {
+      return LocalBundler._runsLocally;
+    }
+    if (os.platform() === 'win32') { // TODO: add Windows support
+      return false;
+    }
+    try {
+      const parcel = spawnSync(require.resolve('parcel'), ['--version']);
+      LocalBundler._runsLocally = /^2/.test(parcel.stdout.toString().trim()); // Cache result to avoid unnecessary spawns
+      return LocalBundler._runsLocally;
+    } catch {
+      return false;
+    }
+  }
+
+  private static _runsLocally?: boolean;
+
+  constructor(private readonly props: LocalBundlerProps) {}
+
+  public tryBundle(outputDir: string) {
+    if (!LocalBundler.runsLocally) {
+      return false;
+    }
+    const localCommand = createBundlingCommand({
+      projectRoot: this.props.projectRoot,
+      relativeEntryPath: this.props.relativeEntryPath,
+      outputDir,
+      dependencies: this.props.dependencies,
+      parcelOptions: this.props.parcelOptions,
+    });
+
+
+    exec('bash', ['-c', localCommand], {
+      env: { ...process.env, ...this.props.parcelOptions.parcelEnvironment ?? {} },
+      stdio: [ // show output
+        'ignore', // ignore stdio
+        process.stderr, // redirect stdout to stderr
+        'inherit', // inherit stderr
+      ],
+    });
+    return true;
+  }
+}
+
+/**
+ * Docker bundler
+ */
+class DockerBundler {
+  public readonly bundlingOptions: cdk.BundlingOptions;
+
+  constructor(props: BundlerProps) {
+    const image = LocalBundler.runsLocally && !props.parcelOptions.forceDockerBundling // Do not build an entire image if we run locally
+      ? cdk.BundlingDockerImage.fromRegistry('dummy')
+      : cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel'), {
+        buildArgs: {
+          ...props.parcelOptions.buildArgs ?? {},
+          IMAGE: props.parcelOptions.runtime.bundlingDockerImage.image,
+          PARCEL_VERSION: props.parcelOptions.parcelVersion ?? '2.0.0-beta.1',
+        },
+      });
+
+    const command = createBundlingCommand({
+      projectRoot: cdk.AssetStaging.BUNDLING_INPUT_DIR, // project root is mounted at /asset-input
+      relativeEntryPath: props.relativeEntryPath,
+      outputDir: cdk.AssetStaging.BUNDLING_OUTPUT_DIR,
+      dependencies: props.dependencies,
+      parcelOptions: props.parcelOptions,
+    });
+
+    this.bundlingOptions = {
+      image,
+      command: ['bash', '-c', command],
+      environment: props.parcelOptions.parcelEnvironment,
+      workingDirectory: path.dirname(path.join(cdk.AssetStaging.BUNDLING_INPUT_DIR, props.relativeEntryPath)),
+    };
+  }
+}
+
+interface BundlingCommandOptions extends LocalBundlerProps {
+  outputDir: string;
+}
+
+/**
+ * Generates bundling command
+ */
+function createBundlingCommand(options: BundlingCommandOptions): string {
+  const entryPath = path.join(options.projectRoot, options.relativeEntryPath);
+  const distFile = path.basename(options.parcelOptions.entry).replace(/\.ts$/, '.js');
+  const parcelCommand: string = chain([
+    [
+      '$(node -p "require.resolve(\'parcel\')")', // Parcel is not globally installed, find its "bin"
+      'build', entryPath.replace(/\\/g, '/'), // Always use POSIX paths in the container
+      '--target', 'cdk-lambda',
+      '--dist-dir', options.outputDir, // Output bundle in outputDir (will have the same name as the entry)
+      '--no-autoinstall',
+      '--no-scope-hoist',
+      ...options.parcelOptions.cacheDir
+        ? ['--cache-dir', '/parcel-cache']
+        : [],
+    ].join(' '),
+    // Always rename dist file to index.js because Lambda doesn't support filenames
+    // with multiple dots and we can end up with multiple dots when using automatic
+    // entry lookup
+    `mv ${options.outputDir}/${distFile} ${options.outputDir}/index.js`,
+  ]);
+
+  let installer = Installer.NPM;
+  let lockfile: string | undefined;
+  let depsCommand = '';
+
+  if (options.dependencies) {
+    // Create a dummy package.json for dependencies that we need to install
+    fs.writeFileSync(
+      path.join(options.projectRoot, '.package.json'),
+      JSON.stringify({ dependencies: options.dependencies }),
+    );
+
+    // Use npm unless we have a yarn.lock.
+    if (fs.existsSync(path.join(options.projectRoot, LockFile.YARN))) {
+      installer = Installer.YARN;
+      lockfile = LockFile.YARN;
+    } else if (fs.existsSync(path.join(options.projectRoot, LockFile.NPM))) {
+      lockfile = LockFile.NPM;
+    }
+
+    // Move dummy package.json and lock file then install
+    depsCommand = chain([
+      `mv ${options.projectRoot}/.package.json ${options.outputDir}/package.json`,
+      lockfile ? `cp ${options.projectRoot}/${lockfile} ${options.outputDir}/${lockfile}` : '',
+      `cd ${options.outputDir}`,
+      `${installer} install`,
+    ]);
+  }
+
+  return chain([parcelCommand, depsCommand]);
 }
 
 enum Installer {
