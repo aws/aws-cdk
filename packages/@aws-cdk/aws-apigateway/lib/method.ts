@@ -221,7 +221,7 @@ export class Method extends Resource {
 
     const deployment = props.resource.api.latestDeployment;
     if (deployment) {
-      deployment.node.addDependency(resource);
+      deployment.construct.addDependency(resource);
       deployment.addToLogicalId({
         method: {
           ...methodProps,

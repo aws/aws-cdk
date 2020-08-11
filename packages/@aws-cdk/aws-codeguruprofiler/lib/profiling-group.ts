@@ -170,7 +170,7 @@ export class ProfilingGroup extends ProfilingGroupBase {
   }
 
   private generateUniqueId(): string {
-    const name = this.node.uniqueId;
+    const name = this.construct.uniqueId;
     if (name.length > 240) {
       return name.substring(0, 120) + name.substring(name.length - 120);
     }
