@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
+import { AssetHashType } from '@aws-cdk/core';
 import { bundle, bundleDependencies } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
@@ -19,6 +20,8 @@ test('Bundling', () => {
 
   // Correctly bundles
   expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', {
+    assetHashType: AssetHashType.BUNDLE,
+    exclude: ['*.pyc'],
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
@@ -47,6 +50,8 @@ test('Bundling with requirements.txt installed', () => {
 
   // Correctly bundles with requirements.txt pip installed
   expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', {
+    assetHashType: AssetHashType.BUNDLE,
+    exclude: ['*.pyc'],
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
@@ -72,6 +77,8 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
 
   // Correctly bundles with requirements.txt pip installed
   expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', {
+    assetHashType: AssetHashType.BUNDLE,
+    exclude: ['*.pyc'],
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
@@ -97,6 +104,8 @@ test('Bundling can dependencies can be switched off', () => {
 
   // Does not install dependencies when instructed not to.
   expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', {
+    assetHashType: AssetHashType.BUNDLE,
+    exclude: ['*.pyc'],
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
@@ -114,12 +123,13 @@ test('Bundling dependencies for a lambda layer', () => {
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', {
+    assetHashType: AssetHashType.BUNDLE,
+    exclude: ['*.pyc'],
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
         'pip3 install -r requirements.txt -t /asset-output/python',
       ],
     }),
-    exclude: ['*', '!requirements.txt'],
   });
 });

@@ -82,8 +82,8 @@ enum PipCommand {
 export function pipenvInstallCommands(options: InstallDependenciesCommandsOptions) {
   const runtime = options.runtime;
 
-  // pip install pipenv doesn't like writing to /.local in the lambda container,
-  // so we set a home directory to somewhere we can write.
+  // We're unprivileged and don't have a home, so we need to install pipenv
+  // somewhere else so that we can use it.
   const pipenvHome = '/tmp/pipenv';
   const pipCommand = `HOME=${pipenvHome} ${getPipCommand(runtime)}`;
   const pipenvCommand = `HOME=${pipenvHome} python -m pipenv`;
@@ -91,8 +91,7 @@ export function pipenvInstallCommands(options: InstallDependenciesCommandsOption
   const requirementsTxtPath = '/tmp/requirements.txt';
 
   return [
-    `${pipCommand} install pipenv`,
-    `find ${pipenvHome}`,
+    `${pipCommand} install --user pipenv`,
     `${pipenvCommand} lock -r >${requirementsTxtPath}`,
     ...pipInstallCommands({ ...options, requirementsTxtPath }),
   ];

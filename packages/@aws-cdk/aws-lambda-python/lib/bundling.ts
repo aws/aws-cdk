@@ -46,6 +46,9 @@ export function bundle(options: BundlingOptions): lambda.AssetCode {
       image: options.runtime.bundlingDockerImage,
       command: ['bash', '-c', depsCommand],
     },
+    // XXX: Temporary until bundling options are hashed with source hash
+    assetHashType: cdk.AssetHashType.BUNDLE,
+    exclude: ['*.pyc'],
   });
 }
 
@@ -78,6 +81,8 @@ export function bundleDependencies(options: DependencyBundlingOptions): lambda.A
       image: options.runtime.bundlingDockerImage,
       command: ['bash', '-c', depsCommand],
     },
-    exclude: ['*', '!requirements.txt'],
+    // XXX: Temporary until bundling options are hashed with source hash
+    assetHashType: cdk.AssetHashType.BUNDLE,
+    exclude: ['*.pyc'],
   });
 }
