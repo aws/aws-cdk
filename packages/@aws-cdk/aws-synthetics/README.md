@@ -33,38 +33,43 @@ import * as synthetics from '@aws-cdk/aws-synthetics';
 
 const canary = new synthetics.Canary(this, 'MyCanary', {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
-  test: synthetics.Test.custom({
-    code: synthetics.Code.fromInline(`const https = require('https');
-      var synthetics = require('Synthetics');
-      const log = require('SyntheticsLogger');
-  
-      exports.handler = async function () {
-        const requestOptions = {"hostname":"api.example.com","method":"","path":"/user/books/topbook/","port":443}
-        let req = https.request(requestOptions);
-        req.on('response', (res) => {
-          log.info()
-        });
-      }`),
+  test: Test.custom({
+    code: Code.fromAsset(path.join(__dirname, 'canary'))),
     handler: 'index.handler',
   }),
 });
 ```
 
+The following is an example of a `canary/index.js` which exports the `handler` function:
+
+```
+const https = require('https');
+var synthetics = require('Synthetics');
+const log = require('SyntheticsLogger');
+
+exports.handler = async function () {
+  const requestOptions = {"hostname":"api.example.com","method":"","path":"/user/books/topbook/","port":443}
+  let req = https.request(requestOptions);
+  req.on('response', (res) => {
+    log.info()
+  });
+}
+```
+
+
 The canary will automatically produce a CloudWatch Dashboard:
 
 ![UI Screenshot](images/ui-screenshot.png)
 
-### Canary Test
+### Configuring the Canary Script 
 
-The canary resource creates a lambda function that executes the canary script. To specify the script, use the `test` property. 
+To configure the script the canary executes, use the `test` property. The `test` property exposes `code` and `handler` properties -- both are required by Synthetics to create a lambda function on your behalf. 
 
-#### Custom Test
+The `synthetics.Code` class exposes static methods to bundle your code artifacts: 
 
-You can bring your own code by using `Test.custom()`, which allows you to specify a custom script and handler for the canary. To specify the script in the `code` property, use one of the following static methods:
-
-  - `code.fromInline()` - specify an inline script.
-  - `code.fromAsset()` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment.
-  - `code.fromBucket()` - specify an S3 object that contains the .zip file of your runtime code.
+  - `code.fromInline(code)` - specify an inline script.
+  - `code.fromAsset(path)` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment. See note for directory structure.
+  - `code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object that contains the .zip file of your runtime code. See note for directory structure.
 
 > **Note:** For `code.fromAsset()` and `code.fromBucket()`, the canary resource requires the following folder structure: `nodejs/node_modules/<handlerFile>`. 
 
