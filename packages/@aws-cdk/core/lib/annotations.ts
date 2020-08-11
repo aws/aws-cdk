@@ -66,7 +66,7 @@ export class Annotations {
    * alternatives.
    */
   public addDeprecation(api: string, message: string) {
-    const text = `The API ${api} is deprecated: ${message}. This API should will be removed in the next major version of the AWS CDK`;
+    const text = `The API ${api} is deprecated: ${message}. This API will be removed in the next major release`;
 
     // throw if CDK_BLOCK_DEPRECATIONS is set
     if (process.env.CDK_BLOCK_DEPRECATIONS) {
