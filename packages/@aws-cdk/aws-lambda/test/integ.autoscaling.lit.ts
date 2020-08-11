@@ -40,7 +40,7 @@ class TestStack extends cdk.Stack {
       maxCapacity: 20,
     });
 
-    new cdk.CfnOutput(this, 'Output', {
+    new cdk.CfnOutput(this, 'FunctionName', {
       value: fn.functionName,
     });
   }

@@ -155,7 +155,7 @@
     }
   },
   "Outputs": {
-    "Output": {
+    "FunctionName": {
       "Value": {
         "Ref": "MyLambdaCCE802FB"
       }

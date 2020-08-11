@@ -600,7 +600,7 @@ export = {
     const target = alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    test.throws(() => target.scaleOnUtilization({utilizationTarget: 0.95}), /Utilization Target should be between 0.1 and 0.9./);
+    test.throws(() => target.scaleOnUtilization({utilizationTarget: 0.95}), /Utilization Target should be between 0.1 and 0.9. Found 0.95/);
     test.done();
   },
 
