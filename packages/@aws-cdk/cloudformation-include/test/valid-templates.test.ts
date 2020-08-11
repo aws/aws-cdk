@@ -240,6 +240,33 @@ describe('CDK Include', () => {
     );
   });
 
+  test('paramters shadowed my expression in the map of Fn::Sub are not replaced', () => {
+    new inc.CfnInclude(stack, 'template', {
+      templateFile: _testTemplateFilePath('fn-sub-parameter-shadow.json'),
+      parameters: {
+        'MyParam': 'MyValue',
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::Sub": [
+                "${MyParam}",
+                {
+                  "MyParam": "MyValue",
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('can modify resources used in Fn::Sub in map form references and see the changes in the template', () => {
     const cfnTemplate = includeTestTemplate(stack, 'fn-sub-shadow.json');
 
@@ -658,57 +685,11 @@ describe('CDK Include', () => {
     }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);
   });
 
-  test('parameters are replaced only when specified', () => {
+  test('replaces references to parameters with the user-specified values in Resources, Conditions, Metadata, and Options', () => {
     new inc.CfnInclude(stack, 'includeTemplate', {
-      templateFile: testTemplateFilePath('bucket-with-parameters.json'),
-      parameterValues: {
-        BucketName: 'my-s3-bucket',
-      },
-    });
-
-    expect(stack).toMatchTemplate({
-      "Parameters": {
-        "CorsMaxAge": {
-          "Default": "3",
-          "Description": "the time in seconds that a browser will cache the preflight response",
-          "MaxValue": "300",
-          "MinValue": "0",
-          "AllowedValues": [1, 2, 3, 10, 100, 300],
-          "Type": "Number",
-          "NoEcho": "true",
-        },
-      },
-      "Resources": {
-        "Bucket": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": "my-s3-bucket",
-            "CorsConfiguration": {
-              "CorsRules": [{
-                "AllowedMethods": [
-                  "GET",
-                  "POST",
-                ],
-                "AllowedOrigins": [
-                  "origin1",
-                  "origin2",
-                ],
-                "MaxAge": {
-                  "Ref": "CorsMaxAge",
-                },
-              }],
-            },
-          },
-        },
-      },
-    });
-  });
-
-  test('can replace parameters referenced in conditions and metadata', () => {
-    new inc.CfnInclude(stack, 'includeTemplate', {
-      templateFile: testTemplateFilePath('parameter-references.json'),
-      parameterValues: {
-        MyParam: 'my-s3-bucket',
+      templateFile: _testTemplateFilePath('parameter-references.json'),
+      parameters: {
+        'MyParam': 'my-s3-bucket',
       },
     });
 
@@ -720,7 +701,13 @@ describe('CDK Include', () => {
         },
       },
       "Metadata": {
-        "Field": "my-s3-bucket",
+        "Field": {
+          "Fn::If": [
+            "AlwaysFalse",
+            "AWS::NoValue",
+            "my-s3-bucket",
+          ],
+        },
       },
       "Conditions": {
         "AlwaysFalse": {
@@ -732,6 +719,9 @@ describe('CDK Include', () => {
           "Type": "AWS::S3::Bucket",
           "Metadata": {
             "Field": "my-s3-bucket",
+          },
+          "Properties": {
+            "BucketName": "my-s3-bucket",
           },
         },
       },
@@ -745,9 +735,9 @@ describe('CDK Include', () => {
 
   test('can replace parameters in Fn::Sub', () => {
     new inc.CfnInclude(stack, 'includeTemplate', {
-      templateFile: testTemplateFilePath('fn-sub-parameters.json'),
-      parameterValues: {
-        MyParam: 'my-s3-bucket',
+      templateFile: _testTemplateFilePath('fn-sub-parameters.json'),
+      parameters: {
+        'MyParam': 'my-s3-bucket',
       },
     });
 
@@ -770,12 +760,34 @@ describe('CDK Include', () => {
     });
   });
 
-  test('throws an exception when provided a parameter not in the template', () => {
+  test('throws an exception when parameters are passed a resource name', () => {
     expect(() => {
       new inc.CfnInclude(stack, 'includeTemplate', {
-        templateFile: testTemplateFilePath('bucket-with-parameters.json'),
-        parameterValues: {
-          FakeParameter: 'DoesNotExist',
+        templateFile: _testTemplateFilePath('bucket-with-parameters.json'),
+        parameters: {
+          'Bucket': 'noChange',
+        },
+      });
+    }).toThrow(/Parameter with logical ID 'Bucket' was not found in the template/);
+  });
+
+  test('throws an exception when provided a parameter to replace that is not in the template with parameters', () => {
+    expect(() => {
+      new inc.CfnInclude(stack, 'includeTemplate', {
+        templateFile: _testTemplateFilePath('bucket-with-parameters.json'),
+        parameters: {
+          'FakeParameter': 'DoesNotExist',
+        },
+      });
+    }).toThrow(/Parameter with logical ID 'FakeParameter' was not found in the template/);
+  });
+
+  test('throws an exception when provided a parameter to replace in a template with no parameters', () => {
+    expect(() => {
+      new inc.CfnInclude(stack, 'includeTemplate', {
+        templateFile: _testTemplateFilePath('only-empty-bucket.json'),
+        parameters: {
+          'FakeParameter': 'DoesNotExist',
         },
       });
     }).toThrow(/Parameter with logical ID 'FakeParameter' was not found in the template/);
@@ -789,15 +801,15 @@ interface IncludeTestTemplateProps {
 
 function includeTestTemplate(scope: core.Construct, testTemplate: string, _props: IncludeTestTemplateProps = {}): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
-    templateFile: testTemplateFilePath(testTemplate),
+    templateFile: _testTemplateFilePath(testTemplate),
     // preserveLogicalIds: props.preserveLogicalIds,
   });
 }
 
 function loadTestFileToJsObject(testTemplate: string): any {
-  return futils.readJsonSync(testTemplateFilePath(testTemplate));
+  return futils.readJsonSync(_testTemplateFilePath(testTemplate));
 }
 
-function testTemplateFilePath(testTemplate: string) {
+function _testTemplateFilePath(testTemplate: string) {
   return path.join(__dirname, 'test-templates', testTemplate);
 }

@@ -12,6 +12,7 @@ import { CfnReference } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
 import { Mapper, Validator } from './runtime';
 import { isResolvableObject, Token } from './token';
+import { CfnElement } from './cfn-element';
 
 /**
  * This class contains static methods called when going from
@@ -171,6 +172,11 @@ export interface ParseCfnOptions {
    * @default - the default context (no special behavior)
    */
   readonly context?: CfnParsingContext;
+
+  /**
+   * Values provided here will replace the parameters specified here.
+   */
+  readonly parameters?: { [parameterName: string]: any }
 }
 
 /**
@@ -188,11 +194,13 @@ export interface ParseCfnOptions {
  */
 export class CfnParser {
   private readonly options: ParseCfnOptions;
-  public readonly parameterValues?: { [parameterName: string]: any };
 
-  constructor(options: ParseCfnOptions, parameterValues?: { [parameterName: string]: any }) {
+  constructor(options: ParseCfnOptions) {
     this.options = options;
-    this.parameterValues = parameterValues;
+  }
+
+  private get parameters(): { [parameterName: string]: any } {
+    return this.options.parameters || {};
   }
 
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
@@ -359,10 +367,7 @@ export class CfnParser {
         return undefined;
       case 'Ref': {
         const refTarget = object[key];
-        if (refTarget in (this.parameterValues || {})) {
-          return this.parameterValues![refTarget];
-        }
-        const specialRef = specialCaseRefs(refTarget);
+        const specialRef = this.specialCaseRefs(refTarget);
         if (specialRef) {
           return specialRef;
         } else {
@@ -510,13 +515,11 @@ export class CfnParser {
 
     // lookup in map
     if (refTarget in map) {
-      return leftHalf
-        + (refTarget in (this.parameterValues || {}) ? this.parameterValues![refTarget] : '${' + refTarget + '}')
-        + this.parseFnSubString(rightHalf, map);;
+      return leftHalf + '${' + refTarget + '}' + this.parseFnSubString(rightHalf, map); 
     }
 
     // since it's not in the map, check if it's a pseudo parameter
-    const specialRef = specialCaseSubRefs(refTarget);
+    const specialRef = this.specialCaseSubRefs(refTarget, true);
     if (specialRef) {
       return leftHalf + specialRef + this.parseFnSubString(rightHalf, map);
     }
@@ -526,45 +529,46 @@ export class CfnParser {
     if (isRef) {
       const refElement = this.options.finder.findRefTarget(refTarget);
       if (!refElement) {
-        if  (!(refTarget in (this.parameterValues || {}))) {
+        if  (!(refTarget in (this.parameters))) {
           throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
         }
       }
-      return leftHalf
-        + (refTarget in (this.parameterValues || {}) ? this.parameterValues![refTarget] : CfnReference.for(refElement!, 'Ref', true).toString())
-        + this.parseFnSubString(rightHalf, map);
+      return leftHalf + this.specialCaseSubRefs(refTarget, false, refElement) + this.parseFnSubString(rightHalf, map);
     } else {
       const targetId = refTarget.substring(0, dotIndex);
       const refResource = this.options.finder.findResource(targetId);
       if (!refResource) {
-        if  (!(refTarget in (this.parameterValues || {}))) {
-          throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
-        }
+        throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
       }
       const attribute = refTarget.substring(dotIndex + 1);
-      return leftHalf
-        + (refTarget in (this.parameterValues || {}) ? this.parameterValues![refTarget] : CfnReference.for(refResource!, attribute, true).toString())
-        + this.parseFnSubString(rightHalf, map);
+      return leftHalf + CfnReference.for(refResource, attribute, true).toString() + this.parseFnSubString(rightHalf, map); 
     }
   }
-}
 
-function specialCaseRefs(value: any): any {
-  switch (value) {
-    case 'AWS::AccountId': return Aws.ACCOUNT_ID;
-    case 'AWS::Region': return Aws.REGION;
-    case 'AWS::Partition': return Aws.PARTITION;
-    case 'AWS::URLSuffix': return Aws.URL_SUFFIX;
-    case 'AWS::NotificationARNs': return Aws.NOTIFICATION_ARNS;
-    case 'AWS::StackId': return Aws.STACK_ID;
-    case 'AWS::StackName': return Aws.STACK_NAME;
-    case 'AWS::NoValue': return Aws.NO_VALUE;
-    default: return undefined;
+  specialCaseSubRefs(value: string, pseudoParameter: boolean, refElement?: CfnElement ): string | undefined {
+    if (pseudoParameter) {
+      return value.indexOf('::') === -1 ? undefined: '${' + value + '}';
+    }
+    return value in (this.parameters) ? this.parameters[value] : CfnReference.for(refElement!, 'Ref', true).toString();
   }
-}
 
-function specialCaseSubRefs(value: string): string | undefined {
-  return value.indexOf('::') === -1 ? undefined: '${' + value + '}';
+  specialCaseRefs(value: any): any {
+    if (value in (this.parameters)) {
+      return this.parameters![value];
+    }
+    switch (value) {
+      case 'AWS::AccountId': return Aws.ACCOUNT_ID;
+      case 'AWS::Region': return Aws.REGION;
+      case 'AWS::Partition': return Aws.PARTITION;
+      case 'AWS::URLSuffix': return Aws.URL_SUFFIX;
+      case 'AWS::NotificationARNs': return Aws.NOTIFICATION_ARNS;
+      case 'AWS::StackId': return Aws.STACK_ID;
+      case 'AWS::StackName': return Aws.STACK_NAME;
+      case 'AWS::NoValue': return Aws.NO_VALUE;
+      default: return undefined;
+    }
+  }
+
 }
 
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {

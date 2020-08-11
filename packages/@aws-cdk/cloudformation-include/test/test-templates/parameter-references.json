@@ -10,16 +10,23 @@
   "Parameters": {
     "MyParam": {
       "Type": "String",
-      "Default": "MyValue",
-      "AllowedPattern": "^[a-zA-Z0-9]*$"
+      "Default": "MyValue"
     }
-  },
-  "Metadata": {
-    "Field": { "Ref": "MyParam" }
   },
   "Conditions": {
     "AlwaysFalse": {
       "Fn::Equals": [ { "Ref": "MyParam" }, "Invalid?BucketName"]
+    }
+  },
+  "Metadata": {
+    "Field": {
+      "Fn::If": [
+        "AlwaysFalse",
+        "AWS::NoValue",
+        {
+          "Ref": "MyParam"
+        }
+      ]
     }
   },
   "Resources": {
@@ -27,6 +34,11 @@
       "Type": "AWS::S3::Bucket",
       "Metadata": {
         "Field": {
+          "Ref": "MyParam"
+        }
+      },
+      "Properties": {
+        "BucketName": {
           "Ref": "MyParam"
         }
       }

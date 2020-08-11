@@ -134,12 +134,12 @@ param.default = 'MyDefault';
 You can also provide values for them:
 
 ```typescript
-    new inc.CfnInclude(stack, 'includeTemplate', {
-      templateFile: 'path/to/my/template'
-      parameterValues: {
-        MyParam: 'my-value',
-      },
-    });
+new inc.CfnInclude(stack, 'includeTemplate', {
+  templateFile: 'path/to/my/template'
+  parameterValues: {
+    MyParam: 'my-value',
+  },
+});
 ```
 
 This will replace all references to `MyParam` with the string 'my-value',
