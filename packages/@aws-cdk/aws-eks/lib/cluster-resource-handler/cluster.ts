@@ -197,6 +197,8 @@ export class ClusterResourceHandler extends ResourceHandler {
     // not complete. note that the custom resource provider framework forbids
     // returning attributes (Data) if isComplete is false.
     if (cluster?.status === 'FAILED') {
+      // not very informative, unfortunately the response doesn't contain any error
+      // information :\
       throw new Error('Cluster is in a FAILED status');
     } else if (cluster?.status !== 'ACTIVE') {
       return {
