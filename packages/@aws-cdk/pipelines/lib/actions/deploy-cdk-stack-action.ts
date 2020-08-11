@@ -270,10 +270,10 @@ function roleFromPlaceholderArn(scope: Construct, arn: string | undefined): iam.
   scope = hackyRoleScope(scope, arn);
 
   // https://github.com/aws/aws-cdk/issues/7255
-  let existingRole = scope.node.tryFindChild(`ImmutableRole${id}`) as iam.IRole;
+  let existingRole = scope.construct.tryFindChild(`ImmutableRole${id}`) as iam.IRole;
   if (existingRole) { return existingRole; }
   // For when #7255 is fixed.
-  existingRole = scope.node.tryFindChild(id) as iam.IRole;
+  existingRole = scope.construct.tryFindChild(id) as iam.IRole;
   if (existingRole) { return existingRole; }
 
   return iam.Role.fromRoleArn(scope, id, cfnExpressionFromManifestString(arn), { mutable: false });
