@@ -99,7 +99,7 @@ new assets.Asset(this, 'BundledAsset', {
   path: '/path/to/asset',
   bundling: {
     local: {
-      tryBundler(outputDir: string, options: BundlingOptions) {
+      tryBundle(outputDir: string, options: BundlingOptions) {
         if (canRunLocally) {
           // perform local bundling here
           return true;
