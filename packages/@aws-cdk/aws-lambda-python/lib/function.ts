@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { bundle, bundleDependencies } from './bundling';
+import { hasDependencies } from './dependencies';
 
 /**
  * Properties for a PythonFunction
@@ -36,16 +37,31 @@ export interface PythonFunctionProps extends lambda.FunctionOptions {
   readonly runtime?: lambda.Runtime;
 
   /**
-   * Install dependencies
-   * @default true
+   * The location to install dependencies.
+   *
+   * @default DependenciesLocation.INLINE
    */
-  readonly installDependencies?: boolean;
+  readonly dependenciesLocation?: DependenciesLocation;
+}
+
+/**
+ * Where to install dependencies.
+ */
+export enum DependenciesLocation {
+  /**
+   * Does not install dependencies.
+   */
+  NONE = 'none',
 
   /**
-   * Use a dependency lambda layer for packages.
-   * @default false
+   * Installs dependencies in the lambda function.
    */
-  readonly useDependencyLayer?: boolean;
+  INLINE = 'inline',
+
+  /**
+   * Installs dependencies to a seperate lambda layer.
+   */
+  LAYER = 'layer',
 }
 
 /**
@@ -71,8 +87,7 @@ export class PythonFunction extends lambda.Function {
 
     const handler = props.handler ?? 'handler';
     const runtime = props.runtime ?? lambda.Runtime.PYTHON_3_7;
-    const useDependencyLayer = props.useDependencyLayer ?? false;
-    const installDependencies = props.installDependencies ?? true;
+    const dependenciesLocation = props.dependenciesLocation ?? DependenciesLocation.INLINE;
 
     super(scope, id, {
       ...props,
@@ -81,12 +96,12 @@ export class PythonFunction extends lambda.Function {
         ...props,
         entry,
         runtime,
-        installDependencies: !useDependencyLayer && installDependencies,
+        installDependencies: dependenciesLocation === DependenciesLocation.INLINE,
       }),
       handler: `${index.slice(0, -3)}.${handler}`,
     });
 
-    if (installDependencies && useDependencyLayer && fs.existsSync(path.join(entry, 'requirements.txt'))) {
+    if (dependenciesLocation === DependenciesLocation.LAYER && hasDependencies(entry)) {
       this.addLayers(new lambda.LayerVersion(this, 'Dependencies', {
         compatibleRuntimes: [runtime],
         code: bundleDependencies({

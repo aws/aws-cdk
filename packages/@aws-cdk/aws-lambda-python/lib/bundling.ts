@@ -1,7 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { installDependenciesCommands } from './dependencies';
 
 /**
  * Options for bundling
@@ -27,13 +26,18 @@ export interface BundlingOptions {
  * Produce bundled Lambda asset code
  */
 export function bundle(options: BundlingOptions): lambda.AssetCode {
-  let installer = options.runtime === lambda.Runtime.PYTHON_2_7 ? Installer.PIP : Installer.PIP3;
+  const installDependencies = options.installDependencies;
 
-  let hasRequirements = fs.existsSync(path.join(options.entry, 'requirements.txt'));
-  let installDependencies = options.installDependencies;
+  const runtime = options.runtime;
+  const entry = options.entry;
+  const outputPath = cdk.AssetStaging.BUNDLING_OUTPUT_DIR;
 
-  let depsCommand = chain([
-    hasRequirements && installDependencies ? `${installer} install -r requirements.txt -t ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}` : '',
+  const conditionalInlineDependencyInstallCommands = installDependencies
+    ? installDependenciesCommands({ runtime, entry, outputPath })
+    : [];
+
+  const depsCommand = chain([
+    ...conditionalInlineDependencyInstallCommands,
     `cp -au . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}`,
   ]);
 
@@ -43,11 +47,6 @@ export function bundle(options: BundlingOptions): lambda.AssetCode {
       command: ['bash', '-c', depsCommand],
     },
   });
-}
-
-enum Installer {
-  PIP = 'pip',
-  PIP3 = 'pip3',
 }
 
 function chain(commands: string[]): string {
@@ -65,11 +64,14 @@ export interface DependencyBundlingOptions {
    */
   readonly runtime: lambda.Runtime;
 }
+
 export function bundleDependencies(options: DependencyBundlingOptions): lambda.AssetCode {
-  let installer = options.runtime === lambda.Runtime.PYTHON_2_7 ? Installer.PIP : Installer.PIP3;
-  let depsCommand = chain([
-    `${installer} install -r requirements.txt -t ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/python`,
-  ]);
+  const runtime = options.runtime;
+  const entry = options.entry;
+
+  const outputPath = `${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/python`;
+
+  const depsCommand = chain(installDependenciesCommands({ runtime, entry, outputPath }));
 
   return lambda.Code.fromAsset(options.entry, {
     bundling: {
