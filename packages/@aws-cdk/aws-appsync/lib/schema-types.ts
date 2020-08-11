@@ -30,13 +30,45 @@ export class Directive {
 }
 
 /**
- * Properties for configuring an Object Type
+ * Properties for configuring an type
+ *
+ * @param definition - the variables and types that define this type
+ * i.e. { string: GraphqlType, string: GraphqlType }
  */
-export interface ObjectTypeProps {
+export interface BaseTypeProps {
   /**
-   * the attributes of this object type
+   * the attributes of this type
    */
   readonly definition: { [key: string]: GraphqlType };
+}
+
+/**
+ * Properties for configuring an Interface Type
+ */
+export class InterfaceType {
+  /**
+   * the name of this type
+   */
+  public readonly name: string;
+  /**
+   * the attributes of this type
+   */
+  public readonly definition: { [key: string]: GraphqlType };
+
+  public constructor(name: string, props: BaseTypeProps) {
+    this.name = name;
+    this.definition = props.definition;
+  }
+}
+
+/**
+ * Properties for configuring an Object Type
+ *
+ * @param definition - the variables and types that define this type
+ * i.e. { string: GraphqlType, string: GraphqlType }
+ * @param directives - the directives for this object type
+ */
+export interface ObjectTypeProps extends BaseTypeProps {
   /**
    * the directives for this object type
    *
@@ -46,27 +78,18 @@ export interface ObjectTypeProps {
 }
 
 /**
- * Object Types must be configured using addType to be added to schema
+ * Object Types are types declared by you.
  */
-export class ObjectType {
+export class ObjectType extends InterfaceType {
   /**
-   *  A method to define Object Types from an interface
-   *  TODO: implement interface class
+   * A method to define Object Types from an interface
    */
-  public static extendInterface(name: string, typeInterface: ObjectType, props: ObjectTypeProps): ObjectType {
-    // check to make sure interface is properly scoped out
-    typeInterface;
-    return new ObjectType(name, props);
+  public static fromInterface(name: string, interfaceType: InterfaceType, props: ObjectTypeProps): ObjectType {
+    return new ObjectType(name, {
+      definition: Object.assign({}, props.definition, interfaceType.definition),
+      directives: props.directives,
+    });
   }
-
-  /**
-   * the name of this object type
-   */
-  public readonly name: string;
-  /**
-   * the attributes of this object type
-   */
-  public readonly definition: { [key: string]: GraphqlType };
   /**
    * the directives for this object type
    *
@@ -75,8 +98,7 @@ export class ObjectType {
   public readonly directives?: Directive[];
 
   public constructor(name: string, props: ObjectTypeProps) {
-    this.name = name;
-    this.definition = props.definition;
+    super(name, props);
     this.directives = props.directives;
   }
 
