@@ -1,4 +1,5 @@
 ## AWS Secrets Manager Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -14,15 +15,35 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 ```
 
 ### Create a new Secret in a Stack
+
 In order to have SecretsManager generate a new secret value automatically,
 you can get started with the following:
 
-[example of creating a secret](test/integ.secret.lit.ts)
+```ts
+// Default secret
+const secret = new secretsmanager.Secret(this, 'Secret');
 
-The `Secret` construct does not allow specifying the `SecretString` property
-of the `AWS::SecretsManager::Secret` resource (as this will almost always
-lead to the secret being surfaced in plain text and possibly committed to
-your source control).
+// Using the default secret
+new iam.User(this, 'User', {
+  password: secret.secretValue,
+});
+
+// Templated secret
+const templatedSecret = new secretsmanager.Secret(this, 'TemplatedSecret', {
+  generateSecretString: {
+    secretStringTemplate: JSON.stringify({ username: 'user' }),
+    generateStringKey: 'password',
+  },
+});
+
+// Using the templated secret
+new iam.User(this, 'OtherUser', {
+  userName: templatedSecret.secretValueFromJson('username').toString(),
+  password: templatedSecret.secretValueFromJson('password'),
+});
+```
+
+[see also this example of creating a secret](test/integ.secret.lit.ts)
 
 If you need to use a pre-existing secret, the recommended way is to manually
 provision the secret in *AWS SecretsManager* and use the `Secret.fromSecretArn`
@@ -43,7 +64,7 @@ A secret can set `RemovalPolicy`. If it set to `RETAIN`, that removing a secret 
 
 ### Grant permission to use the secret to a role
 
-You must grant permission to a resource for that resource to be allowed to 
+You must grant permission to a resource for that resource to be allowed to
 use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.grantUpdate`
  method, depending on your need:
 
@@ -55,18 +76,22 @@ secret.grantWrite(role);
 ```
 
 If, as in the following example, your secret was created with a KMS key:
+
 ```ts
 const key = new kms.Key(stack, 'KMS');
 const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
 secret.grantRead(role);
 secret.grantWrite(role);
 ```
+
 then `Secret.grantRead` and `Secret.grantWrite` will also grant the role the
 relevant encrypt and decrypt permissions to the KMS key through the
 SecretsManager service principal.
 
 ### Rotating a Secret with a custom Lambda function
+
 A rotation schedule can be added to a Secret using a custom Lambda function:
+
 ```ts
 const fn = new lambda.Function(...);
 const secret = new secretsmanager.Secret(this, 'Secret');
@@ -76,10 +101,13 @@ secret.addRotationSchedule('RotationSchedule', {
   automaticallyAfter: Duration.days(15)
 });
 ```
+
 See [Overview of the Lambda Rotation Function](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-lambda-function-overview.html) on how to implement a Lambda Rotation Function.
 
 ### Rotating database credentials
+
 Define a `SecretRotation` to rotate database credentials:
+
 ```ts
 new SecretRotation(this, 'SecretRotation', {
   application: SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, // MySQL single user scheme
@@ -90,6 +118,7 @@ new SecretRotation(this, 'SecretRotation', {
 ```
 
 The secret must be a JSON string with the following format:
+
 ```json
 {
   "engine": "<required: database engine>",
@@ -103,6 +132,7 @@ The secret must be a JSON string with the following format:
 ```
 
 For the multi user scheme, a `masterSecret` must be specified:
+
 ```ts
 new SecretRotation(stack, 'SecretRotation', {
   application: SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,

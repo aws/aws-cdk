@@ -324,7 +324,7 @@ test('when specifying every property', () => {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  table.construct.applyAspect(new Tag('Environment', 'Production'));
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table',
     {
@@ -357,7 +357,7 @@ test('when specifying sse with customer managed CMK', () => {
     encryption: TableEncryption.CUSTOMER_MANAGED,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  table.construct.applyAspect(new Tag('Environment', 'Production'));
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -383,7 +383,7 @@ test('when specifying only encryptionKey', () => {
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  table.construct.applyAspect(new Tag('Environment', 'Production'));
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -410,7 +410,7 @@ test('when specifying sse with customer managed CMK with encryptionKey provided 
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  table.construct.applyAspect(new Tag('Environment', 'Production'));
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {

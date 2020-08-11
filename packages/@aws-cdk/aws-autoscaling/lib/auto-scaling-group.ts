@@ -390,7 +390,9 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
 
   public abstract autoScalingGroupName: string;
   public abstract autoScalingGroupArn: string;
+  public abstract readonly osType: ec2.OperatingSystemType;
   protected albTargetGroup?: elbv2.ApplicationTargetGroup;
+  public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
@@ -469,7 +471,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
       ...props,
     });
 
-    policy.node.addDependency(this.albTargetGroup.loadBalancerAttached);
+    policy.construct.addDependency(this.albTargetGroup.loadBalancerAttached);
     return policy;
   }
 
@@ -490,6 +492,10 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps): StepScalingPolicy {
     return new StepScalingPolicy(this, id, { ...props, autoScalingGroup: this });
   }
+
+  public addUserData(..._commands: string[]): void {
+    // do nothing
+  }
 }
 
 /**
@@ -508,8 +514,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
-  elbv2.INetworkLoadBalancerTarget,
-  iam.IGrantable {
+  elbv2.INetworkLoadBalancerTarget {
 
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
@@ -519,6 +524,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         resource: 'autoScalingGroup:*:autoScalingGroupName',
         resourceName: this.autoScalingGroupName,
       });
+      public readonly osType = ec2.OperatingSystemType.UNKNOWN;
     }
 
     return new Import(scope, id);
@@ -589,7 +595,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
+    this.construct.applyAspect(new Tag(NAME_TAG, this.construct.path));
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
@@ -626,7 +632,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined),
     });
 
-    launchConfig.node.addDependency(this.role);
+    launchConfig.construct.addDependency(this.role);
 
     // desiredCapacity just reflects what the user has supplied.
     const desiredCapacity = props.desiredCapacity;
@@ -653,7 +659,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
 
     if (desiredCapacity !== undefined) {
-      this.node.addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
+      this.construct.addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
     }
 
     this.maxInstanceLifetime = props.maxInstanceLifetime;
@@ -709,7 +715,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       resource: 'autoScalingGroup:*:autoScalingGroupName',
       resourceName: this.autoScalingGroupName,
     });
-    this.node.defaultChild = this.autoScalingGroup;
+    this.construct.defaultChild = this.autoScalingGroup;
 
     this.applyUpdatePolicies(props);
 
@@ -760,11 +766,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     return { targetType: elbv2.TargetType.INSTANCE };
   }
 
-  /**
-   * Add command to the startup script of fleet instances.
-   * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
-   */
-  public addUserData(...commands: string[]) {
+  public addUserData(...commands: string[]): void {
     this.userData.addCommands(...commands);
   }
 
@@ -1121,7 +1123,7 @@ function validatePercentage(x?: number): number | undefined {
 /**
  * An AutoScalingGroup
  */
-export interface IAutoScalingGroup extends IResource {
+export interface IAutoScalingGroup extends IResource, iam.IGrantable {
   /**
    * The name of the AutoScalingGroup
    * @attribute
@@ -1133,6 +1135,19 @@ export interface IAutoScalingGroup extends IResource {
    * @attribute
    */
   readonly autoScalingGroupArn: string;
+
+  /**
+   * The operating system family that the instances in this auto-scaling group belong to.
+   * Is 'UNKNOWN' for imported ASGs.
+   */
+  readonly osType: ec2.OperatingSystemType;
+
+  /**
+   * Add command to the startup script of fleet instances.
+   * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
+   * Does nothing for imported ASGs.
+   */
+  addUserData(...commands: string[]): void;
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
@@ -1244,7 +1259,7 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
           throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+        construct.construct.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
       }
     }
 

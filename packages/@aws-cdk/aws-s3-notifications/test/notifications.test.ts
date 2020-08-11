@@ -39,7 +39,7 @@ test('when notification are added, a custom resource is provisioned + a lambda h
 
 test('when notification are added, you can tag the lambda', () => {
   const stack = new cdk.Stack();
-  stack.node.applyAspect(new cdk.Tag('Lambda', 'AreTagged'));
+  stack.construct.applyAspect(new cdk.Tag('Lambda', 'AreTagged'));
 
   const bucket = new s3.Bucket(stack, 'MyBucket');
 
@@ -289,8 +289,6 @@ test('a notification destination can specify a set of dependencies that must be 
   };
 
   bucket.addObjectCreatedNotification(dest);
-
-  cdk.ConstructNode.prepare(stack.node);
 
   expect(SynthUtils.synthesize(stack).template.Resources.BucketNotifications8F2E257D).toEqual({
     Type: 'Custom::S3BucketNotifications',

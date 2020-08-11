@@ -50,7 +50,7 @@ export abstract class InstanceBase extends Resource implements IInstance {
    */
   protected uniqueInstanceId() {
     // Max length of 64 chars, get the last 64 chars
-    const id = this.node.uniqueId;
+    const id = this.construct.uniqueId;
     return id.substring(Math.max(id.length - 64, 0), id.length);
   }
 }

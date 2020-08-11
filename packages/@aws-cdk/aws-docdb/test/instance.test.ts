@@ -24,6 +24,34 @@ describe('DatabaseInstance', () => {
       Properties: {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
         DBInstanceClass: EXPECTED_SYNTH_INSTANCE_TYPE,
+        AutoMinorVersionUpgrade: true,
+      },
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition));
+  });
+
+  test.each([
+    [undefined, true],
+    [true, true],
+    [false, false],
+  ])('check that autoMinorVersionUpdate works: %p', (given: boolean | undefined, expected: boolean) => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new DatabaseInstance(stack, 'Instance', {
+      cluster: stack.cluster,
+      instanceClass: SINGLE_INSTANCE_TYPE,
+      autoMinorVersionUpgrade: given,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::DocDB::DBInstance', {
+      Properties: {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: EXPECTED_SYNTH_INSTANCE_TYPE,
+        AutoMinorVersionUpgrade: expected,
       },
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
@@ -145,7 +173,7 @@ class TestStack extends cdk.Stack {
   constructor(scope?: cdk.Construct, id?: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
-    this.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
+    this.construct.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
 
     this.vpc = new ec2.Vpc(this, 'VPC');
     this.cluster = new DatabaseCluster(this, 'Database', {

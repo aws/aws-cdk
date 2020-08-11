@@ -184,6 +184,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a UserData script, and output it unchanged', () => {
+    includeTestTemplate(stack, 'user-data.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('user-data.json'),
+    );
+  });
+
   test('can ingest a template with intrinsic functions and conditions, and output it unchanged', () => {
     includeTestTemplate(stack, 'functions-and-conditions.json');
 
@@ -289,7 +297,7 @@ describe('CDK Include', () => {
     const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-depends-on.json');
     const cfnBucket2 = cfnTemplate.getResource('Bucket2');
 
-    expect(cfnBucket2.node.dependencies).toHaveLength(1);
+    expect(cfnBucket2.construct.dependencies).toHaveLength(1);
     // we always render dependsOn as an array, even if it's a single string
     expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
       "Properties": {
@@ -305,7 +313,7 @@ describe('CDK Include', () => {
     const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-depends-on-array.json');
     const cfnBucket2 = cfnTemplate.getResource('Bucket2');
 
-    expect(cfnBucket2.node.dependencies).toHaveLength(2);
+    expect(cfnBucket2.construct.dependencies).toHaveLength(2);
     expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
       "Properties": {
         "BucketName": "bucket2",

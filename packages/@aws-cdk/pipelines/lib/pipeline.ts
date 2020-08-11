@@ -65,7 +65,7 @@ export class CdkPipeline extends Construct {
   constructor(scope: Construct, id: string, props: CdkPipelineProps) {
     super(scope, id);
 
-    if (!App.isApp(this.node.root)) {
+    if (!App.isApp(this.construct.root)) {
       throw new Error('CdkPipeline must be created under an App');
     }
 
@@ -102,6 +102,8 @@ export class CdkPipeline extends Construct {
       pipeline: this._pipeline,
       projectName: maybeSuffix(props.pipelineName, '-publish'),
     });
+
+    this.construct.applyAspect({ visit: () => this._assets.removeAssetsStageIfEmpty() });
   }
 
   /**
@@ -178,14 +180,6 @@ export class CdkPipeline extends Construct {
     return ret;
   }
 
-  protected onPrepare() {
-    super.onPrepare();
-
-    // TODO: Support this in a proper way in the upstream library. For now, we
-    // "un-add" the Assets stage if it turns out to be empty.
-    this._assets.removeAssetsStageIfEmpty();
-  }
-
   /**
    * Return all StackDeployActions in an ordered list
    */
@@ -201,7 +195,7 @@ export class CdkPipeline extends Construct {
         const depAction = stackActions.find(s => s.stackArtifactId === depId);
 
         if (depAction === undefined) {
-          this.node.addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
+          this.construct.addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
               `'${depId}', but that dependency is not deployed through the pipeline!`);
         } else if (!(depAction.executeRunOrder < stackAction.prepareRunOrder)) {
           yield `Stack '${stackAction.stackName}' depends on stack ` +

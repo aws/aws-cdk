@@ -299,7 +299,7 @@ export class Stream extends StreamBase {
     if (!props.encryption && !props.encryptionKey) {
 
       const conditionName = 'AwsCdkKinesisEncryptedStreamsUnsupportedRegions';
-      const existing = Stack.of(this).node.tryFindChild(conditionName);
+      const existing = Stack.of(this).construct.tryFindChild(conditionName);
 
       // create a single condition for the Stack
       if (!existing) {
@@ -338,7 +338,7 @@ export class Stream extends StreamBase {
 
     if (encryptionType === StreamEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-        description: `Created by ${this.node.path}`,
+        description: `Created by ${this.construct.path}`,
       });
 
       const streamEncryption: CfnStream.StreamEncryptionProperty = {

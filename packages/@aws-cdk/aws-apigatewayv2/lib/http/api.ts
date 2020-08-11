@@ -143,6 +143,10 @@ export class HttpApi extends Resource implements IHttpApi {
 
     let corsConfiguration: CfnApi.CorsProperty | undefined;
     if (props?.corsPreflight) {
+      const cors = props.corsPreflight;
+      if (cors.allowOrigins && cors.allowOrigins.includes('*') && cors.allowCredentials) {
+        throw new Error("CORS preflight - allowCredentials is not supported when allowOrigin is '*'");
+      }
       const {
         allowCredentials,
         allowHeaders,
@@ -187,7 +191,7 @@ export class HttpApi extends Resource implements IHttpApi {
 
       // to ensure the domain is ready before creating the default stage
       if(props?.defaultDomainMapping) {
-        this.defaultStage.node.addDependency(props.defaultDomainMapping.domainName);
+        this.defaultStage.construct.addDependency(props.defaultDomainMapping.domainName);
       }
     }
 
