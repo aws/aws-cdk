@@ -1,5 +1,4 @@
 import { expect, haveResource } from '@aws-cdk/assert';
- import { expect, haveResource } from '@aws-cdk/assert';
 import { Test } from 'nodeunit';
 import { Cluster, KubernetesManifest, KubernetesVersion } from '../lib';
 import { testFixtureNoVpc } from './util';
