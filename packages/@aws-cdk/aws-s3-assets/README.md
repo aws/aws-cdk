@@ -90,6 +90,36 @@ docker program to execute. This may sometime be needed when building in
 environments where the standard docker cannot be executed (see
 https://github.com/aws/aws-cdk/issues/8460 for details).
 
+Use `local` to specify a local bundling provider. The provider implements a
+method `tryBundle()` which should return `true` if local bundling was performed.
+If `false` is returned, docker bundling will be done:
+
+```ts
+new assets.Asset(this, 'BundledAsset', {
+  path: '/path/to/asset',
+  bundling: {
+    local: {
+      tryBundler(outputDir: string, options: BundlingOptions) {
+        try {
+          // perform local bundling here
+          return true;
+        } catch (err) {
+          // local bundling failed or cannot run locally due to missing dependencies
+          return false;
+        }
+      },
+    },
+    docker: { // Docker bundling fallback
+      image: BundlingDockerImage.fromRegistry('alpine'),
+      command: ['bundle'],
+    },
+  },
+});
+```
+
+Although optional, it's recommended to provide a local bundling method which can
+greatly improve performance.
+
 ## CloudFormation Resource Metadata
 
 > NOTE: This section is relevant for authors of AWS Resource Constructs.

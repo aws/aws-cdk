@@ -181,7 +181,7 @@ export class AssetStaging extends Construct {
     try {
       process.stderr.write(`Bundling asset ${this.construct.path}...\n`);
 
-      if (options.local?.tryBundle(bundleDir)) {
+      if (options.local?.tryBundle(bundleDir, options)) {
         return bundleDir;
       }
 

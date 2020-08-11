@@ -316,8 +316,8 @@ export = {
           command: [DockerStubCommand.SUCCESS],
         },
         local: {
-          tryBundle(bundleDir: string): boolean {
-            dir = bundleDir;
+          tryBundle(outputDir: string): boolean {
+            dir = outputDir;
             return true;
           },
         },

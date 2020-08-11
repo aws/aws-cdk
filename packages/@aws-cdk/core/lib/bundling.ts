@@ -7,17 +7,23 @@ import { spawnSync, SpawnSyncOptions } from 'child_process';
  */
 export interface BundlingOptions {
   /**
-   * Docker bundling
+   * Docker bundling.
+   *
+   * This is required in order to allow bundling to happen in any environment.
+   * It is however recommended to also provide a `local` bundling method which
+   * can greatly improve bundling performance.
    */
   readonly docker: DockerBundling;
 
   /**
-   * Local bundling provider. 
-   * 
-   * The provider implements a method `tryBundle()` which should returns `true` if local bundling was
-   * performed. If `false` is returned, docker bundling will be done.
+   * Local bundling provider.
    *
-   * @default - bundling will only be performed in a Docker container based on the settings in `docker`.
+   * The provider implements a method `tryBundle()` which should return `true`
+   * if local bundling was performed. If `false` is returned, docker bundling
+   * will be done.
+   *
+   * @default - bundling will only be performed in a Docker container based on
+   * the settings in `docker`.
    */
   readonly local?: ILocalBundling;
 }
@@ -88,7 +94,7 @@ export interface ILocalBundling {
    * bundler to be executed locally. If the local bundler exists, and bundling
    * was performed locally, return `true`. Otherwise, return `false`.
    */
-  tryBundle(bundleDir: string): boolean;
+  tryBundle(outputDir: string, options: BundlingOptions): boolean;
 }
 
 /**
