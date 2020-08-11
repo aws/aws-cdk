@@ -1,7 +1,7 @@
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { PackageJsonManager } from './package-json-manager';
 import { findUp } from './util';
 
@@ -71,6 +71,13 @@ export interface ParcelBaseOptions {
    * @default - 2.0.0-beta.1
    */
   readonly parcelVersion?: string;
+
+  /**
+   * Build arguments to pass when building the bundling image.
+   *
+   * @default - no build arguments are passed
+   */
+  readonly buildArgs?: { [key:string] : string };
 }
 
 /**
@@ -102,9 +109,10 @@ export class Bundling {
       throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }
 
-    // Bundling image derived from runtime bundling image (lambci)
+    // Bundling image derived from runtime bundling image (AWS SAM docker image)
     const image = cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel'), {
       buildArgs: {
+        ...options.buildArgs ?? {},
         IMAGE: options.runtime.bundlingDockerImage.image,
         PARCEL_VERSION: options.parcelVersion ?? '2.0.0-beta.1',
       },
@@ -129,8 +137,7 @@ export class Bundling {
 
     // Configure target in package.json for Parcel
     packageJsonManager.update({
-      'cdk-lambda': `${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/index.js`,
-      'targets': {
+      targets: {
         'cdk-lambda': {
           context: 'node',
           includeNodeModules: includeNodeModules ?? true,
@@ -145,7 +152,24 @@ export class Bundling {
 
     // Entry file path relative to container path
     const containerEntryPath = path.join(cdk.AssetStaging.BUNDLING_INPUT_DIR, path.relative(projectRoot, path.resolve(options.entry)));
-    const parcelCommand = `parcel build ${containerEntryPath.replace(/\\/g, '/')} --target cdk-lambda${options.cacheDir ? ' --cache-dir /parcel-cache' : ''}`;
+    const distFile = path.basename(options.entry).replace(/\.ts$/, '.js');
+    const parcelCommand = chain([
+      [
+        '$(node -p "require.resolve(\'parcel\')")', // Parcel is not globally installed, find its "bin"
+        'build', containerEntryPath.replace(/\\/g, '/'), // Always use POSIX paths in the container
+        '--target', 'cdk-lambda',
+        '--dist-dir', cdk.AssetStaging.BUNDLING_OUTPUT_DIR, // Output bundle in /asset-output (will have the same name as the entry)
+        '--no-autoinstall',
+        '--no-scope-hoist',
+        ...options.cacheDir
+          ? ['--cache-dir', '/parcel-cache']
+          : [],
+      ].join(' '),
+      // Always rename dist file to index.js because Lambda doesn't support filenames
+      // with multiple dots and we can end up with multiple dots when using automatic
+      // entry lookup
+      `mv ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${distFile} ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/index.js`,
+    ]);
 
     let installer = Installer.NPM;
     let lockfile: string | undefined;

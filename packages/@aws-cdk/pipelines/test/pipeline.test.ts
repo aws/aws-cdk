@@ -40,7 +40,6 @@ test('references stack template in subassembly', () => {
   });
 });
 
-// tslint:disable: max-line-length
 test('action has right settings for same-env deployment', () => {
   // WHEN
   pipeline.addApplicationStage(new OneStackApp(app, 'Same'));
@@ -161,8 +160,6 @@ test('action has right settings for cross-account/cross-region deployment', () =
   });
 });
 
-// tslint:enable: max-line-length
-
 test('pipeline has self-mutation stage', () => {
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -180,6 +177,9 @@ test('pipeline has self-mutation stage', () => {
   });
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -203,6 +203,9 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
 
   // THEN
   expect(stackTemplate(nestedPipelineStack)).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {

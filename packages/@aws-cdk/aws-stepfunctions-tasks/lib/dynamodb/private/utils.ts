@@ -22,3 +22,9 @@ export function transformAttributeValueMap(attrMap?: { [key: string]: DynamoAttr
   }
   return attrMap ? transformedValue : undefined;
 }
+
+export function validateJsonPath(value: string) {
+  if (!value.startsWith('$')) {
+    throw new Error("Data JSON path values must either be exactly equal to '$' or start with '$.'");
+  }
+}

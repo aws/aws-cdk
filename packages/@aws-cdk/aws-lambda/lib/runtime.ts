@@ -6,6 +6,12 @@ export interface LambdaRuntimeProps {
    * @default false
    */
   readonly supportsInlineCode?: boolean;
+
+  /**
+   * The Docker image name to be used for bundling in this runtime.
+   * @default - the latest docker image "amazon/aws-sam-cli-build-image-<runtime>" from https://hub.docker.com/u/amazon
+   */
+  readonly bundlingDockerImage?: string;
 }
 
 export enum RuntimeFamily {
@@ -113,17 +119,23 @@ export class Runtime {
   /**
    * The .NET Core 2.1 runtime (dotnetcore2.1)
    */
-  public static readonly DOTNET_CORE_2_1 =  new Runtime('dotnetcore2.1',  RuntimeFamily.DOTNET_CORE);
+  public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1', RuntimeFamily.DOTNET_CORE, {
+    bundlingDockerImage: 'lambci/lambda:build-dotnetcore2.1',
+  });
 
   /**
    * The .NET Core 3.1 runtime (dotnetcore3.1)
    */
-  public static readonly DOTNET_CORE_3_1 = new Runtime('dotnetcore3.1',  RuntimeFamily.DOTNET_CORE);
+  public static readonly DOTNET_CORE_3_1 = new Runtime('dotnetcore3.1', RuntimeFamily.DOTNET_CORE, {
+    bundlingDockerImage: 'lambci/lambda:build-dotnetcore3.1',
+  });
 
   /**
    * The Go 1.x runtime (go1.x)
    */
-  public static readonly GO_1_X =           new Runtime('go1.x',          RuntimeFamily.GO);
+  public static readonly GO_1_X = new Runtime('go1.x', RuntimeFamily.GO, {
+    bundlingDockerImage: 'lambci/lambda:build-go1.x',
+  });
 
   /**
    * The Ruby 2.5 runtime (ruby2.5)
@@ -158,9 +170,6 @@ export class Runtime {
 
   /**
    * The bundling Docker image for this runtime.
-   * Points to the lambci/lambda build image for this runtime.
-   *
-   * @see https://hub.docker.com/r/lambci/lambda/
    */
   public readonly bundlingDockerImage: BundlingDockerImage;
 
@@ -168,7 +177,8 @@ export class Runtime {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
-    this.bundlingDockerImage = BundlingDockerImage.fromRegistry(`lambci/lambda:build-${name}`);
+    const imageName = props.bundlingDockerImage ?? `amazon/aws-sam-cli-build-image-${name}`;
+    this.bundlingDockerImage = BundlingDockerImage.fromRegistry(imageName);
 
     Runtime.ALL.push(this);
   }

@@ -94,6 +94,7 @@ export interface IVpc extends IResource {
    * Identifier for the VPN gateway
    */
   readonly vpnGatewayId?: string;
+
   /**
    * Dependable that can be depended upon to force internet connectivity established on the VPC
    */
@@ -1098,7 +1099,23 @@ export class Vpc extends VpcBase {
    */
   public readonly availabilityZones: string[];
 
+  /**
+   * Internet Gateway for the VPC. Note that in case the VPC is configured only
+   * with ISOLATED subnets, this attribute will be `undefined`.
+   */
+  public readonly internetGatewayId?: string;
+
   public readonly internetConnectivityEstablished: IDependable;
+
+  /**
+   * Indicates if instances launched in this VPC will have public DNS hostnames.
+   */
+  public readonly dnsHostnamesEnabled: boolean;
+
+  /**
+   * Indicates if DNS support is enabled for this VPC.
+   */
+  public readonly dnsSupportEnabled: boolean;
 
   /**
    * The VPC resource
@@ -1140,16 +1157,16 @@ export class Vpc extends VpcBase {
 
     this.networkBuilder = new NetworkBuilder(cidrBlock);
 
-    const enableDnsHostnames = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
-    const enableDnsSupport = props.enableDnsSupport == null ? true : props.enableDnsSupport;
+    this.dnsHostnamesEnabled = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
+    this.dnsSupportEnabled = props.enableDnsSupport == null ? true : props.enableDnsSupport;
     const instanceTenancy = props.defaultInstanceTenancy || 'default';
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
 
     // Define a VPC using the provided CIDR range
     this.resource = new CfnVPC(this, 'Resource', {
       cidrBlock,
-      enableDnsHostnames,
-      enableDnsSupport,
+      enableDnsHostnames: this.dnsHostnamesEnabled,
+      enableDnsSupport: this.dnsSupportEnabled,
       instanceTenancy,
     });
 
@@ -1184,6 +1201,9 @@ export class Vpc extends VpcBase {
     if (allowOutbound) {
       const igw = new CfnInternetGateway(this, 'IGW', {
       });
+
+      this.internetGatewayId = igw.ref;
+
       this._internetConnectivityEstablished.add(igw);
       const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
         internetGatewayId: igw.ref,

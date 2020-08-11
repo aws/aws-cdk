@@ -49,7 +49,7 @@ export interface AppProps {
    *
    * @default - no additional context
    */
-  readonly context?: { [key: string]: string };
+  readonly context?: { [key: string]: any };
 
   /**
    * Include construct tree metadata as part of the Cloud Assembly.
@@ -98,11 +98,11 @@ export class App extends Stage {
     this.loadContext(props.context);
 
     if (props.stackTraces === false) {
-      this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
+      this.construct.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
     }
 
     if (props.runtimeInfo === false) {
-      this.node.setContext(cxapi.DISABLE_VERSION_REPORTING, true);
+      this.construct.setContext(cxapi.DISABLE_VERSION_REPORTING, true);
     }
 
     const autoSynth = props.autoSynth !== undefined ? props.autoSynth : cxapi.OUTDIR_ENV in process.env;
@@ -120,7 +120,7 @@ export class App extends Stage {
   private loadContext(defaults: { [key: string]: string } = { }) {
     // prime with defaults passed through constructor
     for (const [ k, v ] of Object.entries(defaults)) {
-      this.node.setContext(k, v);
+      this.construct.setContext(k, v);
     }
 
     // read from environment
@@ -130,7 +130,7 @@ export class App extends Stage {
       : { };
 
     for (const [ k, v ] of Object.entries(contextFromEnvironment)) {
-      this.node.setContext(k, v);
+      this.construct.setContext(k, v);
     }
   }
 }

@@ -1,4 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { IProfilingGroup, ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -191,6 +192,22 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly tracing?: Tracing;
 
   /**
+   * Enable profiling.
+   * @see https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html
+   *
+   * @default - No profiling.
+   */
+  readonly profiling?: boolean;
+
+  /**
+   * Profiling Group.
+   * @see https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html
+   *
+   * @default - A new profiling group will be created if `profiling` is set.
+   */
+  readonly profilingGroup?: IProfilingGroup;
+
+  /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
    * additional code during initialization in the form of layers. Layers are packages of libraries or other dependencies
    * that can be used by mulitple functions.
@@ -314,6 +331,18 @@ export class Function extends FunctionBase {
       lambda: this,
       ...this.currentVersionOptions,
     });
+
+    // override the version's logical ID with a lazy string which includes the
+    // hash of the function itself, so a new version resource is created when
+    // the function configuration changes.
+    const cfn = this._currentVersion.node.defaultChild as CfnResource;
+    const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
+
+    cfn.overrideLogicalId(Lazy.stringValue({ produce: _ => {
+      const hash = calculateFunctionHash(this);
+      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+      return `${logicalId}${hash}`;
+    }}));
 
     return this._currentVersion;
   }
@@ -485,8 +514,6 @@ export class Function extends FunctionBase {
       physicalName: props.functionName,
     });
 
-    this.environment = props.environment || {};
-
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -519,6 +546,30 @@ export class Function extends FunctionBase {
 
     const code = props.code.bind(this);
     verifyCodeConfig(code, props.runtime);
+
+    let profilingGroupEnvironmentVariables = {};
+    if (props.profilingGroup && props.profiling !== false) {
+      this.validateProfilingEnvironmentVariables(props);
+      props.profilingGroup.grantPublish(this.role);
+      profilingGroupEnvironmentVariables = {
+        AWS_CODEGURU_PROFILER_GROUP_ARN: Stack.of(scope).formatArn({
+          service: 'codeguru-profiler',
+          resource: 'profilingGroup',
+          resourceName: props.profilingGroup.profilingGroupName,
+        }),
+        AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+      };
+    } else if (props.profiling) {
+      this.validateProfilingEnvironmentVariables(props);
+      const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup');
+      profilingGroup.grantPublish(this.role);
+      profilingGroupEnvironmentVariables = {
+        AWS_CODEGURU_PROFILER_GROUP_ARN: profilingGroup.profilingGroupArn,
+        AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+      };
+    }
+
+    this.environment = { ...profilingGroupEnvironmentVariables, ...(props.environment || {}) };
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
 
@@ -700,23 +751,6 @@ export class Function extends FunctionBase {
     return this._logGroup;
   }
 
-  protected prepare() {
-    super.prepare();
-
-    // if we have a current version resource, override it's logical id
-    // so that it includes the hash of the function code and it's configuration.
-    if (this._currentVersion) {
-      const stack = Stack.of(this);
-      const cfn = this._currentVersion.node.defaultChild as CfnResource;
-      const originalLogicalId: string = stack.resolve(cfn.logicalId);
-
-      const hash = calculateFunctionHash(this);
-
-      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
-      cfn.overrideLogicalId(`${logicalId}${hash}`);
-    }
-  }
-
   private renderEnvironment() {
     if (!this.environment || Object.keys(this.environment).length === 0) {
       return undefined;
@@ -851,6 +885,12 @@ export class Function extends FunctionBase {
     return {
       mode: props.tracing,
     };
+  }
+
+  private validateProfilingEnvironmentVariables(props: FunctionProps) {
+    if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
+      throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
+    }
   }
 }
 

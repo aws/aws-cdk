@@ -449,7 +449,6 @@ export interface DatabaseInstanceNewProps {
    * time for each AWS Region, occurring on a random day of the week. To see
    * the time blocks available, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
    */
-  // tslint:enable:max-line-length
   readonly preferredMaintenanceWindow?: string;
 
   /**
@@ -679,14 +678,15 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     props.engine.bindToInstance(this, props);
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
+    const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
     this.sourceCfnProps = {
       ...this.newCfnProps,
       allocatedStorage: props.allocatedStorage ? props.allocatedStorage.toString() : '100',
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
-      dbParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
+      dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       engine: props.engine.engineType,
-      engineVersion: props.engine.engineVersion,
+      engineVersion: props.engine.engineVersion?.fullVersion,
       licenseModel: props.licenseModel,
       timezone: props.timezone,
     };
