@@ -415,7 +415,7 @@ export class PolicyStatement {
   public validateForAnyPolicy(): string[] {
     const errors = new Array<string>();
     if (this.action.length === 0 && this.notAction.length === 0) {
-      errors.push('A PolicyStatement must specify at least one allow or deny action.');
+      errors.push('A PolicyStatement must specify at least one \'action\' or \'notAction\'.');
     }
     return errors;
   }

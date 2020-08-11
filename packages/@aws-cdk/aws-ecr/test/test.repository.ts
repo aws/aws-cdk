@@ -319,7 +319,7 @@ export = {
     }));
 
     // THEN
-    test.throws(() => app.synth(), /A PolicyStatement must specify at least one allow or deny action/);
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
     test.done();
   },
 

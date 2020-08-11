@@ -734,7 +734,7 @@ describe('IAM policy document', () => {
     // THEN
     const validationErrorsForResourcePolicy: string[] = policyStatement.validateForResourcePolicy();
     // const validationErrorsForIdentityPolicy: string[] = policyStatement.validateForIdentityPolicy();
-    expect(validationErrorsForResourcePolicy).toEqual(['A PolicyStatement must specify at least one allow or deny action.']);
+    expect(validationErrorsForResourcePolicy).toEqual(['A PolicyStatement must specify at least one \'action\' or \'notAction\'.']);
   });
 
   test('validation error if policy statement for resource-based policy has no principals specified', () => {
