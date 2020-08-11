@@ -19,12 +19,10 @@ test('Bundling', () => {
   // Correctly bundles
   expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', {
     bundling: expect.objectContaining({
-      docker: expect.objectContaining({
-        command: [
-          'bash', '-c',
-          'cp -au . /asset-output',
-        ],
-      }),
+      command: [
+        'bash', '-c',
+        'cp -au . /asset-output',
+      ],
     }),
   });
 
@@ -48,12 +46,10 @@ test('Bundling with requirements.txt installed', () => {
   // Correctly bundles with requirements.txt pip installed
   expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', {
     bundling: expect.objectContaining({
-      docker: expect.objectContaining({
-        command: [
-          'bash', '-c',
-          'pip3 install -r requirements.txt -t /asset-output && cp -au . /asset-output',
-        ],
-      }),
+      command: [
+        'bash', '-c',
+        'pip3 install -r requirements.txt -t /asset-output && cp -au . /asset-output',
+      ],
     }),
   });
 });
@@ -74,12 +70,10 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
   // Correctly bundles with requirements.txt pip installed
   expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', {
     bundling: expect.objectContaining({
-      docker: expect.objectContaining({
-        command: [
-          'bash', '-c',
-          'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output',
-        ],
-      }),
+      command: [
+        'bash', '-c',
+        'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output',
+      ],
     }),
   });
 });

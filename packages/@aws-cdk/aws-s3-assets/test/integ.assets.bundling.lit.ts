@@ -11,14 +11,12 @@ class TestStack extends Stack {
     const asset = new assets.Asset(this, 'BundledAsset', {
       path: path.join(__dirname, 'markdown-asset'), // /asset-input and working directory in the container
       bundling: {
-        docker: {
-          image: BundlingDockerImage.fromAsset(path.join(__dirname, 'alpine-markdown')), // Build an image
-          command: [
-            'sh', '-c', `
-              markdown index.md > /asset-output/index.html
-            `,
-          ],
-        },
+        image: BundlingDockerImage.fromAsset(path.join(__dirname, 'alpine-markdown')), // Build an image
+        command: [
+          'sh', '-c', `
+            markdown index.md > /asset-output/index.html
+          `,
+        ],
       },
     });
     /// !hide

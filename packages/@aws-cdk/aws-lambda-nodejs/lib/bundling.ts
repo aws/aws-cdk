@@ -201,15 +201,13 @@ export class Bundling {
     return lambda.Code.fromAsset(projectRoot, {
       assetHashType: cdk.AssetHashType.BUNDLE,
       bundling: {
-        docker: {
-          image,
-          command: ['bash', '-c', chain([parcelCommand, depsCommand])],
-          environment: options.parcelEnvironment,
-          volumes: options.cacheDir
-            ? [{ containerPath: '/parcel-cache', hostPath: options.cacheDir }]
-            : [],
-          workingDirectory: path.dirname(containerEntryPath).replace(/\\/g, '/'), // Always use POSIX paths in the container
-        },
+        image,
+        command: ['bash', '-c', chain([parcelCommand, depsCommand])],
+        environment: options.parcelEnvironment,
+        volumes: options.cacheDir
+          ? [{ containerPath: '/parcel-cache', hostPath: options.cacheDir }]
+          : [],
+        workingDirectory: path.dirname(containerEntryPath).replace(/\\/g, '/'), // Always use POSIX paths in the container
       },
     });
   }

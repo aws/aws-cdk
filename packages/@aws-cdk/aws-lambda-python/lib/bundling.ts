@@ -33,10 +33,8 @@ export function bundle(options: BundlingOptions): lambda.AssetCode {
 
   return lambda.Code.fromAsset(options.entry, {
     bundling: {
-      docker: {
-        image: options.runtime.bundlingDockerImage,
-        command: ['bash', '-c', depsCommand],
-      },
+      image: options.runtime.bundlingDockerImage,
+      command: ['bash', '-c', depsCommand],
     },
   });
 }

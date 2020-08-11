@@ -109,10 +109,9 @@ new assets.Asset(this, 'BundledAsset', {
         }
       },
     },
-    docker: { // Docker bundling fallback
-      image: BundlingDockerImage.fromRegistry('alpine'),
-      command: ['bundle'],
-    },
+    // Docker bundling fallback
+    image: BundlingDockerImage.fromRegistry('alpine'),
+    command: ['bundle'],
   },
 });
 ```

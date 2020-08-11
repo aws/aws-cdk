@@ -7,40 +7,12 @@ import { spawnSync, SpawnSyncOptions } from 'child_process';
  */
 export interface BundlingOptions {
   /**
-   * Docker bundling.
-   *
-   * This is required in order to allow bundling to happen in any environment.
-   * It is however recommended to also provide a `local` bundling method which
-   * can greatly improve bundling performance.
-   */
-  readonly docker: DockerBundling;
-
-  /**
-   * Local bundling provider.
-   *
-   * The provider implements a method `tryBundle()` which should return `true`
-   * if local bundling was performed. If `false` is returned, docker bundling
-   * will be done.
-   *
-   * @default - bundling will only be performed in a Docker container based on
-   * the settings in `docker`.
-   */
-  readonly local?: ILocalBundling;
-}
-
-/**
- * Docker bundling options
- *
- * @experimental
- */
-export interface DockerBundling {
-  /**
    * The Docker image where the command will run.
    */
   readonly image: BundlingDockerImage;
 
   /**
-   * The command to run in the container.
+   * The command to run in the Docker container.
    *
    * @example ['npm', 'install']
    *
@@ -58,21 +30,21 @@ export interface DockerBundling {
   readonly volumes?: DockerVolume[];
 
   /**
-   * The environment variables to pass to the container.
+   * The environment variables to pass to the Docker container.
    *
    * @default - no environment variables.
    */
   readonly environment?: { [key: string]: string; };
 
   /**
-   * Working directory inside the container.
+   * Working directory inside the Docker container.
    *
    * @default /asset-input
    */
   readonly workingDirectory?: string;
 
   /**
-   * The user to use when running the container.
+   * The user to use when running the Docker container.
    *
    *   user | user:group | uid | uid:gid | user:gid | uid:group
    *
@@ -81,6 +53,17 @@ export interface DockerBundling {
    * @default - uid:gid of the current user or 1000:1000 on Windows
    */
   readonly user?: string;
+
+  /**
+   * Local bundling provider.
+   *
+   * The provider implements a method `tryBundle()` which should return `true`
+   * if local bundling was performed. If `false` is returned, docker bundling
+   * will be done.
+   *
+   * @default - bundling will only be performed in a Docker container
+   */
+  readonly local?: ILocalBundling;
 }
 
 /**

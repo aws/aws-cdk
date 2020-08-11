@@ -358,15 +358,13 @@ Example with Python:
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
     bundling: {
-      docker: {
-        image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
-        command: [
-          'bash', '-c', `
-          pip install -r requirements.txt -t /asset-output &&
-          cp -au . /asset-output
-          `,
-        ],
-      },
+      image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
+      command: [
+        'bash', '-c', `
+        pip install -r requirements.txt -t /asset-output &&
+        cp -au . /asset-output
+        `,
+      ],
     },
   }),
   runtime: lambda.Runtime.PYTHON_3_6,
@@ -384,14 +382,12 @@ import * as cdk from '@aws-cdk/core';
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset('/path/to/handler', {
     bundling: {
-      docker: {
-        image: cdk.BundlingDockerImage.fromAsset('/path/to/dir/with/DockerFile', {
-          buildArgs: {
-            ARG1: 'value1',
-          },
-        }),
-        command: ['my', 'cool', 'command'],
-      },
+      image: cdk.BundlingDockerImage.fromAsset('/path/to/dir/with/DockerFile', {
+        buildArgs: {
+          ARG1: 'value1',
+        },
+      }),
+      command: ['my', 'cool', 'command'],
     },
   }),
   // ...
