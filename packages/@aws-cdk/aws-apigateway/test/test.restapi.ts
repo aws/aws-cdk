@@ -103,7 +103,7 @@ export = {
   'defaultChild is set correctly'(test: Test) {
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'my-api');
-    test.ok(api.node.defaultChild instanceof apigw.CfnRestApi);
+    test.ok(api.construct.defaultChild instanceof apigw.CfnRestApi);
     test.done();
   },
 
@@ -570,7 +570,7 @@ export = {
     const resource = new CfnResource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
 
     // WHEN
-    resource.node.addDependency(api);
+    resource.construct.addDependency(api);
 
     // THEN
     expect(stack).to(haveResource('My::Resource', {
@@ -713,7 +713,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Model', {
-      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
+      RestApiId: { Ref: stack.getLogicalId(api.construct.findChild('Resource') as CfnElement) },
       Schema: {
         $schema: 'http://json-schema.org/draft-04/schema#',
         title: 'test',
@@ -745,14 +745,14 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
-      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
+      RestApiId: { Ref: stack.getLogicalId(api.construct.findChild('Resource') as CfnElement) },
       Name: 'Parameters',
       ValidateRequestBody: false,
       ValidateRequestParameters: true,
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
-      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
+      RestApiId: { Ref: stack.getLogicalId(api.construct.findChild('Resource') as CfnElement) },
       Name: 'Body',
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
