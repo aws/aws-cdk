@@ -2,7 +2,6 @@ import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/a
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as secretsmanager from '../lib';
@@ -571,41 +570,6 @@ export = {
         generateStringKey: 'password',
       },
     }), /`secretStringTemplate`.+`generateStringKey`/);
-
-    test.done();
-  },
-
-  'can provide a secret value directly'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const secret = new secretsmanager.Secret(stack, 'Secret', {
-      secretString: 'mynotsosecretvalue',
-    });
-
-    // THEN
-    expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
-      SecretString: 'mynotsosecretvalue',
-    }));
-
-    test.equals(secret.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-    test.equals(secret.node.metadata[0].data, 'Using a `secretString` value which will be visible in plaintext in the CloudFormation template and cdk output.');
-
-    test.done();
-  },
-
-  'throws when specifying secretString and generateStringKey'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // THEN
-    test.throws(() => new secretsmanager.Secret(stack, 'Secret', {
-      generateSecretString: {
-        excludeCharacters: '@',
-      },
-      secretString: 'myexistingsecret',
-    }), /Cannot specify both `generateSecretString` and `secretString`./);
 
     test.done();
   },
