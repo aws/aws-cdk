@@ -33,7 +33,8 @@ async function main() {
   const defaultShellOptions = {
     timers,
     env: {
-      CDK_DISABLE_STACK_TRACE: '1',
+      CDK_DISABLE_STACK_TRACE: '1', // skip all stack trace collection (expensive)
+      CDK_BLOCK_DEPRECATIONS: '1',  // forbid the usage of deprecated APIs
     },
   };
 

@@ -65,15 +65,6 @@ export class Construct extends constructs.Construct implements IConstruct {
   }
 
   /**
-   * The construct tree node associated with this construct.
-   *
-   * @deprecate `Construct.node` is being deprecated in favor of
-   * `Construct.construct`. This API will be removed in the next major version
-   * of the AWS CDK, please migrate your code to use `construct` instead.
-   */
-  public readonly node: ConstructNode;
-
-  /**
    * Construct API.
    */
   public readonly construct: ConstructNode;
@@ -91,8 +82,7 @@ export class Construct extends constructs.Construct implements IConstruct {
     }
 
     Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
-    this.node = ConstructNode._unwrap(constructs.Node.of(this));
-    this.construct = this.node;
+    this.construct = ConstructNode._unwrap(constructs.Node.of(this));
 
     const disableTrace =
       this.construct.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ||
@@ -104,6 +94,18 @@ export class Construct extends constructs.Construct implements IConstruct {
       this.construct.setContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA, true);
       process.env.CDK_DISABLE_STACK_TRACE = '1';
     }
+  }
+
+  /**
+   * The construct tree node associated with this construct.
+   *
+   * @deprecate `Construct.node` is being deprecated in favor of
+   * `Construct.construct`. This API will be removed in the next major version
+   * of the AWS CDK, please migrate your code to use `construct` instead.
+   */
+  public get node(): ConstructNode {
+    Annotations.of(this).addDeprecation('@aws-cdk/core.Construct.node', 'Use "@aws-cdk/core.Construct.construct" instead');
+    return this.construct;
   }
 
   /**
