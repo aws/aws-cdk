@@ -16,6 +16,11 @@ export interface BundlingOptions {
    * The runtime of the lambda function
    */
   readonly runtime: lambda.Runtime;
+
+  /**
+   * Install dependencies while bundling
+   */
+  readonly installDependencies: boolean;
 }
 
 /**
@@ -25,9 +30,10 @@ export function bundle(options: BundlingOptions): lambda.AssetCode {
   let installer = options.runtime === lambda.Runtime.PYTHON_2_7 ? Installer.PIP : Installer.PIP3;
 
   let hasRequirements = fs.existsSync(path.join(options.entry, 'requirements.txt'));
+  let installDependencies = options.installDependencies;
 
   let depsCommand = chain([
-    hasRequirements ? `${installer} install -r requirements.txt -t ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}` : '',
+    hasRequirements && installDependencies ? `${installer} install -r requirements.txt -t ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}` : '',
     `cp -au . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}`,
   ]);
 
@@ -46,4 +52,30 @@ enum Installer {
 
 function chain(commands: string[]): string {
   return commands.filter(c => !!c).join(' && ');
+}
+
+export interface DependencyBundlingOptions {
+  /**
+   * Entry path
+   */
+  readonly entry: string;
+
+  /**
+   * The runtime of the lambda function
+   */
+  readonly runtime: lambda.Runtime;
+}
+export function bundleDependencies(options: DependencyBundlingOptions): lambda.AssetCode {
+  let installer = options.runtime === lambda.Runtime.PYTHON_2_7 ? Installer.PIP : Installer.PIP3;
+  let depsCommand = chain([
+    `${installer} install -r requirements.txt -t ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/python`,
+  ]);
+
+  return lambda.Code.fromAsset(options.entry, {
+    bundling: {
+      image: options.runtime.bundlingDockerImage,
+      command: ['bash', '-c', depsCommand],
+    },
+    exclude: ['*', '!requirements.txt'],
+  });
 }

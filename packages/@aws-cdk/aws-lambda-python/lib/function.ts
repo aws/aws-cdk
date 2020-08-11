@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { bundle } from './bundling';
+import { bundle, bundleDependencies } from './bundling';
 
 /**
  * Properties for a PythonFunction
@@ -34,6 +34,18 @@ export interface PythonFunctionProps extends lambda.FunctionOptions {
    * @default lambda.Runtime.PYTHON_3_7
    */
   readonly runtime?: lambda.Runtime;
+
+  /**
+   * Install dependencies
+   * @default true
+   */
+  readonly installDependencies?: boolean;
+
+  /**
+   * Use a dependency lambda layer for packages.
+   * @default false
+   */
+  readonly useDependencyLayer?: boolean;
 }
 
 /**
@@ -59,6 +71,8 @@ export class PythonFunction extends lambda.Function {
 
     const handler = props.handler ?? 'handler';
     const runtime = props.runtime ?? lambda.Runtime.PYTHON_3_7;
+    const useDependencyLayer = props.useDependencyLayer ?? false;
+    const installDependencies = props.installDependencies ?? true;
 
     super(scope, id, {
       ...props,
@@ -67,8 +81,18 @@ export class PythonFunction extends lambda.Function {
         ...props,
         entry,
         runtime,
+        installDependencies: !useDependencyLayer && installDependencies,
       }),
       handler: `${index.slice(0, -3)}.${handler}`,
     });
+
+    if (installDependencies && useDependencyLayer && fs.existsSync(path.join(entry, 'requirements.txt'))) {
+      this.addLayers(new lambda.LayerVersion(this, 'Dependencies', {
+        code: bundleDependencies({
+          entry,
+          runtime,
+        }),
+      }));
+    }
   }
 }
