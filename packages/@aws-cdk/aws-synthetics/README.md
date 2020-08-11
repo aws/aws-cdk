@@ -71,7 +71,7 @@ The `synthetics.Code` class exposes static methods to bundle your code artifacts
   - `code.fromAsset(path)` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment. See note for directory structure.
   - `code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object that contains the .zip file of your runtime code. See note for directory structure.
 
-> **Note:** For `code.fromAsset()` and `code.fromBucket()`, the canary resource requires the following folder structure: `nodejs/node_modules/<handlerFile>`. 
+> **Note:** For `code.fromAsset()` and `code.fromBucket()`, the canary resource requires the following folder structure: `nodejs/node_modules/<handlerFile>`. See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html).
 
 To supply the code from your local filesystem:
 
