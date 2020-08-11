@@ -515,7 +515,7 @@ export class CfnParser {
 
     // lookup in map
     if (refTarget in map) {
-      return leftHalf + '${' + refTarget + '}' + this.parseFnSubString(rightHalf, map); 
+      return leftHalf + '${' + refTarget + '}' + this.parseFnSubString(rightHalf, map);
     }
 
     // since it's not in the map, check if it's a pseudo parameter
@@ -541,7 +541,7 @@ export class CfnParser {
         throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
       }
       const attribute = refTarget.substring(dotIndex + 1);
-      return leftHalf + CfnReference.for(refResource, attribute, true).toString() + this.parseFnSubString(rightHalf, map); 
+      return leftHalf + CfnReference.for(refResource, attribute, true).toString() + this.parseFnSubString(rightHalf, map);
     }
   }
 
