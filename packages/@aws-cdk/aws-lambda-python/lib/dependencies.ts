@@ -84,16 +84,16 @@ export function pipenvInstallCommands(options: InstallDependenciesCommandsOption
 
   // pip install pipenv doesn't like writing to /.local in the lambda container,
   // so we set a home directory to somewhere we can write.
-  const pipenvHome = `${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/pipenv`;
-  const pipenvCommand = `HOME=${pipenvHome} ${pipenvHome}/.local/bin/pipenv`;
+  const pipenvHome = '/tmp/pipenv';
   const pipCommand = `HOME=${pipenvHome} ${getPipCommand(runtime)}`;
+  const pipenvCommand = `HOME=${pipenvHome} python -m pipenv`;
 
   const requirementsTxtPath = '/tmp/requirements.txt';
 
   return [
     `${pipCommand} install pipenv`,
+    `find ${pipenvHome}`,
     `${pipenvCommand} lock -r >${requirementsTxtPath}`,
-    `rm -rf ${pipenvHome}`,
     ...pipInstallCommands({ ...options, requirementsTxtPath }),
   ];
 }
