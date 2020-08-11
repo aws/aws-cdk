@@ -104,6 +104,8 @@ export interface SecretProps {
   readonly secretName?: string;
 
   /**
+   * Secret value (WARNING).
+   *
    * **WARNING:** *It is **highly** encouraged to leave this field undefined and allow SecretsManager to create the secret value.
    * The secret string -- if provided -- will be included in the output of the cdk as part of synthesis,
    * and will appear in the CloudFormation template in the console*.
