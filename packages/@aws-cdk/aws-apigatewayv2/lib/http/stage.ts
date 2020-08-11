@@ -103,7 +103,7 @@ export class HttpStage extends Resource implements IStage {
         apiMappingKey: props.domainMapping.mappingKey,
       });
       // ensure the dependency
-      this.node.addDependency(props.domainMapping.domainName);
+      this.construct.addDependency(props.domainMapping.domainName);
     }
 
   }
