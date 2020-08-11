@@ -7,7 +7,7 @@ export * from './fargate-profile';
 export * from './helm-chart';
 export * from './k8s-patch';
 export * from './k8s-resource';
+export * from './k8s-get';
 export * from './fargate-cluster';
 export * from './service-account';
 export * from './managed-nodegroup';
-export * from './service-description';

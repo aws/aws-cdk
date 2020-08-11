@@ -179,7 +179,7 @@ class EksClusterStack extends TestStack {
       },
     });
 
-    const service = this.cluster.addResource('simple-web-service', {
+    this.cluster.addResource('simple-web-service', {
       kind: 'Service',
       apiVersion: 'v1',
       metadata: {
@@ -197,14 +197,12 @@ class EksClusterStack extends TestStack {
       },
     });
 
-    const serviceDescription = this.cluster.describeService({serviceName: serviceName});
-    // TODO is this really needed? If so, would be nice to do this automagically.
-    serviceDescription.node.addDependency(service);
+    const loadBalancerAddress = this.cluster.getServiceLoadBalancerAddress(serviceName);
 
     // create a resource that hits the load balancer to make sure
     // everything is wired properly.
     const pinger = new Pinger(this, 'ServicePinger', {
-      url: `http://${serviceDescription.loadBalancerAddress}:${servicePort}`,
+      url: `http://${loadBalancerAddress}:${servicePort}`,
       securityGroup: pingerSecurityGroup,
       vpc: this.vpc,
     });

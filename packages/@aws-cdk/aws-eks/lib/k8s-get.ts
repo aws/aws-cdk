@@ -31,8 +31,18 @@ export interface KubernetesGetProps {
 
   /**
    * Timeout for waiting on a value.
+   *
+   * @default Duration.minutes(5)
    */
-  readonly timeout: Duration;
+  readonly timeout?: Duration;
+
+  /**
+   * The namespace the resource belongs to.
+   *
+   * @default 'default'
+   */
+  readonly namespace?: string;
+
 
 }
 
@@ -61,8 +71,9 @@ export class KubernetesGet extends Construct {
         RoleArn: props.cluster._kubectlCreationRole.roleArn,
         ResourceType: props.resourceType,
         ResourceName: props.resourceName,
+        ResourceNamespace: props.namespace ?? 'default',
         JsonPath: props.jsonPath,
-        TimeoutSeconds: props.timeout.toSeconds(),
+        TimeoutSeconds: (props?.timeout ?? Duration.minutes(5)).toSeconds(),
       },
     });
 

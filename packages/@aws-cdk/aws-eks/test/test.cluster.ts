@@ -1670,27 +1670,46 @@ export = {
 
   },
 
-  'describeService'(test: Test) {
+  'getServiceLoadBalancerAddress'(test: Test) {
 
     const { stack } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION });
 
-    cluster.describeService({serviceName: 'myservice'});
+    const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('myservice');
 
-    new eks.ServiceDescription(stack, 'ExpectedService', {
-      cluster: cluster,
-      serviceName: 'myservice',
+    new cdk.CfnOutput(stack, 'LoadBalancerAddress', {
+      value: loadBalancerAddress,
     });
 
-    const expectedId = 'ExpectedServiceLoadBalancerAttributeDAB697B2';
-    const actualId = 'Cluster1ServicemyserviceDescriptionLoadBalancerAttributeBCB8A179';
+    const expectedKubernetesGetId = 'Cluster1myserviceLoadBalancerAddress198CCB03';
 
     const rawTemplate = expect(stack).value;
 
-    // this comparison makes sure the describeCluster creates the same resource as new ServiceDescription.
-    // the validity of the actual properties is tested in 'test.service-description.ts'
-    test.deepEqual(rawTemplate.Resources[actualId].Properties, rawTemplate.Resources[expectedId].Properties);
-    test.done();
+    // make sure the custom resource is created correctly
+    test.deepEqual(rawTemplate.Resources[expectedKubernetesGetId].Properties, {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
+          'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+        ],
+      },
+      ClusterName: {
+        Ref: 'Cluster1B02DD5A2',
+      },
+      RoleArn: {
+        'Fn::GetAtt': [
+          'Cluster1CreationRoleA231BE8D',
+          'Arn',
+        ],
+      },
+      ResourceType: 'service',
+      ResourceName: 'myservice',
+      JsonPath: '.status.loadBalancer.ingress[0].hostname',
+      TimeoutSeconds: 300,
+    });
 
+    // make sure the attribute points to the expected custom resource and extracts the correct attribute
+    test.deepEqual(rawTemplate.Outputs.LoadBalancerAddress.Value, { 'Fn::GetAtt': [ expectedKubernetesGetId, 'Value' ] });
+    test.done();
   },
 };

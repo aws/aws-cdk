@@ -4,19 +4,19 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tag, Token, Duration } from '@aws-cdk/core';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { clusterArnComponents, ClusterResource } from './cluster-resource';
 import { CfnClusterProps } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
+import { KubernetesGet } from './k8s-get';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlProvider, KubectlProviderProps } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
-import { ServiceDescription, DescribeServiceOptions } from './service-description';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -417,6 +417,24 @@ export class KubernetesVersion {
   private constructor(public readonly version: string) { }
 }
 
+export interface ServiceLoadBalancerOptions {
+
+  /**
+   * Timeout for waiting on the load balancer address.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly timeout?: Duration;
+
+  /**
+   * The namespace the service belongs to.
+   *
+   * @default 'default'
+   */
+  readonly namespace?: string;
+
+}
+
 /**
  * A Cluster represents a managed Kubernetes Service (EKS)
  *
@@ -716,15 +734,24 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Describe the service to retrieve runtime information from the cluster.
+   * Fetch the load balancer address of a service of type 'LoadBalancer'.
    *
-   * @param options The operation options.
+   * @param serviceName The name of the service.
+   * @param options Additional operation options.
    */
-  public describeService(options: DescribeServiceOptions): ServiceDescription {
-    return new ServiceDescription(this, `Service${options.serviceName}Description`, {
+  public getServiceLoadBalancerAddress(serviceName: string, options: ServiceLoadBalancerOptions = {}): string {
+
+    const loadBalancerAddress = new KubernetesGet(this, `${serviceName}LoadBalancerAddress`, {
       cluster: this,
-      ...options,
+      resourceType: 'service',
+      resourceName: serviceName,
+      jsonPath: '.status.loadBalancer.ingress[0].hostname',
+      timeout: options.timeout,
+      namespace: options.namespace,
     });
+
+    return loadBalancerAddress.value;
+
   }
 
   /**
