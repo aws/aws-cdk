@@ -448,6 +448,12 @@ abstract class BucketBase extends Resource implements IBucket {
     return { statementAdded: false };
   }
 
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
+  }
+
   /**
    * The https URL of an S3 object. For example:
    * @example https://s3.us-west-1.amazonaws.com/onlybucket

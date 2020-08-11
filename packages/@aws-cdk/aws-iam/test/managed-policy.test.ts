@@ -547,12 +547,30 @@ describe('managed policy', () => {
     });
   });
 
+  test('fails if policy document does not specify resources', () => {
+    new ManagedPolicy(stack, 'MyManagedPolicy', { statements: [
+      new PolicyStatement({ actions: ['*'] }),
+    ] });
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy must specify at least one resource/);
+  });
+
+
+  test('fails if policy document specifies principals', () => {
+    new ManagedPolicy(stack, 'MyManagedPolicy', { statements: [
+      new PolicyStatement({ actions: ['*'], resources: ['*'], principals: [new ServicePrincipal('test.service')] }),
+    ] });
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+  });
+
   test('cross-stack hard-name contains the right resource type', () => {
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: cdk.PhysicalName.GENERATE_IF_NEEDED,
     });
     mp.addStatements(new PolicyStatement({
       actions: ['a:abc'],
+      resources: ['*'],
     }));
 
     const stack2 = new cdk.Stack(app, 'Stack2', { env: { account: '5678', region: 'us-east-1' }});

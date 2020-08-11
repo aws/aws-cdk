@@ -310,6 +310,17 @@ describe('IAM policy', () => {
 
     expect(() => app.synth()).toThrow(/must contain at least one statement/);
   });
+
+  test('fails if policy document is invalid', () => {
+    new Policy(stack, 'MyRole', {
+      statements: [new PolicyStatement({
+        actions: ['*'],
+        principals: [new ServicePrincipal('test.service')],
+      })],
+    });
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+  });
 });
 
 function createPolicyWithLogicalId(stack: Stack, logicalId: string): void {
