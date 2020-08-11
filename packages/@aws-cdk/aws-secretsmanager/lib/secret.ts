@@ -104,6 +104,20 @@ export interface SecretProps {
   readonly secretName?: string;
 
   /**
+   * Specifies text data that you want to encrypt and store in this new version of the secret.
+   * May be a simple string value, or a string representation of a JSON structure.
+   *
+   * *It is highly encouraged to leave this field undefined and allow SecretsManager to create the secret value.*
+   * *The secret string -- if provided -- will be included in the output of the cdk as part of synthesis,
+   * and will appear in the CloudFormation template in the console*.
+   *
+   * Only one of `secretString` and `generateSecretString` can be provided.
+   *
+   * @default - SecretsManager generates a new secret value.
+   */
+  readonly secretString?: string;
+
+  /**
    * Policy to apply when the secret is removed from this stack.
    *
    * @default - Not set.
@@ -266,11 +280,16 @@ export class Secret extends SecretBase {
       throw new Error('`secretStringTemplate` and `generateStringKey` must be specified together.');
     }
 
+    if (props.generateSecretString && props.secretString) {
+      throw new Error('Cannot specify both `generateSecretString` and `secretString`.');
+    }
+
     const resource = new secretsmanager.CfnSecret(this, 'Resource', {
       description: props.description,
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
-      generateSecretString: props.generateSecretString || {},
+      generateSecretString: props.generateSecretString || (props.secretString ? undefined : {}),
       name: this.physicalName,
+      secretString: props.secretString,
     });
 
     if (props.removalPolicy) {

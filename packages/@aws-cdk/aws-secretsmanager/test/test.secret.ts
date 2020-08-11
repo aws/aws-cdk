@@ -574,6 +574,38 @@ export = {
     test.done();
   },
 
+  'can provide a secret value directly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new secretsmanager.Secret(stack, 'Secret', {
+      secretString: 'mynotsosecretvalue',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+      SecretString: 'mynotsosecretvalue',
+    }));
+
+    test.done();
+  },
+
+  'throws when specifying secretString and generateStringKey'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        excludeCharacters: '@',
+      },
+      secretString: 'myexistingsecret',
+    }), /Cannot specify both `generateSecretString` and `secretString`./);
+
+    test.done();
+  },
+
   'equivalence of SecretValue and Secret.fromSecretAttributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
