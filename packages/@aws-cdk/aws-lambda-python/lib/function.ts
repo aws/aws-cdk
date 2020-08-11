@@ -59,7 +59,7 @@ export enum DependenciesLocation {
   INLINE = 'inline',
 
   /**
-   * Installs dependencies to a seperate lambda layer.
+   * Installs dependencies to a separate lambda layer.
    */
   LAYER = 'layer',
 }

@@ -29,11 +29,34 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 
 ### Module Dependencies
 
-If `requirements.txt` exists at the entry path, the construct will handle installing
+If `requirements.txt` or `Pipfile` exists at the entry path, the construct will handle installing
 all required modules in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-python3.7)
 according to the `runtime`.
+
+**Lambda with a requirements.txt**
 ```
 .
 ├── lambda_function.py # exports a function named 'handler'
 ├── requirements.txt # has to be present at the entry path
+```
+
+**Lambda with a Pipfile**
+```
+.
+├── lambda_function.py # exports a function named 'handler'
+├── Pipfile # has to be present at the entry path
+├── Pipfile.lock # your lock file
+```
+
+**Lambda Layer Support**
+
+If the handler uses a supported dependency management scheme, such as a `requirements.txt` or `Pipfile`,
+this construct can bundle the dependencies into a separate lambda layer. To activate this feature, set
+the `dependenciesLocation` construct prop to `lambda.DependenciesLocation.LAYER`.
+
+```ts
+new lambda.PythonFunction(this, 'MyFunction', {
+  entry: '/path/to/my/function', // required
+  dependenciesLocation: lambda.DependenciesLocation.LAYER // installs dependencies to a lambda layer
+});
 ```
