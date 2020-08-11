@@ -37,6 +37,7 @@ export * from './stack-trace';
 export * from './app';
 export * from './context-provider';
 export * from './environment';
+export * from './annotations';
 
 export * from './runtime';
 export * from './secret-value';
