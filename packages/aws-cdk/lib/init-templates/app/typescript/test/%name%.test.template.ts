@@ -1,6 +1,6 @@
 import { expect as expectCDK, matchTemplate, MatchStyle } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import * as %name.PascalCased% from '../lib/%name%-stack';
+import * as %name.PascalCased% from '../app/stacks/%name%-stack';
 
 test('Empty Stack', () => {
     const app = new cdk.App();
