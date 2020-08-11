@@ -281,7 +281,7 @@ export = {
         image: BundlingDockerImage.fromRegistry('this-is-an-invalid-docker-image'),
         command: [ DockerStubCommand.FAIL ],
       },
-    }), /Failed to run bundling Docker image for asset stack\/Asset/);
+    }), /Failed to bundle asset stack\/Asset/);
     test.equal(
       readDockerStubInput(),
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
@@ -308,6 +308,7 @@ export = {
           tryBundle(outputDir: string, options: BundlingOptions): boolean {
             dir = outputDir;
             opts = options;
+            fs.writeFileSync(path.join(outputDir, 'hello.txt'), 'hello'); // output cannot be empty
             return true;
           },
         },
@@ -318,6 +319,10 @@ export = {
     test.ok(dir && /asset-bundle-/.test(dir));
     test.equals(opts?.command?.[0], DockerStubCommand.SUCCESS);
     test.throws(() => readDockerStubInput());
+
+    if (dir) {
+      fs.removeSync(path.join(dir, 'hello.txt'));
+    }
 
     test.done();
   },
