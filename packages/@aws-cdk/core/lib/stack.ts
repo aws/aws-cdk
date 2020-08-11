@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Annotations } from './annotations';
+import { App } from './app';
 import { Arn, ArnComponents } from './arn';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
@@ -201,7 +203,7 @@ export class Stack extends Construct implements ITaggable {
    * value is an unresolved token (`Token.isUnresolved(stack.region)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **region-agnostic template**. In this case, your code should either
-   * fail (throw an error, emit a synth error using `node.addError`) or
+   * fail (throw an error, emit a synth error using `Annotations.of(construct).addError()`) or
    * implement some other region-agnostic behavior.
    */
   public readonly region: string;
@@ -223,7 +225,7 @@ export class Stack extends Construct implements ITaggable {
    * value is an unresolved token (`Token.isUnresolved(stack.account)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **account-agnostic template**. In this case, your code should either
-   * fail (throw an error, emit a synth error using `node.addError`) or
+   * fail (throw an error, emit a synth error using `Annotations.of(construct).addError()`) or
    * implement some other region-agnostic behavior.
    */
   public readonly account: string;
@@ -800,7 +802,7 @@ export class Stack extends Construct implements ITaggable {
 
     if (this.templateOptions.transform) {
       // eslint-disable-next-line max-len
-      this.construct.addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
+      Annotations.of(this).addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
 
@@ -1094,7 +1096,6 @@ import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 import { FileSystem } from './fs';
-import { App } from './app';
 
 interface StackDependency {
   stack: Stack;
