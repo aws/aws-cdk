@@ -47,7 +47,7 @@ export function parseStackTrace(error?: Error): StackTrace[] {
  * Returns the major version of node installation
  */
 export function nodeMajorVersion(): number {
-  return parseInt(process.versions.node.split('.')[0], 10);
+  return parseInt(process.versions.construct.split('.')[0], 10);
 }
 
 /**

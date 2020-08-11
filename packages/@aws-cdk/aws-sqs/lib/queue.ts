@@ -302,7 +302,7 @@ export class Queue extends QueueBase {
 
       if (encryption === QueueEncryption.KMS) {
         const masterKey = props.encryptionMasterKey || new kms.Key(this, 'Key', {
-          description: `Created by ${this.node.path}`,
+          description: `Created by ${this.construct.path}`,
         });
 
         return {

@@ -262,7 +262,7 @@ describe('IAM policy', () => {
     });
 
     // WHEN
-    res.node.addDependency(pol);
+    res.construct.addDependency(pol);
 
     // THEN
     expect(stack).toMatchTemplate({
@@ -288,7 +288,7 @@ describe('IAM policy', () => {
     });
 
     // WHEN
-    res.node.addDependency(pol);
+    res.construct.addDependency(pol);
 
     // THEN
     expect(stack).toHaveResource('Some::Resource', {
@@ -314,7 +314,7 @@ describe('IAM policy', () => {
 
 function createPolicyWithLogicalId(stack: Stack, logicalId: string): void {
   const policy = new Policy(stack, logicalId);
-  const cfnPolicy = policy.node.defaultChild as CfnPolicy;
+  const cfnPolicy = policy.construct.defaultChild as CfnPolicy;
   cfnPolicy.overrideLogicalId(logicalId); // force a particular logical ID
 
   // add statements & principal to satisfy validation

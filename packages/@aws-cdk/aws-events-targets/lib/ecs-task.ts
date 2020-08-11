@@ -99,7 +99,7 @@ export class EcsTask implements events.IRuleTarget {
     // Security groups are only configurable with the "awsvpc" network mode.
     if (this.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC) {
       if (props.securityGroup !== undefined || props.securityGroups !== undefined) {
-        this.taskDefinition.node.addWarning('security groups are ignored when network mode is not awsvpc');
+        this.taskDefinition.construct.addWarning('security groups are ignored when network mode is not awsvpc');
       }
       return;
     }
@@ -107,7 +107,7 @@ export class EcsTask implements events.IRuleTarget {
       this.securityGroups = props.securityGroups;
       return;
     }
-    let securityGroup = props.securityGroup || this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup;
+    let securityGroup = props.securityGroup || this.taskDefinition.construct.tryFindChild('SecurityGroup') as ec2.ISecurityGroup;
     securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
     this.securityGroup = securityGroup; // Maintain backwards-compatibility for customers that read the generated security group.
     this.securityGroups = [securityGroup];

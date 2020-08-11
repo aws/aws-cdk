@@ -335,7 +335,7 @@ export class Function extends FunctionBase {
     // override the version's logical ID with a lazy string which includes the
     // hash of the function itself, so a new version resource is created when
     // the function configuration changes.
-    const cfn = this._currentVersion.node.defaultChild as CfnResource;
+    const cfn = this._currentVersion.construct.defaultChild as CfnResource;
     const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
 
     cfn.overrideLogicalId(Lazy.stringValue({ produce: _ => {
@@ -595,7 +595,7 @@ export class Function extends FunctionBase {
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
     });
 
-    resource.node.addDependency(this.role);
+    resource.construct.addDependency(this.role);
 
     this.functionName = this.getResourceNameAttribute(resource.ref);
     this.functionArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -643,7 +643,7 @@ export class Function extends FunctionBase {
     if (props.filesystem) {
       const config = props.filesystem.config;
       if (config.dependency) {
-        this.node.addDependency(...config.dependency);
+        this.construct.addDependency(...config.dependency);
       }
 
       resource.addPropertyOverride('FileSystemConfigs',
@@ -746,7 +746,7 @@ export class Function extends FunctionBase {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: logs.RetentionDays.INFINITE,
       });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.construct.id}-LogGroup`, logretention.logGroupArn);
     }
     return this._logGroup;
   }
@@ -805,7 +805,7 @@ export class Function extends FunctionBase {
     } else {
       const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
-        description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
+        description: 'Automatic security group for Lambda Function ' + this.construct.uniqueId,
         allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];

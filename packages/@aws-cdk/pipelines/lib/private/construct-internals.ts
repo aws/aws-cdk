@@ -6,10 +6,10 @@ import { App, IConstruct, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 
 export function appOf(construct: IConstruct): App {
-  const root = construct.node.root;
+  const root = construct.construct.root;
 
   if (!App.isApp(root)) {
-    throw new Error(`Construct must be created under an App, but is not: ${construct.node.path}`);
+    throw new Error(`Construct must be created under an App, but is not: ${construct.construct.path}`);
   }
 
   return root;

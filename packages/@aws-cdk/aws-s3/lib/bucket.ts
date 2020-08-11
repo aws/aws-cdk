@@ -1419,7 +1419,7 @@ export class Bucket extends BucketBase {
 
     if (encryptionType === BucketEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-        description: `Created by ${this.node.path}`,
+        description: `Created by ${this.construct.path}`,
       });
 
       const bucketEncryption = {
@@ -1617,7 +1617,7 @@ export class Bucket extends BucketBase {
     return this.inventories.map((inventory, index) => {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
-      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`;
+      const id = inventory.inventoryId ?? `${this.construct.id}Inventory${index}`;
 
       if (inventory.destination.bucket instanceof Bucket) {
         inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({
