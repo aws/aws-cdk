@@ -1,6 +1,6 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import { Construct, Token } from '@aws-cdk/core';
-import { IScalableFunctionAttribute, UtilizationScalingOptions } from '../scalable-function-attribute';
+import { IScalableFunctionAttribute, UtilizationScalingOptions } from '../scalable-attribute-api';
 
 /**
  * A scalable lambda alias attribute
@@ -14,8 +14,6 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
    * Scale out or in to keep utilization at a given level. The utilization is tracked by the
    * LambdaProvisionedConcurrencyUtilization metric, emitted by lambda. See:
    * https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
-   *
-   * Allowed values: 0.1 - 0.9.
    */
   public scaleOnUtilization(options: UtilizationScalingOptions) {
     if ( !Token.isUnresolved(options.utilizationTarget) && (options.utilizationTarget < 0.1 || options.utilizationTarget > 0.9)) {

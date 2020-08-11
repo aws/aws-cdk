@@ -10,8 +10,6 @@ export interface IScalableFunctionAttribute extends IConstruct {
    * Scale out or in to keep utilization at a given level. The utilization is tracked by the
    * LambdaProvisionedConcurrencyUtilization metric, emitted by lambda. See:
    * https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
-   *
-   * Allowed values: 0.1 - 0.9.
    */
   scaleOnUtilization(options: UtilizationScalingOptions): void;
   /**
@@ -26,8 +24,6 @@ export interface IScalableFunctionAttribute extends IConstruct {
 export interface UtilizationScalingOptions extends appscaling.BaseTargetTrackingProps {
   /**
    * Utilization target for the attribute. For example, .5 indicates that 50 percent of allocated provisioned concurrency is in use.
-   *
-   * Allowed values: 0.1 - 0.9.
    */
   readonly utilizationTarget: number;
 }
