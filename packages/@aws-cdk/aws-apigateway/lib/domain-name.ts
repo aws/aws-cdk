@@ -137,7 +137,7 @@ export class DomainName extends Resource implements IDomainName {
    */
   public addBasePathMapping(targetApi: IRestApi, options: BasePathMappingOptions = { }) {
     const basePath = options.basePath || '/';
-    const id = `Map:${basePath}=>${targetApi.node.uniqueId}`;
+    const id = `Map:${basePath}=>${targetApi.construct.uniqueId}`;
     return new BasePathMapping(this, id, {
       domainName: this,
       restApi: targetApi,

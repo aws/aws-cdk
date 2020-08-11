@@ -367,7 +367,7 @@ export class Repository extends RepositoryBase {
 
     let name = options && options.name;
     if (!name) {
-      name = this.node.path + '/' + arn;
+      name = this.construct.path + '/' + arn;
     }
 
     if (this.triggers.find(prop => prop.name === name)) {

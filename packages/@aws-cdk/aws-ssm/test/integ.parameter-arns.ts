@@ -19,7 +19,7 @@ const params = [
 ];
 
 for (const p of params) {
-  new CfnOutput(stack, `${p.node.id}Arn`, { value: p.parameterArn });
+  new CfnOutput(stack, `${p.construct.id}Arn`, { value: p.parameterArn });
 }
 
 app.synth();

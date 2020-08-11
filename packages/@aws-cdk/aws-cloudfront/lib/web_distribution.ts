@@ -924,7 +924,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
-    this.node.defaultChild = distribution;
+    this.construct.defaultChild = distribution;
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;

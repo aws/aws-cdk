@@ -185,7 +185,7 @@ export class Activity extends Resource implements IActivity {
   }
 
   private generateName(): string {
-    const name = this.node.uniqueId;
+    const name = this.construct.uniqueId;
     if (name.length > 80) {
       return name.substring(0, 40) + name.substring(name.length - 40);
     }

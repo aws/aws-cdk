@@ -116,7 +116,7 @@ class DeployStack extends NestedStack {
     const deployment = new Deployment(this, 'Deployment', {
       api: RestApi.fromRestApiId(this, 'RestApi', props.restApiId),
     });
-    (props.methods ?? []).forEach((method) => deployment.node.addDependency(method));
+    (props.methods ?? []).forEach((method) => deployment.construct.addDependency(method));
     new Stage(this, 'Stage', { deployment });
   }
 }

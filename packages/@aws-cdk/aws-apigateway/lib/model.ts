@@ -178,7 +178,7 @@ export class Model extends Resource implements IModel {
 
     const deployment = (props.restApi instanceof RestApi) ? props.restApi.latestDeployment : undefined;
     if (deployment) {
-      deployment.node.addDependency(resource);
+      deployment.construct.addDependency(resource);
       deployment.addToLogicalId({ model: modelProps });
     }
   }

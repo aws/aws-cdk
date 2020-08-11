@@ -93,12 +93,12 @@ export class HttpApiMapping extends Resource implements IApiMapping {
 
     // ensure the dependency on the provided stage
     if (props.stage) {
-      this.node.addDependency(props.stage);
+      this.construct.addDependency(props.stage);
     }
 
     // if stage not specified, we ensure the default stage is ready before we create the api mapping
     if (!props.stage?.stageName && props.api.defaultStage) {
-      this.node.addDependency(props.api.defaultStage!);
+      this.construct.addDependency(props.api.defaultStage!);
     }
 
     this.apiMappingId = resource.ref;

@@ -27,7 +27,7 @@ export function defaultSubnetName(type: SubnetType) {
  * All subnet names look like NAME <> "Subnet" <> INDEX
  */
 export function subnetGroupNameFromConstructId(subnet: ISubnet) {
-  return subnet.node.id.replace(/Subnet\d+$/, '');
+  return subnet.construct.id.replace(/Subnet\d+$/, '');
 }
 
 /**

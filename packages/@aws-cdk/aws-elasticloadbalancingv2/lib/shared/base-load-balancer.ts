@@ -142,7 +142,7 @@ export abstract class BaseLoadBalancer extends Resource {
       ...additionalProps,
     });
     if (internetFacing) {
-      resource.node.addDependency(internetConnectivityEstablished);
+      resource.construct.addDependency(internetConnectivityEstablished);
     }
 
     if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }
@@ -180,7 +180,7 @@ export abstract class BaseLoadBalancer extends Resource {
     bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + '/' : '')}AWSLogs/${Stack.of(this).account}/*`);
 
     // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
-    this.node.addDependency(bucket);
+    this.construct.addDependency(bucket);
   }
 
   /**

@@ -383,9 +383,9 @@ function invokeMethod(stack: cdk.Stack, method: reflect.Callable, parameters: an
  */
 function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
   return cdk.Lazy.stringValue({ produce: () => {
-    const res = stack.node.tryFindChild(id);
+    const res = stack.construct.tryFindChild(id);
     if (!res) {
-      const include = stack.node.tryFindChild('Include') as cdk.CfnInclude;
+      const include = stack.construct.tryFindChild('Include') as cdk.CfnInclude;
       if (!include) {
         throw new Error(`Unexpected - "Include" should be in the stack at this point`);
       }
@@ -403,7 +403,7 @@ function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
 }
 
 function findConstruct(stack: cdk.Stack, id: string) {
-  const child = stack.node.tryFindChild(id);
+  const child = stack.construct.tryFindChild(id);
   if (!child) {
     throw new Error(`Construct with ID ${id} not found (it must be defined before it is referenced)`);
   }
@@ -411,7 +411,7 @@ function findConstruct(stack: cdk.Stack, id: string) {
 }
 
 function processReferences(stack: cdk.Stack) {
-  const include = stack.node.findChild('Include') as cdk.CfnInclude;
+  const include = stack.construct.findChild('Include') as cdk.CfnInclude;
   if (!include) {
     throw new Error('Unexpected');
   }

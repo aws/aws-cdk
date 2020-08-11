@@ -220,7 +220,7 @@ test('compressed table', () => {
 
 });
 
-test('table.node.defaultChild', () => {
+test('table.construct.defaultChild', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database', {
@@ -240,7 +240,7 @@ test('table.node.defaultChild', () => {
   });
 
   // THEN
-  ok(table.node.defaultChild instanceof glue.CfnTable);
+  ok(table.construct.defaultChild instanceof glue.CfnTable);
 });
 
 test('encrypted table: SSE-S3', () => {

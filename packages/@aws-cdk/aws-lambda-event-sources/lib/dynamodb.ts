@@ -21,10 +21,10 @@ export class DynamoEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     if (!this.table.tableStreamArn) {
-      throw new Error(`DynamoDB Streams must be enabled on the table ${this.table.node.path}`);
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.table.construct.path}`);
     }
 
-    const eventSourceMapping = target.addEventSourceMapping(`DynamoDBEventSource:${this.table.node.uniqueId}`,
+    const eventSourceMapping = target.addEventSourceMapping(`DynamoDBEventSource:${this.table.construct.uniqueId}`,
       this.enrichMappingOptions({eventSourceArn: this.table.tableStreamArn}),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;

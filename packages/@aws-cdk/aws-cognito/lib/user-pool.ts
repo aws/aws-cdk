@@ -842,7 +842,7 @@ export class UserPool extends UserPoolBase {
         externalId: props.smsRoleExternalId,
       };
     } else {
-      const smsRoleExternalId = this.node.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
+      const smsRoleExternalId = this.construct.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
       const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
         assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
           conditions: {

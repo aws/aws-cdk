@@ -58,7 +58,7 @@ const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
-tableWithGlobalAndLocalSecondaryIndex.node.applyAspect(new Tag('Environment', 'Production'));
+tableWithGlobalAndLocalSecondaryIndex.construct.applyAspect(new Tag('Environment', 'Production'));
 
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,

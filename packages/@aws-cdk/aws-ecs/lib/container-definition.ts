@@ -377,7 +377,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
-    this.containerName = this.node.id;
+    this.containerName = this.construct.id;
 
     this.imageConfig = props.image.bind(this, this);
     if (props.logging) {
@@ -389,7 +389,7 @@ export class ContainerDefinition extends cdk.Construct {
       this.secrets = [];
       for (const [name, secret] of Object.entries(props.secrets)) {
         if (this.taskDefinition.isFargateCompatible && secret.hasField) {
-          throw new Error(`Cannot specify secret JSON field for a task using the FARGATE launch type: '${name}' in container '${this.node.id}'`);
+          throw new Error(`Cannot specify secret JSON field for a task using the FARGATE launch type: '${name}' in container '${this.construct.id}'`);
         }
         secret.grantRead(this.taskDefinition.obtainExecutionRole());
         this.secrets.push({

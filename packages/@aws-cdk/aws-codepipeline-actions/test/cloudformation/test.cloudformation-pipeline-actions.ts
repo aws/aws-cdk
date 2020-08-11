@@ -659,7 +659,7 @@ export = {
         },
       }));
 
-      const otherStack = app.node.findChild('cross-account-support-stack-123456789012') as cdk.Stack;
+      const otherStack = app.construct.findChild('cross-account-support-stack-123456789012') as cdk.Stack;
       expect(otherStack).to(haveResourceLike('AWS::IAM::Role', {
         'RoleName': 'pipelinestack-support-123loycfnactionrole56af64af3590f311bc50',
       }));

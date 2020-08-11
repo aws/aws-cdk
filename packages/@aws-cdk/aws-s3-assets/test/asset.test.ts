@@ -24,7 +24,7 @@ test('simple use case', () => {
 
   // verify that metadata contains an "aws:cdk:asset" entry with
   // the correct information
-  const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
+  const entry = stack.construct.metadata.find(m => m.type === 'aws:cdk:asset');
   expect(entry).toBeTruthy();
 
   // verify that now the template contains parameters for this asset
@@ -74,7 +74,7 @@ test('"file" assets', () => {
   const stack = new cdk.Stack();
   const filePath = path.join(__dirname, 'file-asset.txt');
   new Asset(stack, 'MyAsset', { path: filePath });
-  const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
+  const entry = stack.construct.metadata.find(m => m.type === 'aws:cdk:asset');
   expect(entry).toBeTruthy();
 
   // synthesize first so "prepare" is called
@@ -196,7 +196,7 @@ test('isZipArchive indicates if the asset represents a .zip file (either explici
 test('addResourceMetadata can be used to add CFN metadata to resources', () => {
   // GIVEN
   const stack = new cdk.Stack();
-  stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+  stack.construct.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
   const location = path.join(__dirname, 'sample-asset-directory');
   const resource = new cdk.CfnResource(stack, 'MyResource', { type: 'My::Resource::Type' });

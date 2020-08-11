@@ -65,7 +65,7 @@ export class AliasTargetInstance extends InstanceBase {
         AWS_ALIAS_DNS_NAME: props.dnsName,
         ...props.customAttributes,
       },
-      instanceId: props.instanceId || this.node.uniqueId,
+      instanceId: props.instanceId || this.construct.uniqueId,
       serviceId: props.service.serviceId,
     });
 

@@ -11,7 +11,7 @@ export = {
     new s3.Bucket(stack, 'MyBucket');
 
     // WHEN
-    stack.node.applyAspect(new BucketVersioningChecker());
+    stack.construct.applyAspect(new BucketVersioningChecker());
 
     // THEN
     const assembly = SynthUtils.synthesize(stack);
@@ -29,7 +29,7 @@ export = {
     });
 
     // WHEN
-    stack.node.applyAspect(new BucketVersioningChecker());
+    stack.construct.applyAspect(new BucketVersioningChecker());
 
     // THEN
     const assembly = SynthUtils.synthesize(stack);
@@ -44,7 +44,7 @@ class BucketVersioningChecker implements cdk.IAspect {
     if (node instanceof s3.CfnBucket) {
       if (!node.versioningConfiguration ||
         (!cdk.Tokenization.isResolvable(node.versioningConfiguration) && node.versioningConfiguration.status !== 'Enabled')) {
-        node.node.addError('Bucket versioning is not enabled');
+        node.construct.addError('Bucket versioning is not enabled');
       }
     }
   }

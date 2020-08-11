@@ -91,8 +91,8 @@ export class Construct extends constructs.Construct implements IConstruct {
     }
 
     Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
-    this.node = ConstructNode._unwrap(constructs.Node.of(this));
-    this.construct = this.node;
+    this.construct = ConstructNode._unwrap(constructs.Node.of(this));
+    this.node = this.construct;
 
     const disableTrace =
       this.construct.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ||

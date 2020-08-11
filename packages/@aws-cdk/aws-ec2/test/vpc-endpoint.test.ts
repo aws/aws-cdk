@@ -393,13 +393,13 @@ nodeunitShim({
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 
       // Setup context for stack AZs
-      stack.node.setContext(
+      stack.construct.setContext(
         ContextProvider.getKey(stack, {
           provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         }).key,
         ['us-east-1a', 'us-east-1b', 'us-east-1c']);
       // Setup context for endpoint service AZs
-      stack.node.setContext(
+      stack.construct.setContext(
         ContextProvider.getKey(stack, {
           provider: cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
           props: {
@@ -438,7 +438,7 @@ nodeunitShim({
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 
       // Setup context for stack AZs
-      stack.node.setContext(
+      stack.construct.setContext(
         ContextProvider.getKey(stack, {
           provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         }).key,
@@ -477,13 +477,13 @@ nodeunitShim({
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 
       // Setup context for stack AZs
-      stack.node.setContext(
+      stack.construct.setContext(
         ContextProvider.getKey(stack, {
           provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         }).key,
         ['us-east-1a', 'us-east-1b', 'us-east-1c']);
       // Setup context for endpoint service AZs
-      stack.node.setContext(
+      stack.construct.setContext(
         ContextProvider.getKey(stack, {
           provider: cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
           props: {

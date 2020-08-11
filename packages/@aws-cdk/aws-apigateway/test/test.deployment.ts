@@ -178,7 +178,7 @@ export = {
     const dep = new CfnResource(stack, 'MyResource', { type: 'foo' });
 
     // WHEN
-    deployment.node.addDependency(dep);
+    deployment.construct.addDependency(dep);
 
     expect(stack).to(haveResource('AWS::ApiGateway::Deployment', {
       DependsOn: [

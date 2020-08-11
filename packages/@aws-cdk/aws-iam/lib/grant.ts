@@ -263,11 +263,11 @@ export class Grant implements cdk.IDependable {
   /**
    * Make sure this grant is applied before the given constructs are deployed
    *
-   * The same as construct.node.addDependency(grant), but slightly nicer to read.
+   * The same as construct.construct.addDependency(grant), but slightly nicer to read.
    */
   public applyBefore(...constructs: cdk.IConstruct[]) {
     for (const construct of constructs) {
-      construct.node.addDependency(this);
+      construct.construct.addDependency(this);
     }
   }
 }

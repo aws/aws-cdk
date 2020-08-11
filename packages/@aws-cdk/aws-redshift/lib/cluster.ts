@@ -505,7 +505,7 @@ export class Cluster extends ClusterBase {
     }
 
     const id = 'RotationSingleUser';
-    const existing = this.node.tryFindChild(id);
+    const existing = this.construct.tryFindChild(id);
     if (existing) {
       throw new Error('A single user rotation was already added to this cluster.');
     }

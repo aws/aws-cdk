@@ -65,7 +65,7 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
       statusCode: props.statusCode,
     });
 
-    this.node.defaultChild = resource;
+    this.construct.defaultChild = resource;
   }
 
   private buildResponseParameters(responseHeaders?: { [key: string]: string }): { [key: string]: string } | undefined {

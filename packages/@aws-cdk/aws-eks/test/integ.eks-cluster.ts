@@ -99,7 +99,7 @@ class EksClusterStack extends TestStack {
     });
 
     // make sure namespace is deployed before the chart
-    nginxIngress.node.addDependency(nginxNamespace);
+    nginxIngress.construct.addDependency(nginxNamespace);
 
     // add a service account connected to a IAM role
     cluster.addServiceAccount('MyServiceAccount');

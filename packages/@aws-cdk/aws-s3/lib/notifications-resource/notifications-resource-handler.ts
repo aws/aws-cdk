@@ -30,7 +30,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
 
     // well-known logical id to ensure stack singletonity
     const logicalId = 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834';
-    let lambda = root.node.tryFindChild(logicalId) as NotificationsResourceHandler;
+    let lambda = root.construct.tryFindChild(logicalId) as NotificationsResourceHandler;
     if (!lambda) {
       lambda = new NotificationsResourceHandler(root, logicalId);
     }
@@ -83,7 +83,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
       },
     });
 
-    resource.node.addDependency(role);
+    resource.construct.addDependency(role);
 
     this.functionArn = resource.getAtt('Arn').toString();
   }
