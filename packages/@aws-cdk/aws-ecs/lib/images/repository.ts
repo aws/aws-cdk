@@ -37,7 +37,7 @@ export class RepositoryImage extends ContainerImage {
   public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
     // name could be a Token - in that case, skip validation altogether
     if (!Token.isUnresolved(this.imageName) && ECR_IMAGE_REGEX.test(this.imageName)) {
-      scope.node.addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      scope.construct.addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     }
 
     if (this.props.credentials) {
