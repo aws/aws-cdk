@@ -332,7 +332,7 @@ export class Distribution extends Resource implements IDistribution {
         quantity: 2,
       },
     });
-    return originGroupId
+    return originGroupId;
   }
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
