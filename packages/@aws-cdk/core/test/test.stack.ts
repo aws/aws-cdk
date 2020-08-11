@@ -249,6 +249,43 @@ export = {
     test.done();
   },
 
+  'Cross-stack reference export names are relative to the stack (when the flag is set)'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': 'true'
+      },
+    });
+    const indifferentScope = new Construct(app, 'ExtraScope');
+
+    const stack1 = new Stack(indifferentScope, 'Stack1', {
+      stackName: 'Stack1',
+    });
+    const resource1 = new CfnResource(stack1, 'Resource', { type: 'BLA' });
+    const stack2 = new Stack(indifferentScope, 'Stack2');
+
+    // WHEN - used in another resource
+    new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
+      someProperty: new Intrinsic(resource1.ref),
+    }});
+
+    // THEN
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    test.deepEqual(template2, {
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::Some::Resource',
+          Properties: {
+            someProperty: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefResource1D5D905A' },
+          },
+        },
+      },
+    });
+    test.done();
+  },
+
   'cross-stack references in lazy tokens work'(test: Test) {
     // GIVEN
     const app = new App();
