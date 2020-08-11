@@ -5,7 +5,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Schedule } from './schedule';
 import { CfnCanary } from './synthetics.generated';
-import { Test, TestOptions } from './test-script';
+import { Test, TestOptions } from './test-prop';
 
 
 /**
