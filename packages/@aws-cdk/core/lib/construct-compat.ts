@@ -10,10 +10,10 @@
  * This file, in its entirety, is expected to be removed in v2.0.
  */
 
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
-import { IAspect } from './aspect';
+import { Annotations } from './annotations';
+import { IAspect, Aspects } from './aspect';
 import { IDependable } from './dependency';
 import { Token } from './token';
 
@@ -28,6 +28,11 @@ export interface IConstruct extends constructs.IConstruct, IDependable {
    * The construct tree node for this construct.
    */
   readonly node: ConstructNode;
+
+  /**
+   * The construct tree node for this construct.
+   */
+  readonly construct: ConstructNode;
 }
 
 /**
@@ -61,8 +66,17 @@ export class Construct extends constructs.Construct implements IConstruct {
 
   /**
    * The construct tree node associated with this construct.
+   *
+   * @deprecate `Construct.node` is being deprecated in favor of
+   * `Construct.construct`. This API will be removed in the next major version
+   * of the AWS CDK, please migrate your code to use `construct` instead.
    */
   public readonly node: ConstructNode;
+
+  /**
+   * Construct API.
+   */
+  public readonly construct: ConstructNode;
 
   constructor(scope: Construct, id: string) {
     super(scope, id, {
@@ -77,16 +91,17 @@ export class Construct extends constructs.Construct implements IConstruct {
     }
 
     Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
-    this.node = ConstructNode._unwrap(constructs.Node.of(this));
+    this.construct = ConstructNode._unwrap(constructs.Node.of(this));
+    this.node = this.construct;
 
     const disableTrace =
-      this.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ||
-      this.node.tryGetContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA) ||
+      this.construct.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ||
+      this.construct.tryGetContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA) ||
       process.env.CDK_DISABLE_STACK_TRACE;
 
     if (disableTrace) {
-      this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
-      this.node.setContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA, true);
+      this.construct.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
+      this.construct.setContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA, true);
       process.env.CDK_DISABLE_STACK_TRACE = '1';
     }
   }
@@ -267,7 +282,13 @@ export class ConstructNode {
    */
   public readonly _actualNode: constructs.Node;
 
+  /**
+   * The Construct class that hosts this API.
+   */
+  private readonly host: Construct;
+
   constructor(host: Construct, scope: IConstruct, id: string) {
+    this.host = host;
     this._actualNode = new constructs.Node(host, scope, id);
 
     // store a back reference on _actualNode so we can our ConstructNode from it
@@ -405,37 +426,43 @@ export class ConstructNode {
   public addMetadata(type: string, data: any, fromFunction?: any): void { this._actualNode.addMetadata(type, data, fromFunction); }
 
   /**
-   * Adds a { "info": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds a { "info": <message> } metadata entry to this construct.
    * The toolkit will display the info message when apps are synthesized.
    * @param message The info message.
+   * @deprecated use `Annotations.of(construct).addInfo()`
    */
   public addInfo(message: string): void {
-    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.INFO, message);
+    Annotations.of(this.host).addInfo(message);
   }
 
   /**
-   * Adds a { "warning": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds a { "warning": <message> } metadata entry to this construct.
    * The toolkit will display the warning when an app is synthesized, or fail
    * if run in --strict mode.
    * @param message The warning message.
+   * @deprecated use `Annotations.of(construct).addWarning()`
    */
   public addWarning(message: string): void {
-    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.WARN, message);
+    Annotations.of(this.host).addWarning(message);
   }
 
   /**
-   * Adds an { "error": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds an { "error": <message> } metadata entry to this construct.
    * The toolkit will fail synthesis when errors are reported.
    * @param message The error message.
+   * @deprecated use `Annotations.of(construct).addError()`
    */
   public addError(message: string) {
-    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.ERROR, message);
+    Annotations.of(this.host).addError(message);
   }
 
   /**
-   * Applies the aspect to this Constructs node
+   * DEPRECATED: Applies the aspect to this Constructs node
+   *
+   * @deprecated This API is going to be removed in the next major version of
+   * the AWS CDK. Please use `Aspects.of(scope).add()` instead.
    */
-  public applyAspect(aspect: IAspect): void { this._actualNode.applyAspect(aspect); }
+  public applyAspect(aspect: IAspect): void { Aspects.of(this.host).add(aspect); }
 
   /**
    * All parent scopes of this construct.

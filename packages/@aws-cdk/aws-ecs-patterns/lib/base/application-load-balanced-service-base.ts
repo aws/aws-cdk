@@ -43,6 +43,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly publicLoadBalancer?: boolean;
 
   /**
+   * Determines whether or not the Security Group for the Load Balancer's Listener will be open to all traffic by default.
+   *
+   * @default true -- The security group allows ingress from all IP addresses.
+   */
+  readonly openListener?: boolean;
+
+  /**
    * The desired number of instantiations of the task definition to keep running on the service.
    * The minimum value is 1
    *
@@ -323,7 +330,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
-      open: true,
+      open: props.openListener ?? true,
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
@@ -373,9 +380,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
    */
   protected getDefaultCluster(scope: cdk.Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
-    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.construct.id : ''}`;
     const stack = cdk.Stack.of(scope);
-    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return stack.construct.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**

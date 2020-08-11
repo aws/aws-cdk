@@ -262,7 +262,7 @@ describe('IAM policy', () => {
     });
 
     // WHEN
-    res.node.addDependency(pol);
+    res.construct.addDependency(pol);
 
     // THEN
     expect(stack).toMatchTemplate({
@@ -288,7 +288,7 @@ describe('IAM policy', () => {
     });
 
     // WHEN
-    res.node.addDependency(pol);
+    res.construct.addDependency(pol);
 
     // THEN
     expect(stack).toHaveResource('Some::Resource', {
@@ -310,11 +310,22 @@ describe('IAM policy', () => {
 
     expect(() => app.synth()).toThrow(/must contain at least one statement/);
   });
+
+  test('fails if policy document is invalid', () => {
+    new Policy(stack, 'MyRole', {
+      statements: [new PolicyStatement({
+        actions: ['*'],
+        principals: [new ServicePrincipal('test.service')],
+      })],
+    });
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+  });
 });
 
 function createPolicyWithLogicalId(stack: Stack, logicalId: string): void {
   const policy = new Policy(stack, logicalId);
-  const cfnPolicy = policy.node.defaultChild as CfnPolicy;
+  const cfnPolicy = policy.construct.defaultChild as CfnPolicy;
   cfnPolicy.overrideLogicalId(logicalId); // force a particular logical ID
 
   // add statements & principal to satisfy validation

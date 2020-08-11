@@ -208,6 +208,12 @@ abstract class SecretBase extends Resource implements ISecret {
     return { statementAdded: false };
   }
 
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
+  }
+
   public denyAccountRootDelete() {
     this.addToResourcePolicy(new iam.PolicyStatement({
       actions: ['secretsmanager:DeleteSecret'],
@@ -309,7 +315,7 @@ export class Secret extends SecretBase {
    */
   public attach(target: ISecretAttachmentTarget): ISecret {
     const id = 'Attachment';
-    const existing = this.node.tryFindChild(id);
+    const existing = this.construct.tryFindChild(id);
 
     if (existing) {
       throw new Error('Secret is already attached to a target.');

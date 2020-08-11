@@ -132,6 +132,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
   private readonly boundOrigins: BoundOrigin[] = [];
+  private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
 
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: acm.ICertificate;
@@ -160,6 +161,7 @@ export class Distribution extends Resource implements IDistribution {
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
       enabled: true,
       origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
+      originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
       defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
       cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
       viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
@@ -187,18 +189,49 @@ export class Distribution extends Resource implements IDistribution {
     this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
   }
 
-  private addOrigin(origin: IOrigin): string {
+  private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
     const existingOrigin = this.boundOrigins.find(boundOrigin => boundOrigin.origin === origin);
     if (existingOrigin) {
       return existingOrigin.originId;
     } else {
       const originIndex = this.boundOrigins.length + 1;
       const scope = new Construct(this, `Origin${originIndex}`);
-      const originId = scope.node.uniqueId;
+      const originId = scope.construct.uniqueId;
       const originBindConfig = origin.bind(scope, { originId });
       this.boundOrigins.push({ origin, originId, ...originBindConfig });
+      if (originBindConfig.failoverConfig) {
+        if (isFailoverOrigin) {
+          throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
+        }
+        const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
+        this.addOriginGroup(originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
+      }
       return originId;
     }
+  }
+
+  private addOriginGroup(statusCodes: number[] | undefined, originId: string, failoverOriginId: string): void {
+    statusCodes = statusCodes ?? [500, 502, 503, 504];
+    if (statusCodes.length === 0) {
+      throw new Error('fallbackStatusCodes cannot be empty');
+    }
+    const groupIndex = this.originGroups.length + 1;
+    this.originGroups.push({
+      failoverCriteria: {
+        statusCodes: {
+          items: statusCodes,
+          quantity: statusCodes.length,
+        },
+      },
+      id: new Construct(this, `OriginGroup${groupIndex}`).construct.uniqueId,
+      members: {
+        items: [
+          { originId },
+          { originId: failoverOriginId },
+        ],
+        quantity: 2,
+      },
+    });
   }
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
@@ -209,6 +242,15 @@ export class Distribution extends Resource implements IDistribution {
       }
     });
     return renderedOrigins;
+  }
+
+  private renderOriginGroups(): CfnDistribution.OriginGroupsProperty | undefined {
+    return this.originGroups.length === 0
+      ? undefined
+      : {
+        items: this.originGroups,
+        quantity: this.originGroups.length,
+      };
   }
 
   private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
@@ -335,6 +377,21 @@ export class AllowedMethods {
 }
 
 /**
+ * The HTTP methods that the Behavior will cache requests on.
+ */
+export class CachedMethods {
+  /** HEAD and GET */
+  public static readonly CACHE_GET_HEAD = new CachedMethods(['GET', 'HEAD']);
+  /** HEAD, GET, and OPTIONS */
+  public static readonly CACHE_GET_HEAD_OPTIONS = new CachedMethods(['GET', 'HEAD', 'OPTIONS']);
+
+  /** HTTP methods supported */
+  public readonly methods: string[];
+
+  private constructor(methods: string[]) { this.methods = methods; }
+}
+
+/**
  * Options for configuring custom error responses.
  *
  * @experimental
@@ -419,9 +476,25 @@ export interface AddBehaviorOptions {
   /**
    * HTTP methods to allow for this behavior.
    *
-   * @default - GET and HEAD
+   * @default AllowedMethods.ALLOW_GET_HEAD
    */
   readonly allowedMethods?: AllowedMethods;
+
+  /**
+   * HTTP methods to cache for this behavior.
+   *
+   * @default CachedMethods.CACHE_GET_HEAD
+   */
+  readonly cachedMethods?: CachedMethods;
+
+  /**
+   * Whether you want CloudFront to automatically compress certain files for this cache behavior.
+   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html#compressed-content-cloudfront-file-types
+   * for file types CloudFront will compress.
+   *
+   * @default false
+   */
+  readonly compress?: boolean;
 
   /**
    * Whether CloudFront will forward query strings to the origin.
@@ -439,6 +512,20 @@ export interface AddBehaviorOptions {
    * @default []
    */
   readonly forwardQueryStringCacheKeys?: string[];
+
+  /**
+   * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.
+   *
+   * @default false
+   */
+  readonly smoothStreaming?: boolean;
+
+  /**
+   * The protocol that viewers can use to access the files controlled by this behavior.
+   *
+   * @default ViewerProtocolPolicy.ALLOW_ALL
+   */
+  readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
 
   /**
    * The Lambda@Edge functions to invoke before serving the contents.

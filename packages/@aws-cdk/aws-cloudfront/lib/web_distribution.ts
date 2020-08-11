@@ -646,7 +646,14 @@ export interface CloudFrontWebDistributionProps {
 
   /**
    * Unique identifier that specifies the AWS WAF web ACL to associate with this CloudFront distribution.
+   *
+   * To specify a web ACL created using the latest version of AWS WAF, use the ACL ARN, for example
+   * `arn:aws:wafv2:us-east-1:123456789012:global/webacl/ExampleWebACL/473e64fd-f30b-4765-81a0-62ad96dd167a`.
+   *
+   * To specify a web ACL created using AWS WAF Classic, use the ACL ID, for example `473e64fd-f30b-4765-81a0-62ad96dd167a`.
+   *
    * @see https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html
+   * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_CreateDistribution.html#API_CreateDistribution_RequestParameters.
    *
    * @default - No AWS Web Application Firewall web access control list (web ACL).
    */
@@ -917,7 +924,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
-    this.node.defaultChild = distribution;
+    this.construct.defaultChild = distribution;
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;

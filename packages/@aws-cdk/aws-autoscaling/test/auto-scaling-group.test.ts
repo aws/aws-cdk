@@ -32,7 +32,7 @@ nodeunitShim({
         'MyFleetInstanceSecurityGroup774E8234': {
           'Type': 'AWS::EC2::SecurityGroup',
           'Properties': {
-            'GroupDescription': 'MyFleet/InstanceSecurityGroup',
+            'GroupDescription': 'TestStack/MyFleet/InstanceSecurityGroup',
             'SecurityGroupEgress': [
               {
                 'CidrIp': '0.0.0.0/0',
@@ -43,7 +43,7 @@ nodeunitShim({
             'Tags': [
               {
                 'Key': 'Name',
-                'Value': 'MyFleet',
+                'Value': 'TestStack/MyFleet',
               },
             ],
 
@@ -68,7 +68,7 @@ nodeunitShim({
             'Tags': [
               {
                 'Key': 'Name',
-                'Value': 'MyFleet',
+                'Value': 'TestStack/MyFleet',
               },
             ],
           },
@@ -122,7 +122,7 @@ nodeunitShim({
               {
                 'Key': 'Name',
                 'PropagateAtLaunch': true,
-                'Value': 'MyFleet',
+                'Value': 'TestStack/MyFleet',
               },
             ],
 
@@ -511,8 +511,8 @@ nodeunitShim({
         pauseTime: cdk.Duration.seconds(345),
       },
     });
-    asg.node.applyAspect(new cdk.Tag('superfood', 'acai'));
-    asg.node.applyAspect(new cdk.Tag('notsuper', 'caramel', { applyToLaunchedInstances: false }));
+    asg.construct.applyAspect(new cdk.Tag('superfood', 'acai'));
+    asg.construct.applyAspect(new cdk.Tag('notsuper', 'caramel', { applyToLaunchedInstances: false }));
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
@@ -520,7 +520,7 @@ nodeunitShim({
         {
           Key: 'Name',
           PropagateAtLaunch: true,
-          Value: 'MyFleet',
+          Value: 'TestStack/MyFleet',
         },
         {
           Key: 'notsuper',
@@ -713,7 +713,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.ok(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup);
+    test.ok(asg.construct.defaultChild instanceof autoscaling.CfnAutoScalingGroup);
 
     test.done();
   },
@@ -958,8 +958,8 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(asg.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-    test.deepEqual(asg.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    test.deepEqual(asg.construct.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
+    test.deepEqual(asg.construct.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
     test.done();
   },
@@ -985,8 +985,8 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(asg.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-    test.deepEqual(asg.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    test.deepEqual(asg.construct.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
+    test.deepEqual(asg.construct.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
     test.done();
   },

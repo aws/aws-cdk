@@ -16,12 +16,8 @@ import { resolveReferences } from './refs';
  * @param root The root of the construct tree.
  */
 export function prepareApp(root: IConstruct) {
-  if (root.node.scope && !Stage.isStage(root)) {
-    throw new Error('prepareApp can only be called on a stage or a root construct');
-  }
-
   // apply dependencies between resources in depending subtrees
-  for (const dependency of root.node.dependencies) {
+  for (const dependency of root.construct.dependencies) {
     const targetCfnResources = findCfnResources(dependency.target);
     const sourceCfnResources = findCfnResources(dependency.source);
 
@@ -75,7 +71,7 @@ function findAllNestedStacks(root: IConstruct) {
 
   // create a list of all nested stacks in depth-first post order this means
   // that we first prepare the leaves and then work our way up.
-  for (const stack of root.node.findAll(ConstructOrder.POSTORDER /* <== important */)) {
+  for (const stack of root.construct.findAll(ConstructOrder.POSTORDER /* <== important */)) {
     if (includeStack(stack)) {
       result.push(stack);
     }
@@ -88,7 +84,7 @@ function findAllNestedStacks(root: IConstruct) {
  * Find all resources in a set of constructs
  */
 function findCfnResources(root: IConstruct): CfnResource[] {
-  return root.node.findAll().filter(CfnResource.isCfnResource);
+  return root.construct.findAll().filter(CfnResource.isCfnResource);
 }
 
 interface INestedStackPrivateApi {

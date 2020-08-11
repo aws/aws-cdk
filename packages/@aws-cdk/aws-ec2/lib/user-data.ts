@@ -89,6 +89,7 @@ export abstract class UserData {
     switch (os) {
       case OperatingSystemType.LINUX: return UserData.forLinux();
       case OperatingSystemType.WINDOWS: return UserData.forWindows();
+      case OperatingSystemType.UNKNOWN: throw new Error('Cannot determine UserData for unknown operating system type');
     }
   }
 
@@ -171,7 +172,7 @@ class LinuxUserData extends UserData {
 
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
-    const resourceID = stack.getLogicalId(resource.node.defaultChild as CfnElement);
+    const resourceID = stack.getLogicalId(resource.construct.defaultChild as CfnElement);
     this.addOnExitCommands(`/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} -e $exitCode || echo 'Failed to send Cloudformation Signal'`);
   }
 
@@ -229,7 +230,7 @@ class WindowsUserData extends UserData {
 
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
-    const resourceID = stack.getLogicalId(resource.node.defaultChild as CfnElement);
+    const resourceID = stack.getLogicalId(resource.construct.defaultChild as CfnElement);
 
     this.addOnExitCommands(`cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} --success ($success.ToString().ToLower())`);
   }
