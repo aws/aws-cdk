@@ -103,7 +103,14 @@ export class EcsTask implements events.IRuleTarget {
     this.cluster = props.cluster;
     this.taskDefinition = props.taskDefinition;
     this.taskCount = props.taskCount !== undefined ? props.taskCount : 1;
-    this.role = props.role || this.createTaskRole();
+
+    if (props.role) {
+      const role = props.role;
+      this.createEventRolePolicyStatements().forEach(role.addToPolicy.bind(role));
+      this.role = role;
+    } else {
+      this.role = singletonEventRole(this.taskDefinition, this.createEventRolePolicyStatements());
+    }
 
     // Security groups are only configurable with the "awsvpc" network mode.
     if (this.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC) {
@@ -163,7 +170,7 @@ export class EcsTask implements events.IRuleTarget {
     };
   }
 
-  private createTaskRole(): iam.IRole {
+  private createEventRolePolicyStatements(): iam.PolicyStatement[] {
     const policyStatements = [new iam.PolicyStatement({
       actions: ['ecs:RunTask'],
       resources: [this.taskDefinition.taskDefinitionArn],
@@ -189,6 +196,6 @@ export class EcsTask implements events.IRuleTarget {
       }));
     }
 
-    return singletonEventRole(this.taskDefinition, policyStatements);
+    return policyStatements;
   }
 }
