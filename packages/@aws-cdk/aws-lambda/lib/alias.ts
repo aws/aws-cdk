@@ -6,7 +6,8 @@ import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { extractQualifierFromArn, IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
-import { AutoScalingOptions, IScalableFunctionAttribute, ScalableFunctionAttribute } from './scalable-function-attribute';
+import { ScalableFunctionAttribute } from './private/scalable-function-attribute';
+import { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-attribute-api';
 
 export interface IAlias extends IFunction {
   /**
