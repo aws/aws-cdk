@@ -322,12 +322,15 @@ dashboard.addWidgets(new TextWidget({
 
 ### Alarm Status widget
 
-An alarm status widget shows the status of your alarms in a grid view.
+An alarm status widget displays instantly the status of any type of alarms and gives the
+ability to aggregate one or more alarms together in a small surface.
 
 ```ts
-dashboard.addWidgets(new AlarmStatusWidget({
-  alarms: [errorAlarm],
-}));
+dashboard.addWidgets(
+  new AlarmStatusWidget({
+    alarms: [errorAlarm],
+  })
+);
 ```
 
 ### Query results widget

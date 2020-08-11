@@ -1,4 +1,4 @@
-import { Alarm } from './alarm';
+import { IAlarm } from './alarm-base';
 import { ConcreteWidget } from './widget';
 
 /**
@@ -8,7 +8,7 @@ export interface AlarmStatusWidgetProps {
   /**
    * CloudWatch Alarms to show in widget
    */
-  readonly alarms: Alarm[];
+  readonly alarms: IAlarm[];
   /**
    * The title of the widget
    *
