@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import * as asg from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -15,6 +16,111 @@ import { testFixture, testFixtureNoVpc } from './util';
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
+
+  'can declare a HelmChart in a different stack than the cluster'(test: Test) {
+
+    class ClusterStack extends cdk.Stack {
+      public eksCluster: eks.Cluster;
+
+      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+        this.eksCluster = new eks.Cluster(this, 'Cluster', {
+          version: eks.KubernetesVersion.V1_17,
+        });
+      }
+    }
+
+    class ChartStack extends cdk.Stack {
+      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+        super(scope, id, props);
+
+        const resource = new cdk.CfnResource(this, 'resource', { type: 'MyType' });
+        new eks.HelmChart(this, `chart-${id}`, { cluster: props.cluster, chart: resource.ref });
+
+      }
+    }
+
+    const { app } = testFixture();
+    const clusterStack = new ClusterStack(app, 'ClusterStack');
+    new ChartStack(app, 'ChartStack', { cluster: clusterStack.eksCluster });
+
+    // make sure we can synth (no circular dependencies between the stacks)
+    app.synth();
+
+    test.done();
+  },
+
+  'can declare an AutoScalingGroup in a different stack than the cluster'(test: Test) {
+
+    class ClusterStack extends cdk.Stack {
+      public eksCluster: eks.Cluster;
+
+      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+        this.eksCluster = new eks.Cluster(this, 'Cluster', {
+          version: eks.KubernetesVersion.V1_17,
+        });
+      }
+    }
+
+    class CapacityStack extends cdk.Stack {
+      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+        super(scope, id, props);
+
+        const group = new asg.AutoScalingGroup(this, 'autoScaling', {
+          instanceType: new ec2.InstanceType('t3.medium'),
+          vpc: props.cluster.vpc,
+          machineImage: new eks.EksOptimizedImage({
+            kubernetesVersion: eks.KubernetesVersion.V1_16.version,
+            nodeType: eks.NodeType.STANDARD,
+          }),
+        });
+
+        props.cluster.addAutoScalingGroup(group, {});
+      }
+    }
+
+    const { app } = testFixture();
+    const clusterStack = new ClusterStack(app, 'ClusterStack');
+    new CapacityStack(app, 'CapacityStack', { cluster: clusterStack.eksCluster });
+
+    // make sure we can synth (no circular dependencies between the stacks)
+    app.synth();
+
+    test.done();
+  },
+
+  'can declare a ServiceAccount in a different stack than the cluster'(test: Test) {
+
+    class ClusterStack extends cdk.Stack {
+      public eksCluster: eks.Cluster;
+
+      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+        this.eksCluster = new eks.Cluster(this, 'EKSCluster', {
+          version: eks.KubernetesVersion.V1_17,
+        });
+      }
+    }
+
+    class AppStack extends cdk.Stack {
+      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+        super(scope, id, props);
+
+        new eks.ServiceAccount(this, 'testAccount', {cluster: props.cluster, name: 'test-account', namespace: 'test'});
+      }
+    }
+
+    const { app } = testFixture();
+    const clusterStack = new ClusterStack(app, 'EKSCluster');
+    new AppStack(app, 'KubeApp', { cluster: clusterStack.eksCluster });
+
+    // make sure we can synth (no circular dependencies between the stacks)
+    app.synth();
+
+    test.done();
+  },
+
   'a default cluster spans all subnets'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
