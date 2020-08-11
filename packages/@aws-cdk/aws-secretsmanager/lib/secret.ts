@@ -104,12 +104,12 @@ export interface SecretProps {
   readonly secretName?: string;
 
   /**
+   * **WARNING:** *It is **highly** encouraged to leave this field undefined and allow SecretsManager to create the secret value.
+   * The secret string -- if provided -- will be included in the output of the cdk as part of synthesis,
+   * and will appear in the CloudFormation template in the console*.
+   *
    * Specifies text data that you want to encrypt and store in this new version of the secret.
    * May be a simple string value, or a string representation of a JSON structure.
-   *
-   * *It is highly encouraged to leave this field undefined and allow SecretsManager to create the secret value.*
-   * *The secret string -- if provided -- will be included in the output of the cdk as part of synthesis,
-   * and will appear in the CloudFormation template in the console*.
    *
    * Only one of `secretString` and `generateSecretString` can be provided.
    *
@@ -294,6 +294,10 @@ export class Secret extends SecretBase {
 
     if (props.removalPolicy) {
       resource.applyRemovalPolicy(props.removalPolicy);
+    }
+
+    if (props.secretString) {
+      this.node.addWarning('Using a `secretString` value which will be visible in plaintext in the CloudFormation template and cdk output.');
     }
 
     this.secretArn = this.getResourceArnAttribute(resource.ref, {

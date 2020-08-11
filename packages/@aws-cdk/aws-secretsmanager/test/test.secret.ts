@@ -2,6 +2,7 @@ import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/a
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as secretsmanager from '../lib';
@@ -579,7 +580,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new secretsmanager.Secret(stack, 'Secret', {
+    const secret = new secretsmanager.Secret(stack, 'Secret', {
       secretString: 'mynotsosecretvalue',
     });
 
@@ -587,6 +588,9 @@ export = {
     expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
       SecretString: 'mynotsosecretvalue',
     }));
+
+    test.equals(secret.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
+    test.equals(secret.node.metadata[0].data, 'Using a `secretString` value which will be visible in plaintext in the CloudFormation template and cdk output.');
 
     test.done();
   },
