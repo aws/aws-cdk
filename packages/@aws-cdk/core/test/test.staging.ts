@@ -4,7 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
 import * as sinon from 'sinon';
-import { App, AssetHashType, AssetStaging, BundlingDockerImage, Stack } from '../lib';
+import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, Stack } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 
@@ -298,14 +298,16 @@ export = {
 
     // WHEN
     let dir: string | undefined;
+    let opts: BundlingOptions | undefined;
     new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
         local: {
-          tryBundle(outputDir: string): boolean {
+          tryBundle(outputDir: string, options: BundlingOptions): boolean {
             dir = outputDir;
+            opts = options;
             return true;
           },
         },
@@ -314,6 +316,7 @@ export = {
 
     // THEN
     test.ok(dir && /asset-bundle-/.test(dir));
+    test.equals(opts?.command?.[0], DockerStubCommand.SUCCESS);
     test.throws(() => readDockerStubInput());
 
     test.done();

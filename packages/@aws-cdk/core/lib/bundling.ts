@@ -62,6 +62,8 @@ export interface BundlingOptions {
    * will be done.
    *
    * @default - bundling will only be performed in a Docker container
+   *
+   * @experimental
    */
   readonly local?: ILocalBundling;
 }
@@ -76,6 +78,9 @@ export interface ILocalBundling {
    * This method is called before attempting docker bundling to allow the
    * bundler to be executed locally. If the local bundler exists, and bundling
    * was performed locally, return `true`. Otherwise, return `false`.
+   *
+   * @param outputDir the directory where the bundled asset should be output
+   * @param options bundling options for this asset
    */
   tryBundle(outputDir: string, options: BundlingOptions): boolean;
 }
