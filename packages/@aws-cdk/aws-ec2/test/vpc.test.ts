@@ -807,7 +807,7 @@ nodeunitShim({
 
       const vpc = new Vpc(stack, 'VpcNetwork');
 
-      test.ok(vpc.publicSubnets[0].node.defaultChild instanceof CfnSubnet);
+      test.ok(vpc.publicSubnets[0].construct.defaultChild instanceof CfnSubnet);
 
       test.done();
     },
@@ -1033,8 +1033,8 @@ nodeunitShim({
 
       const vpc = new Vpc(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.node.applyAspect(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.CFN_RESOURCE_TYPE_NAME]}));
-      vpc.node.applyAspect(new Tag('VpcType', 'Good'));
+      vpc.construct.applyAspect(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.CFN_RESOURCE_TYPE_NAME]}));
+      vpc.construct.applyAspect(new Tag('VpcType', 'Good'));
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
       const propTags = toCfnTags(tags);
@@ -1049,12 +1049,12 @@ nodeunitShim({
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'TheVPC');
       for (const subnet of vpc.publicSubnets) {
-        const tag = {Key: 'Name', Value: subnet.node.path};
+        const tag = {Key: 'Name', Value: subnet.construct.path};
         expect(stack).to(haveResource('AWS::EC2::NatGateway', hasTags([tag])));
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       for (const subnet of vpc.privateSubnets) {
-        const tag = {Key: 'Name', Value: subnet.node.path};
+        const tag = {Key: 'Name', Value: subnet.construct.path};
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       test.done();
@@ -1065,7 +1065,7 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'TheVPC');
       const tag = {Key: 'Late', Value: 'Adder'};
       expect(stack).notTo(haveResource('AWS::EC2::VPC', hasTags([tag])));
-      vpc.node.applyAspect(new Tag(tag.Key, tag.Value));
+      vpc.construct.applyAspect(new Tag(tag.Key, tag.Value));
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags([tag])));
       test.done();
     },

@@ -448,6 +448,12 @@ abstract class BucketBase extends Resource implements IBucket {
     return { statementAdded: false };
   }
 
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
+  }
+
   /**
    * The https URL of an S3 object. For example:
    * @example https://s3.us-west-1.amazonaws.com/onlybucket
@@ -1419,7 +1425,7 @@ export class Bucket extends BucketBase {
 
     if (encryptionType === BucketEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-        description: `Created by ${this.node.path}`,
+        description: `Created by ${this.construct.path}`,
       });
 
       const bucketEncryption = {
@@ -1617,7 +1623,7 @@ export class Bucket extends BucketBase {
     return this.inventories.map((inventory, index) => {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
-      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`;
+      const id = inventory.inventoryId ?? `${this.construct.id}Inventory${index}`;
 
       if (inventory.destination.bucket instanceof Bucket) {
         inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({
