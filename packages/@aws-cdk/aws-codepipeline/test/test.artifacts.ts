@@ -285,7 +285,7 @@ export = {
   },
 };
 
-function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
-  cdk.ConstructNode.prepare(construct.node);
-  return cdk.ConstructNode.validate(construct.node);
+function validate(scope: cdk.IConstruct): cdk.ValidationError[] {
+  cdk.ConstructNode.prepare(scope.construct);
+  return cdk.ConstructNode.validate(scope.construct);
 }
