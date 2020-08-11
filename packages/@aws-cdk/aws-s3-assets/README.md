@@ -100,13 +100,11 @@ new assets.Asset(this, 'BundledAsset', {
   bundling: {
     local: {
       tryBundler(outputDir: string, options: BundlingOptions) {
-        try {
+        if (canRunLocally) {
           // perform local bundling here
           return true;
-        } catch (err) {
-          // local bundling failed or cannot run locally due to missing dependencies
-          return false;
         }
+        return false;
       },
     },
     // Docker bundling fallback
