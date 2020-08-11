@@ -621,4 +621,38 @@ export = {
 
     test.done();
   },
+
+  'fails if secret policy has no actions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+
+    // WHEN
+    secret.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    test.done();
+  },
+
+  'fails if secret policy has no IAM principals'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+
+    // WHEN
+    secret.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['secretsmanager:*'],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+    test.done();
+  },
 };
