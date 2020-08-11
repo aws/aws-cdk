@@ -25,7 +25,7 @@ export = {
     test.deepEqual(getWarnings(app.synth()), [
       {
         path: '/MyStack/Hello',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-cdk.Construct.construct instead. This API should will be removed in the next major version of the AWS CDK',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-cdk.Construct.construct instead. This API will be removed in the next major release',
       },
     ]);
     test.done();
