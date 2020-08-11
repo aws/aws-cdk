@@ -253,7 +253,7 @@ export = {
     // GIVEN
     const app = new App({
       context: {
-        '@aws-cdk/core:stackRelativeExports': 'true'
+        '@aws-cdk/core:stackRelativeExports': 'true',
       },
     });
     const indifferentScope = new Construct(app, 'ExtraScope');
