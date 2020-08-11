@@ -13,7 +13,7 @@ export * from './event-source';
 export * from './event-source-mapping';
 export * from './destination';
 export * from './event-invoke-config';
-export * from './scalable-function-attribute';
+export * from './scalable-attribute-api';
 
 export * from './log-retention';
 
