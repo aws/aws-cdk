@@ -95,7 +95,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
   private readonly accountExpression: string;
 
   private constructor(private readonly repositoryName: string, tag: string, private readonly account: string | undefined) {
-    this.accountExpression = account ?? core.Fn.findInMap(mappingName, core.Aws.REGION, 'account');
+    this.accountExpression = account ?? core.Fn.findInMap(mappingName, core.Aws.REGION, 'repositoryAccount');
     this.imageId = `${this.accountExpression}.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
   }
 
@@ -109,7 +109,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
         // get the accounts from the region-info module
         const region2Accounts = RegionInfo.regionMap(FactName.DLC_REPOSITORY_ACCOUNT);
         for (const [region, account] of Object.entries(region2Accounts)) {
-          mapping[region] = { account };
+          mapping[region] = { repositoryAccount: account };
         }
         new core.CfnMapping(scopeStack, mappingName, { mapping });
       }
