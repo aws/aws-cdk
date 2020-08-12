@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { CfnParameter, Duration, Stack } from '@aws-cdk/core';
+import { CfnParameter, Duration, Stack, App } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as sqs from '../lib';
 
@@ -410,6 +410,40 @@ export = {
       statistic: 'Average',
     });
 
+    test.done();
+  },
+
+  'fails if queue policy has no actions'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const queue = new sqs.Queue(stack, 'Queue');
+
+    // WHEN
+    queue.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    test.done();
+  },
+
+  'fails if queue policy has no IAM principals'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const queue = new sqs.Queue(stack, 'Queue');
+
+    // WHEN
+    queue.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['sqs:*'],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
     test.done();
   },
 };

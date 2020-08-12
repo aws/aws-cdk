@@ -1,11 +1,9 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import {
-  AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
+import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
   InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, Peer, Port, PrivateSubnet, PublicSubnet,
-  RouterType, Subnet, SubnetType, TrafficDirection, Vpc,
-} from '../lib';
+  RouterType, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 nodeunitShim({
   'When creating a VPC': {
@@ -14,7 +12,7 @@ nodeunitShim({
       'vpc.vpcId returns a token to the VPC ID'(test: Test) {
         const stack = getTestStack();
         const vpc = new Vpc(stack, 'TheVPC');
-        test.deepEqual(stack.resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' } );
+        test.deepEqual(stack.resolve(vpc.vpcId), {Ref: 'TheVPC92636AB0' } );
         test.done();
       },
 
@@ -34,11 +32,11 @@ nodeunitShim({
         new Vpc(stack, 'TheVPC');
         expect(stack).to(
           haveResource('AWS::EC2::VPC',
-            hasTags( [{ Key: 'Name', Value: 'TestStack/TheVPC' }])),
+            hasTags( [ {Key: 'Name', Value: 'TestStack/TheVPC'} ])),
         );
         expect(stack).to(
           haveResource('AWS::EC2::InternetGateway',
-            hasTags( [{ Key: 'Name', Value: 'TestStack/TheVPC' }])),
+            hasTags( [ {Key: 'Name', Value: 'TestStack/TheVPC'} ])),
         );
         test.done();
       },
@@ -68,10 +66,10 @@ nodeunitShim({
       const tests: any = { };
 
       const inputs = [
-        { dnsSupport: false, dnsHostnames: false },
+        {dnsSupport: false, dnsHostnames: false},
         // {dnsSupport: false, dnsHostnames: true} - this configuration is illegal so its not part of the permutations.
-        { dnsSupport: true, dnsHostnames: false },
-        { dnsSupport: true, dnsHostnames: true },
+        {dnsSupport: true, dnsHostnames: false},
+        {dnsSupport: true, dnsHostnames: true},
       ];
 
       for (const input of inputs) {
@@ -809,7 +807,7 @@ nodeunitShim({
 
       const vpc = new Vpc(stack, 'VpcNetwork');
 
-      test.ok(vpc.publicSubnets[0].node.defaultChild instanceof CfnSubnet);
+      test.ok(vpc.publicSubnets[0].construct.defaultChild instanceof CfnSubnet);
 
       test.done();
     },
@@ -978,7 +976,7 @@ nodeunitShim({
       expect(stack).toMatch({
         Outputs: {
           Output: {
-            Value: { 'Fn::GetAtt': ['TheVPCPublicSubnet1Subnet770D4FF2', 'NetworkAclAssociationId'] },
+            Value: { 'Fn::GetAtt': [ 'TheVPCPublicSubnet1Subnet770D4FF2', 'NetworkAclAssociationId' ] },
           },
         },
       }, MatchStyle.SUPERSET);
@@ -1003,7 +1001,7 @@ nodeunitShim({
       expect(stack).toMatch({
         Outputs: {
           Output: {
-            Value: { Ref: 'ACLDBD1BB49' },
+            Value: { Ref: 'ACLDBD1BB49'},
           },
         },
       }, MatchStyle.SUPERSET);
@@ -1025,18 +1023,18 @@ nodeunitShim({
   'When tagging': {
     'VPC propagated tags will be on subnet, IGW, routetables, NATGW'(test: Test) {
       const stack = getTestStack();
-      const tags = {
+      const tags =  {
         VpcType: 'Good',
       };
       const noPropTags = {
         BusinessUnit: 'Marketing',
       };
-      const allTags = { ...tags, ...noPropTags };
+      const allTags  = {...tags, ...noPropTags};
 
       const vpc = new Vpc(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.node.applyAspect(new Tag('BusinessUnit', 'Marketing', { includeResourceTypes: [CfnVPC.CFN_RESOURCE_TYPE_NAME] }));
-      vpc.node.applyAspect(new Tag('VpcType', 'Good'));
+      vpc.construct.applyAspect(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.CFN_RESOURCE_TYPE_NAME]}));
+      vpc.construct.applyAspect(new Tag('VpcType', 'Good'));
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
       const propTags = toCfnTags(tags);
@@ -1051,12 +1049,12 @@ nodeunitShim({
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'TheVPC');
       for (const subnet of vpc.publicSubnets) {
-        const tag = { Key: 'Name', Value: subnet.node.path };
+        const tag = {Key: 'Name', Value: subnet.construct.path};
         expect(stack).to(haveResource('AWS::EC2::NatGateway', hasTags([tag])));
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       for (const subnet of vpc.privateSubnets) {
-        const tag = { Key: 'Name', Value: subnet.node.path };
+        const tag = {Key: 'Name', Value: subnet.construct.path};
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       test.done();
@@ -1065,9 +1063,9 @@ nodeunitShim({
       const stack = getTestStack();
 
       const vpc = new Vpc(stack, 'TheVPC');
-      const tag = { Key: 'Late', Value: 'Adder' };
+      const tag = {Key: 'Late', Value: 'Adder'};
       expect(stack).notTo(haveResource('AWS::EC2::VPC', hasTags([tag])));
-      vpc.node.applyAspect(new Tag(tag.Key, tag.Value));
+      vpc.construct.applyAspect(new Tag(tag.Key, tag.Value));
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags([tag])));
       test.done();
     },
@@ -1212,9 +1210,9 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'VpcNetwork', {
         maxAzs: 1,
         subnetConfiguration: [
-          { name: 'lb', subnetType: SubnetType.PUBLIC },
-          { name: 'app', subnetType: SubnetType.PRIVATE },
-          { name: 'db', subnetType: SubnetType.PRIVATE },
+          {name: 'lb', subnetType: SubnetType.PUBLIC },
+          {name: 'app', subnetType: SubnetType.PRIVATE },
+          {name: 'db', subnetType: SubnetType.PRIVATE },
         ],
       });
 
@@ -1376,7 +1374,7 @@ function getTestStack(): Stack {
 
 function toCfnTags(tags: any): Array<{Key: string, Value: string}> {
   return Object.keys(tags).map( key => {
-    return { Key: key, Value: tags[key] };
+    return {Key: key, Value: tags[key]};
   });
 }
 

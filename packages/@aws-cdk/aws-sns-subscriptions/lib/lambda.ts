@@ -27,14 +27,14 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       throw new Error('The supplied lambda Function object must be an instance of Construct');
     }
 
-    this.fn.addPermission(`AllowInvoke:${topic.node.uniqueId}`, {
+    this.fn.addPermission(`AllowInvoke:${topic.construct.uniqueId}`, {
       sourceArn: topic.topicArn,
       principal: new iam.ServicePrincipal('sns.amazonaws.com'),
     });
 
     return {
       subscriberScope: this.fn,
-      subscriberId: topic.node.id,
+      subscriberId: topic.construct.id,
       endpoint: this.fn.functionArn,
       protocol: sns.SubscriptionProtocol.LAMBDA,
       filterPolicy: this.props.filterPolicy,

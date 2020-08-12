@@ -198,7 +198,7 @@ export class Distribution extends Resource implements IDistribution {
     } else {
       const originIndex = this.boundOrigins.length + 1;
       const scope = new Construct(this, `Origin${originIndex}`);
-      const originId = scope.node.uniqueId;
+      const originId = scope.construct.uniqueId;
       const originBindConfig = origin.bind(scope, { originId });
       this.boundOrigins.push({ origin, originId, ...originBindConfig });
       if (originBindConfig.failoverConfig) {
@@ -225,7 +225,7 @@ export class Distribution extends Resource implements IDistribution {
           quantity: statusCodes.length,
         },
       },
-      id: new Construct(this, `OriginGroup${groupIndex}`).node.uniqueId,
+      id: new Construct(this, `OriginGroup${groupIndex}`).construct.uniqueId,
       members: {
         items: [
           { originId },

@@ -527,7 +527,7 @@ abstract class TableBase extends Resource implements ITable {
    */
   public grantStream(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (!this.tableStreamArn) {
-      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.construct.path}`);
     }
 
     return iam.Grant.addToPrincipal({
@@ -558,7 +558,7 @@ abstract class TableBase extends Resource implements ITable {
    */
   public grantTableListStreams(grantee: iam.IGrantable): iam.Grant {
     if (!this.tableStreamArn) {
-      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.construct.path}`);
     }
 
     return iam.Grant.addToPrincipal({
@@ -728,7 +728,7 @@ abstract class TableBase extends Resource implements ITable {
     }
     if (opts.streamActions) {
       if (!this.tableStreamArn) {
-        throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
+        throw new Error(`DynamoDB Streams must be enabled on the table ${this.construct.path}`);
       }
       const resources = [this.tableStreamArn];
       const ret = iam.Grant.addToPrincipal({
@@ -919,7 +919,7 @@ export class Table extends TableBase {
     });
     this.tableName = this.getResourceNameAttribute(this.table.ref);
 
-    if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName); }
+    if (props.tableName) { this.construct.addMetadata('aws:cdk:hasPhysicalName', this.tableName); }
 
     this.tableStreamArn = streamSpecification ? this.table.attrStreamArn : undefined;
 
@@ -1266,7 +1266,7 @@ export class Table extends TableBase {
           Region: region,
         },
       });
-      currentRegion.node.addDependency(
+      currentRegion.construct.addDependency(
         onEventHandlerPolicy.policy,
         isCompleteHandlerPolicy.policy,
       );
@@ -1278,7 +1278,7 @@ export class Table extends TableBase {
         const createReplica = new CfnCondition(this, `StackRegionNotEquals${region}`, {
           expression: Fn.conditionNot(Fn.conditionEquals(region, Aws.REGION)),
         });
-        const cfnCustomResource = currentRegion.node.defaultChild as CfnCustomResource;
+        const cfnCustomResource = currentRegion.construct.defaultChild as CfnCustomResource;
         cfnCustomResource.cfnOptions.condition = createReplica;
       }
 
@@ -1294,7 +1294,7 @@ export class Table extends TableBase {
       // have multiple table updates at the same time. The `isCompleteHandler`
       // of the provider waits until the replica is in an ACTIVE state.
       if (previousRegion) {
-        currentRegion.node.addDependency(previousRegion);
+        currentRegion.construct.addDependency(previousRegion);
       }
       previousRegion = currentRegion;
     }
@@ -1348,7 +1348,7 @@ export class Table extends TableBase {
     switch (encryptionType) {
       case TableEncryption.CUSTOMER_MANAGED:
         const encryptionKey = props.encryptionKey ?? new kms.Key(this, 'Key', {
-          description: `Customer-managed key auto-created for encrypting DynamoDB table at ${this.node.path}`,
+          description: `Customer-managed key auto-created for encrypting DynamoDB table at ${this.construct.path}`,
           enableKeyRotation: true,
         });
 
@@ -1453,7 +1453,7 @@ class SourceTableAttachedPolicy extends Construct implements iam.IGrantable {
   public readonly policy: iam.IPolicy;
 
   public constructor(sourceTable: Table, role: iam.IRole) {
-    super(sourceTable, `SourceTableAttachedPolicy-${role.node.uniqueId}`);
+    super(sourceTable, `SourceTableAttachedPolicy-${role.construct.uniqueId}`);
 
     const policy = new iam.Policy(this, 'Resource', { roles: [role] });
     this.policy = policy;

@@ -44,14 +44,14 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   }
 
   // unsupported: stacks from different apps
-  if (producer.node.root !== consumer.node.root) {
+  if (producer.construct.root !== consumer.construct.root) {
     throw new Error('Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
   }
 
   // unsupported: stacks are not in the same environment
   if (producer.environment !== consumer.environment) {
     throw new Error(
-      `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
+      `Stack "${consumer.construct.path}" cannot consume a cross reference from stack "${producer.construct.path}". ` +
       'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack');
   }
 
@@ -97,7 +97,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // will take care of applying the dependency at the right level (e.g. the
   // top-level stacks).
   consumer.addDependency(producer,
-    `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
+    `${consumer.construct.path} -> ${reference.target.construct.path}.${reference.displayName}`);
 
   return createImportValue(reference);
 }
@@ -107,7 +107,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
  */
 function findAllReferences(root: IConstruct) {
   const result = new Array<{ source: CfnElement, value: CfnReference }>();
-  for (const consumer of root.node.findAll()) {
+  for (const consumer of root.construct.findAll()) {
 
     // include only CfnElements (i.e. resources)
     if (!CfnElement.isCfnElement(consumer)) {
@@ -178,7 +178,7 @@ function createImportValue(reference: Reference): Intrinsic {
     throw new Error(`unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`);
   }
 
-  const output = exportsScope.node.tryFindChild(id) as CfnOutput;
+  const output = exportsScope.construct.tryFindChild(id) as CfnOutput;
   if (!output) {
     new CfnOutput(exportsScope, id, { value: Token.asString(reference), exportName });
   }
@@ -190,7 +190,7 @@ function createImportValue(reference: Reference): Intrinsic {
 
 function getCreateExportsScope(stack: Stack) {
   const exportsName = 'Exports';
-  let stackExports = stack.node.tryFindChild(exportsName) as Construct;
+  let stackExports = stack.construct.tryFindChild(exportsName) as Construct;
   if (stackExports === undefined) {
     stackExports = new Construct(stack, exportsName);
   }
@@ -200,7 +200,7 @@ function getCreateExportsScope(stack: Stack) {
 
 function generateExportName(stackExports: Construct, id: string) {
   const stack = Stack.of(stackExports);
-  const components = [...stackExports.node.scopes.slice(2).map(c => c.node.id), id];
+  const components = [...stackExports.construct.scopes.slice(2).map(c => c.construct.id), id];
   const prefix = stack.stackName ? stack.stackName + ':' : '';
   const exportName = prefix + makeUniqueId(components);
   return exportName;
@@ -216,8 +216,8 @@ function generateExportName(stackExports: Construct, id: string) {
  */
 function createNestedStackParameter(nested: Stack, reference: CfnReference, value: IResolvable) {
   // we call "this.resolve" to ensure that tokens do not creep in (for example, if the reference display name includes tokens)
-  const paramId = nested.resolve(`reference-to-${reference.target.node.uniqueId}.${reference.displayName}`);
-  let param = nested.node.tryFindChild(paramId) as CfnParameter;
+  const paramId = nested.resolve(`reference-to-${reference.target.construct.uniqueId}.${reference.displayName}`);
+  let param = nested.construct.tryFindChild(paramId) as CfnParameter;
   if (!param) {
     param = new CfnParameter(nested, paramId, { type: 'String' });
 
@@ -237,8 +237,8 @@ function createNestedStackParameter(nested: Stack, reference: CfnReference, valu
  * intrinsic that can be used to reference this output in the parent stack.
  */
 function createNestedStackOutput(producer: Stack, reference: Reference): CfnReference {
-  const outputId = `${reference.target.node.uniqueId}${reference.displayName}`;
-  let output = producer.node.tryFindChild(outputId) as CfnOutput;
+  const outputId = `${reference.target.construct.uniqueId}${reference.displayName}`;
+  let output = producer.construct.tryFindChild(outputId) as CfnOutput;
   if (!output) {
     output = new CfnOutput(producer, outputId, { value: Token.asString(reference) });
   }

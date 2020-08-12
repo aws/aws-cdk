@@ -473,6 +473,12 @@ export class Repository extends RepositoryBase {
     return { statementAdded: false, policyDependable: this.policyDocument };
   }
 
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policyDocument?.validateForResourcePolicy() || []);
+    return errors;
+  }
+
   /**
    * Add a life cycle rule to the repository
    *

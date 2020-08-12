@@ -162,7 +162,7 @@ export class ClusterResource extends Construct {
       },
     });
 
-    resource.node.addDependency(this.creationRole);
+    resource.construct.addDependency(this.creationRole);
 
     this.ref = resource.ref;
     this.attrEndpoint = Token.asString(resource.getAtt('Endpoint'));

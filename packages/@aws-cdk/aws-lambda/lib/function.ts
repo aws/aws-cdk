@@ -299,6 +299,15 @@ export interface FunctionProps extends FunctionOptions {
    * @default - will not mount any filesystem
    */
   readonly filesystem?: FileSystem;
+
+  /**
+   * Lambda Functions in a public subnet can NOT access the internet.
+   * Use this property to acknowledge this limitation and still place the function in a public subnet.
+   * @see https://stackoverflow.com/questions/52992085/why-cant-an-aws-lambda-function-inside-a-public-subnet-in-a-vpc-connect-to-the/52994841#52994841
+   *
+   * @default false
+   */
+  readonly allowPublicSubnet?: boolean;
 }
 
 /**
@@ -335,7 +344,7 @@ export class Function extends FunctionBase {
     // override the version's logical ID with a lazy string which includes the
     // hash of the function itself, so a new version resource is created when
     // the function configuration changes.
-    const cfn = this._currentVersion.node.defaultChild as CfnResource;
+    const cfn = this._currentVersion.construct.defaultChild as CfnResource;
     const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
 
     cfn.overrideLogicalId(Lazy.stringValue({
@@ -597,7 +606,7 @@ export class Function extends FunctionBase {
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
     });
 
-    resource.node.addDependency(this.role);
+    resource.construct.addDependency(this.role);
 
     this.functionName = this.getResourceNameAttribute(resource.ref);
     this.functionArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -645,7 +654,7 @@ export class Function extends FunctionBase {
     if (props.filesystem) {
       const config = props.filesystem.config;
       if (config.dependency) {
-        this.node.addDependency(...config.dependency);
+        this.construct.addDependency(...config.dependency);
       }
 
       resource.addPropertyOverride('FileSystemConfigs',
@@ -748,7 +757,7 @@ export class Function extends FunctionBase {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: logs.RetentionDays.INFINITE,
       });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.construct.id}-LogGroup`, logretention.logGroupArn);
     }
     return this._logGroup;
   }
@@ -807,7 +816,7 @@ export class Function extends FunctionBase {
     } else {
       const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
-        description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
+        description: 'Automatic security group for Lambda Function ' + this.construct.uniqueId,
         allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];
@@ -821,15 +830,13 @@ export class Function extends FunctionBase {
       }
     }
 
-    // Pick subnets, make sure they're not Public. Routing through an IGW
-    // won't work because the ENIs don't get a Public IP.
-    // Why are we not simply forcing vpcSubnets? Because you might still be choosing
-    // Isolated networks or selecting among 2 sets of Private subnets by name.
+    const allowPublicSubnet = props.allowPublicSubnet ?? false;
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
     for (const subnetId of subnetIds) {
-      if (publicSubnetIds.has(subnetId)) {
-        throw new Error('Not possible to place Lambda Functions in a Public subnet');
+      if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
+        throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
+          'If you are aware of this limitation and would still like to place the function int a public subnet, set `allowPublicSubnet` to true');
       }
     }
 

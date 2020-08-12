@@ -302,7 +302,7 @@ export = {
         const app = new cdk.App({
           treeMetadata: false, // we can't set the context otherwise, because App will have a child
         });
-        app.node.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, true);
+        app.construct.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, true);
 
         const pipelineStack = new cdk.Stack(app, 'PipelineStack', {
           env: { region: 'us-west-2', account: '123456789012' },

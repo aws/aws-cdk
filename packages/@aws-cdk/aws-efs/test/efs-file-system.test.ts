@@ -75,16 +75,16 @@ test('encrypted file system is created correctly with custom KMS', () => {
   }));
 });
 
-test('file system is created correctly with life cycle property', () => {
+test('file system is created correctly with a life cycle property', () => {
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
-    lifecyclePolicy: LifecyclePolicy.AFTER_14_DAYS,
+    lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
   });
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     LifecyclePolicies: [{
-      TransitionToIA: 'AFTER_14_DAYS',
+      TransitionToIA: 'AFTER_7_DAYS',
     }],
   }));
 });
@@ -181,7 +181,7 @@ test('support tags', () => {
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     FileSystemTags: [
-      { Key: 'Name', Value: 'LookAtMeAndMyFancyTags' },
+      {Key: 'Name', Value: 'LookAtMeAndMyFancyTags'},
     ],
   }));
 });
@@ -196,7 +196,7 @@ test('file system is created correctly when given a name', () => {
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     FileSystemTags: [
-      { Key: 'Name', Value: 'MyNameableFileSystem' },
+      {Key: 'Name', Value: 'MyNameableFileSystem'},
     ],
   }));
 });
@@ -210,13 +210,13 @@ test('auto-named if none provided', () => {
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     FileSystemTags: [
-      { Key: 'Name', Value: fileSystem.node.path },
+      {Key: 'Name', Value: fileSystem.construct.path},
     ],
   }));
 });
 
 test('removalPolicy is DESTROY', () => {
-  new FileSystem(stack, 'EfsFileSystem', { vpc, removalPolicy: RemovalPolicy.DESTROY });
+  new FileSystem(stack, 'EfsFileSystem', {vpc, removalPolicy: RemovalPolicy.DESTROY});
 
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     DeletionPolicy: 'Delete',

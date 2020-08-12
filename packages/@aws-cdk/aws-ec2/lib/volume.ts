@@ -176,7 +176,7 @@ export function synthesizeBlockDeviceMappings(construct: Construct, blockDevices
           throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+        construct.construct.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
       }
     }
 
@@ -292,14 +292,10 @@ export interface IVolume extends IResource {
    * given the ability to AttachVolume if both the Volume and the destination Instance have that
    * tag applied to them.
    *
-   * If you need to call this method multiple times on different sets of constructs, then provide a
-   * unique `tagKeySuffix` for each call; failure to do so will result in an inability to attach this
-   * volume to some of the grants because it will overwrite the tag.
-   *
    * @param grantee    the principal being granted permission.
    * @param constructs The list of constructs that will have the generated resource tag applied to them.
    * @param tagKeySuffix A suffix to use on the generated Tag key in place of the generated hash value.
-   *                     Defaults to a hash calculated from this volume.
+   *                     Defaults to a hash calculated from this volume and list of constructs. (DEPRECATED)
    */
   grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant;
 
@@ -326,7 +322,7 @@ export interface IVolume extends IResource {
    * @param grantee    the principal being granted permission.
    * @param constructs The list of constructs that will have the generated resource tag applied to them.
    * @param tagKeySuffix A suffix to use on the generated Tag key in place of the generated hash value.
-   *                     Defaults to a hash calculated from this volume.
+   *                     Defaults to a hash calculated from this volume and list of constructs. (DEPRECATED)
    */
   grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant;
 }
@@ -499,8 +495,8 @@ abstract class VolumeBase extends Resource implements IVolume {
   }
 
   public grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
-    const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? this.stringHash(this.node.uniqueId)}`;
-    const tagValue = this.calculateResourceTagValue(constructs);
+    const tagValue = this.calculateResourceTagValue([this, ...constructs]);
+    const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? tagValue.slice(0,10).toUpperCase()}`;
     const grantCondition: { [key: string]: string } = {};
     grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
 
@@ -528,8 +524,8 @@ abstract class VolumeBase extends Resource implements IVolume {
   }
 
   public grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
-    const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? this.stringHash(this.node.uniqueId)}`;
-    const tagValue = this.calculateResourceTagValue(constructs);
+    const tagValue = this.calculateResourceTagValue([this, ...constructs]);
+    const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? tagValue.slice(0,10).toUpperCase()}`;
     const grantCondition: { [key: string]: string } = {};
     grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
 
@@ -560,14 +556,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     return resourceArns;
   }
 
-  private stringHash(value: string): string {
-    const md5 = crypto.createHash('md5').update(value).digest('hex');
-    return md5.slice(0, 8).toUpperCase();
-  }
-
   private calculateResourceTagValue(constructs: Construct[]): string {
     const md5 = crypto.createHash('md5');
-    constructs.forEach(construct => md5.update(construct.node.uniqueId));
+    constructs.forEach(construct => md5.update(construct.construct.uniqueId));
     return md5.digest('hex');
   }
 }

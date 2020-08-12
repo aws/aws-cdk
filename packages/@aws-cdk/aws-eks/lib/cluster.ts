@@ -14,7 +14,7 @@ import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlProvider, KubectlProviderProps } from './kubectl-provider';
-import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
@@ -276,13 +276,13 @@ export class EndpointAccess {
    *
    * @param cidr The CIDR blocks.
    */
-  public static readonly PUBLIC = new EndpointAccess({ privateAccess: false, publicAccess: true });
+  public static readonly PUBLIC = new EndpointAccess({privateAccess: false, publicAccess: true});
 
   /**
    * The cluster endpoint is only accessible through your VPC.
    * Worker node traffic to the endpoint will stay within your VPC.
    */
-  public static readonly PRIVATE = new EndpointAccess({ privateAccess: true, publicAccess: false });
+  public static readonly PRIVATE = new EndpointAccess({privateAccess: true, publicAccess: false});
 
   /**
    * The cluster endpoint is accessible from outside of your VPC.
@@ -295,7 +295,7 @@ export class EndpointAccess {
    *
    * @param cidr The CIDR blocks.
    */
-  public static readonly PUBLIC_AND_PRIVATE = new EndpointAccess({ privateAccess: true, publicAccess: true });
+  public static readonly PUBLIC_AND_PRIVATE = new EndpointAccess({privateAccess: true, publicAccess: true});
 
   private constructor(
     /**
@@ -637,12 +637,12 @@ export class Cluster extends Resource implements ICluster {
 
     // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
     // this ensures that.
-    this._clusterResource.node.addDependency(this.kubctlProviderSecurityGroup, this.vpc);
+    this._clusterResource.construct.addDependency(this.kubctlProviderSecurityGroup, this.vpc);
 
     // see https://github.com/aws/aws-cdk/issues/9027
     this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
       actions: ['ec2:DescribeVpcs'],
-      resources: [stack.formatArn({
+      resources: [ stack.formatArn({
         service: 'ec2',
         resource: 'vpc',
         resourceName: this.vpc.vpcId,
@@ -659,7 +659,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     // add the cluster resource itself as a dependency of the barrier
-    this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
+    this._kubectlReadyBarrier.construct.addDependency(this._clusterResource);
 
     this.clusterName = this.getResourceNameAttribute(resource.ref);
     this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
@@ -671,7 +671,7 @@ export class Cluster extends Resource implements ICluster {
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
-    const commonCommandOptions = [`--region ${stack.region}`];
+    const commonCommandOptions = [ `--region ${stack.region}` ];
 
     if (props.outputClusterName) {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
@@ -899,13 +899,13 @@ export class Cluster extends Resource implements ICluster {
     if (!this._openIdConnectProvider) {
       this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
         url: this.clusterOpenIdConnectIssuerUrl,
-        clientIds: ['sts.amazonaws.com'],
+        clientIds: [ 'sts.amazonaws.com' ],
         /**
          * For some reason EKS isn't validating the root certificate but a intermediat certificate
          * which is one level up in the tree. Because of the a constant thumbprint value has to be
          * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
          */
-        thumbprints: ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'],
+        thumbprints: [ '9e99a48a9960b14926bb7f3b02e22da2b0ab7280' ],
       });
     }
 
@@ -988,7 +988,7 @@ export class Cluster extends Resource implements ICluster {
     // add all profiles as a dependency of the "kubectl-ready" barrier because all kubectl-
     // resources can only be deployed after all fargate profiles are created.
     if (this._kubectlReadyBarrier) {
-      this._kubectlReadyBarrier.node.addDependency(fargateProfile);
+      this._kubectlReadyBarrier.construct.addDependency(fargateProfile);
     }
 
     return this._fargateProfiles;
@@ -1009,7 +1009,7 @@ export class Cluster extends Resource implements ICluster {
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
 
     // singleton
-    let provider = this.stack.node.tryFindChild(uid) as KubectlProvider;
+    let provider = this.stack.construct.tryFindChild(uid) as KubectlProvider;
     if (!provider) {
       // create the provider.
 
@@ -1018,13 +1018,20 @@ export class Cluster extends Resource implements ICluster {
       };
 
       if (!this.endpointAccess._config.publicAccess) {
+
+        const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+
+        if (privateSubents.length === 0) {
+          throw new Error('Vpc must contain private subnets to configure private endpoint access');
+        }
+
         // endpoint access is private only, we need to attach the
         // provider to the VPC so that it can access the cluster.
         providerProps = {
           ...providerProps,
           vpc: this.vpc,
           // lambda can only be accociated with max 16 subnets and they all need to be private.
-          vpcSubnets: { subnets: this.selectPrivateSubnets().slice(0, 16) },
+          vpcSubnets: {subnets: privateSubents},
           securityGroups: [this.kubctlProviderSecurityGroup],
         };
       }
@@ -1039,7 +1046,7 @@ export class Cluster extends Resource implements ICluster {
       throw new Error('unexpected: kubectl enabled clusters should have a kubectl-ready barrier resource');
     }
 
-    resourceScope.node.addDependency(this._kubectlReadyBarrier);
+    resourceScope.construct.addDependency(this._kubectlReadyBarrier);
 
     return provider;
   }
@@ -1049,7 +1056,26 @@ export class Cluster extends Resource implements ICluster {
     const privateSubnets: ec2.ISubnet[] = [];
 
     for (const placement of this.vpcSubnets) {
-      privateSubnets.push(...this.vpc.selectSubnets(placement).subnets.filter(s => s instanceof ec2.PrivateSubnet));
+
+      for (const subnet of this.vpc.selectSubnets(placement).subnets) {
+
+        if (this.vpc.privateSubnets.includes(subnet)) {
+          // definitely private, take it.
+          privateSubnets.push(subnet);
+          continue;
+        }
+
+        if (this.vpc.publicSubnets.includes(subnet)) {
+          // definitely public, skip it.
+          continue;
+        }
+
+        // neither public and nor private - what is it then? this means its a subnet instance that was explicitly passed
+        // in the subnet selection. since ISubnet doesn't contain information on type, we have to assume its private and let it
+        // fail at deploy time :\ (its better than filtering it out and preventing a possibly successful deployment)
+        privateSubnets.push(subnet);
+      }
+
     }
 
     return privateSubnets;
@@ -1104,11 +1130,11 @@ export class Cluster extends Resource implements ICluster {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
-          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          this.construct.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, '1'));
+        subnet.construct.applyAspect(new Tag(tag, '1'));
       }
     };
 

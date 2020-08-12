@@ -44,7 +44,7 @@ class CognitoStack extends Stack {
         ],
       },
     });
-    const cfnClient = userPoolClient.node.defaultChild as cognito.CfnUserPoolClient;
+    const cfnClient = userPoolClient.construct.defaultChild as cognito.CfnUserPoolClient;
     cfnClient.addPropertyOverride('RefreshTokenValidity', 1);
     cfnClient.addPropertyOverride('SupportedIdentityProviders', ['COGNITO']);
 

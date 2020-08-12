@@ -1358,6 +1358,6 @@ export = {
 class ResourceWithLBDependency extends cdk.CfnResource {
   constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
     super(scope, id, { type: 'Test::Resource' });
-    this.node.addDependency(targetGroup.loadBalancerAttached);
+    this.construct.addDependency(targetGroup.loadBalancerAttached);
   }
 }

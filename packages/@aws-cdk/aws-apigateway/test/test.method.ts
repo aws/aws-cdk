@@ -472,7 +472,7 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       RequestModels: {
-        'application/json': { Ref: stack.getLogicalId(model.node.findChild('Resource') as cdk.CfnElement) },
+        'application/json': { Ref: stack.getLogicalId(model.construct.findChild('Resource') as cdk.CfnElement) },
       },
     }));
 
@@ -536,7 +536,7 @@ export = {
         ResponseModels: {
           'application/json': 'Empty',
           'text/plain': 'Error',
-          'text/html': { Ref: stack.getLogicalId(htmlModel.node.findChild('Resource') as cdk.CfnElement) },
+          'text/html': { Ref: stack.getLogicalId(htmlModel.construct.findChild('Resource') as cdk.CfnElement) },
         },
       }],
     }));
@@ -564,10 +564,10 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      RequestValidatorId: { Ref: stack.getLogicalId(validator.node.findChild('Resource') as cdk.CfnElement) },
+      RequestValidatorId: { Ref: stack.getLogicalId(validator.construct.findChild('Resource') as cdk.CfnElement) },
     }));
     expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
-      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
+      RestApiId: { Ref: stack.getLogicalId(api.construct.findChild('Resource') as cdk.CfnElement) },
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
     }));

@@ -72,7 +72,7 @@ jobs:
            {"keywords":["[@aws-cdk/aws-ecr]","[aws-ecr]","[ecr]"],"labels":["@aws-cdk/aws-ecr"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["[@aws-cdk/aws-ecr-assets]","[aws-ecr-assets]","[ecr-assets]","[ecr assets]","[ecrassets]"],"labels":["@aws-cdk/aws-ecr-assets"],"assignees":["eladb"]},
            {"keywords":["[@aws-cdk/aws-efs]","[aws-efs]","[efs]"],"labels":["@aws-cdk/aws-efs"],"assignees":["rix0rrr"]},
-           {"keywords":["[@aws-cdk/aws-eks]","[aws-eks]","[eks]"],"labels":["@aws-cdk/aws-eks"],"assignees":["eladb"]},
+           {"keywords":["[@aws-cdk/aws-eks]","[aws-eks]","[eks]"],"labels":["@aws-cdk/aws-eks"],"assignees":["iliapolo"]},
            {"keywords":["[@aws-cdk/aws-elasticache]","[aws-elasticache]","[elasticache]","[elastic cache]","[elastic-cache]"],"labels":["@aws-cdk/aws-elasticache"],"assignees":["iliapolo"]},
            {"keywords":["[@aws-cdk/aws-elasticbeanstalk]","[aws-elasticbeanstalk]","[elasticbeanstalk]","[elastic beanstalk]","[elastic-beanstalk]"],"labels":["@aws-cdk/aws-elasticbeanstalk"],"assignees":["skinny85"]},
            {"keywords":["[@aws-cdk/aws-elasticloadbalancing]","[aws-elasticloadbalancing]","[elasticloadbalancing]","[elastic loadbalancing]","[elastic-loadbalancing]","[elb]"],"labels":["@aws-cdk/aws-elasticloadbalancing"],"assignees":["rix0rrr"]},

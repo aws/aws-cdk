@@ -118,7 +118,7 @@ export class Deployment extends Resource {
     // and the `AWS::Lambda::Permission` resources (children under Method),
     // causing cyclic dependency errors. Hence, falling back to declaring
     // dependencies between the underlying CfnResources.
-    this.node.addDependency(method.node.defaultChild as CfnResource);
+    this.construct.addDependency(method.construct.defaultChild as CfnResource);
   }
 }
 
@@ -150,7 +150,7 @@ class LatestDeploymentResource extends CfnDeployment {
   public addToLogicalId(data: unknown) {
     // if the construct is locked, it means we are already synthesizing and then
     // we can't modify the hash because we might have already calculated it.
-    if (this.node.locked) {
+    if (this.construct.locked) {
       throw new Error('Cannot modify the logical ID when the construct is locked');
     }
 
@@ -163,7 +163,7 @@ class LatestDeploymentResource extends CfnDeployment {
     if (this.api instanceof RestApi || this.api instanceof SpecRestApi) { // Ignore IRestApi that are imported
 
       // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.
-      const cfnRestApiCF = (this.api.node.defaultChild as any)._toCloudFormation();
+      const cfnRestApiCF = (this.api.construct.defaultChild as any)._toCloudFormation();
       hash.push(this.stack.resolve(cfnRestApiCF));
     }
 

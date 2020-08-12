@@ -491,7 +491,7 @@ nodeunitShim({
       ],
     });
 
-    test.ok(distribution.node.defaultChild instanceof CfnDistribution);
+    test.ok(distribution.construct.defaultChild instanceof CfnDistribution);
     test.done();
   },
 

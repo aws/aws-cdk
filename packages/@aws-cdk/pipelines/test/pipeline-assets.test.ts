@@ -41,6 +41,9 @@ test('command line properly locates assets in subassembly', () => {
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -107,6 +110,7 @@ test('file image asset publishers do not use privilegedmode, have right AssumeRo
     },
     Environment: objectLike({
       PrivilegedMode: false,
+      Image: 'aws/codebuild/standard:4.0',
     }),
   });
 
@@ -137,6 +141,7 @@ test('docker image asset publishers use privilegedmode, have right AssumeRole', 
       })),
     },
     Environment: objectLike({
+      Image: 'aws/codebuild/standard:4.0',
       PrivilegedMode: true,
     }),
   });
@@ -161,6 +166,9 @@ test('can control fix/CLI version used in pipeline selfupdate', () => {
 
   // THEN
   expect(stack2).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {

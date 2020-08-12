@@ -335,7 +335,7 @@ export = {
 function matrixForResourceDependencyTest(testFunction: (test: Test, addDep: (source: CfnResource, target: CfnResource) => void) => void) {
   return {
     'construct dependency'(test: Test) {
-      testFunction(test, (source, target) => source.node.addDependency(target));
+      testFunction(test, (source, target) => source.construct.addDependency(target));
     },
     'resource dependency'(test: Test) {
       testFunction(test, (source, target) => source.addDependsOn(target));

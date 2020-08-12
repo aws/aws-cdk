@@ -70,7 +70,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   }
 
   public get uniqueId() {
-    return this.node.uniqueId;
+    return this.construct.uniqueId;
   }
 
   public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
@@ -81,7 +81,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     const [scope, id] = determineRuleScope(this, peer, connection, 'from', remoteRule);
 
     // Skip duplicates
-    if (scope.node.tryFindChild(id) === undefined) {
+    if (scope.construct.tryFindChild(id) === undefined) {
       new CfnSecurityGroupIngress(scope, id, {
         groupId: this.securityGroupId,
         ...peer.toIngressRuleConfig(),
@@ -99,7 +99,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     const [scope, id] = determineRuleScope(this, peer, connection, 'to', remoteRule);
 
     // Skip duplicates
-    if (scope.node.tryFindChild(id) === undefined) {
+    if (scope.construct.tryFindChild(id) === undefined) {
       new CfnSecurityGroupEgress(scope, id, {
         groupId: this.securityGroupId,
         ...peer.toEgressRuleConfig(),
@@ -363,7 +363,7 @@ export class SecurityGroup extends SecurityGroupBase {
       physicalName: props.securityGroupName,
     });
 
-    const groupDescription = props.description || this.node.path;
+    const groupDescription = props.description || this.construct.path;
 
     this.allowAllOutbound = props.allowAllOutbound !== false;
 
@@ -404,7 +404,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
-      this.node.addWarning('Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup');
+      this.construct.addWarning('Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup');
       return;
     } else {
       // Otherwise, if the bogus rule exists we can now remove it because the
