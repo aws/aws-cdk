@@ -956,15 +956,15 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Defines a Kubernetes resource in this cluster.
+   * Defines a Kubernetes manifest in this cluster.
    *
    * The manifest will be applied/deleted using kubectl as needed.
    *
    * @param id logical id of this manifest
    * @param manifest a list of Kubernetes resource specifications
-   * @returns a `KubernetesResource` object.
+   * @returns a `KubernetesManifest` object.
    */
-  public addResource(id: string, ...manifest: any[]) {
+  public addManifest(id: string, ...manifest: any[]) {
     return new KubernetesManifest(this, `manifest-${id}`, { cluster: this, manifest });
   }
 
@@ -1126,7 +1126,7 @@ export class Cluster extends Resource implements ICluster {
     if (!this._neuronDevicePlugin) {
       const fileContents = fs.readFileSync(path.join(__dirname, 'addons/neuron-device-plugin.yaml'), 'utf8');
       const sanitized = YAML.parse(fileContents);
-      this._neuronDevicePlugin = this.addResource('NeuronDevicePlugin', sanitized);
+      this._neuronDevicePlugin = this.addManifest('NeuronDevicePlugin', sanitized);
     }
 
     return this._neuronDevicePlugin;

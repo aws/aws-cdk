@@ -49,15 +49,22 @@ def get_handler(event, context):
 def wait_for_output(args, timeout_seconds):
 
   end_time = time.time() + timeout_seconds
+  error = None
 
   while time.time() < end_time:
-    # the output is surrounded with '', so we unquote
-    output = kubectl(args).decode('utf-8')[1:-1]
-    if output:
-      return output
+    try:
+      # the output is surrounded with '', so we unquote
+      output = kubectl(args).decode('utf-8')[1:-1]
+      if output:
+        return output
+    except Exception as e:
+      error = str(e)
+      # also a recoverable error
+      if 'NotFound' in error:
+        pass
     time.sleep(10)
 
-  raise RuntimeError(f'Timeout waiting for output from kubectl command: {args}')
+  raise RuntimeError(f'Timeout waiting for output from kubectl command: {args} (last_error={error})')
 
 def kubectl(args):
     retry = 3

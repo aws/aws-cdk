@@ -396,7 +396,7 @@ export = {
     test.done();
   },
 
-  'addResource can be used to apply k8s manifests on this cluster'(test: Test) {
+  'addManifest can be used to apply k8s manifests on this cluster'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -406,8 +406,8 @@ export = {
     });
 
     // WHEN
-    cluster.addResource('manifest1', { foo: 123 });
-    cluster.addResource('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
+    cluster.addManifest('manifest1', { foo: 123 });
+    cluster.addManifest('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
 
     // THEN
     expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
@@ -1290,7 +1290,7 @@ export = {
 
       // WHEN
       cluster.addFargateProfile('profile1', { selectors: [{ namespace: 'profile1' }] });
-      cluster.addResource('resource1', { foo: 123 });
+      cluster.addManifest('resource1', { foo: 123 });
       cluster.addFargateProfile('profile2', { selectors: [{ namespace: 'profile2' }] });
       new eks.HelmChart(stack, 'chart', { cluster, chart: 'mychart' });
       cluster.addFargateProfile('profile3', { selectors: [{ namespace: 'profile3' }] });
@@ -1340,9 +1340,9 @@ export = {
       // WHEN
 
       // activate kubectl provider
-      c1.addResource('c1a', { foo: 123 });
-      c1.addResource('c1b', { foo: 123 });
-      c2.addResource('c2', { foo: 123 });
+      c1.addManifest('c1a', { foo: 123 });
+      c1.addManifest('c1b', { foo: 123 });
+      c2.addManifest('c2', { foo: 123 });
 
       // THEN
       const template = app.synth().getStackArtifact(stack.artifactId).template;
@@ -1374,7 +1374,7 @@ export = {
       },
     });
 
-    cluster.addResource('resource', {
+    cluster.addManifest('resource', {
       kind: 'ConfigMap',
       apiVersion: 'v1',
       data: {
@@ -1477,7 +1477,7 @@ export = {
         vpc,
       });
 
-      cluster.addResource('resource', {
+      cluster.addManifest('resource', {
         kind: 'ConfigMap',
         apiVersion: 'v1',
         data: {
@@ -1541,7 +1541,7 @@ export = {
         vpc: vpc2,
       });
 
-      cluster.addResource('resource', {
+      cluster.addManifest('resource', {
         kind: 'ConfigMap',
         apiVersion: 'v1',
         data: {
@@ -1590,7 +1590,7 @@ export = {
         vpcSubnets: [{subnetGroupName: 'Private1'}, {subnetGroupName: 'Private2'}],
       });
 
-      cluster.addResource('resource', {
+      cluster.addManifest('resource', {
         kind: 'ConfigMap',
         apiVersion: 'v1',
         data: {
@@ -1704,6 +1704,7 @@ export = {
       },
       ResourceType: 'service',
       ResourceName: 'myservice',
+      ResourceNamespace: 'default',
       JsonPath: '.status.loadBalancer.ingress[0].hostname',
       TimeoutSeconds: 300,
     });

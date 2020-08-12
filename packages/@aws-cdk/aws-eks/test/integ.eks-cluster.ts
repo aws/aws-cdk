@@ -51,7 +51,7 @@ class EksClusterStack extends TestStack {
 
     this.assertServiceAccount();
 
-    this.assertKubectlGet();
+    this.assertServiceLoadBalancerAddress();
 
     new CfnOutput(this, 'ClusterEndpoint', { value: this.cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: this.cluster.clusterArn });
@@ -68,7 +68,7 @@ class EksClusterStack extends TestStack {
 
   private assertCreateNamespace() {
     // deploy an nginx ingress in a namespace
-    const nginxNamespace = this.cluster.addResource('nginx-namespace', {
+    const nginxNamespace = this.cluster.addManifest('nginx-namespace', {
       apiVersion: 'v1',
       kind: 'Namespace',
       metadata: {
@@ -98,7 +98,7 @@ class EksClusterStack extends TestStack {
   }
   private assertSimpleManifest() {
     // apply a kubernetes manifest
-    this.cluster.addResource('HelloApp', ...hello.resources);
+    this.cluster.addManifest('HelloApp', ...hello.resources);
   }
   private assertNodeGroup() {
     // add a extra nodegroup
@@ -153,7 +153,7 @@ class EksClusterStack extends TestStack {
 
   }
 
-  private assertKubectlGet() {
+  private assertServiceLoadBalancerAddress() {
 
     const serviceName = 'webservice';
     const labels = { app: 'simple-web' };
@@ -166,7 +166,7 @@ class EksClusterStack extends TestStack {
 
     pingerSecurityGroup.addIngressRule(pingerSecurityGroup, ec2.Port.tcp(servicePort), `allow http ${servicePort} access from myself`);
 
-    this.cluster.addResource('simple-web-pod', {
+    this.cluster.addManifest('simple-web-pod', {
       kind: 'Pod',
       apiVersion: 'v1',
       metadata: { name: 'webpod', labels: labels },
@@ -179,7 +179,7 @@ class EksClusterStack extends TestStack {
       },
     });
 
-    this.cluster.addResource('simple-web-service', {
+    this.cluster.addManifest('simple-web-service', {
       kind: 'Service',
       apiVersion: 'v1',
       metadata: {
