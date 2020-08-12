@@ -12,7 +12,6 @@ import { CfnReference } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
 import { Mapper, Validator } from './runtime';
 import { isResolvableObject, Token } from './token';
-import { CfnElement } from './cfn-element';
 
 /**
  * This class contains static methods called when going from
