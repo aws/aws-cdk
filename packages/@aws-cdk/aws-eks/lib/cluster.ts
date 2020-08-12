@@ -659,7 +659,7 @@ export class Cluster extends Resource implements ICluster {
 
     // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
     // this ensures that.
-    this._clusterResource.node.addDependency(this.kubctlProviderSecurityGroup, this.vpc);
+    this._clusterResource.construct.addDependency(this.kubctlProviderSecurityGroup, this.vpc);
 
     // see https://github.com/aws/aws-cdk/issues/9027
     this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
@@ -681,7 +681,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     // add the cluster resource itself as a dependency of the barrier
-    this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
+    this._kubectlReadyBarrier.construct.addDependency(this._clusterResource);
 
     this.clusterName = this.getResourceNameAttribute(resource.ref);
     this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
@@ -1031,7 +1031,7 @@ export class Cluster extends Resource implements ICluster {
     // add all profiles as a dependency of the "kubectl-ready" barrier because all kubectl-
     // resources can only be deployed after all fargate profiles are created.
     if (this._kubectlReadyBarrier) {
-      this._kubectlReadyBarrier.node.addDependency(fargateProfile);
+      this._kubectlReadyBarrier.construct.addDependency(fargateProfile);
     }
 
     return this._fargateProfiles;
@@ -1052,7 +1052,7 @@ export class Cluster extends Resource implements ICluster {
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
 
     // singleton
-    let provider = this.stack.node.tryFindChild(uid) as KubectlProvider;
+    let provider = this.stack.construct.tryFindChild(uid) as KubectlProvider;
     if (!provider) {
       // create the provider.
 
@@ -1061,13 +1061,20 @@ export class Cluster extends Resource implements ICluster {
       };
 
       if (!this.endpointAccess._config.publicAccess) {
+
+        const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+
+        if (privateSubents.length === 0) {
+          throw new Error('Vpc must contain private subnets to configure private endpoint access');
+        }
+
         // endpoint access is private only, we need to attach the
         // provider to the VPC so that it can access the cluster.
         providerProps = {
           ...providerProps,
           vpc: this.vpc,
           // lambda can only be accociated with max 16 subnets and they all need to be private.
-          vpcSubnets: {subnets: this.selectPrivateSubnets().slice(0, 16)},
+          vpcSubnets: {subnets: privateSubents},
           securityGroups: [this.kubctlProviderSecurityGroup],
         };
       }
@@ -1082,7 +1089,7 @@ export class Cluster extends Resource implements ICluster {
       throw new Error('unexpected: kubectl enabled clusters should have a kubectl-ready barrier resource');
     }
 
-    resourceScope.node.addDependency(this._kubectlReadyBarrier);
+    resourceScope.construct.addDependency(this._kubectlReadyBarrier);
 
     return provider;
   }
@@ -1092,7 +1099,26 @@ export class Cluster extends Resource implements ICluster {
     const privateSubnets: ec2.ISubnet[] = [];
 
     for (const placement of this.vpcSubnets) {
-      privateSubnets.push(...this.vpc.selectSubnets(placement).subnets.filter(s => s instanceof ec2.PrivateSubnet));
+
+      for (const subnet of this.vpc.selectSubnets(placement).subnets) {
+
+        if (this.vpc.privateSubnets.includes(subnet)) {
+          // definitely private, take it.
+          privateSubnets.push(subnet);
+          continue;
+        }
+
+        if (this.vpc.publicSubnets.includes(subnet)) {
+          // definitely public, skip it.
+          continue;
+        }
+
+        // neither public and nor private - what is it then? this means its a subnet instance that was explicitly passed
+        // in the subnet selection. since ISubnet doesn't contain information on type, we have to assume its private and let it
+        // fail at deploy time :\ (its better than filtering it out and preventing a possibly successful deployment)
+        privateSubnets.push(subnet);
+      }
+
     }
 
     return privateSubnets;
@@ -1147,11 +1173,11 @@ export class Cluster extends Resource implements ICluster {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
-          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          this.construct.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, '1'));
+        subnet.construct.applyAspect(new Tag(tag, '1'));
       }
     };
 

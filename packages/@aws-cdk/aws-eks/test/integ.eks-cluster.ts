@@ -86,7 +86,7 @@ class EksClusterStack extends TestStack {
     });
 
     // make sure namespace is deployed before the chart
-    nginxIngress.node.addDependency(nginxNamespace);
+    nginxIngress.construct.addDependency(nginxNamespace);
 
   }
   private assertSimpleHelmChart() {

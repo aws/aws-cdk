@@ -20,7 +20,6 @@ export class Pinger extends Construct {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_6,
       vpc: props.vpc,
-      // vpcSubnets: props.vpc ? { subnetType: ec2.SubnetType.PRIVATE } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
       timeout: Duration.minutes(10),
     });

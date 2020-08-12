@@ -399,14 +399,14 @@ new KubernetesPatch(this, 'hello-kub-deployment-label', {
 
 ### Querying Kubernetes Resources
 
-The `KubernetesManifestAttribute` construct can be used to query for information about kubernetes resources,
+The `KubernetesResourceAttribute` construct can be used to query for information about kubernetes resources,
 and use that as part of your CDK application.
 
 For example, you can fetch the address of a [`LoadBalancer`](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) type service:
 
 ```typescript
 // query the load balancer address
-const myServiceAddress = new KubernetesManifestAttribute(this, 'LoadBalancerAttribute', {
+const myServiceAddress = new KubernetesResourceAttribute(this, 'LoadBalancerAttribute', {
   cluster: cluster,
   resourceType: 'service',
   resourceName: 'my-service',

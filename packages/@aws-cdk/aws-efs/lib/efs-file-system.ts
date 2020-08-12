@@ -13,27 +13,27 @@ export enum LifecyclePolicy {
   /**
    * After 7 days of not being accessed.
    */
-  AFTER_7_DAYS,
+  AFTER_7_DAYS = 'AFTER_7_DAYS',
 
   /**
    * After 14 days of not being accessed.
    */
-  AFTER_14_DAYS,
+  AFTER_14_DAYS = 'AFTER_14_DAYS',
 
   /**
    * After 30 days of not being accessed.
    */
-  AFTER_30_DAYS,
+  AFTER_30_DAYS = 'AFTER_30_DAYS',
 
   /**
    * After 60 days of not being accessed.
    */
-  AFTER_60_DAYS,
+  AFTER_60_DAYS = 'AFTER_60_DAYS',
 
   /**
    * After 90 days of not being accessed.
    */
-  AFTER_90_DAYS
+  AFTER_90_DAYS = 'AFTER_90_DAYS'
 }
 
 /**
@@ -247,9 +247,7 @@ export class FileSystem extends Resource implements IFileSystem {
     const filesystem = new CfnFileSystem(this, 'Resource', {
       encrypted: props.encrypted,
       kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
-      lifecyclePolicies: (props.lifecyclePolicy ? Array.of({
-        transitionToIa: LifecyclePolicy[props.lifecyclePolicy],
-      } as CfnFileSystem.LifecyclePolicyProperty) : undefined),
+      lifecyclePolicies: (props.lifecyclePolicy ? [{ transitionToIa: props.lifecyclePolicy }] : undefined),
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
@@ -257,7 +255,7 @@ export class FileSystem extends Resource implements IFileSystem {
     filesystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = filesystem.ref;
-    Tag.add(this, 'Name', props.fileSystemName || this.node.path);
+    Tag.add(this, 'Name', props.fileSystemName || this.construct.path);
 
     const securityGroup = (props.securityGroup || new ec2.SecurityGroup(this, 'EfsSecurityGroup', {
       vpc: props.vpc,

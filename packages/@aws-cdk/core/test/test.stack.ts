@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, Tag, validateString, ISynthesisSession } from '../lib';
+  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
@@ -129,9 +129,9 @@ export = {
     const o = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
     const c = new CfnCondition(stack, 'MyCondition');
 
-    test.equal(stack.node.findChild(p.node.id), p);
-    test.equal(stack.node.findChild(o.node.id), o);
-    test.equal(stack.node.findChild(c.node.id), c);
+    test.equal(stack.construct.findChild(p.construct.id), p);
+    test.equal(stack.construct.findChild(o.construct.id), o);
+    test.equal(stack.construct.findChild(c.construct.id), c);
 
     test.done();
   },
@@ -226,6 +226,43 @@ export = {
     const stack1 = new Stack(app, 'Stack1');
     const resource1 = new CfnResource(stack1, 'Resource', { type: 'BLA' });
     const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another resource
+    new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
+      someProperty: new Intrinsic(resource1.ref),
+    }});
+
+    // THEN
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    test.deepEqual(template2, {
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::Some::Resource',
+          Properties: {
+            someProperty: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefResource1D5D905A' },
+          },
+        },
+      },
+    });
+    test.done();
+  },
+
+  'Cross-stack reference export names are relative to the stack (when the flag is set)'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': 'true',
+      },
+    });
+    const indifferentScope = new Construct(app, 'ExtraScope');
+
+    const stack1 = new Stack(indifferentScope, 'Stack1', {
+      stackName: 'Stack1',
+    });
+    const resource1 = new CfnResource(stack1, 'Resource', { type: 'BLA' });
+    const stack2 = new Stack(indifferentScope, 'Stack2');
 
     // WHEN - used in another resource
     new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
@@ -546,7 +583,7 @@ export = {
     app.synth();
 
     // THEN
-    test.deepEqual(stack2.dependencies.map(s => s.node.id), ['Stack1']);
+    test.deepEqual(stack2.dependencies.map(s => s.construct.id), ['Stack1']);
 
     test.done();
   },
@@ -822,7 +859,7 @@ export = {
     const child = new Stack(parent, 'child');
 
     // WHEN
-    child.node.addMetadata('foo', 'bar');
+    child.construct.addMetadata('foo', 'bar');
 
     // THEN
     const asm = app.synth();
@@ -840,7 +877,7 @@ export = {
     const stack2 = new Stack(stack1, 'stack2');
 
     // WHEN
-    Tag.add(app, 'foo', 'bar');
+    Tags.of(app).add('foo', 'bar');
 
     // THEN
     const asm = app.synth();

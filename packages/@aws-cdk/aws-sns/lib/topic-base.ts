@@ -32,7 +32,7 @@ export interface ITopic extends IResource {
    *
    * If this topic was created in this stack (`new Topic`), a topic policy
    * will be automatically created upon the first call to `addToPolicy`. If
-   * the topic is improted (`Topic.import`), then this is a no-op.
+   * the topic is imported (`Topic.import`), then this is a no-op.
    */
   addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
@@ -73,8 +73,8 @@ export abstract class TopicBase extends Resource implements ITopic {
 
     // We use the subscriber's id as the construct id. There's no meaning
     // to subscribing the same subscriber twice on the same topic.
-    if (scope.node.tryFindChild(id)) {
-      throw new Error(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`);
+    if (scope.construct.tryFindChild(id)) {
+      throw new Error(`A subscription with id "${id}" already exists under the scope ${scope.construct.path}`);
     }
 
     new Subscription(scope, id, {
@@ -88,7 +88,7 @@ export abstract class TopicBase extends Resource implements ITopic {
    *
    * If this topic was created in this stack (`new Topic`), a topic policy
    * will be automatically created upon the first call to `addToPolicy`. If
-   * the topic is improted (`Topic.import`), then this is a no-op.
+   * the topic is imported (`Topic.import`), then this is a no-op.
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
@@ -100,6 +100,12 @@ export abstract class TopicBase extends Resource implements ITopic {
       return { statementAdded: true, policyDependable: this.policy };
     }
     return { statementAdded: false };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
   }
 
   /**
@@ -119,8 +125,8 @@ export abstract class TopicBase extends Resource implements ITopic {
     const re = /TokenSubscription:([\d]*)/gm;
     // Search through the construct and all of its children
     // for previous subscriptions that match our regex pattern
-    for (const source of scope.node.findAll()) {
-      const m = re.exec(source.node.id); // Use regex to find a match
+    for (const source of scope.construct.findAll()) {
+      const m = re.exec(source.construct.id); // Use regex to find a match
       if (m !== null) { // if we found a match
         const matchSuffix = parseInt(m[1], 10); // get the suffix for that match (as integer)
         if (matchSuffix >= nextSuffix) { // check if the match suffix is larger or equal to currently proposed suffix

@@ -18,7 +18,7 @@ export = {
     test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
     const key = expectedContextKey(stack);
 
-    stack.node.setContext(key, ['us-east-1a', 'us-east-1b']);
+    stack.construct.setContext(key, ['us-east-1a', 'us-east-1b']);
 
     const azs = stack.availabilityZones;
     test.deepEqual(azs, ['us-east-1a', 'us-east-1b']);
@@ -32,7 +32,7 @@ export = {
     test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
     const key = expectedContextKey(stack);
 
-    stack.node.setContext(key, 'not-a-list');
+    stack.construct.setContext(key, 'not-a-list');
 
     test.throws(
       () => stack.availabilityZones,
@@ -149,7 +149,7 @@ export = {
 
     // NOTE: error key is inlined here because it's part of the CX-API
     // compatibility surface.
-    stack.node.setContext(contextKey, { $providerError: 'I had a boo-boo' });
+    stack.construct.setContext(contextKey, { $providerError: 'I had a boo-boo' });
     const construct = new Construct(stack, 'Child');
 
     // Verify that we got the right hardcoded key above, give a descriptive error if not
@@ -162,7 +162,7 @@ export = {
     });
 
     // THEN
-    const error = construct.node.metadata.find(m => m.type === 'aws:cdk:error');
+    const error = construct.construct.metadata.find(m => m.type === 'aws:cdk:error');
     test.equals(error && error.data, 'I had a boo-boo');
 
     test.done();

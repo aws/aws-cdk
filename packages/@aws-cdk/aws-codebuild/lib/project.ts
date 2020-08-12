@@ -1007,7 +1007,7 @@ export class Project extends ProjectBase {
     } else {
       const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
-        description: 'Automatic generated security group for CodeBuild ' + this.node.uniqueId,
+        description: 'Automatic generated security group for CodeBuild ' + this.construct.uniqueId,
         allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];
@@ -1060,7 +1060,7 @@ export class Project extends ProjectBase {
     // add an explicit dependency between the EC2 Policy and this Project -
     // otherwise, creating the Project fails, as it requires these permissions
     // to be already attached to the Project's Role
-    project.node.addDependency(policy);
+    project.construct.addDependency(policy);
   }
 
   private validateCodePipelineSettings(artifacts: IArtifacts) {
