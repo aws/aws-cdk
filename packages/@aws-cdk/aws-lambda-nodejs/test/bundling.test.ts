@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, BundlingDockerImage } from '@aws-cdk/core';
+import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
 import * as util from '../lib/util';
 
@@ -115,7 +116,7 @@ test('Parcel bundling with externals and dependencies', () => {
         [
           '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
           'mv /asset-output/entry.js /asset-output/index.js',
-          'echo \'{\"dependencies\":{\"delay\":\"4.3.0\"}}\' > /asset-output/package.json',
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > /asset-output/package.json`,
           'cd /asset-output',
           'npm install',
         ].join(' && '),
