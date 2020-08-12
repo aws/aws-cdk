@@ -22,7 +22,7 @@ export class CloudFrontTarget implements route53.IAliasRecordTarget {
     const scopeStack = Stack.of(scope);
 
     let mapping =
-      (scopeStack.construct.tryFindChild(mappingName) as CfnMapping) ??
+      (scopeStack.node.tryFindChild(mappingName) as CfnMapping) ??
       new CfnMapping(scopeStack, mappingName, {
         mapping: {
           ['aws']: {

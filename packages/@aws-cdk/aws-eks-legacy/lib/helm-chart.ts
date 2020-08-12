@@ -84,7 +84,7 @@ export class HelmChart extends Construct {
       provider: CustomResourceProvider.lambda(handler),
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
-        Release: props.release || this.construct.uniqueId.slice(-63).toLowerCase(), // Helm has a 63 character limit for the name
+        Release: props.release || this.node.uniqueId.slice(-63).toLowerCase(), // Helm has a 63 character limit for the name
         Chart: props.chart,
         Version: props.version,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
@@ -99,7 +99,7 @@ export class HelmChart extends Construct {
       return undefined;
     }
 
-    let handler = cluster.construct.tryFindChild('HelmChartHandler') as lambda.IFunction;
+    let handler = cluster.node.tryFindChild('HelmChartHandler') as lambda.IFunction;
     if (!handler) {
       handler = new lambda.Function(cluster, 'HelmChartHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'helm-chart')),

@@ -123,7 +123,7 @@ export class CodeCommitSourceAction extends Action {
       this.props.trigger === CodeCommitTrigger.EVENTS;
     if (createEvent) {
       const branchIdDisambiguator = this.branch === 'master' ? '' : `-${this.branch}-`;
-      this.props.repository.onCommit(`${stage.pipeline.construct.uniqueId}${branchIdDisambiguator}EventRule`, {
+      this.props.repository.onCommit(`${stage.pipeline.node.uniqueId}${branchIdDisambiguator}EventRule`, {
         target: new targets.CodePipeline(stage.pipeline),
         branches: [this.branch],
       });

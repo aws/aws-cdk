@@ -107,7 +107,7 @@ export class HelmChart extends Construct {
       properties: {
         ClusterName: props.cluster.clusterName,
         RoleArn: props.cluster._kubectlCreationRole.roleArn,
-        Release: props.release ?? this.construct.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
+        Release: props.release ?? this.node.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
         Version: props.version,
         Wait: wait || undefined, // props are stringified so we encode “false” as undefined

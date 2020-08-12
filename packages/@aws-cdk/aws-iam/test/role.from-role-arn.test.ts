@@ -535,7 +535,7 @@ function somePolicy(policyStack: Stack, policyName: string) {
   const someRole = new Role(policyStack, 'SomeExampleRole', {
     assumedBy: new AnyPrincipal(),
   });
-  const roleResource = someRole.construct.defaultChild as CfnElement;
+  const roleResource = someRole.node.defaultChild as CfnElement;
   roleResource.overrideLogicalId('SomeRole'); // force a particular logical ID in the Ref expression
 
   return new Policy(policyStack, 'MyPolicy', {

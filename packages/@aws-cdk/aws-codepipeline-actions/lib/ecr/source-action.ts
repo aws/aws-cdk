@@ -89,7 +89,7 @@ export class EcrSourceAction extends Action {
       resources: [this.props.repository.repositoryArn],
     }));
 
-    this.props.repository.onCloudTrailImagePushed(stage.pipeline.construct.uniqueId + 'SourceEventRule', {
+    this.props.repository.onCloudTrailImagePushed(stage.pipeline.node.uniqueId + 'SourceEventRule', {
       target: new targets.CodePipeline(stage.pipeline),
       imageTag: this.props.imageTag,
     });

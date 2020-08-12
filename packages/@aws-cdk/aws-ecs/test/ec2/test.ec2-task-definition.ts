@@ -519,7 +519,7 @@ export = {
       });
 
       // THEN
-      test.deepEqual(container.construct.metadata[0].data, "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      test.deepEqual(container.node.metadata[0].data, "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
       test.done();
     },
 
@@ -538,7 +538,7 @@ export = {
       });
 
       // THEN
-      test.deepEqual(container.construct.metadata[0].data, "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      test.deepEqual(container.node.metadata[0].data, "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
 
       test.done();
     },

@@ -28,7 +28,7 @@ export function getCertificateRegion(cert: ICertificate): string | undefined {
   const { certificateArn, stack } = cert;
 
   if (isDnsValidatedCertificate(cert)) {
-    const requestResource = cert.construct.findChild('CertificateRequestorResource').construct.defaultChild;
+    const requestResource = cert.node.findChild('CertificateRequestorResource').node.defaultChild;
 
     // @ts-ignore
     const { _cfnProperties: properties } = requestResource;

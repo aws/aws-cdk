@@ -189,7 +189,7 @@ export class FargateProfile extends Construct implements ITaggable {
     const clusterFargateProfiles = props.cluster._attachFargateProfile(this);
     if (clusterFargateProfiles.length > 1) {
       const previousProfile = clusterFargateProfiles[clusterFargateProfiles.length - 2];
-      resource.construct.addDependency(previousProfile);
+      resource.node.addDependency(previousProfile);
     }
 
     // map the fargate pod execution role to the relevant groups in rbac

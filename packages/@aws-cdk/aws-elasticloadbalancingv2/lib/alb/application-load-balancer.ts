@@ -69,7 +69,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
-      description: `Automatically created Security Group for ELB ${this.construct.uniqueId}`,
+      description: `Automatically created Security Group for ELB ${this.node.uniqueId}`,
       allowAllOutbound: false,
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
@@ -562,12 +562,12 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   public get loadBalancerCanonicalHostedZoneId(): string {
     if (this.props.loadBalancerCanonicalHostedZoneId) { return this.props.loadBalancerCanonicalHostedZoneId; }
     // eslint-disable-next-line max-len
-    throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.construct.path} from attributes`);
+    throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
   }
 
   public get loadBalancerDnsName(): string {
     if (this.props.loadBalancerDnsName) { return this.props.loadBalancerDnsName; }
     // eslint-disable-next-line max-len
-    throw new Error(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.construct.path} from attributes`);
+    throw new Error(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
   }
 }

@@ -17,7 +17,7 @@ import { resolveReferences } from './refs';
  */
 export function prepareApp(root: IConstruct) {
   // apply dependencies between resources in depending subtrees
-  for (const dependency of root.construct.dependencies) {
+  for (const dependency of root.node.dependencies) {
     const targetCfnResources = findCfnResources(dependency.target);
     const sourceCfnResources = findCfnResources(dependency.source);
 
@@ -71,7 +71,7 @@ function findAllNestedStacks(root: IConstruct) {
 
   // create a list of all nested stacks in depth-first post order this means
   // that we first prepare the leaves and then work our way up.
-  for (const stack of root.construct.findAll(ConstructOrder.POSTORDER /* <== important */)) {
+  for (const stack of root.node.findAll(ConstructOrder.POSTORDER /* <== important */)) {
     if (includeStack(stack)) {
       result.push(stack);
     }
@@ -84,7 +84,7 @@ function findAllNestedStacks(root: IConstruct) {
  * Find all resources in a set of constructs
  */
 function findCfnResources(root: IConstruct): CfnResource[] {
-  return root.construct.findAll().filter(CfnResource.isCfnResource);
+  return root.node.findAll().filter(CfnResource.isCfnResource);
 }
 
 interface INestedStackPrivateApi {

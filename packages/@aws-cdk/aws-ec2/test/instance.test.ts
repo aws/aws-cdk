@@ -237,8 +237,8 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(instance.construct.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-      test.deepEqual(instance.construct.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      test.deepEqual(instance.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
+      test.deepEqual(instance.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
       test.done();
     },
@@ -264,8 +264,8 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(instance.construct.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-      test.deepEqual(instance.construct.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      test.deepEqual(instance.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
+      test.deepEqual(instance.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
       test.done();
     },

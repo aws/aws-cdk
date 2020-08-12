@@ -8,7 +8,7 @@ export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup:
   const stack = Stack.of(autoScalingGroup);
 
   // determine logical id of ASG so we can signal cloudformation
-  const cfn = autoScalingGroup.construct.defaultChild as autoscaling.CfnAutoScalingGroup;
+  const cfn = autoScalingGroup.node.defaultChild as autoscaling.CfnAutoScalingGroup;
   const asgLogicalId = cfn.logicalId;
 
   const extraArgs = new Array<string>();

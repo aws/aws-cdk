@@ -256,7 +256,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.logDriver = props.logDriver !== undefined
       ? props.logDriver
       : enableLogging
-        ? this.createAWSLogDriver(this.construct.id)
+        ? this.createAWSLogDriver(this.node.id)
         : undefined;
 
     // Add the queue name to environment variables
@@ -304,9 +304,9 @@ export abstract class QueueProcessingServiceBase extends Construct {
    */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
-    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.construct.id : ''}`;
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = Stack.of(scope);
-    return stack.construct.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**

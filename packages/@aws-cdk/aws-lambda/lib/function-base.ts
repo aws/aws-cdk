@@ -287,7 +287,6 @@ export abstract class FunctionBase extends Resource implements IFunction {
           return { statementAdded: true, policyDependable: this._functionNode().findChild(identifier) } as iam.AddToResourcePolicyResult;
         },
         node: this.node,
-        construct: this.construct,
       },
     });
   }
@@ -309,8 +308,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
   }
 
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
-    if (this.construct.tryFindChild('EventInvokeConfig') !== undefined) {
-      throw new Error(`An EventInvokeConfig has already been configured for the function at ${this.construct.path}`);
+    if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
+      throw new Error(`An EventInvokeConfig has already been configured for the function at ${this.node.path}`);
     }
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {
@@ -368,8 +367,8 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
   }
 
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
-    if (this.construct.tryFindChild('EventInvokeConfig') !== undefined) {
-      throw new Error(`An EventInvokeConfig has already been configured for the qualified function at ${this.construct.path}`);
+    if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
+      throw new Error(`An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`);
     }
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {

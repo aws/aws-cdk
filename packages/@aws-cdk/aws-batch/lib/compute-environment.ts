@@ -386,7 +386,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
     });
 
     if (props.computeResources && props.computeResources.vpc) {
-      this.construct.addDependency(props.computeResources.vpc);
+      this.node.addDependency(props.computeResources.vpc);
     }
 
     this.computeEnvironmentArn = this.getResourceArnAttribute(computeEnvironment.ref, {

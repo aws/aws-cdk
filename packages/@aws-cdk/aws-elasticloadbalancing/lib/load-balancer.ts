@@ -248,7 +248,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       crossZone: (props.crossZone === undefined || props.crossZone) ? true : false,
     });
     if (props.internetFacing) {
-      this.elb.construct.addDependency(selectedSubnets.internetConnectivityEstablished);
+      this.elb.node.addDependency(selectedSubnets.internetConnectivityEstablished);
     }
 
     ifUndefined(props.listeners, []).forEach(b => this.addListener(b));

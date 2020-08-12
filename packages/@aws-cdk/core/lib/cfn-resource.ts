@@ -92,8 +92,8 @@ export class CfnResource extends CfnRefElement {
     // if aws:cdk:enable-path-metadata is set, embed the current construct's
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
-    if (this.construct.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
-      this.addMetadata(cxapi.PATH_METADATA_KEY, this.construct.path);
+    if (this.node.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
+      this.addMetadata(cxapi.PATH_METADATA_KEY, this.node.path);
     }
   }
 
@@ -238,7 +238,7 @@ export class CfnResource extends CfnRefElement {
       return;
     }
 
-    addDependency(this, target, `"${this.construct.path}" depends on "${target.construct.path}"`);
+    addDependency(this, target, `"${this.node.path}" depends on "${target.node.path}"`);
   }
 
   /**
@@ -312,7 +312,7 @@ export class CfnResource extends CfnRefElement {
       return ret;
     } catch (e) {
       // Change message
-      e.message = `While synthesizing ${this.construct.path}: ${e.message}`;
+      e.message = `While synthesizing ${this.node.path}: ${e.message}`;
       // Adjust stack trace (make it look like node built it, too...)
       const trace = this.creationStack;
       if (trace) {
@@ -330,7 +330,7 @@ export class CfnResource extends CfnRefElement {
     function renderDependsOn(dependsOn: Set<CfnResource>) {
       return Array
         .from(dependsOn)
-        .sort((x, y) => x.construct.path.localeCompare(y.construct.path))
+        .sort((x, y) => x.node.path.localeCompare(y.node.path))
         .map(r => r.logicalId);
     }
 

@@ -161,7 +161,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
         deleteAfterDays: rule.props.deleteAfter?.toDays(),
         moveToColdStorageAfterDays: rule.props.moveToColdStorageAfter?.toDays(),
       },
-      ruleName: rule.props.ruleName ?? `${this.construct.id}Rule${this.rules.length}`,
+      ruleName: rule.props.ruleName ?? `${this.node.id}Rule${this.rules.length}`,
       scheduleExpression: rule.props.scheduleExpression?.expressionString,
       startWindowMinutes: rule.props.startWindow?.toMinutes(),
       targetBackupVault: vault.backupVaultName,

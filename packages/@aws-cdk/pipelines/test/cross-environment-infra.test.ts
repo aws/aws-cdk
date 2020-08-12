@@ -26,7 +26,7 @@ test('in a cross-account/cross-region setup, artifact bucket can be read by depl
 
   // THEN
   app.synth();
-  const supportStack = app.construct.findAll().filter(Stack.isStack).find(s => s.stackName === 'PipelineStack-support-us-elsewhere');
+  const supportStack = app.node.findAll().filter(Stack.isStack).find(s => s.stackName === 'PipelineStack-support-us-elsewhere');
   expect(supportStack).not.toBeUndefined();
 
   expect(supportStack).toHaveResourceLike('AWS::S3::BucketPolicy',  {

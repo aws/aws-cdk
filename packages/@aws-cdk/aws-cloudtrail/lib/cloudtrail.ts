@@ -295,14 +295,14 @@ export class Trail extends Resource {
 
     // Add a dependency on the bucket policy being updated, CloudTrail will test this upon creation.
     if (this.s3bucket.policy) {
-      trail.construct.addDependency(this.s3bucket.policy);
+      trail.node.addDependency(this.s3bucket.policy);
     }
 
     // If props.sendToCloudWatchLogs is set to true then the trail needs to depend on the created logsRole
     // so that it can create the log stream for the log group. This ensures the logsRole is created and propagated
     // before the trail tries to create the log stream.
     if (logsRole !== undefined) {
-      trail.construct.addDependency(logsRole);
+      trail.node.addDependency(logsRole);
     }
   }
 

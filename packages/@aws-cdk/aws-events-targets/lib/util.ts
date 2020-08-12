@@ -11,7 +11,7 @@ import { Construct, IConstruct } from '@aws-cdk/core';
  */
 export function singletonEventRole(scope: IConstruct, policyStatements: iam.PolicyStatement[]): iam.IRole {
   const id = 'EventsRole';
-  const existing = scope.construct.tryFindChild(id) as iam.IRole;
+  const existing = scope.node.tryFindChild(id) as iam.IRole;
   if (existing) { return existing; }
 
   const role = new iam.Role(scope as Construct, id, {
@@ -27,7 +27,7 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
  * Allows a Lambda function to be called from a rule
  */
 export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunction): void {
-  const permissionId = `AllowEventRule${rule.construct.uniqueId}`;
+  const permissionId = `AllowEventRule${rule.node.uniqueId}`;
   if (!handler.permissionsNode.tryFindChild(permissionId)) {
     handler.addPermission(permissionId, {
       action: 'lambda:InvokeFunction',

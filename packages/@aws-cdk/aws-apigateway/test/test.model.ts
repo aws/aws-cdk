@@ -26,7 +26,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Model', {
-      RestApiId: { Ref: stack.getLogicalId(api.construct.findChild('Resource') as cdk.CfnElement) },
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       Schema: {
         $schema: 'http://json-schema.org/draft-04/schema#',
         title: 'test',
@@ -61,7 +61,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Model', {
-      RestApiId: { Ref: stack.getLogicalId(api.construct.findChild('Resource') as cdk.CfnElement) },
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       Schema: {
         $schema: 'http://json-schema.org/draft-04/schema#',
         title: 'test',

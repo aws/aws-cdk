@@ -11,7 +11,7 @@ export class ReplicaProvider extends NestedStack {
   public static getOrCreate(scope: Construct) {
     const stack = Stack.of(scope);
     const uid = '@aws-cdk/aws-dynamodb.ReplicaProvider';
-    return stack.construct.tryFindChild(uid) as ReplicaProvider || new ReplicaProvider(stack, uid);
+    return stack.node.tryFindChild(uid) as ReplicaProvider || new ReplicaProvider(stack, uid);
   }
 
   /**

@@ -65,7 +65,7 @@ export class VpcLink extends Resource implements IVpcLink {
   constructor(scope: Construct, id: string, props: VpcLinkProps = {}) {
     super(scope, id, {
       physicalName: props.vpcLinkName ||
-        Lazy.stringValue({ produce: () => this.construct.uniqueId }),
+        Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {

@@ -270,7 +270,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
         // pass role is not allowed for cross-account access - so,
         // create the deployment Role in the other account!
         this._deploymentRole = new iam.Role(roleStack,
-          `${stage.pipeline.construct.uniqueId}-${stage.stageName}-${this.actionProperties.actionName}-DeploymentRole`, {
+          `${stage.pipeline.node.uniqueId}-${stage.stageName}-${this.actionProperties.actionName}-DeploymentRole`, {
             assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
             roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
           });
@@ -500,7 +500,7 @@ class SingletonPolicy extends cdk.Construct implements iam.IGrantable {
    * @returns the SingletonPolicy for this role.
    */
   public static forRole(role: iam.IRole): SingletonPolicy {
-    const found = role.construct.tryFindChild(SingletonPolicy.UUID);
+    const found = role.node.tryFindChild(SingletonPolicy.UUID);
     return (found as SingletonPolicy) || new SingletonPolicy(role);
   }
 

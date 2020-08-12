@@ -315,7 +315,7 @@ export class Secret extends SecretBase {
    */
   public attach(target: ISecretAttachmentTarget): ISecret {
     const id = 'Attachment';
-    const existing = this.construct.tryFindChild(id);
+    const existing = this.node.tryFindChild(id);
 
     if (existing) {
       throw new Error('Secret is already attached to a target.');

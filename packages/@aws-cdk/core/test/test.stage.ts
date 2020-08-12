@@ -152,7 +152,7 @@ export = {
 
     // THEN
     app.synth();
-    test.deepEqual(aspect.visits.map(c => c.construct.path), [
+    test.deepEqual(aspect.visits.map(c => c.node.path), [
       'MyStage/Stack',
       'MyStage/Stack/Resource',
     ]);
@@ -172,7 +172,7 @@ export = {
 
     // THEN
     app.synth();
-    test.deepEqual(aspect.visits.map(c => c.construct.path), [
+    test.deepEqual(aspect.visits.map(c => c.node.path), [
       '',
       'Tree',
     ]);

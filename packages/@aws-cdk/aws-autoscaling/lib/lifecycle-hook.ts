@@ -116,7 +116,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     // A LifecycleHook resource is going to do a permissions test upon creation,
     // so we have to make sure the role has full permissions before creating the
     // lifecycle hook.
-    resource.construct.addDependency(this.role);
+    resource.node.addDependency(this.role);
 
     this.lifecycleHookName = resource.ref;
   }

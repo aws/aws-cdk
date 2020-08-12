@@ -189,7 +189,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       this.addPostHook(props.postHook);
     }
 
-    (props.alias.construct.defaultChild as lambda.CfnAlias).cfnOptions.updatePolicy = {
+    (props.alias.node.defaultChild as lambda.CfnAlias).cfnOptions.updatePolicy = {
       codeDeployLambdaAliasUpdate: {
         applicationName: this.application.applicationName,
         deploymentGroupName: resource.ref,

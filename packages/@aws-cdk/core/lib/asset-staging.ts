@@ -5,9 +5,9 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
-import { Construct } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
 import { Stage } from './stage';
+import { Construct } from './construct-compat';
 
 const STAGING_TMP = '.cdk.staging';
 
@@ -95,7 +95,7 @@ export class AssetStaging extends Construct {
 
     this.assetHash = this.calculateHash(props);
 
-    const stagingDisabled = this.construct.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
+    const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
     if (stagingDisabled) {
       this.stagedPath = this.bundleDir ?? this.sourcePath;
     } else {
@@ -180,7 +180,7 @@ export class AssetStaging extends Construct {
 
     let localBundling: boolean | undefined;
     try {
-      process.stderr.write(`Bundling asset ${this.construct.path}...\n`);
+      process.stderr.write(`Bundling asset ${this.node.path}...\n`);
 
       localBundling = options.local?.tryBundle(bundleDir, options);
       if (!localBundling) {
@@ -193,7 +193,7 @@ export class AssetStaging extends Construct {
         });
       }
     } catch (err) {
-      throw new Error(`Failed to bundle asset ${this.construct.path}: ${err}`);
+      throw new Error(`Failed to bundle asset ${this.node.path}: ${err}`);
     }
 
     if (FileSystem.isEmpty(bundleDir)) {

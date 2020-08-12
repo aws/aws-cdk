@@ -56,7 +56,7 @@ export class LambdaIntegration extends AwsIntegration {
     const bindResult = super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
-    const desc = `${method.api.construct.uniqueId}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
+    const desc = `${method.api.node.uniqueId}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
 
     this.handler.addPermission(`ApiPermission.${desc}`, {
       principal,
@@ -78,7 +78,7 @@ export class LambdaIntegration extends AwsIntegration {
     if (this.handler instanceof lambda.Function) {
       // if not imported, extract the name from the CFN layer to reach
       // the literal value if it is given (rather than a token)
-      functionName = (this.handler.construct.defaultChild as lambda.CfnFunction).functionName;
+      functionName = (this.handler.node.defaultChild as lambda.CfnFunction).functionName;
     } else {
       // imported, just take the function name.
       functionName = this.handler.functionName;

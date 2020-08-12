@@ -65,7 +65,7 @@ export class CdkPipeline extends Construct {
   constructor(scope: Construct, id: string, props: CdkPipelineProps) {
     super(scope, id);
 
-    if (!App.isApp(this.construct.root)) {
+    if (!App.isApp(this.node.root)) {
       throw new Error('CdkPipeline must be created under an App');
     }
 
@@ -103,7 +103,7 @@ export class CdkPipeline extends Construct {
       projectName: maybeSuffix(props.pipelineName, '-publish'),
     });
 
-    this.construct.applyAspect({ visit: () => this._assets.removeAssetsStageIfEmpty() });
+    this.node.applyAspect({ visit: () => this._assets.removeAssetsStageIfEmpty() });
   }
 
   /**
@@ -195,7 +195,7 @@ export class CdkPipeline extends Construct {
         const depAction = stackActions.find(s => s.stackArtifactId === depId);
 
         if (depAction === undefined) {
-          this.construct.addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
+          this.node.addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
               `'${depId}', but that dependency is not deployed through the pipeline!`);
         } else if (!(depAction.executeRunOrder < stackAction.prepareRunOrder)) {
           yield `Stack '${stackAction.stackName}' depends on stack ` +

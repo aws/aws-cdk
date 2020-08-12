@@ -207,7 +207,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   public bind(stack: Stack): void {
     this._stack = stack;
 
-    const qualifier = this.props.qualifier ?? stack.construct.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+    const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
 
     // Function to replace placeholders in the input string as much as possible
     //

@@ -262,7 +262,7 @@ export class Pipeline extends PipelineBase {
     });
 
     // this will produce a DependsOn for both the role and the policy resources.
-    codePipeline.construct.addDependency(this.role);
+    codePipeline.node.addDependency(this.role);
 
     this.artifactBucket.grantReadWrite(this.role);
     this.pipelineName = this.getResourceNameAttribute(codePipeline.ref);
@@ -460,7 +460,7 @@ export class Pipeline extends PipelineBase {
     if (otherStack) {
       // check if the stack doesn't have this magic construct already
       const id = `CrossRegionReplicationSupport-d823f1d8-a990-4e5c-be18-4ac698532e65-${actionRegion}`;
-      let crossRegionSupportConstruct = otherStack.construct.tryFindChild(id) as CrossRegionSupportConstruct;
+      let crossRegionSupportConstruct = otherStack.node.tryFindChild(id) as CrossRegionSupportConstruct;
       if (!crossRegionSupportConstruct) {
         crossRegionSupportConstruct = new CrossRegionSupportConstruct(otherStack, id);
       }
@@ -480,7 +480,7 @@ export class Pipeline extends PipelineBase {
 
     const app = this.requireApp();
     const supportStackId = `cross-region-stack-${pipelineAccount}:${actionRegion}`;
-    let supportStack = app.construct.tryFindChild(supportStackId) as CrossRegionSupportStack;
+    let supportStack = app.node.tryFindChild(supportStackId) as CrossRegionSupportStack;
     if (!supportStack) {
       supportStack = new CrossRegionSupportStack(app, supportStackId, {
         pipelineStackName: pipelineStack.stackName,
@@ -516,7 +516,7 @@ export class Pipeline extends PipelineBase {
   private generateNameForDefaultBucketKeyAlias(): string {
     const prefix = 'alias/codepipeline-';
     const maxAliasLength = 256;
-    const uniqueId = this.construct.uniqueId;
+    const uniqueId = this.node.uniqueId;
     // take the last 256 - (prefix length) characters of uniqueId
     const startIndex = Math.max(0, uniqueId.length - (maxAliasLength - prefix.length));
     return prefix + uniqueId.substring(startIndex).toLowerCase();
@@ -598,7 +598,7 @@ export class Pipeline extends PipelineBase {
 
     // generate a role in the other stack, that the Pipeline will assume for executing this action
     const ret = new iam.Role(otherAccountStack,
-      `${this.construct.uniqueId}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
+      `${this.node.uniqueId}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
         assumedBy: new iam.AccountPrincipal(pipelineStack.account),
         roleName: PhysicalName.GENERATE_IF_NEEDED,
       });
@@ -652,7 +652,7 @@ export class Pipeline extends PipelineBase {
     if (!targetAccountStack) {
       const stackId = `cross-account-support-stack-${targetAccount}`;
       const app = this.requireApp();
-      targetAccountStack = app.construct.tryFindChild(stackId) as Stack;
+      targetAccountStack = app.node.tryFindChild(stackId) as Stack;
       if (!targetAccountStack) {
         targetAccountStack = new Stack(app, stackId, {
           stackName: `${pipelineStack.stackName}-support-${targetAccount}`,
@@ -858,7 +858,7 @@ export class Pipeline extends PipelineBase {
   }
 
   private requireApp(): App {
-    const app = this.construct.root;
+    const app = this.node.root;
     if (!app || !App.isApp(app)) {
       throw new Error('Pipeline stack which uses cross-environment actions must be part of a CDK app');
     }

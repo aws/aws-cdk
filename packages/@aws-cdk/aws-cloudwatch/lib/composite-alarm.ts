@@ -119,7 +119,7 @@ export class CompositeAlarm extends AlarmBase {
   }
 
   private generateUniqueId(): string {
-    const name = this.construct.uniqueId;
+    const name = this.node.uniqueId;
     if (name.length > 240) {
       return name.substring(0, 120) + name.substring(name.length - 120);
     }
