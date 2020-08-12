@@ -51,7 +51,7 @@ export class FromCloudFormation {
   }
 
   // won't always return a string; if the input can't be resolved to a string,
-  // the input will be returned. 
+  // the input will be returned.
   public static getString(value: any): string {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
@@ -64,7 +64,7 @@ export class FromCloudFormation {
   }
 
   // won't always return a number; if the input can't be parsed to a number,
-  // the input will be returned. 
+  // the input will be returned.
   public static getNumber(value: any): number {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
@@ -80,7 +80,7 @@ export class FromCloudFormation {
       }
     }
 
-    // otherwise return the input, 
+    // otherwise return the input,
     // and let a validator handle it if it's not a number
     return value;
   }

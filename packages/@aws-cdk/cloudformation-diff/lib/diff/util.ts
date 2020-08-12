@@ -3,7 +3,7 @@
  * +null+, +undefined+, arrays and objects. For objects, the function will not take the
  * object prototype into account for the purpose of the comparison, only the values of
  * properties reported by +Object.keys+.
- * 
+ *
  * If both operands can be parsed to equivalent numbers, will return true.
  * This makes diff consistent with CloudFormation, where a numeric 10 and a literal "10"
  * are considered equivalent.
@@ -15,7 +15,7 @@
  */
 export function deepEqual(lvalue: any, rvalue: any): boolean {
   if (lvalue === rvalue) { return true; }
-  // allows a numeric 10 and a literal "10" to be equivalent; 
+  // allows a numeric 10 and a literal "10" to be equivalent;
   // this is consistent with CloudFormation.
   if (parseFloat(lvalue) === parseFloat(rvalue)) { return true; }
   if (typeof lvalue !== typeof rvalue) { return false; }
