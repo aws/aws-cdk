@@ -105,21 +105,8 @@ export class AssetStaging extends Construct {
 
       this.bundleDir = this.bundle(props.bundling, outdir, sourceHash);
       this.assetHash = sourceHash ?? this.calculateHash(hashType, props.assetHash, props.bundling);
-      this.stagedPath = path.join(outdir, this.getAssetRelativePath(this.assetHash));
-
-      if (this.bundleDir !== path.resolve(this.stagedPath)) {
-        // The bundler needed to use an intermediate directory, probably because
-        // the asset hash couldn't be known in advance.
-        if (!fs.existsSync(this.stagedPath)) {
-          // If the produced asset doesn't already exist, then we need to rename
-          // the asset to its staged name.
-          fs.renameSync(this.bundleDir, this.stagedPath);
-        } else {
-          // If the asset already exists, we'll leave the staged path alone and
-          // remove the intermediate directory.
-          fs.removeSync(this.bundleDir);
-        }
-      }
+      this.relativePath = this.getAssetRelativePath(this.assetHash);
+      this.stagedPath = this.relativePath;
     } else {
       this.assetHash = this.calculateHash(hashType, props.assetHash);
 
@@ -144,6 +131,21 @@ export class AssetStaging extends Construct {
     }
 
     const targetPath = path.join(outdir, this.relativePath);
+
+    // Staging the bundling asset.
+    if (this.bundleDir) {
+      const isAlreadyStaged = fs.existsSync(targetPath);
+
+      if (isAlreadyStaged && this.bundleDir !== path.resolve(targetPath)) {
+        // When an identical asset is already staged and the bundler used an
+        // intermediate bundling directory, we remove the extra directory.
+        fs.removeSync(this.bundleDir);
+      } else if (!isAlreadyStaged) {
+        fs.renameSync(this.bundleDir, targetPath);
+      }
+
+      return;
+    }
 
     // Already staged
     if (fs.existsSync(targetPath)) {
