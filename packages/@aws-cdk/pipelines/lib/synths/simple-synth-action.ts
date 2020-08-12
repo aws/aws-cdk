@@ -1,9 +1,9 @@
+import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import { Construct } from '@aws-cdk/core';
-import * as path from 'path';
 import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
 
@@ -54,7 +54,7 @@ export interface SimpleSynthOptions {
   /**
    * Build environment to use for CodeBuild job
    *
-   * @default BuildEnvironment.LinuxBuildImage.STANDARD_1_0
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_4_0
    */
   readonly environment?: codebuild.BuildEnvironment;
 
@@ -210,7 +210,7 @@ export class SimpleSynthAction implements codepipeline.IAction {
 
     const project = new codebuild.PipelineProject(scope, 'CdkBuildProject', {
       projectName: this.props.projectName ?? this.props.projectName,
-      environment: this.props.environment,
+      environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0, ...this.props.environment },
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
         phases: {

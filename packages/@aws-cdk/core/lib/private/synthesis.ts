@@ -1,5 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
+import { Annotations } from '../annotations';
+import { Aspects, IAspect } from '../aspect';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
 import { Stack } from '../stack';
 import { Stage, StageSynthesisOptions } from '../stage';
@@ -60,26 +62,35 @@ function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions)
  * twice for the same construct.
  */
 function invokeAspects(root: IConstruct) {
+  const invokedByPath: { [nodePath: string]: IAspect[] } = { };
+
   let nestedAspectWarning = false;
   recurse(root, []);
 
   function recurse(construct: IConstruct, inheritedAspects: constructs.IAspect[]) {
-    // hackery to be able to access some private members with strong types (yack!)
-    const node: NodeWithAspectPrivatesHangingOut = construct.node._actualNode as any;
-
-    const allAspectsHere = [...inheritedAspects ?? [], ...node._aspects];
-    const nodeAspectsCount = node._aspects.length;
+    const node = construct.node;
+    const aspects = Aspects.of(construct);
+    const allAspectsHere = [...inheritedAspects ?? [], ...aspects.aspects];
+    const nodeAspectsCount = aspects.aspects.length;
     for (const aspect of allAspectsHere) {
-      if (node.invokedAspects.includes(aspect)) { continue; }
+      let invoked = invokedByPath[node.path];
+      if (!invoked) {
+        invoked = invokedByPath[node.path] = [];
+      }
+
+      if (invoked.includes(aspect)) { continue; }
 
       aspect.visit(construct);
+
       // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
       // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
-      if (!nestedAspectWarning && nodeAspectsCount !== node._aspects.length) {
-        construct.node.addWarning('We detected an Aspect was added via another Aspect, and will not be applied');
+      if (!nestedAspectWarning && nodeAspectsCount !== aspects.aspects.length) {
+        Annotations.of(construct).addWarning('We detected an Aspect was added via another Aspect, and will not be applied');
         nestedAspectWarning = true;
       }
-      node.invokedAspects.push(aspect);
+
+      // mark as invoked for this node
+      invoked.push(aspect);
     }
 
     for (const child of construct.node.children) {
@@ -180,13 +191,3 @@ interface IProtectedConstructMethods extends IConstruct {
    */
   onPrepare(): void;
 }
-
-/**
- * The constructs Node type, but with some aspects-related fields public.
- *
- * Hackery!
- */
-type NodeWithAspectPrivatesHangingOut = Omit<constructs.Node, 'invokedAspects' | '_aspects'> & {
-  readonly invokedAspects: constructs.IAspect[];
-  readonly _aspects: constructs.IAspect[];
-};
