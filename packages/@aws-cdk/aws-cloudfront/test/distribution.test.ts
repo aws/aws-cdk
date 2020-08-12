@@ -4,7 +4,7 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass } from '../lib';
+import { CfnDistribution, Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass } from '../lib';
 import { defaultOrigin } from './test-origin';
 
 let app: App;
@@ -527,6 +527,24 @@ test('price class is included if provided', () => {
   expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       PriceClass: 'PriceClass_200',
+    },
+  });
+});
+
+test('escape hatches are supported', () => {
+  const dist = new Distribution(stack, 'Dist', {
+    defaultBehavior: { origin: defaultOrigin },
+  });
+  const cfnDist = dist.node.defaultChild as CfnDistribution;
+  cfnDist.addPropertyOverride('DistributionConfig.DefaultCacheBehavior.ForwardedValues.Headers', ['*']);
+
+  expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        ForwardedValues: {
+          Headers: ['*'],
+        },
+      },
     },
   });
 });

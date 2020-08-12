@@ -251,7 +251,7 @@ export class Distribution extends Resource implements IDistribution {
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
 
-    const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
+    const distribution = new CfnDistribution(this, 'Resource', { distributionConfig: {
       enabled: props.enabled ?? true,
       origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
       originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
@@ -295,7 +295,7 @@ export class Distribution extends Resource implements IDistribution {
     } else {
       const originIndex = this.boundOrigins.length + 1;
       const scope = new Construct(this, `Origin${originIndex}`);
-      const originId = scope.construct.uniqueId;
+      const originId = scope.node.uniqueId;
       const originBindConfig = origin.bind(scope, { originId });
       this.boundOrigins.push({ origin, originId, ...originBindConfig });
       if (originBindConfig.failoverConfig) {
@@ -322,7 +322,7 @@ export class Distribution extends Resource implements IDistribution {
           quantity: statusCodes.length,
         },
       },
-      id: new Construct(this, `OriginGroup${groupIndex}`).construct.uniqueId,
+      id: new Construct(this, `OriginGroup${groupIndex}`).node.uniqueId,
       members: {
         items: [
           { originId },
