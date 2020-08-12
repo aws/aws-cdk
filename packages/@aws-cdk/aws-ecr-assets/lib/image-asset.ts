@@ -112,7 +112,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     });
 
     if (props.repositoryName) {
-      this.construct.addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
+      this.node.addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
     }
 
     // include build context in "extra" so it will impact the hash

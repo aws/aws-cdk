@@ -266,7 +266,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
     super(scope, id);
 
-    this.family = props.family || this.construct.uniqueId;
+    this.family = props.family || this.node.uniqueId;
     this.compatibility = props.compatibility;
 
     if (props.volumes) {

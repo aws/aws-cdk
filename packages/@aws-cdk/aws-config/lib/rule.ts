@@ -357,7 +357,7 @@ export class CustomRule extends RuleNew {
     }
 
     // The lambda permission must be created before the rule
-    this.construct.addDependency(props.lambdaFunction);
+    this.node.addDependency(props.lambdaFunction);
 
     const rule = new CfnConfigRule(this, 'Resource', {
       configRuleName: this.physicalName,

@@ -176,7 +176,7 @@ export function synthesizeBlockDeviceMappings(construct: Construct, blockDevices
           throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        construct.construct.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
       }
     }
 
@@ -558,7 +558,7 @@ abstract class VolumeBase extends Resource implements IVolume {
 
   private calculateResourceTagValue(constructs: Construct[]): string {
     const md5 = crypto.createHash('md5');
-    constructs.forEach(construct => md5.update(construct.construct.uniqueId));
+    constructs.forEach(construct => md5.update(construct.node.uniqueId));
     return md5.digest('hex');
   }
 }

@@ -81,7 +81,7 @@ export class AwsApi implements events.IRuleTarget {
    * result from an EventBridge event.
    */
   public bind(rule: events.IRule, id?: string): events.RuleTargetConfig {
-    const handler = new lambda.SingletonFunction(rule as events.Rule, `${rule.construct.id}${id}Handler`, {
+    const handler = new lambda.SingletonFunction(rule as events.Rule, `${rule.node.id}${id}Handler`, {
       code: lambda.Code.fromAsset(path.join(__dirname, 'aws-api-handler')),
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',

@@ -96,7 +96,7 @@ export = testCase({
     test.done();
 
     function path(s: Stack) {
-      return pathToTopLevelStack(s).map(x => x.construct.id);
+      return pathToTopLevelStack(s).map(x => x.node.id);
     }
   },
 
@@ -132,7 +132,7 @@ export = testCase({
     function lca(s1: Stack, s2: Stack) {
       const res = findLastCommonElement(pathToTopLevelStack(s1), pathToTopLevelStack(s2));
       if (!res) { return undefined; }
-      return res.construct.id;
+      return res.node.id;
     }
   },
 });

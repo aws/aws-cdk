@@ -356,7 +356,7 @@ export abstract class BaseService extends Resource
     });
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
-      this.construct.addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
+      this.node.addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }
 
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
@@ -675,7 +675,7 @@ export abstract class BaseService extends Resource
 
     // Service creation can only happen after the load balancer has
     // been associated with our target group(s), so add ordering dependency.
-    this.resource.construct.addDependency(targetGroup.loadBalancerAttached);
+    this.resource.node.addDependency(targetGroup.loadBalancerAttached);
 
     const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
     return { targetType };

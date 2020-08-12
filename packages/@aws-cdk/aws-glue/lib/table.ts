@@ -284,7 +284,7 @@ export class Table extends Resource implements ITable {
       resource: 'table',
       resourceName: `${this.database.databaseName}/${this.tableName}`,
     });
-    this.construct.defaultChild = tableResource;
+    this.node.defaultChild = tableResource;
   }
 
   /**

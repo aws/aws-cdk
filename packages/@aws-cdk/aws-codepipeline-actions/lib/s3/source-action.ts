@@ -110,8 +110,8 @@ export class S3SourceAction extends Action {
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     if (this.props.trigger === S3Trigger.EVENTS) {
-      const id = stage.pipeline.construct.uniqueId + 'SourceEventRule' + this.props.bucketKey;
-      if (this.props.bucket.construct.tryFindChild(id)) {
+      const id = stage.pipeline.node.uniqueId + 'SourceEventRule' + this.props.bucketKey;
+      if (this.props.bucket.node.tryFindChild(id)) {
         // this means a duplicate path for the same bucket - error out
         throw new Error(`S3 source action with path '${this.props.bucketKey}' is already present in the pipeline for this source bucket`);
       }

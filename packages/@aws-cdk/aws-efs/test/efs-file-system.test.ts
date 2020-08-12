@@ -210,7 +210,7 @@ test('auto-named if none provided', () => {
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     FileSystemTags: [
-      { Key: 'Name', Value: fileSystem.construct.path },
+      { Key: 'Name', Value: fileSystem.node.path },
     ],
   }));
 });

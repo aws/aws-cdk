@@ -59,7 +59,7 @@ export class BatchJob implements events.IRuleTarget {
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const batchParameters: events.CfnRule.BatchParametersProperty = {
       jobDefinition: this.jobDefinition.jobDefinitionArn,
-      jobName: this.props.jobName ?? rule.construct.uniqueId,
+      jobName: this.props.jobName ?? rule.node.uniqueId,
       arrayProperties: this.props.size ? { size: this.props.size } : undefined,
       retryStrategy: this.props.attempts ? { attempts: this.props.attempts } : undefined,
     };

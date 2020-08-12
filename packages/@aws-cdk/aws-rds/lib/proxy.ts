@@ -69,9 +69,9 @@ export class ProxyTarget {
     if (this.dbCluster && this.dbInstance) {
       throw new Error('Proxy cannot target both database cluster and database instance.');
     } else if (this.dbCluster) {
-      engine = (this.dbCluster.construct.defaultChild as CfnDBCluster).engine;
+      engine = (this.dbCluster.node.defaultChild as CfnDBCluster).engine;
     } else if (this.dbInstance) {
-      engine = (this.dbInstance.construct.defaultChild as CfnDBInstance).engine;
+      engine = (this.dbInstance.node.defaultChild as CfnDBInstance).engine;
     }
 
     let engineFamily;

@@ -410,7 +410,7 @@ export class Resource extends ResourceBase {
 
     const deployment = props.parent.api.latestDeployment;
     if (deployment) {
-      deployment.construct.addDependency(resource);
+      deployment.node.addDependency(resource);
       deployment.addToLogicalId({ resource: resourceProps });
     }
 
@@ -488,7 +488,7 @@ export class ProxyResource extends Resource {
     // the root so that empty paths are proxied as well.
     if (this.parentResource && this.parentResource.path === '/') {
       // skip if the root resource already has this method defined
-      if (!(this.parentResource.construct.tryFindChild(httpMethod) instanceof Method)) {
+      if (!(this.parentResource.node.tryFindChild(httpMethod) instanceof Method)) {
         this.parentResource.addMethod(httpMethod, integration, options);
       }
     }

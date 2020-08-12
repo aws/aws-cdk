@@ -138,9 +138,9 @@ export = {
     const o = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
     const c = new CfnCondition(stack, 'MyCondition');
 
-    test.equal(stack.construct.findChild(p.construct.id), p);
-    test.equal(stack.construct.findChild(o.construct.id), o);
-    test.equal(stack.construct.findChild(c.construct.id), c);
+    test.equal(stack.node.findChild(p.node.id), p);
+    test.equal(stack.node.findChild(o.node.id), o);
+    test.equal(stack.node.findChild(c.node.id), c);
 
     test.done();
   },
@@ -599,7 +599,7 @@ export = {
     app.synth();
 
     // THEN
-    test.deepEqual(stack2.dependencies.map(s => s.construct.id), ['Stack1']);
+    test.deepEqual(stack2.dependencies.map(s => s.node.id), ['Stack1']);
 
     test.done();
   },
@@ -886,7 +886,7 @@ export = {
     const child = new Stack(parent, 'child');
 
     // WHEN
-    child.construct.addMetadata('foo', 'bar');
+    child.node.addMetadata('foo', 'bar');
 
     // THEN
     const asm = app.synth();
