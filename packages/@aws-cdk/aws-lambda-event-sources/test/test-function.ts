@@ -6,12 +6,12 @@ export class TestFunction extends lambda.Function {
     super(scope, id, {
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
-      runtime: lambda.Runtime.NODEJS_10_X
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
   }
 }
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 async function handler(event: any) {
   console.log('event:', JSON.stringify(event, undefined, 2));
   return { event };

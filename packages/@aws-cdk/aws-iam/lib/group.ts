@@ -4,10 +4,15 @@ import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IUser } from './user';
 import { AttachedPolicies } from './util';
 
+/**
+ * Represents an IAM Group.
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
+ */
 export interface IGroup extends IIdentity {
   /**
    * Returns the IAM Group Name
@@ -24,6 +29,9 @@ export interface IGroup extends IIdentity {
   readonly groupArn: string;
 }
 
+/**
+ * Properties for defining an IAM group
+ */
 export interface GroupProps {
   /**
    * A name for the IAM group. For valid values, see the GroupName parameter
@@ -96,22 +104,43 @@ abstract class GroupBase extends Resource implements IGroup {
   /**
    * Adds an IAM statement to the default policy.
    */
-  public addToPolicy(statement: PolicyStatement): boolean {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.defaultPolicy.attachToGroup(this);
     }
 
     this.defaultPolicy.addStatements(statement);
-    return true;
+    return { statementAdded: true, policyDependable: this.defaultPolicy };
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 }
 
+/**
+ * An IAM Group (collection of IAM users) lets you specify permissions for
+ * multiple users, which can make it easier to manage permissions for those users.
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
+ */
 export class Group extends GroupBase {
-
   /**
-   * Imports a group from ARN
-   * @param groupArn (e.g. `arn:aws:iam::account-id:group/group-name`)
+   * Import an external group by ARN.
+   *
+   * If the imported Group ARN is a Token (such as a
+   * `CfnParameter.valueAsString` or a `Fn.importValue()`) *and* the referenced
+   * group has a `path` (like `arn:...:group/AdminGroup/NetworkAdmin`), the
+   * `groupName` property will not resolve to the correct value. Instead it
+   * will resolve to the first path component. We unfortunately cannot express
+   * the correct calculation of the full path name as a CloudFormation
+   * expression. In this scenario the Group ARN should be supplied without the
+   * `path` in order to resolve the correct group resource.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param groupArn the ARN of the group to import (e.g. `arn:aws:iam::account-id:group/group-name`)
    */
   public static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
     const groupName = Stack.of(scope).parseArn(groupArn).resourceName!;

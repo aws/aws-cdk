@@ -11,3 +11,7 @@ tsconfig.json
 .nyc_output
 coverage
 nyc.config.js
+!.eslintrc.js
+!jest.config.js
+
+junit.xml

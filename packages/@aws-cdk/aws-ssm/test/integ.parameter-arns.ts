@@ -1,5 +1,5 @@
-// tslint:disable: max-line-length
-import { App, CfnOutput, CfnParameter, Stack } from "@aws-cdk/core";
+/* eslint-disable max-len */
+import { App, CfnOutput, CfnParameter, Stack } from '@aws-cdk/core';
 import * as ssm from '../lib';
 
 const app = new App();
@@ -19,7 +19,7 @@ const params = [
 ];
 
 for (const p of params) {
-  new CfnOutput(stack, `${p.node.id}Arn`, { value: p.parameterArn });
+  new CfnOutput(stack, `${p.construct.id}Arn`, { value: p.parameterArn });
 }
 
 app.synth();

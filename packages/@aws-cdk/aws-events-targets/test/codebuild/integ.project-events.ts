@@ -33,20 +33,20 @@ project.onStateChange('StateChange', { target: new targets.SnsTopic(topic) });
 // details.
 project.onPhaseChange('PhaseChange', {
   target: new targets.SnsTopic(topic, {
-    message: events.RuleTargetInput.fromText(`Build phase changed to ${codebuild.PhaseChangeEvent.completedPhase}`)
-  })
+    message: events.RuleTargetInput.fromText(`Build phase changed to ${codebuild.PhaseChangeEvent.completedPhase}`),
+  }),
 });
 
 // trigger a build when a commit is pushed to the repo
 const onCommitRule = repo.onCommit('OnCommit', {
   target: new targets.CodeBuildProject(project),
-  branches: ['master']
+  branches: ['master'],
 });
 
 onCommitRule.addTarget(new targets.SnsTopic(topic, {
   message: events.RuleTargetInput.fromText(
-    `A commit was pushed to the repository ${codecommit.ReferenceEvent.repositoryName} on branch ${codecommit.ReferenceEvent.referenceName}`
-  )
+    `A commit was pushed to the repository ${codecommit.ReferenceEvent.repositoryName} on branch ${codecommit.ReferenceEvent.referenceName}`,
+  ),
 }));
 
 app.synth();

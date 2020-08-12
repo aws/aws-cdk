@@ -1,24 +1,15 @@
 # AWS CDK Custom Resources
-
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
-
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
->
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
 
 ## Provider Framework
 
-AWS CloudFormation [custom resources] are extension points to the provisioning
+AWS CloudFormation [custom resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html) are extension points to the provisioning
 engine. When CloudFormation needs to create, update or delete a custom resource,
 it sends a lifecycle event notification to a **custom resource provider**. The provider
 handles the event (e.g. creates a resource) and sends back a response to CloudFormation.
@@ -30,26 +21,28 @@ and powerful custom resources and includes the following capabilities:
 * Handles responses to AWS CloudFormation and protects against blocked
   deployments
 * Validates handler return values to help with correct handler implementation
-* Supports asynchronous handlers to enable long operations which can exceed the AWS Lambda timeout
+* Supports asynchronous handlers to enable operations that require a long waiting period for a resource, which can exceed the AWS Lambda timeout
 * Implements default behavior for physical resource IDs.
 
 The following code shows how the `Provider` construct is used in conjunction
-with `cfn.CustomResource` and a user-provided AWS Lambda function which
-implements the actual handler.
+with a `CustomResource` and a user-provided AWS Lambda function which implements
+the actual handler.
 
 ```ts
-import cr = require('@aws-cdk/custom-resources');
-import cfn = require('@aws-cdk/aws-cloudformation');
+import { CustomResource } from '@aws-cdk/core';
+import * as logs from '@aws-cdk/aws-logs';
+import * as cr from '@aws-cdk/custom-resources';
 
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
 
 const myProvider = new cr.Provider(this, 'MyProvider', {
   onEventHandler: onEvent,
-  isCompleteHandler: isComplete // optional async "waiter"
+  isCompleteHandler: isComplete,        // optional async "waiter"
+  logRetention: logs.RetentionDays.ONE_DAY   // default is INFINITE
 });
 
-new cfn.CustomResource(this, 'Resource1', { provider: myProvider });
-new cfn.CustomResource(this, 'Resource2', { provider: myProvider });
+new CustomResource(this, 'Resource1', { serviceToken: myProvider.serviceToken });
+new CustomResource(this, 'Resource2', { serviceToken: myProvider.serviceToken });
 ```
 
 Providers are implemented through AWS Lambda functions that are triggered by the
@@ -63,7 +56,7 @@ The following example is a skeleton for a Python implementation of `onEvent`:
 
 ```py
 def on_event(event, context):
-  print(event)  
+  print(event)
   request_type = event['RequestType']
   if request_type == 'Create': return on_create(event)
   if request_type == 'Update': return on_update(event)
@@ -76,9 +69,9 @@ def on_create(event):
 
   # add your create code here...
   physical_id = ...
-  
+
   return { 'PhysicalResourceId': physical_id }
-  
+
 def on_update(event):
   physical_id = event["PhysicalResourceId"]
   props = event["ResourceProperties"]
@@ -104,12 +97,10 @@ def is_complete(event, context):
   request_type = event["RequestType"]
 
   # check if resource is stable based on request_type
-  is_ready = ... 
-  
+  is_ready = ...
+
   return { 'IsComplete': is_ready }
 ```
-
-[custom resources]: (https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html).
 
 ### Handling Lifecycle Events: onEvent
 
@@ -121,7 +112,7 @@ If `onEvent` returns successfully, the framework will submit a "SUCCESS" respons
 to AWS CloudFormation for this resource operation.  If the provider is
 [asynchronous](#asynchronous-providers-iscomplete) (`isCompleteHandler` is
 defined), the framework will only submit a response based on the result of
-`isComplete`. 
+`isComplete`.
 
 If `onEvent` throws an error, the framework will submit a "FAILED" response to
 AWS CloudFormation.
@@ -146,6 +137,7 @@ The return value from `onEvent` must be a JSON object with the following fields:
 |-----|----|--------|-----------
 |`PhysicalResourceId`|String|No|The allocated/assigned physical ID of the resource. If omitted for `Create` events, the event's `RequestId` will be used. For `Update`, the current physical ID will be used. If a different value is returned, CloudFormation will follow with a subsequent `Delete` for the previous ID (resource replacement). For `Delete`, it will always return the current physical resource ID, and if the user returns a different one, an error will occur.
 |`Data`|JSON|No|Resource attributes, which can later be retrieved through `Fn::GetAtt` on the custom resource object.
+|*any*|*any*|No|Any other field included in the response will be passed through to `isComplete`. This can sometimes be useful to pass state between the handlers.
 
 [Custom Resource Provider Request]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-requests.html#crpg-ref-request-fields
 
@@ -153,10 +145,10 @@ The return value from `onEvent` must be a JSON object with the following fields:
 
 It is not uncommon for the provisioning of resources to be an asynchronous
 operation, which means that the operation does not immediately finish, and we
-need to "wait" until the resource stabilizes. 
+need to "wait" until the resource stabilizes.
 
 The provider framework makes it easy to implement "waiters" by allowing users to
-specify an additional AWS Lambda function in `isCompleteHandler`. 
+specify an additional AWS Lambda function in `isCompleteHandler`.
 
 The framework will repeatedly invoke the handler every `queryInterval`. When
 `isComplete` returns with `IsComplete: true`, the framework will submit a
@@ -167,10 +159,10 @@ with the message "Operation timed out".
 If an error is thrown, the framework will submit a "FAILED" response to AWS
 CloudFormation.
 
-The input event to `isComplete` is similar to
-[`onEvent`](#handling-lifecycle-events-onevent), with an additional guarantee
-that `PhysicalResourceId` is defines and contains the value returned from
-`onEvent` or the described default. At any case, it is guaranteed to exist.
+The input event to `isComplete` includes all request fields, combined with all
+fields returned from `onEvent`. If `PhysicalResourceId` has not been explicitly
+returned from `onEvent`, it's value will be calculated based on the heuristics
+described above.
 
 The return value must be a JSON object with the following fields:
 
@@ -230,7 +222,7 @@ lifecycle events:
 ### Execution Policy
 
 Similarly to any AWS Lambda function, if the user-defined handlers require
-access to AWS resources, you will have to define these permissions  
+access to AWS resources, you will have to define these permissions
 by calling "grant" methods such as `myBucket.grantRead(myHandler)`), using `myHandler.addToRolePolicy`
 or specifying an `initialPolicy` when defining the function.
 
@@ -270,8 +262,8 @@ This module includes a few examples for custom resource implementations:
 
 Provisions an object in an S3 bucket with textual contents. See the source code
 for the
-[construct](test/provider-framework/integration-test-fixtures/s3-file.ts) and
-[handler](test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
+[construct](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
+[handler](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
 
 The following example will create the file `folder/file1.txt` inside `myBucket`
 with the contents `hello!`.
@@ -337,11 +329,14 @@ be `Items.0.Title.S`.
 
 ### Execution Policy
 
-IAM policy statements required to make the API calls are derived from the calls
-and allow by default the actions to be made on all resources (`*`). You can
-restrict the permissions by specifying your own list of statements with the
-`policyStatements` prop. The custom resource also implements `iam.IGrantable`,
-making it possible to use the `grantXxx()` methods.
+You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
+The library provides two factory methods to quickly configure this:
+
+- **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM Policy statements based on the configured SDK calls.
+Note that you will have to either provide specific ARN's, or explicitly use `AwsCustomResourcePolicy.ANY_RESOURCE` to allow access to any resource.
+- **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own custom statements.
+
+The custom resource also implements `iam.IGrantable`, making it possible to use the `grantXxx()` methods.
 
 As this custom resource uses a singleton Lambda function, it's important to note
 that the function's role will eventually accumulate the permissions/grants from all
@@ -353,8 +348,9 @@ const awsCustom1 = new AwsCustomResource(this, 'API1', {
   onCreate: {
     service: '...',
     action: '...',
-    physicalResourceId: '...'
-  }
+    physicalResourceId: PhysicalResourceId.of('...')
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 const awsCustom2 = new AwsCustomResource(this, 'API2', {
@@ -362,10 +358,37 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
     service: '...',
     action: '...'
     parameters: {
-      text: awsCustom1.getDataString('Items.0.text')
+      text: awsCustom1.getResponseField('Items.0.text')
     },
-    physicalResourceId: '...'
-  }
+    physicalResourceId: PhysicalResourceId.of('...')
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
+})
+```
+
+### Error Handling
+
+Every error produced by the API call is treated as is and will cause a "FAILED" response to be submitted to CloudFormation.
+You can ignore some errors by specifying the `ignoreErrorCodesMatching` property, which accepts a regular expression that is
+tested against the `code` property of the response. If matched, a "SUCCESS" response is submitted.
+Note that in such a case, the call response data and the `Data` key submitted to CloudFormation would both be an empty JSON object.
+Since a successful resource provisioning might or might not produce outputs, this presents us with some limitations:
+
+- `PhysicalResourceId.fromResponse` - Since the call response data might be empty, we cannot use it to extract the physical id.
+- `getResponseField` and `getResponseFieldReference` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.
+
+In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
+
+### Customizing the Lambda function implementing the custom resource
+Use the `role`, `timeout` and `logRetention` properties to customize the Lambda function implementing the custom
+resource:
+
+```ts
+new AwsCustomResource(this, 'Customized', {
+  // other props here
+  role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
+  timeout: cdk.Duration.minutes(10) // defaults to 2 minutes
+  logRetention: logs.RetentionDays.ONE_WEEK // defaults to never delete logs
 })
 ```
 
@@ -381,14 +404,15 @@ const verifyDomainIdentity = new AwsCustomResource(this, 'VerifyDomainIdentity',
     parameters: {
       Domain: 'example.com'
     },
-    physicalResourceIdPath: 'VerificationToken' // Use the token returned by the call as physical id
-  }
+    physicalResourceId: PhysicalResourceId.fromResponse('VerificationToken') // Use the token returned by the call as physical id
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 new route53.TxtRecord(this, 'SESVerificationRecord', {
   zone,
   recordName: `_amazonses.example.com`,
-  values: [verifyDomainIdentity.getDataString('VerificationToken')]
+  values: [verifyDomainIdentity.getResponseField('VerificationToken')]
 });
 ```
 
@@ -403,12 +427,13 @@ const getParameter = new AwsCustomResource(this, 'GetParameter', {
       Name: 'my-parameter',
       WithDecryption: true
     },
-    physicalResourceId: Date.now().toString() // Update physical id to always fetch the latest version
-  }
+    physicalResourceId: PhysicalResourceId.of(Date.now().toString()) // Update physical id to always fetch the latest version
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 // Use the value in another construct with
-getParameter.getData('Parameter.Value')
+getParameter.getResponseField('Parameter.Value')
 ```
 
 
@@ -416,3 +441,4 @@ getParameter.getData('Parameter.Value')
 ---
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+

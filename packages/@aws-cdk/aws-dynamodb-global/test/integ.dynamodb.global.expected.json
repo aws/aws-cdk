@@ -1,7 +1,5 @@
 [
   {
-  },
-  {
     "Resources": {
       "globdynamodbintegGlobalTableuseast162596384": {
         "Type": "AWS::DynamoDB::Table",
@@ -249,5 +247,6 @@
         "Description": "Artifact hash for asset \"94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3a\""
       }
     }
-  }
+  },
+  {}
 ]

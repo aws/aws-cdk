@@ -1,0 +1,76 @@
+{
+  "name": "@aws-cdk/cdk-assets-schema",
+  "version": "0.0.0",
+  "description": "Schema definition for the Asset Manifest",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.cdkassets.schema",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-assets-schema"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.CdkAssets.Schema",
+        "packageId": "Amazon.CDK.CdkAssets.Schema",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.cdk-assets-schema",
+        "module": "aws_cdk.cdk_assets_schema"
+      }
+    }
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/jest": "^26.0.4",
+    "cdk-build-tools": "0.0.0",
+    "jest": "^25.5.4",
+    "pkglint": "0.0.0"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/cdk-assets-schema"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "deprecated",
+  "awscdkio": {
+    "announce": false
+  },
+  "deprecated": "merged into @aws-cdk/cloud-assembly-schema",
+  "maturity": "deprecated",
+  "cdk-build": {
+    "jest": true
+  }
+}

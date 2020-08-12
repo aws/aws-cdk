@@ -87,7 +87,7 @@ export interface TableProps {
   /**
    * S3 prefix under which table objects are stored.
    *
-   * @default data/
+   * @default - No prefix. The data will be stored under the root of the bucket.
    */
   readonly s3Prefix?: string;
 
@@ -154,7 +154,7 @@ export class Table extends Resource implements ITable {
 
     return Table.fromTableAttributes(scope, id, {
       tableArn,
-      tableName
+      tableName,
     });
   }
 
@@ -236,7 +236,7 @@ export class Table extends Resource implements ITable {
 
     this.database = props.database;
     this.dataFormat = props.dataFormat;
-    this.s3Prefix = (props.s3Prefix !== undefined && props.s3Prefix !== null) ? props.s3Prefix : 'data/';
+    this.s3Prefix = props.s3Prefix ?? '';
 
     validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;
@@ -260,7 +260,7 @@ export class Table extends Resource implements ITable {
         partitionKeys: renderColumns(props.partitionKeys),
 
         parameters: {
-          has_encrypted_data: this.encryption !== TableEncryption.UNENCRYPTED
+          has_encrypted_data: this.encryption !== TableEncryption.UNENCRYPTED,
         },
         storageDescriptor: {
           location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
@@ -270,21 +270,21 @@ export class Table extends Resource implements ITable {
           inputFormat: props.dataFormat.inputFormat.className,
           outputFormat: props.dataFormat.outputFormat.className,
           serdeInfo: {
-            serializationLibrary: props.dataFormat.serializationLibrary.className
+            serializationLibrary: props.dataFormat.serializationLibrary.className,
           },
         },
 
-        tableType: 'EXTERNAL_TABLE'
-      }
+        tableType: 'EXTERNAL_TABLE',
+      },
     });
 
     this.tableName = this.getResourceNameAttribute(tableResource.ref);
     this.tableArn = this.stack.formatArn({
       service: 'glue',
       resource: 'table',
-      resourceName: `${this.database.databaseName}/${this.tableName}`
+      resourceName: `${this.database.databaseName}/${this.tableName}`,
     });
-    this.node.defaultChild = tableResource;
+    this.construct.defaultChild = tableResource;
   }
 
   /**
@@ -340,7 +340,7 @@ function validateSchema(columns: Column[], partitionKeys?: Column[]): void {
   const names = new Set<string>();
   (columns.concat(partitionKeys || [])).forEach(column => {
     if (names.has(column.name)) {
-      throw new Error(`column names and partition keys must be unique, but 'p1' is duplicated`);
+      throw new Error(`column names and partition keys must be unique, but \'${column.name}\' is duplicated`);
     }
     names.add(column.name);
   });
@@ -380,7 +380,7 @@ function createBucket(table: Table, props: TableProps) {
     } else {
       bucket = new s3.Bucket(table, 'Bucket', {
         encryption: encryptionMappings[encryption],
-        encryptionKey
+        encryptionKey,
       });
       encryptionKey = bucket.encryptionKey;
     }
@@ -389,7 +389,7 @@ function createBucket(table: Table, props: TableProps) {
   return {
     bucket,
     encryption,
-    encryptionKey
+    encryptionKey,
   };
 }
 
@@ -400,7 +400,7 @@ const readPermissions = [
   'glue:GetPartitions',
   'glue:GetTable',
   'glue:GetTables',
-  'glue:GetTableVersions'
+  'glue:GetTableVersions',
 ];
 
 const writePermissions = [
@@ -408,7 +408,7 @@ const writePermissions = [
   'glue:BatchDeletePartition',
   'glue:CreatePartition',
   'glue:DeletePartition',
-  'glue:UpdatePartition'
+  'glue:UpdatePartition',
 ];
 
 function renderColumns(columns?: Array<Column | Column>) {
@@ -419,7 +419,7 @@ function renderColumns(columns?: Array<Column | Column>) {
     return {
       name: column.name,
       type: column.type.inputString,
-      comment: column.comment
+      comment: column.comment,
     };
   });
 }

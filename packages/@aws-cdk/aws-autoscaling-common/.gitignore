@@ -1,7 +1,6 @@
 lambda/bundle.zip
 
 *.js
-tslint.json
 *.js.map
 *.d.ts
 *.generated.ts
@@ -18,3 +17,6 @@ nyc.config.js
 tsconfig.json
 
 *.snk
+!.eslintrc.js
+
+junit.xml

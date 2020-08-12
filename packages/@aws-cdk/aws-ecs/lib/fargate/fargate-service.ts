@@ -1,7 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { TaskDefinition } from '../base/task-definition';
+import { ICluster } from '../cluster';
 
 /**
  * The properties for defining a service using the Fargate launch type.
@@ -19,14 +21,14 @@ export interface FargateServiceProps extends BaseServiceOptions {
    *
    * If true, each task will receive a public IP address.
    *
-   * @default - Use subnet default.
+   * @default false
    */
   readonly assignPublicIp?: boolean;
 
   /**
    * The subnets to associate with the service.
    *
-   * @default - Private subnets.
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -34,8 +36,16 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
    *
    * @default - A new security group is created.
+   * @deprecated use securityGroups instead.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   *
+   * @default - A new security group is created.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The platform version on which to run your service.
@@ -66,6 +76,30 @@ export interface IFargateService extends IService {
 }
 
 /**
+ * The properties to import from the service using the Fargate launch type.
+ */
+export interface FargateServiceAttributes {
+  /**
+   * The cluster that hosts the service.
+   */
+  readonly cluster: ICluster;
+
+  /**
+   * The service ARN.
+   *
+   * @default - either this, or {@link serviceName}, is required
+   */
+  readonly serviceArn?: string;
+
+  /**
+   * The name of the service.
+   *
+   * @default - either this, or {@link serviceArn}, is required
+   */
+  readonly serviceName?: string;
+}
+
+/**
  * This creates a service using the Fargate launch type on an ECS cluster.
  *
  * @resource AWS::ECS::Service
@@ -73,13 +107,21 @@ export interface IFargateService extends IService {
 export class FargateService extends BaseService implements IFargateService {
 
   /**
-   * Import a task definition from the specified task definition ARN.
+   * Imports from the specified service ARN.
    */
   public static fromFargateServiceArn(scope: cdk.Construct, id: string, fargateServiceArn: string): IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
+      public readonly serviceName = cdk.Stack.of(scope).parseArn(fargateServiceArn).resourceName as string;
     }
     return new Import(scope, id);
+  }
+
+  /**
+   * Imports from the specified service attrributes.
+   */
+  public static fromFargateServiceAttributes(scope: cdk.Construct, id: string, attrs: FargateServiceAttributes): IBaseService {
+    return fromServiceAtrributes(scope, id, attrs);
   }
 
   /**
@@ -94,8 +136,12 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
     }
 
+    if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
+      throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
+    }
+
     const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
-                                      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
+      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
 
     super(scope, id, {
       ...props,
@@ -105,11 +151,18 @@ export class FargateService extends BaseService implements IFargateService {
       enableECSManagedTags: props.enableECSManagedTags,
     }, {
       cluster: props.cluster.clusterName,
-      taskDefinition: props.taskDefinition.taskDefinitionArn,
+      taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
       platformVersion: props.platformVersion,
     }, props.taskDefinition);
 
-    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
+    let securityGroups;
+    if (props.securityGroup !== undefined) {
+      securityGroups = [ props.securityGroup ];
+    } else if (props.securityGroups !== undefined) {
+      securityGroups = props.securityGroups;
+    }
+
+    this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
 
     if (!props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
@@ -124,9 +177,18 @@ export class FargateService extends BaseService implements IFargateService {
  */
 export enum FargatePlatformVersion {
   /**
-   * The latest, recommended platform version
+   * The latest, recommended platform version.
    */
   LATEST = 'LATEST',
+
+  /**
+   * Version 1.4.0
+   *
+   * Supports EFS endpoints, CAP_SYS_PTRACE Linux capability,
+   * network performance metrics in CloudWatch Container Insights,
+   * consolidated 20 GB ephemeral volume.
+   */
+  VERSION1_4 = '1.4.0',
 
   /**
    * Version 1.3.0

@@ -1,82 +1,220 @@
-import { IUserPool } from "@aws-cdk/aws-cognito";
-import { Table } from '@aws-cdk/aws-dynamodb';
-import { IGrantable, IPrincipal, IRole, ManagedPolicy, Role, ServicePrincipal } from "@aws-cdk/aws-iam";
-import { IFunction } from "@aws-cdk/aws-lambda";
-import { Construct, IResolvable } from "@aws-cdk/core";
-import { readFileSync } from "fs";
-import { CfnDataSource, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from "./appsync.generated";
+import { readFileSync } from 'fs';
+import { IUserPool } from '@aws-cdk/aws-cognito';
+import { ITable } from '@aws-cdk/aws-dynamodb';
+import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IFunction } from '@aws-cdk/aws-lambda';
+import { Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
+import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
+import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
+
+/**
+ * enum with all possible values for AppSync authorization type
+ */
+export enum AuthorizationType {
+  /**
+   * API Key authorization type
+   */
+  API_KEY = 'API_KEY',
+  /**
+   * AWS IAM authorization type. Can be used with Cognito Identity Pool federated credentials
+   */
+  IAM = 'AWS_IAM',
+  /**
+   * Cognito User Pool authorization type
+   */
+  USER_POOL = 'AMAZON_COGNITO_USER_POOLS',
+  /**
+   * OpenID Connect authorization type
+   */
+  OIDC = 'OPENID_CONNECT',
+}
+
+/**
+ * Interface to specify default or additional authorization(s)
+ */
+export interface AuthorizationMode {
+  /**
+   * One of possible four values AppSync supports
+   *
+   * @see https://docs.aws.amazon.com/appsync/latest/devguide/security.html
+   *
+   * @default - `AuthorizationType.API_KEY`
+   */
+  readonly authorizationType: AuthorizationType;
+  /**
+   * If authorizationType is `AuthorizationType.USER_POOL`, this option is required.
+   * @default - none
+   */
+  readonly userPoolConfig?: UserPoolConfig;
+  /**
+   * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
+   * @default - name: 'DefaultAPIKey' | description: 'Default API Key created by CDK'
+   */
+  readonly apiKeyConfig?: ApiKeyConfig;
+  /**
+   * If authorizationType is `AuthorizationType.OIDC`, this option is required.
+   * @default - none
+   */
+  readonly openIdConnectConfig?: OpenIdConnectConfig;
+}
 
 /**
  * enum with all possible values for Cognito user-pool default actions
  */
 export enum UserPoolDefaultAction {
-    /**
-     * ALLOW access to API
-     */
-    ALLOW = 'ALLOW',
-    /**
-     * DENY access to API
-     */
-    DENY = 'DENY',
+  /**
+   * ALLOW access to API
+   */
+  ALLOW = 'ALLOW',
+  /**
+   * DENY access to API
+   */
+  DENY = 'DENY',
 }
 
 /**
  * Configuration for Cognito user-pools in AppSync
  */
 export interface UserPoolConfig {
+  /**
+   * The Cognito user pool to use as identity source
+   */
+  readonly userPool: IUserPool;
+  /**
+   * the optional app id regex
+   *
+   * @default -  None
+   */
+  readonly appIdClientRegex?: string;
+  /**
+   * Default auth action
+   *
+   * @default ALLOW
+   */
+  readonly defaultAction?: UserPoolDefaultAction;
+}
 
-    /**
-     * The Cognito user pool to use as identity source
-     */
-    readonly userPool: IUserPool;
-    /**
-     * the optional app id regex
-     *
-     * @default -  None
-     */
-    readonly appIdClientRegex?: string;
-    /**
-     * Default auth action
-     *
-     * @default ALLOW
-     */
-    readonly defaultAction?: UserPoolDefaultAction;
+/**
+ * Configuration for API Key authorization in AppSync
+ */
+export interface ApiKeyConfig {
+  /**
+   * Unique name of the API Key
+   * @default - 'DefaultAPIKey'
+   */
+  readonly name?: string;
+  /**
+   * Description of API key
+   * @default - 'Default API Key created by CDK'
+   */
+  readonly description?: string;
+
+  /**
+   * The time from creation time after which the API key expires, using RFC3339 representation.
+   * It must be a minimum of 1 day and a maximum of 365 days from date of creation.
+   * Rounded down to the nearest hour.
+   * @default - 7 days from creation time
+   */
+  readonly expires?: string;
+}
+
+/**
+ * Configuration for OpenID Connect authorization in AppSync
+ */
+export interface OpenIdConnectConfig {
+  /**
+   * The number of milliseconds an OIDC token is valid after being authenticated by OIDC provider.
+   * `auth_time` claim in OIDC token is required for this validation to work.
+   * @default - no validation
+   */
+  readonly tokenExpiryFromAuth?: number;
+  /**
+   * The number of milliseconds an OIDC token is valid after being issued to a user.
+   * This validation uses `iat` claim of OIDC token.
+   * @default - no validation
+   */
+  readonly tokenExpiryFromIssue?: number;
+  /**
+   * The client identifier of the Relying party at the OpenID identity provider.
+   * A regular expression can be specified so AppSync can validate against multiple client identifiers at a time.
+   * @example - 'ABCD|CDEF' where ABCD and CDEF are two different clientId
+   * @default - * (All)
+   */
+  readonly clientId?: string;
+  /**
+   * The issuer for the OIDC configuration. The issuer returned by discovery must exactly match the value of `iss` in the OIDC token.
+   */
+  readonly oidcProvider: string;
+}
+
+/**
+ * Configuration of the API authorization modes.
+ */
+export interface AuthorizationConfig {
+  /**
+   * Optional authorization configuration
+   *
+   * @default - API Key authorization
+   */
+  readonly defaultAuthorization?: AuthorizationMode;
+
+  /**
+   * Additional authorization modes
+   *
+   * @default - No other modes
+   */
+  readonly additionalAuthorizationModes?: AuthorizationMode[];
 }
 
 /**
  * log-level for fields in AppSync
  */
 export enum FieldLogLevel {
-    /**
-     * No logging
-     */
-    NONE = 'NONE',
-    /**
-     * Error logging
-     */
-    ERROR = 'ERROR',
-    /**
-     * All logging
-     */
-    ALL = 'ALL',
+  /**
+   * No logging
+   */
+  NONE = 'NONE',
+  /**
+   * Error logging
+   */
+  ERROR = 'ERROR',
+  /**
+   * All logging
+   */
+  ALL = 'ALL',
 }
 
 /**
  * Logging configuration for AppSync
  */
 export interface LogConfig {
-    /**
-     * exclude verbose content
-     *
-     * @default false
-     */
-    readonly excludeVerboseContent?: boolean | IResolvable;
-    /**
-     * log level for fields
-     *
-     * @default - Use AppSync default
-     */
-    readonly fieldLogLevel?: FieldLogLevel;
+  /**
+   * exclude verbose content
+   *
+   * @default false
+   */
+  readonly excludeVerboseContent?: boolean | IResolvable;
+  /**
+   * log level for fields
+   *
+   * @default - Use AppSync default
+   */
+  readonly fieldLogLevel?: FieldLogLevel;
+}
+
+/**
+ * Enum containing the different modes of schema definition
+ */
+export enum SchemaDefinition {
+  /**
+   * Define schema through functions like addType, addQuery, etc.
+   */
+  CODE = 'CODE',
+
+  /**
+   * Define schema in a file, i.e. schema.graphql
+   */
+  FILE = 'FILE',
 }
 
 /**
@@ -84,38 +222,106 @@ export interface LogConfig {
  */
 export interface GraphQLApiProps {
 
-    /**
-     * the name of the GraphQL API
-     */
-    readonly name: string;
+  /**
+   * the name of the GraphQL API
+   */
+  readonly name: string;
 
-    /**
-     * Optional user pool authorizer configuration
-     *
-     * @default - Do not use Cognito auth
-     */
-    readonly userPoolConfig?: UserPoolConfig;
+  /**
+   * Optional authorization configuration
+   *
+   * @default - API Key authorization
+   */
+  readonly authorizationConfig?: AuthorizationConfig;
 
-    /**
-     * Logging configuration for this api
-     *
-     * @default - None
-     */
-    readonly logConfig?: LogConfig;
+  /**
+   * Logging configuration for this api
+   *
+   * @default - None
+   */
+  readonly logConfig?: LogConfig;
 
-    /**
-     * GraphQL schema definition. You have to specify a definition or a file containing one.
-     *
-     * @default - Use schemaDefinitionFile
-     */
-    readonly schemaDefinition?: string;
-    /**
-     * File containing the GraphQL schema definition. You have to specify a definition or a file containing one.
-     *
-     * @default - Use schemaDefinition
-     */
-    readonly schemaDefinitionFile?: string;
+  /**
+   * GraphQL schema definition. Specify how you want to define your schema.
+   *
+   * SchemaDefinition.CODE allows schema definition through CDK
+   * SchemaDefinition.FILE allows schema definition through schema.graphql file
+   *
+   * @experimental
+   */
+  readonly schemaDefinition: SchemaDefinition;
+  /**
+   * File containing the GraphQL schema definition. You have to specify a definition or a file containing one.
+   *
+   * @default - Use schemaDefinition
+   */
+  readonly schemaDefinitionFile?: string;
+  /**
+   * A flag indicating whether or not X-Ray tracing is enabled for the GraphQL API.
+   *
+   * @default - false
+   */
+  readonly xrayEnabled?: boolean;
 
+}
+
+/**
+ * A class used to generate resource arns for AppSync
+ */
+export class IamResource {
+  /**
+   * Generate the resource names given custom arns
+   *
+   * @param arns The custom arns that need to be permissioned
+   *
+   * Example: custom('/types/Query/fields/getExample')
+   */
+  public static custom(...arns: string[]): IamResource {
+    if (arns.length === 0) {
+      throw new Error('At least 1 custom ARN must be provided.');
+    }
+    return new IamResource(arns);
+  }
+
+  /**
+   * Generate the resource names given a type and fields
+   *
+   * @param type The type that needs to be allowed
+   * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
+   *
+   * Example: ofType('Query', 'GetExample')
+   */
+  public static ofType(type: string, ...fields: string[]): IamResource {
+    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [ `types/${type}/*` ];
+    return new IamResource(arns);
+  }
+
+  /**
+   * Generate the resource names that accepts all types: `*`
+   */
+  public static all(): IamResource {
+    return new IamResource(['*']);
+  }
+
+  private arns: string[];
+
+  private constructor(arns: string[]){
+    this.arns = arns;
+  }
+
+  /**
+   * Return the Resource ARN
+   *
+   * @param api The GraphQL API to give permissions
+   */
+  public resourceArns(api: GraphQLApi): string[] {
+    return this.arns.map((arn) => Stack.of(api).formatArn({
+      service: 'appsync',
+      resource: `apis/${api.apiId}`,
+      sep: '/',
+      resourceName: `${arn}`,
+    }));
+  }
 }
 
 /**
@@ -123,858 +329,393 @@ export interface GraphQLApiProps {
  */
 export class GraphQLApi extends Construct {
 
-    /**
-     * the id of the GraphQL API
-     */
-    public readonly apiId: string;
-    /**
-     * the ARN of the API
-     */
-    public readonly arn: string;
-    /**
-     * the URL of the endpoint created by AppSync
-     */
-    public readonly graphQlUrl: string;
-    /**
-     * the name of the API
-     */
-    public name: string;
-    /**
-     * underlying CFN schema resource
-     */
-    public readonly schema: CfnGraphQLSchema;
+  /**
+   * the id of the GraphQL API
+   */
+  public readonly apiId: string;
+  /**
+   * the ARN of the API
+   */
+  public readonly arn: string;
+  /**
+   * the URL of the endpoint created by AppSync
+   */
+  public readonly graphQlUrl: string;
+  /**
+   * the name of the API
+   */
+  public readonly name: string;
+  /**
+   * underlying CFN schema resource
+   */
+  public readonly schema: CfnGraphQLSchema;
+  /**
+   * the configured API key, if present
+   */
+  public get apiKey(): string | undefined {
+    return this._apiKey;
+  }
 
-    private api: CfnGraphQLApi;
-    private authenticationType: string;
+  private schemaMode: SchemaDefinition;
+  private api: CfnGraphQLApi;
+  private _apiKey?: string;
 
-    constructor(scope: Construct, id: string, props: GraphQLApiProps) {
-        super(scope, id);
+  constructor(scope: Construct, id: string, props: GraphQLApiProps) {
+    super(scope, id);
 
-        let apiLogsRole;
-        if (props.logConfig) {
-            apiLogsRole = new Role(this, 'ApiLogsRole', { assumedBy: new ServicePrincipal('appsync') });
-            apiLogsRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'));
-        }
+    this.validateAuthorizationProps(props);
+    const defaultAuthorizationType =
+      props.authorizationConfig?.defaultAuthorization?.authorizationType ||
+      AuthorizationType.API_KEY;
 
-        if (props.userPoolConfig) {
-            this.authenticationType = 'AMAZON_COGNITO_USER_POOLS';
-        } else {
-            this.authenticationType = 'API_KEY';
-        }
-
-        this.api = new CfnGraphQLApi(this, 'Resource', {
-            name: props.name,
-            authenticationType: this.authenticationType,
-            ...props.userPoolConfig && {
-                userPoolConfig: {
-                    userPoolId: props.userPoolConfig.userPool.userPoolId,
-                    awsRegion: props.userPoolConfig.userPool.stack.region,
-                    defaultAction: props.userPoolConfig.defaultAction ? props.userPoolConfig.defaultAction.toString() : 'ALLOW',
-                },
-            },
-            ...props.logConfig && {
-                logConfig: {
-                    cloudWatchLogsRoleArn: apiLogsRole ? apiLogsRole.roleArn : undefined,
-                    excludeVerboseContent: props.logConfig.excludeVerboseContent,
-                    fieldLogLevel: props.logConfig.fieldLogLevel ? props.logConfig.fieldLogLevel.toString() : undefined,
-                },
-            }
-        });
-
-        this.apiId = this.api.attrApiId;
-        this.arn = this.api.attrArn;
-        this.graphQlUrl = this.api.attrGraphQlUrl;
-        this.name = this.api.name;
-
-        let definition;
-        if (props.schemaDefinition) {
-            definition = props.schemaDefinition;
-        } else if (props.schemaDefinitionFile) {
-            definition = readFileSync(props.schemaDefinitionFile).toString('UTF-8');
-        } else {
-            throw new Error('Missing Schema definition. Provide schemaDefinition or schemaDefinitionFile');
-        }
-        this.schema = new CfnGraphQLSchema(this, 'Schema', {
-            apiId: this.apiId,
-            definition,
-        });
+    let apiLogsRole;
+    if (props.logConfig) {
+      apiLogsRole = new Role(this, 'ApiLogsRole', {
+        assumedBy: new ServicePrincipal('appsync'),
+      });
+      apiLogsRole.addManagedPolicy(
+        ManagedPolicy.fromAwsManagedPolicyName(
+          'service-role/AWSAppSyncPushToCloudWatchLogs',
+        ),
+      );
     }
 
-    /**
-     * add a new DynamoDB data source to this API
-     * @param name The name of the data source
-     * @param description The description of the data source
-     * @param table The DynamoDB table backing this data source [disable-awslint:ref-via-interface]
-     */
-    public addDynamoDbDataSource(name: string, description: string, table: Table): DynamoDbDataSource {
-        return new DynamoDbDataSource(this, `${name}DS`, {
-            api: this,
-            description,
-            name,
-            table
-        });
-    }
-
-    /**
-     * add a new Lambda data source to this API
-     * @param name The name of the data source
-     * @param description The description of the data source
-     * @param lambdaFunction The Lambda function to call to interact with this data source
-     */
-    public addLambdaDataSource(name: string, description: string, lambdaFunction: IFunction): LambdaDataSource {
-        return new LambdaDataSource(this, `${name}DS`, {
-            api: this,
-            description,
-            name,
-            lambdaFunction
-        });
-    }
-
-}
-
-/**
- * Base properties fo an AppSync datasource
- */
-export interface BaseDataSourceProps {
-    /**
-     * The API to attach this data source to
-     */
-    readonly api: GraphQLApi;
-    /**
-     * The name of the data source
-     */
-    readonly name: string;
-    /**
-     * the description of the data source
-     *
-     * @default - None
-     */
-    readonly description?: string;
-    /**
-     * The IAM service role to be assumed by AppSync to interact with the data source
-     *
-     * @default -  Create a new role
-     */
-    readonly serviceRole?: IRole;
-}
-
-/**
- * props used by implementations of BaseDataSource to provide configuration. Should not be used directly.
- */
-export interface ExtendedDataSourceProps {
-    /**
-     * the type of the AppSync datasource
-     */
-    readonly type: string;
-    /**
-     * configuration for DynamoDB Datasource
-     *
-     * @default - No config
-     */
-    readonly dynamoDbConfig?: CfnDataSource.DynamoDBConfigProperty | IResolvable;
-    /**
-     * configuration for Elasticsearch Datasource
-     *
-     * @default - No config
-     */
-    readonly elasticsearchConfig?: CfnDataSource.ElasticsearchConfigProperty | IResolvable;
-    /**
-     * configuration for HTTP Datasource
-     *
-     * @default - No config
-     */
-    readonly httpConfig?: CfnDataSource.HttpConfigProperty | IResolvable;
-    /**
-     * configuration for Lambda Datasource
-     *
-     * @default - No config
-     */
-    readonly lambdaConfig?: CfnDataSource.LambdaConfigProperty | IResolvable;
-    /**
-     * configuration for RDS Datasource
-     *
-     * @default - No config
-     */
-    readonly relationalDatabaseConfig?: CfnDataSource.RelationalDatabaseConfigProperty | IResolvable;
-}
-
-/**
- * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
- */
-export abstract class BaseDataSource extends Construct implements IGrantable {
-
-    /**
-     * the principal of the data source to be IGrantable
-     */
-    public readonly grantPrincipal: IPrincipal;
-    /**
-     * the name of the data source
-     */
-    public readonly name: string;
-    /**
-     * the underlying CFNN data source resource
-     */
-    public readonly ds: CfnDataSource;
-
-    protected api: GraphQLApi;
-    protected serviceRole: IRole;
-
-    constructor(scope: Construct, id: string, props: BaseDataSourceProps, extended: ExtendedDataSourceProps) {
-        super(scope, id);
-
-        this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
-        this.grantPrincipal = this.serviceRole;
-
-        this.ds = new CfnDataSource(this, 'Resource', {
-            apiId: props.api.apiId,
-            name: props.name,
-            description: props.description,
-            serviceRoleArn: this.serviceRole.roleArn,
-            ...extended,
-        });
-        this.name = props.name;
-        this.api = props.api;
-    }
-
-    /**
-     * creates a new resolver for this datasource and API using the given properties
-     */
-    public createResolver(props: BaseResolverProps): Resolver {
-        return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
-            api: this.api,
-            dataSource: this,
-            ...props,
-        });
-    }
-
-}
-
-/**
- * Properties for an AppSync DynamoDB datasource
- */
-export interface DynamoDbDataSourceProps extends BaseDataSourceProps {
-    /**
-     * The DynamoDB table backing this data source
-     * [disable-awslint:ref-via-interface]
-     */
-    readonly table: Table;
-    /**
-     * Specify whether this DS is read only or has read and write permissions to the DynamoDB table
-     *
-     * @default false
-     */
-    readonly readOnlyAccess?: boolean;
-    /**
-     * use credentials of caller to access DynamoDB
-     *
-     * @default false
-     */
-    readonly useCallerCredentials?: boolean;
-}
-
-/**
- * An AppSync datasource backed by a DynamoDB table
- */
-export class DynamoDbDataSource extends BaseDataSource {
-    constructor(scope: Construct, id: string, props: DynamoDbDataSourceProps) {
-        super(scope, id, props, {
-            type: 'AMAZON_DYNAMODB',
-            dynamoDbConfig: {
-                tableName: props.table.tableName,
-                awsRegion: props.table.stack.region,
-                useCallerCredentials: props.useCallerCredentials,
-            },
-        });
-        if (props.readOnlyAccess) {
-            props.table.grantReadData(this.serviceRole);
-        } else {
-            props.table.grantReadWriteData(this.serviceRole);
-        }
-    }
-}
-
-/**
- * Properties for an AppSync Lambda datasource
- */
-export interface LambdaDataSourceProps extends BaseDataSourceProps {
-    /**
-     * The Lambda function to call to interact with this data source
-     */
-    readonly lambdaFunction: IFunction;
-}
-
-/**
- * An AppSync datasource backed by a Lambda function
- */
-export class LambdaDataSource extends BaseDataSource {
-    constructor(scope: Construct, id: string, props: LambdaDataSourceProps) {
-        super(scope, id, props, {
-            type: 'AWS_LAMBDA',
-            lambdaConfig: {
-                lambdaFunctionArn: props.lambdaFunction.functionArn,
-            },
-        });
-        props.lambdaFunction.grantInvoke(this.serviceRole);
-    }
-}
-
-function concatAndDedup<T>(left: T[], right: T[]): T[] {
-    return left.concat(right).filter((elem, index, self) => {
-        return index === self.indexOf(elem);
+    this.api = new CfnGraphQLApi(this, 'Resource', {
+      name: props.name,
+      authenticationType: defaultAuthorizationType,
+      ...(props.logConfig && {
+        logConfig: {
+          cloudWatchLogsRoleArn: apiLogsRole ? apiLogsRole.roleArn : undefined,
+          excludeVerboseContent: props.logConfig.excludeVerboseContent,
+          fieldLogLevel: props.logConfig.fieldLogLevel
+            ? props.logConfig.fieldLogLevel.toString()
+            : undefined,
+        },
+      }),
+      openIdConnectConfig:
+        props.authorizationConfig?.defaultAuthorization?.authorizationType ===
+        AuthorizationType.OIDC
+          ? this.formatOpenIdConnectConfig(
+            props.authorizationConfig.defaultAuthorization
+              .openIdConnectConfig!,
+          )
+          : undefined,
+      userPoolConfig:
+        props.authorizationConfig?.defaultAuthorization?.authorizationType ===
+        AuthorizationType.USER_POOL
+          ? this.formatUserPoolConfig(
+            props.authorizationConfig.defaultAuthorization.userPoolConfig!,
+          )
+          : undefined,
+      additionalAuthenticationProviders: this.formatAdditionalAuthenticationProviders(props),
+      xrayEnabled: props.xrayEnabled,
     });
-}
 
-/**
- * Utility class to represent DynamoDB key conditions.
- */
-abstract class BaseKeyCondition {
-    public and(cond: BaseKeyCondition): BaseKeyCondition {
-        return new (class extends BaseKeyCondition {
-            constructor(private readonly left: BaseKeyCondition, private readonly right: BaseKeyCondition) {
-                super();
-            }
+    this.apiId = this.api.attrApiId;
+    this.arn = this.api.attrArn;
+    this.graphQlUrl = this.api.attrGraphQlUrl;
+    this.name = this.api.name;
+    this.schemaMode = props.schemaDefinition;
 
-            public renderCondition(): string {
-                return `${this.left.renderCondition()} AND ${this.right.renderCondition()}`;
-            }
-
-            public keyNames(): string[] {
-                return concatAndDedup(this.left.keyNames(), this.right.keyNames());
-            }
-
-            public args(): string[] {
-                return concatAndDedup(this.left.args(), this.right.args());
-            }
-        })(this, cond);
+    if (
+      defaultAuthorizationType === AuthorizationType.API_KEY ||
+      props.authorizationConfig?.additionalAuthorizationModes?.some(
+        (authMode) => authMode.authorizationType === AuthorizationType.API_KEY
+      )
+    ) {
+      const apiKeyConfig: ApiKeyConfig = props.authorizationConfig
+        ?.defaultAuthorization?.apiKeyConfig || {
+          name: 'DefaultAPIKey',
+          description: 'Default API Key created by CDK',
+        };
+      this._apiKey = this.createAPIKey(apiKeyConfig);
     }
 
-    public renderExpressionNames(): string {
-        return this.keyNames()
-            .map((keyName: string) => {
-                return `"#${keyName}" : "${keyName}"`;
-            })
-            .join(", ");
+    this.schema = this.defineSchema(props.schemaDefinitionFile);
+  }
+
+  /**
+   * add a new dummy data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   */
+  public addNoneDataSource(name: string, description: string): NoneDataSource {
+    return new NoneDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      name,
+    });
+  }
+
+  /**
+   * add a new DynamoDB data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   * @param table The DynamoDB table backing this data source [disable-awslint:ref-via-interface]
+   */
+  public addDynamoDbDataSource(
+    name: string,
+    description: string,
+    table: ITable,
+  ): DynamoDbDataSource {
+    return new DynamoDbDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      name,
+      table,
+    });
+  }
+
+  /**
+   * add a new http data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   * @param endpoint The http endpoint
+   */
+  public addHttpDataSource(name: string, description: string, endpoint: string): HttpDataSource {
+    return new HttpDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      endpoint,
+      name,
+    });
+  }
+
+  /**
+   * add a new Lambda data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   * @param lambdaFunction The Lambda function to call to interact with this data source
+   */
+  public addLambdaDataSource(
+    name: string,
+    description: string,
+    lambdaFunction: IFunction,
+  ): LambdaDataSource {
+    return new LambdaDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      name,
+      lambdaFunction,
+    });
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
+   * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
+   */
+  public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: resources.resourceArns(this),
+      scope: this,
+    });
+  }
+
+  /**
+   * Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Mutations (leave blank for all)
+   */
+  public grantMutation(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Mutation', ...fields), 'appsync:GraphQL');
+  }
+
+  /**
+   * Adds an IAM policy statement for Query access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Queries (leave blank for all)
+   */
+  public grantQuery(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Query', ...fields), 'appsync:GraphQL');
+  }
+
+  /**
+   * Adds an IAM policy statement for Subscription access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Subscriptions (leave blank for all)
+   */
+  public grantSubscription(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Subscription', ...fields), 'appsync:GraphQL');
+  }
+
+  private validateAuthorizationProps(props: GraphQLApiProps) {
+    const defaultAuthorizationType =
+      props.authorizationConfig?.defaultAuthorization?.authorizationType ||
+      AuthorizationType.API_KEY;
+
+    if (
+      defaultAuthorizationType === AuthorizationType.OIDC &&
+      !props.authorizationConfig?.defaultAuthorization?.openIdConnectConfig
+    ) {
+      throw new Error('Missing default OIDC Configuration');
     }
 
-    public renderExpressionValues(): string {
-        return this.args()
-            .map((arg: string) => {
-                return `":${arg}" : $util.dynamodb.toDynamoDBJson($ctx.args.${arg})`;
-            })
-            .join(", ");
+    if (
+      defaultAuthorizationType === AuthorizationType.USER_POOL &&
+      !props.authorizationConfig?.defaultAuthorization?.userPoolConfig
+    ) {
+      throw new Error('Missing default User Pool Configuration');
     }
 
-    public abstract renderCondition(): string;
-    public abstract keyNames(): string[];
-    public abstract args(): string[];
-}
+    if (props.authorizationConfig?.additionalAuthorizationModes) {
+      props.authorizationConfig.additionalAuthorizationModes.forEach(
+        (authorizationMode) => {
+          if (
+            authorizationMode.authorizationType === AuthorizationType.API_KEY &&
+            defaultAuthorizationType === AuthorizationType.API_KEY
+          ) {
+            throw new Error(
+              "You can't duplicate API_KEY in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
+            );
+          }
 
-/**
- * Utility class to represent DynamoDB "begins_with" key conditions.
- */
-class BeginsWith extends BaseKeyCondition {
-    constructor(private readonly keyName: string, private readonly arg: string) {
-        super();
+          if (
+            authorizationMode.authorizationType === AuthorizationType.IAM &&
+            defaultAuthorizationType === AuthorizationType.IAM
+          ) {
+            throw new Error(
+              "You can't duplicate IAM in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
+            );
+          }
+
+          if (
+            authorizationMode.authorizationType === AuthorizationType.OIDC &&
+            !authorizationMode.openIdConnectConfig
+          ) {
+            throw new Error(
+              'Missing OIDC Configuration inside an additional authorization mode',
+            );
+          }
+
+          if (
+            authorizationMode.authorizationType ===
+              AuthorizationType.USER_POOL &&
+            !authorizationMode.userPoolConfig
+          ) {
+            throw new Error(
+              'Missing User Pool Configuration inside an additional authorization mode',
+            );
+          }
+        },
+      );
+    }
+  }
+
+  private formatOpenIdConnectConfig(
+    config: OpenIdConnectConfig,
+  ): CfnGraphQLApi.OpenIDConnectConfigProperty {
+    return {
+      authTtl: config.tokenExpiryFromAuth,
+      clientId: config.clientId,
+      iatTtl: config.tokenExpiryFromIssue,
+      issuer: config.oidcProvider,
+    };
+  }
+
+  private formatUserPoolConfig(
+    config: UserPoolConfig,
+  ): CfnGraphQLApi.UserPoolConfigProperty {
+    return {
+      userPoolId: config.userPool.userPoolId,
+      awsRegion: config.userPool.stack.region,
+      appIdClientRegex: config.appIdClientRegex,
+      defaultAction: config.defaultAction || 'ALLOW',
+    };
+  }
+
+  private createAPIKey(config: ApiKeyConfig) {
+    let expires: number | undefined;
+    if (config.expires) {
+      expires = new Date(config.expires).valueOf();
+      const days = (d: number) =>
+        Date.now() + Duration.days(d).toMilliseconds();
+      if (expires < days(1) || expires > days(365)) {
+        throw Error('API key expiration must be between 1 and 365 days.');
+      }
+      expires = Math.round(expires / 1000);
+    }
+    const key = new CfnApiKey(this, `${config.name || 'DefaultAPIKey'}ApiKey`, {
+      expires,
+      description: config.description || 'Default API Key created by CDK',
+      apiId: this.apiId,
+    });
+    return key.attrApiKey;
+  }
+
+  private formatAdditionalAuthorizationModes(
+    authModes: AuthorizationMode[],
+  ): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] {
+    return authModes.reduce<
+    CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]
+    >(
+      (acc, authMode) => [
+        ...acc,
+        {
+          authenticationType: authMode.authorizationType,
+          userPoolConfig:
+            authMode.authorizationType === AuthorizationType.USER_POOL
+              ? this.formatUserPoolConfig(authMode.userPoolConfig!)
+              : undefined,
+          openIdConnectConfig:
+            authMode.authorizationType === AuthorizationType.OIDC
+              ? this.formatOpenIdConnectConfig(authMode.openIdConnectConfig!)
+              : undefined,
+        },
+      ],
+      [],
+    );
+  }
+
+  private formatAdditionalAuthenticationProviders(props: GraphQLApiProps): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] | undefined {
+    const authModes = props.authorizationConfig?.additionalAuthorizationModes;
+    return authModes ? this.formatAdditionalAuthorizationModes(authModes) : undefined;
+  }
+
+  /**
+   * Sets schema defintiion to input if schema mode is configured with SchemaDefinition.CODE
+   *
+   * @param definition string that is the graphql representation of schema
+   * @experimental temporary
+   */
+  public updateDefinition (definition: string): void{
+    if ( this.schemaMode != SchemaDefinition.CODE ) {
+      throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
+    }
+    this.schema.definition = definition;
+  }
+
+  /**
+   * Define schema based on props configuration
+   * @param file the file name/s3 location of Schema
+   */
+  private defineSchema(file?: string): CfnGraphQLSchema {
+    let definition;
+
+    if ( this.schemaMode == SchemaDefinition.FILE && !file) {
+      throw new Error('schemaDefinitionFile must be configured if using FILE definition mode.');
+    } else if ( this.schemaMode == SchemaDefinition.FILE && file ) {
+      definition = readFileSync(file).toString('UTF-8');
+    } else if ( this.schemaMode == SchemaDefinition.CODE && !file ) {
+      definition = '';
+    } else if ( this.schemaMode == SchemaDefinition.CODE && file) {
+      throw new Error('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
     }
 
-    public renderCondition(): string {
-        return `begins_with(#${this.keyName}, :${this.arg})`;
-    }
-
-    public keyNames(): string[] {
-        return [this.keyName];
-    }
-
-    public args(): string[] {
-        return [this.arg];
-    }
-}
-
-/**
- * Utility class to represent DynamoDB binary key conditions.
- */
-class BinaryCondition extends BaseKeyCondition {
-    constructor(private readonly keyName: string, private readonly op: string, private readonly arg: string) {
-        super();
-    }
-
-    public renderCondition(): string {
-        return `#${this.keyName} ${this.op} :${this.arg}`;
-    }
-
-    public keyNames(): string[] {
-        return [this.keyName];
-    }
-
-    public args(): string[] {
-        return [this.arg];
-    }
-}
-
-/**
- * Utility class to represent DynamoDB "between" key conditions.
- */
-class Between extends BaseKeyCondition {
-    constructor(private readonly keyName: string, private readonly arg1: string, private readonly arg2: string) {
-        super();
-    }
-
-    public renderCondition(): string {
-        return `#${this.keyName} BETWEEN :${this.arg1} AND :${this.arg2}`;
-    }
-
-    public keyNames(): string[] {
-        return [this.keyName];
-    }
-
-    public args(): string[] {
-        return [this.arg1, this.arg2];
-    }
-}
-
-/**
- * Factory class for DynamoDB key conditions.
- */
-export class KeyCondition {
-
-    /**
-     * Condition k = arg, true if the key attribute k is equal to the Query argument
-     */
-    public static eq(keyName: string, arg: string): KeyCondition {
-        return new KeyCondition(new BinaryCondition(keyName, '=', arg));
-    }
-
-    /**
-     * Condition k < arg, true if the key attribute k is less than the Query argument
-     */
-    public static lt(keyName: string, arg: string): KeyCondition {
-        return new KeyCondition(new BinaryCondition(keyName, '<', arg));
-    }
-
-    /**
-     * Condition k <= arg, true if the key attribute k is less than or equal to the Query argument
-     */
-    public static le(keyName: string, arg: string): KeyCondition {
-        return new KeyCondition(new BinaryCondition(keyName, '<=', arg));
-    }
-
-    /**
-     * Condition k > arg, true if the key attribute k is greater than the the Query argument
-     */
-    public static gt(keyName: string, arg: string): KeyCondition {
-        return new KeyCondition(new BinaryCondition(keyName, '>', arg));
-    }
-
-    /**
-     * Condition k >= arg, true if the key attribute k is greater or equal to the Query argument
-     */
-    public static ge(keyName: string, arg: string): KeyCondition {
-        return new KeyCondition(new BinaryCondition(keyName, '>=', arg));
-    }
-
-    /**
-     * Condition (k, arg). True if the key attribute k begins with the Query argument.
-     */
-    public static beginsWith(keyName: string, arg: string): KeyCondition {
-        return new KeyCondition(new BeginsWith(keyName, arg));
-    }
-
-    /**
-     * Condition k BETWEEN arg1 AND arg2, true if k >= arg1 and k <= arg2.
-     */
-    public static between(keyName: string, arg1: string, arg2: string): KeyCondition {
-        return new KeyCondition(new Between(keyName, arg1, arg2));
-    }
-
-    private constructor(private readonly cond: BaseKeyCondition) { }
-
-    /**
-     * Conjunction between two conditions.
-     */
-    public and(keyCond: KeyCondition): KeyCondition {
-        return new KeyCondition(this.cond.and(keyCond.cond));
-    }
-
-    /**
-     * Renders the key condition to a VTL string.
-     */
-    public renderTemplate(): string {
-        return `"query" : {
-            "expression" : "${this.cond.renderCondition()}",
-            "expressionNames" : {
-                ${this.cond.renderExpressionNames()}
-            },
-            "expressionValues" : {
-                ${this.cond.renderExpressionValues()}
-            }
-        }`;
-    }
-}
-
-/**
- * Utility class representing the assigment of a value to an attribute.
- */
-export class Assign {
-    constructor(private readonly attr: string, private readonly arg: string) { }
-
-    /**
-     * Renders the assignment as a VTL string.
-     */
-    public renderAsAssignment(): string {
-        return `"${this.attr}" : $util.dynamodb.toDynamoDBJson(${this.arg})`;
-    }
-
-    /**
-     * Renders the assignment as a map element.
-     */
-    public putInMap(map: string): string {
-        return `$util.qr($${map}.put("${this.attr}", "${this.arg}"))`;
-    }
-}
-
-/**
- * Utility class to allow assigning a value or an auto-generated id
- * to a partition key.
- */
-export class PartitionKeyStep {
-    constructor(private readonly key: string) { }
-
-    /**
-     * Assign an auto-generated value to the partition key.
-     */
-    public is(val: string): PartitionKey {
-        return new PartitionKey(new Assign(this.key, `$ctx.args.${val}`));
-    }
-
-    /**
-     * Assign an auto-generated value to the partition key.
-     */
-    public auto(): PartitionKey {
-        return new PartitionKey(new Assign(this.key, '$util.autoId()'));
-    }
-}
-
-/**
- * Utility class to allow assigning a value or an auto-generated id
- * to a sort key.
- */
-export class SortKeyStep {
-   constructor(private readonly pkey: Assign, private readonly skey: string) { }
-
-    /**
-     * Assign an auto-generated value to the sort key.
-     */
-    public is(val: string): PrimaryKey {
-        return new PrimaryKey(this.pkey, new Assign(this.skey, `$ctx.args.${val}`));
-    }
-
-    /**
-     * Assign an auto-generated value to the sort key.
-     */
-    public auto(): PrimaryKey {
-        return new PrimaryKey(this.pkey, new Assign(this.skey, '$util.autoId()'));
-    }
-}
-
-/**
- * Specifies the assignment to the primary key. It either
- * contains the full primary key or only the partition key.
- */
-export class PrimaryKey {
-    /**
-     * Allows assigning a value to the partition key.
-     */
-    public static partition(key: string): PartitionKeyStep {
-        return new PartitionKeyStep(key);
-    }
-
-    constructor(protected readonly pkey: Assign, private readonly skey?: Assign) { }
-
-    /**
-     * Renders the key assignment to a VTL string.
-     */
-    public renderTemplate(): string {
-        const assignments = [this.pkey.renderAsAssignment()];
-        if (this.skey) {
-            assignments.push(this.skey.renderAsAssignment());
-        }
-        return `"key" : {
-            ${assignments.join(",")}
-        }`;
-    }
-}
-
-/**
- * Specifies the assignment to the partition key. It can be
- * enhanced with the assignment of the sort key.
- */
-export class PartitionKey extends PrimaryKey {
-    constructor(pkey: Assign) {
-        super(pkey);
-    }
-
-    /**
-     * Allows assigning a value to the sort key.
-     */
-    public sort(key: string): SortKeyStep {
-        return new SortKeyStep(this.pkey, key);
-    }
-}
-
-/**
- * Specifies the attribute value assignments.
- */
-export class AttributeValues {
-    constructor(private readonly container: string, private readonly assignments: Assign[] = []) { }
-
-    /**
-     * Allows assigning a value to the specified attribute.
-     */
-    public attribute(attr: string): AttributeValuesStep {
-        return new AttributeValuesStep(attr, this.container, this.assignments);
-    }
-
-    /**
-     * Renders the attribute value assingments to a VTL string.
-     */
-    public renderTemplate(): string {
-        return `
-            #set($input = ${this.container})
-            ${this.assignments.map(a => a.putInMap("input")).join("\n")}
-            "attributeValues": $util.dynamodb.toMapValuesJson($input)`;
-    }
-}
-
-/**
- * Utility class to allow assigning a value to an attribute.
- */
-export class AttributeValuesStep {
-    constructor(private readonly attr: string, private readonly container: string, private readonly assignments: Assign[]) { }
-
-    /**
-     * Assign the value to the current attribute.
-     */
-    public is(val: string): AttributeValues  {
-        this.assignments.push(new Assign(this.attr, val));
-        return new AttributeValues(this.container, this.assignments);
-    }
-}
-
-/**
- * Factory class for attribute value assignments.
- */
-export class Values {
-    /**
-     * Treats the specified object as a map of assignments, where the property
-     * names represent attribute names. It’s opinionated about how it represents
-     * some of the nested objects: e.g., it will use lists (“L”) rather than sets
-     * (“SS”, “NS”, “BS”). By default it projects the argument container ("$ctx.args").
-     */
-    public static projecting(arg?: string): AttributeValues {
-        return new AttributeValues('$ctx.args' + (arg ? `.${arg}` : ''));
-    }
-
-    /**
-     * Allows assigning a value to the specified attribute.
-     */
-    public static attribute(attr: string): AttributeValuesStep {
-        return new AttributeValues('{}').attribute(attr);
-    }
-}
-
-/**
- * MappingTemplates for AppSync resolvers
- */
-export abstract class MappingTemplate {
-
-    /**
-     * Create a mapping template from the given string
-     */
-    public static fromString(template: string): MappingTemplate {
-        return new StringMappingTemplate(template);
-    }
-
-    /**
-     * Create a mapping template from the given file
-     */
-    public static fromFile(fileName: string): MappingTemplate {
-        return new StringMappingTemplate(readFileSync(fileName).toString('UTF-8'));
-    }
-
-    /**
-     * Mapping template for a result list from DynamoDB
-     */
-    public static dynamoDbResultList(): MappingTemplate {
-        return this.fromString('$util.toJson($ctx.result.items)');
-    }
-
-    /**
-     * Mapping template for a single result item from DynamoDB
-     */
-    public static dynamoDbResultItem(): MappingTemplate {
-        return this.fromString('$util.toJson($ctx.result)');
-    }
-
-    /**
-     * Mapping template to scan a DynamoDB table to fetch all entries
-     */
-    public static dynamoDbScanTable(): MappingTemplate {
-        return this.fromString('{"version" : "2017-02-28", "operation" : "Scan"}');
-    }
-
-    /**
-     * Mapping template to query a set of items from a DynamoDB table
-     *
-     * @param cond the key condition for the query
-     */
-    public static dynamoDbQuery(cond: KeyCondition): MappingTemplate {
-        return this.fromString(`{"version" : "2017-02-28", "operation" : "Query", ${cond.renderTemplate()}}`);
-    }
-
-    /**
-     * Mapping template to get a single item from a DynamoDB table
-     *
-     * @param keyName the name of the hash key field
-     * @param idArg the name of the Query argument
-     */
-    public static dynamoDbGetItem(keyName: string, idArg: string): MappingTemplate {
-        return this.fromString(`{"version": "2017-02-28", "operation": "GetItem", "key": {"${keyName}": $util.dynamodb.toDynamoDBJson($ctx.args.${idArg})}}`);
-    }
-
-    /**
-     * Mapping template to delete a single item from a DynamoDB table
-     *
-     * @param keyName the name of the hash key field
-     * @param idArg the name of the Mutation argument
-     */
-    public static dynamoDbDeleteItem(keyName: string, idArg: string): MappingTemplate {
-        return this.fromString(`{"version": "2017-02-28", "operation": "DeleteItem", "key": {"${keyName}": $util.dynamodb.toDynamoDBJson($ctx.args.${idArg})}}`);
-    }
-
-    /**
-     * Mapping template to save a single item to a DynamoDB table
-     *
-     * @param key the assigment of Mutation values to the primary key
-     * @param values the assignment of Mutation values to the table attributes
-     */
-    public static dynamoDbPutItem(key: PrimaryKey, values: AttributeValues): MappingTemplate {
-        return this.fromString(`{
-            "version" : "2017-02-28",
-            "operation" : "PutItem",
-            ${key.renderTemplate()},
-            ${values.renderTemplate()}
-        }`);
-    }
-
-    /**
-     * Mapping template to invoke a Lambda function
-     * @param payload the VTL template snippet of the payload to send to the lambda
-     */
-    public static lambdaRequest(payload: string): MappingTemplate {
-        return this.fromString(`{"version": "2017-02-28", "operation": "Invoke", "payload": ${payload}}`);
-    }
-
-    /**
-     * Mapping template to return the Lambda result to the caller
-     */
-    public static lambdaResult(): MappingTemplate {
-        return this.fromString('$util.toJson($ctx.result)');
-    }
-
-    /**
-     * this is called to render the mapping template to a VTL string
-     */
-    public abstract renderTemplate(): string;
-
-}
-
-class StringMappingTemplate extends MappingTemplate {
-
-    constructor(private readonly template: string) {
-        super();
-    }
-
-    public renderTemplate() {
-        return this.template;
-    }
-}
-
-/**
- * Basic properties for an AppSync resolver
- */
-export interface BaseResolverProps {
-    /**
-     * name of the GraphQL type this resolver is attached to
-     */
-    readonly typeName: string;
-    /**
-     * name of the GraphQL fiel din the given type this resolver is attached to
-     */
-    readonly fieldName: string;
-    /**
-     * configuration of the pipeline resolver
-     *
-     * @default - create a UNIT resolver
-     */
-    readonly pipelineConfig?: CfnResolver.PipelineConfigProperty | IResolvable;
-    /**
-     * The request mapping template for this resolver
-     *
-     * @default - No mapping template
-     */
-    readonly requestMappingTemplate?: MappingTemplate;
-    /**
-     * The response mapping template for this resolver
-     *
-     * @default - No mapping template
-     */
-    readonly responseMappingTemplate?: MappingTemplate;
-}
-
-/**
- * Additional properties for an AppSync resolver like GraphQL API reference and datasource
- */
-export interface ResolverProps extends BaseResolverProps {
-    /**
-     * The API this resolver is attached to
-     */
-    readonly api: GraphQLApi;
-    /**
-     * The data source this resolver is using
-     *
-     * @default - No datasource
-     */
-    readonly dataSource?: BaseDataSource;
-}
-
-/**
- * An AppSync resolver
- */
-export class Resolver extends Construct {
-
-    /**
-     * the ARN of the resolver
-     */
-    public readonly arn: string;
-
-    private resolver: CfnResolver;
-
-    constructor(scope: Construct, id: string, props: ResolverProps) {
-        super(scope, id);
-
-        this.resolver = new CfnResolver(this, 'Resource', {
-            apiId: props.api.apiId,
-            typeName: props.typeName,
-            fieldName: props.fieldName,
-            dataSourceName: props.dataSource ? props.dataSource.name : undefined,
-            kind: props.pipelineConfig ? 'PIPELINE' : 'UNIT',
-            requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
-            responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
-        });
-        this.resolver.addDependsOn(props.api.schema);
-        if (props.dataSource) {
-            this.resolver.addDependsOn(props.dataSource.ds);
-        }
-        this.arn = this.resolver.attrResolverArn;
-    }
+    return new CfnGraphQLSchema(this, 'Schema', {
+      apiId: this.apiId,
+      definition,
+    });
+  }
 }

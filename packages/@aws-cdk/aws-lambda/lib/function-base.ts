@@ -2,12 +2,14 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { ConstructNode, IResource, Resource } from '@aws-cdk/core';
+import { AliasOptions } from './alias';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
+import { addAlias } from './util';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -39,6 +41,13 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
    * The `$LATEST` version of this function.
+   *
+   * Note that this is reference to a non-specific AWS Lambda version, which
+   * means the function this version refers to can return different results in
+   * different invocations.
+   *
+   * To obtain a reference to an explicit version which references the current
+   * function configuration, use `lambdaFunction.currentVersion` instead.
    */
   readonly latestVersion: IVersion;
 
@@ -102,7 +111,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Configures options for asynchronous invocation.
    */
-  configureAsyncInvoke(options: EventInvokeConfigOptions): void
+  configureAsyncInvoke(options: EventInvokeConfigOptions): void;
 }
 
 /**
@@ -228,14 +237,14 @@ export abstract class FunctionBase extends Resource implements IFunction {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error('Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.');
     }
     return this._connections;
   }
 
   public get latestVersion(): IVersion {
-    // Dynamic to avoid invinite recursion when creating the LatestVersion instance...
+    // Dynamic to avoid infinite recursion when creating the LatestVersion instance...
     return new LatestVersion(this);
   }
 
@@ -251,7 +260,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
   public addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping {
     return new EventSourceMapping(this, id, {
       target: this,
-      ...options
+      ...options,
     });
   }
 
@@ -274,8 +283,11 @@ export abstract class FunctionBase extends Resource implements IFunction {
             principal: grantee.grantPrincipal!,
             action: 'lambda:InvokeFunction',
           });
+
+          return { statementAdded: true, policyDependable: this._functionNode().findChild(identifier) } as iam.AddToResourcePolicyResult;
         },
         node: this.node,
+        construct: this.construct,
       },
     });
   }
@@ -297,14 +309,23 @@ export abstract class FunctionBase extends Resource implements IFunction {
   }
 
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
-    if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
-      throw new Error(`An EventInvokeConfig has already been configured for the function at ${this.node.path}`);
+    if (this.construct.tryFindChild('EventInvokeConfig') !== undefined) {
+      throw new Error(`An EventInvokeConfig has already been configured for the function at ${this.construct.path}`);
     }
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {
       function: this,
-      ...options
+      ...options,
     });
+  }
+
+  /**
+   * Returns the construct tree node that corresponds to the lambda function.
+   * For use internally for constructs, when the tree is set up in non-standard ways. Ex: SingletonFunction.
+   * @internal
+   */
+  protected _functionNode(): ConstructNode {
+    return this.node;
   }
 
   private parsePermissionPrincipal(principal?: iam.IPrincipal) {
@@ -317,11 +338,11 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return (principal as iam.AccountPrincipal).accountId;
     }
 
-    if (`service` in principal) {
+    if ('service' in principal) {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    if (`arn` in principal) {
+    if ('arn' in principal) {
       return (principal as iam.ArnPrincipal).arn;
     }
 
@@ -347,14 +368,14 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
   }
 
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
-    if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
-      throw new Error(`An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`);
+    if (this.construct.tryFindChild('EventInvokeConfig') !== undefined) {
+      throw new Error(`An EventInvokeConfig has already been configured for the qualified function at ${this.construct.path}`);
     }
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {
       function: this.lambda,
       qualifier: this.qualifier,
-      ...options
+      ...options,
     });
   }
 }
@@ -392,5 +413,9 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public get role() {
     return this.lambda.role;
+  }
+
+  public addAlias(aliasName: string, options: AliasOptions = {}) {
+    return addAlias(this, this, aliasName, options);
   }
 }

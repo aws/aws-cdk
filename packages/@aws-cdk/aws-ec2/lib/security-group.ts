@@ -70,7 +70,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   }
 
   public get uniqueId() {
-    return this.node.uniqueId;
+    return this.construct.uniqueId;
   }
 
   public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
@@ -81,12 +81,12 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     const [scope, id] = determineRuleScope(this, peer, connection, 'from', remoteRule);
 
     // Skip duplicates
-    if (scope.node.tryFindChild(id) === undefined) {
+    if (scope.construct.tryFindChild(id) === undefined) {
       new CfnSecurityGroupIngress(scope, id, {
         groupId: this.securityGroupId,
         ...peer.toIngressRuleConfig(),
         ...connection.toRuleJson(),
-        description
+        description,
       });
     }
   }
@@ -99,12 +99,12 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     const [scope, id] = determineRuleScope(this, peer, connection, 'to', remoteRule);
 
     // Skip duplicates
-    if (scope.node.tryFindChild(id) === undefined) {
+    if (scope.construct.tryFindChild(id) === undefined) {
       new CfnSecurityGroupEgress(scope, id, {
         groupId: this.securityGroupId,
         ...peer.toEgressRuleConfig(),
         ...connection.toRuleJson(),
-        description
+        description,
       });
     }
   }
@@ -167,11 +167,11 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
  *   ╚═══════════════════════════════════╝
  */
 function determineRuleScope(
-      group: SecurityGroupBase,
-      peer: IPeer,
-      connection: Port,
-      fromTo: 'from' | 'to',
-      remoteRule?: boolean): [SecurityGroupBase, string] {
+  group: SecurityGroupBase,
+  peer: IPeer,
+  connection: Port,
+  fromTo: 'from' | 'to',
+  remoteRule?: boolean): [SecurityGroupBase, string] {
 
   if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(group, peer)) {
     // Reversed
@@ -184,7 +184,7 @@ function determineRuleScope(
 }
 
 function renderPeer(peer: IPeer) {
-  return Token.isUnresolved(peer.uniqueId) ? `{IndirectPeer}` : peer.uniqueId;
+  return Token.isUnresolved(peer.uniqueId) ? '{IndirectPeer}' : peer.uniqueId;
 }
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
@@ -324,8 +324,8 @@ export class SecurityGroup extends SecurityGroupBase {
     }
 
     return options.mutable !== false
-    ? new MutableImport(scope, id)
-    : new ImmutableImport(scope, id);
+      ? new MutableImport(scope, id)
+      : new ImmutableImport(scope, id);
   }
 
   /**
@@ -360,10 +360,10 @@ export class SecurityGroup extends SecurityGroupBase {
 
   constructor(scope: Construct, id: string, props: SecurityGroupProps) {
     super(scope, id, {
-      physicalName: props.securityGroupName
+      physicalName: props.securityGroupName,
     });
 
-    const groupDescription = props.description || this.node.path;
+    const groupDescription = props.description || this.construct.path;
 
     this.allowAllOutbound = props.allowAllOutbound !== false;
 
@@ -395,7 +395,7 @@ export class SecurityGroup extends SecurityGroupBase {
     this.addDirectIngressRule({
       ...peer.toIngressRuleConfig(),
       ...connection.toRuleJson(),
-      description
+      description,
     });
   }
 
@@ -404,6 +404,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
+      this.construct.addWarning('Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup');
       return;
     } else {
       // Otherwise, if the bogus rule exists we can now remove it because the
@@ -424,7 +425,7 @@ export class SecurityGroup extends SecurityGroupBase {
     const rule = {
       ...peer.toEgressRuleConfig(),
       ...connection.toRuleJson(),
-      description
+      description,
     };
 
     if (isAllTrafficRule(rule)) {
@@ -518,7 +519,7 @@ const MATCH_NO_TRAFFIC = {
   description: 'Disallow all traffic',
   ipProtocol: 'icmp',
   fromPort: 252,
-  toPort: 86
+  toPort: 86,
 };
 
 /**

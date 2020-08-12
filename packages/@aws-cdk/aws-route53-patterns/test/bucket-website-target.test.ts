@@ -16,22 +16,23 @@ test('create HTTPS redirect', () => {
     zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'ID',
       zoneName: 'example.com',
-    })
+    }),
   });
 
   // THEN
   expect(stack).toHaveResource('AWS::S3::Bucket', {
     WebsiteConfiguration: {
       RedirectAllRequestsTo: {
-        HostName: "bar.example.com",
-        Protocol: "https"
-      }
-    }
+        HostName: 'bar.example.com',
+        Protocol: 'https',
+      },
+    },
   });
   expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
     DistributionConfig: {
-      Aliases: ['foo.example.com', 'baz.example.com']
-    }
+      Aliases: ['foo.example.com', 'baz.example.com'],
+      DefaultRootObject: '',
+    },
   });
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     Name: 'foo.example.com.',
@@ -54,17 +55,17 @@ test('create HTTPS redirect for apex', () => {
     zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'ID',
       zoneName: 'example.com',
-    })
+    }),
   });
 
   // THEN
   expect(stack).toHaveResource('AWS::S3::Bucket', {
     WebsiteConfiguration: {
       RedirectAllRequestsTo: {
-        HostName: "bar.example.com",
-        Protocol: "https"
-      }
-    }
+        HostName: 'bar.example.com',
+        Protocol: 'https',
+      },
+    },
   });
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     Name: 'example.com.',
@@ -80,29 +81,51 @@ test('create HTTPS redirect with existing cert', () => {
   new HttpsRedirect(stack, 'Redirect', {
     recordNames: ['foo.example.com'],
     certificate: Certificate.fromCertificateArn(
-      stack, 'Certificate', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+      stack, 'Certificate', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
     ),
     targetDomain: 'bar.example.com',
     zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'ID',
       zoneName: 'example.com',
-    })
+    }),
   });
 
   // THEN
   expect(stack).toHaveResource('AWS::S3::Bucket', {
     WebsiteConfiguration: {
       RedirectAllRequestsTo: {
-        HostName: "bar.example.com",
-        Protocol: "https"
-      }
-    }
+        HostName: 'bar.example.com',
+        Protocol: 'https',
+      },
+    },
   });
   expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       ViewerCertificate: {
-        AcmCertificateArn: "arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d"
-      }
-    }
+        AcmCertificateArn: 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
+      },
+    },
   });
+});
+
+test('throws when certificate in region other than us-east-1 is supplied', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'test', { env: { region: 'us-east-1' } });
+  const certificate = Certificate.fromCertificateArn(
+    stack, 'Certificate', 'arn:aws:acm:us-east-2:123456789012:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
+  );
+
+  // WHEN / THEN
+  expect(() => {
+    new HttpsRedirect(stack, 'Redirect', {
+      recordNames: ['foo.example.com'],
+      certificate,
+      targetDomain: 'bar.example.com',
+      zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'ID',
+        zoneName: 'example.com',
+      }),
+    });
+  }).toThrow(/The certificate must be in the us-east-1 region and the certificate you provided is in us-east-2./);
 });

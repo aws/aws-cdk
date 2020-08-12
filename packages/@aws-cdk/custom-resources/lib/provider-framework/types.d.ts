@@ -75,6 +75,11 @@ interface OnEventResponse {
    * Resource attributes to return.
    */
   readonly Data?: { [name: string]: any };
+
+  /**
+   * Custom fields returned from OnEvent will be passed to IsComplete.
+   */
+  readonly [key: string]: any;
 }
 
 /**

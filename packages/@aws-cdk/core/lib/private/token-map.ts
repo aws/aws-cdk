@@ -1,8 +1,8 @@
-import { IResolvable } from "../resolvable";
-import { TokenizedStringFragments } from "../string-fragments";
-import { Token } from "../token";
+import { IResolvable } from '../resolvable';
+import { TokenizedStringFragments } from '../string-fragments';
+import { Token } from '../token';
 import { BEGIN_LIST_TOKEN_MARKER, BEGIN_STRING_TOKEN_MARKER, createTokenDouble,
-  END_TOKEN_MARKER, extractTokenDouble, TokenString, VALID_KEY_CHARS } from "./encoding";
+  END_TOKEN_MARKER, extractTokenDouble, TokenString, VALID_KEY_CHARS } from './encoding';
 
 const glob = global as any;
 
@@ -139,7 +139,7 @@ export class TokenMap {
 
   private registerStringKey(token: IResolvable, displayHint?: string): string {
     const counter = this.tokenCounter++;
-    const representation = (displayHint || `TOKEN`).replace(new RegExp(`[^${VALID_KEY_CHARS}]`, 'g'), '.');
+    const representation = (displayHint || 'TOKEN').replace(new RegExp(`[^${VALID_KEY_CHARS}]`, 'g'), '.');
     const key = `${representation}.${counter}`;
     this.stringTokenMap.set(key, token);
     return key;

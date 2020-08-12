@@ -97,7 +97,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     });
 
     this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
     });
 
     const targetProps = props.notificationTarget.bind(this, this);
@@ -116,7 +116,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     // A LifecycleHook resource is going to do a permissions test upon creation,
     // so we have to make sure the role has full permissions before creating the
     // lifecycle hook.
-    resource.node.addDependency(this.role);
+    resource.construct.addDependency(this.role);
 
     this.lifecycleHookName = resource.ref;
   }

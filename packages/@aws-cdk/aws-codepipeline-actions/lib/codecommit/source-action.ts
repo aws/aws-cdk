@@ -87,7 +87,10 @@ export class CodeCommitSourceAction extends Action {
   private readonly props: CodeCommitSourceActionProps;
 
   constructor(props: CodeCommitSourceActionProps) {
-    const branch = props.branch || 'master';
+    const branch = props.branch ?? 'master';
+    if (!branch) {
+      throw new Error("'branch' parameter cannot be an empty string");
+    }
 
     super({
       ...props,
@@ -115,11 +118,12 @@ export class CodeCommitSourceAction extends Action {
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     const createEvent = this.props.trigger === undefined ||
       this.props.trigger === CodeCommitTrigger.EVENTS;
     if (createEvent) {
-      this.props.repository.onCommit(stage.pipeline.node.uniqueId + 'EventRule', {
+      const branchIdDisambiguator = this.branch === 'master' ? '' : `-${this.branch}-`;
+      this.props.repository.onCommit(`${stage.pipeline.construct.uniqueId}${branchIdDisambiguator}EventRule`, {
         target: new targets.CodePipeline(stage.pipeline),
         branches: [this.branch],
       });

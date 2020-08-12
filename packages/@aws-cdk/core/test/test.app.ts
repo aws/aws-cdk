@@ -1,6 +1,8 @@
+import { ContextProvider } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { CfnResource, Construct, Stack, StackProps } from '../lib';
+import { Annotations } from '../lib/annotations';
 import { App, AppProps } from '../lib/app';
 
 function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {
@@ -26,11 +28,11 @@ function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
     const c1 = new MyConstruct(stack2, 's1c2');
 
     // add some metadata
-    stack1.node.addMetadata('meta', 111);
-    r2.node.addWarning('warning1');
-    r2.node.addWarning('warning2');
-    c1.node.addMetadata('meta', { key: 'value' });
-    app.node.addMetadata('applevel', 123); // apps can also have metadata
+    stack1.construct.addMetadata('meta', 111);
+    Annotations.of(r2).addWarning('warning1');
+    Annotations.of(r2).addWarning('warning2');
+    c1.construct.addMetadata('meta', { key: 'value' });
+    app.construct.addMetadata('applevel', 123); // apps can also have metadata
   });
 }
 
@@ -66,8 +68,8 @@ export = {
       '/stack1/s1c1': [{ type: 'aws:cdk:logicalId', data: 's1c1' }],
       '/stack1/s1c2':
         [{ type: 'aws:cdk:logicalId', data: 's1c2' },
-        { type: 'aws:cdk:warning', data: 'warning1' },
-        { type: 'aws:cdk:warning', data: 'warning2' }],
+          { type: 'aws:cdk:warning', data: 'warning1' },
+          { type: 'aws:cdk:warning', data: 'warning2' }],
     });
 
     const stack2 = response.stacks[1];
@@ -88,242 +90,283 @@ export = {
     });
 
     test.done();
-},
+  },
 
-'context can be passed through CDK_CONTEXT'(test: Test) {
-  process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
-    key1: 'val1',
-    key2: 'val2'
-  });
-  const prog = new App();
-  test.deepEqual(prog.node.tryGetContext('key1'), 'val1');
-  test.deepEqual(prog.node.tryGetContext('key2'), 'val2');
-  test.done();
-},
+  'context can be passed through CDK_CONTEXT'(test: Test) {
+    process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
+      key1: 'val1',
+      key2: 'val2',
+    });
+    const prog = new App();
+    test.deepEqual(prog.construct.tryGetContext('key1'), 'val1');
+    test.deepEqual(prog.construct.tryGetContext('key2'), 'val2');
+    test.done();
+  },
 
-'context passed through CDK_CONTEXT has precedence'(test: Test) {
-  process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
-    key1: 'val1',
-    key2: 'val2'
-  });
-  const prog = new App({
-    context: {
-      key1: 'val3',
-      key2: 'val4'
-    }
-  });
-  test.deepEqual(prog.node.tryGetContext('key1'), 'val1');
-  test.deepEqual(prog.node.tryGetContext('key2'), 'val2');
-  test.done();
-},
-
-'context from the command line can be used when creating the stack'(test: Test) {
-  const output = synthStack('stack2', false, { ctx1: 'HELLO' });
-
-  test.deepEqual(output.template, {
-    Resources: {
-      s2c1: {
-        Type: "DummyResource",
-        Properties: {
-          Prog2: "Prog2"
-        }
+  'context passed through CDK_CONTEXT has precedence'(test: Test) {
+    process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
+      key1: 'val1',
+      key2: 'val2',
+    });
+    const prog = new App({
+      context: {
+        key1: 'val3',
+        key2: 'val4',
       },
-      s1c2r1D1791C01: {
-        Type: "ResourceType1"
+    });
+    test.deepEqual(prog.construct.tryGetContext('key1'), 'val1');
+    test.deepEqual(prog.construct.tryGetContext('key2'), 'val2');
+    test.done();
+  },
+
+  'context from the command line can be used when creating the stack'(test: Test) {
+    const output = synthStack('stack2', false, { ctx1: 'HELLO' });
+
+    test.deepEqual(output.template, {
+      Resources: {
+        s2c1: {
+          Type: 'DummyResource',
+          Properties: {
+            Prog2: 'Prog2',
+          },
+        },
+        s1c2r1D1791C01: {
+          Type: 'ResourceType1',
+        },
+        s1c2r25F685FFF: {
+          Type: 'ResourceType2',
+          Properties: {
+            FromContext: 'HELLO',
+          },
+        },
       },
-      s1c2r25F685FFF: {
-        Type: "ResourceType2",
-        Properties: {
-          FromContext: "HELLO"
-        }
+    });
+    test.done();
+  },
+
+  'setContext(k,v) can be used to set context programmatically'(test: Test) {
+    const prog = new App({
+      context: {
+        foo: 'bar',
+      },
+    });
+    test.deepEqual(prog.construct.tryGetContext('foo'), 'bar');
+    test.done();
+  },
+
+  'setContext(k,v) cannot be called after stacks have been added because stacks may use the context'(test: Test) {
+    const prog = new App();
+    new Stack(prog, 's1');
+    test.throws(() => prog.construct.setContext('foo', 'bar'));
+    test.done();
+  },
+
+  'app.synth() performs validation first and if there are errors, it returns the errors'(test: Test) {
+
+    class Child extends Construct {
+      protected validate() {
+        return [`Error from ${this.construct.id}`];
       }
     }
-  });
-  test.done();
-},
 
-'setContext(k,v) can be used to set context programmatically'(test: Test) {
-  const prog = new App({
-    context: {
-      foo: 'bar'
+    class Parent extends Stack {
+
     }
-  });
-  test.deepEqual(prog.node.tryGetContext('foo'), 'bar');
-  test.done();
-},
 
-'setContext(k,v) cannot be called after stacks have been added because stacks may use the context'(test: Test) {
-  const prog = new App();
-  new Stack(prog, 's1');
-  test.throws(() => prog.node.setContext('foo', 'bar'));
-  test.done();
-},
+    const app = new App();
 
-'app.synth() performs validation first and if there are errors, it returns the errors'(test: Test) {
+    const parent = new Parent(app, 'Parent');
+    new Child(parent, 'C1');
+    new Child(parent, 'C2');
 
-  class Child extends Construct {
-    protected validate() {
-      return [`Error from ${this.node.id}`];
+    test.throws(() => app.synth(), /Validation failed with the following errors/);
+
+    test.done();
+  },
+
+  'app.synthesizeStack(stack) will return a list of missing contextual information'(test: Test) {
+    class MyStack extends Stack {
+      constructor(scope: App, id: string, props?: StackProps) {
+        super(scope, id, props);
+
+        this.reportMissingContext({
+          key: 'missing-context-key',
+          provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
+          props: {
+            account: '12345689012',
+            region: 'ab-north-1',
+          },
+        },
+        );
+
+        this.reportMissingContext({
+          key: 'missing-context-key-2',
+          provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
+          props: {
+            account: '12345689012',
+            region: 'ab-south-1',
+          },
+        },
+        );
+      }
     }
-  }
 
-  class Parent extends Stack {
+    const assembly = withApp({}, app => {
+      new MyStack(app, 'MyStack');
+    });
 
-  }
-
-  const app = new App();
-
-  const parent = new Parent(app, 'Parent');
-  new Child(parent, 'C1');
-  new Child(parent, 'C2');
-
-  test.throws(() => app.synth(), /Validation failed with the following errors/);
-
-  test.done();
-},
-
-'app.synthesizeStack(stack) will return a list of missing contextual information'(test: Test) {
-  class MyStack extends Stack {
-    constructor(scope: App, id: string, props?: StackProps) {
-      super(scope, id, props);
-
-      this.reportMissingContext({
+    test.deepEqual(assembly.manifest.missing, [
+      {
         key: 'missing-context-key',
-        provider: 'fake',
+        provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
           account: '12345689012',
           region: 'ab-north-1',
         },
       },
-      );
-
-      this.reportMissingContext({
+      {
         key: 'missing-context-key-2',
-        provider: 'fake2',
+        provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
-          foo: 'bar',
           account: '12345689012',
           region: 'ab-south-1',
         },
       },
-      );
-    }
-  }
+    ]);
 
-  const assembly = withApp({}, app => {
-    new MyStack(app, 'MyStack');
-  });
+    test.done();
+  },
 
-  test.deepEqual(assembly.manifest.missing, [
-    {
-      key: "missing-context-key",
-      provider: 'fake',
-      props: {
-        account: '12345689012',
-        region: 'ab-north-1',
-      },
-    },
-    {
-      key: "missing-context-key-2",
-      provider: 'fake2',
-      props: {
-        account: '12345689012',
-        region: 'ab-south-1',
-        foo: 'bar',
-      },
-    }
-  ]);
+  'runtime library versions disabled'(test: Test) {
+    const context: any = {};
+    context[cxapi.DISABLE_VERSION_REPORTING] = true;
 
-  test.done();
-},
+    const assembly = withApp(context, app => {
+      const stack = new Stack(app, 'stack1');
+      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
+    });
 
-'runtime library versions disabled'(test: Test) {
-  const context: any = {};
-  context[cxapi.DISABLE_VERSION_REPORTING] = true;
+    test.deepEqual(assembly.runtime, { libraries: {} });
+    test.done();
+  },
 
-  const assembly = withApp(context, app => {
-    const stack = new Stack(app, 'stack1');
-    new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
-  });
+  'runtime library versions'(test: Test) {
+    const response = withApp({ runtimeInfo: true }, app => {
+      const stack = new Stack(app, 'stack1');
+      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
+    });
 
-  test.deepEqual(assembly.runtime, { libraries: {} });
-  test.done();
-},
+    const libs = (response.runtime && response.runtime.libraries) || {};
 
-'runtime library versions'(test: Test) {
-  const response = withApp({ runtimeInfo: true }, app => {
-    const stack = new Stack(app, 'stack1');
-    new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
-  });
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const version = require('../package.json').version;
+    test.deepEqual(libs['@aws-cdk/core'], version);
+    test.deepEqual(libs['@aws-cdk/cx-api'], version);
+    test.deepEqual(libs['jsii-runtime'], `node.js/${process.version}`);
+    test.done();
+  },
 
-  const libs = (response.runtime && response.runtime.libraries) || {};
+  'jsii-runtime version loaded from JSII_AGENT'(test: Test) {
+    process.env.JSII_AGENT = 'Java/1.2.3.4';
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const version = require('../package.json').version;
-  test.deepEqual(libs['@aws-cdk/core'], version);
-  test.deepEqual(libs['@aws-cdk/cx-api'], version);
-  test.deepEqual(libs['jsii-runtime'], `node.js/${process.version}`);
-  test.done();
-},
+    const response = withApp({ runtimeInfo: true }, app => {
+      const stack = new Stack(app, 'stack1');
+      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
+    });
 
-'jsii-runtime version loaded from JSII_AGENT'(test: Test) {
-  process.env.JSII_AGENT = 'Java/1.2.3.4';
+    const libs = (response.runtime && response.runtime.libraries) || {};
+    test.deepEqual(libs['jsii-runtime'], 'Java/1.2.3.4');
 
-  const response = withApp({ runtimeInfo: true }, app => {
-    const stack = new Stack(app, 'stack1');
-    new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
-  });
+    delete process.env.JSII_AGENT;
+    test.done();
+  },
 
-  const libs = (response.runtime && response.runtime.libraries) || {};
-  test.deepEqual(libs['jsii-runtime'], `Java/1.2.3.4`);
+  'version reporting includes only @aws-cdk, aws-cdk and jsii libraries'(test: Test) {
+    const response = withApp({ runtimeInfo: true }, app => {
+      const stack = new Stack(app, 'stack1');
+      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
+    });
 
-  delete process.env.JSII_AGENT;
-  test.done();
-},
+    const libs = (response.runtime && response.runtime.libraries) || {};
 
-'version reporting includes only @aws-cdk, aws-cdk and jsii libraries'(test: Test) {
-  const response = withApp({ runtimeInfo: true }, app => {
-    const stack = new Stack(app, 'stack1');
-    new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
-  });
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const version = require('../package.json').version;
+    test.deepEqual(libs, {
+      '@aws-cdk/core': version,
+      '@aws-cdk/cx-api': version,
+      '@aws-cdk/cloud-assembly-schema': version,
+      'jsii-runtime': `node.js/${process.version}`,
+    });
 
-  const libs = (response.runtime && response.runtime.libraries) || {};
+    test.done();
+  },
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const version = require('../package.json').version;
-  test.deepEqual(libs, {
-    '@aws-cdk/core': version,
-    '@aws-cdk/cx-api': version,
-    'jsii-runtime': `node.js/${process.version}`
-  });
-
-  test.done();
-},
-
-'deep stack is shown and synthesized properly'(test: Test) {
+  'deep stack is shown and synthesized properly'(test: Test) {
   // WHEN
-  const response = withApp({}, (app) => {
-    const topStack = new Stack(app, 'Stack');
-    const topResource = new CfnResource(topStack, 'Res', { type: 'CDK::TopStack::Resource' });
+    const response = withApp({}, (app) => {
+      const topStack = new Stack(app, 'Stack');
+      const topResource = new CfnResource(topStack, 'Res', { type: 'CDK::TopStack::Resource' });
 
-    const bottomStack = new Stack(topResource, 'Stack');
-    new CfnResource(bottomStack, 'Res', { type: 'CDK::BottomStack::Resource' });
-  });
+      const bottomStack = new Stack(topResource, 'Stack');
+      new CfnResource(bottomStack, 'Res', { type: 'CDK::BottomStack::Resource' });
+    });
 
-  // THEN
-  test.deepEqual(response.stacks.map(s => ({ name: s.stackName, template: s.template })), [
-    {
-      name: 'Stack',
-      template: { Resources: { Res: { Type: 'CDK::TopStack::Resource' } } },
-    },
-    {
-      name: 'StackResStack7E4AFA86',
-      template: { Resources: { Res: { Type: 'CDK::BottomStack::Resource' } } },
-    },
-  ]);
+    // THEN
+    test.deepEqual(response.stacks.map(s => ({ name: s.stackName, template: s.template })), [
+      {
+        name: 'Stack',
+        template: { Resources: { Res: { Type: 'CDK::TopStack::Resource' } } },
+      },
+      {
+        name: 'StackResStack7E4AFA86',
+        template: { Resources: { Res: { Type: 'CDK::BottomStack::Resource' } } },
+      },
+    ]);
 
-  test.done();
-},
+    test.done();
+  },
+
+  'stacks are written to the assembly file in a topological order'(test: Test) {
+    // WHEN
+    const assembly = withApp({}, (app) => {
+      const stackC = new Stack(app, 'StackC');
+      const stackD = new Stack(app, 'StackD');
+      const stackA = new Stack(app, 'StackA');
+      const stackB = new Stack(app, 'StackB');
+
+      // Create the following dependency order:
+      // A ->
+      //      C -> D
+      // B ->
+      stackC.addDependency(stackA);
+      stackC.addDependency(stackB);
+      stackD.addDependency(stackC);
+    });
+
+    // THEN
+    const artifactsIds = assembly.artifacts.map(a => a.id);
+    test.ok(artifactsIds.indexOf('StackA') < artifactsIds.indexOf('StackC'));
+    test.ok(artifactsIds.indexOf('StackB') < artifactsIds.indexOf('StackC'));
+    test.ok(artifactsIds.indexOf('StackC') < artifactsIds.indexOf('StackD'));
+
+    test.done();
+  },
+
+  'application support any type in context'(test: Test) {
+    const app = new App({
+      context: {
+        isString: 'string',
+        isNumber: 10,
+        isObject: { isString: 'string', isNumber: 10 },
+      },
+    });
+
+    test.ok(app.construct.tryGetContext('isString') === 'string');
+    test.ok(app.construct.tryGetContext('isNumber') === 10);
+    test.deepEqual(app.construct.tryGetContext('isObject'), { isString: 'string', isNumber: 10 });
+
+    test.done();
+  },
 };
 
 class MyConstruct extends Construct {
@@ -331,6 +374,6 @@ class MyConstruct extends Construct {
     super(scope, id);
 
     new CfnResource(this, 'r1', { type: 'ResourceType1' });
-    new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.tryGetContext('ctx1') } });
+    new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.construct.tryGetContext('ctx1') } });
   }
 }

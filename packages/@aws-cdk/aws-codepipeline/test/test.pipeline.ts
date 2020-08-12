@@ -3,31 +3,32 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'Pipeline': {
     'can be passed an IAM role during pipeline creation'(test: Test) {
       const stack = new cdk.Stack();
       const role = new iam.Role(stack, 'Role', {
-        assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
+        assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
       });
       new codepipeline.Pipeline(stack, 'Pipeline', {
-        role
+        role,
       });
 
       expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "RoleArn": {
-          "Fn::GetAtt": [
-            "Role1ABCC5F0",
-            "Arn",
-          ]
-        }
+        'RoleArn': {
+          'Fn::GetAtt': [
+            'Role1ABCC5F0',
+            'Arn',
+          ],
+        },
       }));
 
       test.done();
@@ -46,7 +47,7 @@ export = {
     },
 
     'that is cross-region': {
-      'validates that source actions are in the same account as the pipeline'(test: Test) {
+      'validates that source actions are in the same region as the pipeline'(test: Test) {
         const app = new cdk.App();
         const stack = new cdk.Stack(app, 'PipelineStack', { env: { region: 'us-west-1', account: '123456789012' }});
         const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -109,22 +110,22 @@ export = {
         });
 
         expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-          "ArtifactStores": [
+          'ArtifactStores': [
             {
-              "Region": replicationRegion,
-              "ArtifactStore": {
-                "Type": "S3",
-                "EncryptionKey": {
-                  "Type": "KMS",
-                  "Id": {
-                    "Fn::Join": [
-                      "",
+              'Region': replicationRegion,
+              'ArtifactStore': {
+                'Type': 'S3',
+                'EncryptionKey': {
+                  'Type': 'KMS',
+                  'Id': {
+                    'Fn::Join': [
+                      '',
                       [
-                        "arn:",
+                        'arn:',
                         {
-                          "Ref": "AWS::Partition",
+                          'Ref': 'AWS::Partition',
                         },
-                        ":kms:us-west-1:123456789012:alias/my-replication-alias",
+                        ':kms:us-west-1:123456789012:alias/my-replication-alias',
                       ],
                     ],
                   },
@@ -132,14 +133,14 @@ export = {
               },
             },
             {
-              "Region": pipelineRegion,
+              'Region': pipelineRegion,
             },
           ],
         }));
 
         expect(replicationStack).to(haveResourceLike('AWS::KMS::Key', {
-          "KeyPolicy": {
-            "Statement": [
+          'KeyPolicy': {
+            'Statement': [
               {
                 // owning account management permissions - we don't care about them in this test
               },
@@ -148,24 +149,24 @@ export = {
                 // Since the replication bucket must be deployed before the pipeline,
                 // we cannot put the pipeline role as the principal here -
                 // hence, we put the account itself
-                "Action": [
-                  "kms:Decrypt",
-                  "kms:DescribeKey",
-                  "kms:Encrypt",
-                  "kms:ReEncrypt*",
-                  "kms:GenerateDataKey*",
+                'Action': [
+                  'kms:Decrypt',
+                  'kms:DescribeKey',
+                  'kms:Encrypt',
+                  'kms:ReEncrypt*',
+                  'kms:GenerateDataKey*',
                 ],
-                "Effect": "Allow",
-                "Principal": {
-                  "AWS": {
-                    "Fn::Join": ["", [
-                      "arn:",
-                      { "Ref": "AWS::Partition" },
-                      ":iam::123456789012:root",
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
+                    'Fn::Join': ['', [
+                      'arn:',
+                      { 'Ref': 'AWS::Partition' },
+                      ':iam::123456789012:root',
                     ]],
                   },
                 },
-                "Resource": "*",
+                'Resource': '*',
               },
             ],
           },
@@ -204,22 +205,22 @@ export = {
         });
 
         expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-          "ArtifactStores": [
+          'ArtifactStores': [
             {
-              "Region": replicationRegion,
-              "ArtifactStore": {
-                "Type": "S3",
-                "EncryptionKey": {
-                  "Type": "KMS",
-                  "Id": {
-                    "Fn::Join": [
-                      "",
+              'Region': replicationRegion,
+              'ArtifactStore': {
+                'Type': 'S3',
+                'EncryptionKey': {
+                  'Type': 'KMS',
+                  'Id': {
+                    'Fn::Join': [
+                      '',
                       [
-                        "arn:",
+                        'arn:',
                         {
-                          "Ref": "AWS::Partition",
+                          'Ref': 'AWS::Partition',
                         },
-                        ":kms:us-west-1:123456789012:alias/s-west-1tencryptionalias9b344b2b8e6825cb1f7d",
+                        ':kms:us-west-1:123456789012:alias/s-west-1tencryptionalias9b344b2b8e6825cb1f7d',
                       ],
                     ],
                   },
@@ -227,14 +228,14 @@ export = {
               },
             },
             {
-              "Region": pipelineRegion,
+              'Region': pipelineRegion,
             },
           ],
         }));
 
         expect(pipeline.crossRegionSupport[replicationRegion].stack).to(haveResourceLike('AWS::KMS::Alias', {
-          "DeletionPolicy": "Delete",
-          "UpdateReplacePolicy": "Delete",
+          'DeletionPolicy': 'Delete',
+          'UpdateReplacePolicy': 'Delete',
         }, ResourcePart.CompleteDefinition));
 
         test.done();
@@ -253,7 +254,7 @@ export = {
             [replicationRegion]: s3.Bucket.fromBucketAttributes(pipelineStack, 'ReplicationBucket', {
               bucketArn: 'arn:aws:s3:::my-us-west-1-replication-bucket',
               encryptionKey: kms.Key.fromKeyArn(pipelineStack, 'ReplicationKey',
-                `arn:aws:kms:${replicationRegion}:123456789012:key/1234-5678-9012`
+                `arn:aws:kms:${replicationRegion}:123456789012:key/1234-5678-9012`,
               ),
             }),
           },
@@ -276,23 +277,63 @@ export = {
         });
 
         expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-          "ArtifactStores": [
+          'ArtifactStores': [
             {
-              "Region": replicationRegion,
-              "ArtifactStore": {
-                "Type": "S3",
-                "Location": "my-us-west-1-replication-bucket",
-                "EncryptionKey": {
-                  "Type": "KMS",
-                  "Id": "arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012",
+              'Region': replicationRegion,
+              'ArtifactStore': {
+                'Type': 'S3',
+                'Location': 'my-us-west-1-replication-bucket',
+                'EncryptionKey': {
+                  'Type': 'KMS',
+                  'Id': 'arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012',
                 },
               },
             },
             {
-              "Region": pipelineRegion,
+              'Region': pipelineRegion,
             },
           ],
         }));
+
+        test.done();
+      },
+
+      'generates the support stack containing the replication Bucket without the need to bootstrap in that environment'(test: Test) {
+        const app = new cdk.App({
+          treeMetadata: false, // we can't set the context otherwise, because App will have a child
+        });
+        app.construct.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, true);
+
+        const pipelineStack = new cdk.Stack(app, 'PipelineStack', {
+          env: { region: 'us-west-2', account: '123456789012' },
+        });
+        const sourceOutput = new codepipeline.Artifact();
+        new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({
+                actionName: 'Source',
+                output: sourceOutput,
+              })],
+            },
+            {
+              stageName: 'Build',
+              actions: [new FakeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+                region: 'eu-south-1',
+              })],
+            },
+          ],
+        });
+
+        const assembly = app.synth();
+        const supportStackArtifact = assembly.getStackByName('PipelineStack-support-eu-south-1');
+        test.equal(supportStackArtifact.assumeRoleArn,
+          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-west-2');
+        test.equal(supportStackArtifact.cloudFormationExecutionRoleArn,
+          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2');
 
         test.done();
       },

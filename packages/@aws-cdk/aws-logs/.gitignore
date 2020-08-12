@@ -7,7 +7,6 @@ dist
 lib/generated/resources.ts
 node_modules
 tsconfig.json
-tslint.json
 
 .LAST_BUILD
 .nyc_output
@@ -15,3 +14,6 @@ coverage
 nyc.config.js
 .LAST_PACKAGE
 *.snk
+!.eslintrc.js
+
+junit.xml

@@ -22,8 +22,8 @@ class MyStack extends TestStack {
       maxCapacity: 10,
       bootstrapOptions: {
         kubeletExtraArgs: '--node-labels foo=bar,goo=far',
-        awsApiRetryAttempts: 5
-      }
+        awsApiRetryAttempts: 5,
+      },
     });
   }
 }

@@ -87,7 +87,7 @@ export interface ComplexMapProperty extends MapPropertyBase {
 }
 
 export interface TagPropertyStandard extends PropertyBase {
-  ItemType: 'Tag' | 'TagsEntry' | 'TagRef';
+  ItemType: 'Tag' | 'TagsEntry' | 'TagRef' | 'ElasticFileSystemTag' | 'HostedZoneTag';
   Type: 'Tags';
 }
 
@@ -125,12 +125,12 @@ export enum UpdateType {
 
 export function isUpdateType(str: string): str is UpdateType {
   switch (str) {
-  case UpdateType.Conditional:
-  case UpdateType.Immutable:
-  case UpdateType.Mutable:
-    return true;
-  default:
-    return false;
+    case UpdateType.Conditional:
+    case UpdateType.Immutable:
+    case UpdateType.Mutable:
+      return true;
+    default:
+      return false;
   }
 }
 
@@ -223,8 +223,10 @@ export function isPropertyScrutinyType(str: string): str is PropertyScrutinyType
 }
 
 const tagPropertyNames = {
-  Tags: "",
-  UserPoolTags: "",
+  FileSystemTags: '',
+  HostedZoneTags: '',
+  Tags: '',
+  UserPoolTags: '',
 };
 
 export type TagPropertyName = keyof typeof tagPropertyNames;
@@ -255,7 +257,9 @@ export function isTagPropertyStandard(prop: Property): prop is TagPropertyStanda
     (prop as TagPropertyStandard).ItemType === 'Tag' ||
     (prop as TagPropertyStandard).ItemType === 'TagsEntry' ||
     (prop as TagPropertyStandard).Type === 'Tags' ||
-    (prop as TagPropertyStandard).ItemType === 'TagRef'
+    (prop as TagPropertyStandard).ItemType === 'TagRef' ||
+    (prop as TagPropertyStandard).ItemType === 'ElasticFileSystemTag' ||
+    (prop as TagPropertyStandard).ItemType === 'HostedZoneTag'
   );
 
 }

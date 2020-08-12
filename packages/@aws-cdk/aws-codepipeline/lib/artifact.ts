@@ -1,5 +1,5 @@
 import * as s3 from '@aws-cdk/aws-s3';
-import { Lazy, Token } from "@aws-cdk/core";
+import { Lazy, Token } from '@aws-cdk/core';
 import * as validation from './validation';
 
 /**
@@ -17,6 +17,7 @@ export class Artifact {
   }
 
   private _artifactName?: string;
+  private readonly metadata: { [key: string]: any } = {};
 
   constructor(artifactName?: string) {
     validation.validateArtifactName(artifactName);
@@ -78,6 +79,25 @@ export class Artifact {
       bucketName: this.bucketName,
       objectKey: this.objectKey,
     };
+  }
+
+  /**
+   * Add arbitrary extra payload to the artifact under a given key.
+   * This can be used by CodePipeline actions to communicate data between themselves.
+   * If metadata was already present under the given key,
+   * it will be overwritten with the new value.
+   */
+  public setMetadata(key: string, value: any): void {
+    this.metadata[key] = value;
+  }
+
+  /**
+   * Retrieve the metadata stored in this artifact under the given key.
+   * If there is no metadata stored under the given key,
+   * null will be returned.
+   */
+  public getMetadata(key: string): any {
+    return this.metadata[key];
   }
 
   public toString() {

@@ -1,7 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
-import { CfnResource, Construct, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
-import { CfnCustomResource } from './cloudformation.generated';
+import * as core from '@aws-cdk/core';
 
 /**
  * Collection of arbitrary properties
@@ -21,6 +20,7 @@ export interface CustomResourceProviderConfig {
 
 /**
  * Represents a provider for an AWS CloudFormation custom resources.
+ * @deprecated use `core.ICustomResourceProvider`
  */
 export interface ICustomResourceProvider {
   /**
@@ -28,7 +28,7 @@ export interface ICustomResourceProvider {
    * @param scope The resource that uses this provider.
    * @returns provider configuration
    */
-  bind(scope: Construct): CustomResourceProviderConfig;
+  bind(scope: core.Construct): CustomResourceProviderConfig;
 }
 
 /**
@@ -68,13 +68,14 @@ export class CustomResourceProvider implements ICustomResourceProvider {
    */
   private constructor(public readonly serviceToken: string) { }
 
-  public bind(_: Construct): CustomResourceProviderConfig {
+  public bind(_: core.Construct): CustomResourceProviderConfig {
     return { serviceToken: this.serviceToken };
   }
 }
 
 /**
  * Properties to provide a Lambda-backed custom resource
+ * @deprecated use `core.CustomResourceProps`
  */
 export interface CustomResourceProps {
   /**
@@ -142,103 +143,21 @@ export interface CustomResourceProps {
    *
    * @default cdk.RemovalPolicy.Destroy
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: core.RemovalPolicy;
 }
 
 /**
- * Custom resource that is implemented using a Lambda
- *
- * As a custom resource author, you should be publishing a subclass of this class
- * that hides the choice of provider, and accepts a strongly-typed properties
- * object with the properties your provider accepts.
+ * Deprecated.
+ * @deprecated use `core.CustomResource`
  */
-export class CustomResource extends Resource {
-  private readonly resource: CfnResource;
-
-  constructor(scope: Construct, id: string, props: CustomResourceProps) {
-    super(scope, id);
-
-    const type = renderResourceType(props.resourceType);
-    const providerConfig = props.provider.bind(this);
-    this.resource = new CfnResource(this, 'Default', {
-      type,
-      properties: {
-        ServiceToken: providerConfig.serviceToken,
-        ...uppercaseProperties(props.properties || {})
-      }
-    });
-
-    this.resource.applyRemovalPolicy(props.removalPolicy, {
-      default: RemovalPolicy.DESTROY
+export class CustomResource extends core.CustomResource {
+  constructor(scope: core.Construct, id: string, props: CustomResourceProps) {
+    super(scope, id, {
+      pascalCaseProperties: true,
+      properties: props.properties,
+      removalPolicy: props.removalPolicy,
+      resourceType: props.resourceType,
+      serviceToken: core.Lazy.stringValue({ produce: () => props.provider.bind(this).serviceToken }),
     });
   }
-
-  /**
-   * The physical name of this custom resource.
-   */
-  public get ref() {
-    return this.resource.ref;
-  }
-
-  /**
-   * Returns the value of an attribute of the custom resource of an arbitrary
-   * type. Attributes are returned from the custom resource provider through the
-   * `Data` map where the key is the attribute name.
-   *
-   * @param attributeName the name of the attribute
-   * @returns a token for `Fn::GetAtt`. Use `Token.asXxx` to encode the returned `Reference` as a specific type or
-   * use the convenience `getAttString` for string attributes.
-   */
-  public getAtt(attributeName: string) {
-    return this.resource.getAtt(attributeName);
-  }
-
-  /**
-   * Returns the value of an attribute of the custom resource of type string.
-   * Attributes are returned from the custom resource provider through the
-   * `Data` map where the key is the attribute name.
-   *
-   * @param attributeName the name of the attribute
-   * @returns a token for `Fn::GetAtt` encoded as a string.
-   */
-  public getAttString(attributeName: string): string {
-    return Token.asString(this.getAtt(attributeName));
-  }
-}
-
-/**
- * Uppercase the first letter of every property name
- *
- * It's customary for CloudFormation properties to start with capitals, and our
- * properties to start with lowercase, so this function translates from one
- * to the other
- */
-function uppercaseProperties(props: Properties): Properties {
-  const ret: Properties = {};
-  Object.keys(props).forEach(key => {
-    const upper = key.substr(0, 1).toUpperCase() + key.substr(1);
-    ret[upper] = props[key];
-  });
-  return ret;
-}
-
-function renderResourceType(resourceType?: string) {
-  if (!resourceType) {
-    return CfnCustomResource.CFN_RESOURCE_TYPE_NAME;
-  }
-
-  if (!resourceType.startsWith('Custom::')) {
-    throw new Error(`Custom resource type must begin with "Custom::" (${resourceType})`);
-  }
-
-  const typeName = resourceType.substr(resourceType.indexOf('::') + 2);
-  if (typeName.length > 60) {
-    throw new Error(`Custom resource type length > 60 (${resourceType})`);
-  }
-
-  if (!/^[a-z0-9_@-]+$/i.test(typeName)) {
-    throw new Error(`Custom resource type name can only include alphanumeric characters and _@- (${typeName})`);
-  }
-
-  return resourceType;
 }

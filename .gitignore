@@ -1,5 +1,7 @@
 # VSCode extension
-.vscode/
+
+# Store launch config in repo but not settings
+.vscode/settings.json
 /.favorites.json
 
 # TypeScript incremental build states
@@ -16,10 +18,12 @@ pack/
 .tools/
 coverage/
 .nyc_output
+.nycrc
 .LAST_BUILD
 *.sw[a-z]
 *~
 .idea
+junit.xml
 
 # We don't want tsconfig at the root
 /tsconfig.json
@@ -33,5 +37,8 @@ cdk.out/
 # Yarn error log
 yarn-error.log
 
-# Generated jest config
-jest.config.gen.json
+# Parcel default cache directory
+.parcel-cache
+
+# Cloud9
+.c9

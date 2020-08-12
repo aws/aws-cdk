@@ -10,10 +10,15 @@
           {
             "op": "add",
             "path": "/Properties/DeviceTemplates/Type",
+            "value": "Map"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DeviceTemplates/ItemType",
             "value": "DeviceTemplate"
           }
         ],
-        "description": "Set type of AWS::IoT1Click::Project.PlacementTemplate.DeviceTemplates to AWS::IoT1Click::Project.DeviceTemplate"
+        "description": "Set type of AWS::IoT1Click::Project.PlacementTemplate.DeviceTemplates to Map<String, AWS::IoT1Click::Project.DeviceTemplate>"
       }
     }
   }

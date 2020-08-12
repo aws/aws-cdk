@@ -1,5 +1,5 @@
 import * as nodeunit from 'nodeunit';
-import { Duration, Stack, Token } from '../lib';
+import { Duration, Lazy, Stack, Token } from '../lib';
 
 export = nodeunit.testCase({
   'negative amount'(test: nodeunit.Test) {
@@ -14,7 +14,7 @@ export = nodeunit.testCase({
     test.equals(stack.resolve(lazyDuration.toSeconds()), 1337);
     test.throws(
       () => stack.resolve(lazyDuration.toMinutes()),
-      /Unable to perform time unit conversion on un-resolved token/
+      /Unable to perform time unit conversion on un-resolved token/,
     );
 
     test.done();
@@ -78,17 +78,37 @@ export = nodeunit.testCase({
   },
 
   'toISOString'(test: nodeunit.Test) {
+    test.equal(Duration.millis(0).toISOString(), 'PT0S');
     test.equal(Duration.seconds(0).toISOString(), 'PT0S');
     test.equal(Duration.minutes(0).toISOString(), 'PT0S');
     test.equal(Duration.hours(0).toISOString(), 'PT0S');
     test.equal(Duration.days(0).toISOString(), 'PT0S');
 
+    test.equal(Duration.millis(5).toISOString(), 'PT0.005S');
     test.equal(Duration.seconds(5).toISOString(), 'PT5S');
     test.equal(Duration.minutes(5).toISOString(), 'PT5M');
     test.equal(Duration.hours(5).toISOString(), 'PT5H');
     test.equal(Duration.days(5).toISOString(), 'PT5D');
 
     test.equal(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toISOString(), 'PT1D1H1M1S');
+
+    test.done();
+  },
+
+  'toIsoString'(test: nodeunit.Test) {
+    test.equal(Duration.millis(0).toIsoString(), 'PT0S');
+    test.equal(Duration.seconds(0).toIsoString(), 'PT0S');
+    test.equal(Duration.minutes(0).toIsoString(), 'PT0S');
+    test.equal(Duration.hours(0).toIsoString(), 'PT0S');
+    test.equal(Duration.days(0).toIsoString(), 'PT0S');
+
+    test.equal(Duration.millis(5).toIsoString(), 'PT0.005S');
+    test.equal(Duration.seconds(5).toIsoString(), 'PT5S');
+    test.equal(Duration.minutes(5).toIsoString(), 'PT5M');
+    test.equal(Duration.hours(5).toIsoString(), 'PT5H');
+    test.equal(Duration.days(5).toIsoString(), 'PT5D');
+
+    test.equal(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toIsoString(), 'PT1D1H1M1S');
 
     test.done();
   },
@@ -107,7 +127,33 @@ export = nodeunit.testCase({
     test.equal(Duration.parse('PT1D1H1M1S').toSeconds(), 1 + 60 * (1 + 60 * (1 + 24)));
 
     test.done();
-  }
+  },
+
+  'to human string'(test: nodeunit.Test) {
+    test.equal(Duration.minutes(0).toHumanString(), '0 minutes');
+    test.equal(Duration.minutes(Lazy.numberValue({ produce: () => 5 })).toHumanString(), '<token> minutes');
+
+    test.equal(Duration.minutes(10).toHumanString(), '10 minutes');
+    test.equal(Duration.minutes(1).toHumanString(), '1 minute');
+
+    test.equal(Duration.minutes(62).toHumanString(), '1 hour 2 minutes');
+
+    test.equal(Duration.seconds(3666).toHumanString(), '1 hour 1 minute');
+
+    test.equal(Duration.millis(3000).toHumanString(), '3 seconds');
+    test.equal(Duration.millis(3666).toHumanString(), '3 seconds 666 millis');
+
+    test.equal(Duration.millis(3.6).toHumanString(), '3.6 millis');
+
+    test.done();
+  },
+
+  'add two durations'(test: nodeunit.Test) {
+    test.equal(Duration.minutes(1).plus(Duration.seconds(30)).toSeconds(), Duration.seconds(90).toSeconds());
+    test.equal(Duration.minutes(1).plus(Duration.seconds(30)).toMinutes({ integral: false }), Duration.seconds(90).toMinutes({ integral: false }));
+
+    test.done();
+  },
 });
 
 function floatEqual(test: nodeunit.Test, actual: number, expected: number) {

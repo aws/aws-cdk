@@ -8,7 +8,7 @@ export = {
     'HostedZoneProvider will return context values if available'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack(undefined, 'TestStack', {
-        env: { account: '12345', region: 'us-east-1' }
+        env: { account: '12345', region: 'us-east-1' },
       });
       const filter = { domainName: 'test.com' };
 
@@ -24,15 +24,15 @@ export = {
         CallerReference: 'TestLates-PublicZo-OESZPDFV7G6A',
         Config: {
           Comment: 'CDK created',
-          PrivateZone: false
+          PrivateZone: false,
         },
-        ResourceRecordSetCount: 3
+        ResourceRecordSetCount: 3,
       };
 
       const stack2 = new cdk.Stack(undefined, 'TestStack', {
-        env: { account: '12345', region: 'us-east-1' }
+        env: { account: '12345', region: 'us-east-1' },
       });
-      stack2.node.setContext(missing[0].key, fakeZone);
+      stack2.construct.setContext(missing[0].key, fakeZone);
 
       // WHEN
       const zoneRef = HostedZone.fromLookup(stack2, 'MyZoneProvider', filter);
@@ -42,11 +42,11 @@ export = {
       test.done();
     },
     'HostedZoneProvider will return context values if available when using plain hosted zone id'(
-      test: Test
+      test: Test,
     ) {
       // GIVEN
       const stack = new cdk.Stack(undefined, 'TestStack', {
-        env: { account: '12345', region: 'us-east-1' }
+        env: { account: '12345', region: 'us-east-1' },
       });
       const filter = { domainName: 'test.com' };
 
@@ -62,15 +62,15 @@ export = {
         CallerReference: 'TestLates-PublicZo-OESZPDFV7G6A',
         Config: {
           Comment: 'CDK created',
-          PrivateZone: false
+          PrivateZone: false,
         },
-        ResourceRecordSetCount: 3
+        ResourceRecordSetCount: 3,
       };
 
       const stack2 = new cdk.Stack(undefined, 'TestStack', {
-        env: { account: '12345', region: 'us-east-1' }
+        env: { account: '12345', region: 'us-east-1' },
       });
-      stack2.node.setContext(missing[0].key, fakeZone);
+      stack2.construct.setContext(missing[0].key, fakeZone);
 
       const zone = HostedZone.fromLookup(stack2, 'MyZoneProvider', filter);
 
@@ -80,6 +80,6 @@ export = {
       // THEN
       test.deepEqual(fakeZoneId, zoneId);
       test.done();
-    }
-  }
+    },
+  },
 };

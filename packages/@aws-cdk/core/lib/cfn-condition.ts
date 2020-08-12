@@ -1,5 +1,5 @@
 import { CfnElement } from './cfn-element';
-import { Construct } from './construct';
+import { Construct } from './construct-compat';
 import { IResolvable, IResolveContext } from './resolvable';
 
 export interface CfnConditionProps {
@@ -40,8 +40,8 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
 
     return {
       Conditions: {
-        [this.logicalId]: this.expression
-      }
+        [this.logicalId]: this.expression,
+      },
     };
   }
 

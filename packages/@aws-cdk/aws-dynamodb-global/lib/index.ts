@@ -1,1 +1,1 @@
-export * from "./aws-dynamodb-global";
+export * from './aws-dynamodb-global';

@@ -7,7 +7,7 @@ function shortLogGroup() {
   /// !show
   // Configure log group for short retention
   const logGroup = new LogGroup(stack, 'LogGroup', {
-    retention: RetentionDays.ONE_WEEK
+    retention: RetentionDays.ONE_WEEK,
   });
   /// !hide
   return logGroup;
@@ -17,7 +17,7 @@ function infiniteLogGroup() {
   /// !show
   // Configure log group for infinite retention
   const logGroup = new LogGroup(stack, 'LogGroup', {
-    retention: Infinity
+    retention: Infinity,
   });
   /// !hide
   return logGroup;

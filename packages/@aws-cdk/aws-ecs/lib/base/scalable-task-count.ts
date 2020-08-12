@@ -6,7 +6,6 @@ import { Construct } from '@aws-cdk/core';
 /**
  * The properties of a scalable attribute representing task count.
  */
-// tslint:disable-next-line:no-empty-interface
 export interface ScalableTaskCountProps extends appscaling.BaseScalableAttributeProps {
 
 }
@@ -47,7 +46,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       disableScaleIn: props.disableScaleIn,
       targetValue: props.targetUtilizationPercent,
       scaleInCooldown: props.scaleInCooldown,
-      scaleOutCooldown: props.scaleOutCooldown
+      scaleOutCooldown: props.scaleOutCooldown,
     });
   }
 
@@ -61,7 +60,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
       scaleInCooldown: props.scaleInCooldown,
-      scaleOutCooldown: props.scaleOutCooldown
+      scaleOutCooldown: props.scaleOutCooldown,
     });
   }
 
@@ -79,7 +78,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
       scaleInCooldown: props.scaleInCooldown,
-      scaleOutCooldown: props.scaleOutCooldown
+      scaleOutCooldown: props.scaleOutCooldown,
     });
   }
 

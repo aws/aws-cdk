@@ -1,10 +1,8 @@
 ## AWS CDK Toolkit
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
-
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -88,22 +86,31 @@ $ cdk list --app='node bin/main.js' --long
 ```
 
 #### `cdk synthesize`
-Synthesize the CDK app and outputs CloudFormation templates. If the application contains multiple stacks and no
-stack name is provided in the command-line arguments, the `--output` option is mandatory and a CloudFormation template
-will be generated in the output folder for each stack.
+Synthesizes the CDK app and produces a cloud assembly to a designated output (defaults to `cdk.out`)
 
-By default, templates are generated in YAML format. The `--json` option can be used to switch to JSON.
+Typically you don't interact directly with cloud assemblies. They are files that include everything
+needed to deploy your app to a cloud environment. For example, it includes an AWS CloudFormation
+template for each stack in your app, and a copy of any file assets or Docker images that you reference
+in your app.
+
+If your app contains a single stack or a stack is supplied as an argument to `cdk synth`, the CloudFormation template will also be displayed in the standard output (STDOUT) as `YAML`.
+
+If there are multiple stacks in your application, `cdk synth` will synthesize the cloud assembly to `cdk.out`.
 
 ```console
-$ # Generate the template for StackName and output it to STDOUT
-$ cdk synthesize --app='node bin/main.js' MyStackName
+$ # Synthesize cloud assembly for StackName and output the CloudFormation template to STDOUT
+$ cdk synth MyStackName
 
-$ # Generate the template for MyStackName and save it to template.yml
-$ cdk synth --app='node bin/main.js' MyStackName --output=template.yml
+$ # Synthesize cloud assembly for all the stacks and save them into cdk.out/
+$ cdk synth
 
-$ # Generate templates for all the stacks and save them into templates/
-$ cdk synth --app='node bin/main.js' --output=templates
+$ # Synthesize cloud assembly for StackName, but don't include dependencies
+$ cdk synth MyStackName --exclusively
 ```
+
+See the [AWS Documentation](https://docs.aws.amazon.com/cdk/latest/guide/apps.html#apps_cloud_assembly) to learn more about cloud assemblies.
+See the [CDK reference documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/cloud-assembly-schema-readme.html) for details on the cloud assembly specification
+
 
 #### `cdk diff`
 Computes differences between the infrastructure specified in the current state of the CDK app and the currently
@@ -128,6 +135,98 @@ bootstrapped (using `cdk bootstrap`), only stacks that are not using assets and 
 $ cdk deploy --app='node bin/main.js' MyStackName
 ```
 
+Before creating a change set, `cdk deploy` will compare the template and tags of the
+currently deployed stack to the template and tags that are about to be deployed and
+will skip deployment if they are identical. Use `--force` to override this behavior
+and always deploy the stack.
+
+##### Parameters
+
+Pass parameters to your template during deployment by using `--parameters
+(STACK:KEY=VALUE)`. This will apply the value `VALUE` to the key `KEY` for stack `STACK`.
+
+Example of providing an attribute value for an SNS Topic through a parameter in TypeScript:
+
+Usage of parameter in CDK Stack:
+```ts
+new sns.Topic(this, 'TopicParameter', {
+    topicName: new cdk.CfnParameter(this, 'TopicNameParam').value.toString()
+});
+```
+
+Parameter values as a part of `cdk deploy`
+```console
+$ cdk deploy --parameters "MyStackName:TopicNameParam=parameterized"
+```
+
+Parameter values can be overwritten by supplying the `--force` flag.
+Example of overwriting the topic name from a previous deployment.
+```console
+$ cdk deploy --parameters "ParametersStack:TopicNameParam=blahagain" --force
+```
+
+⚠️ Parameters will be applied to all stacks if a stack name is not specified or `*` is provided.
+Parameters provided to Stacks that do not make use of the parameter will not successfully deploy.
+
+⚠️ Parameters do not propagate to NestedStacks. These must be sent with the constructor.
+See Nested Stack [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-cloudformation.NestedStack.html)
+
+##### Outputs
+
+Write stack outputs from deployments into a file. When your stack finishes deploying, all stack outputs
+will be written to the output file as JSON.
+
+Usage of output in a CDK stack
+```typescript
+const fn = new lambda.Function(this, "fn", {
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`exports.handler = \${handler.toString()}`),
+  runtime: lambda.Runtime.NODEJS_10_X
+});
+
+new cdk.CfnOutput(this, 'FunctionArn', {
+  value: fn.functionArn,
+});
+```
+
+Specify an outputs file to write to by supplying the `--outputs-file` parameter
+
+```console
+$ cdk deploy --outputs-file outputs.json
+```
+
+When the stack finishes deployment, `outputs.json` would look like this:
+```json
+{
+  "MyStack": {
+    "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:MyStack-fn5FF616E3-G632ITHSP5HK"
+  }
+}
+```
+
+⚠️ The `key` of the outputs corresponds to the logical ID of the `CfnOutput`.
+Read more about identifiers in the CDK [here](https://docs.aws.amazon.com/cdk/latest/guide/identifiers.html)
+
+If multiple stacks are being deployed or the wild card `*` is used to deploy all stacks, all outputs
+are written to the same output file where each stack artifact ID is a key in the JSON file
+
+
+```console
+$ cdk deploy '*' --outputs-file "/Users/code/myproject/outputs.json"
+```
+
+Example `outputs.json` after deployment of multiple stacks
+```json
+{
+  "MyStack": {
+    "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:MyStack-fn5FF616E3-G632ITHSP5HK"
+  },
+  "AnotherStack": {
+    "VPCId": "vpc-z0mg270fee16693f"
+  }  
+}
+```
+
 #### `cdk destroy`
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
 configured with a `DeletionPolicy` of `Retain`). During the stack destruction, the command will output progress
@@ -140,7 +239,8 @@ $ cdk destroy --app='node bin/main.js' MyStackName
 #### `cdk bootstrap`
 Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket that
 `cdk deploy` will use to store synthesized templates and the related assets, before triggering a CloudFormation stack
-update. The name of the deployed stack can be configured using the `--toolkit-stack-name` argument.
+update. The name of the deployed stack can be configured using the `--toolkit-stack-name` argument. The S3 Bucket
+Public Access Block Configuration can be configured using the `--public-access-block-configuration` argument.
 
 ```console
 $ # Deploys to all environments
@@ -149,6 +249,9 @@ $ cdk bootstrap --app='node bin/main.js'
 $ # Deploys only to environments foo and bar
 $ cdk bootstrap --app='node bin/main.js' foo bar
 ```
+
+By default, bootstrap stack will be protected from stack termination. This can be disabled using 
+`--termination-protection` argument.
 
 #### `cdk doctor`
 Inspect the current command-line environment and configurations, and collect information that can be useful for
@@ -172,14 +275,14 @@ configuration's order of precedence is:
 
 #### JSON Configuration files
 Some of the interesting keys that can be used in the JSON configuration files:
-```js
+```json5
 {
-    "app": "node bin/main.js",        // Command to start the CDK app     (--app='node bin/main.js')
-    "context": {                      // Context entries                  (--context=key=value)
-        "key": "value",
+    "app": "node bin/main.js",        // Command to start the CDK app      (--app='node bin/main.js')
+    "context": {                      // Context entries                   (--context=key=value)
+        "key": "value"
     },
-    "toolkitStackName": "foo",        // Customize 'bootstrap' stack name (--toolkit-stack-name=foo)
-    "toolkitBucketName": "fooBucket", // Customize 'bootstrap' bucket name(--toolkit-bucket-name=fooBucket)
-    "versionReporting": false,        // Opt-out of version reporting     (--no-version-reporting)
+    "toolkitStackName": "foo",        // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
+    "toolkitBucketName": "fooBucket", // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
+    "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
 }
 ```

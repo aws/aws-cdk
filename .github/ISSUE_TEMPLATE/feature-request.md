@@ -1,7 +1,8 @@
 ---
 name: "\U0001F680 Feature Request"
 about: Request a new feature
-labels: feature-request, status/needs-triage
+title: "[module] "
+labels: feature-request, needs-triage
 ---
 
 <!-- short description of the feature you are proposing: -->

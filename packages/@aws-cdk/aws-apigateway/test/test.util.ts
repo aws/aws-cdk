@@ -29,7 +29,7 @@ export = testCase({
       test.deepEqual(parseMethodOptionsPath('/*/*'),     { resourcePath: '/*', httpMethod: '*' });
       test.deepEqual(parseMethodOptionsPath('//POST'),     { resourcePath: '/', httpMethod: 'POST' });
       test.done();
-    }
+    },
   },
 
   'parseAwsApiCall': {
@@ -61,10 +61,10 @@ export = testCase({
     '"action" mode with parameters (url-encoded)'(test: Test) {
       test.deepEqual(parseAwsApiCall(undefined, 'GetObject', { Bucket: 'MyBucket', Key: 'MyKey' }), {
         apiType: 'action',
-        apiValue: 'GetObject&Bucket=MyBucket&Key=MyKey'
+        apiValue: 'GetObject&Bucket=MyBucket&Key=MyKey',
       });
       test.done();
-    }
+    },
   },
 
   'JsonSchemaMapper.toCfnJsonSchema': {

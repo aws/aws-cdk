@@ -16,13 +16,13 @@ export = {
     // WHEN
     lb.addListener('Listener', {
       port: 443,
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       Protocol: 'TCP',
-      Port: 443
+      Port: 443,
     }));
 
     test.done();
@@ -43,9 +43,9 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
-          TargetGroupArn: { Ref: "TargetGroup3D7CD9B8" },
-          Type: "forward"
-        }
+          TargetGroupArn: { Ref: 'TargetGroup3D7CD9B8' },
+          Type: 'forward',
+        },
       ],
     }));
 
@@ -62,25 +62,25 @@ export = {
     // WHEN
     listener.addTargets('Targets', {
       port: 80,
-      targets: [new elbv2.InstanceTarget('i-12345')]
+      targets: [new elbv2.InstanceTarget('i-12345')],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
-          TargetGroupArn: { Ref: "LBListenerTargetsGroup76EF81E8" },
-          Type: "forward"
-        }
+          TargetGroupArn: { Ref: 'LBListenerTargetsGroup76EF81E8' },
+          Type: 'forward',
+        },
       ],
     }));
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      VpcId: { Ref: "Stack8A423254" },
+      VpcId: { Ref: 'Stack8A423254' },
       Port: 80,
-      Protocol: "TCP",
+      Protocol: 'TCP',
       Targets: [
-        { Id: "i-12345" }
-      ]
+        { Id: 'i-12345' },
+      ],
     }));
 
     test.done();
@@ -96,15 +96,15 @@ export = {
     // WHEN
     const group = listener.addTargets('Group', {
       port: 80,
-      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
+      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
     });
     group.configureHealthCheck({
-      interval: cdk.Duration.seconds(30)
+      interval: cdk.Duration.seconds(30),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      HealthCheckIntervalSeconds: 30
+      HealthCheckIntervalSeconds: 30,
     }));
 
     test.done();
@@ -118,7 +118,7 @@ export = {
     const listener = lb.addListener('Listener', { port: 443 });
     const group = listener.addTargets('Group', {
       port: 80,
-      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
+      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
     });
 
     // WHEN
@@ -128,15 +128,15 @@ export = {
     expect(stack).toMatch({
       Resources: {
         MyResource: {
-          Type: "Test::Resource",
+          Type: 'Test::Resource',
           DependsOn: [
             // 2nd dependency is there because of the structure of the construct tree.
             // It does not harm.
-            "LBListenerGroupGroup79B304FF",
-            "LBListener49E825B4",
-          ]
-        }
-      }
+            'LBListenerGroupGroup79B304FF',
+            'LBListener49E825B4',
+          ],
+        },
+      },
     }, MatchStyle.SUPERSET);
 
     test.done();
@@ -148,7 +148,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const cert = new acm.Certificate(stack, 'Certificate', {
-      domainName: 'example.com'
+      domainName: 'example.com',
     });
 
     // WHEN
@@ -157,7 +157,7 @@ export = {
       protocol: elbv2.Protocol.TLS,
       certificates: [ elbv2.ListenerCertificate.fromCertificateManager(cert) ],
       sslPolicy: elbv2.SslPolicy.TLS12,
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
 
     // THEN
@@ -165,9 +165,9 @@ export = {
       Protocol: 'TLS',
       Port: 443,
       Certificates: [
-        { CertificateArn: { Ref: "Certificate4E7ABB08" } }
+        { CertificateArn: { Ref: 'Certificate4E7ABB08' } },
       ],
-      SslPolicy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+      SslPolicy: 'ELBSecurityPolicy-TLS-1-2-2017-01',
     }));
 
     test.done();
@@ -181,7 +181,7 @@ export = {
     test.throws(() => lb.addListener('Listener', {
       port: 443,
       protocol: elbv2.Protocol.HTTP,
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
     }), /The protocol must be one of TCP, TLS, UDP, TCP_UDP\. Found HTTP/);
 
     test.done();
@@ -195,8 +195,8 @@ export = {
     const targetGroup = listener.addTargets('ECS', {
       port: 80,
       healthCheck: {
-        interval: cdk.Duration.seconds(60)
-      }
+        interval: cdk.Duration.seconds(60),
+      },
     });
 
     const validationErrors: string[] = (targetGroup as any).validate();
@@ -214,13 +214,13 @@ export = {
     const targetGroup = listener.addTargets('ECS', {
       port: 80,
       healthCheck: {
-        interval: cdk.Duration.seconds(60)
-      }
+        interval: cdk.Duration.seconds(60),
+      },
     });
 
     targetGroup.configureHealthCheck({
       interval: cdk.Duration.seconds(30),
-      protocol: elbv2.Protocol.UDP
+      protocol: elbv2.Protocol.UDP,
     });
 
     // THEN
@@ -238,20 +238,20 @@ export = {
     const targetGroup = listener.addTargets('ECS', {
       port: 80,
       healthCheck: {
-        interval: cdk.Duration.seconds(60)
-      }
+        interval: cdk.Duration.seconds(60),
+      },
     });
 
     targetGroup.configureHealthCheck({
       interval: cdk.Duration.seconds(30),
       protocol: elbv2.Protocol.TCP,
-      path: '/'
+      path: '/',
     });
 
     // THEN
     const validationErrors: string[] = (targetGroup as any).validate();
     test.deepEqual(validationErrors, [
-      "'TCP' health checks do not support the path property. Must be one of [HTTP, HTTPS]"
+      "'TCP' health checks do not support the path property. Must be one of [HTTP, HTTPS]",
     ]);
 
     test.done();
@@ -265,8 +265,8 @@ export = {
     const targetGroup = listener.addTargets('ECS', {
       port: 80,
       healthCheck: {
-        interval: cdk.Duration.seconds(60)
-      }
+        interval: cdk.Duration.seconds(60),
+      },
     });
 
     targetGroup.configureHealthCheck({
@@ -278,7 +278,7 @@ export = {
     // THEN
     const validationErrors: string[] = (targetGroup as any).validate();
     test.deepEqual(validationErrors, [
-      "Custom health check timeouts are not supported for Network Load Balancer health checks. Expected 6 seconds for HTTP, got 10"
+      'Custom health check timeouts are not supported for Network Load Balancer health checks. Expected 6 seconds for HTTP, got 10',
     ]);
 
     test.done();
@@ -292,7 +292,7 @@ export = {
     test.throws(() => lb.addListener('Listener', {
       port: 443,
       protocol: elbv2.Protocol.TLS,
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
     }), /When the protocol is set to TLS, you must specify certificates/);
 
     test.done();
@@ -303,15 +303,34 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const cert = new acm.Certificate(stack, 'Certificate', {
-      domainName: 'example.com'
+      domainName: 'example.com',
     });
 
     test.throws(() => lb.addListener('Listener', {
       port: 443,
       protocol: elbv2.Protocol.TCP,
       certificates: [ { certificateArn: cert.certificateArn } ],
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
     }), /Protocol must be TLS when certificates have been specified/);
+
+    test.done();
+  },
+
+  'not allowed to specify defaultTargetGroups and defaultAction together'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const group = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    test.throws(() => {
+      lb.addListener('Listener1', {
+        port: 80,
+        defaultTargetGroups: [group],
+        defaultAction: elbv2.NetworkListenerAction.forward([group]),
+      });
+    }, /Specify at most one/);
 
     test.done();
   },
@@ -320,6 +339,6 @@ export = {
 class ResourceWithLBDependency extends cdk.CfnResource {
   constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
     super(scope, id, { type: 'Test::Resource' });
-    this.node.addDependency(targetGroup.loadBalancerAttached);
+    this.construct.addDependency(targetGroup.loadBalancerAttached);
   }
 }

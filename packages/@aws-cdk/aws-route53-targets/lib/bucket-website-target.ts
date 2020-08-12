@@ -17,7 +17,7 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
       throw new Error([
         'Cannot use an S3 record alias in region-agnostic stacks.',
         'You must specify a specific region when you define the stack',
-        '(see https://docs.aws.amazon.com/cdk/latest/guide/environments.html)'
+        '(see https://docs.aws.amazon.com/cdk/latest/guide/environments.html)',
       ].join(' '));
     }
 

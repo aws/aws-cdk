@@ -1,4 +1,4 @@
-import { Construct } from './construct';
+import { Construct } from './construct-compat';
 
 // ----------------------------------------------------------------------
 // PROPERTY MAPPERS
@@ -31,7 +31,7 @@ export function dateToCloudFormation(x?: Date): any {
     return undefined;
   }
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   return `${x.getUTCFullYear()}-${pad(x.getUTCMonth() + 1)}-${pad(x.getUTCDate())}T${pad(x.getUTCHours())}:${pad(x.getUTCMinutes())}:${pad(x.getUTCSeconds())}`;
 }
 
@@ -40,7 +40,7 @@ export function dateToCloudFormation(x?: Date): any {
  */
 function pad(x: number) {
   if (x < 10) {
-    return "0" + x.toString();
+    return '0' + x.toString();
   }
   return x.toString();
 }
@@ -51,7 +51,7 @@ function pad(x: number) {
 export function cfnTagToCloudFormation(x: any): any {
   return {
     Key: x.key,
-    Value: x.value
+    Value: x.value,
   };
 }
 
@@ -316,7 +316,7 @@ export function propertyValidator(propName: string, validator: Validator): Valid
  */
 export function requiredValidator(x: any) {
   if (x == null) {
-    return new ValidationResult(`required but missing`);
+    return new ValidationResult('required but missing');
   }
   return VALIDATION_SUCCESS;
 }
@@ -333,10 +333,10 @@ export function requiredValidator(x: any) {
  * @throws if the property ``name`` is not present in ``props``.
  */
 export function requireProperty(props: { [name: string]: any }, name: string, context: Construct): any {
-  if (!(name in props)) {
+  const value = props[name];
+  if (value == null) {
     throw new Error(`${context.toString()} is missing required property: ${name}`);
   }
-  const value = props[name];
   // Possibly add type-checking here...
   return value;
 }

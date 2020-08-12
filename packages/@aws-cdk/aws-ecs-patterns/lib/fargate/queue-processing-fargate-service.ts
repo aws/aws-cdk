@@ -1,4 +1,4 @@
-import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
@@ -48,6 +48,17 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default 512
    */
   readonly memoryLimitMiB?: number;
+
+  /**
+   * The platform version on which to run your service.
+   *
+   * If one is not specified, the LATEST platform version is used by default. For more information, see
+   * [AWS Fargate Platform Versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html)
+   * in the Amazon Elastic Container Service Developer Guide.
+   *
+   * @default Latest
+   */
+  readonly platformVersion?: FargatePlatformVersion;
 }
 
 /**
@@ -73,14 +84,14 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
       memoryLimitMiB: props.memoryLimitMiB || 512,
       cpu: props.cpu || 256,
-      family: props.family
+      family: props.family,
     });
     this.taskDefinition.addContainer('QueueProcessingContainer', {
       image: props.image,
       command: props.command,
       environment: this.environment,
       secrets: this.secrets,
-      logging: this.logDriver
+      logging: this.logDriver,
     });
 
     // Create a Fargate service with the previously defined Task Definition and configure
@@ -90,8 +101,11 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,
       serviceName: props.serviceName,
+      minHealthyPercent: props.minHealthyPercent,
+      maxHealthyPercent: props.maxHealthyPercent,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
+      platformVersion: props.platformVersion,
     });
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);

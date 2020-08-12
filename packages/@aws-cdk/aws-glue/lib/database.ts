@@ -120,7 +120,7 @@ export class Database extends Resource implements IDatabase {
     // catalogId is implicitly the accountId, which is why we don't pass the catalogId here
     this.catalogArn = Stack.of(this).formatArn({
       service: 'glue',
-      resource: 'catalog'
+      resource: 'catalog',
     });
   }
 }

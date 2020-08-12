@@ -69,9 +69,9 @@ export function mergePrincipal(target: { [key: string]: string[] }, source: { [k
   for (const key of Object.keys(source)) {
     target[key] = target[key] || [];
 
-    const value = source[key];
+    let value = source[key];
     if (!Array.isArray(value)) {
-      throw new Error(`Principal value must be an array (it will be normalized later): ${value}`);
+      value = [ value ];
     }
 
     target[key].push(...value);

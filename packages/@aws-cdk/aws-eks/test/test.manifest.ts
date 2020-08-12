@@ -1,15 +1,17 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Test } from 'nodeunit';
-import { Cluster, KubernetesResource } from '../lib';
+import { Cluster, KubernetesResource, KubernetesVersion } from '../lib';
 import { testFixtureNoVpc } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
+
+const CLUSTER_VERSION = KubernetesVersion.V1_16;
 
 export = {
   'basic usage'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'cluster');
+    const cluster = new Cluster(stack, 'cluster', { version: CLUSTER_VERSION });
 
     const manifest = [
       {
@@ -21,31 +23,31 @@ export = {
         spec: {
           type: 'LoadBalancer',
           ports: [
-            { port: 80, targetPort: 8080 }
+            { port: 80, targetPort: 8080 },
           ],
           selector: {
-            app: 'hello-kubernetes'
-          }
-        }
+            app: 'hello-kubernetes',
+          },
+        },
       },
       {
         apiVersion: 'apps/v1',
         kind: 'Deployment',
         metadata: {
-          name: 'hello-kubernetes'
+          name: 'hello-kubernetes',
         },
         spec: {
           replicas: 2,
           selector: {
             matchLabels: {
-              app: 'hello-kubernetes'
-            }
+              app: 'hello-kubernetes',
+            },
           },
           template: {
             metadata: {
               labels: {
-                app: 'hello-kubernetes'
-              }
+                app: 'hello-kubernetes',
+              },
             },
             spec: {
               containers: [
@@ -53,25 +55,25 @@ export = {
                   name: 'hello-kubernetes',
                   image: 'paulbouwer/hello-kubernetes:1.5',
                   ports: [
-                    { containerPort: 8080 }
-                  ]
-                }
-              ]
-            }
-          }
-        }
-      }
+                    { containerPort: 8080 },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      },
     ];
 
     // WHEN
     new KubernetesResource(stack, 'manifest', {
       cluster,
-      manifest
+      manifest,
     });
 
     expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
-      Manifest: JSON.stringify(manifest)
+      Manifest: JSON.stringify(manifest),
     }));
     test.done();
-  }
+  },
 };

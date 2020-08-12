@@ -1,7 +1,7 @@
-import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as fs_path from 'path';
-import { Tag } from './api/cxapp/stacks';
+import * as fs from 'fs-extra';
+import { Tag } from './cdk-toolkit';
 import { debug, warning } from './logging';
 import * as util from './util';
 
@@ -30,7 +30,7 @@ export class Configuration {
   public readonly defaultConfig = new Settings({
     versionReporting: true,
     pathMetadata: true,
-    output: 'cdk.out'
+    output: 'cdk.out',
   });
 
   private readonly commandLineArguments: Settings;
@@ -41,21 +41,21 @@ export class Configuration {
 
   constructor(commandLineArguments?: Arguments) {
     this.commandLineArguments = commandLineArguments
-                              ? Settings.fromCommandLineArguments(commandLineArguments)
-                              : new Settings();
+      ? Settings.fromCommandLineArguments(commandLineArguments)
+      : new Settings();
     this.commandLineContext = this.commandLineArguments.subSettings([CONTEXT_KEY]).makeReadOnly();
   }
 
   private get projectConfig() {
     if (!this._projectConfig) {
-      throw new Error(`#load has not been called yet!`);
+      throw new Error('#load has not been called yet!');
     }
     return this._projectConfig;
   }
 
   private get projectContext() {
     if (!this._projectContext) {
-      throw new Error(`#load has not been called yet!`);
+      throw new Error('#load has not been called yet!');
     }
     return this._projectContext;
   }
@@ -68,12 +68,10 @@ export class Configuration {
     this._projectConfig = await loadAndLog(PROJECT_CONFIG);
     this._projectContext = await loadAndLog(PROJECT_CONTEXT);
 
-    await this.migrateLegacyContext();
-
     this.context = new Context(
-        this.commandLineContext,
-        this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
-        this.projectContext);
+      this.commandLineContext,
+      this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
+      this.projectContext);
 
     // Build settings from what's left
     this.settings = this.defaultConfig
@@ -98,34 +96,6 @@ export class Configuration {
     await this.projectContext.save(PROJECT_CONTEXT);
 
     return this;
-  }
-
-  /**
-   * Migrate context from the 'context' field in the projectConfig object to the dedicated object
-   *
-   * Only migrate context whose key contains a ':', to migrate only context generated
-   * by context providers.
-   */
-  private async migrateLegacyContext() {
-    const legacyContext = this.projectConfig.get([CONTEXT_KEY]);
-    if (legacyContext === undefined) { return; }
-
-    const toMigrate = Object.keys(legacyContext).filter(k => k.indexOf(':') > -1);
-    if (toMigrate.length === 0) { return; }
-
-    for (const key of toMigrate) {
-      this.projectContext.set([key], legacyContext[key]);
-      this.projectConfig.unset([CONTEXT_KEY, key]);
-    }
-
-    // If the source object is empty now, completely remove it
-    if (Object.keys(this.projectConfig.get([CONTEXT_KEY])).length === 0) {
-      this.projectConfig.unset([CONTEXT_KEY]);
-    }
-
-    // Save back
-    await this.projectConfig.save(PROJECT_CONFIG);
-    await this.projectContext.save(PROJECT_CONTEXT);
   }
 }
 
@@ -223,6 +193,7 @@ export class Settings {
       language: argv.language,
       pathMetadata: argv.pathMetadata,
       assetMetadata: argv.assetMetadata,
+      profile: argv.profile,
       plugin: argv.plugin,
       requireApproval: argv.requireApproval,
       toolkitStackName: argv.toolkitStackName,
@@ -270,8 +241,8 @@ export class Settings {
       if (parts.length === 2) {
         debug('CLI argument tags: %s=%s', parts[0], parts[1]);
         tags.push({
-         Key: parts[0],
-         Value: parts[1]
+          Key: parts[0],
+          Value: parts[1],
         });
       } else {
         warning('Tags argument is not an assignment (key=value): %s', assignment);
@@ -358,7 +329,7 @@ export class Settings {
   private prohibitContextKey(key: string, fileName: string) {
     if (!this.settings.context) { return; }
     if (key in this.settings.context) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is no longer supported. Please remove it.`);
     }
   }
@@ -367,7 +338,7 @@ export class Settings {
     if (!this.settings.context) { return; }
     for (const contextKey of Object.keys(this.settings.context)) {
       if (contextKey.startsWith(prefix)) {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
       }
     }

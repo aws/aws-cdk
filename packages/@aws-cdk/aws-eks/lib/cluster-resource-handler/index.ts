@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 import { IsCompleteResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -16,6 +16,7 @@ const defaultEksClient: EksClient = {
   createCluster: req => getEksClient().createCluster(req).promise(),
   deleteCluster: req => getEksClient().deleteCluster(req).promise(),
   describeCluster: req => getEksClient().describeCluster(req).promise(),
+  describeUpdate: req => getEksClient().describeUpdate(req).promise(),
   updateClusterConfig: req => getEksClient().updateClusterConfig(req).promise(),
   updateClusterVersion: req => getEksClient().updateClusterVersion(req).promise(),
   createFargateProfile: req => getEksClient().createFargateProfile(req).promise(),
@@ -24,16 +25,16 @@ const defaultEksClient: EksClient = {
   configureAssumeRole: req => {
     console.log(JSON.stringify({ assumeRole: req }, undefined, 2));
     const creds = new aws.ChainableTemporaryCredentials({
-      params: req
+      params: req,
     });
 
     eks = new aws.EKS({ credentials: creds });
-  }
+  },
 };
 
 function getEksClient() {
   if (!eks) {
-    throw new Error(`EKS client not initialized (call "configureAssumeRole")`);
+    throw new Error('EKS client not initialized (call "configureAssumeRole")');
   }
 
   return eks;

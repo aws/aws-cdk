@@ -1,10 +1,10 @@
 ## Amazon CloudWatch Logs Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -83,6 +83,31 @@ logGroup.extractMetric('$.jsonField', 'Namespace', 'MetricName');
 Will extract the value of `jsonField` wherever it occurs in JSON-structed
 log records in the LogGroup, and emit them to CloudWatch Metrics under
 the name `Namespace/MetricName`.
+
+#### Exposing Metric on a Metric Filter
+
+You can expose a metric on a metric filter by calling the `MetricFilter.metric()` API. 
+This has a default of `statistic = 'avg'` if the statistic is not set in the `props`.
+
+```ts
+const mf = new MetricFilter(this, 'MetricFilter', {
+  logGroup,
+  metricNamespace: 'MyApp',
+  metricName: 'Latency',
+  filterPattern: FilterPattern.exists('$.latency'),
+  metricValue: '$.latency',
+});
+
+//expose a metric from the metric filter
+const metric = mf.metric();
+
+//you can use the metric to create a new alarm
+new Alarm(this, 'alarm from metric filter', {
+  metric,
+  threshold: 100,
+  evaluationPeriods: 2,
+});
+```
 
 ### Patterns
 
@@ -216,3 +241,9 @@ const pattern = FilterPattern.spaceDelimited('time', 'component', '...', 'result
     .whereString('component', '=', 'HttpServer')
     .whereNumber('result_code', '!=', 200);
 ```
+
+### Notes
+
+Be aware that Log Group ARNs will always have the string `:*` appended to
+them, to match the behavior of [the CloudFormation `AWS::Logs::LogGroup`
+resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#aws-resource-logs-loggroup-return-values).

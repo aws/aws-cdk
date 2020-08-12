@@ -1,7 +1,8 @@
 import * as yargs from 'yargs';
 import { compileCurrentPackage } from '../lib/compile';
+import { lintCurrentPackage } from '../lib/lint';
 import { shell } from '../lib/os';
-import { cdkBuildOptions } from '../lib/package-info';
+import { cdkBuildOptions, CompilerOverrides } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 async function main() {
@@ -11,22 +12,17 @@ async function main() {
     .option('jsii', {
       type: 'string',
       desc: 'Specify a different jsii executable',
-      defaultDescription: 'jsii provided by node dependencies'
+      defaultDescription: 'jsii provided by node dependencies',
     })
     .option('tsc', {
       type: 'string',
       desc: 'Specify a different tsc executable',
-      defaultDescription: 'tsc provided by node dependencies'
-    })
-    .option('tslint', {
-      type: 'string',
-      desc: 'Specify a different tslint executable',
-      defaultDescription: 'tslint provided by node dependencies'
+      defaultDescription: 'tsc provided by node dependencies',
     })
     .option('eslint', {
       type: 'string',
       desc: 'Specify a different eslint executable',
-      defaultDescription: 'eslint provided by node dependencies'
+      defaultDescription: 'eslint provided by node dependencies',
     })
     .argv;
 
@@ -45,7 +41,13 @@ async function main() {
     await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], { timers });
   }
 
-  await compileCurrentPackage(timers, options, { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc, tslint: args.tslint });
+  const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
+  await compileCurrentPackage(timers, overrides);
+  await lintCurrentPackage(options, overrides);
+
+  if (options.post) {
+    await shell(options.post, { timers });
+  }
 }
 
 const timers = new Timers();
@@ -57,6 +59,6 @@ main().then(() => {
   buildTimer.end();
   process.stderr.write(`${e.toString()}\n`);
   process.stderr.write(`Build failed. ${timers.display()}\n`);
-  process.stderr.write(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n`);
+  process.stderr.write('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n');
   process.exit(1);
 });

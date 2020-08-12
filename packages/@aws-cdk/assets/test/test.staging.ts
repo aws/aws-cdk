@@ -23,7 +23,7 @@ export = {
   'staging can be disabled through context'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
+    stack.construct.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
     const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // WHEN
@@ -74,5 +74,5 @@ export = {
     test.deepEqual(withoutExtra.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.deepEqual(withExtra.sourceHash, 'c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
     test.done();
-  }
+  },
 };

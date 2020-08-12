@@ -3,6 +3,9 @@ import { Construct, Resource } from '@aws-cdk/core';
 import { IQueue } from './queue-base';
 import { CfnQueuePolicy } from './sqs.generated';
 
+/**
+ * Properties to associate SQS queues with a policy
+ */
 export interface QueuePolicyProps {
   /**
    * The set of queues this policy applies to.
@@ -24,7 +27,7 @@ export class QueuePolicy extends Resource {
 
     new CfnQueuePolicy(this, 'Resource', {
       policyDocument: this.document,
-      queues: props.queues.map(q => q.queueUrl)
+      queues: props.queues.map(q => q.queueUrl),
     });
   }
 }

@@ -5,10 +5,10 @@
  * document at `spec/specification.json`.
  */
 
+import * as path from 'path';
 import * as fastJsonPatch from 'fast-json-patch';
 import * as fs from 'fs-extra';
 import * as md5 from 'md5';
-import * as path from 'path';
 import { schema } from '../lib';
 import { detectScrutinyTypes } from './scrutiny';
 
@@ -26,14 +26,19 @@ async function main() {
     }
   }
 
-  detectScrutinyTypes(spec);
-  replaceIncompleteTypes(spec);
+  massageSpec(spec);
 
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 
   const outDir = path.join(process.cwd(), 'spec');
   await fs.mkdirp(outDir);
   await fs.writeJson(path.join(outDir, 'specification.json'), spec, { spaces: 2 });
+}
+
+export function massageSpec(spec: schema.Specification) {
+  detectScrutinyTypes(spec);
+  replaceIncompleteTypes(spec);
+  dropTypelessAttributes(spec);
 }
 
 function forEachSection(spec: schema.Specification, data: any, cb: (spec: any, fragment: any, path: string[]) => void) {
@@ -66,12 +71,29 @@ function replaceIncompleteTypes(spec: schema.Specification) {
     && !schema.isCollectionProperty(definition)
     && !schema.isScalarProperty(definition)
     && !schema.isPrimitiveProperty(definition)) {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.log(`[${name}] Incomplete type, adding empty "Properties" field`);
 
       (definition as unknown as schema.RecordProperty).Properties = {};
     }
   }
+}
+
+/**
+ * Drop Attributes specified with the different ResourceTypes that have
+ * no type specified.
+ */
+function dropTypelessAttributes(spec: schema.Specification) {
+  const resourceTypes = spec.ResourceTypes;
+  Object.values(resourceTypes).forEach((resourceType) => {
+    const attributes = resourceType.Attributes ?? {};
+    Object.keys(attributes).forEach((attrKey) => {
+      const attrVal = attributes[attrKey];
+      if (Object.keys(attrVal).length === 0) {
+        delete attributes[attrKey];
+      }
+    });
+  });
 }
 
 function merge(spec: any, fragment: any, jsonPath: string[]) {
@@ -81,11 +103,11 @@ function merge(spec: any, fragment: any, jsonPath: string[]) {
       const specVal = spec[key];
       const fragVal = fragment[key];
       if (typeof specVal !== typeof fragVal) {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`Attempted to merge ${JSON.stringify(fragVal)} into incompatible ${JSON.stringify(specVal)} at path ${jsonPath.join('/')}/${key}`);
       }
       if (typeof specVal !== 'object') {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`Conflict when attempting to merge ${JSON.stringify(fragVal)} into ${JSON.stringify(specVal)} at path ${jsonPath.join('/')}/${key}`);
       }
       merge(specVal, fragVal, [...jsonPath, key]);
@@ -98,7 +120,7 @@ function merge(spec: any, fragment: any, jsonPath: string[]) {
 function patch(spec: any, fragment: any) {
   if (!fragment) { return; }
   if ('patch' in fragment) {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.log(`Applying patch: ${fragment.patch.description}`);
     fastJsonPatch.applyPatch(spec, fragment.patch.operations);
   } else {
@@ -133,7 +155,7 @@ function normalize(spec: schema.Specification): schema.Specification {
 
 main()
   .catch(e => {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.error(e.stack);
     process.exit(-1);
   });

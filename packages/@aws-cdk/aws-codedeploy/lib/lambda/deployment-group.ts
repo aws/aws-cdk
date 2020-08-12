@@ -130,9 +130,9 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromLambdaDeploymentGroupAttributes(
-      scope: cdk.Construct,
-      id: string,
-      attrs: LambdaDeploymentGroupAttributes): ILambdaDeploymentGroup {
+    scope: cdk.Construct,
+    id: string,
+    attrs: LambdaDeploymentGroupAttributes): ILambdaDeploymentGroup {
     return new ImportedLambdaDeploymentGroup(scope, id, attrs);
   }
 
@@ -155,7 +155,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
     this.alarms = props.alarms || [];
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
     });
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRoleForLambda'));
@@ -168,7 +168,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       deploymentConfigName: this.deploymentConfig.deploymentConfigName,
       deploymentStyle: {
         deploymentType: 'BLUE_GREEN',
-        deploymentOption: 'WITH_TRAFFIC_CONTROL'
+        deploymentOption: 'WITH_TRAFFIC_CONTROL',
       },
       alarmConfiguration: cdk.Lazy.anyValue({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
       autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
@@ -189,13 +189,13 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       this.addPostHook(props.postHook);
     }
 
-    (props.alias.node.defaultChild as lambda.CfnAlias).cfnOptions.updatePolicy = {
+    (props.alias.construct.defaultChild as lambda.CfnAlias).cfnOptions.updatePolicy = {
       codeDeployLambdaAliasUpdate: {
         applicationName: this.application.applicationName,
         deploymentGroupName: resource.ref,
         beforeAllowTrafficHook: cdk.Lazy.stringValue({ produce: () => this.preHook && this.preHook.functionName }),
         afterAllowTrafficHook: cdk.Lazy.stringValue({ produce: () => this.postHook && this.postHook.functionName }),
-      }
+      },
     };
   }
 

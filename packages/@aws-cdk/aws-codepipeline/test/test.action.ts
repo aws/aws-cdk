@@ -7,7 +7,7 @@ import * as validations from '../lib/validation';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'artifact bounds validation': {
@@ -201,36 +201,36 @@ export = {
     });
 
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-      "Stages": [
+      'Stages': [
         {
-          "Name": "Source",
-          "Actions": [
+          'Name': 'Source',
+          'Actions': [
             {
-              "Name": "CodeCommit",
-              "OutputArtifacts": [
+              'Name': 'CodeCommit',
+              'OutputArtifacts': [
                 {
-                  "Name": "Artifact_Source_CodeCommit",
+                  'Name': 'Artifact_Source_CodeCommit',
                 },
               ],
-            }
+            },
           ],
         },
         {
-          "Name": "Build",
-          "Actions": [
+          'Name': 'Build',
+          'Actions': [
             {
-              "Name": "CodeBuild",
-              "InputArtifacts": [
+              'Name': 'CodeBuild',
+              'InputArtifacts': [
                 {
-                  "Name": "Artifact_Source_CodeCommit",
-                }
-              ],
-              "OutputArtifacts": [
-                {
-                  "Name": "Artifact_Build_CodeBuild",
+                  'Name': 'Artifact_Source_CodeCommit',
                 },
               ],
-            }
+              'OutputArtifacts': [
+                {
+                  'Name': 'Artifact_Build_CodeBuild',
+                },
+              ],
+            },
           ],
         },
       ],

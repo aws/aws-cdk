@@ -1,4 +1,4 @@
-import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
+import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
@@ -41,6 +41,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default true
    */
   readonly publicLoadBalancer?: boolean;
+
+  /**
+   * Determines whether or not the Security Group for the Load Balancer's Listener will be open to all traffic by default.
+   *
+   * @default true -- The security group allows ingress from all IP addresses.
+   */
+  readonly openListener?: boolean;
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
@@ -304,11 +311,11 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
 
     const lbProps = {
       vpc: this.cluster.vpc,
-      internetFacing
+      internetFacing,
     };
 
     const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer
-                        : new ApplicationLoadBalancer(this, 'LB', lbProps);
+      : new ApplicationLoadBalancer(this, 'LB', lbProps);
 
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
@@ -317,13 +324,13 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     const targetProps = {
-      port: 80
+      port: 80,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
-      open: true
+      open: props.openListener ?? true,
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
@@ -335,9 +342,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       if (props.certificate !== undefined) {
         this.certificate = props.certificate;
       } else {
-        this.certificate = new DnsValidatedCertificate(this, 'Certificate', {
+        this.certificate = new Certificate(this, 'Certificate', {
           domainName: props.domainName,
-          hostedZone: props.domainZone
+          validation: CertificateValidation.fromDns(props.domainZone),
         });
       }
     }
@@ -351,7 +358,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      const record = new ARecord(this, "DNS", {
+      const record = new ARecord(this, 'DNS', {
         zone: props.domainZone,
         recordName: props.domainName,
         target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
@@ -373,9 +380,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
    */
   protected getDefaultCluster(scope: cdk.Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
-    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.construct.id : ''}`;
     const stack = cdk.Stack.of(scope);
-    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return stack.construct.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**

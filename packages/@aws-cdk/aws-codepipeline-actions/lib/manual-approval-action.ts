@@ -61,7 +61,7 @@ export class ManualApprovalAction extends Action {
   }
 
   protected bound(scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     if (this.props.notificationTopic) {
       this._notificationTopic = this.props.notificationTopic;
     } else if ((this.props.notifyEmails || []).length > 0) {

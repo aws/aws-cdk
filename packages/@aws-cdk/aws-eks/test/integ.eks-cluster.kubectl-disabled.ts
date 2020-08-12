@@ -7,20 +7,18 @@ class EksClusterStack extends TestStack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    /// !show
     const vpc = new ec2.Vpc(this, 'VPC');
 
-    const cluster = new eks.Cluster(this, 'EKSCluster', {
+    const cluster = new eks.LegacyCluster(this, 'EKSCluster', {
       vpc,
-      kubectlEnabled: false,
       defaultCapacity: 0,
+      version: eks.KubernetesVersion.V1_16,
     });
 
     cluster.addCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
       minCapacity: 1,  // Raise this number to add more nodes
     });
-    /// !hide
   }
 }
 

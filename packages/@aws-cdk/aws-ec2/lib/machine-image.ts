@@ -1,4 +1,5 @@
 import * as ssm from '@aws-cdk/aws-ssm';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct, ContextProvider, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { UserData } from './user-data';
@@ -97,10 +98,8 @@ export interface MachineImageConfig {
 
   /**
    * Initial UserData for this image
-   *
-   * @default - Default UserData appropriate for the osType is created
    */
-  readonly userData?: UserData;
+  readonly userData: UserData;
 }
 
 /**
@@ -139,7 +138,7 @@ export class WindowsImage implements IMachineImage  {
     const ami = ssm.StringParameter.valueForTypedStringParameter(scope, parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
     return {
       imageId: ami,
-      userData: this.props.userData,
+      userData: this.props.userData ?? UserData.forWindows(),
       osType: OperatingSystemType.WINDOWS,
     };
   }
@@ -150,6 +149,21 @@ export class WindowsImage implements IMachineImage  {
   private imageParameterName(): string {
     return '/aws/service/ami-windows-latest/' + this.version;
   }
+}
+
+/**
+ * CPU type
+ */
+export enum AmazonLinuxCpuType {
+  /**
+   * arm64 CPU type
+   */
+  ARM_64 = 'arm64',
+
+  /**
+   * x86_64 CPU type
+   */
+  X86_64 = 'x86_64',
 }
 
 /**
@@ -190,6 +204,13 @@ export interface AmazonLinuxImageProps {
    * @default - Empty UserData for Linux machines
    */
   readonly userData?: UserData;
+
+  /**
+   * CPU Type
+   *
+   * @default X86_64
+   */
+  readonly cpuType?: AmazonLinuxCpuType;
 }
 
 /**
@@ -207,12 +228,14 @@ export class AmazonLinuxImage implements IMachineImage {
   private readonly edition: AmazonLinuxEdition;
   private readonly virtualization: AmazonLinuxVirt;
   private readonly storage: AmazonLinuxStorage;
+  private readonly cpu: AmazonLinuxCpuType;
 
   constructor(private readonly props: AmazonLinuxImageProps = {}) {
     this.generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
     this.edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
     this.virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
     this.storage = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
+    this.cpu = (props && props.cpuType) || AmazonLinuxCpuType.X86_64;
   }
 
   /**
@@ -224,8 +247,8 @@ export class AmazonLinuxImage implements IMachineImage {
       'ami',
       this.edition !== AmazonLinuxEdition.STANDARD ? this.edition : undefined,
       this.virtualization,
-      'x86_64', // No 32-bits images vended through this
-      this.storage
+      this.cpu,
+      this.storage,
     ].filter(x => x !== undefined); // Get rid of undefineds
 
     const parameterName = '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
@@ -233,7 +256,7 @@ export class AmazonLinuxImage implements IMachineImage {
 
     return {
       imageId: ami,
-      userData: this.props.userData,
+      userData: this.props.userData ?? UserData.forLinux(),
       osType: OperatingSystemType.LINUX,
     };
   }
@@ -338,7 +361,7 @@ export class GenericLinuxImage implements IMachineImage  {
   public getImage(scope: Construct): MachineImageConfig {
     const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
+      throw new Error('Unable to determine AMI from AMI map since stack is region-agnostic');
     }
 
     const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
@@ -348,7 +371,7 @@ export class GenericLinuxImage implements IMachineImage  {
 
     return {
       imageId: ami,
-      userData: this.props.userData,
+      userData: this.props.userData ?? UserData.forLinux(),
       osType: OperatingSystemType.LINUX,
     };
   }
@@ -366,7 +389,7 @@ export class GenericWindowsImage implements IMachineImage  {
   public getImage(scope: Construct): MachineImageConfig {
     const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
+      throw new Error('Unable to determine AMI from AMI map since stack is region-agnostic');
     }
 
     const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
@@ -376,7 +399,7 @@ export class GenericWindowsImage implements IMachineImage  {
 
     return {
       imageId: ami,
-      userData: this.props.userData,
+      userData: this.props.userData ?? UserData.forWindows(),
       osType: OperatingSystemType.WINDOWS,
     };
   }
@@ -388,6 +411,11 @@ export class GenericWindowsImage implements IMachineImage  {
 export enum OperatingSystemType {
   LINUX,
   WINDOWS,
+  /**
+   * Used when the type of the operating system is not known
+   * (for example, for imported Auto-Scaling Groups).
+   */
+  UNKNOWN,
 }
 
 /**
@@ -418,11 +446,11 @@ export class LookupMachineImage implements IMachineImage {
     Object.assign(filters, this.props.filters);
 
     const value = ContextProvider.getValue(scope, {
-      provider: cxapi.AMI_PROVIDER,
+      provider: cxschema.ContextProvider.AMI_PROVIDER,
       props: {
         owners: this.props.owners,
         filters,
-       } as cxapi.AmiContextQuery,
+      } as cxschema.AmiContextQuery,
       dummyValue: 'ami-1234',
     }).value as cxapi.AmiContextResponse;
 
@@ -430,10 +458,12 @@ export class LookupMachineImage implements IMachineImage {
       throw new Error(`Response to AMI lookup invalid, got: ${value}`);
     }
 
+    const osType = this.props.windows ? OperatingSystemType.WINDOWS : OperatingSystemType.LINUX;
+
     return {
       imageId: value,
-      osType: this.props.windows ? OperatingSystemType.WINDOWS : OperatingSystemType.LINUX,
-      userData: this.props.userData
+      osType,
+      userData: this.props.userData ?? UserData.forOperatingSystem(osType),
     };
   }
 }

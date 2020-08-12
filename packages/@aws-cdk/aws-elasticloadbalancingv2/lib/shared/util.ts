@@ -1,4 +1,4 @@
-import { ApplicationProtocol } from "./enums";
+import { ApplicationProtocol, Protocol } from './enums';
 
 export type Attributes = {[key: string]: string | undefined};
 
@@ -50,7 +50,7 @@ export function defaultProtocolForPort(port: number): ApplicationProtocol {
 /**
  * Given a protocol and a port, try to guess the other one if it's undefined
  */
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 export function determineProtocolAndPort(protocol: ApplicationProtocol | undefined, port: number | undefined): [ApplicationProtocol | undefined, number | undefined] {
   if (protocol === undefined && port === undefined) {
     return [undefined, undefined];
@@ -67,4 +67,16 @@ export function determineProtocolAndPort(protocol: ApplicationProtocol | undefin
  */
 export function ifUndefined<T>(x: T | undefined, def: T) {
   return x !== undefined ? x : def;
+}
+
+/**
+ * Helper function for ensuring network listeners and target groups only accept valid
+ * protocols.
+ */
+export function validateNetworkProtocol(protocol: Protocol) {
+  const NLB_PROTOCOLS = [Protocol.TCP, Protocol.TLS, Protocol.UDP, Protocol.TCP_UDP];
+
+  if (NLB_PROTOCOLS.indexOf(protocol) === -1) {
+    throw new Error(`The protocol must be one of ${NLB_PROTOCOLS.join(', ')}. Found ${protocol}`);
+  }
 }

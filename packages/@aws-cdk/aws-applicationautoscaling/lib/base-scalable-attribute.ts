@@ -55,7 +55,7 @@ export abstract class BaseScalableAttribute extends cdk.Construct {
       resourceId: this.props.resourceId,
       role: this.props.role,
       minCapacity: props.minCapacity !== undefined ? props.minCapacity : 1,
-      maxCapacity: props.maxCapacity
+      maxCapacity: props.maxCapacity,
     });
   }
 

@@ -49,61 +49,92 @@ export interface EcsTaskProps {
    * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
    *
    * @default A new security group is created
+   * @deprecated use securityGroups instead
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * Existing security groups to use for the task's ENIs
+   *
+   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   *
+   * @default A new security group is created
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Existing IAM role to run the ECS task
+   *
+   * @default A new IAM role is created
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
  * Start a task on an ECS cluster
  */
 export class EcsTask implements events.IRuleTarget {
+  // Security group fields are public because we can generate a new security group if none is provided.
+
+  /**
+   * The security group associated with the task. Only applicable with awsvpc network mode.
+   *
+   * @default - A new security group is created.
+   * @deprecated use securityGroups instead.
+   */
   public readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * The security groups associated with the task. Only applicable with awsvpc network mode.
+   *
+   * @default - A new security group is created.
+   */
+  public readonly securityGroups?: ec2.ISecurityGroup[];
   private readonly cluster: ecs.ICluster;
   private readonly taskDefinition: ecs.TaskDefinition;
   private readonly taskCount: number;
+  private readonly role: iam.IRole;
 
   constructor(private readonly props: EcsTaskProps) {
+    if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
+      throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
+    }
+
     this.cluster = props.cluster;
     this.taskDefinition = props.taskDefinition;
     this.taskCount = props.taskCount !== undefined ? props.taskCount : 1;
 
-    if (this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
-      const securityGroup = props.securityGroup || this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup;
-      this.securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+    if (props.role) {
+      const role = props.role;
+      this.createEventRolePolicyStatements().forEach(role.addToPolicy.bind(role));
+      this.role = role;
+    } else {
+      this.role = singletonEventRole(this.taskDefinition, this.createEventRolePolicyStatements());
     }
+
+    // Security groups are only configurable with the "awsvpc" network mode.
+    if (this.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC) {
+      if (props.securityGroup !== undefined || props.securityGroups !== undefined) {
+        this.taskDefinition.construct.addWarning('security groups are ignored when network mode is not awsvpc');
+      }
+      return;
+    }
+    if (props.securityGroups) {
+      this.securityGroups = props.securityGroups;
+      return;
+    }
+    let securityGroup = props.securityGroup || this.taskDefinition.construct.tryFindChild('SecurityGroup') as ec2.ISecurityGroup;
+    securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+    this.securityGroup = securityGroup; // Maintain backwards-compatibility for customers that read the generated security group.
+    this.securityGroups = [securityGroup];
   }
 
   /**
-   * Allows using tasks as target of CloudWatch events
+   * Allows using tasks as target of EventBridge events
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    const policyStatements = [new iam.PolicyStatement({
-      actions: ['ecs:RunTask'],
-      resources: [this.taskDefinition.taskDefinitionArn],
-      conditions: {
-        ArnEquals: { "ecs:cluster": this.cluster.clusterArn }
-      }
-    })];
-
-    // If it so happens that a Task Execution Role was created for the TaskDefinition,
-    // then the CloudWatch Events Role must have permissions to pass it (otherwise it doesn't).
-    if (this.taskDefinition.executionRole !== undefined) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: [this.taskDefinition.executionRole.roleArn],
-      }));
-    }
-
-    // For Fargate task we need permission to pass the task role.
-    if (this.taskDefinition.isFargateCompatible) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: [this.taskDefinition.taskRole.roleArn]
-      }));
-    }
-
     const arn = this.cluster.clusterArn;
-    const role = singletonEventRole(this.taskDefinition, policyStatements);
+    const role = this.role;
     const containerOverrides = this.props.containerOverrides && this.props.containerOverrides
       .map(({ containerName, ...overrides }) => ({ name: containerName, ...overrides }));
     const input = { containerOverrides };
@@ -123,9 +154,9 @@ export class EcsTask implements events.IRuleTarget {
           awsVpcConfiguration: {
             subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
             assignPublicIp,
-            securityGroups: this.securityGroup && [this.securityGroup.securityGroupId]
-          }
-        }
+            securityGroups: this.securityGroups && this.securityGroups.map(sg => sg.securityGroupId),
+          },
+        },
       }
       : baseEcsParameters;
 
@@ -137,5 +168,34 @@ export class EcsTask implements events.IRuleTarget {
       input: events.RuleTargetInput.fromObject(input),
       targetResource: this.taskDefinition,
     };
+  }
+
+  private createEventRolePolicyStatements(): iam.PolicyStatement[] {
+    const policyStatements = [new iam.PolicyStatement({
+      actions: ['ecs:RunTask'],
+      resources: [this.taskDefinition.taskDefinitionArn],
+      conditions: {
+        ArnEquals: { 'ecs:cluster': this.cluster.clusterArn },
+      },
+    })];
+
+    // If it so happens that a Task Execution Role was created for the TaskDefinition,
+    // then the EventBridge Role must have permissions to pass it (otherwise it doesn't).
+    if (this.taskDefinition.executionRole !== undefined) {
+      policyStatements.push(new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.taskDefinition.executionRole.roleArn],
+      }));
+    }
+
+    // For Fargate task we need permission to pass the task role.
+    if (this.taskDefinition.isFargateCompatible) {
+      policyStatements.push(new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.taskDefinition.taskRole.roleArn],
+      }));
+    }
+
+    return policyStatements;
   }
 }

@@ -5,47 +5,15 @@ import { Duration, SecretValue } from '@aws-cdk/core';
 import { IParameterGroup } from './parameter-group';
 
 /**
- * A database cluster engine. Provides mapping to the serverless application
- * used for secret rotation.
- */
-export class DatabaseClusterEngine {
-  /* tslint:disable max-line-length */
-  public static readonly AURORA = new DatabaseClusterEngine('aurora', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER);
-  public static readonly AURORA_MYSQL = new DatabaseClusterEngine('aurora-mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER);
-  public static readonly AURORA_POSTGRESQL = new DatabaseClusterEngine('aurora-postgresql', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER);
-  /* tslint:enable max-line-length */
-
-  /**
-   * The engine.
-   */
-  public readonly name: string;
-
-  /**
-   * The single user secret rotation application.
-   */
-  public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
-
-  /**
-   * The multi user secret rotation application.
-   */
-  public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
-
-  // tslint:disable-next-line max-line-length
-  constructor(name: string, singleUserRotationApplication: secretsmanager.SecretRotationApplication, multiUserRotationApplication: secretsmanager.SecretRotationApplication) {
-    this.name = name;
-    this.singleUserRotationApplication = singleUserRotationApplication;
-    this.multiUserRotationApplication = multiUserRotationApplication;
-  }
-}
-
-/**
  * Instance properties for database instances
  */
 export interface InstanceProps {
   /**
-   * What type of instance to start for the replicas
+   * What type of instance to start for the replicas.
+   *
+   * @default - t3.medium (or, more precisely, db.t3.medium)
    */
-  readonly instanceType: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * What subnets to run the RDS instances in.
@@ -57,7 +25,7 @@ export interface InstanceProps {
   /**
    * Where to place the instances within the VPC
    *
-   * @default private subnets
+   * @default - the Vpc default strategy if not specified.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -66,7 +34,7 @@ export interface InstanceProps {
    *
    * @default a new security group is created.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The DB parameter group to associate with the instance.
@@ -128,7 +96,7 @@ export interface Login {
    *
    * @default default master key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**

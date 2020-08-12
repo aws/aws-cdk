@@ -33,20 +33,22 @@ def patch_handler(event, context):
     resource_namespace = props['ResourceNamespace']
     apply_patch_json = props['ApplyPatchJson']
     restore_patch_json = props['RestorePatchJson']
+    patch_type = props['PatchType']
 
     patch_json = None
-    if request_type == 'Create' or request_type == 'Update': 
+    if request_type == 'Create' or request_type == 'Update':
         patch_json = apply_patch_json
-    elif request_type == 'Delete': 
+    elif request_type == 'Delete':
         patch_json = restore_patch_json
     else:
         raise Exception("invalid request type %s" % request_type)
 
-    kubectl([ 'patch', resource_name, '-n', resource_namespace, '-p', patch_json ])
+    kubectl([ 'patch', resource_name, '-n', resource_namespace, '-p', patch_json, '--type', patch_type ])
 
 
 def kubectl(args):
-    retry = 3
+    maxAttempts = 3
+    retry = maxAttempts
     while retry > 0:
         try:
             cmd = [ 'kubectl', '--kubeconfig', kubeconfig ] + args
@@ -54,10 +56,11 @@ def kubectl(args):
         except subprocess.CalledProcessError as exc:
             output = exc.output
             if b'i/o timeout' in output and retry > 0:
-                logger.info("kubectl timed out, retries left: %s" % retry)
                 retry = retry - 1
+                logger.info("kubectl timed out, retries left: %s" % retry)
             else:
                 raise Exception(output)
         else:
             logger.info(output)
             return
+    raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')

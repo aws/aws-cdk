@@ -32,7 +32,7 @@ export class MinimumHealthyHosts {
   public static count(value: number): MinimumHealthyHosts {
     return new MinimumHealthyHosts({
       type: 'HOST_COUNT',
-      value
+      value,
     });
   }
 
@@ -42,7 +42,7 @@ export class MinimumHealthyHosts {
   public static percentage(value: number): MinimumHealthyHosts {
     return new MinimumHealthyHosts({
       type: 'FLEET_PERCENT',
-      value
+      value,
     });
   }
 
@@ -93,9 +93,9 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
   public static fromServerDeploymentConfigName(
-      scope: cdk.Construct,
-      id: string,
-      serverDeploymentConfigName: string): IServerDeploymentConfig {
+    scope: cdk.Construct,
+    id: string,
+    serverDeploymentConfigName: string): IServerDeploymentConfig {
 
     ignore(scope);
     ignore(id);

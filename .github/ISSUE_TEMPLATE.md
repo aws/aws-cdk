@@ -1,7 +1,7 @@
 ---
 name: "\U00002753 General Issue"
 about: Create a new issue
-labels: status/needs-triage
+labels: needs-triage
 ---
 
 <!-- NOTE:📕 If issue regarding developer guide, please create issue [here](https://github.com/awsdocs/aws-cdk-guide/issues) -->
@@ -25,6 +25,7 @@ falling prey to the [X/Y problem][2]!
 
   - **CDK CLI Version:** <!-- Output of `cdk version` -->
   - **Module Version:** <!-- Version of the module in question -->
+  - **Node.js Version:** <!-- Version of Node.js (run the command `node -v`) -->
   - **OS:** <!-- [all | Windows 10 | OSX Mojave | Ubuntu | etc... ] -->
   - **Language:** <!-- [all | TypeScript | Java | Python ] etc... ] -->
 

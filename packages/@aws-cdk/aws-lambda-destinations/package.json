@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-lambda-destinations",
-  "version": "1.24.0",
+  "version": "0.0.0",
   "description": "CDK Destinations Constructs for AWS Lambda",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -41,7 +41,6 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat"
@@ -57,54 +56,46 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 60,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.24.0",
-    "cdk-build-tools": "1.24.0",
-    "cdk-integ-tools": "1.24.0",
-    "cfn2ts": "1.24.0",
-    "jest": "^24.9.0",
-    "pkglint": "1.24.0"
+    "@aws-cdk/assert": "0.0.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
+    "jest": "^25.5.4",
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "1.24.0",
-    "@aws-cdk/aws-events-targets": "1.24.0",
-    "@aws-cdk/aws-lambda": "1.24.0",
-    "@aws-cdk/aws-sns": "1.24.0",
-    "@aws-cdk/aws-sqs": "1.24.0",
-    "@aws-cdk/core": "1.24.0"
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-events-targets": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-sqs": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-events": "1.24.0",
-    "@aws-cdk/aws-events-targets": "1.24.0",
-    "@aws-cdk/aws-lambda": "1.24.0",
-    "@aws-cdk/aws-sns": "1.24.0",
-    "@aws-cdk/aws-sqs": "1.24.0",
-    "@aws-cdk/core": "1.24.0"
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-events-targets": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-sqs": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "awslint": {
     "exclude": []
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable",
+  "cdk-build": {
+    "jest": true
   }
 }

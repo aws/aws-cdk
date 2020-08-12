@@ -1,7 +1,7 @@
 *.js
 *.d.ts
 tsconfig.json
-tslint.json
+*.generated.ts
 *.js.map
 dist
 coverage
@@ -12,3 +12,6 @@ coverage
 nyc.config.js
 .LAST_PACKAGE
 *.snk
+!.eslintrc.js
+
+junit.xml

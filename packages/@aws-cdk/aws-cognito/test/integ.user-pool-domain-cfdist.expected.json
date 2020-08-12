@@ -1,0 +1,220 @@
+{
+  "Resources": {
+    "UserPool6BA7E5F2": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_phone_number",
+              "Priority": 1
+            },
+            {
+              "Name": "verified_email",
+              "Priority": 2
+            }
+          ]
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": true
+        },
+        "EmailVerificationMessage": "The verification code to your new account is {####}",
+        "EmailVerificationSubject": "Verify your new account",
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "VerificationMessageTemplate": {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "The verification code to your new account is {####}",
+          "EmailSubject": "Verify your new account",
+          "SmsMessage": "The verification code to your new account is {####}"
+        }
+      }
+    },
+    "UserPoolDomainD0EA232A": {
+      "Type": "AWS::Cognito::UserPoolDomain",
+      "Properties": {
+        "Domain": "cdk-integ-user-pool-domain",
+        "UserPoolId": {
+          "Ref": "UserPool6BA7E5F2"
+        }
+      }
+    },
+    "UserPoolDomainCloudFrontDomainNameE213E594": {
+      "Type": "Custom::UserPoolCloudFrontDomainName",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn"
+          ]
+        },
+        "Create": {
+          "service": "CognitoIdentityServiceProvider",
+          "action": "describeUserPoolDomain",
+          "parameters": {
+            "Domain": {
+              "Ref": "UserPoolDomainD0EA232A"
+            }
+          },
+          "physicalResourceId": {
+            "id": {
+              "Ref": "UserPoolDomainD0EA232A"
+            }
+          }
+        },
+        "Update": {
+          "service": "CognitoIdentityServiceProvider",
+          "action": "describeUserPoolDomain",
+          "parameters": {
+            "Domain": {
+              "Ref": "UserPoolDomainD0EA232A"
+            }
+          },
+          "physicalResourceId": {
+            "id": {
+              "Ref": "UserPoolDomainD0EA232A"
+            }
+          }
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:DescribeUserPoolDomain",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      }
+    },
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters8ae75ec4aaae0510b0918d3a69fac5c978d780ae0d60bb94c65c7f5b4c498061S3Bucket67234880"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters8ae75ec4aaae0510b0918d3a69fac5c978d780ae0d60bb94c65c7f5b4c498061S3VersionKey9802AE96"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters8ae75ec4aaae0510b0918d3a69fac5c978d780ae0d60bb94c65c7f5b4c498061S3VersionKey9802AE96"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 120
+      },
+      "DependsOn": [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+      ]
+    }
+  },
+  "Outputs": {
+    "Domain": {
+      "Value": {
+        "Ref": "UserPoolDomainD0EA232A"
+      }
+    },
+    "CloudFrontDomainName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "UserPoolDomainCloudFrontDomainNameE213E594",
+          "DomainDescription.CloudFrontDistribution"
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "AssetParameters8ae75ec4aaae0510b0918d3a69fac5c978d780ae0d60bb94c65c7f5b4c498061S3Bucket67234880": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"8ae75ec4aaae0510b0918d3a69fac5c978d780ae0d60bb94c65c7f5b4c498061\""
+    },
+    "AssetParameters8ae75ec4aaae0510b0918d3a69fac5c978d780ae0d60bb94c65c7f5b4c498061S3VersionKey9802AE96": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"8ae75ec4aaae0510b0918d3a69fac5c978d780ae0d60bb94c65c7f5b4c498061\""
+    },
+    "AssetParameters8ae75ec4aaae0510b0918d3a69fac5c978d780ae0d60bb94c65c7f5b4c498061ArtifactHash9212BF97": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"8ae75ec4aaae0510b0918d3a69fac5c978d780ae0d60bb94c65c7f5b4c498061\""
+    }
+  }
+}

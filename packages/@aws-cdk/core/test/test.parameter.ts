@@ -10,7 +10,7 @@ export = {
     const param = new CfnParameter(child, 'MyParam', {
       default: 10,
       type: 'Integer',
-      description: 'My first parameter'
+      description: 'My first parameter',
     });
 
     new CfnResource(stack, 'Resource', { type: 'Type', properties: { ReferenceToParam: param.value } });
@@ -35,5 +35,5 @@ export = {
 
     test.deepEqual(stack.resolve(param), { Ref: 'MyParam' });
     test.done();
-  }
+  },
 };

@@ -13,14 +13,14 @@ export = {
     new SubscriptionFilter(stack, 'Subscription', {
       logGroup,
       destination: new FakeDestination(),
-      filterPattern: FilterPattern.literal("some pattern")
+      filterPattern: FilterPattern.literal('some pattern'),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::SubscriptionFilter', {
-      DestinationArn: "arn:bogus",
-      FilterPattern: "some pattern",
-      LogGroupName: { Ref: "LogGroupF5B46931" }
+      DestinationArn: 'arn:bogus',
+      FilterPattern: 'some pattern',
+      LogGroupName: { Ref: 'LogGroupF5B46931' },
     }));
 
     test.done();

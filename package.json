@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk",
-  "version": "1.24.0",
+  "version": "0.0.0",
   "private": true,
   "pkglint": {
     "include": "dependencies/node-version"
@@ -10,27 +10,28 @@
     "build": "./build.sh",
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
+    "bump": "./bump.sh",
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "conventional-changelog-cli": "^2.0.31",
-    "fs-extra": "^8.1.0",
-    "jsii-diff": "^0.22.0",
-    "jsii-pacmak": "^0.22.0",
-    "jsii-rosetta": "^0.22.0",
-    "lerna": "^3.20.2",
-    "typescript": "~3.7.5"
+    "conventional-changelog-cli": "^2.0.34",
+    "fs-extra": "^9.0.1",
+    "graceful-fs": "^4.2.4",
+    "jsii-diff": "^1.9.0",
+    "jsii-pacmak": "^1.9.0",
+    "jsii-rosetta": "^1.9.0",
+    "jest-junit": "^11.0.1",
+    "lerna": "^3.22.1",
+    "standard-version": "^8.0.2",
+    "typescript": "~3.9.6"
+  },
+  "resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
+  "resolutions": {
+    "tap-mocha-reporter": "^5.0.1"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/aws/aws-cdk"
-  },
-  "standard-version": {
-    "releaseCommitMessageFormat": "v{{currentTag}}",
-    "scripts": {
-      "prebump": "echo $(node -pe \"require('./lerna.json').version\")",
-      "precommit": "git add ."
-    }
   },
   "license": "Apache-2.0",
   "author": {
@@ -41,23 +42,45 @@
     "packages": [
       "packages/*",
       "packages/@aws-cdk/*",
+      "packages/@monocdk-experiment/*",
       "packages/@aws-cdk/*/lambda-packages/*",
       "tools/*"
     ],
     "nohoist": [
       "**/jszip",
       "**/jszip/**",
-      "@aws-cdk/assets/minimatch",
-      "@aws-cdk/assets/minimatch/**",
       "@aws-cdk/aws-codepipeline-actions/case",
       "@aws-cdk/aws-codepipeline-actions/case/**",
       "@aws-cdk/aws-ecr-assets/minimatch",
       "@aws-cdk/aws-ecr-assets/minimatch/**",
+      "@aws-cdk/aws-eks/yaml",
+      "@aws-cdk/aws-eks/yaml/**",
+      "@aws-cdk/aws-lambda-nodejs/parcel-bundler",
+      "@aws-cdk/aws-lambda-nodejs/parcel-bundler/**",
+      "@aws-cdk/cloud-assembly-schema/jsonschema",
+      "@aws-cdk/cloud-assembly-schema/jsonschema/**",
+      "@aws-cdk/cloud-assembly-schema/semver",
+      "@aws-cdk/cloud-assembly-schema/semver/**",
+      "@aws-cdk/cloudformation-include/yaml",
+      "@aws-cdk/cloudformation-include/yaml/**",
+      "@aws-cdk/core/fs-extra",
+      "@aws-cdk/core/fs-extra/**",
+      "@aws-cdk/core/minimatch",
+      "@aws-cdk/core/minimatch/**",
       "@aws-cdk/cx-api/semver",
       "@aws-cdk/cx-api/semver/**",
-      "@aws-cdk/cx-api/semver/**",
-      "@aws-cdk/aws-lambda-nodejs/parcel-bundler",
-      "@aws-cdk/aws-lambda-nodejs/parcel-bundler/**"
+      "monocdk-experiment/case",
+      "monocdk-experiment/case/**",
+      "monocdk-experiment/fs-extra",
+      "monocdk-experiment/fs-extra/**",
+      "monocdk-experiment/jsonschema",
+      "monocdk-experiment/jsonschema/**",
+      "monocdk-experiment/minimatch",
+      "monocdk-experiment/minimatch/**",
+      "monocdk-experiment/semver",
+      "monocdk-experiment/semver/**",
+      "monocdk-experiment/yaml",
+      "monocdk-experiment/yaml/**"
     ]
   }
 }

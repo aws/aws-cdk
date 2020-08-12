@@ -1,15 +1,26 @@
 #!/bin/bash
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
-source ${scriptdir}/common.bash
 
-header CLI Integration Tests
+echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+echo 'CLI Integration Tests'
+echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
-prepare_fixture
+current_version=$(node -p "require('${scriptdir}/../../../package.json').version")
 
-for test in $(cd ${scriptdir} && ls test-*.sh); do
-  echo "============================================================================================"
-  echo "${test}"
-  echo "============================================================================================"
-  /bin/bash ${scriptdir}/${test}
-done
+# This allows injecting different versions, not just the current one.
+# Useful when testing.
+export VERSION_UNDER_TEST=${VERSION_UNDER_TEST:-${current_version}}
+
+cd $scriptdir
+
+# Install these dependencies that the tests (written in Jest) need.
+# Only if we're not running from the repo, because if we are the
+# dependencies have already been installed by the containing 'aws-cdk' package's
+# package.json.
+if ! npx --no-install jest --version; then
+  echo 'Looks like we need to install jest first. Hold on.' >& 2
+  npm install --prefix . jest jest-junit aws-sdk
+fi
+
+npx jest --runInBand --verbose "$@"

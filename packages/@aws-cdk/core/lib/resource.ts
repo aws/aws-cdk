@@ -1,5 +1,5 @@
 import { ArnComponents } from './arn';
-import { Construct, IConstruct } from './construct';
+import { Construct, IConstruct } from './construct-compat';
 import { Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { IResolveContext } from './resolvable';
@@ -96,7 +96,7 @@ export abstract class Resource extends Construct implements IResource {
   public _enableCrossEnvironment(): void {
     if (!this._allowCrossEnvironment) {
       // error out - a deploy-time name cannot be used across environments
-      throw new Error(`Cannot use resource '${this.node.path}' in a cross-environment fashion, ` +
+      throw new Error(`Cannot use resource '${this.construct.path}' in a cross-environment fashion, ` +
         "the resource's physical name must be explicit set or use `PhysicalName.GENERATE_IF_NEEDED`");
     }
 
@@ -132,7 +132,7 @@ export abstract class Resource extends Construct implements IResource {
         } else {
           return nameAttr;
         }
-      }
+      },
     });
   }
 
@@ -164,7 +164,7 @@ export abstract class Resource extends Construct implements IResource {
         } else {
           return arnAttr;
         }
-      }
+      },
     });
   }
 }

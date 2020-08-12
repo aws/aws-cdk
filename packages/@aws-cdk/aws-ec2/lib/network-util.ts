@@ -53,7 +53,7 @@ export class NetworkUtils {
       .split('.')
       .reduce(
         (p: number, c: string, i: number) => p + parseInt(c, 10) * 256 ** (3 - i),
-        0
+        0,
       );
   }
 

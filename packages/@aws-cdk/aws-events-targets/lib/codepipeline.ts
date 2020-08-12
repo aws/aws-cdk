@@ -17,11 +17,12 @@ export interface CodePipelineTargetOptions {
 }
 
 /**
- * Allows the pipeline to be used as a CloudWatch event rule target.
+ * Allows the pipeline to be used as an EventBridge rule target.
  */
 export class CodePipeline implements events.IRuleTarget {
-  constructor(private readonly pipeline: codepipeline.IPipeline,
-              private readonly options: CodePipelineTargetOptions = {}) {
+  constructor(
+    private readonly pipeline: codepipeline.IPipeline,
+    private readonly options: CodePipelineTargetOptions = {}) {
   }
 
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {

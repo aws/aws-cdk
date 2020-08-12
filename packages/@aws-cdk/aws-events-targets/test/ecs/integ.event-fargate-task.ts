@@ -21,7 +21,7 @@ class EventStack extends cdk.Stack {
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
     taskDefinition.addContainer('TheContainer', {
       image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
-      logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
+      logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' }),
     });
 
     // A rule that describes the event trigger (in this case a scheduled run)
@@ -37,9 +37,9 @@ class EventStack extends cdk.Stack {
       containerOverrides: [{
         containerName: 'TheContainer',
         environment: [
-          { name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' }
-        ]
-      }]
+          { name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' },
+        ],
+      }],
     }));
     /// !hide
   }

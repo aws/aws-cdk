@@ -9,7 +9,7 @@ class MultiStack extends cdk.Stack {
     const hello = new apigw.LambdaIntegration(new lambda.Function(this, 'Hello', {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
-      code: lambda.Code.inline(`exports.handler = ${helloCode}`)
+      code: lambda.Code.inline(`exports.handler = ${helloCode}`),
     }));
 
     const api = new apigw.RestApi(this, 'hello-api');
@@ -31,7 +31,7 @@ class MultiApp extends cdk.App {
 function helloCode(_event: any, _context: any, callback: any) {
   return callback(undefined, {
     statusCode: 200,
-    body: 'hello, world!'
+    body: 'hello, world!',
   });
 }
 

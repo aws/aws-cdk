@@ -1,16 +1,10 @@
 ## AWS CDK Assets
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
->
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -40,7 +34,8 @@ to an S3 bucket during deployment.
 
  * `s3BucketName` - the name of the assets S3 bucket.
  * `s3ObjectKey` - the S3 object key of the asset file (whether it's a file or a zip archive)
- * `s3Url` - the S3 URL of the asset (i.e. https://s3.us-east-1.amazonaws.com/mybucket/mykey.zip)
+ * `s3ObjectUrl` - the S3 object URL of the asset (i.e. s3://mybucket/mykey.zip)
+ * `httpUrl` - the S3 HTTP URL of the asset (i.e. https://s3.us-east-1.amazonaws.com/mybucket/mykey.zip)
 
 In the following example, the various asset attributes are exported as stack outputs:
 
@@ -74,6 +69,53 @@ the asset store, it is uploaded during deployment.
 
 Now, when the toolkit deploys the stack, it will set the relevant CloudFormation
 Parameters to point to the actual bucket and key for each asset.
+
+## Asset Bundling
+
+When defining an asset, you can use the `bundling` option to specify a command
+to run inside a docker container. The command can read the contents of the asset
+source from `/asset-input` and is expected to write files under `/asset-output`
+(directories mapped inside the container). The files under `/asset-output` will
+be zipped and uploaded to S3 as the asset.
+
+The following example uses custom asset bundling to convert a markdown file to html:
+
+[Example of using asset bundling](./test/integ.assets.bundling.lit.ts).
+
+The bundling docker image (`image`) can either come from a registry (`BundlingDockerImage.fromRegistry`)
+or it can be built from a `Dockerfile` located inside your project (`BundlingDockerImage.fromAsset`).
+
+You can set the `CDK_DOCKER` environment variable in order to provide a custom
+docker program to execute. This may sometime be needed when building in
+environments where the standard docker cannot be executed (see
+https://github.com/aws/aws-cdk/issues/8460 for details).
+
+Use `local` to specify a local bundling provider. The provider implements a
+method `tryBundle()` which should return `true` if local bundling was performed.
+If `false` is returned, docker bundling will be done:
+
+```ts
+new assets.Asset(this, 'BundledAsset', {
+  path: '/path/to/asset',
+  bundling: {
+    local: {
+      tryBundle(outputDir: string, options: BundlingOptions) {
+        if (canRunLocally) {
+          // perform local bundling here
+          return true;
+        }
+        return false;
+      },
+    },
+    // Docker bundling fallback
+    image: BundlingDockerImage.fromRegistry('alpine'),
+    command: ['bundle'],
+  },
+});
+```
+
+Although optional, it's recommended to provide a local bundling method which can
+greatly improve performance.
 
 ## CloudFormation Resource Metadata
 

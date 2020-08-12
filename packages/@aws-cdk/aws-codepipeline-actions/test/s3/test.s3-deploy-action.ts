@@ -1,11 +1,11 @@
-import { expect, haveResourceLike } from "@aws-cdk/assert";
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Duration, SecretValue, Stack } from "@aws-cdk/core";
+import { Duration, SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'S3 Deploy Action': {
@@ -14,34 +14,34 @@ export = {
       minimalPipeline(stack);
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source",
-            "Actions": [
+            'Name': 'Source',
+            'Actions': [
               {
-                "Name": "Source",
-                "ActionTypeId": {
-                  "Category": "Source",
-                  "Owner": "ThirdParty"
-                }
+                'Name': 'Source',
+                'ActionTypeId': {
+                  'Category': 'Source',
+                  'Owner': 'ThirdParty',
+                },
               },
-            ]
+            ],
           },
           {
-            "Name": "Deploy",
-            "Actions": [
+            'Name': 'Deploy',
+            'Actions': [
               {
-                "ActionTypeId": {
-                  "Category": "Deploy",
-                  "Provider": "S3",
+                'ActionTypeId': {
+                  'Category': 'Deploy',
+                  'Provider': 'S3',
                 },
-                "Configuration": {
-                  "Extract": "true"
+                'Configuration': {
+                  'Extract': 'true',
                 },
-                "Name": "CopyFiles"
-              }
-            ]
-          }
+                'Name': 'CopyFiles',
+              },
+            ],
+          },
         ],
       }));
 
@@ -53,26 +53,26 @@ export = {
       minimalPipeline(stack);
 
       expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Effect": "Allow",
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*"
-              ]
+              'Effect': 'Allow',
+              'Action': [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
+                's3:DeleteObject*',
+                's3:PutObject*',
+                's3:Abort*',
+              ],
             },
             {},
             {
-              "Effect": "Allow",
-              "Action": "sts:AssumeRole"
-            }
-          ]
-        }
+              'Effect': 'Allow',
+              'Action': 'sts:AssumeRole',
+            },
+          ],
+        },
       }));
 
       test.done();
@@ -81,22 +81,22 @@ export = {
     'kebab-case CannedACL value'(test: Test) {
       const stack = new Stack();
       minimalPipeline(stack, {
-        accessControl: s3.BucketAccessControl.PUBLIC_READ_WRITE
+        accessControl: s3.BucketAccessControl.PUBLIC_READ_WRITE,
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {},
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "CannedACL": "public-read-write"
-                }
-              }
-            ]
-          }
-        ]
+                'Configuration': {
+                  'CannedACL': 'public-read-write',
+                },
+              },
+            ],
+          },
+        ],
       }));
 
       test.done();
@@ -108,22 +108,23 @@ export = {
         cacheControl: [
           cpactions.CacheControl.setPublic(),
           cpactions.CacheControl.maxAge(Duration.hours(12)),
-        ]
+          cpactions.CacheControl.sMaxAge(Duration.hours(12)),
+        ],
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {},
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "CacheControl": "public, max-age: 43200"
-                }
-              }
-            ]
-          }
-        ]
+                'Configuration': {
+                  'CacheControl': 'public, max-age=43200, s-maxage=43200',
+                },
+              },
+            ],
+          },
+        ],
       }));
 
       test.done();
@@ -132,27 +133,27 @@ export = {
     'allow customizing objectKey (deployment path on S3)'(test: Test) {
       const stack = new Stack();
       minimalPipeline(stack, {
-        objectKey: "/a/b/c"
+        objectKey: '/a/b/c',
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {},
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "ObjectKey": "/a/b/c"
-                }
-              }
-            ]
-          }
-        ]
+                'Configuration': {
+                  'ObjectKey': '/a/b/c',
+                },
+              },
+            ],
+          },
+        ],
       }));
 
       test.done();
-    }
-  }
+    },
+  },
 };
 
 interface MinimalPipelineOptions {
@@ -178,8 +179,8 @@ function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): co
       {
         stageName: 'Source',
         actions: [ sourceAction ],
-      }
-    ]
+      },
+    ],
   });
 
   const deploymentStage = pipeline.addStage({

@@ -11,14 +11,14 @@ export = {
     // WHEN
     const bucket = new Bucket(stack, 'Bucket');
     bucket.addMetric({
-      id: "test"
+      id: 'test',
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::S3::Bucket', {
       MetricsConfigurations: [{
-        Id: "test"
-      }]
+        Id: 'test',
+      }],
     }));
 
     test.done();
@@ -31,17 +31,17 @@ export = {
     // WHEN
     new Bucket(stack, 'Bucket', {
       metrics: [{
-        id: "test",
-        prefix: "prefix"
-      }]
+        id: 'test',
+        prefix: 'prefix',
+      }],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::S3::Bucket', {
       MetricsConfigurations: [{
-        Id: "test",
-        Prefix: "prefix"
-      }]
+        Id: 'test',
+        Prefix: 'prefix',
+      }],
     }));
 
     test.done();
@@ -54,20 +54,20 @@ export = {
     // WHEN
     new Bucket(stack, 'Bucket', {
       metrics: [{
-        id: "test",
-        tagFilters: {tagname1: "tagvalue1", tagname2: "tagvalue2"}
-      }]
+        id: 'test',
+        tagFilters: {tagname1: 'tagvalue1', tagname2: 'tagvalue2'},
+      }],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::S3::Bucket', {
       MetricsConfigurations: [{
-        Id: "test",
+        Id: 'test',
         TagFilters: [
-          { Key: "tagname1", Value: "tagvalue1" },
-          { Key: "tagname2", Value: "tagvalue2" },
-        ]
-      }]
+          { Key: 'tagname1', Value: 'tagvalue1' },
+          { Key: 'tagname2', Value: 'tagvalue2' },
+        ],
+      }],
     }));
 
     test.done();
@@ -81,30 +81,30 @@ export = {
     new Bucket(stack, 'Bucket', {
       metrics: [
         {
-          id: "test",
-          tagFilters: {tagname1: "tagvalue1", tagname2: "tagvalue2"}
+          id: 'test',
+          tagFilters: {tagname1: 'tagvalue1', tagname2: 'tagvalue2'},
 
         },
         {
-          id: "test2",
-          prefix: "prefix"
+          id: 'test2',
+          prefix: 'prefix',
         },
-      ]
+      ],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::S3::Bucket', {
       MetricsConfigurations: [{
-        Id: "test",
+        Id: 'test',
         TagFilters: [
-          { Key: "tagname1", Value: "tagvalue1" },
-          { Key: "tagname2", Value: "tagvalue2" },
-        ]
+          { Key: 'tagname1', Value: 'tagvalue1' },
+          { Key: 'tagname2', Value: 'tagvalue2' },
+        ],
       },
       {
-        Id: "test2",
-        Prefix: "prefix"
-      }]
+        Id: 'test2',
+        Prefix: 'prefix',
+      }],
     }));
 
     test.done();

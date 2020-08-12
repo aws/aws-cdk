@@ -7,7 +7,7 @@ export function renderUserData(clusterName: string, autoScalingGroup: autoscalin
   const stack = Stack.of(autoScalingGroup);
 
   // determine logical id of ASG so we can signal cloudformation
-  const cfn = autoScalingGroup.node.defaultChild as autoscaling.CfnAutoScalingGroup;
+  const cfn = autoScalingGroup.construct.defaultChild as autoscaling.CfnAutoScalingGroup;
   const asgLogicalId = cfn.logicalId;
 
   const extraArgs = new Array<string>();
@@ -19,7 +19,7 @@ export function renderUserData(clusterName: string, autoScalingGroup: autoscalin
   }
 
   if (options.enableDockerBridge) {
-    extraArgs.push(`--enable-docker-bridge`);
+    extraArgs.push('--enable-docker-bridge');
   }
 
   if (options.dockerConfigJson) {
@@ -39,8 +39,8 @@ export function renderUserData(clusterName: string, autoScalingGroup: autoscalin
   const kubeletExtraArgs = `--node-labels lifecycle=${lifecycleLabel} ${withTaints} ${kubeletExtraArgsSuffix}`.trim();
 
   return [
-    `set -o xtrace`,
+    'set -o xtrace',
     `/etc/eks/bootstrap.sh ${clusterName} --kubelet-extra-args "${kubeletExtraArgs}" ${commandLineSuffix}`.trim(),
-    `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`
+    `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`,
   ];
 }

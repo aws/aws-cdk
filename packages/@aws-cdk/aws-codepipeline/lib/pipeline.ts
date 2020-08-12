@@ -2,13 +2,16 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import { ActionCategory, IAction, IPipeline, IStage } from "./action";
+import {
+  App, BootstraplessSynthesizer, Construct, DefaultStackSynthesizer,
+  IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token,
+} from '@aws-cdk/core';
+import { ActionCategory, IAction, IPipeline, IStage } from './action';
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './cross-region-support-stack';
 import { FullActionDescriptor } from './full-action-descriptor';
 import { Stage } from './stage';
-import { validateName, validateNamespaceName, validateSourceAction } from "./validation";
+import { validateName, validateNamespaceName, validateSourceAction } from './validation';
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
@@ -233,7 +236,7 @@ export class Pipeline extends PipelineBase {
         encryptionKey,
         encryption: s3.BucketEncryption.KMS,
         blockPublicAccess: new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
-        removalPolicy: RemovalPolicy.RETAIN
+        removalPolicy: RemovalPolicy.RETAIN,
       });
       // add an alias to make finding the key in the console easier
       new kms.Alias(this, 'ArtifactsBucketEncryptionKeyAlias', {
@@ -246,7 +249,7 @@ export class Pipeline extends PipelineBase {
 
     // If a role has been provided, use it - otherwise, create a role.
     this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
@@ -259,7 +262,7 @@ export class Pipeline extends PipelineBase {
     });
 
     // this will produce a DependsOn for both the role and the policy resources.
-    codePipeline.node.addDependency(this.role);
+    codePipeline.construct.addDependency(this.role);
 
     this.artifactBucket.grantReadWrite(this.role);
     this.pipelineName = this.getResourceNameAttribute(codePipeline.ref);
@@ -276,7 +279,7 @@ export class Pipeline extends PipelineBase {
     // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
     this.pipelineArn = Stack.of(this).formatArn({
       service: 'codepipeline',
-      resource: this.pipelineName
+      resource: this.pipelineName,
     });
 
     for (const stage of props.stages || []) {
@@ -299,8 +302,8 @@ export class Pipeline extends PipelineBase {
     const stage = new Stage(props, this);
 
     const index = props.placement
-        ? this.calculateInsertIndexFromPlacement(props.placement)
-        : this.stageCount;
+      ? this.calculateInsertIndexFromPlacement(props.placement)
+      : this.stageCount;
 
     this._stages.splice(index, 0, stage);
 
@@ -452,12 +455,12 @@ export class Pipeline extends PipelineBase {
   }
 
   private createSupportResourcesForRegion(otherStack: Stack | undefined, actionRegion: string):
-      CrossRegionSupport {
+  CrossRegionSupport {
     // if we have a stack from the resource passed - use that!
     if (otherStack) {
       // check if the stack doesn't have this magic construct already
       const id = `CrossRegionReplicationSupport-d823f1d8-a990-4e5c-be18-4ac698532e65-${actionRegion}`;
-      let crossRegionSupportConstruct = otherStack.node.tryFindChild(id) as CrossRegionSupportConstruct;
+      let crossRegionSupportConstruct = otherStack.construct.tryFindChild(id) as CrossRegionSupportConstruct;
       if (!crossRegionSupportConstruct) {
         crossRegionSupportConstruct = new CrossRegionSupportConstruct(otherStack, id);
       }
@@ -477,12 +480,13 @@ export class Pipeline extends PipelineBase {
 
     const app = this.requireApp();
     const supportStackId = `cross-region-stack-${pipelineAccount}:${actionRegion}`;
-    let supportStack = app.node.tryFindChild(supportStackId) as CrossRegionSupportStack;
+    let supportStack = app.construct.tryFindChild(supportStackId) as CrossRegionSupportStack;
     if (!supportStack) {
       supportStack = new CrossRegionSupportStack(app, supportStackId, {
         pipelineStackName: pipelineStack.stackName,
         region: actionRegion,
         account: pipelineAccount,
+        synthesizer: this.getCrossRegionSupportSynthesizer(),
       });
     }
 
@@ -492,10 +496,27 @@ export class Pipeline extends PipelineBase {
     };
   }
 
+  private getCrossRegionSupportSynthesizer(): IStackSynthesizer | undefined {
+    if (this.stack.synthesizer instanceof DefaultStackSynthesizer) {
+      // if we have the new synthesizer,
+      // we need a bootstrapless copy of it,
+      // because we don't want to require bootstrapping the environment
+      // of the pipeline account in this replication region
+      return new BootstraplessSynthesizer({
+        deployRoleArn: this.stack.synthesizer.deployRoleArn,
+        cloudFormationExecutionRoleArn: this.stack.synthesizer.cloudFormationExecutionRoleArn,
+      });
+    } else {
+      // any other synthesizer: just return undefined
+      // (ie., use the default based on the context settings)
+      return undefined;
+    }
+  }
+
   private generateNameForDefaultBucketKeyAlias(): string {
     const prefix = 'alias/codepipeline-';
     const maxAliasLength = 256;
-    const uniqueId = this.node.uniqueId;
+    const uniqueId = this.construct.uniqueId;
     // take the last 256 - (prefix length) characters of uniqueId
     const startIndex = Math.max(0, uniqueId.length - (maxAliasLength - prefix.length));
     return prefix + uniqueId.substring(startIndex).toLowerCase();
@@ -525,7 +546,7 @@ export class Pipeline extends PipelineBase {
     if (actionRole) {
       this.role.addToPolicy(new iam.PolicyStatement({
         actions: ['sts:AssumeRole'],
-        resources: [actionRole.roleArn]
+        resources: [actionRole.roleArn],
       }));
     }
 
@@ -541,8 +562,14 @@ export class Pipeline extends PipelineBase {
     if (action.actionProperties.role) {
       if (this.isAwsOwned(action)) {
         // the role has to be deployed before the pipeline
-        const roleStack = Stack.of(action.actionProperties.role);
-        pipelineStack.addDependency(roleStack);
+        // (our magical cross-stack dependencies will not work,
+        // because the role might be from a different environment),
+        // but _only_ if it's a new Role -
+        // an imported Role should not add the dependency
+        if (action.actionProperties.role instanceof iam.Role) {
+          const roleStack = Stack.of(action.actionProperties.role);
+          pipelineStack.addDependency(roleStack);
+        }
 
         return action.actionProperties.role;
       } else {
@@ -571,10 +598,10 @@ export class Pipeline extends PipelineBase {
 
     // generate a role in the other stack, that the Pipeline will assume for executing this action
     const ret = new iam.Role(otherAccountStack,
-        `${this.node.uniqueId}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
-      assumedBy: new iam.AccountPrincipal(pipelineStack.account),
-      roleName: PhysicalName.GENERATE_IF_NEEDED,
-    });
+      `${this.construct.uniqueId}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
+        assumedBy: new iam.AccountPrincipal(pipelineStack.account),
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+      });
     // the other stack with the role has to be deployed before the pipeline stack
     // (CodePipeline verifies you can assume the action Role on creation)
     pipelineStack.addDependency(otherAccountStack);
@@ -614,7 +641,7 @@ export class Pipeline extends PipelineBase {
     }
     // check whether the pipeline account is a static string
     if (Token.isUnresolved(pipelineStack.account)) {
-      throw new Error("Pipeline stack which uses cross-environment actions must have an explicitly set account");
+      throw new Error('Pipeline stack which uses cross-environment actions must have an explicitly set account');
     }
 
     if (pipelineStack.account === targetAccount) {
@@ -625,7 +652,7 @@ export class Pipeline extends PipelineBase {
     if (!targetAccountStack) {
       const stackId = `cross-account-support-stack-${targetAccount}`;
       const app = this.requireApp();
-      targetAccountStack = app.node.tryFindChild(stackId) as Stack;
+      targetAccountStack = app.construct.tryFindChild(stackId) as Stack;
       if (!targetAccountStack) {
         targetAccountStack = new Stack(app, stackId, {
           stackName: `${pipelineStack.stackName}-support-${targetAccount}`,
@@ -661,7 +688,7 @@ export class Pipeline extends PipelineBase {
     const providedPlacementProps = ['rightBefore', 'justAfter', 'atIndex']
       .filter((prop) => (placement as any)[prop] !== undefined);
     if (providedPlacementProps.length > 1) {
-      throw new Error("Error adding Stage to the Pipeline: " +
+      throw new Error('Error adding Stage to the Pipeline: ' +
         'you can only provide at most one placement property, but ' +
         `'${providedPlacementProps.join(', ')}' were given`);
     }
@@ -669,7 +696,7 @@ export class Pipeline extends PipelineBase {
     if (placement.rightBefore !== undefined) {
       const targetIndex = this.findStageIndex(placement.rightBefore);
       if (targetIndex === -1) {
-        throw new Error("Error adding Stage to the Pipeline: " +
+        throw new Error('Error adding Stage to the Pipeline: ' +
           `the requested Stage to add it before, '${placement.rightBefore.stageName}', was not found`);
       }
       return targetIndex;
@@ -678,7 +705,7 @@ export class Pipeline extends PipelineBase {
     if (placement.justAfter !== undefined) {
       const targetIndex = this.findStageIndex(placement.justAfter);
       if (targetIndex === -1) {
-        throw new Error("Error adding Stage to the Pipeline: " +
+        throw new Error('Error adding Stage to the Pipeline: ' +
           `the requested Stage to add it after, '${placement.justAfter.stageName}', was not found`);
       }
       return targetIndex + 1;
@@ -722,31 +749,49 @@ export class Pipeline extends PipelineBase {
   private validateArtifacts(): string[] {
     const ret = new Array<string>();
 
-    const outputArtifactNames = new Set<string>();
-    for (const stage of this._stages) {
-      const sortedActions = stage.actionDescriptors.sort((a1, a2) => a1.runOrder - a2.runOrder);
+    const producers: Record<string, PipelineLocation> = {};
+    const firstConsumers: Record<string, PipelineLocation> = {};
 
-      for (const action of sortedActions) {
-        // start with inputs
-        const inputArtifacts = action.inputs;
-        for (const inputArtifact of inputArtifacts) {
-          if (!inputArtifact.artifactName) {
-            ret.push(`Action '${action.actionName}' has an unnamed input Artifact that's not used as an output`);
-          } else if (!outputArtifactNames.has(inputArtifact.artifactName)) {
-            ret.push(`Artifact '${inputArtifact.artifactName}' was used as input before being used as output`);
-          }
-        }
+    for (const [stageIndex, stage] of enumerate(this._stages)) {
+      // For every output artifact, get the producer
+      for (const action of stage.actionDescriptors) {
+        const actionLoc = new PipelineLocation(stageIndex, stage, action);
 
-        // then process outputs by adding them to the Set
-        const outputArtifacts = action.outputs;
-        for (const outputArtifact of outputArtifacts) {
+        for (const outputArtifact of action.outputs) {
           // output Artifacts always have a name set
-          if (outputArtifactNames.has(outputArtifact.artifactName!)) {
-            ret.push(`Artifact '${outputArtifact.artifactName}' has been used as an output more than once`);
-          } else {
-            outputArtifactNames.add(outputArtifact.artifactName!);
+          const name = outputArtifact.artifactName!;
+          if (producers[name]) {
+            ret.push(`Both Actions '${producers[name].actionName}' and '${action.actionName}' are producting Artifact '${name}'. Every artifact can only be produced once.`);
+            continue;
           }
+
+          producers[name] = actionLoc;
         }
+
+        // For every input artifact, get the first consumer
+        for (const inputArtifact of action.inputs) {
+          const name = inputArtifact.artifactName;
+          if (!name) {
+            ret.push(`Action '${action.actionName}' is using an unnamed input Artifact, which is not being produced in this pipeline`);
+            continue;
+          }
+
+          firstConsumers[name] = firstConsumers[name] ? firstConsumers[name].first(actionLoc) : actionLoc;
+        }
+      }
+    }
+
+    // Now validate that every input artifact is produced before it's
+    // being consumed.
+    for (const [artifactName, consumerLoc] of Object.entries(firstConsumers)) {
+      const producerLoc = producers[artifactName];
+      if (!producerLoc) {
+        ret.push(`Action '${consumerLoc.actionName}' is using input Artifact '${artifactName}', which is not being produced in this pipeline`);
+        continue;
+      }
+
+      if (consumerLoc.beforeOrEqual(producerLoc)) {
+        ret.push(`${consumerLoc} is consuming input Artifact '${artifactName}' before it is being produced at ${producerLoc}`);
       }
     }
 
@@ -807,15 +852,15 @@ export class Pipeline extends PipelineBase {
   private requireRegion(): string {
     const region = Stack.of(this).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Pipeline stack which uses cross-environment actions must have an explicitly set region`);
+      throw new Error('Pipeline stack which uses cross-environment actions must have an explicitly set region');
     }
     return region;
   }
 
   private requireApp(): App {
-    const app = this.node.root;
+    const app = this.construct.root;
     if (!app || !App.isApp(app)) {
-      throw new Error(`Pipeline stack which uses cross-environment actions must be part of a CDK app`);
+      throw new Error('Pipeline stack which uses cross-environment actions must be part of a CDK app');
     }
     return app;
   }
@@ -846,4 +891,45 @@ interface CrossRegionInfo {
   readonly artifactBucket: s3.IBucket;
 
   readonly region?: string;
+}
+
+function enumerate<A>(xs: A[]): Array<[number, A]> {
+  const ret = new Array<[number, A]>();
+  for (let i = 0; i < xs.length; i++) {
+    ret.push([i, xs[i]]);
+  }
+  return ret;
+}
+
+class PipelineLocation {
+  constructor(private readonly stageIndex: number, private readonly stage: IStage, private readonly action: FullActionDescriptor) {
+  }
+
+  public get stageName() {
+    return this.stage.stageName;
+  }
+
+  public get actionName() {
+    return this.action.actionName;
+  }
+
+  /**
+   * Returns whether a is before or the same order as b
+   */
+  public beforeOrEqual(rhs: PipelineLocation) {
+    if (this.stageIndex !== rhs.stageIndex) { return rhs.stageIndex < rhs.stageIndex; }
+    return this.action.runOrder <= rhs.action.runOrder;
+  }
+
+  /**
+   * Returns the first location between this and the other one
+   */
+  public first(rhs: PipelineLocation) {
+    return this.beforeOrEqual(rhs) ? this : rhs;
+  }
+
+  public toString() {
+    // runOrders are 1-based, so make the stageIndex also 1-based otherwise it's going to be confusing.
+    return `Stage ${this.stageIndex + 1} Action ${this.action.runOrder} ('${this.stageName}'/'${this.actionName}')`;
+  }
 }

@@ -1,21 +1,42 @@
-import { NestedStack } from '@aws-cdk/aws-cloudformation';
+import * as path from 'path';
+import { IVpc, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
+import { Construct, Duration, NestedStack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import * as path from 'path';
 import { KubectlLayer } from './kubectl-layer';
 
-export class KubectlProvider extends NestedStack {
-  /**
-   * Creates a stack-singleton resource provider nested stack.
-   */
-  public static getOrCreate(scope: Construct) {
-    const stack = Stack.of(scope);
-    const uid = '@aws-cdk/aws-eks.KubectlProvider';
-    return stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(stack, uid);
-  }
+export interface KubectlProviderProps {
 
+  /**
+   * Connect the provider to a VPC.
+   *
+   * @default - no vpc attachement.
+   */
+  readonly vpc?: IVpc;
+
+  /**
+   * Select the Vpc subnets to attach to the provider.
+   *
+   * @default - no subnets.
+   */
+  readonly vpcSubnets?: SubnetSelection;
+
+  /**
+   * Attach security groups to the provider.
+   *
+   * @default - no security groups.
+   */
+  readonly securityGroups?: ISecurityGroup[];
+
+  /**
+   * Environment variables to inject to the provider function.
+   */
+  readonly env?: { [key: string]: string };
+
+}
+
+export class KubectlProvider extends NestedStack {
   /**
    * The custom resource provider.
    */
@@ -26,7 +47,7 @@ export class KubectlProvider extends NestedStack {
    */
   public readonly role: iam.IRole;
 
-  private constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string, props: KubectlProviderProps = { }) {
     super(scope, id);
 
     const handler = new lambda.Function(this, 'Handler', {
@@ -34,19 +55,29 @@ export class KubectlProvider extends NestedStack {
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
-      layers: [ KubectlLayer.getOrCreate(this, { version: "2.0.0-beta1" }) ],
+      description: 'onEvent handler for EKS kubectl resource provider',
+      layers: [ KubectlLayer.getOrCreate(this, { version: '2.0.0' }) ],
       memorySize: 256,
+      vpc: props.vpc,
+      securityGroups: props.securityGroups,
+      vpcSubnets: props.vpcSubnets,
+      environment: props.env,
     });
 
     this.provider = new cr.Provider(this, 'Provider', {
-      onEventHandler: handler
+      onEventHandler: handler,
     });
 
     this.role = handler.role!;
 
     this.role.addToPolicy(new iam.PolicyStatement({
       actions: [ 'eks:DescribeCluster' ],
-      resources: [ '*' ]
+      resources: [ '*' ],
     }));
   }
+
+  /**
+   * The custom resource provider service token.
+   */
+  public get serviceToken() { return this.provider.serviceToken; }
 }

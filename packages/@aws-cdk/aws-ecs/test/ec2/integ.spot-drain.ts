@@ -26,7 +26,7 @@ cluster.addCapacity('asgOd', {
 });
 
 const taskDefinition = new ecs.TaskDefinition(stack, 'Task', {
-  compatibility: ecs.Compatibility.EC2
+  compatibility: ecs.Compatibility.EC2,
 });
 
 taskDefinition.addContainer('PHP', {
@@ -38,7 +38,7 @@ taskDefinition.addContainer('PHP', {
 
 new ecs.Ec2Service(stack, 'Service', {
   cluster,
-  taskDefinition
+  taskDefinition,
 });
 
 app.synth();

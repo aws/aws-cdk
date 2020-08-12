@@ -35,7 +35,7 @@ new cdk.CfnOutput(stack, 'StringListOutput', {
 });
 
 new cdk.CfnOutput(stack, 'ParamArn', {
-  value: param.parameterArn
+  value: param.parameterArn,
 });
 
 app.synth();

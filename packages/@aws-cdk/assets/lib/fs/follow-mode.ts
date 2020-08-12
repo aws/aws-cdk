@@ -1,3 +1,7 @@
+/**
+ * Symlink follow mode.
+ * @deprecated see `core.SymlinkFollowMode`
+ */
 export enum FollowMode {
   /**
    * Never follow symlinks.

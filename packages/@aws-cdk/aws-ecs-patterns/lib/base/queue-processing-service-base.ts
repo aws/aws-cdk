@@ -2,7 +2,7 @@ import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
-import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
@@ -87,6 +87,21 @@ export interface QueueProcessingServiceBaseProps {
   readonly queue?: IQueue;
 
   /**
+   * The maximum number of times that a message can be received by consumers.
+   * When this value is exceeded for a message the message will be automatically sent to the Dead Letter Queue.
+   *
+   * @default 3
+   */
+  readonly maxReceiveCount?: number;
+
+  /**
+   * The number of seconds that Dead Letter Queue retains a message.
+   *
+   * @default Duration.days(14)
+   */
+  readonly retentionPeriod?: Duration;
+
+  /**
    * Maximum capacity to scale to.
    *
    * @default (desiredTaskCount * 2)
@@ -132,6 +147,24 @@ export interface QueueProcessingServiceBaseProps {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * The maximum number of tasks, specified as a percentage of the Amazon ECS
+   * service's DesiredCount value, that can run in a service during a
+   * deployment.
+   *
+   * @default - default from underlying service.
+   */
+  readonly maxHealthyPercent?: number;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @default - default from underlying service.
+   */
+  readonly minHealthyPercent?: number;
 }
 
 /**
@@ -142,6 +175,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
    * The SQS queue that the service will process from
    */
   public readonly sqsQueue: IQueue;
+
+  /**
+   * The dead letter queue for the primary SQS queue
+   */
+  public readonly deadLetterQueue?: IQueue;
 
   /**
    * The cluster where your service will be deployed
@@ -187,12 +225,27 @@ export abstract class QueueProcessingServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error(`You can only specify either vpc or cluster. Alternatively, you can leave both blank`);
+      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    // Create the SQS queue if one is not provided
-    this.sqsQueue = props.queue !== undefined ? props.queue : new Queue(this, 'EcsProcessingQueue', {});
+    // Create the SQS queue and it's corresponding DLQ if one is not provided
+    if (props.queue) {
+      this.sqsQueue = props.queue;
+    } else {
+      this.deadLetterQueue = new Queue(this, 'EcsProcessingDeadLetterQueue', {
+        retentionPeriod: props.retentionPeriod || Duration.days(14),
+      });
+      this.sqsQueue = new Queue(this, 'EcsProcessingQueue', {
+        deadLetterQueue: {
+          queue: this.deadLetterQueue,
+          maxReceiveCount: props.maxReceiveCount || 3,
+        },
+      });
+
+      new CfnOutput(this, 'SQSDeadLetterQueue', { value: this.deadLetterQueue.queueName });
+      new CfnOutput(this, 'SQSDeadLetterQueueArn', { value: this.deadLetterQueue.queueArn });
+    }
 
     // Setup autoscaling scaling intervals
     const defaultScalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
@@ -201,10 +254,10 @@ export abstract class QueueProcessingServiceBase extends Construct {
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
     this.logDriver = props.logDriver !== undefined
-                        ? props.logDriver
-                        : enableLogging
-                            ? this.createAWSLogDriver(this.node.id)
-                            : undefined;
+      ? props.logDriver
+      : enableLogging
+        ? this.createAWSLogDriver(this.construct.id)
+        : undefined;
 
     // Add the queue name to environment variables
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
@@ -215,7 +268,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
 
     if (!this.desiredCount && !this.maxCapacity) {
-      throw new Error(`maxScalingCapacity must be set and greater than 0 if desiredCount is 0`);
+      throw new Error('maxScalingCapacity must be set and greater than 0 if desiredCount is 0');
     }
 
     new CfnOutput(this, 'SQSQueue', { value: this.sqsQueue.queueName });
@@ -234,7 +287,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     });
     scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {
       metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
-      scalingSteps: this.scalingSteps
+      scalingSteps: this.scalingSteps,
     });
   }
 
@@ -251,9 +304,9 @@ export abstract class QueueProcessingServiceBase extends Construct {
    */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
-    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.construct.id : ''}`;
     const stack = Stack.of(scope);
-    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return stack.construct.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**

@@ -1,6 +1,6 @@
-import { IResolvable, IResolveContext } from "../resolvable";
-import { captureStackTrace } from "../stack-trace";
-import { Token } from "../token";
+import { IResolvable, IResolveContext } from '../resolvable';
+import { captureStackTrace } from '../stack-trace';
+import { Token } from '../token';
 
 /**
  * Token subclass that represents values intrinsic to the target document language
@@ -60,7 +60,7 @@ export class Intrinsic implements IResolvable {
     // throw here we'll obfuscate that descriptive error with something worse.
     // So return a string representation that indicates this thing is a token
     // and needs resolving.
-    return `<unresolved-token>`;
+    return '<unresolved-token>';
   }
 
   /**

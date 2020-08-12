@@ -2,11 +2,11 @@
   "Resources": {
     "LogGroupF5B46931": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete",
       "Properties": {
         "RetentionInDays": 731
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MetricFilter1B93B6E5": {
       "Type": "AWS::Logs::MetricFilter",

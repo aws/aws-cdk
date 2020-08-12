@@ -126,9 +126,9 @@ export class ReceiptRule extends Resource implements IReceiptRule {
         name: this.physicalName,
         recipients: props.recipients,
         scanEnabled: props.scanEnabled,
-        tlsPolicy: props.tlsPolicy
+        tlsPolicy: props.tlsPolicy,
       },
-      ruleSetName: props.ruleSet.receiptRuleSetName
+      ruleSetName: props.ruleSet.receiptRuleSetName,
     });
 
     this.receiptRuleName = resource.ref;
@@ -154,7 +154,6 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   }
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface DropSpamReceiptRuleProps extends ReceiptRuleProps {
 
 }
@@ -174,13 +173,13 @@ export class DropSpamReceiptRule extends Construct {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${dropSpamCode}`),
-      uuid: '224e77f9-a32e-4b4d-ac32-983477abba16'
+      uuid: '224e77f9-a32e-4b4d-ac32-983477abba16',
     });
 
     fn.addPermission('AllowSes', {
       action: 'lambda:InvokeFunction',
       principal: new iam.ServicePrincipal('ses.amazonaws.com'),
-      sourceAccount: Aws.ACCOUNT_ID
+      sourceAccount: Aws.ACCOUNT_ID,
     });
 
     this.rule = new ReceiptRule(this, 'Rule', {
@@ -190,23 +189,23 @@ export class DropSpamReceiptRule extends Construct {
             lambdaAction: {
               functionArn: fn.functionArn,
               invocationType: 'RequestResponse',
-            }
-          })
+            },
+          }),
         },
       ],
       scanEnabled: true,
-      ruleSet: props.ruleSet
+      ruleSet: props.ruleSet,
     });
   }
 }
 
 // Adapted from https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html
-// tslint:disable:no-console
+/* eslint-disable no-console */
 function dropSpamCode(event: any, _: any, callback: any) {
   console.log('Spam filter');
 
   const sesNotification = event.Records[0].ses;
-  console.log("SES Notification:\n", JSON.stringify(sesNotification, null, 2));
+  console.log('SES Notification:\n', JSON.stringify(sesNotification, null, 2));
 
   // Check if any spam check failed
   if (sesNotification.receipt.spfVerdict.status === 'FAIL'
@@ -216,7 +215,7 @@ function dropSpamCode(event: any, _: any, callback: any) {
     console.log('Dropping spam');
 
     // Stop processing rule set, dropping message
-    callback(null, { disposition : 'STOP_RULE_SET' });
+    callback(null, { disposition: 'STOP_RULE_SET' });
   } else {
     callback(null, null);
   }

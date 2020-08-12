@@ -1,20 +1,11 @@
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
-import { ISDK } from '../../lib/api';
 import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
+import { MockSdkProvider } from '../util/mock-sdk';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
-const mockSDK: ISDK = {
-  defaultAccount: () => Promise.resolve('123456789012'),
-  defaultRegion: () => Promise.resolve('bermuda-triangle-1337'),
-  cloudFormation: () => { throw new Error('Not Mocked'); },
-  ec2: () => Promise.resolve(new aws.EC2()),
-  ecr: () => { throw new Error('Not Mocked'); },
-  route53: () => { throw new Error('Not Mocked'); },
-  s3: () => { throw new Error('Not Mocked'); },
-  ssm: () => { throw new Error('Not Mocked'); },
-};
+const mockSDK = new MockSdkProvider();
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
 
@@ -31,18 +22,22 @@ test('looks up the requested VPC', async () => {
   mockVpcLookup({
     subnets: [
       { SubnetId: 'sub-123456', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: true },
-      { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false }
+      { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false },
     ],
     routeTables: [
-      { Associations: [{ SubnetId: 'sub-123456' }], RouteTableId: 'rtb-123456', },
-      { Associations: [{ SubnetId: 'sub-789012' }], RouteTableId: 'rtb-789012', }
+      { Associations: [{ SubnetId: 'sub-123456' }], RouteTableId: 'rtb-123456' },
+      { Associations: [{ SubnetId: 'sub-789012' }], RouteTableId: 'rtb-789012' },
     ],
-    vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }]
+    vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }],
 
   });
 
   // WHEN
-  const result = await provider.getValue({ filter });
+  const result = await provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  });
 
   // THEN
   expect(result).toEqual({
@@ -74,7 +69,11 @@ test('throws when no such VPC is found', async () => {
   });
 
   // WHEN
-  await expect(provider.getValue({ filter })).rejects.toThrow(/Could not find any VPCs matching/);
+  await expect(provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  })).rejects.toThrow(/Could not find any VPCs matching/);
 });
 
 test('throws when multiple VPCs are found', async () => {
@@ -88,7 +87,11 @@ test('throws when multiple VPCs are found', async () => {
   });
 
   // WHEN
-  await expect(provider.getValue({ filter })).rejects.toThrow(/Found 2 VPCs matching/);
+  await expect(provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  })).rejects.toThrow(/Found 2 VPCs matching/);
 });
 
 test('uses the VPC main route table when a subnet has no specific association', async () => {
@@ -99,17 +102,21 @@ test('uses the VPC main route table when a subnet has no specific association', 
   mockVpcLookup({
     subnets: [
       { SubnetId: 'sub-123456', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: true },
-      { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false }
+      { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false },
     ],
     routeTables: [
-      { Associations: [{ SubnetId: 'sub-123456' }], RouteTableId: 'rtb-123456', },
-      { Associations: [{ Main: true }], RouteTableId: 'rtb-789012', }
+      { Associations: [{ SubnetId: 'sub-123456' }], RouteTableId: 'rtb-123456' },
+      { Associations: [{ Main: true }], RouteTableId: 'rtb-789012' },
     ],
-    vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }]
+    vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }],
   });
 
   // WHEN
-  const result = await provider.getValue({ filter });
+  const result = await provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  });
 
   // THEN
   expect(result).toEqual({
@@ -145,30 +152,34 @@ test('Recognize public subnet by route table', async () => {
         RouteTableId: 'rtb-123456',
         Routes: [
           {
-            DestinationCidrBlock: "10.0.2.0/26",
-            Origin: "CreateRoute",
-            State: "active",
-            VpcPeeringConnectionId: "pcx-xxxxxx"
+            DestinationCidrBlock: '10.0.2.0/26',
+            Origin: 'CreateRoute',
+            State: 'active',
+            VpcPeeringConnectionId: 'pcx-xxxxxx',
           },
           {
-            DestinationCidrBlock: "10.0.1.0/24",
-            GatewayId: "local",
-            Origin: "CreateRouteTable",
-            State: "active"
+            DestinationCidrBlock: '10.0.1.0/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
           },
           {
-            DestinationCidrBlock: "0.0.0.0/0",
-            GatewayId: "igw-xxxxxx",
-            Origin: "CreateRoute",
-            State: "active"
-          }
+            DestinationCidrBlock: '0.0.0.0/0',
+            GatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
         ],
       },
     ],
   });
 
   // WHEN
-  const result = await provider.getValue({ filter });
+  const result = await provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  });
 
   // THEN
   expect(result).toEqual({
@@ -217,7 +228,7 @@ function mockVpcLookup(options: VpcLookupOptions) {
     expect(params.Filters).toEqual([
       { Name: 'attachment.vpc-id', Values: [ VpcId ] },
       { Name: 'attachment.state', Values: [ 'attached' ] },
-      { Name: 'state', Values: [ 'available' ] }
+      { Name: 'state', Values: [ 'available' ] },
     ]);
     return cb(null, { VpnGateways: options.vpnGateways });
   });

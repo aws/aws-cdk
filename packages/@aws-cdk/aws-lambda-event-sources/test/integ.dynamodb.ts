@@ -12,7 +12,7 @@ class DynamoEventSourceTest extends cdk.Stack {
     const queue = new dynamodb.Table(this, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
       stream: dynamodb.StreamViewType.NEW_IMAGE,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -20,7 +20,7 @@ class DynamoEventSourceTest extends cdk.Stack {
 
     fn.addEventSource(new DynamoEventSource(queue, {
       batchSize: 5,
-      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
     }));
   }
 }

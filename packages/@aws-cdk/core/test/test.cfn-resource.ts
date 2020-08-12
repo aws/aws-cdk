@@ -17,14 +17,14 @@ export = nodeunit.testCase({
       test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
         Resources: {
           DefaultResource: {
-            Type: 'Test::Resource::Fake'
-          }
-        }
+            Type: 'Test::Resource::Fake',
+          },
+        },
       });
-      test.ok(called, `renderProperties must be called called`);
+      test.ok(called, 'renderProperties must be called called');
 
       test.done();
-    }
+    },
   },
 
   'applyRemovalPolicy default includes Update policy'(test: nodeunit.Test) {
@@ -43,8 +43,8 @@ export = nodeunit.testCase({
           Type: 'Test::Resource::Fake',
           DeletionPolicy: 'Retain',
           UpdateReplacePolicy: 'Retain',
-        }
-      }
+        },
+      },
     });
 
     test.done();
@@ -58,7 +58,7 @@ export = nodeunit.testCase({
 
     // WHEN
     resource.applyRemovalPolicy(core.RemovalPolicy.RETAIN, {
-      applyToUpdateReplacePolicy: false
+      applyToUpdateReplacePolicy: false,
     });
 
     // THEN
@@ -67,8 +67,61 @@ export = nodeunit.testCase({
         DefaultResource: {
           Type: 'Test::Resource::Fake',
           DeletionPolicy: 'Retain',
-        }
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'can add metadata'(test: nodeunit.Test) {
+    // GIVEN
+    const app = new core.App();
+    const stack = new core.Stack(app, 'TestStack');
+    const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
+
+    // WHEN
+    resource.addMetadata('Beep', 'Boop');
+
+    // THEN
+    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
+      Resources: {
+        DefaultResource: {
+          Type: 'Test::Resource::Fake',
+          Metadata: {
+            Beep: 'Boop',
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included'(test: nodeunit.Test) {
+    // GIVEN
+    class HiddenCfnResource extends core.CfnResource {
+      protected shouldSynthesize() {
+        return false;
       }
+    }
+
+    const app = new core.App();
+    const stack = new core.Stack(app, 'TestStack');
+    const subtree = new core.Construct(stack, 'subtree');
+
+    // WHEN
+    new HiddenCfnResource(subtree, 'R1', { type: 'Foo::R1' });
+    const r2 = new core.CfnResource(stack, 'R2', { type: 'Foo::R2' });
+
+    // also try to take a dependency on the parent of `r1` and expect the dependency not to materialize
+    r2.construct.addDependency(subtree);
+
+    // THEN - only R2 is synthesized
+    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
+      Resources: { R2: { Type: 'Foo::R2' } },
+
+      // No DependsOn!
     });
 
     test.done();

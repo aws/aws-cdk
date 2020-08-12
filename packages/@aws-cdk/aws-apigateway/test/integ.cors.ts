@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
 import * as path from 'path';
@@ -12,7 +13,7 @@ class TestStack extends Stack {
     const handler = new lambda.Function(this, 'handler', {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, 'integ.cors.handler'))
+      code: lambda.Code.fromAsset(path.join(__dirname, 'integ.cors.handler')),
     });
 
     const twitch = api.root.addResource('twitch');

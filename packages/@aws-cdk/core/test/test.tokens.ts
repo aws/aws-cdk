@@ -5,6 +5,7 @@ import { Intrinsic } from '../lib/private/intrinsic';
 import { findTokens } from '../lib/private/resolve';
 import { IResolvable } from '../lib/resolvable';
 import { evaluateCFN } from './evaluate-cfn';
+import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
 export = {
   'resolve a plain old object should just return the object'(test: Test) {
@@ -16,12 +17,12 @@ export = {
   'if a value is an object with a token value, it will be evaluated'(test: Test) {
     const obj = {
       RegularValue: 'hello',
-      LazyValue: new Intrinsic('World')
+      LazyValue: new Intrinsic('World'),
     };
 
     test.deepEqual(resolve(obj), {
       RegularValue: 'hello',
-      LazyValue: 'World'
+      LazyValue: 'World',
     });
 
     test.done();
@@ -34,20 +35,20 @@ export = {
     test.deepEqual(actual, {
       Obj: [
         {
-        Data: {
-          stringProp: "hello",
-          numberProp: 1234
-        },
-        Recurse: 42
+          Data: {
+            stringProp: 'hello',
+            numberProp: 1234,
+          },
+          Recurse: 42,
         },
         {
-        Data: {
-          stringProp: "hello",
-          numberProp: 1234
+          Data: {
+            stringProp: 'hello',
+            numberProp: 1234,
+          },
+          Recurse: 42,
         },
-        Recurse: 42
-        }
-      ]
+      ],
     });
 
     test.done();
@@ -60,20 +61,20 @@ export = {
     test.deepEqual(actual, {
       Obj: [
         {
-        Data: {
-          stringProp: "hello",
-          numberProp: 1234
-        },
-        Recurse: 42
+          Data: {
+            stringProp: 'hello',
+            numberProp: 1234,
+          },
+          Recurse: 42,
         },
         {
-        Data: {
-          stringProp: "hello",
-          numberProp: 1234
+          Data: {
+            stringProp: 'hello',
+            numberProp: 1234,
+          },
+          Recurse: 42,
         },
-        Recurse: 42
-        }
-      ]
+      ],
     });
 
     test.done();
@@ -92,9 +93,9 @@ export = {
         PropA: { },
         PropB: {
           PropC: [ undefined, undefined ],
-          PropD: 'Yoohoo'
-        }
-      }
+          PropD: 'Yoohoo',
+        },
+      },
     };
 
     test.deepEqual(resolve(obj), {
@@ -106,9 +107,9 @@ export = {
         PropA: { },
         PropB: {
           PropC: [ ],
-          PropD: 'Yoohoo'
-        }
-      }
+          PropD: 'Yoohoo',
+        },
+      },
     });
 
     test.done();
@@ -120,7 +121,7 @@ export = {
     test.done();
   },
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   'if a resolvable object inherits from a class that is also resolvable, the "constructor" function will not get in the way (uses Object.keys instead of "for in")'(test: Test) {
     test.deepEqual(resolve({ prop: new DataType() }), { prop: { foo: 12, goo: 'hello' } });
     test.done();
@@ -180,14 +181,14 @@ export = {
 
     // THEN
     test.deepEqual(resolved, {
-      'Fn::Join': ['', ['The dog says: ', { woof: 'woof' }]]
+      'Fn::Join': ['', ['The dog says: ', { woof: 'woof' }]],
     });
     test.done();
   },
 
   'Doubly nested strings evaluate correctly in scalar context'(test: Test) {
     // GIVEN
-    const token1 = new Intrinsic( "world");
+    const token1 = new Intrinsic( 'world');
     const token2 = new Intrinsic( `hello ${token1}`);
 
     // WHEN
@@ -195,8 +196,8 @@ export = {
     const resolved2 = resolve(token2);
 
     // THEN
-    test.deepEqual(evaluateCFN(resolved1), "hello world");
-    test.deepEqual(evaluateCFN(resolved2), "hello world");
+    test.deepEqual(evaluateCFN(resolved1), 'hello world');
+    test.deepEqual(evaluateCFN(resolved2), 'hello world');
 
     test.done();
   },
@@ -262,7 +263,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom ${token}`
+      [token.toString()]: `boom ${token}`,
     };
 
     // THEN
@@ -276,7 +277,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom ${token}`
+      [token.toString()]: `boom ${token}`,
     };
 
     // THEN
@@ -291,7 +292,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom chicago`
+      [token.toString()]: 'boom chicago',
     };
 
     // THEN
@@ -306,7 +307,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom chicago`
+      [token.toString()]: 'boom chicago',
     };
 
     // THEN
@@ -322,7 +323,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom ${token}`
+      [token.toString()]: `boom ${token}`,
     };
 
     // THEN
@@ -337,12 +338,12 @@ export = {
 
       // WHEN
       const struct = {
-        XYZ: Token.asList(token)
+        XYZ: Token.asList(token),
       };
 
       // THEN
       test.deepEqual(resolve(struct), {
-        XYZ: { Ref: 'Other'}
+        XYZ: { Ref: 'Other'},
       });
 
       test.done();
@@ -389,7 +390,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        'Fn::Select': [1, { Ref: 'Other'}]
+        'Fn::Select': [1, { Ref: 'Other'}],
       });
 
       test.done();
@@ -404,7 +405,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        'Fn::Join': ['/', { Ref: 'Other'}]
+        'Fn::Join': ['/', { Ref: 'Other'}],
       });
 
       test.done();
@@ -419,7 +420,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        'Fn::Join': ['/', { Ref: 'Other'}]
+        'Fn::Join': ['/', { Ref: 'Other'}],
       });
 
       test.done();
@@ -487,7 +488,9 @@ export = {
       return fn2();
     }
 
+    const previousValue = reEnableStackTraceCollection();
     const token = fn1();
+    restoreStackTraceColection(previousValue);
     test.ok(token.creationTrace.find(x => x.includes('fn1')));
     test.ok(token.creationTrace.find(x => x.includes('fn2')));
     test.done();
@@ -509,7 +512,10 @@ export = {
       }
       return fn2();
     }
+
+    const previousValue = reEnableStackTraceCollection();
     const token = fn1();
+    restoreStackTraceColection(previousValue);
     test.throws(() => token.throwError('message!'), /Token created:/);
     test.done();
   },
@@ -522,7 +528,7 @@ export = {
       1234,
       { an_object: 1234 },
       [ 1, 2, 3 ],
-      false
+      false,
     ];
 
     for (const input of inputs) {
@@ -588,12 +594,15 @@ export = {
       return Lazy.stringValue({ produce: () => { throw new Error('fooError'); } });
     }
 
+    const previousValue = reEnableStackTraceCollection();
     const x = showMeInTheStackTrace();
     let message;
     try {
       resolve(x);
     } catch (e) {
       message = e.message;
+    } finally {
+      restoreStackTraceColection(previousValue);
     }
 
     test.ok(message && message.includes('showMeInTheStackTrace'));
@@ -608,7 +617,7 @@ export = {
 
     'converts tokenized number to string'(test: Test) {
       test.equal(resolve(Tokenization.stringifyNumber({
-        resolve: () => 100
+        resolve: () => 100,
       } as any)), '100');
       test.done();
     },
@@ -627,7 +636,7 @@ export = {
     'lazy Ref remains the same'(test: Test) {
       const resolvedVal = { Ref: 'SomeLogicalId' };
       const tokenizedVal = Lazy.anyValue({
-        produce: () => resolvedVal
+        produce: () => resolvedVal,
       });
       const res = Tokenization.stringifyNumber(tokenizedVal as any) as any;
       test.notDeepEqual(res, resolvedVal);
@@ -643,7 +652,7 @@ export = {
       test.deepEqual(resolve(res), resolvedVal);
       test.done();
     },
-  }
+  },
 };
 
 class Promise2 implements IResolvable {
@@ -655,7 +664,7 @@ class Promise2 implements IResolvable {
         stringProp: 'hello',
         numberProp: 1234,
       },
-      Recurse: new Intrinsic( 42)
+      Recurse: new Intrinsic( 42),
     };
   }
 }
@@ -688,7 +697,7 @@ class DataType extends BaseDataType {
 function tokensThatResolveTo(value: any): Token[] {
   return [
     new Intrinsic(value),
-    Lazy.anyValue({ produce: () => value })
+    Lazy.anyValue({ produce: () => value }),
   ];
 }
 

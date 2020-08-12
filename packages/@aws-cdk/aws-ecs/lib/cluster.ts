@@ -2,6 +2,7 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
@@ -104,7 +105,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
-    const clusterSettings = containerInsights ? [{name: "containerInsights", value: "enabled"}] : undefined;
+    const clusterSettings = containerInsights ? [{name: 'containerInsights', value: 'enabled'}] : undefined;
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
@@ -125,7 +126,7 @@ export class Cluster extends Resource implements ICluster {
       : undefined;
 
     this._autoscalingGroup = props.capacity !== undefined
-      ? this.addCapacity("DefaultAutoScalingGroup", props.capacity)
+      ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
       : undefined;
   }
 
@@ -136,7 +137,7 @@ export class Cluster extends Resource implements ICluster {
    */
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultCloudMapNamespace !== undefined) {
-      throw new Error("Can only add default namespace once.");
+      throw new Error('Can only add default namespace once.');
     }
 
     const namespaceType = options.type !== undefined
@@ -146,7 +147,7 @@ export class Cluster extends Resource implements ICluster {
     const sdNamespace = namespaceType === cloudmap.NamespaceType.DNS_PRIVATE ?
       new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
         name: options.name,
-        vpc: this.vpc
+        vpc: this.vpc,
       }) :
       new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
         name: options.name,
@@ -212,20 +213,45 @@ export class Cluster extends Resource implements ICluster {
 
     // ECS instances must be able to do these things
     // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
+    // But, scoped down to minimal permissions required.
+    //  Notes:
+    //   - 'ecs:CreateCluster' removed. The cluster already exists.
     autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
       actions: [
-        "ecs:CreateCluster",
-        "ecs:DeregisterContainerInstance",
-        "ecs:DiscoverPollEndpoint",
-        "ecs:Poll",
-        "ecs:RegisterContainerInstance",
-        "ecs:StartTelemetrySession",
-        "ecs:Submit*",
-        "ecr:GetAuthorizationToken",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
+        'ecs:DeregisterContainerInstance',
+        'ecs:RegisterContainerInstance',
+        'ecs:Submit*',
       ],
-      resources: ['*']
+      resources: [
+        this.clusterArn,
+      ],
+    }));
+    autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
+        // These act on a cluster instance, and the instance doesn't exist until the service starts.
+        // Thus, scope to the cluster using a condition.
+        // See: https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazonelasticcontainerservice.html
+        'ecs:Poll',
+        'ecs:StartTelemetrySession',
+      ],
+      resources: ['*'],
+      conditions: {
+        ArnEquals: { 'ecs:cluster': this.clusterArn },
+      },
+    }));
+    autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
+        // These do not support resource constraints, and must be resource '*'
+        'ecs:DiscoverPollEndpoint',
+        'ecr:GetAuthorizationToken',
+        // Preserved for backwards compatibility.
+        // Users are able to enable cloudwatch agent using CDK. Existing
+        // customers might be installing CW agent as part of user-data so if we
+        // remove these permissions we will break that customer use cases.
+        'logs:CreateLogStream',
+        'logs:PutLogEvents',
+      ],
+      resources: ['*'],
     }));
 
     // 0 disables, otherwise forward to underlying implementation which picks the sane default
@@ -233,7 +259,8 @@ export class Cluster extends Resource implements ICluster {
       new InstanceDrainHook(autoScalingGroup, 'DrainECSHook', {
         autoScalingGroup,
         cluster: this,
-        drainTime: options.taskDrainTime
+        drainTime: options.taskDrainTime,
+        topicEncryptionKey: options.topicEncryptionKey,
       });
     }
   }
@@ -278,7 +305,7 @@ export class Cluster extends Resource implements ICluster {
       namespace: 'AWS/ECS',
       metricName,
       dimensions: { ClusterName: this.clusterName },
-      ...props
+      ...props,
     }).attachTo(this);
   }
 }
@@ -346,7 +373,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
     if (props && props.generation) {      // generation defined in the props object
       if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error(`Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead`);
+        throw new Error('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
       } else if (props.windowsVersion) {
         throw new Error('"windowsVersion" and Linux image "generation" cannot be both set');
       } else {
@@ -364,13 +391,13 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     }
 
     // set the SSM parameter name
-    this.amiParameterName = "/aws/service/ecs/optimized-ami/"
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "")
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "")
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "")
-      + (this.hwType === AmiHardwareType.GPU ? "gpu/" : "")
-      + (this.hwType === AmiHardwareType.ARM ? "arm64/" : "")
-      + "recommended/image_id";
+    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
+      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
+      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
+      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
+      + 'recommended/image_id';
   }
 
   /**
@@ -378,9 +405,11 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
       imageId: ami,
-      osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
+      osType,
+      userData: ec2.UserData.forOperatingSystem(osType),
     };
   }
 }
@@ -435,13 +464,13 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     }
 
     // set the SSM parameter name
-    this.amiParameterName = "/aws/service/ecs/optimized-ami/"
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "")
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "")
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "")
-      + (this.hwType === AmiHardwareType.GPU ? "gpu/" : "")
-      + (this.hwType === AmiHardwareType.ARM ? "arm64/" : "")
-      + "recommended/image_id";
+    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
+      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
+      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
+      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
+      + 'recommended/image_id';
   }
 
   /**
@@ -449,9 +478,11 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
       imageId: ami,
-      osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
+      osType,
+      userData: ec2.UserData.forOperatingSystem(osType),
     };
   }
 }
@@ -593,11 +624,11 @@ class ImportedCluster extends Resource implements ICluster {
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
       service: 'ecs',
       resource: 'cluster',
-      resourceName: props.clusterName
+      resourceName: props.clusterName,
     });
 
     this.connections = new ec2.Connections({
-      securityGroups: props.securityGroups
+      securityGroups: props.securityGroups,
     });
   }
 
@@ -637,6 +668,16 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @default false
    */
   readonly spotInstanceDraining?: boolean
+
+  /**
+   * If {@link AddAutoScalingGroupCapacityOptions.taskDrainTime} is non-zero, then the ECS cluster creates an
+   * SNS Topic to as part of a system to drain instances of tasks when the instance is being shut down.
+   * If this property is provided, then this key will be used to encrypt the contents of that SNS Topic.
+   * See [SNS Data Encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-data-encryption.html) for more information.
+   *
+   * @default The SNS Topic will not be encrypted.
+   */
+  readonly topicEncryptionKey?: kms.IKey;
 }
 
 /**

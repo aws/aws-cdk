@@ -11,3 +11,4 @@ nyc.config.js
 dist
 .LAST_PACKAGE
 *.snk
+!.eslintrc.js

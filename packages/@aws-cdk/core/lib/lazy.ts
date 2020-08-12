@@ -1,6 +1,6 @@
-import { IResolvable, IResolveContext } from "./resolvable";
+import { IResolvable, IResolveContext } from './resolvable';
 import { captureStackTrace } from './stack-trace';
-import { Token } from "./token";
+import { Token } from './token';
 
 /**
  * Interface for lazy string producers

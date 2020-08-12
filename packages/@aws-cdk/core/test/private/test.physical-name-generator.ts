@@ -116,7 +116,7 @@ export = nodeunit.testCase({
       test.ok(!isGeneratedWhenNeededMarker(Lazy.stringValue({ produce: () => 'Bazinga!' })));
 
       test.done();
-    }
+    },
   },
 });
 

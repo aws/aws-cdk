@@ -33,8 +33,8 @@ export = {
         MyResource1: { Type: 'ResourceType1', Properties: { P1: 1, P2: 2 } },
         MyResource2: { Type: 'ResourceType2' },
         MyResource3: { Type: 'ResourceType3', Properties: { P3: 'Hello' } } },
-       Outputs: {
-         MyOutput: { Description: 'Out!', Value: 'hey' } } });
+      Outputs: {
+        MyOutput: { Description: 'Out!', Value: 'hey' } } });
 
     test.done();
   },
@@ -50,14 +50,38 @@ export = {
     test.throws(() => toCloudFormation(stack));
     test.done();
   },
+
+  'correctly merges template sections that contain strings'(test: Test) {
+    const stack = new Stack();
+
+    new CfnInclude(stack, 'T1', {
+      template: {
+        AWSTemplateFormatVersion: '2010-09-09',
+        Description: 'Test 1',
+      },
+    });
+    new CfnInclude(stack, 'T2', {
+      template: {
+        AWSTemplateFormatVersion: '2010-09-09',
+        Description: 'Test 2',
+      },
+    });
+
+    test.deepEqual(toCloudFormation(stack), {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'Test 1\nTest 2',
+    });
+
+    test.done();
+  },
 };
 
 const template = {
   Parameters: {
     MyParam: {
       Type: 'String',
-      Default: 'Hello'
-    }
+      Default: 'Hello',
+    },
   },
   Resources: {
     MyResource1: {
@@ -65,12 +89,12 @@ const template = {
       Properties: {
         P1: 1,
         P2: 2,
-      }
+      },
     },
     MyResource2: {
-      Type: 'ResourceType2'
-    }
-  }
+      Type: 'ResourceType2',
+    },
+  },
 };
 
 /**
@@ -79,17 +103,17 @@ const template = {
  */
 function clone(obj: any): any {
   switch (typeof obj) {
-  case 'object':
-    if (Array.isArray(obj)) {
-      return obj.map(elt => clone(elt));
-    } else {
-      const cloned: any = {};
-      for (const key of Object.keys(obj)) {
-        cloned[key] = clone(obj[key]);
+    case 'object':
+      if (Array.isArray(obj)) {
+        return obj.map(elt => clone(elt));
+      } else {
+        const cloned: any = {};
+        for (const key of Object.keys(obj)) {
+          cloned[key] = clone(obj[key]);
+        }
+        return cloned;
       }
-      return cloned;
-    }
-  default:
-    return obj;
+    default:
+      return obj;
   }
 }

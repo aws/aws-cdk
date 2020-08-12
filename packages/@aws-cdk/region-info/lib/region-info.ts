@@ -59,10 +59,27 @@ export class RegionInfo {
   }
 
   /**
+   * The prefix for VPC Endpoint Service names,
+   * cn.com.amazonaws.vpce for China regions,
+   * com.amazonaws.vpce otherwise.
+   */
+  public get vpcEndpointServiceNamePrefix(): string | undefined {
+    return Fact.find(this.name, FactName.VPC_ENDPOINT_SERVICE_NAME_PREFIX);
+  }
+
+  /**
    * The name of the service principal for a given service in this region.
    * @param service the service name (e.g: s3.amazonaws.com)
    */
   public servicePrincipal(service: string): string | undefined {
     return Fact.find(this.name, FactName.servicePrincipal(service));
+  }
+
+  /**
+   * The account ID for ELBv2 in this region
+   *
+   */
+  public get elbv2Account(): string | undefined {
+    return Fact.find(this.name, FactName.ELBV2_ACCOUNT);
   }
 }

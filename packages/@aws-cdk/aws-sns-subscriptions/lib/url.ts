@@ -51,13 +51,17 @@ export class UrlSubscription implements sns.ITopicSubscription {
     }
   }
 
+  /**
+   * Returns a configuration for a URL to subscribe to an SNS topic
+   */
   public bind(_topic: sns.ITopic): sns.TopicSubscriptionConfig {
     return {
-      subscriberId: this.unresolvedUrl ? 'UnresolvedUrl' : this.url,
+      subscriberId: this.url,
       endpoint: this.url,
       protocol: this.protocol,
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
+      deadLetterQueue: this.props.deadLetterQueue,
     };
   }
 }

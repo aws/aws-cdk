@@ -1,0 +1,9 @@
+"registrydependency1@^1.2.3":
+  version "1.2.999"
+  resolved "https://registry.bla.com/stuff"
+  integrity sha512-banana
+
+"registrydependency2@^2.3.4":
+  version "2.3.999"
+  resolved "https://registry.bla.com/stuff"
+  integrity sha512-pineapple

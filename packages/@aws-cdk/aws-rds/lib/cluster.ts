@@ -1,13 +1,16 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { CfnDeletionPolicy, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, RotationMultiUserOptions } from './props';
+import { BackupProps, InstanceProps, Login, RotationMultiUserOptions } from './props';
+import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
 /**
@@ -17,14 +20,7 @@ export interface DatabaseClusterProps {
   /**
    * What kind of database to start
    */
-  readonly engine: DatabaseClusterEngine;
-
-  /**
-   * What version of the database to start
-   *
-   * @default - The default for the engine is used.
-   */
-  readonly engineVersion?: string;
+  readonly engine: IClusterEngine;
 
   /**
    * How many replicas/instances to create
@@ -87,19 +83,19 @@ export interface DatabaseClusterProps {
   readonly defaultDatabaseName?: string;
 
   /**
-   * Whether to enable storage encryption
+   * Whether to enable storage encryption.
    *
-   * @default false
+   * @default - true if storageEncryptionKey is provided, false otherwise
    */
   readonly storageEncrypted?: boolean
 
   /**
-   * The KMS key for storage encryption. If specified `storageEncrypted`
-   * will be set to `true`.
+   * The KMS key for storage encryption.
+   * If specified, {@link storageEncrypted} will be set to `true`.
    *
-   * @default - default master key.
+   * @default - if storageEncrypted is true then the default master key, no key otherwise
    */
-  readonly kmsKey?: kms.IKey;
+  readonly storageEncryptionKey?: kms.IKey;
 
   /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
@@ -123,9 +119,9 @@ export interface DatabaseClusterProps {
    * The removal policy to apply when the cluster and its instances are removed
    * from the stack or replaced during an update.
    *
-   * @default - Retain cluster.
+   * @default - RemovalPolicy.SNAPSHOT (remove the cluster and instances, but retain a snapshot of the data)
    */
-  readonly removalPolicy?: RemovalPolicy
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
    * The interval, in seconds, between points when Amazon RDS collects enhanced
@@ -141,6 +137,68 @@ export interface DatabaseClusterProps {
    * @default - A role is automatically created for you
    */
   readonly monitoringRole?: IRole;
+
+  /**
+   * Role that will be associated with this DB cluster to enable S3 import.
+   * This feature is only supported by the Aurora database engine.
+   *
+   * This property must not be used if `s3ImportBuckets` is used.
+   *
+   * For MySQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html
+   *
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html
+   *
+   * @default - New role is created if `s3ImportBuckets` is set, no role is defined otherwise
+   */
+  readonly s3ImportRole?: IRole;
+
+  /**
+   * S3 buckets that you want to load data from. This feature is only supported by the Aurora database engine.
+   *
+   * This property must not be used if `s3ImportRole` is used.
+   *
+   * For MySQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html
+   *
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html
+   *
+   * @default - None
+   */
+  readonly s3ImportBuckets?: s3.IBucket[];
+
+  /**
+   * Role that will be associated with this DB cluster to enable S3 export.
+   * This feature is only supported by the Aurora database engine.
+   *
+   * This property must not be used if `s3ExportBuckets` is used.
+   *
+   * For MySQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html
+   *
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html
+   *
+   * @default - New role is created if `s3ExportBuckets` is set, no role is defined otherwise
+   */
+  readonly s3ExportRole?: IRole;
+
+  /**
+   * S3 buckets that you want to load data into. This feature is only supported by the Aurora database engine.
+   *
+   * This property must not be used if `s3ExportRole` is used.
+   *
+   * For MySQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html
+   *
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html
+   *
+   * @default - None
+   */
+  readonly s3ExportBuckets?: s3.IBucket[];
 }
 
 /**
@@ -177,9 +235,14 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
   public abstract readonly connections: ec2.Connections;
 
   /**
-   * Security group identifier of this database
+   * Add a new db proxy to this cluster.
    */
-  public abstract readonly securityGroupId: string;
+  public addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy {
+    return new DatabaseProxy(this, id, {
+      proxyTarget: ProxyTarget.fromCluster(this),
+      ...options,
+    });
+  }
 
   /**
    * Renders the secret attachment target specifications.
@@ -187,7 +250,7 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.clusterIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.RDS_DB_CLUSTER
+      targetType: secretsmanager.AttachmentTargetType.RDS_DB_CLUSTER,
     };
   }
 }
@@ -205,15 +268,14 @@ export class DatabaseCluster extends DatabaseClusterBase {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
-        securityGroups: [attrs.securityGroup],
-        defaultPort: this.defaultPort
+        securityGroups: attrs.securityGroups,
+        defaultPort: this.defaultPort,
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
       public readonly instanceIdentifiers: string[] = [];
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
       public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
       public readonly instanceEndpoints = attrs.instanceEndpointAddresses.map(a => new Endpoint(a, attrs.port));
-      public readonly securityGroupId = attrs.securityGroup.securityGroupId;
     }
 
     return new Import(scope, id);
@@ -250,11 +312,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
   public readonly connections: ec2.Connections;
 
   /**
-   * Security group identifier of this database
-   */
-  public readonly securityGroupId: string;
-
-  /**
    * The secret attached to this cluster
    */
   public readonly secret?: secretsmanager.ISecret;
@@ -269,6 +326,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   /**
    * The subnets used by the DB subnet group.
+   *
+   * @default - the Vpc default strategy if not specified.
    */
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -282,60 +341,118 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnetIds.length < 2) {
-      throw new Error(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
+      this.construct.addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
       dbSubnetGroupDescription: `Subnets for ${id} database`,
       subnetIds,
     });
+    if (props.removalPolicy === RemovalPolicy.RETAIN) {
+      subnetGroup.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    }
 
-    const securityGroup = props.instanceProps.securityGroup !== undefined ?
-    props.instanceProps.securityGroup : new ec2.SecurityGroup(this, 'SecurityGroup', {
-      description: 'RDS security group',
-      vpc: props.instanceProps.vpc
-    });
-    this.securityGroupId = securityGroup.securityGroupId;
+    const securityGroups = props.instanceProps.securityGroups ?? [
+      new ec2.SecurityGroup(this, 'SecurityGroup', {
+        description: 'RDS security group',
+        vpc: props.instanceProps.vpc,
+      }),
+    ];
 
     let secret: DatabaseSecret | undefined;
     if (!props.masterUser.password) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
-        encryptionKey: props.masterUser.kmsKey
+        encryptionKey: props.masterUser.encryptionKey,
       });
     }
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
+    let s3ImportRole = props.s3ImportRole;
+    if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
+      if (props.s3ImportRole) {
+        throw new Error('Only one of s3ImportRole or s3ImportBuckets must be specified, not both.');
+      }
+
+      s3ImportRole = new Role(this, 'S3ImportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+      for (const bucket of props.s3ImportBuckets) {
+        bucket.grantRead(s3ImportRole);
+      }
+    }
+
+    let s3ExportRole = props.s3ExportRole;
+    if (props.s3ExportBuckets && props.s3ExportBuckets.length > 0) {
+      if (props.s3ExportRole) {
+        throw new Error('Only one of s3ExportRole or s3ExportBuckets must be specified, not both.');
+      }
+
+      s3ExportRole = new Role(this, 'S3ExportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+      for (const bucket of props.s3ExportBuckets) {
+        bucket.grantReadWrite(s3ExportRole);
+      }
+    }
+
+    const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
+    if (s3ImportRole || s3ExportRole) {
+      if (s3ImportRole) {
+        clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn });
+      }
+      if (s3ExportRole) {
+        clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn });
+      }
+    }
+
+    // bind the engine to the Cluster
+    const clusterEngineBindConfig = props.engine.bindToCluster(this, {
+      s3ImportRole,
+      s3ExportRole,
+      parameterGroup: props.parameterGroup,
+    });
+    const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
+    const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
+
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
-      engine: props.engine.name,
-      engineVersion: props.engineVersion,
+      engine: props.engine.engineType,
+      engineVersion: props.engine.engineVersion?.fullVersion,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
-      vpcSecurityGroupIds: [this.securityGroupId],
-      port: props.port,
-      dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
+      vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+      port: props.port ?? clusterEngineBindConfig.port,
+      dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
+      associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').toString()
         : (props.masterUser.password
-            ? props.masterUser.password.toString()
-            : undefined),
+          ? props.masterUser.password.toString()
+          : undefined),
       backupRetentionPeriod: props.backup && props.backup.retention && props.backup.retention.toDays(),
       preferredBackupWindow: props.backup && props.backup.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
       // Encryption
-      kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
-      storageEncrypted: props.kmsKey ? true : props.storageEncrypted
+      kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
+      storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
-    cluster.applyRemovalPolicy(props.removalPolicy, {
-      applyToUpdateReplacePolicy: true
-    });
+    // if removalPolicy was not specified,
+    // leave it as the default, which is Snapshot
+    if (props.removalPolicy) {
+      cluster.applyRemovalPolicy(props.removalPolicy);
+    } else {
+      // The CFN default makes sense for DeletionPolicy,
+      // but doesn't cover UpdateReplacePolicy.
+      // Fix that here.
+      cluster.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
+    }
 
     this.clusterIdentifier = cluster.ref;
 
@@ -358,53 +475,59 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     let monitoringRole;
     if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
-      monitoringRole = props.monitoringRole || new Role(this, "MonitoringRole", {
-        assumedBy: new ServicePrincipal("monitoring.rds.amazonaws.com"),
+      monitoringRole = props.monitoringRole || new Role(this, 'MonitoringRole', {
+        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
         managedPolicies: [
-          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
-        ]
+          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
+        ],
       });
     }
 
+    const instanceType = props.instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
+    const instanceParameterGroupConfig = props.instanceProps.parameterGroup?.bindToInstance({});
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
       const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}` :
-                     props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
-                     undefined;
+        props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
+          undefined;
 
       const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
-        engine: props.engine.name,
-        engineVersion: props.engineVersion,
+        engine: props.engine.engineType,
+        engineVersion: props.engine.engineVersion?.fullVersion,
         dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
-        dbInstanceClass: databaseInstanceType(props.instanceProps.instanceType),
+        dbInstanceClass: databaseInstanceType(instanceType),
         publiclyAccessible,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
-        dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
+        dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
         monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
-        monitoringRoleArn: monitoringRole && monitoringRole.roleArn
+        monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
       });
 
-      instance.applyRemovalPolicy(props.removalPolicy, {
-        applyToUpdateReplacePolicy: true
-      });
+      // If removalPolicy isn't explicitly set,
+      // it's Snapshot for Cluster.
+      // Because of that, in this case,
+      // we can safely use the CFN default of Delete for DbInstances with dbClusterIdentifier set.
+      if (props.removalPolicy) {
+        instance.applyRemovalPolicy(props.removalPolicy);
+      }
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
-      instance.node.addDependency(internetConnected);
+      instance.construct.addDependency(internetConnected);
 
       this.instanceIdentifiers.push(instance.ref);
       this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
     }
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
-    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPort });
+    this.connections = new ec2.Connections({ securityGroups, defaultPort });
   }
 
   /**
@@ -419,7 +542,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     const id = 'RotationSingleUser';
-    const existing = this.node.tryFindChild(id);
+    const existing = this.construct.tryFindChild(id);
     if (existing) {
       throw new Error('A single user rotation was already added to this cluster.');
     }

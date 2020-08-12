@@ -15,13 +15,13 @@ const service = namespace.createService('Service', {
   healthCheck: {
     type: servicediscovery.HealthCheckType.HTTPS,
     resourcePath: '/healthcheck',
-    failureThreshold: 2
-  }
+    failureThreshold: 2,
+  },
 });
 
 service.registerIpInstance('IpInstance', {
   ipv4: '54.239.25.192',
-  port: 443
+  port: 443,
 });
 
 app.synth();

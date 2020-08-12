@@ -6,34 +6,6 @@
         "Name": "cors-api-test"
       }
     },
-    "corsapitestDeployment2BF1633A197b7a426736ab40a59d8a41c2d3d50d": {
-      "Type": "AWS::ApiGateway::Deployment",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "corsapitest8682546E"
-        },
-        "Description": "Automatically created by the RestApi construct"
-      },
-      "DependsOn": [
-        "corsapitesttwitchDELETEB4C94228",
-        "corsapitesttwitchGET4270341B",
-        "corsapitesttwitchOPTIONSE5EEB527",
-        "corsapitesttwitchPOSTB52CFB02",
-        "corsapitesttwitch0E3D1559"
-      ]
-    },
-    "corsapitestDeploymentStageprod8F31F2AB": {
-      "Type": "AWS::ApiGateway::Stage",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "corsapitest8682546E"
-        },
-        "DeploymentId": {
-          "Ref": "corsapitestDeployment2BF1633A197b7a426736ab40a59d8a41c2d3d50d"
-        },
-        "StageName": "prod"
-      }
-    },
     "corsapitestCloudWatchRole9AF5A81A": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -78,6 +50,34 @@
       "DependsOn": [
         "corsapitest8682546E"
       ]
+    },
+    "corsapitestDeployment2BF1633A228079ea05e5799220dd4ca13512b92d": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "corsapitest8682546E"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "corsapitesttwitchDELETEB4C94228",
+        "corsapitesttwitchGET4270341B",
+        "corsapitesttwitchOPTIONSE5EEB527",
+        "corsapitesttwitchPOSTB52CFB02",
+        "corsapitesttwitch0E3D1559"
+      ]
+    },
+    "corsapitestDeploymentStageprod8F31F2AB": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "corsapitest8682546E"
+        },
+        "DeploymentId": {
+          "Ref": "corsapitestDeployment2BF1633A228079ea05e5799220dd4ca13512b92d"
+        },
+        "StageName": "prod"
+      }
     },
     "corsapitesttwitch0E3D1559": {
       "Type": "AWS::ApiGateway::Resource",
@@ -528,7 +528,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3Bucket9DD8E176"
+            "Ref": "AssetParametersc7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4fS3BucketE85F411C"
           },
           "S3Key": {
             "Fn::Join": [
@@ -541,7 +541,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3VersionKey0275D4BE"
+                          "Ref": "AssetParametersc7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4fS3VersionKeyF02404BC"
                         }
                       ]
                     }
@@ -554,7 +554,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3VersionKey0275D4BE"
+                          "Ref": "AssetParametersc7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4fS3VersionKeyF02404BC"
                         }
                       ]
                     }
@@ -607,17 +607,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3Bucket9DD8E176": {
+    "AssetParametersc7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4fS3BucketE85F411C": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4\""
+      "Description": "S3 bucket for asset \"c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f\""
     },
-    "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3VersionKey0275D4BE": {
+    "AssetParametersc7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4fS3VersionKeyF02404BC": {
       "Type": "String",
-      "Description": "S3 key for asset version \"90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4\""
+      "Description": "S3 key for asset version \"c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f\""
     },
-    "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4ArtifactHash1D8265F7": {
+    "AssetParametersc7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4fArtifactHash6742F1C9": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4\""
+      "Description": "Artifact hash for asset \"c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f\""
     }
   }
 }

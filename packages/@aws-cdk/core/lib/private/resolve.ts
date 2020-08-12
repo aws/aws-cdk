@@ -1,7 +1,7 @@
-import { IConstruct } from '../construct';
+import { IConstruct } from '../construct-compat';
 import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, StringConcat } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
-import { containsListTokenElement, TokenString, unresolved } from "./encoding";
+import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
@@ -148,7 +148,8 @@ export function resolve(obj: any, options: IResolveOptions): any {
   for (const key of Object.keys(obj)) {
     const resolvedKey = makeContext()[0].resolve(key);
     if (typeof(resolvedKey) !== 'string') {
-      throw new Error(`"${key}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}`);
+      // eslint-disable-next-line max-len
+      throw new Error(`"${key}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`);
     }
 
     const value = makeContext(key)[0].resolve(obj[key]);

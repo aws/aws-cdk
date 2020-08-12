@@ -1,0 +1,90 @@
+{
+  "name": "@aws-cdk/cloud-assembly-schema",
+  "version": "0.0.0",
+  "description": "Cloud Assembly Schema",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.cloudassembly.schema",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-cloud-assembly-schema"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.CloudAssembly.Schema",
+        "packageId": "Amazon.CDK.CloudAssembly.Schema",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.cloud-assembly-schema",
+        "module": "aws_cdk.cloud_assembly_schema"
+      }
+    }
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat",
+    "update-schema": "bash scripts/update-schema.sh"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/jest": "^26.0.4",
+    "@types/mock-fs": "^4.10.0",
+    "cdk-build-tools": "0.0.0",
+    "jest": "^25.5.4",
+    "mock-fs": "^4.12.0",
+    "pkglint": "0.0.0",
+    "typescript-json-schema": "^0.42.0"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/cloud-assembly-schema"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "bundledDependencies": [
+    "jsonschema",
+    "semver"
+  ],
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "stable",
+  "awslint": {
+    "exclude": []
+  },
+  "dependencies": {
+    "jsonschema": "^1.2.5",
+    "semver": "^7.2.2"
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable",
+  "cdk-build": {
+    "jest": true
+  }
+}

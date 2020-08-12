@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
-import { DatabaseInstanceEngine } from './instance';
+import { IInstanceEngine } from './instance-engine';
 import { CfnOptionGroup } from './rds.generated';
 
 /**
@@ -62,13 +62,7 @@ export interface OptionGroupProps {
   /**
    * The database engine that this option group is associated with.
    */
-  readonly engine: DatabaseInstanceEngine;
-
-  /**
-   * The major version number of the database engine that this option group
-   * is associated with.
-   */
-  readonly majorEngineVersion: string;
+  readonly engine: IInstanceEngine;
 
   /**
    * A description of the option group.
@@ -110,11 +104,15 @@ export class OptionGroup extends Resource implements IOptionGroup {
   constructor(scope: Construct, id: string, props: OptionGroupProps) {
     super(scope, id);
 
+    const majorEngineVersion = props.engine.engineVersion?.majorVersion;
+    if (!majorEngineVersion) {
+      throw new Error("OptionGroup cannot be used with an engine that doesn't specify a version");
+    }
     const optionGroup = new CfnOptionGroup(this, 'Resource', {
-      engineName: props.engine.name,
-      majorEngineVersion: props.majorEngineVersion,
-      optionGroupDescription: props.description || `Option group for ${props.engine.name} ${props.majorEngineVersion}`,
-      optionConfigurations: this.renderConfigurations(props.configurations)
+      engineName: props.engine.engineType,
+      majorEngineVersion,
+      optionGroupDescription: props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
+      optionConfigurations: this.renderConfigurations(props.configurations),
     });
 
     this.optionGroupName = optionGroup.ref;
@@ -129,7 +127,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
       let configuration: CfnOptionGroup.OptionConfigurationProperty = {
         optionName: config.name,
         optionSettings: config.settings && Object.entries(config.settings).map(([name, value]) => ({ name, value })),
-        optionVersion: config.version
+        optionVersion: config.version,
       };
 
       if (config.port) {
@@ -139,18 +137,18 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
         const securityGroup = new ec2.SecurityGroup(this, `SecurityGroup${config.name}`, {
           description: `Security group for ${config.name} option`,
-          vpc: config.vpc
+          vpc: config.vpc,
         });
 
         this.optionConnections[config.name] = new ec2.Connections({
           securityGroups: [securityGroup],
-          defaultPort: ec2.Port.tcp(config.port)
+          defaultPort: ec2.Port.tcp(config.port),
         });
 
         configuration = {
           ...configuration,
           port: config.port,
-          vpcSecurityGroupMemberships: [securityGroup.securityGroupId]
+          vpcSecurityGroupMemberships: [securityGroup.securityGroupId],
         };
       }
 

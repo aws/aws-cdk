@@ -42,7 +42,7 @@ export class LambdaDestination implements lambda.IDestination {
       this.fn.grantInvoke(fn);
 
       return {
-        destination: this.fn.functionArn
+        destination: this.fn.functionArn,
       };
     }
 
@@ -62,9 +62,9 @@ export class LambdaDestination implements lambda.IDestination {
       },
       targets: [
         new targets.LambdaFunction(this.fn, {
-          event: events.RuleTargetInput.fromEventPath('$.detail.responsePayload') // Extract response payload
-        })
-      ]
+          event: events.RuleTargetInput.fromEventPath('$.detail.responsePayload'), // Extract response payload
+        }),
+      ],
     });
 
     const destination = new EventBridgeDestination(); // Use default event bus here

@@ -61,23 +61,32 @@ export abstract class RuleTargetInput {
 export interface RuleTargetInputProperties {
   /**
    * Literal input to the target service (must be valid JSON)
+   *
+   * @default - input for the event target. If the input contains a paths map
+   *   values wil be extracted from event and inserted into the `inputTemplate`.
    */
   readonly input?: string;
 
   /**
    * JsonPath to take input from the input event
+   *
+   * @default - None. The entire matched event is passed as input
    */
   readonly inputPath?: string;
 
   /**
    * Input template to insert paths map into
+   *
+   * @default - None.
    */
   readonly inputTemplate?: string;
 
   /**
    * Paths map to extract values from event and insert into `inputTemplate`
+   *
+   * @default - No values extracted from event.
    */
-  readonly inputPathsMap?: {[key: string]: string};
+  readonly inputPathsMap?: { [key: string]: string };
 }
 
 /**
@@ -107,7 +116,7 @@ class LiteralEventInput extends RuleTargetInput {
  *
  * One weird exception: if we're in object context, we MUST skip the quotes
  * around the placeholder. I assume this is so once a trivial string replace is
- * done later on by CWE, numbers are still numbers.
+ * done later on by EventBridge, numbers are still numbers.
  *
  * So in string context:
  *
@@ -167,13 +176,13 @@ class FieldAwareEventInput extends RuleTargetInput {
       // JSONify individual lines
       resolved = Tokenization.resolve(this.input, {
         scope: rule,
-        resolver: new EventFieldReplacer()
+        resolver: new EventFieldReplacer(),
       });
       resolved = resolved.split('\n').map(stack.toJsonString).join('\n');
     } else {
       resolved = stack.toJsonString(Tokenization.resolve(this.input, {
         scope: rule,
-        resolver: new EventFieldReplacer()
+        resolver: new EventFieldReplacer(),
       }));
     }
 
@@ -184,7 +193,7 @@ class FieldAwareEventInput extends RuleTargetInput {
 
     return {
       inputTemplate: this.unquoteKeyPlaceholders(resolved),
-      inputPathsMap
+      inputPathsMap,
     };
   }
 
@@ -285,9 +294,16 @@ export class EventField implements IResolvable {
     return new EventField(path).toString();
   }
 
+  /**
+   * Human readable display hint about the event pattern
+   */
   public readonly displayHint: string;
   public readonly creationStack: string[];
 
+  /**
+   *
+   * @param path the path to a field in the event pattern
+   */
   private constructor(public readonly path: string) {
     this.displayHint = this.path.replace(/^[^a-zA-Z0-9_-]+/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
     Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
@@ -302,6 +318,9 @@ export class EventField implements IResolvable {
     return Token.asString(this, { displayHint: this.displayHint });
   }
 
+  /**
+   * Convert the path to the field in the event pattern to JSON
+   */
   public toJSON() {
     return `<path:${this.path}>`;
   }
@@ -323,5 +342,5 @@ const EVENT_FIELD_SYMBOL = Symbol.for('@aws-cdk/aws-events.EventField');
  * Quote a string for use in a regex
  */
 function regexQuote(s: string) {
-  return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
+  return s.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
 }

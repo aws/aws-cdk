@@ -1,5 +1,5 @@
-import { Assertion } from "../assertion";
-import { Inspector } from "../inspector";
+import { Assertion } from '../assertion';
+import { Inspector } from '../inspector';
 
 export class AndAssertion<InspectorClass extends Inspector> extends Assertion<InspectorClass> {
   public description: string = 'Combined assertion';

@@ -1,7 +1,8 @@
 ---
 name: "\U0001F41B Bug Report"
 about: Report a bug
-labels: bug, status/needs-triage
+title: "[module] "
+labels: bug, needs-triage
 ---
 
 <!--
@@ -17,24 +18,26 @@ description of the bug:
 minimal amount of code that causes the bug (if possible) or a reference:
 -->
 
-
-
-
-### Error Log
+### What did you expect to happen?
 
 <!--
-what is the error message you are seeing?
+What were you trying to achieve by performing the steps above?
 -->
 
+### What actually happened?
 
+<!--
+What is the unexpected behavior you were seeing? If you got an error, paste it here.
+-->
 
 
 ### Environment
 
   - **CLI Version      :**
   - **Framework Version:**
+  - **Node.js Version:** <!-- Version of Node.js (run the command `node -v`) -->
   - **OS               :**
-  - **Language         :**
+  - **Language (Version):** <!-- [all | TypeScript (3.8.3) | Java (8)| Python (3.7.3) | etc... ] -->
 
 ### Other
 

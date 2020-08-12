@@ -47,8 +47,8 @@ abstract class RuleBase extends Resource implements IRule {
     rule.addEventPattern({
       source: ['aws.config'],
       detail: {
-        configRuleName: [this.configRuleName]
-      }
+        configRuleName: [this.configRuleName],
+      },
     });
     rule.addTarget(options.target);
     return rule;
@@ -122,10 +122,10 @@ abstract class RuleNew extends RuleBase {
    * @param identifier the resource identifier
    */
   public scopeToResource(type: string, identifier?: string) {
-    this.scopeTo({
+    this.scope = {
       complianceResourceId: identifier,
       complianceResourceTypes: [type],
-    });
+    };
   }
 
   /**
@@ -136,9 +136,9 @@ abstract class RuleNew extends RuleBase {
    * @param types resource types
    */
   public scopeToResources(...types: string[]) {
-    this.scopeTo({
-      complianceResourceTypes: types
-    });
+    this.scope = {
+      complianceResourceTypes: types,
+    };
   }
 
   /**
@@ -148,18 +148,10 @@ abstract class RuleNew extends RuleBase {
    * @param value the tag value
    */
   public scopeToTag(key: string, value?: string) {
-    this.scopeTo({
+    this.scope = {
       tagKey: key,
-      tagValue: value
-    });
-  }
-
-  private scopeTo(scope: CfnConfigRule.ScopeProperty) {
-    if (!this.isManaged && !this.isCustomWithChanges) {
-      throw new Error('Cannot scope rule when `configurationChanges` is set to false.');
-    }
-
-    this.scope = scope;
+      tagValue: value,
+    };
   }
 }
 
@@ -167,10 +159,30 @@ abstract class RuleNew extends RuleBase {
  * The maximum frequency at which the AWS Config rule runs evaluations.
  */
 export enum MaximumExecutionFrequency {
+
+  /**
+   * 1 hour.
+   */
   ONE_HOUR = 'One_Hour',
+
+  /**
+   * 3 hours.
+   */
   THREE_HOURS = 'Three_Hours',
+
+  /**
+   * 6 hours.
+   */
   SIX_HOURS = 'Six_Hours',
+
+  /**
+   * 12 hours.
+   */
   TWELVE_HOURS = 'Twelve_Hours',
+
+  /**
+   * 24 hours.
+   */
   TWENTY_FOUR_HOURS = 'TwentyFour_Hours'
 }
 
@@ -250,8 +262,8 @@ export class ManagedRule extends RuleNew {
       scope: Lazy.anyValue({ produce: () => this.scope }),
       source: {
         owner: 'AWS',
-        sourceIdentifier: props.identifier
-      }
+        sourceIdentifier: props.identifier,
+      },
     });
 
     this.configRuleName = rule.ref;
@@ -317,35 +329,35 @@ export class CustomRule extends RuleNew {
 
     if (props.configurationChanges) {
       sourceDetails.push({
-          eventSource: 'aws.config',
-          messageType: 'ConfigurationItemChangeNotification'
-        });
+        eventSource: 'aws.config',
+        messageType: 'ConfigurationItemChangeNotification',
+      });
       sourceDetails.push({
-          eventSource: 'aws.config',
-          messageType: 'OversizedConfigurationItemChangeNotification'
-        });
+        eventSource: 'aws.config',
+        messageType: 'OversizedConfigurationItemChangeNotification',
+      });
     }
 
     if (props.periodic) {
       sourceDetails.push({
         eventSource: 'aws.config',
         maximumExecutionFrequency: props.maximumExecutionFrequency,
-        messageType: 'ScheduledNotification'
+        messageType: 'ScheduledNotification',
       });
     }
 
     props.lambdaFunction.addPermission('Permission', {
-      principal: new iam.ServicePrincipal('config.amazonaws.com')
+      principal: new iam.ServicePrincipal('config.amazonaws.com'),
     });
 
     if (props.lambdaFunction.role) {
       props.lambdaFunction.role.addManagedPolicy(
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSConfigRulesExecutionRole')
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSConfigRulesExecutionRole'),
       );
     }
 
     // The lambda permission must be created before the rule
-    this.node.addDependency(props.lambdaFunction);
+    this.construct.addDependency(props.lambdaFunction);
 
     const rule = new CfnConfigRule(this, 'Resource', {
       configRuleName: this.physicalName,
@@ -356,8 +368,8 @@ export class CustomRule extends RuleNew {
       source: {
         owner: 'CUSTOM_LAMBDA',
         sourceDetails,
-        sourceIdentifier: props.lambdaFunction.functionArn
-      }
+        sourceIdentifier: props.lambdaFunction.functionArn,
+      },
     });
 
     this.configRuleName = rule.ref;

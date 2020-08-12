@@ -61,25 +61,25 @@ export class Lambda implements ses.IReceiptRuleAction {
       this.props.function.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('ses.amazonaws.com'),
-        sourceAccount: cdk.Aws.ACCOUNT_ID
+        sourceAccount: cdk.Aws.ACCOUNT_ID,
       });
     }
 
     // Ensure permission is deployed before rule
     const permission = this.props.function.permissionsNode.tryFindChild(permissionId) as lambda.CfnPermission;
     if (permission) { // The Lambda could be imported
-      rule.node.addDependency(permission);
+      rule.construct.addDependency(permission);
     } else {
-      // tslint:disable-next-line:max-line-length
-      rule.node.addWarning('This rule is using a Lambda action with an imported function. Ensure permission is given to SES to invoke that function.');
+      // eslint-disable-next-line max-len
+      rule.construct.addWarning('This rule is using a Lambda action with an imported function. Ensure permission is given to SES to invoke that function.');
     }
 
     return {
       lambdaAction: {
         functionArn: this.props.function.functionArn,
         invocationType: this.props.invocationType,
-        topicArn: this.props.topic ? this.props.topic.topicArn : undefined
-      }
+        topicArn: this.props.topic ? this.props.topic.topicArn : undefined,
+      },
     };
   }
 }

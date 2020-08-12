@@ -37,13 +37,13 @@ export class CodeDeployServerDeployAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // permissions, based on:
     // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
 
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.deploymentGroup.application.applicationArn],
-      actions: ['codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision']
+      actions: ['codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision'],
     }));
 
     options.role.addToPolicy(new iam.PolicyStatement({
@@ -53,12 +53,12 @@ export class CodeDeployServerDeployAction extends Action {
 
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.deploymentGroup.deploymentConfig.deploymentConfigArn],
-      actions: ['codedeploy:GetDeploymentConfig']
+      actions: ['codedeploy:GetDeploymentConfig'],
     }));
 
     // grant the ASG Role permissions to read from the Pipeline Bucket
     for (const asg of this.deploymentGroup.autoScalingGroups || []) {
-      options.bucket.grantRead(asg.role);
+      options.bucket.grantRead(asg);
     }
 
     // the Action's Role needs to read from the Bucket to get artifacts

@@ -106,7 +106,7 @@ export interface UsagePlanPerApiStage {
 
 export interface UsagePlanProps {
   /**
-   * API Stages to be associated which the usage plan.
+   * API Stages to be associated with the usage plan.
    * @default none
    */
   readonly apiStages?: UsagePlanPerApiStage[];
@@ -181,12 +181,12 @@ export class UsagePlan extends Resource {
     const prefix = 'UsagePlanKeyResource';
 
     // Postfixing apikey id only from the 2nd child, to keep physicalIds of UsagePlanKey for existing CDK apps unmodifed.
-    const id = this.node.tryFindChild(prefix) ? `${prefix}:${apiKey.node.uniqueId}` : prefix;
+    const id = this.construct.tryFindChild(prefix) ? `${prefix}:${apiKey.construct.uniqueId}` : prefix;
 
     new CfnUsagePlanKey(this, id, {
       keyId: apiKey.keyId,
       keyType: UsagePlanKeyType.API_KEY,
-      usagePlanId: this.usagePlanId
+      usagePlanId: this.usagePlanId,
     });
   }
 
@@ -220,7 +220,7 @@ export class UsagePlan extends Resource {
     return {
       apiId,
       stage,
-      throttle
+      throttle,
     };
   }
 
@@ -233,7 +233,7 @@ export class UsagePlan extends Resource {
       const ret = {
         limit: limit ? limit : undefined,
         offset: props.quota ? props.quota.offset : undefined,
-        period: props.quota ? props.quota.period : undefined
+        period: props.quota ? props.quota.period : undefined,
       };
       return ret;
     }
@@ -249,7 +249,7 @@ export class UsagePlan extends Resource {
 
       ret = {
         burstLimit: burstLimit ? burstLimit : undefined,
-        rateLimit: rateLimit ? rateLimit : undefined
+        rateLimit: rateLimit ? rateLimit : undefined,
       };
     }
     return ret!;

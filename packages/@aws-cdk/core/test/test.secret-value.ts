@@ -22,7 +22,7 @@ export = {
     const v = SecretValue.secretsManager('secret-id', {
       jsonField: 'json-key',
       versionId: 'version-id',
-      versionStage: 'version-stage'
+      versionStage: 'version-stage',
     });
 
     // THEN
@@ -44,6 +44,11 @@ export = {
 
   'secretsManager with an empty ID'(test: Test) {
     test.throws(() => SecretValue.secretsManager(''), /secretId cannot be empty/);
+    test.done();
+  },
+
+  'secretsManager with a non-ARN ID that has colon'(test: Test) {
+    test.throws(() => SecretValue.secretsManager('not:an:arn'), /is not an ARN but contains ":"/);
     test.done();
   },
 
@@ -92,6 +97,6 @@ export = {
     // THEN
     test.throws(() => SecretValue.cfnParameter(p), /CloudFormation parameter must be configured with "NoEcho"/);
     test.done();
-  }
+  },
 
 };

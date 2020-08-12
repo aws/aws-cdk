@@ -1,8 +1,9 @@
 import * as cdk from '@aws-cdk/core';
 import { BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-         TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
+  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
+import { validateNetworkProtocol } from '../shared/util';
 import { INetworkListener } from './network-listener';
 
 /**
@@ -13,6 +14,13 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    * The port on which the listener listens for requests.
    */
   readonly port: number;
+
+  /**
+   * Protocol for target group, expects TCP, TLS, UDP, or TCP_UDP.
+   *
+   * @default - TCP
+   */
+  readonly protocol?: Protocol;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.
@@ -56,8 +64,11 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
   private readonly listeners: INetworkListener[];
 
   constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
+    const proto = props.protocol || Protocol.TCP;
+    validateNetworkProtocol(proto);
+
     super(scope, id, props, {
-      protocol: Protocol.TCP,
+      protocol: proto,
       port: props.port,
     });
 
@@ -123,13 +134,13 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     if (healthCheck.path && !NLB_PATH_HEALTH_CHECK_PROTOCOLS.includes(healthCheck.protocol)) {
       ret.push([
         `'${healthCheck.protocol}' health checks do not support the path property.`,
-        `Must be one of [${NLB_PATH_HEALTH_CHECK_PROTOCOLS.join(', ')}]`
+        `Must be one of [${NLB_PATH_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
       ].join(' '));
     }
     if (healthCheck.timeout && healthCheck.timeout.toSeconds() !== NLB_HEALTH_CHECK_TIMEOUTS[healthCheck.protocol]) {
       ret.push([
         'Custom health check timeouts are not supported for Network Load Balancer health checks.',
-        `Expected ${NLB_HEALTH_CHECK_TIMEOUTS[healthCheck.protocol]} seconds for ${healthCheck.protocol}, got ${healthCheck.timeout.toSeconds()}`
+        `Expected ${NLB_HEALTH_CHECK_TIMEOUTS[healthCheck.protocol]} seconds for ${healthCheck.protocol}, got ${healthCheck.timeout.toSeconds()}`,
       ].join(' '));
     }
 
@@ -140,7 +151,6 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 /**
  * A network target group
  */
-// tslint:disable-next-line:no-empty-interface
 export interface INetworkTargetGroup extends ITargetGroup {
   /**
    * Register a listener that is load balancing to this target group.

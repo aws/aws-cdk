@@ -304,7 +304,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
           this.listeners.push(listener);
         }
         this.createDomainName(lb, lbProps.domainName, lbProps.domainZone);
-        new CfnOutput(this, `LoadBalancerDNS${lb.node.id}`, { value: lb.loadBalancerDnsName });
+        new CfnOutput(this, `LoadBalancerDNS${lb.construct.id}`, { value: lb.loadBalancerDnsName });
       }
       // set up default load balancer and listener.
       this.loadBalancer = this.loadBalancers[0];
@@ -323,9 +323,9 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
    */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs.
-    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.construct.id : ''}`;
     const stack = Stack.of(scope);
-    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return stack.construct.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   protected createAWSLogDriver(prefix: string): AwsLogDriver {
@@ -337,7 +337,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
       return this.listener;
     }
     for (const listener of this.listeners) {
-      if (listener.node.id === name) {
+      if (listener.construct.id === name) {
         return listener;
       }
     }
@@ -351,9 +351,9 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
         targets: [
           service.loadBalancerTarget({
             containerName: container.containerName,
-            containerPort: targetProps.containerPort
-          })
-        ]
+            containerPort: targetProps.containerPort,
+          }),
+        ],
       });
       this.targetGroups.push(targetGroup);
     }
@@ -367,7 +367,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
     for (const target of targets) {
       if (!container.findPortMapping(target.containerPort, Protocol.TCP)) {
         container.addPortMappings({
-          containerPort: target.containerPort
+          containerPort: target.containerPort,
         });
       }
     }
@@ -379,8 +379,8 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   private createLogDriver(enableLoggingProp?: boolean, logDriverProp?: LogDriver): LogDriver | undefined {
     const enableLogging = enableLoggingProp !== undefined ? enableLoggingProp : true;
     const logDriver = logDriverProp !== undefined
-                        ? logDriverProp : enableLogging
-                          ? this.createAWSLogDriver(this.node.id) : undefined;
+      ? logDriverProp : enableLogging
+        ? this.createAWSLogDriver(this.construct.id) : undefined;
     return logDriver;
   }
 
@@ -409,7 +409,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
     const internetFacing = publicLoadBalancer !== undefined ? publicLoadBalancer : true;
     const lbProps = {
       vpc: this.cluster.vpc,
-      internetFacing
+      internetFacing,
     };
 
     return new NetworkLoadBalancer(this, name, lbProps);
@@ -417,7 +417,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
 
   private createListener(name: string, lb: NetworkLoadBalancer, port: number): NetworkListener {
     return lb.addListener(name, {
-      port
+      port,
     });
   }
 
@@ -427,7 +427,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      new ARecord(this, `DNS${loadBalancer.node.id}`, {
+      new ARecord(this, `DNS${loadBalancer.construct.id}`, {
         zone,
         recordName: name,
         target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),

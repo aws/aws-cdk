@@ -1,23 +1,22 @@
-import { App, ConstructNode, Stack, SynthesisOptions } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as core from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 
 export class SynthUtils {
-  public static synthesize(stack: Stack, options: SynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
+  /**
+   * Returns the cloud assembly template artifact for a stack.
+   */
+  public static synthesize(stack: core.Stack, options: core.SynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
-    const root = stack.node.root;
-
-    // if the root is an app, invoke "synth" to avoid double synthesis
-    const assembly = root instanceof App ? root.synth() : ConstructNode.synth(root.node, options);
-
+    const assembly = synthesizeApp(stack, options);
     return assembly.getStackArtifact(stack.artifactId);
   }
 
   /**
    * Synthesizes the stack and returns the resulting CloudFormation template.
    */
-  public static toCloudFormation(stack: Stack, options: SynthesisOptions = { }): any {
+  public static toCloudFormation(stack: core.Stack, options: core.SynthesisOptions = { }): any {
     const synth = this._synthesizeWithNested(stack, options);
     if (synth instanceof cxapi.CloudFormationStackArtifact) {
       return synth.template;
@@ -29,7 +28,7 @@ export class SynthUtils {
   /**
    * @returns Returns a subset of the synthesized CloudFormation template (only specific resource types).
    */
-  public static subset(stack: Stack, options: SubsetOptions): any {
+  public static subset(stack: core.Stack, options: SubsetOptions): any {
     const template = this.toCloudFormation(stack);
     if (template.Resources) {
       for (const [key, resource] of Object.entries(template.Resources)) {
@@ -49,12 +48,9 @@ export class SynthUtils {
    * @return CloudFormationStackArtifact for normal stacks or the actual template for nested stacks
    * @internal
    */
-  public static _synthesizeWithNested(stack: Stack, options: SynthesisOptions = { }): cxapi.CloudFormationStackArtifact | object {
+  public static _synthesizeWithNested(stack: core.Stack, options: core.SynthesisOptions = { }): cxapi.CloudFormationStackArtifact | object {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
-    const root = stack.node.root;
-
-    // if the root is an app, invoke "synth" to avoid double synthesis
-    const assembly = root instanceof App ? root.synth() : ConstructNode.synth(root.node, options);
+    const assembly = synthesizeApp(stack, options);
 
     // if this is a nested stack (it has a parent), then just read the template as a string
     if (stack.nestedStackParent) {
@@ -63,6 +59,24 @@ export class SynthUtils {
 
     return assembly.getStackArtifact(stack.artifactId);
   }
+}
+
+/**
+ * Synthesizes the app in which a stack resides and returns the cloud assembly object.
+ */
+function synthesizeApp(stack: core.Stack, options: core.SynthesisOptions) {
+  const root = stack.construct.root;
+  if (!core.Stage.isStage(root)) {
+    throw new Error('unexpected: all stacks must be part of a Stage or an App');
+  }
+
+  // to support incremental assertions (i.e. "expect(stack).toNotContainSomething(); doSomething(); expect(stack).toContainSomthing()")
+  const force = true;
+
+  return root.synth({
+    force,
+    ...options,
+  });
 }
 
 export interface SubsetOptions {

@@ -1,8 +1,7 @@
 {
   "Resources": {
     "myusageplan4B391740": {
-      "Type": "AWS::ApiGateway::UsagePlan",
-      "Properties": {}
+      "Type": "AWS::ApiGateway::UsagePlan"
     },
     "myusageplanUsagePlanKeyResource095B4EA9": {
       "Type": "AWS::ApiGateway::UsagePlanKey",

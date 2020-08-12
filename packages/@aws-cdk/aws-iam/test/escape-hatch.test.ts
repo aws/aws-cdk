@@ -5,7 +5,7 @@ import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('IAM escape hatches', () => {
   test('addPropertyOverride should allow overriding supported properties', () => {
@@ -14,18 +14,18 @@ describe('IAM escape hatches', () => {
       userName: 'MyUserName',
     });
 
-    const cfn = user.node.findChild('Resource') as iam.CfnUser;
+    const cfn = user.construct.findChild('Resource') as iam.CfnUser;
     cfn.addPropertyOverride('UserName', 'OverriddenUserName');
 
     expect(stack).toMatchTemplate({
-      "Resources": {
-        "user2C2B57AE": {
-          "Type": "AWS::IAM::User",
-          "Properties": {
-            "UserName": "OverriddenUserName"
-          }
-        }
-      }
+      'Resources': {
+        'user2C2B57AE': {
+          'Type': 'AWS::IAM::User',
+          'Properties': {
+            'UserName': 'OverriddenUserName',
+          },
+        },
+      },
     });
   });
 
@@ -33,24 +33,24 @@ describe('IAM escape hatches', () => {
     // GIVEN
     const stack = new Stack();
     const user = new iam.User(stack, 'user', { userName: 'MyUserName' });
-    const cfn = user.node.findChild('Resource') as iam.CfnUser;
+    const cfn = user.construct.findChild('Resource') as iam.CfnUser;
 
     // WHEN
     cfn.addPropertyOverride('Hello.World', 'Boom');
 
     // THEN
     expect(stack).toMatchTemplate({
-      "Resources": {
-        "user2C2B57AE": {
-          "Type": "AWS::IAM::User",
-          "Properties": {
-            "UserName": "MyUserName",
-            "Hello": {
-              "World": "Boom"
-            }
-          }
-        }
-      }
+      'Resources': {
+        'user2C2B57AE': {
+          'Type': 'AWS::IAM::User',
+          'Properties': {
+            'UserName': 'MyUserName',
+            'Hello': {
+              'World': 'Boom',
+            },
+          },
+        },
+      },
     });
   });
 
@@ -58,7 +58,7 @@ describe('IAM escape hatches', () => {
     // GIVEN
     const stack = new Stack();
     const user = new iam.User(stack, 'user', { userName: 'MyUserName' });
-    const cfn = user.node.findChild('Resource') as iam.CfnUser;
+    const cfn = user.construct.findChild('Resource') as iam.CfnUser;
     cfn.cfnOptions.updatePolicy = { useOnlineResharding: true };
 
     // WHEN
@@ -70,25 +70,25 @@ describe('IAM escape hatches', () => {
 
     // THEN
     expect(stack).toMatchTemplate({
-      "Resources": {
-        "user2C2B57AE": {
-          "Type": "AWS::IAM::User",
-          "Properties": {
-            "UserName": "HA!",
-            "Hello": {
-              "World": "Bam"
-            }
+      'Resources': {
+        'user2C2B57AE': {
+          'Type': 'AWS::IAM::User',
+          'Properties': {
+            'UserName': 'HA!',
+            'Hello': {
+              'World': 'Bam',
+            },
           },
-          "Joob": {
-            "Jab": "Jib"
+          'Joob': {
+            'Jab': 'Jib',
           },
-          "UpdatePolicy": {
-            "UseOnlineResharding": {
-              "Type": "None"
-            }
-          }
-        }
-      }
+          'UpdatePolicy': {
+            'UseOnlineResharding': {
+              'Type': 'None',
+            },
+          },
+        },
+      },
     });
   });
 });

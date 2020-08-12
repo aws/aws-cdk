@@ -169,7 +169,7 @@ export class Model extends Resource implements IModel {
       restApiId: props.restApi.restApiId,
       contentType: props.contentType ?? 'application/json',
       description: props.description,
-      schema: util.JsonSchemaMapper.toCfnJsonSchema(props.schema)
+      schema: util.JsonSchemaMapper.toCfnJsonSchema(props.schema),
     };
 
     const resource = new CfnModel(this, 'Resource', modelProps);
@@ -178,7 +178,7 @@ export class Model extends Resource implements IModel {
 
     const deployment = (props.restApi instanceof RestApi) ? props.restApi.latestDeployment : undefined;
     if (deployment) {
-      deployment.node.addDependency(resource);
+      deployment.construct.addDependency(resource);
       deployment.addToLogicalId({ model: modelProps });
     }
   }

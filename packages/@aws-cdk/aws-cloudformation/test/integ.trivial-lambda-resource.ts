@@ -30,7 +30,7 @@ class DemoResource extends cdk.Construct {
         timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.PYTHON_2_7,
       })),
-      properties: props
+      properties: props,
     });
 
     this.response = resource.getAtt('Response').toString();
@@ -51,7 +51,7 @@ class SucceedingStack extends cdk.Stack {
     // Publish the custom resource output
     new cdk.CfnOutput(this, 'ResponseMessage', {
       description: 'The message that came back from the Custom Resource',
-      value: resource.response
+      value: resource.response,
     });
   }
 }

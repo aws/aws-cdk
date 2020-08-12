@@ -1,4 +1,4 @@
-import { ConcreteWidget } from "./widget";
+import { ConcreteWidget } from './widget';
 
 /**
  * Properties for a Text widget
@@ -48,8 +48,8 @@ export class TextWidget extends ConcreteWidget {
       x: this.x,
       y: this.y,
       properties: {
-        markdown: this.markdown
-      }
+        markdown: this.markdown,
+      },
     }];
   }
 }

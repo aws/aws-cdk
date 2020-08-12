@@ -63,7 +63,7 @@ export class BucketNotifications extends cdk.Construct {
     // for example, the SNS topic policy must be created /before/ the notification resource.
     // otherwise, S3 won't be able to confirm the subscription.
     if (targetProps.dependencies) {
-      resource.node.addDependency(...targetProps.dependencies);
+      resource.construct.addDependency(...targetProps.dependencies);
     }
 
     // based on the target type, add the the correct configurations array
@@ -89,7 +89,7 @@ export class BucketNotifications extends cdk.Construct {
     return {
       LambdaFunctionConfigurations: this.lambdaNotifications.length > 0 ? this.lambdaNotifications : undefined,
       QueueConfigurations: this.queueNotifications.length > 0 ? this.queueNotifications : undefined,
-      TopicConfigurations: this.topicNotifications.length > 0 ? this.topicNotifications : undefined
+      TopicConfigurations: this.topicNotifications.length > 0 ? this.topicNotifications : undefined,
     };
   }
 
@@ -107,8 +107,8 @@ export class BucketNotifications extends cdk.Construct {
         properties: {
           ServiceToken: handlerArn,
           BucketName: this.bucket.bucketName,
-          NotificationConfiguration: cdk.Lazy.anyValue({ produce: () => this.renderNotificationConfiguration() })
-        }
+          NotificationConfiguration: cdk.Lazy.anyValue({ produce: () => this.renderNotificationConfiguration() }),
+        },
       });
     }
 
@@ -149,8 +149,8 @@ function renderFilters(filters?: NotificationKeyFilter[]): Filter | undefined {
 
   return {
     Key: {
-      FilterRules: renderedRules
-    }
+      FilterRules: renderedRules,
+    },
   };
 }
 

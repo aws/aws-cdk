@@ -1,4 +1,4 @@
-import { Reference } from "../reference";
+import { Reference } from '../reference';
 
 const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.CfnReference');
 
@@ -33,10 +33,15 @@ export class CfnReference extends Reference {
    * important that the state isn't lost if it's lazily created, like so:
    *
    *     Lazy.stringValue({ produce: () => new CfnReference(...) })
+   *
+   * If fnSub is true, then this reference will resolve as ${logicalID}.
+   * This allows cloudformation-include to correctly handle Fn::Sub.
    */
-  public static for(target: CfnElement, attribute: string) {
-    return CfnReference.singletonReference(target, attribute, () => {
-      const cfnIntrinsic = attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [ target.logicalId, attribute ]};
+  public static for(target: CfnElement, attribute: string, fnSub: boolean = false) {
+    return CfnReference.singletonReference(target, attribute, fnSub, () => {
+      const cfnIntrinsic = fnSub
+        ? ('${' + target.logicalId + (attribute === 'Ref' ? '' :  `.${attribute}`) + '}')
+        : (attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [target.logicalId, attribute] });
       return new CfnReference(cfnIntrinsic, attribute, target);
     });
   }
@@ -45,7 +50,7 @@ export class CfnReference extends Reference {
    * Return a CfnReference that references a pseudo referencd
    */
   public static forPseudo(pseudoName: string, scope: Construct) {
-    return CfnReference.singletonReference(scope, `Pseudo:${pseudoName}`, () => {
+    return CfnReference.singletonReference(scope, `Pseudo:${pseudoName}`, false, () => {
       const cfnIntrinsic = { Ref: pseudoName };
       return new CfnReference(cfnIntrinsic, pseudoName, scope);
     });
@@ -57,18 +62,20 @@ export class CfnReference extends Reference {
   private static referenceTable = new Map<Construct, Map<string, CfnReference>>();
 
   /**
-   * Get or create the table
+   * Get or create the table.
+   * Passing fnSub = true allows cloudformation-include to correctly handle Fn::Sub.
    */
-  private static singletonReference(target: Construct, attribKey: string, fresh: () => CfnReference) {
+  private static singletonReference(target: Construct, attribKey: string, fnSub: boolean, fresh: () => CfnReference) {
     let attribs = CfnReference.referenceTable.get(target);
     if (!attribs) {
       attribs = new Map();
       CfnReference.referenceTable.set(target, attribs);
     }
-    let ref = attribs.get(attribKey);
+    const cacheKey = attribKey + (fnSub ? 'Fn::Sub' : '');
+    let ref = attribs.get(cacheKey);
     if (!ref) {
       ref = fresh();
-      attribs.set(attribKey, ref);
+      attribs.set(cacheKey, ref);
     }
     return ref;
   }
@@ -77,12 +84,14 @@ export class CfnReference extends Reference {
    * The Tokens that should be returned for each consuming stack (as decided by the producing Stack)
    */
   private readonly replacementTokens: Map<Stack, IResolvable>;
+  private readonly targetStack: Stack;
 
   protected constructor(value: any, displayName: string, target: IConstruct) {
     // prepend scope path to display name
     super(value, target, displayName);
 
     this.replacementTokens = new Map<Stack, IResolvable>();
+    this.targetStack = Stack.of(target);
 
     Object.defineProperty(this, CFN_REFERENCE_SYMBOL, { value: true });
   }
@@ -93,11 +102,6 @@ export class CfnReference extends Reference {
     const consumingStack = Stack.of(context.scope);
     const token = this.replacementTokens.get(consumingStack);
 
-    // if (!token && this.isCrossStackReference(consumingStack) && !context.preparing) {
-    // tslint:disable-next-line:max-line-length
-    //   throw new Error(`Cross-stack reference (${context.scope.node.path} -> ${this.target.node.path}) has not been assigned a value--call prepare() first`);
-    // }
-
     if (token) {
       return token.resolve(context);
     } else {
@@ -106,12 +110,20 @@ export class CfnReference extends Reference {
   }
 
   public hasValueForStack(stack: Stack) {
+    if (stack === this.targetStack) {
+      return true;
+    }
+
     return this.replacementTokens.has(stack);
   }
 
   public assignValueForStack(stack: Stack, value: IResolvable) {
+    if (stack === this.targetStack) {
+      throw new Error('cannot assign a value for the same stack');
+    }
+
     if (this.hasValueForStack(stack)) {
-      throw new Error(`Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first`);
+      throw new Error('Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first');
     }
 
     this.replacementTokens.set(stack, value);
@@ -121,13 +133,13 @@ export class CfnReference extends Reference {
    */
   public toString(): string {
     return Token.asString(this, {
-      displayHint: `${this.target.node.id}.${this.displayName}`
+      displayHint: `${this.target.construct.id}.${this.displayName}`,
     });
   }
 }
 
-import { CfnElement } from "../cfn-element";
-import { Construct, IConstruct } from "../construct";
-import { IResolvable, IResolveContext } from "../resolvable";
-import { Stack } from "../stack";
-import { Token } from "../token";
+import { CfnElement } from '../cfn-element';
+import { Construct, IConstruct } from '../construct-compat';
+import { IResolvable, IResolveContext } from '../resolvable';
+import { Stack } from '../stack';
+import { Token } from '../token';

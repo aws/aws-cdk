@@ -1,10 +1,10 @@
 ## AWS CodePipeline Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -14,7 +14,7 @@
 To construct an empty Pipeline:
 
 ```ts
-import codepipeline = require('@aws-cdk/aws-codepipeline');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline');
 ```
@@ -236,8 +236,8 @@ for more details on how to use the variables feature.
 A pipeline can be used as a target for a CloudWatch event rule:
 
 ```ts
-import targets = require('@aws-cdk/aws-events-targets');
-import events = require('@aws-cdk/aws-events');
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as events from '@aws-cdk/aws-events';
 
 // kick off the pipeline every day
 const rule = new events.Rule(this, 'Daily', {

@@ -10,7 +10,7 @@ const stack = new cdk.Stack(app, 'lambda-events');
 const fn = new lambda.Function(stack, 'MyFunc', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
-  code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
+  code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
 });
 
 const timer = new events.Rule(stack, 'Timer', {
@@ -25,7 +25,7 @@ timer2.addTarget(new targets.LambdaFunction(fn));
 
 app.synth();
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 function handler(event: any, _context: any, callback: any) {
   console.log(JSON.stringify(event, undefined, 2));
   return callback();

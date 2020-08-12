@@ -8,7 +8,7 @@ import { IMachineImage, OperatingSystemType } from './machine-image';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
 import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
-import { IVpc, SubnetSelection } from './vpc';
+import { IVpc, Subnet, SubnetSelection } from './vpc';
 
 /**
  * Name tag constant
@@ -262,25 +262,25 @@ export class Instance extends Resource implements IInstance {
     } else {
       this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', {
         vpc: props.vpc,
-        allowAllOutbound: props.allowAllOutbound !== false
+        allowAllOutbound: props.allowAllOutbound !== false,
       });
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    Tag.add(this, NAME_TAG, props.instanceName || this.node.path);
+    Tag.add(this, NAME_TAG, props.instanceName || this.construct.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
     this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [this.role.roleName]
+      roles: [this.role.roleName],
     });
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
-    this.userData = props.userData || imageConfig.userData || UserData.forOperatingSystem(imageConfig.osType);
+    this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
@@ -291,10 +291,22 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        throw new Error('When specifying AZ there has to be exactly on subnet of the given type in this az');
+        this.construct.addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
       }
     } else {
-      subnet = subnets[0];
+      if (subnets.length > 0) {
+        subnet = subnets[0];
+      } else {
+        this.construct.addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
+      }
+    }
+    if (!subnet) {
+      // We got here and we don't have a subnet because of validation errors.
+      // Invent one on the spot so the code below doesn't fail.
+      subnet = Subnet.fromSubnetAttributes(this, 'DummySubnet', {
+        subnetId: 's-notfound',
+        availabilityZone: 'az-notfound',
+      });
     }
 
     this.instance = new CfnInstance(this, 'Resource', {
@@ -308,12 +320,12 @@ export class Instance extends Resource implements IInstance {
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
       blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
-      privateIpAddress: props.privateIpAddress
+      privateIpAddress: props.privateIpAddress,
     });
-    this.instance.node.addDependency(this.role);
+    this.instance.construct.addDependency(this.role);
 
     this.osType = imageConfig.osType;
-    this.node.defaultChild = this.instance;
+    this.construct.defaultChild = this.instance;
 
     this.instanceId = this.instance.ref;
     this.instanceAvailabilityZone = this.instance.attrAvailabilityZone;
@@ -358,7 +370,7 @@ export class Instance extends Resource implements IInstance {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
           timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
-        }
+        },
       };
     }
   }

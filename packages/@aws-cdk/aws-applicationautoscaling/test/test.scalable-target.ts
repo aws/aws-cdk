@@ -74,12 +74,12 @@ export = {
         {
           ScalableTargetAction: {
             MaxCapacity: 50,
-            MinCapacity: 1
+            MinCapacity: 1,
           },
-          Schedule: "rate(1 minute)",
-          ScheduledActionName: "ScaleUp"
-        }
-      ]
+          Schedule: 'rate(1 minute)',
+          ScheduledActionName: 'ScaleUp',
+        },
+      ],
     }));
 
     test.done();
@@ -98,46 +98,60 @@ export = {
           a: new cloudwatch.Metric({
             namespace: 'Test',
             metricName: 'Metric',
-          })
+          }),
         },
       }),
       adjustmentType: appscaling.AdjustmentType.CHANGE_IN_CAPACITY,
       scalingSteps: [
         { change: -1, lower: 0, upper: 49 },
         { change: 0, lower: 50, upper: 99 },
-        { change: 1, lower: 100 }
-      ]
+        { change: 1, lower: 100 },
+      ],
     });
 
     // THEN
     expect(stack).notTo(haveResource('AWS::CloudWatch::Alarm', {
-      Period: 60
+      Period: 60,
     }));
 
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
-      ComparisonOperator: "LessThanOrEqualToThreshold",
+      ComparisonOperator: 'LessThanOrEqualToThreshold',
       EvaluationPeriods: 1,
       Metrics: [
         {
-          Expression: "a",
-          Id: "expr_1"
+          Expression: 'a',
+          Id: 'expr_1',
         },
         {
-          Id: "a",
+          Id: 'a',
           MetricStat: {
             Metric: {
-              MetricName: "Metric",
-              Namespace: "Test"
+              MetricName: 'Metric',
+              Namespace: 'Test',
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average',
           },
-          ReturnData: false
-        }
+          ReturnData: false,
+        },
       ],
-      Threshold: 49
+      Threshold: 49,
     }));
 
+    test.done();
+  },
+
+  'test service namespace enum'(test: Test) {
+    test.equals(appscaling.ServiceNamespace.APPSTREAM, 'appstream');
+    test.equals(appscaling.ServiceNamespace.COMPREHEND, 'comprehend');
+    test.equals(appscaling.ServiceNamespace.CUSTOM_RESOURCE, 'custom-resource');
+    test.equals(appscaling.ServiceNamespace.DYNAMODB, 'dynamodb');
+    test.equals(appscaling.ServiceNamespace.EC2, 'ec2');
+    test.equals(appscaling.ServiceNamespace.ECS, 'ecs');
+    test.equals(appscaling.ServiceNamespace.ELASTIC_MAP_REDUCE, 'elasticmapreduce');
+    test.equals(appscaling.ServiceNamespace.LAMBDA, 'lambda');
+    test.equals(appscaling.ServiceNamespace.RDS, 'rds');
+    test.equals(appscaling.ServiceNamespace.SAGEMAKER, 'sagemaker');
     test.done();
   },
 };

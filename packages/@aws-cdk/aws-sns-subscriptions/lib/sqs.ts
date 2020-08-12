@@ -25,11 +25,14 @@ export class SqsSubscription implements sns.ITopicSubscription {
   constructor(private readonly queue: sqs.IQueue, private readonly props: SqsSubscriptionProps = {}) {
   }
 
+  /**
+   * Returns a configuration for an SQS queue to subscribe to an SNS topic
+   */
   public bind(topic: sns.ITopic): sns.TopicSubscriptionConfig {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
     if (!Construct.isConstruct(this.queue)) {
-      throw new Error(`The supplied Queue object must be an instance of Construct`);
+      throw new Error('The supplied Queue object must be an instance of Construct');
     }
 
     // add a statement to the queue resource policy which allows this topic
@@ -39,18 +42,19 @@ export class SqsSubscription implements sns.ITopicSubscription {
       actions: ['sqs:SendMessage'],
       principals: [new iam.ServicePrincipal('sns.amazonaws.com')],
       conditions: {
-        ArnEquals: { 'aws:SourceArn': topic.topicArn }
-      }
+        ArnEquals: { 'aws:SourceArn': topic.topicArn },
+      },
     }));
 
     return {
       subscriberScope: this.queue,
-      subscriberId: topic.node.uniqueId,
+      subscriberId: topic.construct.uniqueId,
       endpoint: this.queue.queueArn,
       protocol: sns.SubscriptionProtocol.SQS,
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
       region: this.regionFromArn(topic),
+      deadLetterQueue: this.props.deadLetterQueue,
     };
   }
 

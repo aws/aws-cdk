@@ -6,7 +6,7 @@ import { Test } from 'nodeunit';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'sufficiently complex example'(test: Test) {
@@ -17,48 +17,60 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.KinesisEventSource(stream, {
-      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
     }));
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": [
-              "kinesis:DescribeStream",
-              "kinesis:GetRecords",
-              "kinesis:GetShardIterator"
+            'Action': [
+              'kinesis:DescribeStreamSummary',
+              'kinesis:GetRecords',
+              'kinesis:GetShardIterator',
+              'kinesis:ListShards',
+              'kinesis:SubscribeToShard',
             ],
-            "Effect": "Allow",
-            "Resource": {
-              "Fn::GetAtt": [
-                "S509448A1",
-                "Arn"
-              ]
-            }
-          }
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'S509448A1',
+                'Arn',
+              ],
+            },
+          },
+          {
+            'Action': 'kinesis:DescribeStream',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'S509448A1',
+                'Arn',
+              ],
+            },
+          },
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17',
       },
-      "PolicyName": "FnServiceRoleDefaultPolicyC6A839BF",
-      "Roles": [{
-        "Ref": "FnServiceRoleB9001A96"
-      }]
+      'PolicyName': 'FnServiceRoleDefaultPolicyC6A839BF',
+      'Roles': [{
+        'Ref': 'FnServiceRoleB9001A96',
+      }],
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "S509448A1",
-          "Arn"
-        ]
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'S509448A1',
+          'Arn',
+        ],
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
       },
-      "BatchSize": 100,
-      "StartingPosition": "TRIM_HORIZON"
+      'BatchSize': 100,
+      'StartingPosition': 'TRIM_HORIZON',
     }));
 
     test.done();
@@ -73,22 +85,22 @@ export = {
     // WHEN
     fn.addEventSource(new sources.KinesisEventSource(stream, {
       batchSize: 50,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     }));
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "S509448A1",
-          "Arn"
-        ]
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'S509448A1',
+          'Arn',
+        ],
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
       },
-      "BatchSize": 50,
-      "StartingPosition": "LATEST"
+      'BatchSize': 50,
+      'StartingPosition': 'LATEST',
     }));
 
     test.done();
@@ -103,7 +115,7 @@ export = {
     // WHEN
     test.throws(() => fn.addEventSource(new sources.KinesisEventSource(stream, {
       batchSize: 0,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     })), /Maximum batch size must be between 1 and 10000 inclusive \(given 0\)/);
 
     test.done();
@@ -118,8 +130,23 @@ export = {
     // WHEN
     test.throws(() => fn.addEventSource(new sources.KinesisEventSource(stream, {
       batchSize: 10001,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     })), /Maximum batch size must be between 1 and 10000 inclusive \(given 10001\)/);
+
+    test.done();
+  },
+
+  'accepts if batch size is a token'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+
+    // WHEN
+    fn.addEventSource(new sources.KinesisEventSource(stream, {
+      batchSize: cdk.Lazy.numberValue({ produce: () => 10 }),
+      startingPosition: lambda.StartingPosition.LATEST,
+    }));
 
     test.done();
   },
@@ -133,24 +160,54 @@ export = {
     // WHEN
     fn.addEventSource(new sources.KinesisEventSource(stream, {
       maxBatchingWindow: cdk.Duration.minutes(2),
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     }));
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "S509448A1",
-          "Arn"
-        ]
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'S509448A1',
+          'Arn',
+        ],
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
       },
-      "MaximumBatchingWindowInSeconds": 120,
-      "StartingPosition": "LATEST"
+      'MaximumBatchingWindowInSeconds': 120,
+      'StartingPosition': 'LATEST',
     }));
 
+    test.done();
+  },
+
+  'contains eventSourceMappingId after lambda binding'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    test.ok(eventSource.eventSourceMappingId);
+    test.done();
+  },
+
+  'eventSourceMappingId throws error before binding to lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    });
+
+    // WHEN/THEN
+    test.throws(() => eventSource.eventSourceMappingId, /KinesisEventSource is not yet bound to an event source mapping/);
     test.done();
   },
 };

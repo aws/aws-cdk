@@ -1,17 +1,35 @@
 import {
+  countResources,
   exactlyMatchTemplate,
   expect,
   haveResource,
   haveResourceLike,
   ResourcePart,
-  SynthUtils
+  SynthUtils,
 } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, CfnOutput, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Key } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
+const ACTIONS: string[] = [
+  'kms:Create*',
+  'kms:Describe*',
+  'kms:Enable*',
+  'kms:List*',
+  'kms:Put*',
+  'kms:Update*',
+  'kms:Revoke*',
+  'kms:Disable*',
+  'kms:Get*',
+  'kms:Delete*',
+  'kms:ScheduleKeyDeletion',
+  'kms:CancelKeyDeletion',
+  'kms:GenerateDataKey',
+  'kms:TagResource',
+  'kms:UntagResource',
+];
 
 export = {
   'default key'(test: Test) {
@@ -21,58 +39,42 @@ export = {
 
     expect(stack).to(exactlyMatchTemplate({
       Resources: {
-      MyKey6AB29FA6: {
-        Type: "AWS::KMS::Key",
-        Properties: {
-        KeyPolicy: {
-          Statement: [
-          {
-            Action: [
-            "kms:Create*",
-            "kms:Describe*",
-            "kms:Enable*",
-            "kms:List*",
-            "kms:Put*",
-            "kms:Update*",
-            "kms:Revoke*",
-            "kms:Disable*",
-            "kms:Get*",
-            "kms:Delete*",
-            "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion",
-            "kms:GenerateDataKey",
-            "kms:TagResource",
-            "kms:UntagResource"
-            ],
-            Effect: "Allow",
-            Principal: {
-            AWS: {
-              "Fn::Join": [
-              "",
-              [
-                "arn:",
+        MyKey6AB29FA6: {
+          Type: 'AWS::KMS::Key',
+          Properties: {
+            KeyPolicy: {
+              Statement: [
                 {
-                Ref: "AWS::Partition"
+                  Action: ACTIONS,
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            Ref: 'AWS::Partition',
+                          },
+                          ':iam::',
+                          {
+                            Ref: 'AWS::AccountId',
+                          },
+                          ':root',
+                        ],
+                      ],
+                    },
+                  },
+                  Resource: '*',
                 },
-                ":iam::",
-                {
-                Ref: "AWS::AccountId"
-                },
-                ":root"
-              ]
-              ]
-            }
+              ],
+              Version: '2012-10-17',
             },
-            Resource: "*"
-          }
-          ],
-          Version: "2012-10-17"
-        }
+          },
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
-        DeletionPolicy: "Retain",
-        UpdateReplacePolicy: "Retain"
-      }
-      }
+      },
     }));
     test.done();
   },
@@ -83,7 +85,7 @@ export = {
 
     new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
 
-    expect(stack).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete", UpdateReplacePolicy: "Delete" }, ResourcePart.CompleteDefinition));
+    expect(stack).to(haveResource('AWS::KMS::Key', { DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' }, ResourcePart.CompleteDefinition));
     test.done();
   },
 
@@ -99,66 +101,50 @@ export = {
     expect(stack).to(exactlyMatchTemplate({
       Resources: {
         MyKey6AB29FA6: {
-        Type: "AWS::KMS::Key",
-        Properties: {
-          KeyPolicy: {
-          Statement: [
-            {
-            Action: [
-              "kms:Create*",
-              "kms:Describe*",
-              "kms:Enable*",
-              "kms:List*",
-              "kms:Put*",
-              "kms:Update*",
-              "kms:Revoke*",
-              "kms:Disable*",
-              "kms:Get*",
-              "kms:Delete*",
-              "kms:ScheduleKeyDeletion",
-              "kms:CancelKeyDeletion",
-              "kms:GenerateDataKey",
-              "kms:TagResource",
-              "kms:UntagResource"
-            ],
-            Effect: "Allow",
-            Principal: {
-              AWS: {
-              "Fn::Join": [
-                "",
-                [
-                "arn:",
+          Type: 'AWS::KMS::Key',
+          Properties: {
+            KeyPolicy: {
+              Statement: [
                 {
-                  Ref: "AWS::Partition"
+                  Action: ACTIONS,
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            Ref: 'AWS::Partition',
+                          },
+                          ':iam::',
+                          {
+                            Ref: 'AWS::AccountId',
+                          },
+                          ':root',
+                        ],
+                      ],
+                    },
+                  },
+                  Resource: '*',
                 },
-                ":iam::",
                 {
-                  Ref: "AWS::AccountId"
+                  Action: 'kms:encrypt',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: 'arn',
+                  },
+                  Resource: '*',
                 },
-                ":root"
-                ]
-              ]
-              }
+              ],
+              Version: '2012-10-17',
             },
-            Resource: '*'
-            },
-            {
-            Action: "kms:encrypt",
-            Effect: "Allow",
-            Principal: {
-              AWS: "arn"
-            },
-            Resource: "*"
-            }
-          ],
-          Version: "2012-10-17"
-          }
+          },
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
-        DeletionPolicy: "Retain",
-        UpdateReplacePolicy: "Retain",
-        }
-      }
-      }));
+      },
+    }));
 
     test.done();
   },
@@ -174,88 +160,72 @@ export = {
     p.addArnPrincipal('arn');
     key.addToResourcePolicy(p);
 
-    key.node.applyAspect(new Tag('tag1', 'value1'));
-    key.node.applyAspect(new Tag('tag2', 'value2'));
-    key.node.applyAspect(new Tag('tag3', ''));
+    key.construct.applyAspect(new Tag('tag1', 'value1'));
+    key.construct.applyAspect(new Tag('tag2', 'value2'));
+    key.construct.applyAspect(new Tag('tag3', ''));
 
     expect(stack).to(exactlyMatchTemplate({
       Resources: {
         MyKey6AB29FA6: {
-          Type: "AWS::KMS::Key",
+          Type: 'AWS::KMS::Key',
           Properties: {
             KeyPolicy: {
               Statement: [
                 {
-                  Action: [
-                    "kms:Create*",
-                    "kms:Describe*",
-                    "kms:Enable*",
-                    "kms:List*",
-                    "kms:Put*",
-                    "kms:Update*",
-                    "kms:Revoke*",
-                    "kms:Disable*",
-                    "kms:Get*",
-                    "kms:Delete*",
-                    "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey",
-                    "kms:TagResource",
-                    "kms:UntagResource"
-                  ],
-                  Effect: "Allow",
+                  Action: ACTIONS,
+                  Effect: 'Allow',
                   Principal: {
                     AWS: {
-                      "Fn::Join": [
-                        "",
+                      'Fn::Join': [
+                        '',
                         [
-                          "arn:",
+                          'arn:',
                           {
-                            Ref: "AWS::Partition"
+                            Ref: 'AWS::Partition',
                           },
-                          ":iam::",
+                          ':iam::',
                           {
-                            Ref: "AWS::AccountId"
+                            Ref: 'AWS::AccountId',
                           },
-                          ":root"
-                        ]
-                      ]
-                    }
+                          ':root',
+                        ],
+                      ],
+                    },
                   },
-                  Resource: '*'
+                  Resource: '*',
                 },
                 {
-                  Action: "kms:encrypt",
-                  Effect: "Allow",
+                  Action: 'kms:encrypt',
+                  Effect: 'Allow',
                   Principal: {
-                    AWS: "arn"
+                    AWS: 'arn',
                   },
-                  Resource: "*"
-                }
+                  Resource: '*',
+                },
               ],
-              Version: "2012-10-17"
+              Version: '2012-10-17',
             },
             Enabled: false,
             EnableKeyRotation: true,
             Tags: [
               {
-                Key: "tag1",
-                Value: "value1"
+                Key: 'tag1',
+                Value: 'value1',
               },
               {
-                Key: "tag2",
-                Value: "value2"
+                Key: 'tag2',
+                Value: 'value2',
               },
               {
-                Key: "tag3",
-                Value: ""
-              }
-            ]
+                Key: 'tag3',
+                Value: '',
+              },
+            ],
           },
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain",
-        }
-      }
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
     }));
 
     test.done();
@@ -267,82 +237,22 @@ export = {
 
     const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
 
     const alias = key.addAlias('alias/xoo');
     test.ok(alias.aliasName);
 
-    expect(stack).toMatch({
-      Resources: {
-        MyKey6AB29FA6: {
-          Type: "AWS::KMS::Key",
-          Properties: {
-            EnableKeyRotation: true,
-            Enabled: false,
-            KeyPolicy: {
-              Statement: [
-                {
-                  Action: [
-                    "kms:Create*",
-                    "kms:Describe*",
-                    "kms:Enable*",
-                    "kms:List*",
-                    "kms:Put*",
-                    "kms:Update*",
-                    "kms:Revoke*",
-                    "kms:Disable*",
-                    "kms:Get*",
-                    "kms:Delete*",
-                    "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey",
-                    "kms:TagResource",
-                    "kms:UntagResource"
-                  ],
-                  Effect: "Allow",
-                  Principal: {
-                    AWS: {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:",
-                          {
-                            Ref: "AWS::Partition"
-                          },
-                          ":iam::",
-                          {
-                            Ref: "AWS::AccountId"
-                          },
-                          ":root"
-                        ]
-                      ]
-                    }
-                  },
-                  Resource: "*"
-                }
-              ],
-              Version: "2012-10-17"
-            }
-          },
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain",
-        },
-        MyKeyAlias1B45D9DA: {
-          Type: "AWS::KMS::Alias",
-          Properties: {
-            AliasName: "alias/xoo",
-            TargetKeyId: {
-              "Fn::GetAtt": [
-                "MyKey6AB29FA6",
-                "Arn"
-              ]
-            }
-          }
-        }
-      }
-    });
-
+    expect(stack).to(countResources('AWS::KMS::Alias', 1));
+    expect(stack).to(haveResource('AWS::KMS::Alias', {
+      AliasName: 'alias/xoo',
+      TargetKeyId: {
+        'Fn::GetAtt': [
+          'MyKey6AB29FA6',
+          'Arn',
+        ],
+      },
+    }));
     test.done();
   },
 
@@ -352,7 +262,7 @@ export = {
 
     const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
 
     const alias1 = key.addAlias('alias/alias1');
@@ -360,88 +270,25 @@ export = {
     test.ok(alias1.aliasName);
     test.ok(alias2.aliasName);
 
-    expect(stack).toMatch({
-      Resources: {
-        MyKey6AB29FA6: {
-          Type: "AWS::KMS::Key",
-          Properties: {
-            EnableKeyRotation: true,
-            Enabled: false,
-            KeyPolicy: {
-              Statement: [
-                {
-                  Action: [
-                    "kms:Create*",
-                    "kms:Describe*",
-                    "kms:Enable*",
-                    "kms:List*",
-                    "kms:Put*",
-                    "kms:Update*",
-                    "kms:Revoke*",
-                    "kms:Disable*",
-                    "kms:Get*",
-                    "kms:Delete*",
-                    "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey",
-                    "kms:TagResource",
-                    "kms:UntagResource"
-                  ],
-                  Effect: "Allow",
-                  Principal: {
-                    AWS: {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:",
-                          {
-                            Ref: "AWS::Partition"
-                          },
-                          ":iam::",
-                          {
-                            Ref: "AWS::AccountId"
-                          },
-                          ":root"
-                        ]
-                      ]
-                    }
-                  },
-                  Resource: "*"
-                }
-              ],
-              Version: "2012-10-17"
-            }
-          },
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain",
-        },
-        MyKeyAlias1B45D9DA: {
-          Type: "AWS::KMS::Alias",
-          Properties: {
-            AliasName: "alias/alias1",
-            TargetKeyId: {
-              "Fn::GetAtt": [
-                "MyKey6AB29FA6",
-                "Arn"
-              ]
-            }
-          }
-        },
-        MyKeyAliasaliasalias2EC56BD3E: {
-          Type: "AWS::KMS::Alias",
-          Properties: {
-            AliasName: "alias/alias2",
-            TargetKeyId: {
-              "Fn::GetAtt": [
-                "MyKey6AB29FA6",
-                "Arn"
-              ]
-            }
-          }
-        }
-      }
-    });
-
+    expect(stack).to(countResources('AWS::KMS::Alias', 2));
+    expect(stack).to(haveResource('AWS::KMS::Alias', {
+      AliasName: 'alias/alias1',
+      TargetKeyId: {
+        'Fn::GetAtt': [
+          'MyKey6AB29FA6',
+          'Arn',
+        ],
+      },
+    }));
+    expect(stack).to(haveResource('AWS::KMS::Alias', {
+      AliasName: 'alias/alias2',
+      TargetKeyId: {
+        'Fn::GetAtt': [
+          'MyKey6AB29FA6',
+          'Arn',
+        ],
+      },
+    }));
     test.done();
   },
 
@@ -460,34 +307,33 @@ export = {
         Statement: [
           // This one is there by default
           {
-            // tslint:disable-next-line:max-line-length
-            Action: [ "kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*", "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:GenerateDataKey", "kms:TagResource", "kms:UntagResource" ],
-            Effect: "Allow",
-            Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::", { Ref: "AWS::AccountId" }, ":root" ] ] } },
-            Resource: "*"
+            Action: ACTIONS,
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
           },
           // This is the interesting one
           {
-            Action: "kms:Decrypt",
-            Effect: "Allow",
-            Principal: { AWS: { "Fn::GetAtt": [ "User00B015A1", "Arn" ] } },
-            Resource: "*"
-          }
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::GetAtt': ['User00B015A1', 'Arn'] } },
+            Resource: '*',
+          },
         ],
-        Version: "2012-10-17"
-      }
+        Version: '2012-10-17',
+      },
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: "kms:Decrypt",
-            Effect: "Allow",
-            Resource: { "Fn::GetAtt": [ "Key961B73FD", "Arn" ] }
-          }
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17',
       },
     }));
 
@@ -510,30 +356,30 @@ export = {
     key.grantEncrypt(principal);
 
     expect(keyStack).to(haveResourceLike('AWS::KMS::Key', {
-      "KeyPolicy": {
-        "Statement": [
+      'KeyPolicy': {
+        'Statement': [
           {
             // owning account management permissions - we don't care about them in this test
           },
           {
-            "Action": [
-              "kms:Encrypt",
-              "kms:ReEncrypt*",
-              "kms:GenerateDataKey*",
+            'Action': [
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
             ],
-            "Effect": "Allow",
-            "Principal": {
-              "AWS": {
-                "Fn::Join": ["", [
-                  "arn:",
-                  { "Ref": "AWS::Partition" },
-                  ":iam::",
-                  { "Ref": "AWS::AccountId" },
-                  ":root",
+            'Effect': 'Allow',
+            'Principal': {
+              'AWS': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
+                  ':iam::',
+                  { 'Ref': 'AWS::AccountId' },
+                  ':root',
                 ]],
               },
             },
-            "Resource": "*",
+            'Resource': '*',
           },
         ],
       },
@@ -553,13 +399,68 @@ export = {
     const template = SynthUtils.synthesize(stack).template.Outputs;
 
     test.deepEqual(template, {
-      "Out": {
-        "Value": {
-          "Ref": "MyKey6AB29FA6",
+      'Out': {
+        'Value': {
+          'Ref': 'MyKey6AB29FA6',
         },
       },
     });
 
+    test.done();
+  },
+  'enablePolicyControl changes key policy to allow IAM control'(test: Test) {
+    const stack = new Stack();
+    new Key(stack, 'MyKey', { trustAccountIdentities: true });
+    expect(stack).to(haveResourceLike('AWS::KMS::Key', {
+      'KeyPolicy': {
+        'Statement': [
+          {
+            'Action': 'kms:*',
+            'Effect': 'Allow',
+            'Principal': {
+              'AWS': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
+                  ':iam::',
+                  { 'Ref': 'AWS::AccountId' },
+                  ':root',
+                ]],
+              },
+            },
+            'Resource': '*',
+          },
+        ],
+      },
+    }));
+    test.done();
+  },
+
+  'fails if key policy has no actions'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const key = new Key(stack, 'MyKey');
+
+    key.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    test.done();
+  },
+
+  'fails if key policy has no IAM principals'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const key = new Key(stack, 'MyKey');
+
+    key.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['kms:*'],
+    }));
+
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
     test.done();
   },
 
@@ -587,13 +488,13 @@ export = {
       expect(stack2).toMatch({
         Resources: {
           MyKeyImportedAliasB1C5269F: {
-            Type: "AWS::KMS::Alias",
+            Type: 'AWS::KMS::Alias',
             Properties: {
-              AliasName: "alias/hello",
-              TargetKeyId: "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
-            }
-          }
-        }
+              AliasName: 'alias/hello',
+              TargetKeyId: 'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012',
+            },
+          },
+        },
       });
 
       test.done();

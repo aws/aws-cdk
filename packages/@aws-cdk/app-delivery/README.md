@@ -1,16 +1,10 @@
 ## Continuous Integration / Continuous Delivery for CDK Applications
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
->
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 <!--END STABILITY BANNER-->
@@ -18,6 +12,13 @@
 This library includes a *CodePipeline* composite Action for deploying AWS CDK Applications.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
+
+# Replacement recommended
+
+This library has been deprecated. We recommend you use the
+[@aws-cdk/pipelines](https://docs.aws.amazon.com/cdk/api/latest/docs/pipelines.html) module instead.
+
 
 ### Limitations
 The construct library in it's current form has the following limitations:
@@ -47,11 +48,11 @@ The example below defines a *CDK App* that contains 3 stacks:
 #### `index.ts`
 
 ```typescript
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
-import cdk = require('@aws-cdk/core');
-import cicd = require('@aws-cdk/app-delivery');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as cdk from '@aws-cdk/core';
+import * as cicd from '@aws-cdk/app-delivery';
 
 const app = new cdk.App();
 

@@ -1,0 +1,594 @@
+{
+    "$ref": "#/definitions/AssemblyManifest",
+    "definitions": {
+        "AssemblyManifest": {
+            "description": "A manifest which describes the cloud assembly.",
+            "type": "object",
+            "properties": {
+                "version": {
+                    "description": "Protocol version",
+                    "type": "string"
+                },
+                "artifacts": {
+                    "description": "The set of artifacts in this assembly. (Default - no artifacts.)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/ArtifactManifest"
+                    }
+                },
+                "missing": {
+                    "description": "Missing context information. If this field has values, it means that the\ncloud assembly is not complete and should not be deployed. (Default - no missing context.)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/MissingContext"
+                    }
+                },
+                "runtime": {
+                    "description": "Runtime information. (Default - no info.)",
+                    "$ref": "#/definitions/RuntimeInfo"
+                }
+            },
+            "required": [
+                "version"
+            ]
+        },
+        "ArtifactManifest": {
+            "description": "A manifest for a single artifact within the cloud assembly.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "$ref": "#/definitions/ArtifactType",
+                    "description": "The type of artifact."
+                },
+                "environment": {
+                    "description": "The environment into which this artifact is deployed. (Default - no envrionment.)",
+                    "type": "string"
+                },
+                "metadata": {
+                    "description": "Associated metadata. (Default - no metadata.)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/MetadataEntry"
+                        }
+                    }
+                },
+                "dependencies": {
+                    "description": "IDs of artifacts that must be deployed before this artifact. (Default - no dependencies.)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "properties": {
+                    "description": "The set of properties for this artifact (depends on type) (Default - no properties.)",
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/AwsCloudFormationStackProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/AssetManifestProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/TreeArtifactProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/NestedCloudAssemblyProperties"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
+        "ArtifactType": {
+            "description": "Type of cloud artifact.",
+            "enum": [
+                "aws:cloudformation:stack",
+                "cdk:asset-manifest",
+                "cdk:cloud-assembly",
+                "cdk:tree",
+                "none"
+            ],
+            "type": "string"
+        },
+        "MetadataEntry": {
+            "description": "A metadata entry in a cloud assembly artifact.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of the metadata entry.",
+                    "type": "string"
+                },
+                "data": {
+                    "description": "The data. (Default - no data.)",
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/FileAssetMetadataEntry"
+                        },
+                        {
+                            "$ref": "#/definitions/ContainerImageAssetMetadataEntry"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Tag"
+                            }
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "description": "Free form data."
+                        }
+                    ]
+                },
+                "trace": {
+                    "description": "A stack trace for when the entry was created. (Default - no trace.)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
+        "FileAssetMetadataEntry": {
+            "description": "Metadata Entry spec for files.",
+            "type": "object",
+            "properties": {
+                "packaging": {
+                    "description": "Requested packaging style",
+                    "enum": [
+                        "file",
+                        "zip"
+                    ],
+                    "type": "string"
+                },
+                "s3BucketParameter": {
+                    "description": "Name of parameter where S3 bucket should be passed in",
+                    "type": "string"
+                },
+                "s3KeyParameter": {
+                    "description": "Name of parameter where S3 key should be passed in",
+                    "type": "string"
+                },
+                "artifactHashParameter": {
+                    "description": "The name of the parameter where the hash of the bundled asset should be passed in.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Logical identifier for the asset",
+                    "type": "string"
+                },
+                "sourceHash": {
+                    "description": "The hash of the asset source.",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Path on disk to the asset",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "artifactHashParameter",
+                "id",
+                "packaging",
+                "path",
+                "s3BucketParameter",
+                "s3KeyParameter",
+                "sourceHash"
+            ]
+        },
+        "ContainerImageAssetMetadataEntry": {
+            "description": "Metadata Entry spec for container images.",
+            "type": "object",
+            "properties": {
+                "packaging": {
+                    "description": "Type of asset",
+                    "type": "string",
+                    "enum": [
+                        "container-image"
+                    ]
+                },
+                "imageNameParameter": {
+                    "description": "ECR Repository name and repo digest (separated by \"@sha256:\") where this\nimage is stored. (Default undefined If not specified, `repositoryName` and `imageTag` are\nrequired because otherwise how will the stack know where to find the asset,\nha?)",
+                    "type": "string"
+                },
+                "repositoryName": {
+                    "description": "ECR repository name, if omitted a default name based on the asset's ID is\nused instead. Specify this property if you need to statically address the\nimage, e.g. from a Kubernetes Pod. Note, this is only the repository name,\nwithout the registry and the tag parts. (Default - this parameter is REQUIRED after 1.21.0)",
+                    "type": "string"
+                },
+                "imageTag": {
+                    "description": "The docker image tag to use for tagging pushed images. This field is\nrequired if `imageParameterName` is ommited (otherwise, the app won't be\nable to find the image). (Default - this parameter is REQUIRED after 1.21.0)",
+                    "type": "string"
+                },
+                "buildArgs": {
+                    "description": "Build args to pass to the `docker build` command (Default no build args are passed)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "target": {
+                    "description": "Docker target to build to (Default no build target)",
+                    "type": "string"
+                },
+                "file": {
+                    "description": "Path to the Dockerfile (relative to the directory). (Default - no file is passed)",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Logical identifier for the asset",
+                    "type": "string"
+                },
+                "sourceHash": {
+                    "description": "The hash of the asset source.",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Path on disk to the asset",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "packaging",
+                "path",
+                "sourceHash"
+            ]
+        },
+        "Tag": {
+            "description": "Metadata Entry spec for stack tag.",
+            "type": "object",
+            "properties": {
+                "key": {
+                    "description": "Tag key.",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Tag value.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "key",
+                "value"
+            ]
+        },
+        "AwsCloudFormationStackProperties": {
+            "description": "Artifact properties for CloudFormation stacks.",
+            "type": "object",
+            "properties": {
+                "templateFile": {
+                    "description": "A file relative to the assembly root which contains the CloudFormation template for this stack.",
+                    "type": "string"
+                },
+                "parameters": {
+                    "description": "Values for CloudFormation stack parameters that should be passed when the stack is deployed. (Default - No parameters)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "stackName": {
+                    "description": "The name to use for the CloudFormation stack. (Default - name derived from artifact ID)",
+                    "type": "string"
+                },
+                "terminationProtection": {
+                    "description": "Whether to enable termination protection for this stack.",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "assumeRoleArn": {
+                    "description": "The role that needs to be assumed to deploy the stack (Default - No role is assumed (current credentials are used))",
+                    "type": "string"
+                },
+                "cloudFormationExecutionRoleArn": {
+                    "description": "The role that is passed to CloudFormation to execute the change set (Default - No role is passed (currently assumed role/credentials are used))",
+                    "type": "string"
+                },
+                "stackTemplateAssetObjectUrl": {
+                    "description": "If the stack template has already been included in the asset manifest, its asset URL (Default - Not uploaded yet, upload just before deploying)",
+                    "type": "string"
+                },
+                "requiresBootstrapStackVersion": {
+                    "description": "Version of bootstrap stack required to deploy this stack (Default - No bootstrap stack required)",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "templateFile"
+            ]
+        },
+        "AssetManifestProperties": {
+            "description": "Artifact properties for the Asset Manifest",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "description": "Filename of the asset manifest",
+                    "type": "string"
+                },
+                "requiresBootstrapStackVersion": {
+                    "description": "Version of bootstrap stack required to deploy this stack (Default - Version 1 (basic modern bootstrap stack))",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "file"
+            ]
+        },
+        "TreeArtifactProperties": {
+            "description": "Artifact properties for the Construct Tree Artifact",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "description": "Filename of the tree artifact",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "file"
+            ]
+        },
+        "NestedCloudAssemblyProperties": {
+            "description": "Artifact properties for nested cloud assemblies",
+            "type": "object",
+            "properties": {
+                "directoryName": {
+                    "description": "Relative path to the nested cloud assembly",
+                    "type": "string"
+                },
+                "displayName": {
+                    "description": "Display name for the cloud assembly (Default - The artifact ID)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "directoryName"
+            ]
+        },
+        "MissingContext": {
+            "description": "Represents a missing piece of context.",
+            "type": "object",
+            "properties": {
+                "key": {
+                    "description": "The missing context key.",
+                    "type": "string"
+                },
+                "provider": {
+                    "$ref": "#/definitions/ContextProvider",
+                    "description": "The provider from which we expect this context key to be obtained."
+                },
+                "props": {
+                    "description": "A set of provider-specific options.",
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/AmiContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/AvailabilityZonesContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/HostedZoneContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/SSMParameterContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/VpcContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/EndpointServiceAvailabilityZonesContextQuery"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "key",
+                "props",
+                "provider"
+            ]
+        },
+        "ContextProvider": {
+            "description": "Identifier for the context provider",
+            "enum": [
+                "ami",
+                "availability-zones",
+                "endpoint-service-availability-zones",
+                "hosted-zone",
+                "ssm",
+                "vpc-provider"
+            ],
+            "type": "string"
+        },
+        "AmiContextQuery": {
+            "description": "Query to AMI context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Account to query",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Region to query",
+                    "type": "string"
+                },
+                "owners": {
+                    "description": "Owners to DescribeImages call (Default - All owners)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "filters": {
+                    "description": "Filters to DescribeImages call",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "account",
+                "filters",
+                "region"
+            ]
+        },
+        "AvailabilityZonesContextQuery": {
+            "description": "Query to availability zone context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "region"
+            ]
+        },
+        "HostedZoneContextQuery": {
+            "description": "Query to hosted zone context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "domainName": {
+                    "description": "The domain name e.g. example.com to lookup",
+                    "type": "string"
+                },
+                "privateZone": {
+                    "description": "True if the zone you want to find is a private hosted zone",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "vpcId": {
+                    "description": "The VPC ID to that the private zone must be associated with\n\nIf you provide VPC ID and privateZone is false, this will return no results\nand raise an error. (Default - Required if privateZone=true)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "domainName",
+                "region"
+            ]
+        },
+        "SSMParameterContextQuery": {
+            "description": "Query to SSM Parameter Context Provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "parameterName": {
+                    "description": "Parameter name to query",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "parameterName",
+                "region"
+            ]
+        },
+        "VpcContextQuery": {
+            "description": "Query input for looking up a VPC",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "filter": {
+                    "description": "Filters to apply to the VPC\n\nFilter parameters are the same as passed to DescribeVpcs.",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "returnAsymmetricSubnets": {
+                    "description": "Whether to populate the subnetGroups field of the {@link VpcContextResponse},\nwhich contains potentially asymmetric subnet groups.",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "subnetGroupNameTag": {
+                    "description": "Optional tag for subnet group name.\nIf not provided, we'll look at the aws-cdk:subnet-name tag.\nIf the subnet does not have the specified tag,\nwe'll use its type as the name. (Default 'aws-cdk:subnet-name')",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "filter",
+                "region"
+            ]
+        },
+        "EndpointServiceAvailabilityZonesContextQuery": {
+            "description": "Query to endpoint service context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "serviceName": {
+                    "description": "Query service name",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "region",
+                "serviceName"
+            ]
+        },
+        "RuntimeInfo": {
+            "description": "Information about the application's runtime components.",
+            "type": "object",
+            "properties": {
+                "libraries": {
+                    "description": "The list of libraries loaded in the application, associated with their versions.",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "libraries"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}

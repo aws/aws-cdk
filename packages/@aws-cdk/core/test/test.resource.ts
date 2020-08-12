@@ -1,8 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { App, App as Root, CfnCondition,
-    CfnDeletionPolicy, CfnResource, Construct, ConstructNode,
-    Fn, RemovalPolicy, Stack } from '../lib';
+  CfnDeletionPolicy, CfnResource, Construct,
+  Fn, RemovalPolicy, Stack } from '../lib';
+import { synthesize } from '../lib/private/synthesis';
 import { toCloudFormation } from './util';
 
 export = {
@@ -12,20 +13,20 @@ export = {
     new CfnResource(stack, 'MyResource', {
       type: 'MyResourceType',
       properties: {
-        Prop1: 'p1', Prop2: 123
-      }
+        Prop1: 'p1', Prop2: 123,
+      },
     });
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         MyResource: {
-          Type: "MyResourceType",
+          Type: 'MyResourceType',
           Properties: {
-            Prop1: "p1",
-            Prop2: 123
-          }
-        }
-      }
+            Prop1: 'p1',
+            Prop2: 123,
+          },
+        },
+      },
     });
 
     test.done();
@@ -59,8 +60,8 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
-        MyResource: { Type: 'My::Counter', Properties: { Count: 13 } }
-      }
+        MyResource: { Type: 'My::Counter', Properties: { Count: 13 } },
+      },
     });
 
     test.done();
@@ -76,7 +77,7 @@ export = {
         CounterName: res.getAtt('Name'),
         CounterArn: res.arn,
         CounterURL: res.url,
-      }
+      },
     });
 
     test.deepEqual(toCloudFormation(stack), {
@@ -87,10 +88,10 @@ export = {
           Properties: {
             CounterName: { 'Fn::GetAtt': [ 'MyResource', 'Name' ] },
             CounterArn: { 'Fn::GetAtt': [ 'MyResource', 'Arn' ] } ,
-            CounterURL: { 'Fn::GetAtt': [ 'MyResource', 'URL' ] }
-          }
-        }
-      }
+            CounterURL: { 'Fn::GetAtt': [ 'MyResource', 'URL' ] },
+          },
+        },
+      },
     });
 
     test.done();
@@ -102,22 +103,22 @@ export = {
     new CfnResource(stack, 'MyResource2', {
       type: 'Type',
       properties: {
-        Perm: res.arn
-      }
+        Perm: res.arn,
+      },
     });
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
-        MyResource: { Type: "My::Counter", Properties: { Count: 1 } },
+        MyResource: { Type: 'My::Counter', Properties: { Count: 1 } },
         MyResource2: {
-          Type: "Type",
+          Type: 'Type',
           Properties: {
             Perm: {
-              "Fn::GetAtt": [ "MyResource", "Arn" ]
-            }
-          }
-        }
-      }
+              'Fn::GetAtt': [ 'MyResource', 'Arn' ],
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -128,26 +129,27 @@ export = {
     const r1 = new Counter(stack, 'Counter1', { Count: 1 });
     const r2 = new Counter(stack, 'Counter2', { Count: 1 });
     const r3 = new CfnResource(stack, 'Resource3', { type: 'MyResourceType' });
-    r2.node.addDependency(r1);
-    r2.node.addDependency(r3);
+    r2.construct.addDependency(r1);
+    r2.construct.addDependency(r3);
 
-    ConstructNode.prepare(stack.node);
+    synthesize(stack);
+
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         Counter1: {
-          Type: "My::Counter",
-          Properties: { Count: 1 }
+          Type: 'My::Counter',
+          Properties: { Count: 1 },
         },
         Counter2: {
-          Type: "My::Counter",
+          Type: 'My::Counter',
           Properties: { Count: 1 },
           DependsOn: [
-            "Counter1",
-            "Resource3"
-          ]
+            'Counter1',
+            'Resource3',
+          ],
         },
-        Resource3: { Type: "MyResourceType" }
-      }
+        Resource3: { Type: 'MyResourceType' },
+      },
     });
 
     test.done();
@@ -170,18 +172,18 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         Counter1: {
-          Type: "My::Counter",
+          Type: 'My::Counter',
           Properties: {
-            Count: 1
-          }
+            Count: 1,
+          },
         },
         Dependent: {
-          Type: "R",
+          Type: 'R',
           DependsOn: [
-            "Counter1"
-          ]
-        }
-      }
+            'Counter1',
+          ],
+        },
+      },
     });
     test.done();
   },
@@ -194,7 +196,7 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: { Resource: { Type: 'Type', Condition: 'MyCondition' } },
-      Conditions: { MyCondition: { 'Fn::Not': [ { 'Fn::Equals': [ 'a', 'b' ] } ] } }
+      Conditions: { MyCondition: { 'Fn::Not': [ { 'Fn::Equals': [ 'a', 'b' ] } ] } },
     });
 
     test.done();
@@ -205,7 +207,7 @@ export = {
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
     r1.cfnOptions.creationPolicy = { autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 } };
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     r1.cfnOptions.updatePolicy = {
       autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false },
       autoScalingReplacingUpdate: { willReplace: true },
@@ -233,9 +235,9 @@ export = {
             },
           },
           DeletionPolicy: 'Retain',
-          UpdateReplacePolicy: 'Snapshot'
-        }
-      }
+          UpdateReplacePolicy: 'Snapshot',
+        },
+      },
     });
 
     test.done();
@@ -254,8 +256,8 @@ export = {
           UpdatePolicy: {
             UseOnlineResharding: true,
           },
-        }
-      }
+        },
+      },
     });
 
     test.done();
@@ -267,19 +269,19 @@ export = {
 
     r1.cfnOptions.metadata = {
       MyKey: 10,
-      MyValue: 99
+      MyValue: 99,
     };
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         Resource: {
-          Type: "Type",
+          Type: 'Type',
           Metadata: {
             MyKey: 10,
-            MyValue: 99
-          }
-        }
-      }
+            MyValue: 99,
+          },
+        },
+      },
     });
 
     test.done();
@@ -309,8 +311,8 @@ export = {
         Retain: { Type: 'T1', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain'  },
         Destroy: { Type: 'T3', DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' },
         Default1: { Type: 'T4', DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' }, // explicit default
-        Default2: { Type: 'T4', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' } // implicit default
-      }
+        Default2: { Type: 'T4', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' }, // implicit default
+      },
     });
     test.done();
   },
@@ -355,10 +357,11 @@ export = {
     const c3 = new C3(stack, 'MyC3');
 
     const dependingResource = new CfnResource(stack, 'MyResource', { type: 'R' });
-    dependingResource.node.addDependency(c1, c2);
-    dependingResource.node.addDependency(c3);
+    dependingResource.construct.addDependency(c1, c2);
+    dependingResource.construct.addDependency(c3);
 
-    ConstructNode.prepare(stack.node);
+    synthesize(stack);
+
     test.deepEqual(toCloudFormation(stack), { Resources:
       { MyC1R1FB2A562F: { Type: 'T1' },
         MyC1R2AE2B5066: { Type: 'T2' },
@@ -382,7 +385,7 @@ export = {
     test.done();
   },
 
-  'overrides': {
+  overrides: {
     'addOverride(p, v) allows assigning arbitrary values to synthesized resource definitions'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -414,9 +417,9 @@ export = {
             World: {
               Value1: 'Hello',
               Value2: 129,
-            }
-          }
-        }
+            },
+          },
+        },
       });
 
       // WHEN
@@ -442,9 +445,9 @@ export = {
             World: {
               Value1: 'Hello',
               Value2: 129,
-            }
-          }
-        }
+            },
+          },
+        },
       });
 
       // WHEN
@@ -489,10 +492,10 @@ export = {
             World: {
               Value1: 'Hello',
               Value2: 129,
-              Value3: [ 'foo', 'bar' ]
-            }
-          }
-        }
+              Value3: [ 'foo', 'bar' ],
+            },
+          },
+        },
       });
 
       // WHEN
@@ -515,9 +518,9 @@ export = {
         type: 'AWS::Resource::Type',
         properties: {
           Hello: {
-            World: 42
-          }
-        }
+            World: 42,
+          },
+        },
       });
 
       // WHEN
@@ -532,7 +535,7 @@ export = {
             Properties:
             { Hello: { World: { Foo: { Bar: 42 } } },
               Override1: {
-                Override2: { Heyy: [ 1] }
+                Override2: { Heyy: [ 1] },
               } } } } });
       test.done();
     },
@@ -542,7 +545,7 @@ export = {
       const stack = new Stack();
       const r = new CfnResource(stack, 'MyResource', {
         type: 'AWS::Resource::Type',
-        properties: { Hello: { World: 42 } }
+        properties: { Hello: { World: 42 } },
       });
 
       // WHEN
@@ -579,11 +582,11 @@ export = {
               Fixed: 123,
               Boom: 'Hi',
               Foo: {
-                Bar: 'Bar'
-              }
-            }
-          }
-        }
+                Bar: 'Bar',
+              },
+            },
+          },
+        },
       });
       test.done();
     },
@@ -594,7 +597,7 @@ export = {
         const stack = new Stack();
 
         const r = new CustomizableResource(stack, 'MyResource', {
-          prop1: 'foo'
+          prop1: 'foo',
         });
 
         r.prop2 = 'bar';
@@ -634,12 +637,12 @@ export = {
               Properties: { PROP2: 'hey', PROP3: 'zoo' } } } });
         test.done();
       },
-    }
+    },
   },
 
   '"aws:cdk:path" metadata is added if "aws:cdk:path-metadata" context is set to true'(test: Test) {
     const stack = new Stack();
-    stack.node.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, true);
+    stack.construct.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, true);
 
     const parent = new Construct(stack, 'Parent');
 
@@ -650,7 +653,7 @@ export = {
     test.deepEqual(toCloudFormation(stack), { Resources:
       { ParentMyResource4B1FDBCC:
          { Type: 'MyResourceType',
-           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Parent/MyResource' } } } });
+           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Default/Parent/MyResource' } } } });
 
     test.done();
   },
@@ -664,7 +667,7 @@ export = {
     const resB = new CfnResource(stackB, 'Resource', { type: 'R' });
 
     // WHEN
-    resB.node.addDependency(resA);
+    resB.construct.addDependency(resA);
 
     // THEN
     const assembly = app.synth();
@@ -673,19 +676,40 @@ export = {
     test.deepEqual(templateB, {
       Resources: {
         Resource: {
-          Type: 'R'
+          Type: 'R',
           // Notice absence of 'DependsOn'
-        }
-      }
+        },
+      },
     });
-    test.deepEqual(stackB.dependencies.map(s => s.node.id), ['StackA']);
+    test.deepEqual(stackB.dependencies.map(s => s.construct.id), ['StackA']);
+
+    test.done();
+  },
+
+  'enableVersionUpgrade can be set on a resource'(test: Test) {
+    const stack = new Stack();
+    const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
+
+    r1.cfnOptions.updatePolicy = {
+      enableVersionUpgrade: true,
+    };
+
+    test.deepEqual(toCloudFormation(stack), {
+      Resources: {
+        Resource: {
+          Type: 'Type',
+          UpdatePolicy: {
+            EnableVersionUpgrade: true,
+          },
+        },
+      },
+    });
 
     test.done();
   },
 };
 
 interface CounterProps {
-  // tslint:disable-next-line:variable-name
   Count: number;
 }
 

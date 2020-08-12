@@ -7,3 +7,8 @@ coverage
 
 .LAST_BUILD
 *.snk
+.eslintrc.js
+
+# exclude cdk artifacts
+**/cdk.out
+junit.xml

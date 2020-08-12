@@ -40,7 +40,7 @@ export class ApplicationListenerCertificate extends cdk.Construct {
     super(scope, id);
 
     if (!props.certificateArns && !props.certificates) {
-      throw new Error(`At least one of 'certificateArns' or 'certificates' is required`);
+      throw new Error('At least one of \'certificateArns\' or \'certificates\' is required');
     }
 
     const certificates = [

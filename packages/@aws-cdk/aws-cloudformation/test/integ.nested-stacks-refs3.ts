@@ -20,7 +20,7 @@ class ConsumerNestedStack extends cfn.NestedStack {
     super(scope, id);
 
     new sns.Topic(this, 'ConsumerTopic', {
-      displayName: `Consuming ${Fn.select(2, Fn.split('-', topic.topicName))}` // just shorten because display name is limited
+      displayName: `Consuming ${Fn.select(2, Fn.split('-', topic.topicName))}`, // just shorten because display name is limited
     });
   }
 }

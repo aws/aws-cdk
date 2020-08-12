@@ -28,10 +28,26 @@ export = {
 
     // WHEN
     const r = new CfnResource(stack, 'MyAwesomeness', { type: 'Resource' });
+    const r2 = new CfnResource(stack, 'x'.repeat(255), { type: 'Resource' }); // max length
+    const r3 = new CfnResource(stack, '*y-'.repeat(255), { type: 'Resource' }); // non-alpha are filtered out (yes, I know it might conflict)
 
     // THEN
     test.equal(stack.resolve(r.logicalId), 'MyAwesomeness');
+    test.equal(stack.resolve(r2.logicalId), 'x'.repeat(255));
+    test.equal(stack.resolve(r3.logicalId), 'y'.repeat(255));
 
+    test.done();
+  },
+
+  'if resource is top-level and logical id is longer than allowed, it is trimmed with a hash'(test: Test) {
+    // GIVEN
+    const stack = new Stack(undefined, 'TestStack');
+
+    // WHEN
+    const r = new CfnResource(stack, 'x'.repeat(256), { type: 'Resource' });
+
+    // THEN
+    test.equals(stack.resolve(r.logicalId), 'x'.repeat(240) + 'C7A139A2');
     test.done();
   },
 
@@ -96,9 +112,9 @@ export = {
     test.deepEqual(template, {
       Resources: {
         ParentChildHeyThere35220347: {
-          Type: 'AWS::TAAS::Thing'
-        }
-      }
+          Type: 'AWS::TAAS::Thing',
+        },
+      },
     });
 
     test.done();
@@ -193,7 +209,7 @@ export = {
     const ref = c1.ref;
 
     const c2 = new CfnResource(stack, 'Construct2', { type: 'R2', properties: { ReferenceToR1: ref } });
-    c2.node.addDependency(c1);
+    c2.construct.addDependency(c1);
 
     // THEN
     test.deepEqual(toCloudFormation(stack), {
@@ -202,9 +218,9 @@ export = {
         Construct2: {
           Type: 'R2',
           Properties: { ReferenceToR1: { Ref: 'NewName' } },
-          DependsOn: [ 'NewName' ]
-        }
-      }
+          DependsOn: [ 'NewName' ],
+        },
+      },
     });
 
     test.done();
@@ -213,9 +229,9 @@ export = {
   'customize logical id allocation behavior by overriding `Stack.allocateLogicalId`'(test: Test) {
     class MyStack extends Stack {
       protected allocateLogicalId(element: CfnElement): string {
-        if (element.node.id === 'A') { return 'LogicalIdOfA'; }
-        if (element.node.id === 'B') { return 'LogicalIdOfB'; }
-        throw new Error(`Invalid element ID`);
+        if (element.construct.id === 'A') { return 'LogicalIdOfA'; }
+        if (element.construct.id === 'B') { return 'LogicalIdOfB'; }
+        throw new Error('Invalid element ID');
       }
     }
 
@@ -234,11 +250,26 @@ export = {
       Resources: {
         LogicalIdOfA: { Type: 'Type::Of::A' },
         BoomBoomB: { Type: 'Type::Of::B' },
-        TheC: { Type: 'Type::Of::C' }
-      }
+        TheC: { Type: 'Type::Of::C' },
+      },
     });
     test.done();
-  }
+  },
+
+  'detects duplicate logical IDs in the same Stack caused by overrideLogicalId'(test: Test) {
+    const stack = new Stack();
+    const resource1 = new CfnResource(stack, 'A', { type: 'Type::Of::A' });
+    const resource2 = new CfnResource(stack, 'B', { type: 'Type::Of::B' });
+
+    resource1.overrideLogicalId('C');
+    resource2.overrideLogicalId('C');
+
+    test.throws(() => {
+      toCloudFormation(stack);
+    }, /section 'Resources' already contains 'C'/);
+
+    test.done();
+  },
 };
 
 function generateString(chars: number) {

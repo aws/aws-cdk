@@ -1,6 +1,6 @@
-import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { Configuration, TRANSIENT_CONTEXT_KEY } from '../lib/settings';
 
 const state: {
@@ -11,14 +11,14 @@ const state: {
 beforeAll(async done => {
   state.previousWorkingDir = process.cwd();
   state.tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test'));
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.log('Temporary working directory:', state.tempDir);
   process.chdir(state.tempDir);
   done();
 });
 
 afterAll(async done => {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.log('Switching back to', state.previousWorkingDir, 'cleaning up', state.tempDir);
   process.chdir(state.previousWorkingDir!);
   await fs.remove(state.tempDir!);
@@ -37,21 +37,6 @@ test('load context from both files if available', async () => {
   // THEN
   expect(config.context.get('foo')).toBe('bar');
   expect(config.context.get('boo')).toBe('far');
-});
-
-test('context with colons gets migrated to new file', async () => {
-  // GIVEN
-  await fs.writeJSON('cdk.context.json', { foo: 'bar' });
-  await fs.writeJSON('cdk.json', { context: { 'boo': 'far', 'boo:boo': 'far:far' } });
-  const config = await new Configuration().load();
-
-  // WHEN
-  config.context.set('baz', 'quux');
-  await config.saveContext();
-
-  // THEN
-  expect(await fs.readJSON('cdk.context.json')).toEqual({ 'foo': 'bar', 'boo:boo': 'far:far', 'baz': 'quux' });
-  expect(await fs.readJSON('cdk.json')).toEqual({ context: { boo: 'far'} });
 });
 
 test('deleted context disappears from new file', async () => {
@@ -84,18 +69,18 @@ test('clear deletes from new file', async () => {
   expect(await fs.readJSON('cdk.json')).toEqual({ context: { boo: 'far' } });
 });
 
-test('surive missing new file', async () => {
+test('context is preserved in the location from which it is read', async () => {
   // GIVEN
-  await fs.writeJSON('cdk.json', { context: { 'boo:boo' : 'far' } });
+  await fs.writeJSON('cdk.json', { context: { 'boo:boo': 'far' } });
   const config = await new Configuration().load();
 
   // WHEN
-  expect(config.context.all).toEqual({ 'boo:boo' : 'far' });
+  expect(config.context.all).toEqual({ 'boo:boo': 'far' });
   await config.saveContext();
 
   // THEN
-  expect(await fs.readJSON('cdk.context.json')).toEqual({ 'boo:boo' : 'far' });
-  expect(await fs.readJSON('cdk.json')).toEqual({});
+  expect(await fs.readJSON('cdk.context.json')).toEqual({});
+  expect(await fs.readJSON('cdk.json')).toEqual({ context: { 'boo:boo': 'far' } });
 });
 
 test('surive no context in old file', async () => {

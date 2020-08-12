@@ -23,12 +23,13 @@ export interface FargateClusterProps extends ClusterOptions {
  * `addFargateProfile`.
  */
 export class FargateCluster extends Cluster {
-  constructor(scope: Construct, id: string, props: FargateClusterProps = { }) {
+  constructor(scope: Construct, id: string, props: FargateClusterProps) {
     super(scope, id, {
       ...props,
       defaultCapacity: 0,
       kubectlEnabled: true,
-      coreDnsComputeType: props.coreDnsComputeType ?? CoreDnsComputeType.FARGATE
+      coreDnsComputeType: props.coreDnsComputeType ?? CoreDnsComputeType.FARGATE,
+      version: props.version,
     });
 
     this.addFargateProfile(
@@ -37,8 +38,8 @@ export class FargateCluster extends Cluster {
         selectors: [
           {namespace: 'default'},
           {namespace: 'kube-system'},
-        ]
-      }
+        ],
+      },
     );
   }
 }

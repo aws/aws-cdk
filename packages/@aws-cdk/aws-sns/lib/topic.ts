@@ -38,6 +38,13 @@ export interface TopicProps {
  */
 export class Topic extends TopicBase {
 
+  /**
+   * Import an existing SNS topic provided an ARN
+   *
+   * @param scope The parent creating construct
+   * @param id The construct's name
+   * @param topicArn topic ARN (i.e. arn:aws:sns:us-east-2:444455556666:MyTopic)
+   */
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
     class Import extends TopicBase {
       public readonly topicArn = topicArn;
