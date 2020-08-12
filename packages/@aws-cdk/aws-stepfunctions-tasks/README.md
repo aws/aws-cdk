@@ -59,8 +59,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 ## Task
 
 A Task state represents a single unit of work performed by a state machine. In the
-CDK, the exact work to be In the CDK, the exact work to be done is determined by
-a class that implements `IStepFunctionsTask`.
+CDK, the exact work to be done is determined by a class that implements `IStepFunctionsTask`.
 
 AWS Step Functions [integrates](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) with some AWS services so that you can call API
 actions, and coordinate executions directly from the Amazon States Language in

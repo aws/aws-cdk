@@ -12,7 +12,7 @@ export interface BundlingOptions {
   readonly image: BundlingDockerImage;
 
   /**
-   * The command to run in the container.
+   * The command to run in the Docker container.
    *
    * @example ['npm', 'install']
    *
@@ -30,21 +30,21 @@ export interface BundlingOptions {
   readonly volumes?: DockerVolume[];
 
   /**
-   * The environment variables to pass to the container.
+   * The environment variables to pass to the Docker container.
    *
    * @default - no environment variables.
    */
   readonly environment?: { [key: string]: string; };
 
   /**
-   * Working directory inside the container.
+   * Working directory inside the Docker container.
    *
    * @default /asset-input
    */
   readonly workingDirectory?: string;
 
   /**
-   * The user to use when running the container.
+   * The user to use when running the Docker container.
    *
    *   user | user:group | uid | uid:gid | user:gid | uid:group
    *
@@ -53,6 +53,36 @@ export interface BundlingOptions {
    * @default - uid:gid of the current user or 1000:1000 on Windows
    */
   readonly user?: string;
+
+  /**
+   * Local bundling provider.
+   *
+   * The provider implements a method `tryBundle()` which should return `true`
+   * if local bundling was performed. If `false` is returned, docker bundling
+   * will be done.
+   *
+   * @default - bundling will only be performed in a Docker container
+   *
+   * @experimental
+   */
+  readonly local?: ILocalBundling;
+}
+
+/**
+ * Local bundling
+ *
+ * @experimental
+ */
+export interface ILocalBundling {
+  /**
+   * This method is called before attempting docker bundling to allow the
+   * bundler to be executed locally. If the local bundler exists, and bundling
+   * was performed locally, return `true`. Otherwise, return `false`.
+   *
+   * @param outputDir the directory where the bundled asset should be output
+   * @param options bundling options for this asset
+   */
+  tryBundle(outputDir: string, options: BundlingOptions): boolean;
 }
 
 /**

@@ -1,6 +1,8 @@
 // ----------------------------------------------------
 // CROSS REFERENCES
 // ----------------------------------------------------
+import * as cxapi from '@aws-cdk/cx-api';
+
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
@@ -199,8 +201,15 @@ function getCreateExportsScope(stack: Stack) {
 }
 
 function generateExportName(stackExports: Construct, id: string) {
+  const stackRelativeExports = stackExports.node.tryGetContext(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
   const stack = Stack.of(stackExports);
-  const components = [...stackExports.node.scopes.slice(2).map(c => c.node.id), id];
+
+  const components = [
+    ...stackExports.node.scopes
+      .slice(stackRelativeExports ? stack.node.scopes.length : 2)
+      .map(c => c.node.id),
+    id,
+  ];
   const prefix = stack.stackName ? stack.stackName + ':' : '';
   const exportName = prefix + makeUniqueId(components);
   return exportName;

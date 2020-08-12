@@ -390,7 +390,9 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
 
   public abstract autoScalingGroupName: string;
   public abstract autoScalingGroupArn: string;
+  public abstract readonly osType: ec2.OperatingSystemType;
   protected albTargetGroup?: elbv2.ApplicationTargetGroup;
+  public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
@@ -490,6 +492,10 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps): StepScalingPolicy {
     return new StepScalingPolicy(this, id, { ...props, autoScalingGroup: this });
   }
+
+  public addUserData(..._commands: string[]): void {
+    // do nothing
+  }
 }
 
 /**
@@ -508,8 +514,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
-  elbv2.INetworkLoadBalancerTarget,
-  iam.IGrantable {
+  elbv2.INetworkLoadBalancerTarget {
 
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
@@ -519,6 +524,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         resource: 'autoScalingGroup:*:autoScalingGroupName',
         resourceName: this.autoScalingGroupName,
       });
+      public readonly osType = ec2.OperatingSystemType.UNKNOWN;
     }
 
     return new Import(scope, id);
@@ -760,11 +766,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     return { targetType: elbv2.TargetType.INSTANCE };
   }
 
-  /**
-   * Add command to the startup script of fleet instances.
-   * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
-   */
-  public addUserData(...commands: string[]) {
+  public addUserData(...commands: string[]): void {
     this.userData.addCommands(...commands);
   }
 
@@ -1121,7 +1123,7 @@ function validatePercentage(x?: number): number | undefined {
 /**
  * An AutoScalingGroup
  */
-export interface IAutoScalingGroup extends IResource {
+export interface IAutoScalingGroup extends IResource, iam.IGrantable {
   /**
    * The name of the AutoScalingGroup
    * @attribute
@@ -1133,6 +1135,19 @@ export interface IAutoScalingGroup extends IResource {
    * @attribute
    */
   readonly autoScalingGroupArn: string;
+
+  /**
+   * The operating system family that the instances in this auto-scaling group belong to.
+   * Is 'UNKNOWN' for imported ASGs.
+   */
+  readonly osType: ec2.OperatingSystemType;
+
+  /**
+   * Add command to the startup script of fleet instances.
+   * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
+   * Does nothing for imported ASGs.
+   */
+  addUserData(...commands: string[]): void;
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate

@@ -742,7 +742,7 @@ export interface CloudMapOptions {
   /**
    * The DNS record type that you want AWS Cloud Map to create. The supported record types are A or SRV.
    *
-   * @default DnsRecordType.A
+   * @default - DnsRecordType.A if TaskDefinition.networkMode = AWS_VPC, otherwise DnsRecordType.SRV
    */
   readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
 

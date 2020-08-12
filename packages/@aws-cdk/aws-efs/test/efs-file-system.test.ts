@@ -75,16 +75,16 @@ test('encrypted file system is created correctly with custom KMS', () => {
   }));
 });
 
-test('file system is created correctly with life cycle property', () => {
+test('file system is created correctly with a life cycle property', () => {
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
-    lifecyclePolicy: LifecyclePolicy.AFTER_14_DAYS,
+    lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
   });
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     LifecyclePolicies: [{
-      TransitionToIA: 'AFTER_14_DAYS',
+      TransitionToIA: 'AFTER_7_DAYS',
     }],
   }));
 });

@@ -90,6 +90,24 @@ itself to 2 Availability Zones.
 Therefore, to get the VPC to spread over 3 or more availability zones, you
 must specify the environment where the stack will be deployed.
 
+You can gain full control over the availability zones selection strategy by overriding the Stack's [`get availabilityZones()`](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/core/lib/stack.ts) method:
+
+```ts
+class MyStack extends Stack {
+
+  get availabilityZones(): string[] {
+    return ['us-west-2a', 'us-west-2b'];
+  }
+
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+    ...
+  }
+}
+```
+
+Note that overriding the `get availabilityZones()` method will override the default behavior for all constructs defined within the Stack.
+
 ### Choosing subnets for resources
 
 When creating resources that create Elastic Network Interfaces (such as

@@ -178,21 +178,27 @@ export class AssetStaging extends Construct {
       ...options.volumes ?? [],
     ];
 
+    let localBundling: boolean | undefined;
     try {
       process.stderr.write(`Bundling asset ${this.node.path}...\n`);
-      options.image._run({
-        command: options.command,
-        user,
-        volumes,
-        environment: options.environment,
-        workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
-      });
+
+      localBundling = options.local?.tryBundle(bundleDir, options);
+      if (!localBundling) {
+        options.image._run({
+          command: options.command,
+          user,
+          volumes,
+          environment: options.environment,
+          workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
+        });
+      }
     } catch (err) {
-      throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}: ${err}`);
+      throw new Error(`Failed to bundle asset ${this.node.path}: ${err}`);
     }
 
     if (FileSystem.isEmpty(bundleDir)) {
-      throw new Error(`Bundling did not produce any output. Check that your container writes content to ${AssetStaging.BUNDLING_OUTPUT_DIR}.`);
+      const outputDir = localBundling ? bundleDir : AssetStaging.BUNDLING_OUTPUT_DIR;
+      throw new Error(`Bundling did not produce any output. Check that content is written to ${outputDir}.`);
     }
 
     return bundleDir;

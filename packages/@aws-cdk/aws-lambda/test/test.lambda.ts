@@ -237,7 +237,7 @@ export = {
       const role = new iam.Role(stack, 'SomeRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
-      role.addToPolicy(new iam.PolicyStatement({ actions: ['confirm:itsthesame'] }));
+      role.addToPolicy(new iam.PolicyStatement({ actions: ['confirm:itsthesame'], resources: ['*'] }));
 
       // WHEN
       const fn = new lambda.Function(stack, 'Function', {
@@ -246,20 +246,20 @@ export = {
         handler: 'index.test',
         role,
         initialPolicy: [
-          new iam.PolicyStatement({ actions: ['inline:inline'] }),
+          new iam.PolicyStatement({ actions: ['inline:inline'], resources: ['*'] }),
         ],
       });
 
-      fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'] }));
+      fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'], resources: ['*'] }));
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Version': '2012-10-17',
           'Statement': [
-            { 'Action': 'confirm:itsthesame', 'Effect': 'Allow' },
-            { 'Action': 'inline:inline', 'Effect': 'Allow' },
-            { 'Action': 'explicit:explicit', 'Effect': 'Allow' },
+            { 'Action': 'confirm:itsthesame', 'Effect': 'Allow', 'Resource': '*' },
+            { 'Action': 'inline:inline', 'Effect': 'Allow', 'Resource': '*' },
+            { 'Action': 'explicit:explicit', 'Effect': 'Allow', 'Resource': '*' },
           ],
         },
       }));
