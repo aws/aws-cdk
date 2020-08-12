@@ -115,7 +115,7 @@ export = nodeunit.testCase({
     const r2 = new core.CfnResource(stack, 'R2', { type: 'Foo::R2' });
 
     // also try to take a dependency on the parent of `r1` and expect the dependency not to materialize
-    r2.construct.addDependency(subtree);
+    r2.node.addDependency(subtree);
 
     // THEN - only R2 is synthesized
     test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
