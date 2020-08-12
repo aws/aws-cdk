@@ -5,7 +5,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "MyDistCFDistribution5D29B9D9": {
+    "MyDistDB88FD9A": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {

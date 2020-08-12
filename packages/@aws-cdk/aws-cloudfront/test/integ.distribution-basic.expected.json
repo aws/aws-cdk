@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "DistCFDistributionA3CCCFE6": {
+    "DistB3B78991": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
