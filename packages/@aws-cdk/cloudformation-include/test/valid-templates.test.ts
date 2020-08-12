@@ -240,7 +240,6 @@ describe('CDK Include', () => {
     );
   });
 
-
   test('can modify resources used in Fn::Sub in map form references and see the changes in the template', () => {
     const cfnTemplate = includeTestTemplate(stack, 'fn-sub-shadow.json');
 
@@ -792,10 +791,10 @@ interface IncludeTestTemplateProps {
   readonly parameters?: { [parameterName: string]: any }
 }
 
-function includeTestTemplate(scope: core.Construct, testTemplate: string, _props: IncludeTestTemplateProps = {}): inc.CfnInclude {
+function includeTestTemplate(scope: core.Construct, testTemplate: string, props: IncludeTestTemplateProps = {}): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
-    parameters: _props.parameters,
+    parameters: props.parameters,
     // preserveLogicalIds: props.preserveLogicalIds,
   });
 }

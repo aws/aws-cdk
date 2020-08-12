@@ -6,7 +6,6 @@ import { upcaseFirst } from './util';
 
 const CORE = genspec.CORE_NAMESPACE;
 const CFN_PARSE = genspec.CFN_PARSE_NAMESPACE;
-const FROM_CFN = genspec.FROM_CFN_NAMESPACE;
 const RESOURCE_BASE_CLASS = `${CORE}.CfnResource`; // base class for all resources
 const CONSTRUCT_CLASS = `${CORE}.Construct`;
 const TAG_TYPE = `${CORE}.TagType`;
@@ -61,7 +60,6 @@ export default class CodeGenerator {
     this.code.line(`import * as ${CORE} from '${coreImport}';`);
     // explicitly import the cfn-parse.ts file from @core, which is not part of the public API of the module
     this.code.line(`import * as ${CFN_PARSE} from '${coreImport}/${coreImport === '.' ? '' : 'lib/'}cfn-parse';`);
-    this.code.line(`import * as ${FROM_CFN} from '${coreImport}/${coreImport === '.' ? '' : 'lib/'}from-cfn';`);
   }
 
   public emitCode(): void {
@@ -236,7 +234,7 @@ export default class CodeGenerator {
     this.code.line(' * @internal');
     this.code.line(' */');
     // eslint-disable-next-line max-len
-    this.code.openBlock(`public static _fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${FROM_CFN}.FromCloudFormationOptions): ` +
+    this.code.openBlock(`public static _fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CFN_PARSE}.FromCloudFormationOptions): ` +
       `${resourceName.className}`);
     this.code.line('resourceAttributes = resourceAttributes || {};');
     if (propsType) {
