@@ -32,7 +32,7 @@ export = {
       const stack2 = new cdk.Stack(undefined, 'TestStack', {
         env: { account: '12345', region: 'us-east-1' },
       });
-      stack2.construct.setContext(missing[0].key, fakeZone);
+      stack2.node.setContext(missing[0].key, fakeZone);
 
       // WHEN
       const zoneRef = HostedZone.fromLookup(stack2, 'MyZoneProvider', filter);
@@ -70,7 +70,7 @@ export = {
       const stack2 = new cdk.Stack(undefined, 'TestStack', {
         env: { account: '12345', region: 'us-east-1' },
       });
-      stack2.construct.setContext(missing[0].key, fakeZone);
+      stack2.node.setContext(missing[0].key, fakeZone);
 
       const zone = HostedZone.fromLookup(stack2, 'MyZoneProvider', filter);
 

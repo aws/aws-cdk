@@ -61,11 +61,11 @@ export class S3 implements ses.IReceiptRuleAction {
     });
     this.props.bucket.addToResourcePolicy(s3Statement);
 
-    const policy = this.props.bucket.construct.tryFindChild('Policy') as s3.BucketPolicy;
+    const policy = this.props.bucket.node.tryFindChild('Policy') as s3.BucketPolicy;
     if (policy) { // The bucket could be imported
-      rule.construct.addDependency(policy);
+      rule.node.addDependency(policy);
     } else {
-      rule.construct.addWarning('This rule is using a S3 action with an imported bucket. Ensure permission is given to SES to write to that bucket.');
+      rule.node.addWarning('This rule is using a S3 action with an imported bucket. Ensure permission is given to SES to write to that bucket.');
     }
 
     // Allow SES to use KMS master key

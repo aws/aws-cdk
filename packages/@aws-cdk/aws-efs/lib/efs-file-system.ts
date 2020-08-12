@@ -255,7 +255,7 @@ export class FileSystem extends Resource implements IFileSystem {
     filesystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = filesystem.ref;
-    Tag.add(this, 'Name', props.fileSystemName || this.construct.path);
+    Tag.add(this, 'Name', props.fileSystemName || this.node.path);
 
     const securityGroup = (props.securityGroup || new ec2.SecurityGroup(this, 'EfsSecurityGroup', {
       vpc: props.vpc,
