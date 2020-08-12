@@ -131,7 +131,7 @@ and any changes you make to it will be reflected in the resulting template:
 param.default = 'MyDefault';
 ```
 
-You can also provide values for them:
+You can also provide values for them when including the template:
 
 ```typescript
 new inc.CfnInclude(stack, 'includeTemplate', {

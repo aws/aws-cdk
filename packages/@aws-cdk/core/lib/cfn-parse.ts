@@ -174,6 +174,7 @@ export interface ParseCfnOptions {
 
   /**
    * Values provided here will replace the parameters specified here.
+   * @default - no parameters will be replaced
    */
   readonly parameters?: { [parameterName: string]: any }
 }
@@ -524,11 +525,9 @@ export class CfnParser {
     if (isRef) {
       const refElement = this.options.finder.findRefTarget(refTarget);
       if (!refElement) {
-        if  (!(refTarget in this.parameters)) {
-          throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
-        }
+        throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
       }
-      return leftHalf + CfnReference.for(refElement!, 'Ref', true).toString() + this.parseFnSubString(rightHalf, map);
+      return leftHalf + CfnReference.for(refElement, 'Ref', true).toString() + this.parseFnSubString(rightHalf, map);
     } else {
       const targetId = refTarget.substring(0, dotIndex);
       const refResource = this.options.finder.findResource(targetId);

@@ -2,6 +2,7 @@ import * as core from '@aws-cdk/core';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
+import * as from_cfn from '@aws-cdk/core/lib/from-cfn';
 
 /**
  * Construction properties of {@link CfnInclude}.
@@ -24,7 +25,7 @@ export interface CfnIncludeProps {
    * or is in the template but is not a nested stack,
    * template creation will fail and an error will be thrown.
    *
-   * @default {}
+   * @default - no nested stacks will be included
    */
   readonly nestedStacks?: { [stackName: string]: CfnIncludeProps };
 
@@ -34,7 +35,7 @@ export interface CfnIncludeProps {
    * If you include a parameter here with an ID that isn't in the template,
    * template creation will fail and an error will be thrown.
    *
-   * @default {}
+   * @default - no parameters will be replaced
    */
   readonly parameters?: { [parameterName: string]: any };
 }
@@ -226,7 +227,7 @@ export class CfnInclude extends core.CfnElement {
 
     for (const section of Object.keys(this.template)) {
       const self = this;
-      const finder: core.ICfnFinder = {
+      const finder: from_cfn.ICfnFinder = {
         findResource(lId): core.CfnResource | undefined {
           return self.resources[lId];
         },
@@ -243,9 +244,6 @@ export class CfnInclude extends core.CfnElement {
         parameters: this.parametersToReplace,
       });
 
-      // render all sections of the template unchanged,
-      // except Conditions, Resources, Parameters,  and Outputs, which will be taken care of by the created L1s
-      // Metadata and Transform are handled below
       switch (section) {
         case 'Conditions':
         case 'Resources':
@@ -380,7 +378,7 @@ export class CfnInclude extends core.CfnElement {
     }
 
     const self = this;
-    const finder: core.ICfnFinder = {
+    const finder: from_cfn.ICfnFinder = {
       findCondition(conditionName: string): core.CfnCondition | undefined {
         return self.conditions[conditionName];
       },
@@ -411,10 +409,13 @@ export class CfnInclude extends core.CfnElement {
     } else {
       const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
       if (l1ClassFqn) {
+        const options: from_cfn.FromCloudFormationOptions = {
+          parser: cfnParser,
+        };
         const [moduleName, ...className] = l1ClassFqn.split('.');
         const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
         const jsClassFromModule = module[className.join('.')];
-        l1Instance = jsClassFromModule._fromCloudFormation(this, logicalId, resourceAttributes, { parser: cfnParser });
+        l1Instance = jsClassFromModule._fromCloudFormation(this, logicalId, resourceAttributes, options);
       } else {
         l1Instance = new core.CfnResource(this, logicalId, {
           type: resourceAttributes.Type,
