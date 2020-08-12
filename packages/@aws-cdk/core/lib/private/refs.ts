@@ -204,10 +204,12 @@ function generateExportName(stackExports: Construct, id: string) {
   const stackRelativeExports = stackExports.construct.tryGetContext(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
   const stack = Stack.of(stackExports);
 
-  const components = stackRelativeExports
-    ? [...stackExports.construct.scopes.slice(stack.construct.scopes.length).map(c => c.construct.id), id]
-    : [...stackExports.construct.scopes.slice(2).map(c => c.construct.id), id];
-
+  const components = [
+    ...stackExports.construct.scopes
+      .slice(stackRelativeExports ? stack.construct.scopes.length : 2)
+      .map(c => c.construct.id),
+    id,
+  ];
   const prefix = stack.stackName ? stack.stackName + ':' : '';
   const exportName = prefix + makeUniqueId(components);
   return exportName;
