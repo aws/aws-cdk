@@ -75,6 +75,17 @@
             "TargetOriginId": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
             "ViewerProtocolPolicy": "allow-all"
           },
+          "CacheBehaviors": [
+            { 
+              "PathPattern": "/api",
+              "ForwardedValues": {
+                "QueryString": false
+              },
+              "PathPattern": "/api",
+              "TargetOriginId": "cloudfrontorigingroupDistributionOrigin137659A54",
+              "ViewerProtocolPolicy": "allow-all"              
+            }
+          ],
           "Enabled": true,
           "HttpVersion": "http2",
           "IPV6Enabled": true,
