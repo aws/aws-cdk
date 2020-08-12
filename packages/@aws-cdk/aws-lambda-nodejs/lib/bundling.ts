@@ -286,7 +286,6 @@ class DockerBundler {
       lockFile: props.lockFile,
       dependencies: props.dependencies,
       parcelOptions: props.parcelOptions,
-
     });
 
     this.bundlingOptions = {
@@ -328,7 +327,7 @@ function createBundlingCommand(options: BundlingCommandOptions): string {
 
   let depsCommand = '';
   if (options.dependencies) {
-    // Move dummy package.json and lock file then install
+    // create dummy package.json, move lock file and then install
     depsCommand = chain([
       `echo '${JSON.stringify({ dependencies: options.dependencies })}' > ${options.outputDir}/package.json`,
       options.lockFile ? `cp ${options.projectRoot}/${options.lockFile} ${options.outputDir}/${options.lockFile}` : '',

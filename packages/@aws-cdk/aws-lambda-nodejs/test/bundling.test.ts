@@ -23,7 +23,7 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-test('Parcel bundling in Docker', () => {
+test('Parcel bundling', () => {
   Bundling.parcel({
     entry: '/project/folder/entry.ts',
     runtime: Runtime.NODEJS_12_X,
