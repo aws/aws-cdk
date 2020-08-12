@@ -12,7 +12,7 @@ import { CfnCapacityProvider } from './ecs.generated';
  */
 export interface ICapacityProvider extends cdk.IResource {
   /**
-   * The name of the CapacityProvider
+   * The name of the CapacityProvider.
    * @attribute
    */
   readonly capacityProviderName: string;
