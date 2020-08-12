@@ -1,8 +1,8 @@
 import * as core from '@aws-cdk/core';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
+import * as from_cfn from '@aws-cdk/core/lib/from-cfn';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
-import * as from_cfn from '@aws-cdk/core/lib/from-cfn';
 
 /**
  * Construction properties of {@link CfnInclude}.
