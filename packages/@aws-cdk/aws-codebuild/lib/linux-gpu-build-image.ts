@@ -14,7 +14,6 @@ const mappingName = 'AwsDeepLearningContainersRepositoriesAccounts';
  * A CodeBuild GPU image running Linux.
  *
  * This class has public constants that represent the most popular GPU images from AWS Deep Learning Containers.
- * Please note that these constants are not available in the following regions: ap-east-1, me-south-1, cn-north-1, cn-northwest-1.
  *
  * @see https://aws.amazon.com/releasenotes/available-deep-learning-containers-images
  */
