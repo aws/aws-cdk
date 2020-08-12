@@ -119,7 +119,7 @@ abstract class KeyBase extends Resource implements IKey {
     return { statementAdded: true, policyDependable: this.policy };
   }
 
-  public validate(): string[] {
+  protected validate(): string[] {
     const errors = super.validate();
     errors.push(...this.policy?.validateForResourcePolicy() || []);
     return errors;
