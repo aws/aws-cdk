@@ -1,6 +1,5 @@
 import * as core from '@aws-cdk/core';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
-import * as from_cfn from '@aws-cdk/core/lib/from-cfn';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
 
@@ -227,7 +226,7 @@ export class CfnInclude extends core.CfnElement {
 
     for (const section of Object.keys(this.template)) {
       const self = this;
-      const finder: from_cfn.ICfnFinder = {
+      const finder: cfn_parse.ICfnFinder = {
         findResource(lId): core.CfnResource | undefined {
           return self.resources[lId];
         },
@@ -378,7 +377,7 @@ export class CfnInclude extends core.CfnElement {
     }
 
     const self = this;
-    const finder: from_cfn.ICfnFinder = {
+    const finder: cfn_parse.ICfnFinder = {
       findCondition(conditionName: string): core.CfnCondition | undefined {
         return self.conditions[conditionName];
       },
@@ -409,7 +408,7 @@ export class CfnInclude extends core.CfnElement {
     } else {
       const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
       if (l1ClassFqn) {
-        const options: from_cfn.FromCloudFormationOptions = {
+        const options: cfn_parse.FromCloudFormationOptions = {
           parser: cfnParser,
         };
         const [moduleName, ...className] = l1ClassFqn.split('.');
