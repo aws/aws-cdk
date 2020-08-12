@@ -158,7 +158,7 @@ export class Distribution extends Resource implements IDistribution {
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
 
-    const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
+    const distribution = new CfnDistribution(this, 'Resource', { distributionConfig: {
       enabled: true,
       origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
       originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
