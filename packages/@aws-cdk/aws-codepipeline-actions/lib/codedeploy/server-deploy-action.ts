@@ -58,7 +58,7 @@ export class CodeDeployServerDeployAction extends Action {
 
     // grant the ASG Role permissions to read from the Pipeline Bucket
     for (const asg of this.deploymentGroup.autoScalingGroups || []) {
-      options.bucket.grantRead(asg.role);
+      options.bucket.grantRead(asg);
     }
 
     // the Action's Role needs to read from the Bucket to get artifacts
