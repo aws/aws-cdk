@@ -54,11 +54,10 @@ export class AwsCliCompatible {
 
     if (containerCreds ?? hasEcsCredentials()) {
       sources.push(() => new AWS.ECSCredentials());
-    } else if (ec2creds ?? await hasEc2Credentials()) {
+    } else if (ec2creds ?? await isEc2Instance()) {
       // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
       // run on EC2 boxes but the creds represent something different. Same behavior as
       // upstream code.
-      this.isEc2 = true;
       sources.push(() => new AWS.EC2MetadataCredentials());
     }
 
@@ -100,7 +99,7 @@ export class AwsCliCompatible {
       }
     }
 
-    if (!region && this.isEc2) {
+    if (!region && isEc2Instance()) {
       debug('Looking up AWS region in the EC2 Instance Metadata Service (IMDS).');
       const imdsOptions = {
         httpOptions: { timeout: 1000, connectTimeout: 1000 }, maxRetries: 2,
@@ -119,8 +118,6 @@ export class AwsCliCompatible {
 
     return region;
   }
-
-  private static isEc2: boolean | undefined;
 }
 
 /**
@@ -133,40 +130,48 @@ function hasEcsCredentials(): boolean {
 /**
  * Return whether we're on an EC2 instance
  */
-async function hasEc2Credentials() {
-  debug("Determining whether we're on an EC2 instance.");
+async function isEc2Instance() {
+  debug("Determining if we're on an EC2 instance.");
+  if (isEc2InstanceCache === undefined) {
+    let instance = false;
+    if (process.platform === 'win32') {
+      // https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
+      const result = await util.promisify(child_process.exec)('wmic path win32_computersystemproduct get uuid', { encoding: 'utf-8' });
+      // output looks like
+      //  UUID
+      //  EC2AE145-D1DC-13B2-94ED-01234ABCDEF
+      const lines = result.stdout.toString().split('\n');
+      instance = lines.some(x => matchesRegex(/^ec2/i, x));
+    } else {
+      // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
+      const files: Array<[string, RegExp]> = [
+        // This recognizes the Xen hypervisor based instances (pre-5th gen)
+        ['/sys/hypervisor/uuid', /^ec2/i],
 
-  let instance = false;
-  if (process.platform === 'win32') {
-    // https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
-    const result = await util.promisify(child_process.exec)('wmic path win32_computersystemproduct get uuid', { encoding: 'utf-8' });
-    // output looks like
-    //  UUID
-    //  EC2AE145-D1DC-13B2-94ED-01234ABCDEF
-    const lines = result.stdout.toString().split('\n');
-    instance = lines.some(x => matchesRegex(/^ec2/i, x));
-  } else {
-    // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
-    const files: Array<[string, RegExp]> = [
-      // This recognizes the Xen hypervisor based instances (pre-5th gen)
-      ['/sys/hypervisor/uuid', /^ec2/i],
-
-      // This recognizes the new Hypervisor (5th-gen instances and higher)
-      // Can't use the advertised file '/sys/devices/virtual/dmi/id/product_uuid' because it requires root to read.
-      // Instead, sys_vendor contains something like 'Amazon EC2'.
-      ['/sys/devices/virtual/dmi/id/sys_vendor', /ec2/i],
-    ];
-    for (const [file, re] of files) {
-      if (matchesRegex(re, readIfPossible(file))) {
-        instance = true;
-        break;
+        // This recognizes the new Hypervisor (5th-gen instances and higher)
+        // Can't use the advertised file '/sys/devices/virtual/dmi/id/product_uuid' because it requires root to read.
+        // Instead, sys_vendor contains something like 'Amazon EC2'.
+        ['/sys/devices/virtual/dmi/id/sys_vendor', /ec2/i],
+      ];
+      for (const [file, re] of files) {
+        if (matchesRegex(re, readIfPossible(file))) {
+          instance = true;
+          break;
+        }
       }
     }
-  }
 
-  debug(instance ? 'Looks like EC2 instance.' : 'Does not look like EC2 instance.');
-  return instance;
+    debug(instance ? 'Looks like EC2 instance.' : 'Does not look like EC2 instance.');
+    isEc2InstanceCache = instance;
+    return instance;
+  }
+  else {
+    debug(isEc2InstanceCache ? 'From the cache: looks like EC2 instance.' : 'From the cache: does not look like EC2 instance.')
+    return isEc2InstanceCache;
+  }
 }
+
+var isEc2InstanceCache: boolean | undefined = undefined;
 
 /**
  * Attempts to get a Instance Metadata Service V2 token
