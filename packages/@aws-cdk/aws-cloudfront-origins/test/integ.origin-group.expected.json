@@ -76,14 +76,14 @@
             "ViewerProtocolPolicy": "allow-all"
           },
           "CacheBehaviors": [
-            { 
+            {
               "PathPattern": "/api",
               "ForwardedValues": {
                 "QueryString": false
               },
               "PathPattern": "/api",
               "TargetOriginId": "cloudfrontorigingroupDistributionOrigin137659A54",
-              "ViewerProtocolPolicy": "allow-all"              
+              "ViewerProtocolPolicy": "allow-all"
             }
           ],
           "Enabled": true,

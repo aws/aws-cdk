@@ -19,9 +19,9 @@ new cloudfront.Distribution(stack, 'Distribution', {
   defaultBehavior: { origin: originGroup },
   additionalBehaviors: {
     '/api': {
-      origin: originGroup
-    }
-  }
+      origin: originGroup,
+    },
+  },
 });
 
 app.synth();
