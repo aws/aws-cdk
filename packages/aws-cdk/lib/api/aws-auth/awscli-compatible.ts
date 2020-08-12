@@ -160,13 +160,12 @@ async function isEc2Instance() {
         }
       }
     }
-
-    debug(instance ? 'Looks like EC2 instance.' : 'Does not look like EC2 instance.');
+    debug(instance ? 'Looks like an EC2 instance.' : 'Does not look like an EC2 instance.');
     isEc2InstanceCache = instance;
     return instance;
   }
   else {
-    debug(isEc2InstanceCache ? 'From the cache: looks like EC2 instance.' : 'From the cache: does not look like EC2 instance.')
+    debug(isEc2InstanceCache ? 'From the cache: looks like an EC2 instance.' : 'From the cache: does not look like an EC2 instance.')
     return isEc2InstanceCache;
   }
 }
@@ -178,7 +177,7 @@ var isEc2InstanceCache: boolean | undefined = undefined;
  */
 async function getImdsV2Token(metadataService: AWS.MetadataService): Promise<string> {
   debug('Attempting to retrieve an IMDSv2 token.');
-  return new Promise((resolve) => {
+  return new Promise((resolve, fail) => {
     metadataService.request(
       '/latest/api/token',
       {
@@ -186,11 +185,13 @@ async function getImdsV2Token(metadataService: AWS.MetadataService): Promise<str
         headers: { 'x-aws-ec2-metadata-token-ttl-seconds': '60' },
       },
       (err: AWS.AWSError, token: string | undefined) => {
-        if (err || !token) {
+        if (err) {
+          fail(err);
+        } else if (!token) {
+          fail(new Error('IMDS did not return a token.'));
+        } else {
           resolve(token);
-          return;
         }
-        resolve(token);
       });
   });
 }
@@ -204,17 +205,19 @@ async function getRegionFromImds(metadataService: AWS.MetadataService, token: st
   if (token) {
     options = { headers: { 'x-aws-ec2-metadata-token': token } };
   }
-  return new Promise((resolve) => {
+  return new Promise((resolve, fail) => {
     metadataService.request(
       '/latest/dynamic/instance-identity/document',
       options,
       (err: AWS.AWSError, instanceIdentityDocument: string | undefined) => {
-        if (err || !instanceIdentityDocument) {
-          resolve(instanceIdentityDocument);
-          return;
+        if (err) {
+          fail(err);
+        } else if (!instanceIdentityDocument) {
+          fail(new Error('IMDS did not return an Instance Identity Document.'));
+        } else {
+          const region = JSON.parse(instanceIdentityDocument).region;
+          resolve(region);
         }
-        const region = JSON.parse(instanceIdentityDocument).region;
-        resolve(region);
       });
   });
 }
