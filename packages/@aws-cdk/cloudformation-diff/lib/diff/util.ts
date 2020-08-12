@@ -4,7 +4,7 @@
  * object prototype into account for the purpose of the comparison, only the values of
  * properties reported by +Object.keys+.
  * 
- * If both operands can be parsed to numbers that are equal, will return true.
+ * If both operands can be parsed to equivalent numbers, will return true.
  * This makes diff consistent with CloudFormation, where a numeric 10 and a literal "10"
  * are considered equivalent.
  *

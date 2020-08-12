@@ -50,6 +50,8 @@ export class FromCloudFormation {
     return value;
   }
 
+  // won't always return a string; if the input can't be resolved to a string,
+  // the input will be returned. 
   public static getString(value: any): string {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
