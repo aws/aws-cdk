@@ -382,6 +382,24 @@ test('price class is included if provided', () => {
   });
 });
 
+test('escape hatches are supported', () => {
+  const dist = new Distribution(stack, 'Dist', {
+    defaultBehavior: { origin: defaultOrigin },
+  });
+  const cfnDist = dist.node.defaultChild as CfnDistribution;
+  cfnDist.addPropertyOverride('DistributionConfig.DefaultCacheBehavior.ForwardedValues.Headers', ['*']);
+
+  expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        ForwardedValues: {
+          Headers: ['*'],
+        },
+      },
+    },
+  });
+});
+
 function defaultOrigin(domainName?: string): IOrigin {
   return new TestOrigin(domainName ?? 'www.example.com');
 }
