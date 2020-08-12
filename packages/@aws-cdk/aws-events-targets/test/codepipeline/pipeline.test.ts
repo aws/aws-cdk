@@ -95,7 +95,7 @@ describe('CodePipeline event target', () => {
         const role = new iam.Role(stack, 'MyExampleRole', {
           assumedBy: new iam.AnyPrincipal(),
         });
-        const roleResource = role.construct.defaultChild as CfnElement;
+        const roleResource = role.node.defaultChild as CfnElement;
         roleResource.overrideLogicalId('MyRole'); // to make it deterministic in the assertion below
 
         rule.addTarget(new targets.CodePipeline(pipeline, {

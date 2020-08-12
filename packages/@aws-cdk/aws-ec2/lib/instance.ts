@@ -267,7 +267,7 @@ export class Instance extends Resource implements IInstance {
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    Tag.add(this, NAME_TAG, props.instanceName || this.construct.path);
+    Tag.add(this, NAME_TAG, props.instanceName || this.node.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
@@ -291,13 +291,13 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        this.construct.addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
+        this.node.addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
       }
     } else {
       if (subnets.length > 0) {
         subnet = subnets[0];
       } else {
-        this.construct.addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
+        this.node.addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
       }
     }
     if (!subnet) {
@@ -322,10 +322,10 @@ export class Instance extends Resource implements IInstance {
       blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
       privateIpAddress: props.privateIpAddress,
     });
-    this.instance.construct.addDependency(this.role);
+    this.instance.node.addDependency(this.role);
 
     this.osType = imageConfig.osType;
-    this.construct.defaultChild = this.instance;
+    this.node.defaultChild = this.instance;
 
     this.instanceId = this.instance.ref;
     this.instanceAvailabilityZone = this.instance.attrAvailabilityZone;
