@@ -314,7 +314,7 @@ new KubernetesManifest(this, 'hello-kub', {
   manifest: [ deployment, service ]
 });
 
-// or, option2: use `addResource`
+// or, option2: use `addManifest`
 cluster.addManifest('hello-kub', service, deployment);
 ```
 
