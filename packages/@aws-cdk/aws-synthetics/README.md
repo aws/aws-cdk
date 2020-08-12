@@ -40,22 +40,29 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 });
 ```
 
-The following is an example of a `canary/index.js` which exports the `handler` function:
+The following is an example of an `index.js` file which exports the `handler` function, note that the function **must** be called `handler`:
 
 ```
 const https = require('https');
-var synthetics = require('Synthetics');
 const log = require('SyntheticsLogger');
 
 exports.handler = async function () {
-  const requestOptions = {"hostname":"api.example.com","method":"","path":"/user/books/topbook/","port":443}
-  let req = https.request(requestOptions);
-  req.on('response', (res) => {
-    log.info()
-  });
+    const requestOptions = {"hostname":"api.example.com","method":"","path":"/user/books/topbook/","port":443}
+    return new Promise((resolve, reject) => {
+        let req = https.request(requestOptions);
+        req.on('response', (res) => {
+            if (res.statusCode !== 200){
+                log.info(`Status Code: ${res.statusCode}`);
+                reject("Failed: " + requestOption.path);
+            }
+            res.on('end', () => {
+                resolve();
+            })
+        });
+        req.end();
+    })
 }
 ```
-
 
 The canary will automatically produce a CloudWatch Dashboard:
 
@@ -63,25 +70,47 @@ The canary will automatically produce a CloudWatch Dashboard:
 
 ### Configuring the Canary Script 
 
-To configure the script the canary executes, use the `test` property. The `test` property exposes `code` and `handler` properties -- both are required by Synthetics to create a lambda function on your behalf. 
+To configure the script the canary executes, use the `test` property. The `test` property accepts a `Test` instance that can be initialized by the `Test` class static methods. Currently, the only implemented method is `Test.custom()`, which allows you to bring your own code. In the future, other methods will be added. `Test.custom()` accepts `code` and `handler` properties -- both are required by Synthetics to create a lambda function on your behalf.
+
+> **Note:** For `code.fromAsset()` and `code.fromBucket()`, the canary resource requires the following folder structure:
+>```
+>canary/
+>├── nodejs/
+>   ├── node_modules/
+>        ├── index.js
+>```
+> See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html).
 
 The `synthetics.Code` class exposes static methods to bundle your code artifacts: 
 
   - `code.fromInline(code)` - specify an inline script.
-  - `code.fromAsset(path)` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment. See note for directory structure.
-  - `code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object that contains the .zip file of your runtime code. See note for directory structure.
-
-> **Note:** For `code.fromAsset()` and `code.fromBucket()`, the canary resource requires the following folder structure: `nodejs/node_modules/<handlerFile>`. See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html).
-
-To supply the code from your local filesystem:
+  - `code.fromAsset(path)` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment. See the above Note for directory structure.
+  - `code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object that contains the .zip file of your runtime code. See the above Note for directory structure.
 
 ```ts
+// To supply the code inline:
 const canary = new Canary(this, 'MyCanary', {
   test: Test.custom({
-    code: Code.fromAsset(path.join(__dirname, 'canary'))),
+    code: Code.fromInline('/* Synthetics handler code */'),
+    handler: 'index.handler', // must be 'index.handler'
+  }),
+});
+
+// To supply the code from your local filesystem:
+const canary = new Canary(this, 'MyCanary', {
+  test: Test.custom({
+    code: Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
 });
+
+// To supply the code from a S3 bucket:
+const canary = new Canary(this, 'MyCanary', {
+  test: Test.custom({
+    code: Code.fromBucket(bucket, 'canary.zip'),
+    handler: 'index.handler', // must end with '.handler'
+  }),
+}); 
 ```
 
 ### Alarms
@@ -101,8 +130,3 @@ new cloudwatch.Alarm(this, 'CanaryAlarm', {
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
 });
 ```
-### Future Work
-
-- Add blueprints to the `Test` class.
-- Automatically add `nodejs/node_modules` prefix to the asset file before zipping to S3.
-- Add support for the `runConfig` property.
