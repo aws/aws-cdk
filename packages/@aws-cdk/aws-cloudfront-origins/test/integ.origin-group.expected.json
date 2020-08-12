@@ -82,7 +82,7 @@
                 "QueryString": false
               },
               "PathPattern": "/api",
-              "TargetOriginId": "cloudfrontorigingroupDistributionOrigin137659A54",
+              "TargetOriginId": "cloudfrontorigingroupDistributionOrigin10B57F1D1",
               "ViewerProtocolPolicy": "allow-all"
             }
           ],
