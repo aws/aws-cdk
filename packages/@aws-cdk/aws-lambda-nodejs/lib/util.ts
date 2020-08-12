@@ -70,7 +70,7 @@ export function findUp(name: string, directory: string = process.cwd()): string 
 }
 
 /**
- *
+ * Spawn sync with error handling
  */
 export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
   const proc = spawnSync(cmd, args, options);
