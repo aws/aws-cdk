@@ -237,7 +237,6 @@ export default class CodeGenerator {
     this.code.line(' */');
     // eslint-disable-next-line max-len
     this.code.openBlock(`public static _fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${FROM_CFN}.FromCloudFormationOptions): ` +
-    //this.code.openBlock(`public static _fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, cfnParser: cfn_parse.CfnParser): ` +
       `${resourceName.className}`);
     this.code.line('resourceAttributes = resourceAttributes || {};');
     if (propsType) {
