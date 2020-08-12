@@ -748,9 +748,9 @@ export class Cluster extends Resource implements ICluster {
       cluster: this,
       resourceType: 'service',
       resourceName: serviceName,
+      resourceNamespace: options.namespace,
       jsonPath: '.status.loadBalancer.ingress[0].hostname',
       timeout: options.timeout,
-      namespace: options.namespace,
     });
 
     return loadBalancerAddress.value;

@@ -23,6 +23,13 @@ export interface KubernetesResourceAttributeProps {
   readonly resourceName: string;
 
   /**
+   * The namespace the resource belongs to.
+   *
+   * @default 'default'
+   */
+  readonly resourceNamespace?: string;
+
+  /**
    * JSONPath to use in the query.
    *
    * @see https://kubernetes.io/docs/reference/kubectl/jsonpath/
@@ -35,14 +42,6 @@ export interface KubernetesResourceAttributeProps {
    * @default Duration.minutes(5)
    */
   readonly timeout?: Duration;
-
-  /**
-   * The namespace the resource belongs to.
-   *
-   * @default 'default'
-   */
-  readonly namespace?: string;
-
 
 }
 
@@ -71,7 +70,7 @@ export class KubernetesResourceAttribute extends Construct {
         RoleArn: props.cluster._kubectlCreationRole.roleArn,
         ResourceType: props.resourceType,
         ResourceName: props.resourceName,
-        ResourceNamespace: props.namespace ?? 'default',
+        ResourceNamespace: props.resourceNamespace ?? 'default',
         JsonPath: props.jsonPath,
         TimeoutSeconds: (props?.timeout ?? Duration.minutes(5)).toSeconds(),
       },

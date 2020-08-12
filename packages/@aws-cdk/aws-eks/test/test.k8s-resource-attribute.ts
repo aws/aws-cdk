@@ -20,7 +20,7 @@ export = {
       resourceName: 'mydeployment',
       resourceType: 'deployment',
       timeout: Duration.seconds(5),
-      namespace: 'mynamespace',
+      resourceNamespace: 'mynamespace',
     });
 
     const expectedCustomResourceId = 'MyAttributeF1E9B10D';
