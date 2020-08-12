@@ -232,6 +232,8 @@ export class Policy extends Resource implements IPolicy {
       }
     }
 
+    result.push(...this.document.validateForIdentityPolicy());
+
     return result;
   }
 

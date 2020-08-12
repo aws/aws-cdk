@@ -401,7 +401,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
       cloudWatchRoleArn: role.roleArn,
     });
 
-    resource.node.addDependency(apiResource);
+    resource.construct.addDependency(apiResource);
   }
 
   protected configureDeployment(props: RestApiOptions) {
@@ -492,7 +492,7 @@ export class SpecRestApi extends RestApiBase {
       endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
     });
-    this.node.defaultChild = resource;
+    this.construct.defaultChild = resource;
     this.restApiId = resource.ref;
     this.restApiRootResourceId = resource.attrRootResourceId;
     this.root = new RootResource(this, {}, this.restApiRootResourceId);
@@ -597,7 +597,7 @@ export class RestApi extends RestApiBase {
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters,
     });
-    this.node.defaultChild = resource;
+    this.construct.defaultChild = resource;
     this.restApiId = resource.ref;
 
     const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
