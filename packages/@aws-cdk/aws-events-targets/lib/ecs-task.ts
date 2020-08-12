@@ -61,6 +61,13 @@ export interface EcsTaskProps {
    * @default A new security group is created
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Existing IAM role to run the ECS task
+   *
+   * @default A new IAM role is created
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -86,6 +93,7 @@ export class EcsTask implements events.IRuleTarget {
   private readonly cluster: ecs.ICluster;
   private readonly taskDefinition: ecs.TaskDefinition;
   private readonly taskCount: number;
+  private readonly role: iam.IRole;
 
   constructor(private readonly props: EcsTaskProps) {
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
@@ -95,6 +103,14 @@ export class EcsTask implements events.IRuleTarget {
     this.cluster = props.cluster;
     this.taskDefinition = props.taskDefinition;
     this.taskCount = props.taskCount !== undefined ? props.taskCount : 1;
+
+    if (props.role) {
+      const role = props.role;
+      this.createEventRolePolicyStatements().forEach(role.addToPolicy.bind(role));
+      this.role = role;
+    } else {
+      this.role = singletonEventRole(this.taskDefinition, this.createEventRolePolicyStatements());
+    }
 
     // Security groups are only configurable with the "awsvpc" network mode.
     if (this.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC) {
@@ -117,33 +133,8 @@ export class EcsTask implements events.IRuleTarget {
    * Allows using tasks as target of EventBridge events
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    const policyStatements = [new iam.PolicyStatement({
-      actions: ['ecs:RunTask'],
-      resources: [this.taskDefinition.taskDefinitionArn],
-      conditions: {
-        ArnEquals: { 'ecs:cluster': this.cluster.clusterArn },
-      },
-    })];
-
-    // If it so happens that a Task Execution Role was created for the TaskDefinition,
-    // then the EventBridge Role must have permissions to pass it (otherwise it doesn't).
-    if (this.taskDefinition.executionRole !== undefined) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: [this.taskDefinition.executionRole.roleArn],
-      }));
-    }
-
-    // For Fargate task we need permission to pass the task role.
-    if (this.taskDefinition.isFargateCompatible) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: [this.taskDefinition.taskRole.roleArn],
-      }));
-    }
-
     const arn = this.cluster.clusterArn;
-    const role = singletonEventRole(this.taskDefinition, policyStatements);
+    const role = this.role;
     const containerOverrides = this.props.containerOverrides && this.props.containerOverrides
       .map(({ containerName, ...overrides }) => ({ name: containerName, ...overrides }));
     const input = { containerOverrides };
@@ -177,5 +168,34 @@ export class EcsTask implements events.IRuleTarget {
       input: events.RuleTargetInput.fromObject(input),
       targetResource: this.taskDefinition,
     };
+  }
+
+  private createEventRolePolicyStatements(): iam.PolicyStatement[] {
+    const policyStatements = [new iam.PolicyStatement({
+      actions: ['ecs:RunTask'],
+      resources: [this.taskDefinition.taskDefinitionArn],
+      conditions: {
+        ArnEquals: { 'ecs:cluster': this.cluster.clusterArn },
+      },
+    })];
+
+    // If it so happens that a Task Execution Role was created for the TaskDefinition,
+    // then the EventBridge Role must have permissions to pass it (otherwise it doesn't).
+    if (this.taskDefinition.executionRole !== undefined) {
+      policyStatements.push(new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.taskDefinition.executionRole.roleArn],
+      }));
+    }
+
+    // For Fargate task we need permission to pass the task role.
+    if (this.taskDefinition.isFargateCompatible) {
+      policyStatements.push(new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.taskDefinition.taskRole.roleArn],
+      }));
+    }
+
+    return policyStatements;
   }
 }
