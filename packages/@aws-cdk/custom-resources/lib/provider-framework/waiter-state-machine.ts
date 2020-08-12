@@ -87,7 +87,7 @@ export class WaiterStateMachine extends Construct {
         RoleArn: role.roleArn,
       },
     });
-    resource.node.addDependency(role);
+    resource.construct.addDependency(role);
 
     this.stateMachineArn = resource.ref;
   }

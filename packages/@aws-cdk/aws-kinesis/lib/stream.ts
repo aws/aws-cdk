@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Aws, CfnCondition, Construct, Duration, Fn, IResolvable, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Aws, CfnCondition, Construct, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnStream } from './kinesis.generated';
 
 const READ_OPERATIONS = [
@@ -261,8 +261,10 @@ export class Stream extends StreamBase {
 
     const shardCount = props.shardCount || 1;
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
-    if (retentionPeriodHours < 24 || retentionPeriodHours > 168) {
-      throw new Error(`retentionPeriod must be between 24 and 168 hours. Received ${retentionPeriodHours}`);
+    if (!Token.isUnresolved(retentionPeriodHours)) {
+      if (retentionPeriodHours < 24 || retentionPeriodHours > 168) {
+        throw new Error(`retentionPeriod must be between 24 and 168 hours. Received ${retentionPeriodHours}`);
+      }
     }
 
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
@@ -297,7 +299,7 @@ export class Stream extends StreamBase {
     if (!props.encryption && !props.encryptionKey) {
 
       const conditionName = 'AwsCdkKinesisEncryptedStreamsUnsupportedRegions';
-      const existing = Stack.of(this).node.tryFindChild(conditionName);
+      const existing = Stack.of(this).construct.tryFindChild(conditionName);
 
       // create a single condition for the Stack
       if (!existing) {
@@ -336,7 +338,7 @@ export class Stream extends StreamBase {
 
     if (encryptionType === StreamEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-        description: `Created by ${this.node.path}`,
+        description: `Created by ${this.construct.path}`,
       });
 
       const streamEncryption: CfnStream.StreamEncryptionProperty = {

@@ -294,6 +294,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
       result.push('Managed Policy is empty. You must add statements to the policy');
     }
 
+    result.push(...this.document.validateForIdentityPolicy());
+
     return result;
   }
 }

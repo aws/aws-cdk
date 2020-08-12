@@ -31,6 +31,9 @@ test.each([['npm'], ['yarn']])('%s build automatically determines artifact base-
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         artifacts: {
@@ -55,6 +58,9 @@ test.each([['npm'], ['yarn']])('%s build respects subdirectory', (npmYarn) => {
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -80,11 +86,43 @@ test.each([['npm'], ['yarn']])('%s assumes no build step by default', (npmYarn) 
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
           build: {
             commands: ['npx cdk synth'],
+          },
+        },
+      })),
+    },
+  });
+});
+
+test.each([['npm'], ['yarn']])('%s can have its install command overridden', (npmYarn) => {
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: npmYarnBuild(npmYarn)({
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      installCommand: '/bin/true',
+    }),
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
+    Source: {
+      BuildSpec: encodedJson(deepObjectLike({
+        phases: {
+          pre_build: {
+            commands: ['/bin/true'],
           },
         },
       })),
@@ -115,6 +153,9 @@ test('Standard (NPM) synth can output additional artifacts', () => {
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         artifacts: {

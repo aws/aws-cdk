@@ -4,7 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
 import * as sinon from 'sinon';
-import { App, AssetHashType, AssetStaging, BundlingDockerImage, Stack } from '../lib';
+import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, Stack } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 
@@ -47,7 +47,7 @@ export = {
   'staging can be disabled through context'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
+    stack.construct.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
     const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // WHEN
@@ -108,7 +108,7 @@ export = {
     const ensureDirSyncSpy = sinon.spy(fs, 'ensureDirSync');
     const mkdtempSyncSpy = sinon.spy(fs, 'mkdtempSync');
     const chmodSyncSpy = sinon.spy(fs, 'chmodSync');
-    const consoleErrorSpy = sinon.spy(console, 'error');
+    const processStdErrWriteSpy = sinon.spy(process.stderr, 'write');
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -140,7 +140,7 @@ export = {
     test.ok(chmodSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-')), 0o777));
 
     // shows a message before bundling
-    test.ok(consoleErrorSpy.calledWith('Bundling asset stack/Asset...'));
+    test.ok(processStdErrWriteSpy.calledWith('Bundling asset stack/Asset...\n'));
 
     test.done();
   },
@@ -281,11 +281,74 @@ export = {
         image: BundlingDockerImage.fromRegistry('this-is-an-invalid-docker-image'),
         command: [ DockerStubCommand.FAIL ],
       },
-    }), /Failed to run bundling Docker image for asset stack\/Asset/);
+    }), /Failed to bundle asset stack\/Asset/);
     test.equal(
       readDockerStubInput(),
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
     );
+
+    test.done();
+  },
+
+  'with local bundling'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    let dir: string | undefined;
+    let opts: BundlingOptions | undefined;
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        local: {
+          tryBundle(outputDir: string, options: BundlingOptions): boolean {
+            dir = outputDir;
+            opts = options;
+            fs.writeFileSync(path.join(outputDir, 'hello.txt'), 'hello'); // output cannot be empty
+            return true;
+          },
+        },
+      },
+    });
+
+    // THEN
+    test.ok(dir && /asset-bundle-/.test(dir));
+    test.equals(opts?.command?.[0], DockerStubCommand.SUCCESS);
+    test.throws(() => readDockerStubInput());
+
+    if (dir) {
+      fs.removeSync(path.join(dir, 'hello.txt'));
+    }
+
+    test.done();
+  },
+
+  'with local bundling returning false'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        local: {
+          tryBundle(_bundleDir: string): boolean {
+            return false;
+          },
+        },
+      },
+    });
+
+    // THEN
+    test.ok(readDockerStubInput());
 
     test.done();
   },

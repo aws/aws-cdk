@@ -361,7 +361,7 @@ export = {
     const t1: IRuleTarget = {
       bind: (eventRule: IRule) => {
         receivedRuleArn = eventRule.ruleArn;
-        receivedRuleId = eventRule.node.uniqueId;
+        receivedRuleId = eventRule.construct.uniqueId;
 
         return {
           id: '',
@@ -375,7 +375,7 @@ export = {
     rule.addTarget(t1);
 
     test.deepEqual(stack.resolve(receivedRuleArn), stack.resolve(rule.ruleArn));
-    test.deepEqual(receivedRuleId, rule.node.uniqueId);
+    test.deepEqual(receivedRuleId, rule.construct.uniqueId);
     test.done();
   },
 
@@ -578,42 +578,6 @@ export = {
       test.done();
     },
 
-    'requires that the source stack be part of an App'(test: Test) {
-      const app = new cdk.App();
-
-      const sourceAccount = '123456789012';
-      const sourceStack = new cdk.Stack(undefined, 'SourceStack', { env: { account: sourceAccount, region: 'us-west-2' } });
-      const rule = new Rule(sourceStack, 'Rule');
-
-      const targetAccount = '234567890123';
-      const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount, region: 'us-west-2' } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
-
-      test.throws(() => {
-        rule.addTarget(new SomeTarget('T', resource));
-      }, /Event stack which uses cross-account targets must be part of a CDK app/);
-
-      test.done();
-    },
-
-    'requires that the target stack be part of an App'(test: Test) {
-      const app = new cdk.App();
-
-      const sourceAccount = '123456789012';
-      const sourceStack = new cdk.Stack(app, 'SourceStack', { env: { account: sourceAccount, region: 'us-west-2' } });
-      const rule = new Rule(sourceStack, 'Rule');
-
-      const targetAccount = '234567890123';
-      const targetStack = new cdk.Stack(undefined, 'TargetStack', { env: { account: targetAccount, region: 'us-west-2' } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
-
-      test.throws(() => {
-        rule.addTarget(new SomeTarget('T', resource));
-      }, /Target stack which uses cross-account event targets must be part of a CDK app/);
-
-      test.done();
-    },
-
     'requires that the source and target stacks be part of the same App'(test: Test) {
       const sourceApp = new cdk.App();
       const sourceAccount = '123456789012';
@@ -714,7 +678,7 @@ export = {
         ],
       }));
 
-      const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
+      const eventBusPolicyStack = app.construct.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
       expect(eventBusPolicyStack).to(haveResourceLike('AWS::Events::EventBusPolicy', {
         'Action': 'events:PutEvents',
         'StatementId': `Allow-account-${sourceAccount}`,

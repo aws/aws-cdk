@@ -146,13 +146,13 @@ export = {
     'defaults task definition placeholder string'(test: Test) {
       const stack = new cdk.Stack();
       const deploymentGroup = addEcsDeploymentGroup(stack);
-      const artifact1 = new codepipeline.Artifact('Artifact1');
-      const artifact2 = new codepipeline.Artifact('Artifact2');
+      const artifact1 = new codepipeline.Artifact();
+      const artifact2 = new codepipeline.Artifact();
       addCodeDeployECSCodePipeline(stack, {
         actionName: 'DeployToECS',
         deploymentGroup,
-        taskDefinitionTemplateFile: new codepipeline.ArtifactPath(artifact1, 'task-definition.json'),
-        appSpecTemplateFile: new codepipeline.ArtifactPath(artifact2, 'appspec-test.yaml'),
+        taskDefinitionTemplateFile: artifact1.atPath('task-definition.json'),
+        appSpecTemplateFile: artifact2.atPath('appspec-test.yaml'),
         containerImageInputs: [
           {
             input: artifact1,
@@ -172,21 +172,21 @@ export = {
                 Configuration: {
                   ApplicationName: 'MyApplication',
                   DeploymentGroupName: 'MyDeploymentGroup',
-                  TaskDefinitionTemplateArtifact: 'Artifact1',
-                  AppSpecTemplateArtifact: 'Artifact2',
+                  TaskDefinitionTemplateArtifact: 'Artifact_Source_GitHub',
+                  AppSpecTemplateArtifact: 'Artifact_Source_GitHub2',
                   TaskDefinitionTemplatePath: 'task-definition.json',
                   AppSpecTemplatePath: 'appspec-test.yaml',
-                  Image1ArtifactName: 'Artifact1',
+                  Image1ArtifactName: 'Artifact_Source_GitHub',
                   Image1ContainerName: 'IMAGE',
-                  Image2ArtifactName: 'Artifact2',
+                  Image2ArtifactName: 'Artifact_Source_GitHub2',
                   Image2ContainerName: 'IMAGE',
                 },
                 InputArtifacts: [
                   {
-                    Name: 'Artifact1',
+                    Name: 'Artifact_Source_GitHub',
                   },
                   {
-                    Name: 'Artifact2',
+                    Name: 'Artifact_Source_GitHub2',
                   },
                 ],
               },

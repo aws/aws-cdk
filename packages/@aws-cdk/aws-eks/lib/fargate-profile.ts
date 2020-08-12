@@ -140,12 +140,6 @@ export class FargateProfile extends Construct implements ITaggable {
   constructor(scope: Construct, id: string, props: FargateProfileProps) {
     super(scope, id);
 
-    // currently the custom resource requires a role to assume when interacting with the cluster
-    // and we only have this role when kubectl is enabled.
-    if (!props.cluster.kubectlEnabled) {
-      throw new Error('adding Faregate Profiles to clusters without kubectl enabled is currently unsupported');
-    }
-
     const provider = ClusterResourceProvider.getOrCreate(this);
 
     this.podExecutionRole = props.podExecutionRole ?? new iam.Role(this, 'PodExecutionRole', {
@@ -195,7 +189,7 @@ export class FargateProfile extends Construct implements ITaggable {
     const clusterFargateProfiles = props.cluster._attachFargateProfile(this);
     if (clusterFargateProfiles.length > 1) {
       const previousProfile = clusterFargateProfiles[clusterFargateProfiles.length - 2];
-      resource.node.addDependency(previousProfile);
+      resource.construct.addDependency(previousProfile);
     }
 
     // map the fargate pod execution role to the relevant groups in rbac

@@ -503,12 +503,12 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     const { subnetIds } = props.vpc.selectSubnets(props.vpcPlacement);
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'SubnetGroup', {
-      dbSubnetGroupDescription: `Subnet group for ${this.node.id} database`,
+      dbSubnetGroupDescription: `Subnet group for ${this.construct.id} database`,
       subnetIds,
     });
 
     const securityGroups = props.securityGroups || [new ec2.SecurityGroup(this, 'SecurityGroup', {
-      description: `Security group for ${this.node.id} database`,
+      description: `Security group for ${this.construct.id} database`,
       vpc: props.vpc,
     })];
 
@@ -704,7 +704,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     }
 
     const id = 'RotationSingleUser';
-    const existing = this.node.tryFindChild(id);
+    const existing = this.construct.tryFindChild(id);
     if (existing) {
       throw new Error('A single user rotation was already added to this instance.');
     }

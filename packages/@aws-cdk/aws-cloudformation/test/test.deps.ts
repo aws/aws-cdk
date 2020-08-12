@@ -209,9 +209,9 @@ export = {
       const nested2 = new NestedStack(nested1, 'Nested2');
 
       // THEN
-      test.throws(() => nested1.addDependency(root), /Nested stack 'Nested1' cannot depend on a parent stack ''/);
-      test.throws(() => nested2.addDependency(nested1), /Nested stack 'Nested1\/Nested2' cannot depend on a parent stack 'Nested1'/);
-      test.throws(() => nested2.addDependency(root), /Nested stack 'Nested1\/Nested2' cannot depend on a parent stack ''/);
+      test.throws(() => nested1.addDependency(root), /Nested stack 'Default\/Nested1' cannot depend on a parent stack 'Default'/);
+      test.throws(() => nested2.addDependency(nested1), /Nested stack 'Default\/Nested1\/Nested2' cannot depend on a parent stack 'Default\/Nested1'/);
+      test.throws(() => nested2.addDependency(root), /Nested stack 'Default\/Nested1\/Nested2' cannot depend on a parent stack 'Default'/);
       test.done();
     },
 
@@ -335,7 +335,7 @@ export = {
 function matrixForResourceDependencyTest(testFunction: (test: Test, addDep: (source: CfnResource, target: CfnResource) => void) => void) {
   return {
     'construct dependency'(test: Test) {
-      testFunction(test, (source, target) => source.node.addDependency(target));
+      testFunction(test, (source, target) => source.construct.addDependency(target));
     },
     'resource dependency'(test: Test) {
       testFunction(test, (source, target) => source.addDependsOn(target));

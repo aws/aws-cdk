@@ -98,7 +98,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       const enableLogging = taskImageOptions.enableLogging !== undefined ? taskImageOptions.enableLogging : true;
       const logDriver = taskImageOptions.logDriver !== undefined
         ? taskImageOptions.logDriver : enableLogging
-          ? this.createAWSLogDriver(this.node.id) : undefined;
+          ? this.createAWSLogDriver(this.construct.id) : undefined;
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
       const container = this.taskDefinition.addContainer(containerName, {

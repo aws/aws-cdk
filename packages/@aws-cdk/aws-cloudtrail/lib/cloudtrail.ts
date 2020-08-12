@@ -199,6 +199,7 @@ export class Trail extends Resource {
 
   private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
+  private topic: sns.ITopic | undefined;
 
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
     super(scope, id, {
@@ -225,6 +226,11 @@ export class Trail extends Resource {
         StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
       },
     }));
+
+    this.topic = props.snsTopic;
+    if (this.topic) {
+      this.topic.grantPublish(cloudTrailPrincipal);
+    }
 
     let logsRole: iam.IRole | undefined;
 
@@ -276,7 +282,7 @@ export class Trail extends Resource {
       s3KeyPrefix: props.s3KeyPrefix,
       cloudWatchLogsLogGroupArn: this.logGroup?.logGroupArn,
       cloudWatchLogsRoleArn: logsRole?.roleArn,
-      snsTopicName: props.snsTopic?.topicName,
+      snsTopicName: this.topic?.topicName,
       eventSelectors: this.eventSelectors,
     });
 
@@ -289,14 +295,14 @@ export class Trail extends Resource {
 
     // Add a dependency on the bucket policy being updated, CloudTrail will test this upon creation.
     if (this.s3bucket.policy) {
-      trail.node.addDependency(this.s3bucket.policy);
+      trail.construct.addDependency(this.s3bucket.policy);
     }
 
     // If props.sendToCloudWatchLogs is set to true then the trail needs to depend on the created logsRole
     // so that it can create the log stream for the log group. This ensures the logsRole is created and propagated
     // before the trail tries to create the log stream.
     if (logsRole !== undefined) {
-      trail.node.addDependency(logsRole);
+      trail.construct.addDependency(logsRole);
     }
   }
 

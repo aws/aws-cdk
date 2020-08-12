@@ -32,11 +32,11 @@ nodeunitShim({
         new Vpc(stack, 'TheVPC');
         expect(stack).to(
           haveResource('AWS::EC2::VPC',
-            hasTags( [ {Key: 'Name', Value: 'TheVPC'} ])),
+            hasTags( [ {Key: 'Name', Value: 'TestStack/TheVPC'} ])),
         );
         expect(stack).to(
           haveResource('AWS::EC2::InternetGateway',
-            hasTags( [ {Key: 'Name', Value: 'TheVPC'} ])),
+            hasTags( [ {Key: 'Name', Value: 'TestStack/TheVPC'} ])),
         );
         test.done();
       },
@@ -61,6 +61,46 @@ nodeunitShim({
       test.done();
     },
 
+    'dns getters correspond to CFN properties': (() => {
+
+      const tests: any = { };
+
+      const inputs = [
+        {dnsSupport: false, dnsHostnames: false},
+        // {dnsSupport: false, dnsHostnames: true} - this configuration is illegal so its not part of the permutations.
+        {dnsSupport: true, dnsHostnames: false},
+        {dnsSupport: true, dnsHostnames: true},
+      ];
+
+      for (const input of inputs) {
+
+        tests[`[dnsSupport=${input.dnsSupport},dnsHostnames=${input.dnsHostnames}]`] = (test: Test) => {
+
+          const stack = getTestStack();
+          const vpc = new Vpc(stack, 'TheVPC', {
+            cidr: '192.168.0.0/16',
+            enableDnsHostnames: input.dnsHostnames,
+            enableDnsSupport: input.dnsSupport,
+            defaultInstanceTenancy: DefaultInstanceTenancy.DEDICATED,
+          });
+
+          expect(stack).to(haveResource('AWS::EC2::VPC', {
+            CidrBlock: '192.168.0.0/16',
+            EnableDnsHostnames: input.dnsHostnames,
+            EnableDnsSupport: input.dnsSupport,
+            InstanceTenancy: DefaultInstanceTenancy.DEDICATED,
+          }));
+
+          test.equal(input.dnsSupport, vpc.dnsSupportEnabled);
+          test.equal(input.dnsHostnames, vpc.dnsHostnamesEnabled);
+          test.done();
+
+        };
+      }
+
+      return tests;
+    })(),
+
     'contains the correct number of subnets'(test: Test) {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'TheVPC');
@@ -68,6 +108,13 @@ nodeunitShim({
       test.equal(vpc.publicSubnets.length, zones);
       test.equal(vpc.privateSubnets.length, zones);
       test.deepEqual(stack.resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' });
+      test.done();
+    },
+
+    'can refer to the internet gateway'(test: Test) {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC');
+      test.deepEqual(stack.resolve(vpc.internetGatewayId), { Ref: 'TheVPCIGWFA25CC08' });
       test.done();
     },
 
@@ -103,7 +150,8 @@ nodeunitShim({
           },
         ],
       });
-      expect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
+      expect(stack).to(countResources('AWS::EC2::InternetGateway', 1))
+      ;
       expect(stack).notTo(haveResource('AWS::EC2::NatGateway'));
       test.done();
     },
@@ -155,6 +203,48 @@ nodeunitShim({
       new Vpc(stack, 'TheVPC', { });
       expect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
       expect(stack).to(countResources('AWS::EC2::NatGateway', zones));
+      test.done();
+    },
+
+    'with isolated and public subnet, should be able to use the internet gateway to define routes'(test: Test) {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.ISOLATED,
+            name: 'isolated',
+          },
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+          },
+        ],
+      });
+      (vpc.isolatedSubnets[0] as Subnet).addRoute('TheRoute', {
+        routerId: vpc.internetGatewayId!,
+        routerType: RouterType.GATEWAY,
+        destinationCidrBlock: '8.8.8.8/32',
+      });
+      expect(stack).to(haveResource('AWS::EC2::InternetGateway'));
+      expect(stack).to(haveResourceLike('AWS::EC2::Route', {
+        DestinationCidrBlock: '8.8.8.8/32',
+        GatewayId: { },
+      }));
+      test.done();
+    },
+
+    'with only isolated subnets the internet gateway should be undefined'(test: Test) {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.ISOLATED,
+            name: 'isolated',
+          },
+        ],
+      });
+      test.equal(vpc.internetGatewayId, undefined);
+      expect(stack).notTo(haveResource('AWS::EC2::InternetGateway'));
       test.done();
     },
 
@@ -408,7 +498,7 @@ nodeunitShim({
       for (let i = 1; i < 4; i++) {
         expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
           Key: 'Name',
-          Value: `VPC/egressSubnet${i}`,
+          Value: `TestStack/VPC/egressSubnet${i}`,
         }, {
           Key: 'aws-cdk:subnet-name',
           Value: 'egress',
@@ -717,7 +807,7 @@ nodeunitShim({
 
       const vpc = new Vpc(stack, 'VpcNetwork');
 
-      test.ok(vpc.publicSubnets[0].node.defaultChild instanceof CfnSubnet);
+      test.ok(vpc.publicSubnets[0].construct.defaultChild instanceof CfnSubnet);
 
       test.done();
     },
@@ -943,8 +1033,8 @@ nodeunitShim({
 
       const vpc = new Vpc(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.node.applyAspect(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.CFN_RESOURCE_TYPE_NAME]}));
-      vpc.node.applyAspect(new Tag('VpcType', 'Good'));
+      vpc.construct.applyAspect(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.CFN_RESOURCE_TYPE_NAME]}));
+      vpc.construct.applyAspect(new Tag('VpcType', 'Good'));
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
       const propTags = toCfnTags(tags);
@@ -959,12 +1049,12 @@ nodeunitShim({
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'TheVPC');
       for (const subnet of vpc.publicSubnets) {
-        const tag = {Key: 'Name', Value: subnet.node.path};
+        const tag = {Key: 'Name', Value: subnet.construct.path};
         expect(stack).to(haveResource('AWS::EC2::NatGateway', hasTags([tag])));
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       for (const subnet of vpc.privateSubnets) {
-        const tag = {Key: 'Name', Value: subnet.node.path};
+        const tag = {Key: 'Name', Value: subnet.construct.path};
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       test.done();
@@ -975,7 +1065,7 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'TheVPC');
       const tag = {Key: 'Late', Value: 'Adder'};
       expect(stack).notTo(haveResource('AWS::EC2::VPC', hasTags([tag])));
-      vpc.node.applyAspect(new Tag(tag.Key, tag.Value));
+      vpc.construct.applyAspect(new Tag(tag.Key, tag.Value));
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags([tag])));
       test.done();
     },

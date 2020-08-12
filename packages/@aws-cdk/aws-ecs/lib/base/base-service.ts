@@ -356,7 +356,7 @@ export abstract class BaseService extends Resource
     });
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
-      this.node.addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
+      this.construct.addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }
 
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
@@ -675,7 +675,7 @@ export abstract class BaseService extends Resource
 
     // Service creation can only happen after the load balancer has
     // been associated with our target group(s), so add ordering dependency.
-    this.resource.node.addDependency(targetGroup.loadBalancerAttached);
+    this.resource.construct.addDependency(targetGroup.loadBalancerAttached);
 
     const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
     return { targetType };
@@ -742,7 +742,7 @@ export interface CloudMapOptions {
   /**
    * The DNS record type that you want AWS Cloud Map to create. The supported record types are A or SRV.
    *
-   * @default DnsRecordType.A
+   * @default - DnsRecordType.A if TaskDefinition.networkMode = AWS_VPC, otherwise DnsRecordType.SRV
    */
   readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
 
