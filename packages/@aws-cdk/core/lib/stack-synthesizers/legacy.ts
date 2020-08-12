@@ -102,7 +102,7 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
     assertBound(this.stack);
 
     // check if we have an override from context
-    const repositoryNameOverride = this.stack.construct.tryGetContext(ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY);
+    const repositoryNameOverride = this.stack.node.tryGetContext(ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY);
     const repositoryName = asset.repositoryName ?? repositoryNameOverride ?? ASSETS_ECR_REPOSITORY_NAME;
     const imageTag = asset.sourceHash;
     const assetId = asset.sourceHash;
@@ -121,7 +121,7 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
         file: asset.dockerFile,
       };
 
-      this.stack.construct.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
+      this.stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
       this.addedImageAssets.add(assetId);
     }
 
@@ -134,7 +134,7 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
   private doAddFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stack);
 
-    let params = this.assetParameters.construct.tryFindChild(asset.sourceHash) as FileAssetParameters;
+    let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as FileAssetParameters;
     if (!params) {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
 
@@ -149,7 +149,7 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
         artifactHashParameter: params.artifactHashParameter.logicalId,
       };
 
-      this.stack.construct.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
+      this.stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
     }
 
     const bucketName = params.bucketNameParameter.valueAsString;
