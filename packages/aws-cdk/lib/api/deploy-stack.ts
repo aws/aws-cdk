@@ -154,14 +154,14 @@ export interface DeployStackOptions {
   usePreviousParameters?: boolean;
 
   /**
-   * Whether to truncate stack events to display only the
+   * Whether to display all stack events or to display only the events for the
    * resource currently being deployed
    *
    * If not set, the stack history with all stack events will be displayed
    *
    * @default false
    */
-  trunc?: boolean;
+  allEvents?: boolean;
 
   /**
    * Deploy even if the deployed template is identical to the one we are about to deploy.
@@ -270,6 +270,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     // eslint-disable-next-line max-len
     const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, stackArtifact, {
       resourcesTotal: (changeSetDescription.Changes ?? []).length,
+      allEvents: options.allEvents,
     }).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
     try {

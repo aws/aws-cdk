@@ -90,14 +90,14 @@ export interface DeployStackOptions {
   usePreviousParameters?: boolean;
 
   /**
-    * Whether to truncate stack events to display only the
+    * Whether to display all stack events or to display only the events for the
     * resource currently being deployed
     *
     * If not set, the stack history with all stack events will be displayed
     *
     * @default false
     */
-  trunc?: boolean;
+  allEvents?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -166,7 +166,7 @@ export class CloudFormationDeployments {
       force: options.force,
       parameters: options.parameters,
       usePreviousParameters: options.usePreviousParameters,
-      trunc: options.trunc,
+      allEvents: options.allEvents,
     });
   }
 
