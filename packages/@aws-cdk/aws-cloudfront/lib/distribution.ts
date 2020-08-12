@@ -93,7 +93,8 @@ export interface DistributionProps {
 
   /**
    * The object that you want CloudFront to request from your origin (for example, index.html)
-   * when a viewer requests the root URL for your distribution.
+   * when a viewer requests the root URL for your distribution. If no default object is set, the
+   * request goes to the origin's root (e.g., example.com/).
    *
    * @default - no default root object
    */
@@ -144,21 +145,21 @@ export interface DistributionProps {
    *
    * @default - A bucket is created if `enableLogging` is true
    */
-  readonly loggingBucket?: s3.IBucket;
+  readonly logBucket?: s3.IBucket;
 
   /**
    * Specifies whether you want CloudFront to include cookies in access logs
    *
    * @default false
    */
-  readonly loggingIncludesCookies?: boolean;
+  readonly logIncludesCookies?: boolean;
 
   /**
    * An optional string that you want CloudFront to prefix to the access log filenames for this distribution.
    *
    * @default - no prefix
    */
-  readonly loggingFilePrefix?: string;
+  readonly logFilePrefix?: string;
 
   /**
    * The price class that corresponds with the maximum price that you want to pay for CloudFront service.
@@ -379,16 +380,16 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderLogging(props: DistributionProps): CfnDistribution.LoggingProperty | undefined {
-    if (!props.enableLogging && !props.loggingBucket) { return undefined; }
-    if (props.enableLogging === false && props.loggingBucket) {
+    if (!props.enableLogging && !props.logBucket) { return undefined; }
+    if (props.enableLogging === false && props.logBucket) {
       throw new Error('Explicitly disabled logging but provided a logging bucket.');
     }
 
-    const bucket = props.loggingBucket ?? new s3.Bucket(this, 'LoggingBucket');
+    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket');
     return {
       bucket: bucket.bucketRegionalDomainName,
-      includeCookies: props.loggingIncludesCookies,
-      prefix: props.loggingFilePrefix,
+      includeCookies: props.logIncludesCookies,
+      prefix: props.logFilePrefix,
     };
   }
 

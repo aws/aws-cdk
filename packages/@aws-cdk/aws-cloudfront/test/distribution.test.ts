@@ -56,8 +56,8 @@ test('exhaustive example of props renders correctly', () => {
     enableLogging: true,
     geoRestriction: GeoRestriction.blacklist('US', 'GB'),
     httpVersion: HttpVersion.HTTP1_1,
-    loggingFilePrefix: 'logs/',
-    loggingIncludesCookies: true,
+    logFilePrefix: 'logs/',
+    logIncludesCookies: true,
     priceClass: PriceClass.PRICE_CLASS_100,
     webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
   });
@@ -363,7 +363,7 @@ describe('logging', () => {
       new Distribution(stack, 'MyDist', {
         defaultBehavior: { origin },
         enableLogging: false,
-        loggingBucket: new s3.Bucket(stack, 'Bucket'),
+        logBucket: new s3.Bucket(stack, 'Bucket'),
       });
     }).toThrow(/Explicitly disabled logging but provided a logging bucket./);
   });
@@ -389,7 +389,7 @@ describe('logging', () => {
     const loggingBucket = new s3.Bucket(stack, 'MyLoggingBucket');
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
-      loggingBucket,
+      logBucket: loggingBucket,
     });
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
@@ -406,8 +406,8 @@ describe('logging', () => {
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       enableLogging: true,
-      loggingFilePrefix: 'logs/',
-      loggingIncludesCookies: true,
+      logFilePrefix: 'logs/',
+      logIncludesCookies: true,
     });
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {

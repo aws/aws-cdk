@@ -14,8 +14,8 @@ new cloudfront.Distribution(stack, 'MyDist', {
   enableLogging: true,
   geoRestriction: cloudfront.GeoRestriction.whitelist('US', 'GB'),
   httpVersion: cloudfront.HttpVersion.HTTP2,
-  loggingFilePrefix: 'logs/',
-  loggingIncludesCookies: true,
+  logFilePrefix: 'logs/',
+  logIncludesCookies: true,
   priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
 });
 
