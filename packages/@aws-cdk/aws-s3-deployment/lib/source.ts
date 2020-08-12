@@ -77,7 +77,7 @@ export class Source {
         }
 
         let id = 1;
-        while (scope.construct.tryFindChild(`Asset${id}`)) {
+        while (scope.node.tryFindChild(`Asset${id}`)) {
           id++;
         }
         const asset = new s3_assets.Asset(scope, `Asset${id}`, {
