@@ -321,7 +321,7 @@ export = {
       });
 
       // THEN
-      test.deepEqual(service.construct.metadata[0].data, 'taskDefinition and launchType are blanked out when using external deployment controller.');
+      test.deepEqual(service.node.metadata[0].data, 'taskDefinition and launchType are blanked out when using external deployment controller.');
       expect(stack).to(haveResource('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',

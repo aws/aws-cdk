@@ -3,7 +3,6 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
-import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ecsPatterns from '../../lib';
@@ -371,10 +370,13 @@ export = {
       cluster,
       protocol: ApplicationProtocol.HTTPS,
       domainName: 'domain.com',
-      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'MyHostedZone', {
+      domainZone: {
         hostedZoneId: 'fakeId',
         zoneName: 'domain.com',
-      }),
+        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
+        stack,
+        node: stack.node,
+      },
       taskImageOptions: {
         containerPort: 2015,
         image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
@@ -406,10 +408,13 @@ export = {
       cluster,
       protocol: ApplicationProtocol.HTTPS,
       domainName: 'test.domain.com',
-      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'MyHostedZone', {
+      domainZone: {
         hostedZoneId: 'fakeId',
         zoneName: 'domain.com.',
-      }),
+        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
+        stack,
+        node: stack.node,
+      },
       taskImageOptions: {
         containerPort: 2015,
         image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),

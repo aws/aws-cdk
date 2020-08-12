@@ -221,7 +221,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       description: props.description,
       environmentVariables: Lazy.anyValue({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
       iamServiceRole: role.roleArn,
-      name: props.appName || this.construct.id,
+      name: props.appName || this.node.id,
       oauthToken: sourceCodeProviderOptions?.oauthToken?.toString(),
       repository: sourceCodeProviderOptions?.repository,
     });
