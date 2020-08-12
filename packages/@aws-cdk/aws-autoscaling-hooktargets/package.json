@@ -69,6 +69,7 @@
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
@@ -80,6 +81,7 @@
   "peerDependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",

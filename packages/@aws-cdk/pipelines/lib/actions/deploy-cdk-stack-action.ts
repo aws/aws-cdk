@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
@@ -5,7 +6,6 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Arn, Construct, Fn, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as path from 'path';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
 
 /**
@@ -270,10 +270,10 @@ function roleFromPlaceholderArn(scope: Construct, arn: string | undefined): iam.
   scope = hackyRoleScope(scope, arn);
 
   // https://github.com/aws/aws-cdk/issues/7255
-  let existingRole = scope.node.tryFindChild(`ImmutableRole${id}`) as iam.IRole;
+  let existingRole = scope.construct.tryFindChild(`ImmutableRole${id}`) as iam.IRole;
   if (existingRole) { return existingRole; }
   // For when #7255 is fixed.
-  existingRole = scope.node.tryFindChild(id) as iam.IRole;
+  existingRole = scope.construct.tryFindChild(id) as iam.IRole;
   if (existingRole) { return existingRole; }
 
   return iam.Role.fromRoleArn(scope, id, cfnExpressionFromManifestString(arn), { mutable: false });

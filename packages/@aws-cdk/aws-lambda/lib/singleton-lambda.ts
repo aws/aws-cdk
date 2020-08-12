@@ -70,7 +70,7 @@ export class SingletonFunction extends FunctionBase {
    * as a singleton across the stack. Use this method instead to declare dependencies.
    */
   public addDependency(...up: cdk.IDependable[]) {
-    this.lambdaFunction.node.addDependency(...up);
+    this.lambdaFunction.construct.addDependency(...up);
   }
 
   /**
@@ -78,7 +78,7 @@ export class SingletonFunction extends FunctionBase {
    * node.addDependency(). Use this method instead to declare this as a dependency of another construct.
    */
   public dependOn(down: cdk.IConstruct) {
-    down.node.addDependency(this.lambdaFunction);
+    down.construct.addDependency(this.lambdaFunction);
   }
 
   /**
@@ -91,7 +91,7 @@ export class SingletonFunction extends FunctionBase {
 
   private ensureLambda(props: SingletonFunctionProps): IFunction {
     const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
-    const existing = cdk.Stack.of(this).node.tryFindChild(constructName);
+    const existing = cdk.Stack.of(this).construct.tryFindChild(constructName);
     if (existing) {
       // Just assume this is true
       return existing as FunctionBase;

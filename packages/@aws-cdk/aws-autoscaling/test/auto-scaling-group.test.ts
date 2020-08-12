@@ -511,8 +511,8 @@ nodeunitShim({
         pauseTime: cdk.Duration.seconds(345),
       },
     });
-    asg.node.applyAspect(new cdk.Tag('superfood', 'acai'));
-    asg.node.applyAspect(new cdk.Tag('notsuper', 'caramel', { applyToLaunchedInstances: false }));
+    asg.construct.applyAspect(new cdk.Tag('superfood', 'acai'));
+    asg.construct.applyAspect(new cdk.Tag('notsuper', 'caramel', { applyToLaunchedInstances: false }));
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
@@ -713,7 +713,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.ok(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup);
+    test.ok(asg.construct.defaultChild instanceof autoscaling.CfnAutoScalingGroup);
 
     test.done();
   },
@@ -958,8 +958,8 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(asg.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-    test.deepEqual(asg.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    test.deepEqual(asg.construct.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
+    test.deepEqual(asg.construct.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
     test.done();
   },
@@ -985,8 +985,8 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(asg.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-    test.deepEqual(asg.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    test.deepEqual(asg.construct.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
+    test.deepEqual(asg.construct.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
     test.done();
   },

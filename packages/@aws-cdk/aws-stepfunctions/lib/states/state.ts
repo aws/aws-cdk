@@ -70,7 +70,7 @@ export abstract class State extends cdk.Construct implements IChainable {
       if (isPrefixable(el)) {
         el.addPrefix(prefix);
       }
-      queue.push(...el.node.children);
+      queue.push(...el.construct.children);
     }
   }
 
@@ -186,7 +186,7 @@ export abstract class State extends cdk.Construct implements IChainable {
   }
 
   public get id() {
-    return this.node.id;
+    return this.construct.id;
   }
 
   /**
