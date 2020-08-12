@@ -341,7 +341,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnetIds.length < 2) {
-      this.node.addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
+      this.construct.addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
@@ -520,7 +520,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
-      instance.node.addDependency(internetConnected);
+      instance.construct.addDependency(internetConnected);
 
       this.instanceIdentifiers.push(instance.ref);
       this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
@@ -542,7 +542,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     const id = 'RotationSingleUser';
-    const existing = this.node.tryFindChild(id);
+    const existing = this.construct.tryFindChild(id);
     if (existing) {
       throw new Error('A single user rotation was already added to this cluster.');
     }
