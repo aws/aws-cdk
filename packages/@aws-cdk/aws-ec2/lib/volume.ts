@@ -496,7 +496,7 @@ abstract class VolumeBase extends Resource implements IVolume {
 
   public grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
     const tagValue = this.calculateResourceTagValue([this, ...constructs]);
-    const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? tagValue.slice(0,10).toUpperCase()}`;
+    const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
     const grantCondition: { [key: string]: string } = {};
     grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
 
@@ -525,7 +525,7 @@ abstract class VolumeBase extends Resource implements IVolume {
 
   public grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
     const tagValue = this.calculateResourceTagValue([this, ...constructs]);
-    const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? tagValue.slice(0,10).toUpperCase()}`;
+    const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
     const grantCondition: { [key: string]: string } = {};
     grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
 

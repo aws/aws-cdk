@@ -231,11 +231,11 @@ export = {
     expect(stack).to(haveResource('AWS::Lambda::Function', {
       VpcConfig: {
         SecurityGroupIds: [
-          {'Fn::GetAtt': [ 'PublicLambdaSecurityGroup61D896FD', 'GroupId' ]},
+          { 'Fn::GetAtt': ['PublicLambdaSecurityGroup61D896FD', 'GroupId'] },
         ],
         SubnetIds: [
-          {Ref: 'VPCPublicSubnet1SubnetB4246D30'},
-          {Ref: 'VPCPublicSubnet2Subnet74179F39'},
+          { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+          { Ref: 'VPCPublicSubnet2Subnet74179F39' },
         ],
       },
     }));
@@ -261,11 +261,11 @@ export = {
     expect(stack).to(haveResource('AWS::Lambda::Function', {
       VpcConfig: {
         SecurityGroupIds: [
-          {'Fn::GetAtt': [ 'PrivateLambdaSecurityGroupF53C8342', 'GroupId' ]},
+          { 'Fn::GetAtt': ['PrivateLambdaSecurityGroupF53C8342', 'GroupId'] },
         ],
         SubnetIds: [
-          {Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'},
-          {Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'},
+          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
         ],
       },
     }));
@@ -298,11 +298,11 @@ export = {
     expect(stack).to(haveResource('AWS::Lambda::Function', {
       VpcConfig: {
         SecurityGroupIds: [
-          {'Fn::GetAtt': [ 'IsolatedLambdaSecurityGroupCE25B6A9', 'GroupId' ]},
+          { 'Fn::GetAtt': ['IsolatedLambdaSecurityGroupCE25B6A9', 'GroupId'] },
         ],
         SubnetIds: [
-          {Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6'},
-          {Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA'},
+          { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
+          { Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA' },
         ],
       },
     }));

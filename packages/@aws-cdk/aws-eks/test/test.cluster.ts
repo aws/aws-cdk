@@ -1481,12 +1481,15 @@ export = {
     'private endpoint access considers specific subnet selection'(test: Test) {
       const { stack } = testFixture();
       new eks.Cluster(stack, 'Cluster', {
-        version: CLUSTER_VERSION, endpointAccess:
+        version: CLUSTER_VERSION,
+        endpointAccess:
         eks.EndpointAccess.PRIVATE,
-        vpcSubnets: [{subnets: [ec2.PrivateSubnet.fromSubnetAttributes(stack, 'Private1', {
-          subnetId: 'subnet1',
-          availabilityZone: 'us-east-1a',
-        })]}],
+        vpcSubnets: [{
+          subnets: [ec2.PrivateSubnet.fromSubnetAttributes(stack, 'Private1', {
+            subnetId: 'subnet1',
+            availabilityZone: 'us-east-1a',
+          })],
+        }],
       });
 
       const nested = stack.construct.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;

@@ -255,13 +255,13 @@ export = {
 
     con.construct.addMetadata('key', 'value');
     con.construct.addMetadata('number', 103);
-    con.construct.addMetadata('array', [ 123, 456 ]);
+    con.construct.addMetadata('array', [123, 456]);
     restoreStackTraceColection(previousValue);
 
     test.deepEqual(con.construct.metadata[0].type, 'key');
     test.deepEqual(con.construct.metadata[0].data, 'value');
     test.deepEqual(con.construct.metadata[1].data, 103);
-    test.deepEqual(con.construct.metadata[2].data, [ 123, 456 ]);
+    test.deepEqual(con.construct.metadata[2].data, [123, 456]);
     test.ok(con.construct.metadata[0].trace && con.construct.metadata[0].trace[1].indexOf('FIND_ME') !== -1, 'First stack line should include this function\s name');
     test.done();
   },
@@ -339,13 +339,13 @@ export = {
 
     class MyConstruct extends Construct {
       protected validate() {
-        return [ 'my-error1', 'my-error2' ];
+        return ['my-error1', 'my-error2'];
       }
     }
 
     class YourConstruct extends Construct {
       protected validate() {
-        return [ 'your-error1' ];
+        return ['your-error1'];
       }
     }
 
@@ -357,7 +357,7 @@ export = {
       }
 
       protected validate() {
-        return [ 'their-error' ];
+        return ['their-error'];
       }
     }
 
@@ -370,7 +370,7 @@ export = {
       }
 
       protected validate() {
-        return  [ 'stack-error' ];
+        return ['stack-error'];
       }
     }
 
@@ -437,14 +437,14 @@ export = {
 
     // THEN
     test.deepEqual(c1.construct.findAll().map(x => x.construct.id), c1.construct.findAll(ConstructOrder.PREORDER).map(x => x.construct.id)); // default is PreOrder
-    test.deepEqual(c1.construct.findAll(ConstructOrder.PREORDER).map(x => x.construct.id), [ '1', '2', '4', '5', '3' ]);
-    test.deepEqual(c1.construct.findAll(ConstructOrder.POSTORDER).map(x => x.construct.id), [ '4', '5', '2', '3', '1' ]);
+    test.deepEqual(c1.construct.findAll(ConstructOrder.PREORDER).map(x => x.construct.id), ['1', '2', '4', '5', '3']);
+    test.deepEqual(c1.construct.findAll(ConstructOrder.POSTORDER).map(x => x.construct.id), ['4', '5', '2', '3', '1']);
     test.done();
   },
 
   'ancestors returns a list of parents up to root'(test: Test) {
     const { child1_1_1 } = createTree();
-    test.deepEqual(child1_1_1.construct.scopes.map(x => x.construct.id), [ '', 'HighChild', 'Child1', 'Child11', 'Child111' ]);
+    test.deepEqual(child1_1_1.construct.scopes.map(x => x.construct.id), ['', 'HighChild', 'Child1', 'Child11', 'Child111']);
     test.done();
   },
 
