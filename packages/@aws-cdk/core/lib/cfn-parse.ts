@@ -199,10 +199,6 @@ export class CfnParser {
     this.options = options;
   }
 
-  private get parameters(): { [parameterName: string]: any } {
-    return this.options.parameters || {};
-  }
-
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
     const finder = this.options.finder;
     const cfnOptions = resource.cfnOptions;
@@ -519,7 +515,7 @@ export class CfnParser {
     }
 
     // since it's not in the map, check if it's a pseudo parameter
-    const specialRef = this.specialCaseSubRefs(refTarget, true);
+    const specialRef = this.specialCaseSubRefs(refTarget);
     if (specialRef) {
       return leftHalf + specialRef + this.parseFnSubString(rightHalf, map);
     }
@@ -529,11 +525,11 @@ export class CfnParser {
     if (isRef) {
       const refElement = this.options.finder.findRefTarget(refTarget);
       if (!refElement) {
-        if  (!(refTarget in (this.parameters))) {
+        if  (!(refTarget in this.parameters)) {
           throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
         }
       }
-      return leftHalf + this.specialCaseSubRefs(refTarget, false, refElement) + this.parseFnSubString(rightHalf, map);
+      return leftHalf + CfnReference.for(refElement!, 'Ref', true).toString() + this.parseFnSubString(rightHalf, map);
     } else {
       const targetId = refTarget.substring(0, dotIndex);
       const refResource = this.options.finder.findResource(targetId);
@@ -545,16 +541,9 @@ export class CfnParser {
     }
   }
 
-  specialCaseSubRefs(value: string, pseudoParameter: boolean, refElement?: CfnElement ): string | undefined {
-    if (pseudoParameter) {
-      return value.indexOf('::') === -1 ? undefined: '${' + value + '}';
-    }
-    return value in (this.parameters) ? this.parameters[value] : CfnReference.for(refElement!, 'Ref', true).toString();
-  }
-
-  specialCaseRefs(value: any): any {
-    if (value in (this.parameters)) {
-      return this.parameters![value];
+  private specialCaseRefs(value: any): any {
+    if (value in this.parameters) {
+      return this.parameters[value];
     }
     switch (value) {
       case 'AWS::AccountId': return Aws.ACCOUNT_ID;
@@ -569,6 +558,16 @@ export class CfnParser {
     }
   }
 
+  private specialCaseSubRefs(value: string): string | undefined {
+    if (value in this.parameters) {
+      return this.parameters[value];
+    }
+    return value.indexOf('::') === -1 ? undefined: '${' + value + '}';
+  }
+
+  private get parameters(): { [parameterName: string]: any } {
+    return this.options.parameters || {};
+  }
 }
 
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {

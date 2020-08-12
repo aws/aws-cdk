@@ -240,32 +240,6 @@ describe('CDK Include', () => {
     );
   });
 
-  test('paramters shadowed my expression in the map of Fn::Sub are not replaced', () => {
-    new inc.CfnInclude(stack, 'template', {
-      templateFile: _testTemplateFilePath('fn-sub-parameter-shadow.json'),
-      parameters: {
-        'MyParam': 'MyValue',
-      },
-    });
-
-    expect(stack).toMatchTemplate({
-      "Resources": {
-        "Bucket": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": {
-              "Fn::Sub": [
-                "${MyParam}",
-                {
-                  "MyParam": "MyValue",
-                },
-              ],
-            },
-          },
-        },
-      },
-    });
-  });
 
   test('can modify resources used in Fn::Sub in map form references and see the changes in the template', () => {
     const cfnTemplate = includeTestTemplate(stack, 'fn-sub-shadow.json');
@@ -686,8 +660,7 @@ describe('CDK Include', () => {
   });
 
   test('replaces references to parameters with the user-specified values in Resources, Conditions, Metadata, and Options', () => {
-    new inc.CfnInclude(stack, 'includeTemplate', {
-      templateFile: _testTemplateFilePath('parameter-references.json'),
+    includeTestTemplate(stack, 'parameter-references.json', {
       parameters: {
         'MyParam': 'my-s3-bucket',
       },
@@ -734,8 +707,7 @@ describe('CDK Include', () => {
   });
 
   test('can replace parameters in Fn::Sub', () => {
-    new inc.CfnInclude(stack, 'includeTemplate', {
-      templateFile: _testTemplateFilePath('fn-sub-parameters.json'),
+    includeTestTemplate(stack, 'fn-sub-parameters.json', {
       parameters: {
         'MyParam': 'my-s3-bucket',
       },
@@ -747,10 +719,31 @@ describe('CDK Include', () => {
           "Type": "AWS::S3::Bucket",
           "Properties": {
             "BucketName": {
+              "Fn::Sub": "my-s3-bucket",
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('does not modify Fn::Sub variables shadowing a replaced parameter', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow-parameter.json', {
+      parameters: {
+        'MyParam': 'MyValue',
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
               "Fn::Sub": [
-                "${MyParameter}-my-s3-bucket",
+                "${MyParam}",
                 {
-                  "MyParameter": "my-s3-bucket",
+                  "MyParam": "MyValue",
                 },
               ],
             },
@@ -762,8 +755,7 @@ describe('CDK Include', () => {
 
   test('throws an exception when parameters are passed a resource name', () => {
     expect(() => {
-      new inc.CfnInclude(stack, 'includeTemplate', {
-        templateFile: _testTemplateFilePath('bucket-with-parameters.json'),
+      includeTestTemplate(stack, 'bucket-with-parameters.json', {
         parameters: {
           'Bucket': 'noChange',
         },
@@ -773,8 +765,7 @@ describe('CDK Include', () => {
 
   test('throws an exception when provided a parameter to replace that is not in the template with parameters', () => {
     expect(() => {
-      new inc.CfnInclude(stack, 'includeTemplate', {
-        templateFile: _testTemplateFilePath('bucket-with-parameters.json'),
+      includeTestTemplate(stack, 'bucket-with-parameters.json', {
         parameters: {
           'FakeParameter': 'DoesNotExist',
         },
@@ -784,8 +775,7 @@ describe('CDK Include', () => {
 
   test('throws an exception when provided a parameter to replace in a template with no parameters', () => {
     expect(() => {
-      new inc.CfnInclude(stack, 'includeTemplate', {
-        templateFile: _testTemplateFilePath('only-empty-bucket.json'),
+      includeTestTemplate(stack, 'only-empty-bucket.json', {
         parameters: {
           'FakeParameter': 'DoesNotExist',
         },
@@ -797,11 +787,15 @@ describe('CDK Include', () => {
 interface IncludeTestTemplateProps {
   /** @default true */
   readonly preserveLogicalIds?: boolean;
+
+  /** @default {} */
+  readonly parameters?: { [parameterName: string]: any }
 }
 
 function includeTestTemplate(scope: core.Construct, testTemplate: string, _props: IncludeTestTemplateProps = {}): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
+    parameters: _props.parameters,
     // preserveLogicalIds: props.preserveLogicalIds,
   });
 }

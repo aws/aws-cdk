@@ -136,8 +136,8 @@ You can also provide values for them:
 ```typescript
 new inc.CfnInclude(stack, 'includeTemplate', {
   templateFile: 'path/to/my/template'
-  parameterValues: {
-    MyParam: 'my-value',
+  parameters: {
+    'MyParam': 'my-value',
   },
 });
 ```

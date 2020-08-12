@@ -11,6 +11,7 @@ const RESOURCE_CLASS_PREFIX = 'Cfn';
 
 export const CORE_NAMESPACE = 'cdk';
 export const CFN_PARSE_NAMESPACE = 'cfn_parse';
+export const FROM_CFN_NAMESPACE = 'from_cfn';
 
 /**
  * The name of a class or method in the generated code.

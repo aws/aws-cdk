@@ -10,10 +10,7 @@
       "Properties": {
         "BucketName": { 
           "Fn::Sub": [ 
-            "${MyParameter}-${MyParam}", 
-            { 
-              "MyParameter": { "Ref" : "MyParam" }
-            } 
+            "${MyParam}"
           ]
         }
       }

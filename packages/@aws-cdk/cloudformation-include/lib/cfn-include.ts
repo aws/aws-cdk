@@ -23,6 +23,7 @@ export interface CfnIncludeProps {
    * If you include a stack here with an ID that isn't in the template,
    * or is in the template but is not a nested stack,
    * template creation will fail and an error will be thrown.
+   *
    * @default {}
    */
   readonly nestedStacks?: { [stackName: string]: CfnIncludeProps };
@@ -32,6 +33,7 @@ export interface CfnIncludeProps {
    * Any parameters in the template that aren't specified here will be left unmodified.
    * If you include a parameter here with an ID that isn't in the template,
    * template creation will fail and an error will be thrown.
+   *
    * @default {}
    */
   readonly parameters?: { [parameterName: string]: any };
@@ -65,7 +67,7 @@ export class CfnInclude extends core.CfnElement {
   private readonly conditionsScope: core.Construct;
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
   private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
-  private readonly parameterValues: { [parameterName: string]: any };
+  private readonly parametersToReplace: { [parameterName: string]: any };
   private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
   private readonly nestedStacks: { [logicalId: string]: IncludedNestedStack } = {};
   private readonly nestedStacksToInclude: { [name: string]: CfnIncludeProps };
@@ -75,7 +77,7 @@ export class CfnInclude extends core.CfnElement {
   constructor(scope: core.Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
 
-    this.parameterValues = props.parameters || {};
+    this.parametersToReplace = props.parameters || {};
 
     // read the template into a JS object
     this.template = futils.readYamlSync(props.templateFile);
@@ -84,7 +86,7 @@ export class CfnInclude extends core.CfnElement {
     this.preserveLogicalIds = true;
 
     // check if all user specified parameter values exist in the template
-    for (const logicalId of Object.keys(this.parameterValues)) {
+    for (const logicalId of Object.keys(this.parametersToReplace)) {
       if (!(logicalId in (this.template.Parameters || {}))) {
         throw new Error(`Parameter with logical ID '${logicalId}' was not found in the template`);
       }
@@ -223,25 +225,44 @@ export class CfnInclude extends core.CfnElement {
     const ret: { [section: string]: any } = {};
 
     for (const section of Object.keys(this.template)) {
+      const self = this;
+      const finder: core.ICfnFinder = {
+        findResource(lId): core.CfnResource | undefined {
+          return self.resources[lId];
+        },
+        findRefTarget(elementName: string): core.CfnElement | undefined {
+          return self.resources[elementName] ?? self.parameters[elementName];
+        },
+        findCondition(conditionName: string): core.CfnCondition | undefined {
+          return self.conditions[conditionName];
+        },
+      };
+
+      const cfnParser = new cfn_parse.CfnParser({
+        finder,
+        parameters: this.parametersToReplace,
+      });
+
       // render all sections of the template unchanged,
       // except Conditions, Resources, Parameters,  and Outputs, which will be taken care of by the created L1s
       // Metadata and Transform are handled below
-      if (section !== 'Conditions' && section !== 'Resources' && section !== 'Parameters' && section !== 'Outputs'
-        && section !== 'Metadata' && section !== 'Transform') {
-        ret[section] = this.template[section];
+      switch (section) {
+        case 'Conditions':
+        case 'Resources':
+        case 'Parameters':
+        case 'Outputs':
+          // these are rendered as a side effect of instantiating the L1s
+          break;
+        default:
+          ret[section] = cfnParser.parseValue(this.template[section]);
       }
     }
-
-    // Parameters cannot be referenced from the Mappings, Description, or AWSTemplateFormatVersion sections.
-    const metaTransform = this.createTransformAndMetadata();
-    ret.Metadata = metaTransform.Metadata;
-    ret.Transform = metaTransform.Transform;
 
     return ret;
   }
 
   private createParameter(logicalId: string): void {
-    if (logicalId in (this.parameterValues)) {
+    if (logicalId in this.parametersToReplace) {
       return;
     }
 
@@ -284,7 +305,7 @@ export class CfnInclude extends core.CfnElement {
           return undefined;
         },
       },
-      parameters: this.parameterValues,
+      parameters: this.parametersToReplace,
     }).parseValue(this.template.Outputs[logicalId]);
     const cfnOutput = new core.CfnOutput(scope, logicalId, {
       value: outputAttributes.Value,
@@ -326,7 +347,7 @@ export class CfnInclude extends core.CfnElement {
         },
       },
       context: cfn_parse.CfnParsingContext.CONDITIONS,
-      parameters: this.parameterValues,
+      parameters: this.parametersToReplace,
     });
     const cfnCondition = new core.CfnCondition(this.conditionsScope, conditionName, {
       expression: cfnParser.parseValue(this.template.Conditions[conditionName]),
@@ -381,7 +402,7 @@ export class CfnInclude extends core.CfnElement {
     };
     const cfnParser = new cfn_parse.CfnParser({
       finder,
-      parameters: this.parameterValues,
+      parameters: this.parametersToReplace,
     });
 
     let l1Instance: core.CfnResource;
@@ -393,7 +414,7 @@ export class CfnInclude extends core.CfnElement {
         const [moduleName, ...className] = l1ClassFqn.split('.');
         const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
         const jsClassFromModule = module[className.join('.')];
-        l1Instance = jsClassFromModule._fromCloudFormation(this, logicalId, resourceAttributes, cfnParser);
+        l1Instance = jsClassFromModule._fromCloudFormation(this, logicalId, resourceAttributes, { parser: cfnParser });
       } else {
         l1Instance = new core.CfnResource(this, logicalId, {
           type: resourceAttributes.Type,
@@ -446,31 +467,5 @@ export class CfnInclude extends core.CfnElement {
     this.nestedStacks[nestedStackId] = includedStack;
 
     return nestedStackResource;
-  }
-
-  private createTransformAndMetadata(): { [element: string]: any } {
-    const ret: { [element: string]: any } = {};
-    const self = this;
-    const finder: core.ICfnFinder = {
-      findResource(lId): core.CfnResource | undefined {
-        return self.resources[lId];
-      },
-      findRefTarget(elementName: string): core.CfnElement | undefined {
-        return self.resources[elementName] ?? self.parameters[elementName];
-      },
-      findCondition(conditionName: string): core.CfnCondition | undefined {
-        return self.conditions[conditionName];
-      },
-    };
-
-    const cfnParser = new cfn_parse.CfnParser({
-      finder,
-      parameters: this.parameterValues,
-    });
-
-    ret.Metadata = cfnParser.parseValue(this.template.Metadata);
-    ret.Transform = cfnParser.parseValue(this.template.Transform);
-
-    return ret;
   }
 }
