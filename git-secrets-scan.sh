@@ -29,4 +29,4 @@ git rev-parse --git-dir > /dev/null 2>&1 || {
 # AWS config needs to be added to this fresh repository's config
 .tools/git-secrets/git-secrets --register-aws
 .tools/git-secrets/git-secrets --scan
-echo "git-secrets scan ok"
+echo "git-secrets scan ok, is it?"
