@@ -18,8 +18,10 @@ mkdir -p .tools
 # when that's the case, 'git init' one on the spot, add all files to it (which
 # because of the .gitignore will exclude dependencies and generated files) and
 # then call 'git-secrets' as usual.
+ls -la
 git rev-parse --git-dir > /dev/null 2>&1 || {
-    git init --quiet
+    echo "Im here!"
+    git init
     git add -A .
 
     # AWS config needs to be added to this fresh repository's config
