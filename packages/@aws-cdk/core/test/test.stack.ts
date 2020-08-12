@@ -277,9 +277,12 @@ export = {
     const stack2 = new Stack(indifferentScope, 'Stack2');
 
     // WHEN - used in another resource
-    new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
-      someProperty: new Intrinsic(resource1.ref),
-    }});
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::Some::Resource',
+      properties: {
+        someProperty: new Intrinsic(resource1.ref),
+      },
+    });
 
     // THEN
     const assembly = app.synth();
