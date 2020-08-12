@@ -19,7 +19,7 @@ export interface ICapacityProvider extends cdk.IResource {
 }
 
 /**
- * Options for addCapacityProvider()
+ *  The properties for CapacityProvider.
  */
 export interface CapacityProviderBase {
   /**
