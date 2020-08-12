@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "Distribution830FAC52": {
+    "DistB3B78991": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
@@ -8,7 +8,7 @@
             "ForwardedValues": {
               "QueryString": false
             },
-            "TargetOriginId": "cloudfronthttporiginDistributionOrigin162B02709",
+            "TargetOriginId": "integdistributionbasicDistOrigin151B53FF1",
             "ViewerProtocolPolicy": "allow-all"
           },
           "Enabled": true,
@@ -20,7 +20,7 @@
                 "OriginProtocolPolicy": "https-only"
               },
               "DomainName": "www.example.com",
-              "Id": "cloudfronthttporiginDistributionOrigin162B02709"
+              "Id": "integdistributionbasicDistOrigin151B53FF1"
             }
           ]
         }

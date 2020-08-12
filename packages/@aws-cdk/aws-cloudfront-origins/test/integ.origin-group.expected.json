@@ -76,6 +76,8 @@
             "ViewerProtocolPolicy": "allow-all"
           },
           "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
           "OriginGroups": {
             "Items": [
               {
