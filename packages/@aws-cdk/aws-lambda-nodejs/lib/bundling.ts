@@ -26,11 +26,11 @@ export interface ParcelBaseOptions {
   readonly sourceMaps?: boolean;
 
   /**
-   * The cache directory
+   * The cache directory (relative to the project root)
    *
    * Parcel uses a filesystem cache for fast rebuilds.
    *
-   * @default - `.cache` in the root directory
+   * @default - `.parcel-cache` in the working directory
    */
   readonly cacheDir?: string;
 
@@ -138,6 +138,19 @@ export class Bundling {
       }
     }
 
+    let installer = Installer.NPM;
+    let lockFile: LockFile | undefined;
+    if (dependencies) {
+      // Use npm unless we have a yarn.lock.
+      if (fs.existsSync(path.join(projectRoot, LockFile.YARN))) {
+        installer = Installer.YARN;
+        lockFile = LockFile.YARN;
+      } else if (fs.existsSync(path.join(projectRoot, LockFile.NPM))) {
+        lockFile = LockFile.NPM;
+      }
+    }
+
+
     // Configure target in package.json for Parcel
     packageJsonManager.update({
       targets: {
@@ -161,6 +174,8 @@ export class Bundling {
         relativeEntryPath,
         parcelOptions: options,
         dependencies,
+        installer,
+        lockFile,
       });
     }
 
@@ -169,6 +184,8 @@ export class Bundling {
       relativeEntryPath,
       parcelOptions: options,
       dependencies,
+      installer,
+      lockFile,
     });
 
     return lambda.Code.fromAsset(projectRoot, {
@@ -185,6 +202,8 @@ interface BundlerProps {
   relativeEntryPath: string;
   parcelOptions: ParcelOptions;
   dependencies?: { [key: string]: string };
+  installer: Installer;
+  lockFile?: LockFile;
 }
 
 interface LocalBundlerProps extends BundlerProps {
@@ -219,14 +238,16 @@ class LocalBundler implements cdk.ILocalBundling {
     if (!LocalBundler.runsLocally) {
       return false;
     }
+
     const localCommand = createBundlingCommand({
       projectRoot: this.props.projectRoot,
       relativeEntryPath: this.props.relativeEntryPath,
       outputDir,
       dependencies: this.props.dependencies,
+      installer: this.props.installer,
+      lockFile: this.props.lockFile,
       parcelOptions: this.props.parcelOptions,
     });
-
 
     exec('bash', ['-c', localCommand], {
       env: { ...process.env, ...this.props.parcelOptions.parcelEnvironment ?? {} },
@@ -261,8 +282,11 @@ class DockerBundler {
       projectRoot: cdk.AssetStaging.BUNDLING_INPUT_DIR, // project root is mounted at /asset-input
       relativeEntryPath: props.relativeEntryPath,
       outputDir: cdk.AssetStaging.BUNDLING_OUTPUT_DIR,
+      installer: props.installer,
+      lockFile: props.lockFile,
       dependencies: props.dependencies,
       parcelOptions: props.parcelOptions,
+
     });
 
     this.bundlingOptions = {
@@ -293,7 +317,7 @@ function createBundlingCommand(options: BundlingCommandOptions): string {
       '--no-autoinstall',
       '--no-scope-hoist',
       ...options.parcelOptions.cacheDir
-        ? ['--cache-dir', '/parcel-cache']
+        ? ['--cache-dir', path.join(options.projectRoot, options.parcelOptions.cacheDir)]
         : [],
     ].join(' '),
     // Always rename dist file to index.js because Lambda doesn't support filenames
@@ -302,31 +326,14 @@ function createBundlingCommand(options: BundlingCommandOptions): string {
     `mv ${options.outputDir}/${distFile} ${options.outputDir}/index.js`,
   ]);
 
-  let installer = Installer.NPM;
-  let lockfile: string | undefined;
   let depsCommand = '';
-
   if (options.dependencies) {
-    // Create a dummy package.json for dependencies that we need to install
-    fs.writeFileSync(
-      path.join(options.projectRoot, '.package.json'),
-      JSON.stringify({ dependencies: options.dependencies }),
-    );
-
-    // Use npm unless we have a yarn.lock.
-    if (fs.existsSync(path.join(options.projectRoot, LockFile.YARN))) {
-      installer = Installer.YARN;
-      lockfile = LockFile.YARN;
-    } else if (fs.existsSync(path.join(options.projectRoot, LockFile.NPM))) {
-      lockfile = LockFile.NPM;
-    }
-
     // Move dummy package.json and lock file then install
     depsCommand = chain([
-      `mv ${options.projectRoot}/.package.json ${options.outputDir}/package.json`,
-      lockfile ? `cp ${options.projectRoot}/${lockfile} ${options.outputDir}/${lockfile}` : '',
+      `echo '${JSON.stringify({ dependencies: options.dependencies })}' > ${options.outputDir}/package.json`,
+      options.lockFile ? `cp ${options.projectRoot}/${options.lockFile} ${options.outputDir}/${options.lockFile}` : '',
       `cd ${options.outputDir}`,
-      `${installer} install`,
+      `${options.installer} install`,
     ]);
   }
 

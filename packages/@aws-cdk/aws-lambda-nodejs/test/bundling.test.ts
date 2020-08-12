@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, BundlingDockerImage } from '@aws-cdk/core';
-import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
 import * as util from '../lib/util';
 
@@ -24,11 +23,11 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-test('Parcel bundling', () => {
+test('Parcel bundling in Docker', () => {
   Bundling.parcel({
     entry: '/project/folder/entry.ts',
     runtime: Runtime.NODEJS_12_X,
-    cacheDir: '/cache-dir',
+    cacheDir: 'cache-dir',
     projectRoot: '/project',
     parcelEnvironment: {
       KEY: 'value',
@@ -39,14 +38,21 @@ test('Parcel bundling', () => {
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.BUNDLE,
     bundling: expect.objectContaining({
+      local: {
+        props: expect.objectContaining({
+          projectRoot: '/project',
+        }),
+      },
       environment: {
         KEY: 'value',
       },
-      volumes: [{ containerPath: '/parcel-cache', hostPath: '/cache-dir' }],
       workingDirectory: '/asset-input/folder',
       command: [
         'bash', '-c',
-        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist --cache-dir /parcel-cache && mv /asset-output/entry.js /asset-output/index.js',
+        [
+          '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist --cache-dir /asset-input/cache-dir',
+          'mv /asset-output/entry.js /asset-output/index.js',
+        ].join(' && '),
       ],
     }),
   });
@@ -106,7 +112,13 @@ test('Parcel bundling with externals and dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist && mv /asset-output/entry.js /asset-output/index.js && mv /asset-input/.package.json /asset-output/package.json && cd /asset-output && npm install',
+        [
+          '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
+          'mv /asset-output/entry.js /asset-output/index.js',
+          'echo \'{\"dependencies\":{\"delay\":\"4.3.0\"}}\' > /asset-output/package.json',
+          'cd /asset-output',
+          'npm install',
+        ].join(' && '),
       ],
     }),
   });
@@ -123,13 +135,6 @@ test('Parcel bundling with externals and dependencies', () => {
         },
       }),
     }),
-  }));
-
-  // Correctly writes dummy package.json
-  expect(writeFileSyncMock).toHaveBeenCalledWith('/project/.package.json', JSON.stringify({
-    dependencies: {
-      delay: delayVersion,
-    },
   }));
 });
 
@@ -159,7 +164,7 @@ test('Detects yarn.lock', () => {
   });
 });
 
-test('with build args', () => {
+test('with Docker build args', () => {
   Bundling.parcel({
     entry: '/project/folder/entry.ts',
     runtime: Runtime.NODEJS_12_X,
@@ -167,6 +172,7 @@ test('with build args', () => {
     buildArgs: {
       HELLO: 'WORLD',
     },
+    forceDockerBundling: true,
   });
 
   expect(fromAssetMock).toHaveBeenCalledWith(expect.stringMatching(/parcel$/), expect.objectContaining({
