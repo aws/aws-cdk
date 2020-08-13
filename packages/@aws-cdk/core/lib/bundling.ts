@@ -126,7 +126,7 @@ export class BundlingDockerImage {
   }
 
   /** @param image The Docker image */
-  private constructor(public readonly image: string, private readonly assetHashNameOverride: string|undefined = undefined) {}
+  private constructor(public readonly image: string, private readonly _imageHash?: string) {}
 
   /**
    * Provides the name that the bundler should use to refer to this image when
