@@ -21,7 +21,7 @@ class VisitOnce implements IAspect {
 
 class MyAspect implements IAspect {
   public visit(node: IConstruct): void {
-    node.construct.addMetadata('foo', 'bar');
+    node.node.addMetadata('foo', 'bar');
   }
 }
 
@@ -45,16 +45,16 @@ export = {
       visit(construct: IConstruct) {
         Aspects.of(construct).add({
           visit(inner: IConstruct) {
-            inner.construct.addMetadata('test', 'would-be-ignored');
+            inner.node.addMetadata('test', 'would-be-ignored');
           },
         });
       },
     });
     app.synth();
-    test.deepEqual(root.construct.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-    test.deepEqual(root.construct.metadata[0].data, 'We detected an Aspect was added via another Aspect, and will not be applied');
+    test.deepEqual(root.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
+    test.deepEqual(root.node.metadata[0].data, 'We detected an Aspect was added via another Aspect, and will not be applied');
     // warning is not added to child construct
-    test.equal(child.construct.metadata.length, 0);
+    test.equal(child.node.metadata.length, 0);
     test.done();
   },
 
@@ -64,13 +64,13 @@ export = {
     const child = new MyConstruct(root, 'ChildConstruct');
     Aspects.of(root).add(new MyAspect());
     app.synth();
-    test.deepEqual(root.construct.metadata[0].type, 'foo');
-    test.deepEqual(root.construct.metadata[0].data, 'bar');
-    test.deepEqual(root.construct.metadata[0].type, 'foo');
-    test.deepEqual(child.construct.metadata[0].data, 'bar');
+    test.deepEqual(root.node.metadata[0].type, 'foo');
+    test.deepEqual(root.node.metadata[0].data, 'bar');
+    test.deepEqual(root.node.metadata[0].type, 'foo');
+    test.deepEqual(child.node.metadata[0].data, 'bar');
     // no warning is added
-    test.equal(root.construct.metadata.length, 1);
-    test.equal(child.construct.metadata.length, 1);
+    test.equal(root.node.metadata.length, 1);
+    test.equal(child.node.metadata.length, 1);
     test.done();
   },
 
