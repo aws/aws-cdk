@@ -400,7 +400,7 @@
         }
       }
     },
-    "DistributionCFDistribution882A7313": {
+    "Distribution830FAC52": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
@@ -412,6 +412,8 @@
             "ViewerProtocolPolicy": "allow-all"
           },
           "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
           "Origins": [
             {
               "CustomOriginConfig": {
