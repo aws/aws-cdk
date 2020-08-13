@@ -121,11 +121,21 @@ export class BundlingDockerImage {
       throw new Error('Failed to extract image ID from Docker build output');
     }
 
-    return new BundlingDockerImage(match[1]);
+    return new BundlingDockerImage(match[1], options.assetHashName);
   }
 
   /** @param image The Docker image */
-  private constructor(public readonly image: string) {}
+  private constructor(public readonly image: string, private readonly assetHashNameOverride: string|undefined = undefined) {}
+
+  /**
+   * Provides the name that the bundler should use to refer to this image when
+   * hashing the bundling configuration with a source or custom asset hash.
+   *
+   * @return The overridden image name if set or image hash name in that order
+   */
+  public get assetHashName() {
+    return this.assetHashNameOverride ?? this.image;
+  }
 
   /**
    * Runs a Docker image
@@ -252,6 +262,15 @@ export interface DockerBuildOptions {
    * @default - no build args
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * The image name to include in the asset hash. This option can be used to
+   * stabilize the assetHashes emitted by bundlers that are built locally.
+   *
+   * @default - The image name used by the bundler will be the same as the image
+   * name.
+   */
+  readonly assetHashName?: string;
 }
 
 function flatten(x: string[][]) {

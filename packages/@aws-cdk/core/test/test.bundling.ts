@@ -119,4 +119,30 @@ export = {
     test.throws(() => image._run(), /\[Status -1\]/);
     test.done();
   },
+
+  'assetHashName is the bundler image name by default'(test: Test) {
+    const image = BundlingDockerImage.fromRegistry('alpine');
+
+    test.equals(image.assetHashName, 'alpine');
+    test.done();
+  },
+
+  'assetHashName is the bundler image override if given'(test: Test) {
+    const imageId = 'abcdef123456';
+    sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from(`sha256:${imageId}`),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const assetHashName = 'my-asset-hash-name';
+    const image = BundlingDockerImage.fromAsset('docker-path', { assetHashName: assetHashName });
+
+    test.equals(image.image, imageId);
+    test.equals(image.assetHashName, assetHashName);
+    test.done();
+  },
 };

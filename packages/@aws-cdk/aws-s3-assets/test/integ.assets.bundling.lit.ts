@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, BundlingDockerImage, Construct, Stack, StackProps } from '@aws-cdk/core';
@@ -12,7 +11,8 @@ class TestStack extends Stack {
     const asset = new assets.Asset(this, 'BundledAsset', {
       path: path.join(__dirname, 'markdown-asset'), // /asset-input and working directory in the container
       bundling: {
-        image: BundlingDockerImage.fromAsset(path.join(__dirname, 'alpine-markdown')), // Build an image
+        image: BundlingDockerImage.fromAsset(path.join(__dirname, 'alpine-markdown'),
+          { assetHashName: 'alpine-markdown' }), // Build an image
         command: [
           'sh', '-c', `
             markdown index.md > /asset-output/index.html
