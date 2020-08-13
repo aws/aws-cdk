@@ -6,7 +6,6 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { App, Aws, CfnResource, Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
-import { InitPlatform } from '../lib/private/cfn-init-internal';
 
 let app: App;
 let stack: Stack;
@@ -139,7 +138,7 @@ describe('userdata', () => {
     const windowsUserData = ec2.UserData.forWindows();
 
     simpleInit._attach(resource, {
-      platform: InitPlatform.WINDOWS,
+      platform: ec2.OperatingSystemType.WINDOWS,
       instanceRole,
       userData: windowsUserData,
     });
@@ -477,7 +476,7 @@ describe('assets n buckets', () => {
 
 function linuxOptions() {
   return {
-    platform: InitPlatform.LINUX,
+    platform: ec2.OperatingSystemType.LINUX,
     instanceRole,
     userData: linuxUserData,
   };
