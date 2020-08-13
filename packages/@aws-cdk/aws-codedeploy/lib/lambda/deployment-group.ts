@@ -153,7 +153,6 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
 
     this.application = props.application || new LambdaApplication(this, 'Application');
     this.alarms = props.alarms || [];
-    
     if (props.role) {
       this.role = props.role;
     } else {
@@ -162,7 +161,6 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       });
       this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRoleForLambda'));
     }
-    
     this.deploymentConfig = props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES;
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
