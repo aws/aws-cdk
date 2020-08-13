@@ -131,8 +131,8 @@ function hasEcsCredentials(): boolean {
  * Return whether we're on an EC2 instance
  */
 async function isEc2Instance() {
-  debug("Determining if we're on an EC2 instance.");
   if (isEc2InstanceCache === undefined) {
+    debug("Determining if we're on an EC2 instance.");
     let instance = false;
     if (process.platform === 'win32') {
       // https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
@@ -160,15 +160,15 @@ async function isEc2Instance() {
         }
       }
     }
-    debug(instance ? 'Looks like an EC2 instance.' : 'Does not look like an EC2 instance.');
     isEc2InstanceCache = instance;
-    return instance;
   }
   else {
-    debug(isEc2InstanceCache ? 'From the cache: looks like an EC2 instance.' : 'From the cache: does not look like an EC2 instance.')
-    return isEc2InstanceCache;
+    debug("Looking in the cache to see if we're on an EC2 instance.");
   }
+  debug(isEc2InstanceCache ? 'Looks like an EC2 instance.' : 'Does not look like an EC2 instance.');
+  return isEc2InstanceCache;
 }
+
 
 var isEc2InstanceCache: boolean | undefined = undefined;
 
@@ -177,7 +177,7 @@ var isEc2InstanceCache: boolean | undefined = undefined;
  */
 async function getImdsV2Token(metadataService: AWS.MetadataService): Promise<string> {
   debug('Attempting to retrieve an IMDSv2 token.');
-  return new Promise((resolve, fail) => {
+  return new Promise((resolve, reject) => {
     metadataService.request(
       '/latest/api/token',
       {
@@ -186,9 +186,9 @@ async function getImdsV2Token(metadataService: AWS.MetadataService): Promise<str
       },
       (err: AWS.AWSError, token: string | undefined) => {
         if (err) {
-          fail(err);
+          reject(err);
         } else if (!token) {
-          fail(new Error('IMDS did not return a token.'));
+          reject(new Error('IMDS did not return a token.'));
         } else {
           resolve(token);
         }
@@ -205,15 +205,15 @@ async function getRegionFromImds(metadataService: AWS.MetadataService, token: st
   if (token) {
     options = { headers: { 'x-aws-ec2-metadata-token': token } };
   }
-  return new Promise((resolve, fail) => {
+  return new Promise((resolve, reject) => {
     metadataService.request(
       '/latest/dynamic/instance-identity/document',
       options,
       (err: AWS.AWSError, instanceIdentityDocument: string | undefined) => {
         if (err) {
-          fail(err);
+          reject(err);
         } else if (!instanceIdentityDocument) {
-          fail(new Error('IMDS did not return an Instance Identity Document.'));
+          reject(new Error('IMDS did not return an Instance Identity Document.'));
         } else {
           const region = JSON.parse(instanceIdentityDocument).region;
           resolve(region);
