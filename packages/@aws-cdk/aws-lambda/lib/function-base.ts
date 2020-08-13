@@ -294,7 +294,6 @@ export abstract class FunctionBase extends Resource implements IFunction {
           return { statementAdded: true, policyDependable: this._functionNode().findChild(identifier) } as iam.AddToResourcePolicyResult;
         },
         node: this.node,
-        construct: this.construct,
       },
     });
   }
