@@ -50,7 +50,7 @@ export enum NodeType {
  */
 export enum ClusterType {
   /**
-   * single-node cluster, the {@link ClusterProps.numberOfNodes} parameter is not required
+   * single-node cluster, the {@link ClusterProps.numberOfNodes} parameter is not permitted
    */
   SINGLE_NODE = 'single-node',
   /**
@@ -430,13 +430,13 @@ export class Cluster extends ClusterBase {
 
     if (clusterType === ClusterType.MULTI_NODE) {
       if (props.numberOfNodes ===  undefined || props.numberOfNodes < 2) {
-        throw new Error('Number of nodes for cluster type multi-node must be at least 2');
+        throw new Error('numberOfNodes for cluster type multi-node must be at least 2');
       }
       numberOfNodes = props.numberOfNodes;
     } else {
       // SINGLE_NODE
       if (props.numberOfNodes !==  undefined) {
-        throw new Error('Number of nodes for cluster type single-node must not be set2');
+        throw new Error('numberOfNodes must not be specified for cluster type single-node');
       }
     }
 
