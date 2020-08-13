@@ -85,7 +85,8 @@ export class Runtime {
 }
 
 /**
- * Options for specifying the s3 location that stores the data of each canary run
+ * Options for specifying the s3 location that stores the data of each canary run. The artifacts bucket location **cannot**
+ * be updated once the canary is created.
  */
 export interface ArtifactsBucketLocation {
   /**

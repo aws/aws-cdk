@@ -40,7 +40,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 });
 ```
 
-The following is an example of an `index.js` file which exports the `handler` function, note that the function **must** be called `handler`:
+The following is an example of an `index.js` file which exports the `handler` function:
 
 ```js
 var synthetics = require('Synthetics');
@@ -56,6 +56,7 @@ const pageLoadBlueprint = async function () {
     //Wait for page to render.
     //Increase or decrease wait time based on endpoint being monitored.
     await page.waitFor(15000);
+    // This will take a screenshot that will be included in test output artifacts
     await synthetics.takeScreenshot('loaded', 'loaded');
     let pageTitle = await page.title();
     log.info('Page title: ' + pageTitle);
@@ -69,9 +70,13 @@ exports.handler = async () => {
 };
 ```
 
+> **Note:** The function **must** be called `handler`.
+
 The canary will automatically produce a CloudWatch Dashboard:
 
 ![UI Screenshot](images/ui-screenshot.png)
+
+The Canary code will be executed in a lambda function created by Synthetics on your behalf. The Lambda function includes a custom [runtime](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html) provided by Synthetics. The provided runtime includes a variety of handy tools such as [Puppeteer](https://www.npmjs.com/package/puppeteer-core)  and Chromium. To learn more about Synthetics capabilities, check out the [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html)
 
 ### Configuring the Canary Script 
 
