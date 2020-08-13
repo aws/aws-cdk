@@ -59,7 +59,7 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-      GroupDescription: 'SecretRotation/SecurityGroup',
+      GroupDescription: 'Default/SecretRotation/SecurityGroup',
     }));
 
     expect(stack).to(haveResource('AWS::Serverless::Application', {
