@@ -304,7 +304,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
           this.listeners.push(listener);
         }
         this.createDomainName(lb, lbProps.domainName, lbProps.domainZone);
-        new CfnOutput(this, `LoadBalancerDNS${lb.construct.id}`, { value: lb.loadBalancerDnsName });
+        new CfnOutput(this, `LoadBalancerDNS${lb.node.id}`, { value: lb.loadBalancerDnsName });
       }
       // set up default load balancer and listener.
       this.loadBalancer = this.loadBalancers[0];
@@ -323,9 +323,9 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
    */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs.
-    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.construct.id : ''}`;
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = Stack.of(scope);
-    return stack.construct.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   protected createAWSLogDriver(prefix: string): AwsLogDriver {
@@ -337,7 +337,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
       return this.listener;
     }
     for (const listener of this.listeners) {
-      if (listener.construct.id === name) {
+      if (listener.node.id === name) {
         return listener;
       }
     }
@@ -380,7 +380,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
     const enableLogging = enableLoggingProp !== undefined ? enableLoggingProp : true;
     const logDriver = logDriverProp !== undefined
       ? logDriverProp : enableLogging
-        ? this.createAWSLogDriver(this.construct.id) : undefined;
+        ? this.createAWSLogDriver(this.node.id) : undefined;
     return logDriver;
   }
 
@@ -427,7 +427,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      new ARecord(this, `DNS${loadBalancer.construct.id}`, {
+      new ARecord(this, `DNS${loadBalancer.node.id}`, {
         zone,
         recordName: name,
         target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),

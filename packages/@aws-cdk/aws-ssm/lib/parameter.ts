@@ -390,7 +390,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
   public static valueForTypedStringParameter(scope: Construct, parameterName: string, type = ParameterType.STRING, version?: number): string {
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
-    const exists = stack.construct.tryFindChild(id) as IStringParameter;
+    const exists = stack.node.tryFindChild(id) as IStringParameter;
 
     if (exists) { return exists.stringValue; }
 
@@ -406,7 +406,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
   public static valueForSecureStringParameter(scope: Construct, parameterName: string, version: number): string {
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
-    const exists = stack.construct.tryFindChild(id) as IStringParameter;
+    const exists = stack.node.tryFindChild(id) as IStringParameter;
     if (exists) { return exists.stringValue; }
 
     return this.fromSecureStringParameterAttributes(stack, id, { parameterName, version }).stringValue;
