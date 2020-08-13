@@ -194,7 +194,7 @@ test('Using init config in ASG leads to correct UserData and permissions', () =>
     UserData: {
       'Fn::Base64': {
         'Fn::Join': [ '', [
-          '#!/bin/bash\n# fingerprint: 6661ddee2afda062\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
+          '#!/bin/bash\n# fingerprint: f8292e775c37d567\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
           { Ref: 'AWS::Region' },
           ' --stack ',
           { Ref: 'AWS::StackName' },

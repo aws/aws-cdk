@@ -1098,7 +1098,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       throw new Error('When applying CloudFormationInit, you must also configure signals by supplying \'signals\' at instantiation time.');
     }
 
-    init._attach(this.autoScalingGroup, {
+    init.attach(this.autoScalingGroup, {
       platform: this.osType,
       instanceRole: this.role,
       userData: this.userData,
