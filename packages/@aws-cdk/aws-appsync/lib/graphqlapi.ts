@@ -6,7 +6,7 @@ import { IFunction } from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
-import { ObjectType, ObjectTypeProps } from './schema-types';
+import { ObjectType, ObjectTypeProps, InterfaceType } from './schema-types';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -715,7 +715,7 @@ export class GraphQLApi extends Construct {
    * @param delimiter the delimiter between schema and addition
    * @default - ''
    */
-  public appendToSchema(addition: string | ObjectType, delimiter?: string): void {
+  public appendToSchema(addition: string | ObjectType | InterfaceType, delimiter?: string): void {
     if ( this.schemaMode != SchemaDefinition.CODE ) {
       throw new Error('API cannot append to schema because schema definition mode is not configured as CODE.');
     }

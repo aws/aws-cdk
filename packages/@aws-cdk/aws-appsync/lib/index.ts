@@ -5,4 +5,5 @@ export * from './data-source';
 export * from './mapping-template';
 export * from './resolver';
 export * from './schema-types';
+export * from './schema-utils';
 export * from './graphqlapi';
