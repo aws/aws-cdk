@@ -215,7 +215,8 @@ export enum Type {
   AWS_IP_ADDRESS = 'AWSIPAddress',
 
   /**
-   * Type used for Object Types
+   * Type used for Intermediate Types
+   * (i.e. an interface or an object type)
    */
-  OBJECT = 'OBJECT',
+  INTERMEDIATE = 'INTERMEDIATE',
 }

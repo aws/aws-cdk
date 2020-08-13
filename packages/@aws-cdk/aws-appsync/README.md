@@ -170,6 +170,8 @@ A code-first approach offers a developer workflow with:
 - **reusability**: simplifying down boilerplate/repetitive code
 - **consistency**: resolvers and schema definition will always be synced
 
+The code-first approach allows for dynamic schema generation. You can generate your schema based on variables and templates to reduce code duplication.
+
 #### Code-First Example
 
 We are going to reference the [example](#Example) through a code-first approach.
@@ -214,14 +216,56 @@ const demo = api.addType('demo', {
 One of the benefits of GraphQL is its strongly typed nature. We define the 
 types within an object, query, mutation, interface, etc. as **GraphQL Types**. 
 
-GraphQL Types are the building blocks of types, whether they are object, 
-queries, mutations, etc. GraphQL Types can be:
+GraphQL Types are the building blocks of types, whether they are scalar, objects, 
+interfaces, etc. GraphQL Types can be:
 - [**Scalar Types**](https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html): Id, Int, String, AWSDate, etc. 
 - **Object Types**: types that you generate (i.e. `demo` from the example above)
+- **Interface Types**: abstract types that define the base implementation of other 
+Intermediate Types
 
 More concretely, GraphQL Types are simply the types appended to variables. 
-Referencing the object type Author in the previous example, the GraphQL Types 
+Referencing the object type `Demo` in the previous example, the GraphQL Types 
 is `String!` and is applied to both the names `id` and `version`.
+
+#### Intermediate Types
+
+Intermediate Types are abstractions above Scalar Types. They have a set of defined 
+fields, where each field corresponds to another type in the system. Intermediate 
+Types will be the meat of your GraphQL Schema as they are the types defined by you.
+
+Intermediate Types include:
+- [**Interface Types**](#Interface-Types)
+- [**Object Types**](#Object-Types)
+
+#### Interface Types
+
+**Interface Types** are abstract types that define the implementation of other
+intermediate types. They are useful for eliminating duplication and can be used
+to generate Object Types with less work.
+
+You can create Interface Types in two ways:
+
+1. Interface Types can be created ***externally***.
+    ```ts
+    const node = new appsync.InterfaceType('Node', {
+      definition: {
+        id: appsync.GraphqlType.string({ isRequired: true }),
+      },
+    });
+    ```
+2. Interface Types can be created ***externally*** from another Interface Type.
+    ```ts
+    const node = new appsync.InterfaceType('Node', {
+      definition: {
+        id: appsync.GraphqlType.string({ isRequired: true }),
+      },
+    });
+    const superNode = new appsync.InterfaceType.extendInterface('SuperNode', node, {
+      definition: {
+        speicalId: appsync.GraphqlType.string(),
+      },
+    });
+    ```
 
 #### Object Types
 
@@ -229,9 +273,9 @@ is `String!` and is applied to both the names `id` and `version`.
 the `demo` variable is an **Object Type**. **Object Types** are defined by 
 GraphQL Types and are only usable when linked to a GraphQL Api.
 
-You can create Object Types in two ways:
+You can create Object Types in three ways:
 
-1. Object Types can be created ***externally*** from a GraphQL API.
+1. Object Types can be created ***externally***.
     ```ts
     const api = new appsync.GraphQLApi(stack, 'Api', {
       name: 'demo',
@@ -244,7 +288,7 @@ You can create Object Types in two ways:
       },
     });
 
-    api.appendToSchema(object);
+    api.appendToSchema(object.toString());
     ```
     > This method allows for reusability and modularity, ideal for larger projects. 
     For example, imagine moving all Object Type definition outside the stack.
@@ -267,11 +311,26 @@ You can create Object Types in two ways:
 
     `cdk-stack.ts` - a file containing our cdk stack
     ```ts
-    import * as gqlType from './object-types';
-    const demo = gqlType.demo;
-    api.appendToSchema(demo);
+    import { demo } from './object-types';
+    api.appendToSchema(demo.toString());
     ```
-2. Object Types can be created ***internally*** within the GraphQL API.
+
+2. Object Types can be created ***externally*** from an Interface Type.
+    ```ts
+    const node = new appsync.InterfaceType('Node', {
+      definition: {
+        id: appsync.GraphqlType.string({ isRequired: true }),
+      },
+    });
+    const demo = new appsync.ObjectType.implementInterface('Demo', node, {
+      defintion: {
+        version: appsync.GraphqlType.string({ isRequired: true }),
+      },
+    });
+    ```
+    > This method allows for reusability and modularity, ideal for reducing code duplication. 
+
+3. Object Types can be created ***internally*** within the GraphQL API.
     ```ts
     const api = new appsync.GraphQLApi(stack, 'Api', {
       name: 'demo',
