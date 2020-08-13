@@ -138,7 +138,7 @@
                         {
                           "Ref": "AWS::Region"
                         },
-                        "account"
+                        "repositoryAccount"
                       ]
                     },
                     ":repository/mxnet-training"
@@ -180,7 +180,7 @@
                     {
                       "Ref": "AWS::Region"
                     },
-                    "account"
+                    "repositoryAccount"
                   ]
                 },
                 ".dkr.ecr.",
@@ -214,65 +214,65 @@
   },
   "Mappings": {
     "AwsDeepLearningContainersRepositoriesAccounts": {
-      "us-east-1": {
-        "account": "763104351884"
-      },
-      "us-east-2": {
-        "account": "763104351884"
-      },
-      "us-west-1": {
-        "account": "763104351884"
-      },
-      "us-west-2": {
-        "account": "763104351884"
-      },
-      "ca-central-1": {
-        "account": "763104351884"
-      },
-      "eu-west-1": {
-        "account": "763104351884"
-      },
-      "eu-west-2": {
-        "account": "763104351884"
-      },
-      "eu-west-3": {
-        "account": "763104351884"
-      },
-      "eu-central-1": {
-        "account": "763104351884"
-      },
-      "eu-north-1": {
-        "account": "763104351884"
-      },
-      "sa-east-1": {
-        "account": "763104351884"
-      },
-      "ap-south-1": {
-        "account": "763104351884"
+      "ap-east-1": {
+        "repositoryAccount": "871362719292"
       },
       "ap-northeast-1": {
-        "account": "763104351884"
+        "repositoryAccount": "763104351884"
       },
       "ap-northeast-2": {
-        "account": "763104351884"
+        "repositoryAccount": "763104351884"
+      },
+      "ap-south-1": {
+        "repositoryAccount": "763104351884"
       },
       "ap-southeast-1": {
-        "account": "763104351884"
+        "repositoryAccount": "763104351884"
       },
       "ap-southeast-2": {
-        "account": "763104351884"
+        "repositoryAccount": "763104351884"
       },
-      "ap-east-1": {
-        "account": "871362719292"
-      },
-      "me-south-1": {
-        "account": "217643126080"
+      "ca-central-1": {
+        "repositoryAccount": "763104351884"
       },
       "cn-north-1": {
-        "account": "727897471807"
+        "repositoryAccount": "727897471807"
       },
       "cn-northwest-1": {
-        "account": "727897471807"
+        "repositoryAccount": "727897471807"
+      },
+      "eu-central-1": {
+        "repositoryAccount": "763104351884"
+      },
+      "eu-north-1": {
+        "repositoryAccount": "763104351884"
+      },
+      "eu-west-1": {
+        "repositoryAccount": "763104351884"
+      },
+      "eu-west-2": {
+        "repositoryAccount": "763104351884"
+      },
+      "eu-west-3": {
+        "repositoryAccount": "763104351884"
+      },
+      "me-south-1": {
+        "repositoryAccount": "217643126080"
+      },
+      "sa-east-1": {
+        "repositoryAccount": "763104351884"
+      },
+      "us-east-1": {
+        "repositoryAccount": "763104351884"
+      },
+      "us-east-2": {
+        "repositoryAccount": "763104351884"
+      },
+      "us-west-1": {
+        "repositoryAccount": "763104351884"
+      },
+      "us-west-2": {
+        "repositoryAccount": "763104351884"
       }
     }
   }
