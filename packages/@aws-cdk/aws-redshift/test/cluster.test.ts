@@ -19,6 +19,7 @@ test('check that instantiation works', () => {
       masterPassword: cdk.SecretValue.plainText('tooshort'),
     },
     vpc,
+    numberOfNodes: 2,
   });
 
   // THEN
@@ -71,6 +72,7 @@ test('can create a cluster with imported vpc and security group', () => {
     },
     vpc,
     securityGroups: [sg],
+    numberOfNodes: 2,
   });
 
   // THEN
@@ -93,6 +95,7 @@ test('creates a secret when master credentials are not specified', () => {
       masterUsername: 'admin',
     },
     vpc,
+    numberOfNodes: 2,
   });
 
   // THEN
@@ -195,6 +198,7 @@ test('create an encrypted cluster with custom KMS key', () => {
     },
     encryptionKey: new kms.Key(stack, 'Key'),
     vpc,
+    numberOfNodes: 2,
   });
 
   // THEN
@@ -227,6 +231,7 @@ test('cluster with parameter group', () => {
     },
     vpc,
     parameterGroup: group,
+    numberOfNodes: 2,
   });
 
   // THEN
@@ -274,6 +279,7 @@ test('can create a cluster with logging enabled', () => {
     vpc,
     loggingBucket: bucket,
     loggingKeyPrefix: 'prefix',
+    numberOfNodes: 2,
   });
 
   // THEN
@@ -297,6 +303,7 @@ test('throws when trying to add rotation to a cluster without secret', () => {
       masterPassword: cdk.SecretValue.plainText('tooshort'),
     },
     vpc,
+    numberOfNodes: 2,
   });
 
   // THEN
@@ -338,6 +345,7 @@ test('throws when trying to add single user rotation multiple times', () => {
       masterUsername: 'admin',
     },
     vpc,
+    numberOfNodes: 2,
   });
 
   // WHEN
