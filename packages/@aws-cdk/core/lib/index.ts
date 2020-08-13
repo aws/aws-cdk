@@ -30,7 +30,6 @@ export * from './cfn-json';
 export * from './removal-policy';
 export * from './arn';
 export * from './duration';
-export * from './from-cfn';
 export * from './size';
 export * from './stack-trace';
 
