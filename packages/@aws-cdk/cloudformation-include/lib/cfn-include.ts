@@ -237,7 +237,6 @@ export class CfnInclude extends core.CfnElement {
           return self.conditions[conditionName];
         },
       };
-
       const cfnParser = new cfn_parse.CfnParser({
         finder,
         parameters: this.parametersToReplace,

@@ -146,8 +146,6 @@ export class FromCloudFormation {
 /**
  * An interface that represents callbacks into a CloudFormation template.
  * Used by the fromCloudFormation methods in the generated L1 classes.
- *
- * @experimental
  */
 export interface ICfnFinder {
   /**
@@ -175,16 +173,13 @@ export interface ICfnFinder {
 /**
  * The interface used as the last argument to the fromCloudFormation
  * static method of the generated L1 classes.
- *
- * @experimental
  */
 export interface FromCloudFormationOptions {
   /**
-   * The finder interface used to resolve references across the template.
+   * The parser used to convert CloudFormation to values the CDK understands.
    */
   readonly parser: CfnParser;
 }
-
 
 /**
  * The context in which the parsing is taking place.
@@ -217,7 +212,7 @@ export interface ParseCfnOptions {
   readonly context?: CfnParsingContext;
 
   /**
-   * Values provided here will replace the parameters specified here.
+   * Values provided here will replace references to parameters in the parsed template.
    * @default - no parameters will be replaced
    */
   readonly parameters?: { [parameterName: string]: any }

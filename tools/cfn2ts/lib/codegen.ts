@@ -230,7 +230,6 @@ export default class CodeGenerator {
     this.code.line(' * containing the CloudFormation properties of this resource.');
     this.code.line(' * Used in the @aws-cdk/cloudformation-include module.');
     this.code.line(' *');
-    this.code.line(' * @experimental');
     this.code.line(' * @internal');
     this.code.line(' */');
     // eslint-disable-next-line max-len
