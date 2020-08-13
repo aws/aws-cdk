@@ -32,7 +32,7 @@ describe('Origin Groups', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
-	        TargetOriginId: originGroupId,
+          TargetOriginId: originGroupId,
         },
         Origins: [
           {

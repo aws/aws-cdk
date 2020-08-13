@@ -298,7 +298,7 @@ export class Distribution extends Resource implements IDistribution {
       const scope = new Construct(this, `Origin${originIndex}`);
       const originId = scope.node.uniqueId;
       const originBindConfig = origin.bind(scope, { originId });
-      if (! originBindConfig.failoverConfig) {
+      if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({origin, originId, ...originBindConfig});
       } else {
         if (isFailoverOrigin) {
