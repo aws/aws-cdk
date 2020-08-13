@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "MyCanaryServiceBucketE50F48B7": {
+    "MyCanaryArtifactsBucket89975E6D": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -52,7 +52,7 @@
                       [
                         {
                           "Fn::GetAtt": [
-                            "MyCanaryServiceBucketE50F48B7",
+                            "MyCanaryArtifactsBucket89975E6D",
                             "Arn"
                           ]
                         },
@@ -97,7 +97,7 @@
             [
               "s3://",
               {
-                "Ref": "MyCanaryServiceBucketE50F48B7"
+                "Ref": "MyCanaryArtifactsBucket89975E6D"
               }
             ]
           ]
@@ -147,7 +147,7 @@
             "Arn"
           ]
         },
-        "Name": "assetcanary-two",
+        "Name": "assetcanary-one",
         "RuntimeVersion": "syn-1.0",
         "Schedule": {
           "DurationInSeconds": "0",
@@ -156,7 +156,7 @@
         "StartCanaryAfterCreation": true
       }
     },
-    "MyCanaryTwoServiceBucket8F15EC98": {
+    "MyCanaryTwoArtifactsBucket79B179B6": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -208,7 +208,7 @@
                       [
                         {
                           "Fn::GetAtt": [
-                            "MyCanaryTwoServiceBucket8F15EC98",
+                            "MyCanaryTwoArtifactsBucket79B179B6",
                             "Arn"
                           ]
                         },
@@ -253,7 +253,7 @@
             [
               "s3://",
               {
-                "Ref": "MyCanaryTwoServiceBucket8F15EC98"
+                "Ref": "MyCanaryTwoArtifactsBucket79B179B6"
               }
             ]
           ]
@@ -303,7 +303,7 @@
             "Arn"
           ]
         },
-        "Name": "assetcanary-one",
+        "Name": "assetcanary-two",
         "RuntimeVersion": "syn-1.0",
         "Schedule": {
           "DurationInSeconds": "0",

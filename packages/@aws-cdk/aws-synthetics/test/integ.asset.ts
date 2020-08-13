@@ -14,7 +14,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'canary-asset');
 
 new synthetics.Canary(stack, 'MyCanary', {
-  canaryName: 'assetcanary-two',
+  canaryName: 'assetcanary-one',
   test: synthetics.Test.custom({
     handler: 'canary.handler',
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
@@ -22,7 +22,7 @@ new synthetics.Canary(stack, 'MyCanary', {
 });
 
 new synthetics.Canary(stack, 'MyCanaryTwo', {
-  canaryName: 'assetcanary-one',
+  canaryName: 'assetcanary-two',
   test: synthetics.Test.custom({
     handler: 'canary.handler',
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
