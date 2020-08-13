@@ -89,6 +89,7 @@ export class AssetCode extends Code {
    */
   public constructor(private assetPath: string, private options?: s3_assets.AssetOptions) {
     super();
+
     if (!fs.existsSync(this.assetPath)) {
       throw new Error(`${this.assetPath} is not a valid path`);
     }
