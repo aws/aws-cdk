@@ -1,5 +1,4 @@
 import { Construct, CustomResource, Token, Duration } from '@aws-cdk/core';
- import { Construct, CustomResource, Token, Duration } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
