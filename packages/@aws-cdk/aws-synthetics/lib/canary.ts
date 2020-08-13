@@ -3,10 +3,64 @@ import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Code } from './code';
 import { Schedule } from './schedule';
 import { CfnCanary } from './synthetics.generated';
-import { Test, TestOptions } from './test-prop';
 
+/**
+ * Specify a test that the canary should run
+ */
+export class Test {
+  /**
+   * Specify a custom test with your own code
+   *
+   * @returns `Test` associated with the specified Code object
+   * @param options The configuration options
+   */
+  public static custom(options: CustomTestOptions): Test {
+    Test.validateHandler(options.handler);
+    return new Test(options.code, options.handler);
+  }
+
+  /**
+   * Verifies that the given handler ends in '.handler'. Returns the handler if successful and
+   * throws an error if not.
+   *
+   * @param handler - the handler given by the user
+   */
+  private static validateHandler(handler: string) {
+    if (!handler.endsWith('.handler')) {
+      throw new Error(`Canary Handler must end in '.handler' (${handler})`);
+    }
+    if (handler.length > 21) {
+      throw new Error(`Canary Handler must be less than 21 characters (${handler})`);
+    }
+  }
+
+  /**
+   * Construct a Test property
+   *
+   * @param code The code that the canary should run
+   * @param handler The handler of the canary
+   */
+  private constructor(public readonly code: Code, public readonly handler: string){
+  }
+}
+
+/**
+ * Properties for specifying a test
+ */
+export interface CustomTestOptions {
+  /**
+   * The code of the canary script
+   */
+  readonly code: Code,
+
+  /**
+   * The handler for the code. Must end with `.handler`.
+   */
+  readonly handler: string,
+}
 
 /**
  * Runtime options for a canary
@@ -15,15 +69,11 @@ export class Runtime {
   /**
    * `syn-1.0` includes the following:
    *
-   * Synthetics library 1.0
-   *
-   * Synthetics handler code 1.0
-   *
-   * Lambda runtime Node.js 10.x
-   *
-   * Puppeteer-core version 1.14.0
-   *
-   * The Chromium version that matches Puppeteer-core 1.14.0
+   * - Synthetics library 1.0
+   * - Synthetics handler code 1.0
+   * - Lambda runtime Node.js 10.x
+   * - Puppeteer-core version 1.14.0
+   * - The Chromium version that matches Puppeteer-core 1.14.0
    */
   public static readonly SYNTHETICS_1_0 = new Runtime('syn-1.0');
 
@@ -44,16 +94,7 @@ export interface ArtifactsBucketLocation {
   readonly bucket: s3.IBucket;
 
   /**
-   * The key prefix of an S3 object. Specify this if you want a more specific key within the artifacts bucket.
-   *
-   * For example, if a key is specified, the resulting s3 location looks like this:
-   * @example
-   * s3://bucket/key
-   *
-   * If not specified, the s3 location looks like this:
-   *
-   * @example
-   * s3://onlybucket
+   * The S3 bucket prefix. Specify this if you want a more specific path within the artifacts bucket.
    *
    * @default - no prefix
    */
@@ -75,7 +116,7 @@ export interface CanaryProps {
    * Canary execution role.
    *
    * This is the role that will be assumed by the canary upon execution.
-   * It controls the permissions that the canary will have. The Role must
+   * It controls the permissions that the canary will have. The role must
    * be assumable by the AWS Lambda service principal.
    *
    * If not supplied, a role will be created with all the required permissions.
@@ -180,15 +221,8 @@ export class Canary extends cdk.Resource {
   /**
    * Bucket where data from each canary run is stored.
    */
-  private readonly artifactsBucket: s3.IBucket;
+  public readonly artifactsBucket: s3.IBucket;
 
-  /**
-   * Construct a new canary resource.
-   *
-   * @param scope The construct within which this construct is defined
-   * @param id A unique identifier
-   * @param props Canary props
-   */
   public constructor(scope: cdk.Construct, id: string, props: CanaryProps) {
     if (props.canaryName && !cdk.Token.isUnresolved(props.canaryName)) {
       validateName(props.canaryName);
@@ -200,11 +234,11 @@ export class Canary extends cdk.Resource {
       }),
     });
 
-    this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ServiceBucket', {
+    this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
     });
 
-    this.role = props.role ?? this.createDefaultRole();
+    this.role = props.role ?? this.createDefaultRole(props.artifactsBucketLocation?.prefix);
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
@@ -276,7 +310,7 @@ export class Canary extends cdk.Resource {
   /**
    * Returns a default role for the canary
    */
-  private createDefaultRole(): iam.IRole {
+  private createDefaultRole(prefix: string = '*'): iam.IRole {
     // Created role will need these policies to run the Canary.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-executionrolearn
     const policy = new iam.PolicyDocument({
@@ -286,9 +320,13 @@ export class Canary extends cdk.Resource {
           actions: ['s3:ListAllMyBuckets'],
         }),
         new iam.PolicyStatement({
-          resources: [this.artifactsBucket.arnForObjects('*')],
+          resources: [this.artifactsBucket.arnForObjects(`${prefix}/*`)],
           actions: ['s3:PutObject', 's3:GetBucketLocation'],
         }),
+        // new iam.PolicyStatement({
+        //   resources: [this.artifactsBucket.arnForObjects('*')],
+        //   actions: ['s3:GetBucketLocation'],
+        // }),
         new iam.PolicyStatement({
           resources: ['*'],
           actions: ['cloudwatch:PutMetricData'],
@@ -313,16 +351,10 @@ export class Canary extends cdk.Resource {
    * Returns the code object taken in by the canary resource.
    */
   private createCode(props: CanaryProps): CfnCanary.CodeProperty {
-    let codeConfig: TestOptions;
-    if(props.test.customCode){
-      codeConfig = {
-        handler: props.test.customCode.handler,
-        ...props.test.customCode.code.bind(this, props.test.customCode.handler),
-      };
-    } else {
-      // testCode and customCode are mutually exclusive, so testCode must exist here
-      codeConfig = props.test.testCode!;
-    }
+    const codeConfig = {
+      handler: props.test.handler,
+      ...props.test.code.bind(this, props.test.handler),
+    };
     return {
       handler: codeConfig.handler,
       script: codeConfig.inlineCode,
@@ -374,7 +406,7 @@ const nameRegex: RegExp = /^[0-9a-z_\-]+$/;
  */
 function validateName(name: string) {
   if (name.length > 21) {
-    throw new Error(`Canary name is too large, must be between 1 and 21 characters, but is ${name.length}`);
+    throw new Error(`Canary name is too large, must be between 1 and 21 characters, but is ${name.length} (got "${name}")`);
   }
   if (!nameRegex.test(name)) {
     throw new Error(`Canary name must be lowercase, numbers, hyphens, or underscores (got "${name}")`);

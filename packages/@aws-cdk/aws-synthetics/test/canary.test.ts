@@ -96,7 +96,7 @@ test('Throws when name has more than 21 characters', () => {
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
   }))
-    .toThrowError('Canary name is too large, must be between 1 and 21 characters, but is 22');
+    .toThrowError(`Canary name is too large, must be between 1 and 21 characters, but is 22 (got "${'a'.repeat(22)}")`);
 });
 
 test('An existing role can be specified instead of auto-created', () => {
@@ -287,4 +287,57 @@ test('Throws when rate above is not a whole number of minutes', () => {
     }),
   }))
     .toThrowError('\'59 seconds\' cannot be converted into a whole number of minutes.');
+});
+
+test('Can share artifacts bucket between canaries', () => {
+  // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+
+  // WHEN
+  const canary1 = new synthetics.Canary(stack, 'Canary1', {
+    schedule: synthetics.Schedule.once(),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+  });
+
+  const canary2 = new synthetics.Canary(stack, 'Canary2', {
+    schedule: synthetics.Schedule.once(),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    artifactsBucketLocation: { bucket: canary1.artifactsBucket },
+  });
+
+  // THEN
+  expect(canary1.artifactsBucket).toEqual(canary2.artifactsBucket);
+});
+
+test('can specify custom test', () => {
+  // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline(`
+        exports.handler = async () => {
+          console.log(\'hello world\');
+        };`),
+    }),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    Code: {
+      Handler: 'index.handler',
+      Script: `
+        exports.handler = async () => {
+          console.log(\'hello world\');
+        };`,
+    },
+  });
 });

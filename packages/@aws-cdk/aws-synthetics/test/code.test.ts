@@ -33,7 +33,7 @@ describe(synthetics.Code.fromInline, () => {
 
     // THEN
     expect(() => synthetics.Code.fromInline('code').bind(stack, 'canary.handler'))
-      .toThrowError('The handler for inline code must be "index.handler"');
+      .toThrowError('The handler for inline code must be "index.handler" (got "canary.handler")');
   });
 });
 
@@ -88,6 +88,12 @@ describe(synthetics.Code.fromAsset, () => {
     expect(synthesized.assets.length).toEqual(1);
   });
 
+  test('fails if path does not exist', () => {
+    const assetPath = path.join(__dirname, 'does-not-exist');
+    expect(() => synthetics.Code.fromAsset(assetPath))
+      .toThrowError(`${assetPath} is not a valid path`);
+  });
+
   test('fails if non-zip asset is used', () => {
     // GIVEN
     const stack = new Stack(new App(), 'canaries');
@@ -105,7 +111,7 @@ describe(synthetics.Code.fromAsset, () => {
     // THEN
     const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
     expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler'))
-      .toThrowError('The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch)');
+      .toThrowError(`The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch)`);
   });
 
   test('fails if handler is specified incorrectly', () => {
@@ -115,7 +121,7 @@ describe(synthetics.Code.fromAsset, () => {
     // THEN
     const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
     expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'incorrect.handler'))
-      .toThrowError('The canary resource requires that the handler is present at "nodejs/node_modules/incorrect.js" (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch)');
+      .toThrowError(`The canary resource requires that the handler is present at "nodejs/node_modules/incorrect.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch)`);
   });
 });
 

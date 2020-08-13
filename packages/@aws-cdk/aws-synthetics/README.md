@@ -42,26 +42,31 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 
 The following is an example of an `index.js` file which exports the `handler` function, note that the function **must** be called `handler`:
 
-```
-const https = require('https');
+```js
+var synthetics = require('Synthetics');
 const log = require('SyntheticsLogger');
 
-exports.handler = async function () {
-    const requestOptions = {"hostname":"api.example.com","method":"","path":"/user/books/topbook/","port":443}
-    return new Promise((resolve, reject) => {
-        let req = https.request(requestOptions);
-        req.on('response', (res) => {
-            if (res.statusCode !== 200){
-                log.info(`Status Code: ${res.statusCode}`);
-                reject("Failed: " + requestOption.path);
-            }
-            res.on('end', () => {
-                resolve();
-            })
-        });
-        req.end();
-    })
-}
+const pageLoadBlueprint = async function () {
+
+    // INSERT URL here
+    const URL = "https://api.example.com/user/books/topbook/";
+
+    let page = await synthetics.getPage();
+    const response = await page.goto(URL, {waitUntil: 'domcontentloaded', timeout: 30000});
+    //Wait for page to render.
+    //Increase or decrease wait time based on endpoint being monitored.
+    await page.waitFor(15000);
+    await synthetics.takeScreenshot('loaded', 'loaded');
+    let pageTitle = await page.title();
+    log.info('Page title: ' + pageTitle);
+    if (response.status() !== 200) {
+        throw "Failed to load page!";
+    }
+};
+
+exports.handler = async () => {
+    return await pageLoadBlueprint();
+};
 ```
 
 The canary will automatically produce a CloudWatch Dashboard:
@@ -77,7 +82,7 @@ To configure the script the canary executes, use the `test` property. The `test`
 >canary/
 >├── nodejs/
 >   ├── node_modules/
->        ├── index.js
+>        ├── <filename>.js
 >```
 > See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html).
 

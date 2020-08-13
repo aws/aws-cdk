@@ -13,10 +13,10 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'a-canary1');
 
 const bucket = new s3.Bucket(stack, 'mytestbucket');
-const prefix = 'canarybucket';
+const prefix = 'anotherthing';
 
 new synthetics.Canary(stack, 'MyCanary', {
-  canaryName: 'canary-custom',
+  canaryName: 'canary-custom88888',
   test: synthetics.Test.custom({
     handler: 'index.handler',
     code: synthetics.Code.fromInline(`

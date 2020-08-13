@@ -5,7 +5,7 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Construct } from '@aws-cdk/core';
 
 /**
- * The custom code the canary should run
+ * The code the canary should execute
  */
 export abstract class Code {
 
@@ -89,6 +89,9 @@ export class AssetCode extends Code {
    */
   public constructor(private assetPath: string, private options?: s3_assets.AssetOptions) {
     super();
+    if (!fs.existsSync(this.assetPath)) {
+      throw new Error(`${this.assetPath} is not a valid path`);
+    }
   }
 
   public bind(scope: Construct, handler: string): CodeConfig {
@@ -123,13 +126,13 @@ export class AssetCode extends Code {
    * @param handler the canary handler
    */
   private validateCanaryAsset(handler: string) {
-    if(path.extname(this.assetPath) !== '.zip') {
-      if(path.extname(this.assetPath) !== '') {
+    if (path.extname(this.assetPath) !== '.zip') {
+      if (!fs.lstatSync(this.assetPath).isDirectory()) {
         throw new Error(`Asset must be a .zip file or a directory (${this.assetPath})`);
       }
-      const filename = `${handler.substring(0,handler.indexOf('.'))}.js`;
-      if(!fs.existsSync(path.join(this.assetPath,'nodejs', 'node_modules', filename))) {
-        throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${filename}" (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch)`);
+      const filename = `${handler.split('.')[0]}.js`;
+      if (!fs.existsSync(path.join(this.assetPath,'nodejs', 'node_modules', filename))) {
+        throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${filename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch)`);
       }
     }
   }
@@ -150,7 +153,7 @@ export class InlineCode extends Code {
   public bind(_scope: Construct, handler: string): CodeConfig {
 
     if (handler !== 'index.handler') {
-      throw new Error('The handler for inline code must be "index.handler"');
+      throw new Error(`The handler for inline code must be "index.handler" (got "${handler}")`);
     }
 
     return {
@@ -160,21 +163,17 @@ export class InlineCode extends Code {
 }
 
 /**
- * Canary code from an S3 archive.
+ * S3 bucket path to the code zip file
  */
 export class S3Code extends Code {
-  private bucketName: string;
-
-  public constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
+  public constructor(private bucket: s3.IBucket, private key: string, private objectVersion?: string) {
     super();
-
-    this.bucketName = bucket.bucketName;
   }
 
   public bind(_scope: Construct, _handler: string): CodeConfig {
     return {
       s3Location: {
-        bucketName: this.bucketName,
+        bucketName: this.bucket.bucketName,
         objectKey: this.key,
         objectVersion: this.objectVersion,
       },
