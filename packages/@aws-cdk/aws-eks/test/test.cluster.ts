@@ -1801,9 +1801,9 @@ export = {
           'Arn',
         ],
       },
-      ResourceType: 'service',
-      ResourceName: 'myservice',
-      ResourceNamespace: 'default',
+      ObjectType: 'service',
+      ObjectName: 'myservice',
+      ObjectNamespace: 'default',
       JsonPath: '.status.loadBalancer.ingress[0].hostname',
       TimeoutSeconds: 300,
     });

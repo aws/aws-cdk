@@ -1,10 +1,11 @@
 import { Construct, CustomResource, Token, Duration } from '@aws-cdk/core';
+ import { Construct, CustomResource, Token, Duration } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
- * Properties for KubernetesResourceAttribute.
+ * Properties for KubernetesObjectValue.
  */
-export interface KubernetesResourceAttributeProps {
+export interface KubernetesObjectValueProps {
   /**
    * The EKS cluster to fetch attributes from.
    *
@@ -13,24 +14,24 @@ export interface KubernetesResourceAttributeProps {
   readonly cluster: Cluster;
 
   /**
-   * The resource type to query. (e.g 'service', 'pod'...)
+   * The object type to query. (e.g 'service', 'pod'...)
    */
-  readonly resourceType: string;
+  readonly objectType: string;
 
   /**
-   * The name of the resource to query.
+   * The name of the object to query.
    */
-  readonly resourceName: string;
+  readonly objectName: string;
 
   /**
-   * The namespace the resource belongs to.
+   * The namespace the object belongs to.
    *
    * @default 'default'
    */
-  readonly resourceNamespace?: string;
+  readonly objectNamespace?: string;
 
   /**
-   * JSONPath to use in the query.
+   * JSONPath to the specific value.
    *
    * @see https://kubernetes.io/docs/reference/kubectl/jsonpath/
    */
@@ -46,31 +47,31 @@ export interface KubernetesResourceAttributeProps {
 }
 
 /**
- * Represents an attribute of a resource deployed in the cluster.
- * Use this to fetch runtime information about resources.
+ * Represents a value of a specific object deployed in the cluster.
+ * Use this to fetch any information available by the `kubectl get` command.
  */
-export class KubernetesResourceAttribute extends Construct {
+export class KubernetesObjectValue extends Construct {
   /**
    * The CloudFormation reosurce type.
    */
-  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesResourceAttribute';
+  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesObjectValue';
 
   private _resource: CustomResource;
 
-  constructor(scope: Construct, id: string, props: KubernetesResourceAttributeProps) {
+  constructor(scope: Construct, id: string, props: KubernetesObjectValueProps) {
     super(scope, id);
 
     const provider = props.cluster._attachKubectlResourceScope(this);
 
     this._resource = new CustomResource(this, 'Resource', {
-      resourceType: KubernetesResourceAttribute.RESOURCE_TYPE,
+      resourceType: KubernetesObjectValue.RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
         ClusterName: props.cluster.clusterName,
         RoleArn: props.cluster._kubectlCreationRole.roleArn,
-        ResourceType: props.resourceType,
-        ResourceName: props.resourceName,
-        ResourceNamespace: props.resourceNamespace ?? 'default',
+        ObjectType: props.objectType,
+        ObjecteName: props.objectName,
+        ObjectNamespace: props.objectNamespace ?? 'default',
         JsonPath: props.jsonPath,
         TimeoutSeconds: (props?.timeout ?? Duration.minutes(5)).toSeconds(),
       },

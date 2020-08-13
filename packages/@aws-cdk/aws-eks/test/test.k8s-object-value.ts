@@ -2,7 +2,7 @@ import { expect } from '@aws-cdk/assert';
 import { Stack, Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
-import { KubernetesResourceAttribute } from '../lib/k8s-resource-attribute';
+import { KubernetesObjectValue } from '../lib/k8s-object-value';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
@@ -14,18 +14,18 @@ export = {
     const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
-    const attribute = new KubernetesResourceAttribute(stack, 'MyAttribute', {
+    const attribute = new KubernetesObjectValue(stack, 'MyAttribute', {
       cluster: cluster,
       jsonPath: '.status',
-      resourceName: 'mydeployment',
-      resourceType: 'deployment',
+      objectName: 'mydeployment',
+      objectType: 'deployment',
+      objectNamespace: 'mynamespace',
       timeout: Duration.seconds(5),
-      resourceNamespace: 'mynamespace',
     });
 
     const expectedCustomResourceId = 'MyAttributeF1E9B10D';
     test.deepEqual(expect(stack).value.Resources[expectedCustomResourceId], {
-      Type: 'Custom::AWSCDK-EKS-KubernetesResourceAttribute',
+      Type: 'Custom::AWSCDK-EKS-KubernetesObjectValue',
       Properties: {
         ServiceToken: {
           'Fn::GetAtt': [
@@ -35,9 +35,9 @@ export = {
         },
         ClusterName: { Ref: 'MyCluster8AD82BF8' },
         RoleArn: { 'Fn::GetAtt': [ 'MyClusterCreationRoleB5FA4FF3', 'Arn' ] },
-        ResourceType: 'deployment',
-        ResourceName: 'mydeployment',
-        ResourceNamespace: 'mynamespace',
+        ObjectType: 'deployment',
+        ObjectName: 'mydeployment',
+        ObjectNamespace: 'mynamespace',
         JsonPath: '.status',
         TimeoutSeconds: 5,
       },
@@ -56,16 +56,16 @@ export = {
     const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
-    const attribute = new KubernetesResourceAttribute(stack, 'MyAttribute', {
+    const attribute = new KubernetesObjectValue(stack, 'MyAttribute', {
       cluster: cluster,
       jsonPath: '.status',
-      resourceName: 'mydeployment',
-      resourceType: 'deployment',
+      objectName: 'mydeployment',
+      objectType: 'deployment',
     });
 
     const expectedCustomResourceId = 'MyAttributeF1E9B10D';
     test.deepEqual(expect(stack).value.Resources[expectedCustomResourceId], {
-      Type: 'Custom::AWSCDK-EKS-KubernetesResourceAttribute',
+      Type: 'Custom::AWSCDK-EKS-KubernetesObjectValue',
       Properties: {
         ServiceToken: {
           'Fn::GetAtt': [
@@ -75,9 +75,9 @@ export = {
         },
         ClusterName: { Ref: 'MyCluster8AD82BF8' },
         RoleArn: { 'Fn::GetAtt': [ 'MyClusterCreationRoleB5FA4FF3', 'Arn' ] },
-        ResourceType: 'deployment',
-        ResourceName: 'mydeployment',
-        ResourceNamespace: 'default',
+        ObjectType: 'deployment',
+        ObjectName: 'mydeployment',
+        ObjectNamespace: 'default',
         JsonPath: '.status',
         TimeoutSeconds: 300,
       },

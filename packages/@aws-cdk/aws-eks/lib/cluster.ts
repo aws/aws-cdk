@@ -12,8 +12,8 @@ import { CfnClusterProps } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesManifest } from './k8s-manifest';
+import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
-import { KubernetesResourceAttribute } from './k8s-resource-attribute';
 import { KubectlProvider, KubectlProviderProps } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
@@ -744,11 +744,11 @@ export class Cluster extends Resource implements ICluster {
    */
   public getServiceLoadBalancerAddress(serviceName: string, options: ServiceLoadBalancerAddressOptions = {}): string {
 
-    const loadBalancerAddress = new KubernetesResourceAttribute(this, `${serviceName}LoadBalancerAddress`, {
+    const loadBalancerAddress = new KubernetesObjectValue(this, `${serviceName}LoadBalancerAddress`, {
       cluster: this,
-      resourceType: 'service',
-      resourceName: serviceName,
-      resourceNamespace: options.namespace,
+      objectType: 'service',
+      objectName: serviceName,
+      objectNamespace: options.namespace,
       jsonPath: '.status.loadBalancer.ingress[0].hostname',
       timeout: options.timeout,
     });

@@ -2911,7 +2911,7 @@
       "DeletionPolicy": "Delete"
     },
     "ClusterwebserviceLoadBalancerAddress38B566FF": {
-      "Type": "Custom::AWSCDK-EKS-KubernetesResourceAttribute",
+      "Type": "Custom::AWSCDK-EKS-KubernetesObjectValue",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
