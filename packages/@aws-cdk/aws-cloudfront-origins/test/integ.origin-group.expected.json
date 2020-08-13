@@ -77,12 +77,11 @@
           },
           "CacheBehaviors": [
             {
-              "PathPattern": "/api",
               "ForwardedValues": {
                 "QueryString": false
               },
               "PathPattern": "/api",
-              "TargetOriginId": "cloudfrontorigingroupDistributionOrigin10B57F1D1",
+              "TargetOriginId": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
               "ViewerProtocolPolicy": "allow-all"
             }
           ],
