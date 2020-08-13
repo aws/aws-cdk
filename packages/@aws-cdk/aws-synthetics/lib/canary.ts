@@ -310,7 +310,7 @@ export class Canary extends cdk.Resource {
   /**
    * Returns a default role for the canary
    */
-  private createDefaultRole(prefix: string = '*'): iam.IRole {
+  private createDefaultRole(prefix?: string): iam.IRole {
     // Created role will need these policies to run the Canary.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-executionrolearn
     const policy = new iam.PolicyDocument({
@@ -320,13 +320,9 @@ export class Canary extends cdk.Resource {
           actions: ['s3:ListAllMyBuckets'],
         }),
         new iam.PolicyStatement({
-          resources: [this.artifactsBucket.arnForObjects(`${prefix}/*`)],
+          resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix+'/*' : '*'}`)],
           actions: ['s3:PutObject', 's3:GetBucketLocation'],
         }),
-        // new iam.PolicyStatement({
-        //   resources: [this.artifactsBucket.arnForObjects('*')],
-        //   actions: ['s3:GetBucketLocation'],
-        // }),
         new iam.PolicyStatement({
           resources: ['*'],
           actions: ['cloudwatch:PutMetricData'],

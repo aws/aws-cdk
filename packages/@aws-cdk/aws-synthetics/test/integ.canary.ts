@@ -12,11 +12,11 @@ import * as synthetics from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'a-canary1');
 
-const bucket = new s3.Bucket(stack, 'mytestbucket');
-const prefix = 'anotherthing';
+// const bucket = new s3.Bucket(stack, 'mytestbucket');
+// const prefix = 'anotherthing';
 
 new synthetics.Canary(stack, 'MyCanary', {
-  canaryName: 'canary-custom88888',
+  canaryName: 'canary-custom01000',
   test: synthetics.Test.custom({
     handler: 'index.handler',
     code: synthetics.Code.fromInline(`
@@ -26,7 +26,7 @@ new synthetics.Canary(stack, 'MyCanary', {
   }),
   runtime: synthetics.Runtime.SYNTHETICS_1_0,
   schedule: synthetics.Schedule.rate(cdk.Duration.minutes(1)),
-  artifactsBucketLocation: { bucket, prefix },
+  // artifactsBucketLocation: { bucket, prefix },
 });
 
 app.synth();
