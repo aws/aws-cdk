@@ -55,7 +55,7 @@ on AWS.
 
 Modules in the AWS Construct Library are designated Experimental while we build
 them; experimental modules may have breaking API changes in any relase.  After
-a module is designated stable, it adheres to [semantic versioning](https://semver.org/),
+a module is designated Stable, it adheres to [semantic versioning](https://semver.org/),
 and only major releases can have breaking changes. For more information, see
 [Versioning](https://docs.aws.amazon.com/cdk/latest/guide/reference.html#versioning)
 in the CDK Developer Guide.
