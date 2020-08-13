@@ -121,7 +121,8 @@ export class BundlingDockerImage {
       throw new Error('Failed to extract image ID from Docker build output');
     }
 
-    return new BundlingDockerImage(match[1], options.assetHashName);
+    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) })
+    return new BundlingDockerImage(match[1], hash);
   }
 
   /** @param image The Docker image */
