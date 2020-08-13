@@ -249,3 +249,115 @@ describe('testing all GraphQL Types', () => {
     });
   });
 });
+
+describe('testing InterfaceType properties', () => {
+  let baseTest: appsync.InterfaceType;
+  beforeEach(()=>{
+    baseTest = new appsync.InterfaceType('baseTest', {
+      definition: {
+        id: t.id,
+      },
+    });
+  });
+  test('basic InterfaceType produces correct schema', () => {
+    // WHEN
+    api.appendToSchema(baseTest.toString());
+    const out = 'interface baseTest {\n  id: ID\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('nested InterfaceTypes produce correct schema', () => {
+    // WHEN
+    const test = appsync.InterfaceType.extendInterface('Test', baseTest, {
+      definition: {
+        id2: t.id,
+      },
+    });
+    api.appendToSchema(baseTest.toString());
+    api.appendToSchema(test.toString());
+    const out = 'interface baseTest {\n  id: ID\n}\ninterface Test {\n  id2: ID\n  id: ID\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('Interface Type can be a Graphql Type', () => {
+    // WHEN
+    const graphqlType = baseTest.attribute();
+
+    const test = new appsync.ObjectType('Test', {
+      definition: {
+        test: graphqlType,
+      },
+    });
+    api.appendToSchema(test.toString());
+    const out = 'type Test {\n  test: baseTest\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+});
+
+describe('testing Object Type properties', () => {
+
+  test('ObjectType can extend from interface types', () => {
+    // WHEN
+    const baseTest = new appsync.InterfaceType('baseTest', {
+      definition: {
+        id: t.id,
+      },
+    });
+    const test = appsync.InterfaceType.extendInterface('Test', baseTest, {
+      definition: {
+        id2: t.id,
+      },
+    });
+    const objectTest = appsync.ObjectType.implementInterface('objectTest', test, {
+      definition: {
+        id3: t.id,
+      },
+      directives: [appsync.Directive.custom('@test')],
+    });
+
+    api.appendToSchema(test.toString());
+    api.appendToSchema(objectTest.toString());
+    const gql_interface = 'interface Test {\n  id2: ID\n  id: ID\n}\n';
+    const gql_object = 'type objectTest @test {\n  id3: ID\n  id2: ID\n  id: ID\n}\n';
+    const out = `${gql_interface}${gql_object}`;
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('Object Type can be a Graphql Type', () => {
+    // WHEN
+    const baseTest = new appsync.ObjectType('baseTest', {
+      definition: {
+        id: t.id,
+      },
+    });
+    const graphqlType = baseTest.attribute();
+    const test = new appsync.ObjectType('Test', {
+      definition: {
+        test: graphqlType,
+      },
+    });
+    api.appendToSchema(test.toString());
+    const out = 'type Test {\n  test: baseTest\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+});

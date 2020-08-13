@@ -714,19 +714,15 @@ export class GraphQLApi extends Construct {
    * @param addition the addition to add to schema
    * @param delimiter the delimiter between schema and addition
    * @default - ''
+   *
+   * @experimental
    */
-  public appendToSchema(addition: string | ObjectType, delimiter?: string): void {
+  public appendToSchema(addition: string, delimiter?: string): void {
     if ( this.schemaMode != SchemaDefinition.CODE ) {
       throw new Error('API cannot append to schema because schema definition mode is not configured as CODE.');
     }
-    let add: string = '';
-    if (addition instanceof ObjectType) {
-      add = addition.toString();
-    } else if (typeof(addition) === 'string') {
-      add = addition;
-    }
     const sep = delimiter ?? '';
-    this.schema.definition = `${this.schema.definition}${sep}${add}\n`;
+    this.schema.definition = `${this.schema.definition}${sep}${addition}\n`;
   }
 
   /**
@@ -734,6 +730,8 @@ export class GraphQLApi extends Construct {
    *
    * @param name the name of the object type
    * @param props the definition
+   *
+   * @experimental
    */
   public addType(name: string, props: ObjectTypeProps): ObjectType {
     if ( this.schemaMode != SchemaDefinition.CODE ) {
@@ -743,7 +741,7 @@ export class GraphQLApi extends Construct {
       definition: props.definition,
       directives: props.directives,
     });
-    this.appendToSchema(type);
+    this.appendToSchema(type.toString());
     return type;
   }
 }

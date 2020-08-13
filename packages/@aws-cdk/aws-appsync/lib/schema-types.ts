@@ -2,6 +2,8 @@
  * Directives for types
  *
  * i.e. @aws_iam or @aws_subscribe
+ *
+ * @experimental
  */
 export class Directive {
   /**
@@ -34,6 +36,8 @@ export class Directive {
  *
  * @param definition - the variables and types that define this type
  * i.e. { string: GraphqlType, string: GraphqlType }
+ *
+ * @experimental
  */
 export interface BaseTypeProps {
   /**
@@ -43,9 +47,20 @@ export interface BaseTypeProps {
 }
 
 /**
- * Properties for configuring an Interface Type
+ * Interface Types are abstract types that includes a certain set of fields
+ * that other types must include if they implement the interface.
+ *
+ * @experimental
  */
 export class InterfaceType {
+  /**
+   * A method to extend an Interface Type from another interface
+   */
+  public static extendInterface(name: string, interfaceType: InterfaceType, props: BaseTypeProps): InterfaceType {
+    return new InterfaceType(name, {
+      definition: Object.assign({}, props.definition, interfaceType.definition),
+    });
+  }
   /**
    * the name of this type
    */
@@ -59,6 +74,35 @@ export class InterfaceType {
     this.name = name;
     this.definition = props.definition;
   }
+
+  /**
+   * Create an GraphQL Type representing this Intermediate Type
+   *
+   * @param options the options to configure this attribute
+   * - isList
+   * - isRequired
+   * - isRequiredList
+   */
+  public attribute(options?: BaseGraphqlTypeOptions): GraphqlType{
+    return GraphqlType.intermediate({
+      isList: options?.isList,
+      isRequired: options?.isRequired,
+      isRequiredList: options?.isRequiredList,
+      intermediateType: this,
+    });
+  }
+
+  /**
+   * Generate the string of this object type
+   */
+  public toString(): string {
+    let schemaAddition = `interface ${this.name} {\n`;
+    Object.keys(this.definition).forEach( (key) => {
+      const attribute = this.definition[key];
+      schemaAddition = `${schemaAddition}  ${key}: ${attribute.toString()}\n`;
+    });
+    return `${schemaAddition}}`;
+  }
 }
 
 /**
@@ -67,6 +111,8 @@ export class InterfaceType {
  * @param definition - the variables and types that define this type
  * i.e. { string: GraphqlType, string: GraphqlType }
  * @param directives - the directives for this object type
+ *
+ * @experimental
  */
 export interface ObjectTypeProps extends BaseTypeProps {
   /**
@@ -79,12 +125,14 @@ export interface ObjectTypeProps extends BaseTypeProps {
 
 /**
  * Object Types are types declared by you.
+ *
+ * @experimental
  */
 export class ObjectType extends InterfaceType {
   /**
    * A method to define Object Types from an interface
    */
-  public static fromInterface(name: string, interfaceType: InterfaceType, props: ObjectTypeProps): ObjectType {
+  public static implementInterface(name: string, interfaceType: InterfaceType, props: ObjectTypeProps): ObjectType {
     return new ObjectType(name, {
       definition: Object.assign({}, props.definition, interfaceType.definition),
       directives: props.directives,
@@ -100,23 +148,6 @@ export class ObjectType extends InterfaceType {
   public constructor(name: string, props: ObjectTypeProps) {
     super(name, props);
     this.directives = props.directives;
-  }
-
-  /**
-   * Create an GraphQL Type representing this Object Type
-   *
-   * @param options the options to configure this attribute
-   * - isList
-   * - isRequired
-   * - isRequiredList
-   */
-  public attribute(options?: BaseGraphqlTypeOptions): GraphqlType{
-    return GraphqlType.graphqlObject({
-      isList: options?.isList,
-      isRequired: options?.isRequired,
-      isRequiredList: options?.isRequiredList,
-      objectType: this,
-    });
   }
 
   /**
@@ -155,6 +186,8 @@ export class ObjectType extends InterfaceType {
  * @option isList - is this attribute a list
  * @option isRequired - is this attribute non-nullable
  * @option isRequiredList - is this attribute a non-nullable list
+ *
+ * @experimental
  */
 export interface BaseGraphqlTypeOptions {
   /**
@@ -190,13 +223,15 @@ export interface BaseGraphqlTypeOptions {
  * @option isRequired - is this attribute non-nullable
  * @option isRequiredList - is this attribute a non-nullable list
  * @option objectType - the object type linked to this attribute
+ *
+ * @experimental
  */
 export interface GraphqlTypeOptions extends BaseGraphqlTypeOptions {
   /**
-   * the object type linked to this attribute
-   * @default - no object type
+   * the intermediate type linked to this attribute
+   * @default - no intermediate type
    */
-  readonly objectType?: ObjectType;
+  readonly intermediateType?: InterfaceType;
 }
 
 /**
@@ -380,19 +415,20 @@ export class GraphqlType {
   }
 
   /**
-   * an object type to be added as an attribute
+   * an intermediate type to be added as an attribute
+   * (i.e. an interface or an object type)
    *
    * @param options the options to configure this attribute
    * - isList
    * - isRequired
    * - isRequiredList
-   * - objectType
+   * - intermediateType
    */
-  public static graphqlObject(options?: GraphqlTypeOptions): GraphqlType {
-    if (!options?.objectType) {
-      throw new Error('GraphQL Type of object must be configured with corresponding Object Type');
+  public static intermediate(options?: GraphqlTypeOptions): GraphqlType {
+    if (!options?.intermediateType) {
+      throw new Error('GraphQL Type of interface must be configured with corresponding Intermediate Type');
     }
-    return new GraphqlType(Type.OBJECT, options);
+    return new GraphqlType(Type.INTERMEDIATE, options);
   }
 
   /**
@@ -427,17 +463,19 @@ export class GraphqlType {
   public readonly isRequiredList: boolean;
 
   /**
-   * the object type linked to this attribute
-   * @default - no object type
+   * the intermediate type linked to this attribute
+   * (i.e. an interface or an object)
+   *
+   * @default - no intermediate type
    */
-  public readonly objectType?: ObjectType;
+  public readonly intermediateType?: InterfaceType;
 
   private constructor(type: Type, options?: GraphqlTypeOptions) {
     this.type = type;
     this.isList = options?.isList ?? false;
     this.isRequired = options?.isRequired ?? false;
     this.isRequiredList = options?.isRequiredList ?? false;
-    this.objectType = options?.objectType;
+    this.intermediateType = options?.intermediateType;
   }
 
   /**
@@ -445,7 +483,7 @@ export class GraphqlType {
    */
   public toString(): string{
     // If an Object Type, we use the name of the Object Type
-    let type = this.objectType ? this.objectType?.name : this.type;
+    let type = this.intermediateType ? this.intermediateType?.name : this.type;
     // If configured as required, the GraphQL Type becomes required
     type = this.isRequired ? `${type}!` : type;
     // If configured with isXxxList, the GraphQL Type becomes a list
@@ -539,7 +577,8 @@ export enum Type {
   AWS_IP_ADDRESS = 'AWSIPAddress',
 
   /**
-   * Type used for Object Types
+   * Type used for Intermediate Types
+   * (i.e. an interface or an object type)
    */
-  OBJECT = 'OBJECT',
+  INTERMEDIATE = 'INTERMEDIATE',
 }

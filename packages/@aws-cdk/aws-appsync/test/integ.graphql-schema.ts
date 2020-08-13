@@ -25,7 +25,7 @@ const api = new appsync.GraphQLApi(stack, 'code-first-api', {
 });
 
 const planet = ObjectType.planet;
-api.appendToSchema(planet);
+api.appendToSchema(planet.toString());
 
 api.addType('Species', {
   definition: {
