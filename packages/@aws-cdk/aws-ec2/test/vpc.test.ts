@@ -1,5 +1,4 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
-import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
@@ -1262,30 +1261,30 @@ nodeunitShim({
       test.done();
     },
 
-    'Referencing AZ returns CFN reference when subnet created from subnetId'(test: Test) {
+    'Referencing AZ throws error when subnet created from subnetId'(test: Test) {
       // GIVEN
       const stack = getTestStack();
 
       // WHEN
       const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
-      // Doesn't matter if it's a role, just need something to resolve the subnet.availabilityZone
-      // token to a string we can test against.
-      new Role(stack, 'role', {
-        assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-        description: subnet.availabilityZone,
-      });
+
+      // THEN
+      // eslint-disable-next-line max-len
+      test.throws(() => subnet.availabilityZone, "You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
+      test.done();
+    },
+
+    'Referencing AZ throws error when subnet created from attributes without az'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId: 'pub-1', availabilityZone: '' });
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
-      expect(stack).to(haveResource('AWS::IAM::Role', {
-        Description: {
-          'Fn::GetAtt': [
-            'pub-1',
-            'AvailabilityZone',
-          ],
-        },
-      }));
-
+      // eslint-disable-next-line max-len
+      test.throws(() => subnet.availabilityZone, "You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
       test.done();
     },
 
@@ -1365,7 +1364,6 @@ nodeunitShim({
       }));
       test.done();
     },
-
     'SubnetSelection doesnt throw error when selecting imported subnets'(test: Test) {
       // GIVEN
       const stack = getTestStack();

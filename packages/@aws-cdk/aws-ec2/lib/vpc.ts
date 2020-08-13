@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { ConcreteDependable, Construct, ContextProvider, DependableTrait, Fn, IConstruct,
+import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
   IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
@@ -345,7 +345,7 @@ abstract class VpcBase extends Resource implements IVpc {
 
     return {
       subnetIds: subnets.map(s => s.subnetId),
-      availabilityZones: subnets.map(s => s.availabilityZone),
+      get availabilityZones(): string[] { return subnets.map(s => s.availabilityZone); },
       internetConnectivityEstablished: tap(new CompositeDependable(), d => subnets.forEach(s => d.add(s.internetConnectivityEstablished))),
       subnets,
       hasPublic: subnets.some(s => pubs.has(s)),
@@ -1884,7 +1884,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;
-  private readonly _availabilityZone: string;
+  private readonly _availabilityZone?: string;
 
   constructor(scope: Construct, id: string, attrs: SubnetAttributes) {
     super(scope, id);
@@ -1897,16 +1897,8 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
-    if(!attrs.availabilityZone) {
-      const ref = Token.isUnresolved(attrs.subnetId)
-        ? `at '${scope.node.path}/${id}'`
-        : `'${attrs.subnetId}'`;
-        // eslint-disable-next-line max-len
-      scope.node.addWarning(`No availabilityZone was provided to the subnet ${ref}. Attempting to read its availabilityZone will return a CFN reference to the AZ, not a string`);
-    }
-
+    this._availabilityZone = attrs.availabilityZone;
     this.subnetId = attrs.subnetId;
-    this._availabilityZone = attrs.availabilityZone ?? Fn.getAtt(this.subnetId, 'AvailabilityZone').toString();
     this.routeTable = {
       // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
       routeTableId: attrs.routeTableId!,
@@ -1914,6 +1906,10 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   }
 
   public get availabilityZone(): string {
+    if (!this._availabilityZone) {
+      // eslint-disable-next-line max-len
+      throw new Error("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
+    }
     return this._availabilityZone;
   }
 
