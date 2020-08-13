@@ -155,7 +155,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
     this.alarms = props.alarms || [];
     
     if (props.role) {
-      this.role = props.role
+      this.role = props.role;
     } else {
       this.role = new iam.Role(this, 'ServiceRole', {
         assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
