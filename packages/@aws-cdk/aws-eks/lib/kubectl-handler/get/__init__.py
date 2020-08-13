@@ -31,8 +31,8 @@ def get_handler(event, context):
     ])
 
     object_type         = props['ObjectType']
-    object_name         = props['ObjecteName']
-    object_namespace    = props['ObjecteNamespace']
+    object_name         = props['ObjectName']
+    object_namespace    = props['ObjectNamespace']
     json_path           = props['JsonPath']
     timeout_seconds     = props['TimeoutSeconds']
 

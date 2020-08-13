@@ -69,7 +69,7 @@ export class KubernetesObjectValue extends Construct {
         ClusterName: props.cluster.clusterName,
         RoleArn: props.cluster._kubectlCreationRole.roleArn,
         ObjectType: props.objectType,
-        ObjecteName: props.objectName,
+        ObjectName: props.objectName,
         ObjectNamespace: props.objectNamespace ?? 'default',
         JsonPath: props.jsonPath,
         TimeoutSeconds: (props?.timeout ?? Duration.minutes(5)).toSeconds(),
