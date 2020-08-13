@@ -1,16 +1,16 @@
 {
   "Parameters": {
-    "AssetParameters5853bacca53311d897fd77190f908a385c0edc82771a7c4ebf517a3b3e71819cS3BucketF4F68944": {
+    "AssetParameters9ece8914470c21f968ff6d48572e5948ba7de6c0c723a2a5fe812a8a20cb90c4S3Bucket2BC4157F": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"5853bacca53311d897fd77190f908a385c0edc82771a7c4ebf517a3b3e71819c\""
+      "Description": "S3 bucket for asset \"9ece8914470c21f968ff6d48572e5948ba7de6c0c723a2a5fe812a8a20cb90c4\""
     },
-    "AssetParameters5853bacca53311d897fd77190f908a385c0edc82771a7c4ebf517a3b3e71819cS3VersionKeyB8E93A7E": {
+    "AssetParameters9ece8914470c21f968ff6d48572e5948ba7de6c0c723a2a5fe812a8a20cb90c4S3VersionKeyED05C740": {
       "Type": "String",
-      "Description": "S3 key for asset version \"5853bacca53311d897fd77190f908a385c0edc82771a7c4ebf517a3b3e71819c\""
+      "Description": "S3 key for asset version \"9ece8914470c21f968ff6d48572e5948ba7de6c0c723a2a5fe812a8a20cb90c4\""
     },
-    "AssetParameters5853bacca53311d897fd77190f908a385c0edc82771a7c4ebf517a3b3e71819cArtifactHash9373D6D6": {
+    "AssetParameters9ece8914470c21f968ff6d48572e5948ba7de6c0c723a2a5fe812a8a20cb90c4ArtifactHashFB7108A6": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"5853bacca53311d897fd77190f908a385c0edc82771a7c4ebf517a3b3e71819c\""
+      "Description": "Artifact hash for asset \"9ece8914470c21f968ff6d48572e5948ba7de6c0c723a2a5fe812a8a20cb90c4\""
     }
   },
   "Resources": {
@@ -40,7 +40,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "AssetParameters5853bacca53311d897fd77190f908a385c0edc82771a7c4ebf517a3b3e71819cS3BucketF4F68944"
+                        "Ref": "AssetParameters9ece8914470c21f968ff6d48572e5948ba7de6c0c723a2a5fe812a8a20cb90c4S3Bucket2BC4157F"
                       }
                     ]
                   ]
@@ -55,7 +55,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "AssetParameters5853bacca53311d897fd77190f908a385c0edc82771a7c4ebf517a3b3e71819cS3BucketF4F68944"
+                        "Ref": "AssetParameters9ece8914470c21f968ff6d48572e5948ba7de6c0c723a2a5fe812a8a20cb90c4S3Bucket2BC4157F"
                       },
                       "/*"
                     ]

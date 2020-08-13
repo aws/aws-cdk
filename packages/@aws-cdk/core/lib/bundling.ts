@@ -1,4 +1,5 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
+import { FileSystem } from './fs';
 
 /**
  * Bundling options
@@ -121,7 +122,7 @@ export class BundlingDockerImage {
       throw new Error('Failed to extract image ID from Docker build output');
     }
 
-    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) })
+    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
     return new BundlingDockerImage(match[1], hash);
   }
 

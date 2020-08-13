@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import { Test } from 'nodeunit';
 import * as sinon from 'sinon';
-import { BundlingDockerImage } from '../lib';
+import { BundlingDockerImage, FileSystem } from '../lib';
 
 export = {
   'tearDown'(callback: any) {
@@ -54,6 +54,10 @@ export = {
       output: ['stdout', 'stderr'],
       signal: null,
     });
+
+    const imageHash = '123456abcdef';
+    const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
+    fingerprintStub.callsFake(() => imageHash);
 
     const image = BundlingDockerImage.fromAsset('docker-path', {
       buildArgs: {
@@ -123,7 +127,7 @@ export = {
   'assetHashName is the bundler image name by default'(test: Test) {
     const image = BundlingDockerImage.fromRegistry('alpine');
 
-    test.equals(image.assetHashName, 'alpine');
+    test.equals(image.imageHash, 'alpine');
     test.done();
   },
 
@@ -137,12 +141,15 @@ export = {
       output: ['stdout', 'stderr'],
       signal: null,
     });
+    const imageHash = '123456abcdef';
+    const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
+    fingerprintStub.callsFake(() => imageHash);
 
-    const assetHashName = 'my-asset-hash-name';
-    const image = BundlingDockerImage.fromAsset('docker-path', { assetHashName: assetHashName });
+    const image = BundlingDockerImage.fromAsset('docker-path');
 
     test.equals(image.image, imageId);
-    test.equals(image.assetHashName, assetHashName);
+    test.equals(image.imageHash, imageHash);
+    test.ok(fingerprintStub.calledWith('docker-path', sinon.match({ extraHash: JSON.stringify({}) })));
     test.done();
   },
 };
