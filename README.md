@@ -53,6 +53,13 @@ how to use AWS. The AWS Construct Library aims to reduce the complexity and
 glue-logic required when integrating various AWS services to achieve your goals
 on AWS.
 
+Modules in the AWS Construct Library are designated Experimental while we build
+them; experimental modules may have breaking API changes in any relase.  After
+a module is designated stable, it adheres to [semantic versioning](https://semver.org/),
+and only major releases can have breaking changes. For more information, see
+[Versioning](https://docs.aws.amazon.com/cdk/latest/guide/reference.html#versioning)
+in the CDK Developer Guide.
+
 [CDK framework]: https://docs.aws.amazon.com/cdk/latest/guide/home.html
 [constructs]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html
 [stacks]: https://docs.aws.amazon.com/cdk/latest/guide/stacks.html
