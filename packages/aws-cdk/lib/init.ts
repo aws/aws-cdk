@@ -264,6 +264,7 @@ async function initializeGitRepository(workDir: string) {
   print('Initializing a new git repository...');
   try {
     await execute('git', ['init'], { cwd: workDir });
+    await execute('git', ['checkout', '-b', 'main'], { cwd: workDir });
     await execute('git', ['add', '.'], { cwd: workDir });
     await execute('git', ['commit', '--message="Initial commit"', '--no-gpg-sign'], { cwd: workDir });
   } catch (e) {
