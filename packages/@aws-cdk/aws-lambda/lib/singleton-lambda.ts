@@ -81,8 +81,8 @@ export class SingletonFunction extends FunctionBase {
     down.node.addDependency(this.lambdaFunction);
   }
 
-  public removeEnvironment() {
-    return this.lambdaFunction.removeEnvironment();
+  public checkEdgeCompatibility() {
+    return this.lambdaFunction.checkEdgeCompatibility();
   }
 
   /**

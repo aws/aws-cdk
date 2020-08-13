@@ -20,6 +20,11 @@ export interface IVersion extends IFunction {
   readonly lambda: IFunction;
 
   /**
+   * The ARN of the version for Lambda@Edge.
+   */
+  readonly edgeArn: string;
+
+  /**
    * Defines an alias for this version.
    * @param aliasName The name of the alias
    * @param options Alias options
@@ -128,6 +133,13 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public addAlias(name: string, opts: AliasOptions = { }): Alias {
         return addAlias(this, this, name, opts);
       }
+
+      public get edgeArn(): string {
+        if (version === '$LATEST') {
+          throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+        }
+        return this.functionArn;
+      }
     }
     return new Import(scope, id);
   }
@@ -146,6 +158,13 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
       public addAlias(name: string, opts: AliasOptions = { }): Alias {
         return addAlias(this, this, name, opts);
+      }
+
+      public get edgeArn(): string {
+        if (attrs.version === '$LATEST') {
+          throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+        }
+        return this.functionArn;
       }
     }
     return new Import(scope, id);
@@ -221,6 +240,18 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    */
   public addAlias(aliasName: string, options: AliasOptions = { }): Alias {
     return addAlias(this, this, aliasName, options);
+  }
+
+  public get edgeArn(): string {
+    // Validate first that this version can be used for Lambda@Edge
+    if (this.version === '$LATEST') {
+      throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+    }
+
+    // Validate that the underlying function can be used for Lambda@Edge
+    this.lambda.checkEdgeCompatibility();
+
+    return this.functionArn;
   }
 
   /**

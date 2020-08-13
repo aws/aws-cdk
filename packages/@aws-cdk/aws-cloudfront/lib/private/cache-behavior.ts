@@ -1,3 +1,4 @@
+import { Lazy } from '@aws-cdk/core';
 import { CfnDistribution } from '../cloudfront.generated';
 import { AddBehaviorOptions, ViewerProtocolPolicy } from '../distribution';
 
@@ -48,20 +49,10 @@ export class CacheBehavior {
       smoothStreaming: this.props.smoothStreaming,
       viewerProtocolPolicy: this.props.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL,
       lambdaFunctionAssociations: this.props.edgeLambdas
-        ? this.props.edgeLambdas.map(edgeLambda => {
-          if (edgeLambda.functionVersion.version === '$LATEST') {
-            throw new Error('$LATEST function version cannot be used for Lambda@Edge');
-          }
-
-          if (edgeLambda.functionVersion.lambda.removeEnvironment()) {
-            edgeLambda.functionVersion.lambda.node.addWarning(`Removed environment variables from function ${edgeLambda.functionVersion.lambda.node.path} because Lambda@Edge does not support environment variables`);
-          }
-
-          return {
-            lambdaFunctionArn: edgeLambda.functionVersion.functionArn,
-            eventType: edgeLambda.eventType.toString(),
-          };
-        })
+        ? this.props.edgeLambdas.map(edgeLambda => ({
+          lambdaFunctionArn: Lazy.stringValue({ produce: () => edgeLambda.functionVersion.edgeArn }),
+          eventType: edgeLambda.eventType.toString(),
+        }))
         : undefined,
     };
   }

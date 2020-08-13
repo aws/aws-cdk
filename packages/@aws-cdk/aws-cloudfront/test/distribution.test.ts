@@ -3,7 +3,6 @@ import '@aws-cdk/assert/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import { CfnDistribution, Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass } from '../lib';
 import { defaultOrigin } from './test-origin';
@@ -501,23 +500,50 @@ describe('with Lambda@Edge functions', () => {
     });
   });
 
-  test('fails creation when attempting to add the $LATEST function version as an edge Lambda to the default behavior', () => {
-    expect(() => {
-      new Distribution(stack, 'MyDist', {
-        defaultBehavior: {
-          origin,
-          edgeLambdas: [
-            {
-              functionVersion: lambdaFunction.latestVersion,
-              eventType: LambdaEdgeEventType.ORIGIN_RESPONSE,
-            },
-          ],
-        },
-      });
-    }).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
+  test('fails synthesis when attempting to add the $LATEST function version as an edge Lambda to the default behavior', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: lambdaFunction.latestVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_RESPONSE,
+          },
+        ],
+      },
+    });
+    expect(() => app.synth()).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
   });
 
-  test('a warning is added when env vars are removed for edge functions', () => {
+  test('with removable env vars', () => {
+    const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
+      runtime: lambda.Runtime.NODEJS,
+      code: lambda.Code.fromInline('whateverwithenv'),
+      handler: 'index.handler',
+    });
+    envLambdaFunction.addEnvironment('KEY', 'value', { removeInEdge: true });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: envLambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Environment: ABSENT,
+      Code: {
+        ZipFile: 'whateverwithenv',
+      },
+    });
+  });
+
+  test('with incompatible env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
       runtime: lambda.Runtime.NODEJS,
       code: lambda.Code.fromInline('whateverwithenv'),
@@ -539,15 +565,7 @@ describe('with Lambda@Edge functions', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Environment: ABSENT,
-      Code: {
-        ZipFile: 'whateverwithenv',
-      },
-    });
-
-    expect(envLambdaFunction.node.metadata[0].type).toBe(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(envLambdaFunction.node.metadata[0].data).toBe('Removed environment variables from function Stack/EnvFunction because Lambda@Edge does not support environment variables');
+    expect(() => app.synth()).toThrow(/KEY/);
   });
 });
 

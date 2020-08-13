@@ -142,4 +142,51 @@ export = {
     }));
     test.done();
   },
+
+  'edgeArn'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('foo'),
+    });
+    const version = fn.addVersion('1');
+
+    // THEN
+    test.deepEqual(stack.resolve(version.edgeArn), { Ref: 'FnVersion1C3F5F93D' });
+
+    test.done();
+  },
+
+  'edgeArn throws with $LATEST'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const version = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:region:account-id:function:function-name:$LATEST');
+
+    // THEN
+    test.throws(() => version.edgeArn, /\$LATEST function version cannot be used for Lambda@Edge/);
+
+    test.done();
+  },
+
+  'edgeArn throws if underlying function is not edge compatible'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('foo'),
+      environment: { // incompatible for Lambda@Edge
+        KEY1: 'value1',
+        KEY2: 'value2',
+      },
+    });
+    const version = fn.addVersion('1');
+
+    // THEN
+    test.throws(() => version.edgeArn, /KEY1,KEY2/);
+
+    test.done();
+  },
 };

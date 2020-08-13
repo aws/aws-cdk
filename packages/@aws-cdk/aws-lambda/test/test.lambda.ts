@@ -1526,7 +1526,28 @@ export = {
     test.done();
   },
 
-  'can remove env vars'(test: Test) {
+  'check edge compatibility with env vars that can be removed'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_12_X,
+    });
+    fn.addEnvironment('KEY', 'value', { removeInEdge: true });
+
+    // WHEN
+    fn.checkEdgeCompatibility();
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Environment: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'check edge compatibility with env vars that cannot be removed'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
@@ -1537,33 +1558,10 @@ export = {
         KEY: 'value',
       },
     });
-
-    // WHEN
-    const removed = fn.removeEnvironment();
+    fn.addEnvironment('OTHER_KEY', 'other_value', { removeInEdge: true });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::Function', {
-      Environment: ABSENT,
-    }));
-    test.ok(removed);
-
-    test.done();
-  },
-
-  'removeEnvironment returns false without env vars'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'fn', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
-    });
-
-    // WHEN
-    const removed = fn.removeEnvironment();
-
-    // THEN
-    test.equal(removed, false);
+    test.throws(() => fn.checkEdgeCompatibility(), /The function Default\/fn is not compatible for Lambda@Edge because it contains environment variables that are not marked for removal when used for Lambda@Edge: KEY/);
 
     test.done();
   },

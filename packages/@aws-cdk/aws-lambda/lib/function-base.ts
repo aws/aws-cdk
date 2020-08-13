@@ -114,11 +114,9 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   configureAsyncInvoke(options: EventInvokeConfigOptions): void;
 
   /**
-   * Removes environment variables (useful when working with Lambda@Edge).
-   *
-   * This is a no-op for imported functions.
+   * Checks whether this function is compatible for Lambda@Edge.
    */
-  removeEnvironment(): boolean;
+  checkEdgeCompatibility(): void;
 }
 
 /**
@@ -325,8 +323,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
     });
   }
 
-  public removeEnvironment(): boolean {
-    return false;
+  public checkEdgeCompatibility(): void {
+    return;
   }
 
   /**
@@ -427,5 +425,9 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public addAlias(aliasName: string, options: AliasOptions = {}) {
     return addAlias(this, this, aliasName, options);
+  }
+
+  public get edgeArn(): never {
+    throw new Error('$LATEST function version cannot be used for Lambda@Edge');
   }
 }
