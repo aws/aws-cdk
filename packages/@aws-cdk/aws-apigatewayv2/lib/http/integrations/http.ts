@@ -1,5 +1,5 @@
-import { HttpIntegrationType, HttpRouteIntegrationConfig, IHttpRouteIntegration, PayloadFormatVersion } from '../integration';
-import { HttpMethod, IHttpRoute } from '../route';
+import { HttpIntegrationType, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteIntegration, PayloadFormatVersion } from '../integration';
+import { HttpMethod } from '../route';
 
 /**
  * Properties to initialize a new `HttpProxyIntegration`.
@@ -24,7 +24,7 @@ export class HttpProxyIntegration implements IHttpRouteIntegration {
   constructor(private readonly props: HttpProxyIntegrationProps) {
   }
 
-  public bind(_: IHttpRoute): HttpRouteIntegrationConfig {
+  public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     return {
       method: this.props.method ?? HttpMethod.ANY,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0, // 1.0 is required and is the only supported format
