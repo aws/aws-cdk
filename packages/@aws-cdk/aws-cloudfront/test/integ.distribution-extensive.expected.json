@@ -1,0 +1,57 @@
+{
+  "Resources": {
+    "MyDistLoggingBucket9B8976BC": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "MyDistDB88FD9A": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "Comment": "a test",
+          "DefaultCacheBehavior": {
+            "ForwardedValues": {
+              "QueryString": false
+            },
+            "TargetOriginId": "integdistributionextensiveMyDistOrigin185F089B3",
+            "ViewerProtocolPolicy": "allow-all"
+          },
+          "DefaultRootObject": "index.html",
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "Logging": {
+            "Bucket": {
+              "Fn::GetAtt": [
+                "MyDistLoggingBucket9B8976BC",
+                "RegionalDomainName"
+              ]
+            },
+            "IncludeCookies": true,
+            "Prefix": "logs/"
+          },
+          "Origins": [
+            {
+              "CustomOriginConfig": {
+                "OriginProtocolPolicy": "https-only"
+              },
+              "DomainName": "www.example.com",
+              "Id": "integdistributionextensiveMyDistOrigin185F089B3"
+            }
+          ],
+          "PriceClass": "PriceClass_100",
+          "Restrictions": {
+            "GeoRestriction": {
+              "Locations": [
+                "US",
+                "GB"
+              ],
+              "RestrictionType": "whitelist"
+            }
+          }
+        }
+      }
+    }
+  }
+}
