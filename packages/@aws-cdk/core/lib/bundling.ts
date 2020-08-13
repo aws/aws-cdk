@@ -134,8 +134,8 @@ export class BundlingDockerImage {
    *
    * @return The overridden image name if set or image hash name in that order
    */
-  public get assetHashName() {
-    return this.assetHashNameOverride ?? this.image;
+  public get imageHash() {
+    return this._imageHash ?? this.image;
   }
 
   /**
