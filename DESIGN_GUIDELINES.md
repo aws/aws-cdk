@@ -9,9 +9,10 @@ the AWS Construct Library in order to ensure a consistent and integrated
 experience across the entire AWS surface area.
 
 As much as possible, the guidelines in this document are enforced using the
-**awslint** tool which reflects on the APIs and verifies that the APIs adhere to
-the guidelines. When a guideline is backed by a linter rule, the rule name will
-be referenced like this: _[awslint:resource-class-is-construct]_.
+[**awslint** tool](https://www.npmjs.com/package/awslint) which reflects on the
+APIs and verifies that the APIs adhere to the guidelines. When a guideline is
+backed by a linter rule, the rule name will be referenced like this:
+_[awslint:resource-class-is-construct]_.
 
 For the purpose of this document we will use "Foo" to denote the official name
 of the resource as defined in the AWS CloudFormation resource specification
