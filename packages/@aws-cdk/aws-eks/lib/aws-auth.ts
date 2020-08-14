@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Lazy, Stack } from '@aws-cdk/core';
 import { AwsAuthMapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';
-import { KubernetesResource } from './k8s-resource';
+import { KubernetesManifest } from './k8s-manifest';
 
 /**
  * Configuration props for the AwsAuth construct.
@@ -32,7 +32,7 @@ export class AwsAuth extends Construct {
 
     this.stack = Stack.of(this);
 
-    new KubernetesResource(this, 'manifest', {
+    new KubernetesManifest(this, 'manifest', {
       cluster: props.cluster,
       manifest: [
         {

@@ -131,6 +131,20 @@ and any changes you make to it will be reflected in the resulting template:
 param.default = 'MyDefault';
 ```
 
+You can also provide values for them when including the template:
+
+```typescript
+new inc.CfnInclude(stack, 'includeTemplate', {
+  templateFile: 'path/to/my/template'
+  parameters: {
+    'MyParam': 'my-value',
+  },
+});
+```
+
+This will replace all references to `MyParam` with the string 'my-value',
+and `MyParam` will be removed from the Parameters section of the template.
+
 ## Conditions
 
 If your template uses [CloudFormation Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html),

@@ -31,7 +31,7 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 });
 
 // apply a kubernetes manifest to the cluster
-cluster.addResource('mypod', {
+cluster.addManifest('mypod', {
   apiVersion: 'v1',
   kind: 'Pod',
   metadata: { name: 'mypod' },
@@ -60,10 +60,10 @@ ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-xxxxx --
 ```
 
 > The IAM role specified in this command is called the "**masters role**". This is
-> an IAM role that is associated with the `system:masters` [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) 
+> an IAM role that is associated with the `system:masters` [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)
 > group and has super-user access to the cluster.
 >
-> You can specify this role using the `mastersRole` option, or otherwise a role will be 
+> You can specify this role using the `mastersRole` option, or otherwise a role will be
 > automatically created for you. This role can be assumed by anyone in the account with
 > `sts:AssumeRole` permissions for this role.
 
@@ -214,7 +214,7 @@ const cluster = new eks.FargateCluster(this, 'MyCluster', {
 });
 
  // apply k8s resources on this cluster
-cluster.addResource(...);
+cluster.addManifest(...);
 ```
 
 **NOTE**: Classic Load Balancers and Network Load Balancers are not supported on
@@ -266,7 +266,7 @@ the capacity.
 
 ### Kubernetes Resources
 
-The `KubernetesResource` construct or `cluster.addResource` method can be used
+The `KubernetesManifest` construct or `cluster.addManifest` method can be used
 to apply Kubernetes resource manifests to this cluster.
 
 The following examples will deploy the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes)
@@ -309,13 +309,13 @@ const service = {
 };
 
 // option 1: use a construct
-new KubernetesResource(this, 'hello-kub', {
+new KubernetesManifest(this, 'hello-kub', {
   cluster,
   manifest: [ deployment, service ]
 });
 
-// or, option2: use `addResource`
-cluster.addResource('hello-kub', service, deployment);
+// or, option2: use `addManifest`
+cluster.addManifest('hello-kub', service, deployment);
 ```
 
 ##### Kubectl Environment
@@ -342,7 +342,7 @@ import * as request from 'sync-request';
 
 const manifestUrl = 'https://url/of/manifest.yaml';
 const manifest = yaml.safeLoadAll(request('GET', manifestUrl).getBody());
-cluster.addResource('my-resource', ...manifest);
+cluster.addManifest('my-resource', ...manifest);
 ```
 
 Since Kubernetes resources are implemented as CloudFormation resources in the
@@ -356,17 +356,17 @@ There are cases where Kubernetes resources must be deployed in a specific order.
 For example, you cannot define a resource in a Kubernetes namespace before the
 namespace was created.
 
-You can represent dependencies between `KubernetesResource`s using
+You can represent dependencies between `KubernetesManifest`s using
 `resource.node.addDependency()`:
 
 ```ts
-const namespace = cluster.addResource('my-namespace', {
+const namespace = cluster.addManifest('my-namespace', {
   apiVersion: 'v1',
   kind: 'Namespace',
   metadata: { name: 'my-app' }
 });
 
-const service = cluster.addResource('my-service', {
+const service = cluster.addManifest('my-service', {
   metadata: {
     name: 'myservice',
     namespace: 'my-app'
@@ -377,14 +377,14 @@ const service = cluster.addResource('my-service', {
 service.node.addDependency(namespace); // will apply `my-namespace` before `my-service`.
 ```
 
-NOTE: when a `KubernetesResource` includes multiple resources (either directly
-or through `cluster.addResource()`) (e.g. `cluster.addResource('foo', r1, r2,
+NOTE: when a `KubernetesManifest` includes multiple resources (either directly
+or through `cluster.addManifest()`) (e.g. `cluster.addManifest('foo', r1, r2,
 r3,...))`), these resources will be applied as a single manifest via `kubectl`
 and will be applied sequentially (the standard behavior in `kubectl`).
 
 ### Patching Kubernetes Resources
 
-The KubernetesPatch construct can be used to update existing kubernetes
+The `KubernetesPatch` construct can be used to update existing kubernetes
 resources. The following example can be used to patch the `hello-kubernetes`
 deployment from the example above with 5 replicas.
 
@@ -395,6 +395,37 @@ new KubernetesPatch(this, 'hello-kub-deployment-label', {
   applyPatch: { spec: { replicas: 5 } },
   restorePatch: { spec: { replicas: 3 } }
 })
+```
+
+### Querying Kubernetes Object Values
+
+The `KubernetesObjectValue` construct can be used to query for information about kubernetes objects,
+and use that as part of your CDK application.
+
+For example, you can fetch the address of a [`LoadBalancer`](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) type service:
+
+```typescript
+// query the load balancer address
+const myServiceAddress = new KubernetesObjectValue(this, 'LoadBalancerAttribute', {
+  cluster: cluster,
+  resourceType: 'service',
+  resourceName: 'my-service',
+  jsonPath: '.status.loadBalancer.ingress[0].hostname', // https://kubernetes.io/docs/reference/kubectl/jsonpath/
+});
+
+// pass the address to a lambda function
+const proxyFunction = new lambda.Function(this, 'ProxyFunction', {
+  ...
+  environment: {
+    myServiceAddress: myServiceAddress.value
+  },
+})
+```
+
+Specifically, since the above use-case is quite common, there is an easier way to access that information:
+
+```typescript
+const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
 ```
 
 ### AWS IAM Mapping
@@ -548,7 +579,7 @@ const sa = cluster.addServiceAccount('MyServiceAccount');
 const bucket = new Bucket(this, 'Bucket');
 bucket.grantReadWrite(serviceAccount);
 
-const mypod = cluster.addResource('mypod', {
+const mypod = cluster.addManifest('mypod', {
   apiVersion: 'v1',
   kind: 'Pod',
   metadata: { name: 'mypod' },
