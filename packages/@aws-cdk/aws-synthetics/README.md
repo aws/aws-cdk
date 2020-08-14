@@ -82,13 +82,13 @@ The Canary code will be executed in a lambda function created by Synthetics on y
 
 To configure the script the canary executes, use the `test` property. The `test` property accepts a `Test` instance that can be initialized by the `Test` class static methods. Currently, the only implemented method is `Test.custom()`, which allows you to bring your own code. In the future, other methods will be added. `Test.custom()` accepts `code` and `handler` properties -- both are required by Synthetics to create a lambda function on your behalf.
 
-#### Using the `Code` class static initializers
-
 The `synthetics.Code` class exposes static methods to bundle your code artifacts: 
 
   - `code.fromInline(code)` - specify an inline script.
   - `code.fromAsset(path)` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment. See the above Note for directory structure.
   - `code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object that contains the .zip file of your runtime code. See the above Note for directory structure.
+
+Using the `Code` class static initializers:
 
 ```ts
 // To supply the code inline:
@@ -142,3 +142,9 @@ new cloudwatch.Alarm(this, 'CanaryAlarm', {
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
 });
 ```
+
+### Future Work
+
+- Add blueprints to the Test class [#9613](https://github.com/aws/aws-cdk/issues/9613#issue-677134857).
+- Automatically add nodejs/node_modules prefix to the asset file before zipping to S3.
+- Add support for the runConfig property [#9300](https://github.com/aws/aws-cdk/issues/9300#issue-667335345).
