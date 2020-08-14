@@ -88,6 +88,7 @@ class EksClusterStack extends TestStack {
     // make sure namespace is deployed before the chart
     nginxIngress.node.addDependency(nginxNamespace);
 
+
   }
   private assertSimpleHelmChart() {
     // deploy the Kubernetes dashboard through a helm chart
