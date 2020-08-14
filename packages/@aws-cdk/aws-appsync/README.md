@@ -170,45 +170,126 @@ A code-first approach offers a developer workflow with:
 - **reusability**: simplifying down boilerplate/repetitive code
 - **consistency**: resolvers and schema definition will always be synced
 
-The code-first approach allows for dynamic schema generation. You can generate your schema based on variables and templates to reduce code duplication.
+The code-first approach allows for **dynamic** schema generation. You can generate your schema based on variables and templates to reduce code duplication.
 
 #### Code-First Example
 
-We are going to reference the [example](#Example) through a code-first approach.
+To showcase the code-first approach. Let's try to model the following schema segment.
+
+```gql
+interface Node {
+  id: String
+}
+
+type Query {
+  allFilms(after: String, first: Int, before: String, last: Int): FilmConnection
+}
+
+type FilmNode implements Node {
+  filmName: String
+}
+
+type FilmConnection {
+  edges: [FilmEdge]
+  films: [Film]
+  totalCount: Int
+}
+
+type FilmEdge {
+  node: Film 
+  cursor: String
+}
+```
+
+Above we see a schema that allows for generating paginated responses. For example,
+we can query `allFilms(first: 100)` since `FilmConnection` acts as an intermediary
+for holding `FilmEdges` we can write a resolver to return the first 100 films.
+
+In a separate file, we can declare our scalar types: `scalar-types.ts`.
+
+```ts
+import { GraphqlType } from '@aws-cdk/aws-appsync';
+
+export const string = appsync.GraphqlType.string();
+export const int = appsync.GraphqlType.int();
+```
+
+In another separate file, we can declare our object types and related functions.
+We will call this file `object-types.ts` and we will have created it in a way that
+allows us to generate other `XxxConnection` and `XxxEdges` in the future. 
+
+```ts
+const pluralize = require('pluralize');
+import * as scalar from './scalar-types.ts';
+import * as appsync from '@aws-cdk/aws-appsync';
+
+export const args = {
+  after: scalar.string, 
+  first: scalar.int,
+  before: scalar.string,
+  last: scalar.int,
+};
+
+export const Node = new appsync.InterfaceType('Node', {
+  definition: { id: scalar.string }
+});
+export const FilmNode = new appsync.ObjectType.implementInterface('FilmNode', {
+  interfaceTypes: [Node],
+  definition: { filmName: scalar.string }
+});
+
+export function generateEdgeAndConnection(base: appsync.ObjectType) {
+  const edge = new appsync.ObjectType(`${base.name}Edge`, {
+    definition: { node: base.attribute(), cursor: scalar.string }
+  });
+  const connection = new appsync.ObjectType(`${base.name}Connection`, {
+    definition: {
+      edges: edges.attribute({ isList: true }),
+      [pluralize(base.name)]: base.attribute({ isList: true }),
+      totalCount: scalar.int,
+    }
+  });
+  return { edge: edge, connection: connection };
+}
+```
+
+Finally, we will go to our `cdk-stack` and combine everything together
+to generate our schema.
 
 ```ts
 import * as appsync from '@aws-cdk/aws-appsync';
-import * as db from '@aws-cdk/aws-dynamodb';
+import * as schema from './object-types';
 
 const api = new appsync.GraphQLApi(stack, 'Api', {
   name: 'demo',
   schemaDefinition: appsync.SchemaDefinition.CODE,
-  authorizationConfig: {
-    defaultAuthorization: {
-      authorizationType: appsync.AuthorizationType.IAM
-    },
-  },
 });
 
-const demoTable = new db.Table(stack, 'DemoTable', {
-  partitionKey: {
-    name: 'id',
-    type: db.AttributeType.STRING,
-  },
-});
+this.objectTypes = [ schema.Node, schema.Film ];
 
-const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos', demoTable);
+const filmConnections = schema.generateEdgeAndConnection(schema.Film);
 
-// Schema Definition starts here
-
-const demo = api.addType('demo', {
+api.addType('Query', {
   definition: {
-    id: appsync.GraphqlType.string({ isRequired: true }),
-    version: appsync.GraphqlType.string({ isRequired: true }),
-  },
-});
+    allFilms: new appsync.ResolvableField(filmConnections.connection.attribute(), dummyDataSource, {
+      args: schema.args,
+      requestMappingTemplate: dummyRequest,
+      responseMappingTemplate: dummyResponse,
+    },
+  }
+  });
+})
 
+this.objectTypes.map((t) => api.appendToSchema(t));
+Object.keys(filmConnections).forEach((key) => api.appendToSchema(filmConnections[key]));
 ```
+
+Notice how we can utilize the `generateEdgeAndConnection` function to generate
+Object Types. In the future, if we wanted to create more Object Types, we can simply
+create the base Object Type (i.e. Film) and from there we can generate its respective
+`Connections` and `Edges`.
+
+Check out a more in-depth example [here](https://github.com/BryanPan342/starwars-code-first).
 
 #### GraphQL Types
 
