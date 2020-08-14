@@ -332,7 +332,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(not(haveResource(eks.KubernetesResource.RESOURCE_TYPE)));
+    expect(stack).to(not(haveResource(eks.KubernetesManifest.RESOURCE_TYPE)));
     test.done();
   },
 
@@ -351,7 +351,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(not(haveResource(eks.KubernetesResource.RESOURCE_TYPE)));
+    expect(stack).to(not(haveResource(eks.KubernetesManifest.RESOURCE_TYPE)));
     test.done();
   },
 
@@ -501,7 +501,7 @@ export = {
           });
 
           // THEN
-          expect(stack).notTo(haveResource(eks.KubernetesResource.RESOURCE_TYPE));
+          expect(stack).notTo(haveResource(eks.KubernetesManifest.RESOURCE_TYPE));
           test.done();
         },
 

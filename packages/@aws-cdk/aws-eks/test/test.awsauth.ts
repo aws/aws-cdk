@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import { Test } from 'nodeunit';
-import { Cluster, KubernetesResource, KubernetesVersion } from '../lib';
+import { Cluster, KubernetesManifest, KubernetesVersion } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
 import { testFixtureNoVpc } from './util';
 
@@ -19,7 +19,7 @@ export = {
     new AwsAuth(stack, 'AwsAuth', { cluster });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: JSON.stringify([{
         apiVersion: 'v1',
         kind: 'ConfigMap',
@@ -46,8 +46,8 @@ export = {
     cluster.awsAuth.addAccount('5566776655');
 
     // THEN
-    expect(stack).to(countResources(KubernetesResource.RESOURCE_TYPE, 1));
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(countResources(KubernetesManifest.RESOURCE_TYPE, 1));
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -136,7 +136,7 @@ export = {
     cluster.awsAuth.addUserMapping(user, { groups: ['group2'] });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -197,7 +197,7 @@ export = {
     cluster.awsAuth.addMastersRole(role);
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
