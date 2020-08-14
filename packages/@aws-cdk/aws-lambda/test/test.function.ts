@@ -197,6 +197,7 @@ export = testCase({
 
     expect(stack).to(haveResource('AWS::CodeGuruProfiler::ProfilingGroup', {
       ProfilingGroupName: 'MyLambdaProfilingGroupC5B6CCD8',
+      ComputePlatform: 'AWSLambda',
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
