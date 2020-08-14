@@ -328,7 +328,7 @@ export interface IntermediateTypeProps {
   /**
    * the attributes of this type
    */
-  readonly definition: { [key: string]: GraphqlType };
+  readonly definition: { [key: string]: GraphqlType | ResolvableField };
 }
 
 /**
@@ -491,7 +491,8 @@ export class ObjectType extends InterfaceType {
     let schemaAddition = `type ${title} ${directives}{\n`;
     Object.keys(this.definition).forEach( (key) => {
       const attribute = this.definition[key];
-      schemaAddition = `${schemaAddition}  ${key}: ${attribute.toString()}\n`;
+      const args = attribute instanceof ResolvableField ? attribute.argsToString() : '';
+      schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
     });
     return `${schemaAddition}}`;
   }
