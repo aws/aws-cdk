@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Test } from 'nodeunit';
-import { Cluster, KubernetesResource, KubernetesVersion } from '../lib';
+import { Cluster, KubernetesManifest, KubernetesVersion } from '../lib';
 import { testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
@@ -66,12 +66,12 @@ export = {
     ];
 
     // WHEN
-    new KubernetesResource(stack, 'manifest', {
+    new KubernetesManifest(stack, 'manifest', {
       cluster,
       manifest,
     });
 
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: JSON.stringify(manifest),
     }));
     test.done();

@@ -296,7 +296,7 @@ Read more about [email settings here](https://docs.aws.amazon.com/cognito/latest
 ```ts
 new UserPool(this, 'myuserpool', {
   // ...
-  emailTransmission: {
+  emailSettings: {
     from: 'noreply@myawesomeapp.com',
     replyTo: 'support@myawesomeapp.com',
   },
