@@ -76,20 +76,13 @@ The canary will automatically produce a CloudWatch Dashboard:
 
 ![UI Screenshot](images/ui-screenshot.png)
 
-The Canary code will be executed in a lambda function created by Synthetics on your behalf. The Lambda function includes a custom [runtime](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html) provided by Synthetics. The provided runtime includes a variety of handy tools such as [Puppeteer](https://www.npmjs.com/package/puppeteer-core)  and Chromium. To learn more about Synthetics capabilities, check out the [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html)
+The Canary code will be executed in a lambda function created by Synthetics on your behalf. The Lambda function includes a custom [runtime](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html) provided by Synthetics. The provided runtime includes a variety of handy tools such as [Puppeteer](https://www.npmjs.com/package/puppeteer-core)  and Chromium. To learn more about Synthetics capabilities, check out the [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html).
 
 ### Configuring the Canary Script 
 
 To configure the script the canary executes, use the `test` property. The `test` property accepts a `Test` instance that can be initialized by the `Test` class static methods. Currently, the only implemented method is `Test.custom()`, which allows you to bring your own code. In the future, other methods will be added. `Test.custom()` accepts `code` and `handler` properties -- both are required by Synthetics to create a lambda function on your behalf.
 
-> **Note:** For `code.fromAsset()` and `code.fromBucket()`, the canary resource requires the following folder structure:
->```
->canary/
->├── nodejs/
->   ├── node_modules/
->        ├── <filename>.js
->```
-> See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html).
+#### Using the `Code` class static initializers
 
 The `synthetics.Code` class exposes static methods to bundle your code artifacts: 
 
@@ -123,9 +116,18 @@ const canary = new Canary(this, 'MyCanary', {
 }); 
 ```
 
+> **Note:** For `code.fromAsset()` and `code.fromBucket()`, the canary resource requires the following folder structure:
+>```
+>canary/
+>├── nodejs/
+>   ├── node_modules/
+>        ├── <filename>.js
+>```
+> See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html).
+
 ### Alarms
 
-You can configure a CloudWatch Alarm on canary metrics. Metrics are emitted by CloudWatch automatically and can be accessed by the following APIs:
+You can configure a CloudWatch Alarm on a canary metric. Metrics are emitted by CloudWatch automatically and can be accessed by the following APIs:
 - `canary.metricSuccessPercent()` - percentage of successful canary runs over a given time
 - `canary.metricDuration()` - how much time each canary run takes, in seconds.
 - `canary.metricFailed()` - number of failed canary runs over a given time
