@@ -1816,7 +1816,7 @@ export = {
     });
 
     // make sure the attribute points to the expected custom resource and extracts the correct attribute
-    test.deepEqual(rawTemplate.Outputs.LoadBalancerAddress.Value, { 'Fn::GetAtt': [ expectedKubernetesGetId, 'Value' ] });
+    test.deepEqual(rawTemplate.Outputs.LoadBalancerAddress.Value, { 'Fn::GetAtt': [expectedKubernetesGetId, 'Value'] });
     test.done();
   },
 };

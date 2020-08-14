@@ -301,14 +301,14 @@ export class Distribution extends Resource implements IDistribution {
       const originId = scope.node.uniqueId;
       const originBindConfig = origin.bind(scope, { originId });
       if (!originBindConfig.failoverConfig) {
-        this.boundOrigins.push({origin, originId, ...originBindConfig});
+        this.boundOrigins.push({ origin, originId, ...originBindConfig });
       } else {
         if (isFailoverOrigin) {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
         const originGroupId = new Construct(this, `OriginGroup${groupIndex}`).node.uniqueId;
-        this.boundOrigins.push({origin, originId, originGroupId, ...originBindConfig});
+        this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
         this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);

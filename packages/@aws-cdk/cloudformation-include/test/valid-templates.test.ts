@@ -682,7 +682,7 @@ describe('CDK Include', () => {
       },
       "Conditions": {
         "AlwaysFalse": {
-          "Fn::Equals": [ "my-s3-bucket", "Invalid?BucketName"],
+          "Fn::Equals": ["my-s3-bucket", "Invalid?BucketName"],
         },
       },
       "Resources": {
