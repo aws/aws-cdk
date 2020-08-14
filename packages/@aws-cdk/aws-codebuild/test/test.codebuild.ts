@@ -1661,17 +1661,6 @@ export = {
       test.done();
     },
 
-    'cannot have file path conditions if the Group contains any action other than PUSH'(test: Test) {
-      const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_CREATED,
-        codebuild.EventAction.PUSH);
-
-      test.throws(() => {
-        filterGroup.andFilePathIsNot('.*\\.java');
-      }, /A file path condition cannot be added if a Group contains any event action other than PUSH/);
-
-      test.done();
-    },
-
     'BitBucket sources do not support the PULL_REQUEST_REOPENED event action'(test: Test) {
       const stack = new cdk.Stack();
 
