@@ -5,8 +5,9 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
-import { Construct, ISynthesisSession } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
+import { Stage } from './stage';
+import { Construct } from './construct-compat';
 
 const STAGING_TMP = '.cdk.staging';
 
@@ -103,15 +104,22 @@ export class AssetStaging extends Construct {
     }
 
     this.sourceHash = this.assetHash;
+
+    const outdir = Stage.of(this)?.outdir;
+    if (!outdir) {
+      throw new Error('unable to determine cloud assembly output directory. Assets must be defined indirectly within a "Stage" or an "App" scope');
+    }
+
+    this.stageAsset(outdir);
   }
 
-  protected synthesize(session: ISynthesisSession) {
+  private stageAsset(outdir: string) {
     // Staging is disabled
     if (!this.relativePath) {
       return;
     }
 
-    const targetPath = path.join(session.assembly.outdir, this.relativePath);
+    const targetPath = path.join(outdir, this.relativePath);
 
     // Already staged
     if (fs.existsSync(targetPath)) {
@@ -170,21 +178,27 @@ export class AssetStaging extends Construct {
       ...options.volumes ?? [],
     ];
 
+    let localBundling: boolean | undefined;
     try {
       process.stderr.write(`Bundling asset ${this.node.path}...\n`);
-      options.image._run({
-        command: options.command,
-        user,
-        volumes,
-        environment: options.environment,
-        workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
-      });
+
+      localBundling = options.local?.tryBundle(bundleDir, options);
+      if (!localBundling) {
+        options.image._run({
+          command: options.command,
+          user,
+          volumes,
+          environment: options.environment,
+          workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
+        });
+      }
     } catch (err) {
-      throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}: ${err}`);
+      throw new Error(`Failed to bundle asset ${this.node.path}: ${err}`);
     }
 
     if (FileSystem.isEmpty(bundleDir)) {
-      throw new Error(`Bundling did not produce any output. Check that your container writes content to ${AssetStaging.BUNDLING_OUTPUT_DIR}.`);
+      const outputDir = localBundling ? bundleDir : AssetStaging.BUNDLING_OUTPUT_DIR;
+      throw new Error(`Bundling did not produce any output. Check that content is written to ${outputDir}.`);
     }
 
     return bundleDir;

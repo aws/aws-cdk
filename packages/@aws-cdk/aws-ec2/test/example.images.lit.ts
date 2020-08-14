@@ -8,6 +8,7 @@ const amznLinux = ec2.MachineImage.latestAmazonLinux({
   edition: ec2.AmazonLinuxEdition.STANDARD,
   virtualization: ec2.AmazonLinuxVirt.HVM,
   storage: ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
+  cpuType: ec2.AmazonLinuxCpuType.X86_64,
 });
 
 // Pick a Windows edition to use
