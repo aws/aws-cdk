@@ -146,5 +146,3 @@ new cloudwatch.Alarm(this, 'CanaryAlarm', {
 ### Future Work
 
 - Add blueprints to the Test class [#9613](https://github.com/aws/aws-cdk/issues/9613#issue-677134857).
-- Automatically add nodejs/node_modules prefix to the asset file before zipping to S3.
-- Add support for the runConfig property [#9300](https://github.com/aws/aws-cdk/issues/9300#issue-667335345).
