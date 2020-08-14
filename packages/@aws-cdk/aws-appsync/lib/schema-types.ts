@@ -317,16 +317,25 @@ export class GraphqlType {
 }
 
 /**
- * Properties for configuring an type
+ * Properties for configuring an Intermediate Type
  *
+ * @param interface - the interface that this intermediate type implements
  * @param definition - the variables and types that define this type
  * i.e. { string: GraphqlType, string: GraphqlType }
+ *
+ * @experimental
  */
-export interface BaseTypeProps {
+export interface IntermediateTypeProps {
+  /**
+   * The Interface Type this Object Type implements
+   *
+   * @default - no interface type
+   */
+  readonly interfaceType?: InterfaceType;
   /**
    * the attributes of this type
    */
-  readonly definition: { [key: string]: GraphqlType | ResolvableField };
+  readonly definition: { [key: string]: GraphqlType | ResolvableField};
 }
 
 /**
@@ -339,9 +348,13 @@ export class InterfaceType {
   /**
    * A method to extend an Interface Type from another interface
    */
-  public static extendInterface(name: string, interfaceType: InterfaceType, props: ObjectTypeProps): InterfaceType {
+  public static extendInterface(name: string, props: IntermediateTypeProps): InterfaceType {
+    if (!props.interfaceType) {
+      throw new Error('Static function `extendInterface` requires an interfaceType to implement');
+    }
     return new InterfaceType(name, {
-      definition: Object.assign({}, props.definition, interfaceType.definition),
+      interfaceType: props.interfaceType,
+      definition: Object.assign({}, props.definition, props?.interfaceType.definition),
     });
   }
   /**
@@ -349,13 +362,20 @@ export class InterfaceType {
    */
   public readonly name: string;
   /**
+   * The Interface Type this Intermediate Type implements
+   *
+   * @default - no interface type
+   */
+  public readonly interfaceType?: InterfaceType;
+  /**
    * the attributes of this type
    */
   public readonly definition: { [key: string]: GraphqlType | ResolvableField };
 
-  public constructor(name: string, props: BaseTypeProps) {
+  public constructor(name: string, props: IntermediateTypeProps) {
     this.name = name;
     this.definition = props.definition;
+    this.interfaceType = props.interfaceType;
   }
 
   /**
@@ -379,7 +399,8 @@ export class InterfaceType {
    * Generate the string of this object type
    */
   public toString(): string {
-    let schemaAddition = `interface ${this.name} {\n`;
+    const title = this.interfaceType ? `${this.name} implements ${this.interfaceType.name}` : this.name;
+    let schemaAddition = `interface ${title} {\n`;
     Object.keys(this.definition).forEach( (key) => {
       const attribute = this.definition[key];
       schemaAddition = `${schemaAddition}  ${key}: ${attribute.toString()}\n`;
@@ -395,7 +416,7 @@ export class InterfaceType {
  * i.e. { string: GraphqlType, string: GraphqlType }
  * @param directives - the directives for this object type
  */
-export interface ObjectTypeProps extends BaseTypeProps {
+export interface ObjectTypeProps extends IntermediateTypeProps {
   /**
    * the directives for this object type
    *
@@ -411,9 +432,13 @@ export class ObjectType extends InterfaceType {
   /**
    * A method to define Object Types from an interface
    */
-  public static implementInterface(name: string, interfaceType: InterfaceType, props: ObjectTypeProps): ObjectType {
+  public static implementInterface(name: string, props: ObjectTypeProps): ObjectType {
+    if (!props.interfaceType) {
+      throw new Error('Static function `implementInterface` requires an interfaceType to implement');
+    }
     return new ObjectType(name, {
-      definition: Object.assign({}, props.definition, interfaceType.definition),
+      interfaceType: props.interfaceType,
+      definition: Object.assign({}, props.definition, props.interfaceType?.definition),
       directives: props.directives,
     });
   }
@@ -460,12 +485,12 @@ export class ObjectType extends InterfaceType {
    * Generate the string of this object type
    */
   public toString(): string {
+    const title = this.interfaceType ? `${this.name} implements ${this.interfaceType.name}` : this.name;
     const directives = this.generateDirectives(this.directives);
-    let schemaAddition = `type ${this.name} ${directives}{\n`;
+    let schemaAddition = `type ${title} ${directives}{\n`;
     Object.keys(this.definition).forEach( (key) => {
       const attribute = this.definition[key];
-      const args = attribute instanceof ResolvableField ? attribute.argsToString() : '';
-      schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
+      schemaAddition = `${schemaAddition}  ${key}: ${attribute.toString()}\n`;
     });
     return `${schemaAddition}}`;
   }

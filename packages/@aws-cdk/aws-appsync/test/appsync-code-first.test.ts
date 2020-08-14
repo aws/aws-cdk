@@ -272,14 +272,15 @@ describe('testing InterfaceType properties', () => {
 
   test('nested InterfaceTypes produce correct schema', () => {
     // WHEN
-    const test = appsync.InterfaceType.extendInterface('Test', baseTest, {
+    const test = appsync.InterfaceType.extendInterface('Test', {
+      interfaceType: baseTest,
       definition: {
         id2: t.id,
       },
     });
     api.appendToSchema(baseTest.toString());
     api.appendToSchema(test.toString());
-    const out = 'interface baseTest {\n  id: ID\n}\ninterface Test {\n  id2: ID\n  id: ID\n}\n';
+    const out = 'interface baseTest {\n  id: ID\n}\ninterface Test implements baseTest {\n  id2: ID\n  id: ID\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
@@ -315,12 +316,14 @@ describe('testing Object Type properties', () => {
         id: t.id,
       },
     });
-    const test = appsync.InterfaceType.extendInterface('Test', baseTest, {
+    const test = appsync.InterfaceType.extendInterface('Test', {
+      interfaceType: baseTest,
       definition: {
         id2: t.id,
       },
     });
-    const objectTest = appsync.ObjectType.implementInterface('objectTest', test, {
+    const objectTest = appsync.ObjectType.implementInterface('objectTest', {
+      interfaceType: test,
       definition: {
         id3: t.id,
       },
@@ -329,8 +332,8 @@ describe('testing Object Type properties', () => {
 
     api.appendToSchema(test.toString());
     api.appendToSchema(objectTest.toString());
-    const gql_interface = 'interface Test {\n  id2: ID\n  id: ID\n}\n';
-    const gql_object = 'type objectTest @test {\n  id3: ID\n  id2: ID\n  id: ID\n}\n';
+    const gql_interface = 'interface Test implements baseTest {\n  id2: ID\n  id: ID\n}\n';
+    const gql_object = 'type objectTest implements Test @test {\n  id3: ID\n  id2: ID\n  id: ID\n}\n';
     const out = `${gql_interface}${gql_object}`;
 
     // THEN
