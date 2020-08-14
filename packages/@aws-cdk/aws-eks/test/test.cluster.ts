@@ -1492,7 +1492,7 @@ export = {
     });
 
     // the kubectl provider is inside a nested stack.
-    const nested = stack.construct.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
     expect(nested).to(haveResource('AWS::Lambda::Function', {
       Environment: {
         Variables: {
@@ -1533,7 +1533,7 @@ export = {
           region: 'us-east-1',
         },
       });
-      stack.construct.setContext(`vpc-provider:account=${stack.account}:filter.vpc-id=${vpcId}:region=${stack.region}:returnAsymmetricSubnets=true`, {
+      stack.node.setContext(`vpc-provider:account=${stack.account}:filter.vpc-id=${vpcId}:region=${stack.region}:returnAsymmetricSubnets=true`, {
         vpcId: vpcId,
         vpcCidrBlock: '10.0.0.0/16',
         subnetGroups: [
@@ -1573,7 +1573,7 @@ export = {
         endpointAccess: eks.EndpointAccess.PRIVATE,
       });
 
-      const nested = stack.construct.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
       const template = expect(nested).value;
 
       test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
@@ -1594,7 +1594,7 @@ export = {
         })]}],
       });
 
-      const nested = stack.construct.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
       const template = expect(nested).value;
 
       test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
@@ -1694,7 +1694,7 @@ export = {
       });
 
       // the kubectl provider is inside a nested stack.
-      const nested = stack.construct.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
       expect(nested).to(haveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
@@ -1758,7 +1758,7 @@ export = {
       });
 
       // the kubectl provider is inside a nested stack.
-      const nested = stack.construct.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
       test.equal(16, expect(nested).value.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length);
 
       test.done();
@@ -1807,7 +1807,7 @@ export = {
       });
 
       // the kubectl provider is inside a nested stack.
-      const nested = stack.construct.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
       expect(nested).to(haveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
@@ -1907,9 +1907,9 @@ export = {
           'Arn',
         ],
       },
-      ResourceType: 'service',
-      ResourceName: 'myservice',
-      ResourceNamespace: 'default',
+      ObjectType: 'service',
+      ObjectName: 'myservice',
+      ObjectNamespace: 'default',
       JsonPath: '.status.loadBalancer.ingress[0].hostname',
       TimeoutSeconds: 300,
     });

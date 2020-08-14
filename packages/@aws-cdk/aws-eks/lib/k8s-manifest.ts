@@ -39,7 +39,7 @@ export interface KubernetesManifestProps {
 /**
  * Represents a manifest within the Kubernetes system.
  *
- * Alternatively, you can use `cluster.addResource(resource[, resource, ...])`
+ * Alternatively, you can use `cluster.addManifest(resource[, resource, ...])`
  * to define resources on this cluster.
  *
  * Applies/deletes the manifest using `kubectl`.

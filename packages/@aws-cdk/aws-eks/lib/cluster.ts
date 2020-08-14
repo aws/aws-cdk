@@ -12,8 +12,8 @@ import { CfnClusterProps } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesManifest } from './k8s-manifest';
+import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
-import { KubernetesResourceAttribute } from './k8s-resource-attribute';
 import { KubectlProvider, KubectlProviderProps } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
@@ -659,7 +659,7 @@ export class Cluster extends Resource implements ICluster {
 
     // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
     // this ensures that.
-    this._clusterResource.construct.addDependency(this.kubctlProviderSecurityGroup, this.vpc);
+    this._clusterResource.node.addDependency(this.kubctlProviderSecurityGroup, this.vpc);
 
     // see https://github.com/aws/aws-cdk/issues/9027
     this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
@@ -681,7 +681,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     // add the cluster resource itself as a dependency of the barrier
-    this._kubectlReadyBarrier.construct.addDependency(this._clusterResource);
+    this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
 
     this.clusterName = this.getResourceNameAttribute(resource.ref);
     this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
@@ -744,11 +744,11 @@ export class Cluster extends Resource implements ICluster {
    */
   public getServiceLoadBalancerAddress(serviceName: string, options: ServiceLoadBalancerAddressOptions = {}): string {
 
-    const loadBalancerAddress = new KubernetesResourceAttribute(this, `${serviceName}LoadBalancerAddress`, {
+    const loadBalancerAddress = new KubernetesObjectValue(this, `${serviceName}LoadBalancerAddress`, {
       cluster: this,
-      resourceType: 'service',
-      resourceName: serviceName,
-      resourceNamespace: options.namespace,
+      objectType: 'service',
+      objectName: serviceName,
+      objectNamespace: options.namespace,
       jsonPath: '.status.loadBalancer.ingress[0].hostname',
       timeout: options.timeout,
     });
@@ -1031,7 +1031,7 @@ export class Cluster extends Resource implements ICluster {
     // add all profiles as a dependency of the "kubectl-ready" barrier because all kubectl-
     // resources can only be deployed after all fargate profiles are created.
     if (this._kubectlReadyBarrier) {
-      this._kubectlReadyBarrier.construct.addDependency(fargateProfile);
+      this._kubectlReadyBarrier.node.addDependency(fargateProfile);
     }
 
     return this._fargateProfiles;
@@ -1052,7 +1052,7 @@ export class Cluster extends Resource implements ICluster {
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
 
     // singleton
-    let provider = this.stack.construct.tryFindChild(uid) as KubectlProvider;
+    let provider = this.stack.node.tryFindChild(uid) as KubectlProvider;
     if (!provider) {
       // create the provider.
 
@@ -1089,7 +1089,7 @@ export class Cluster extends Resource implements ICluster {
       throw new Error('unexpected: kubectl enabled clusters should have a kubectl-ready barrier resource');
     }
 
-    resourceScope.construct.addDependency(this._kubectlReadyBarrier);
+    resourceScope.node.addDependency(this._kubectlReadyBarrier);
 
     return provider;
   }
@@ -1173,11 +1173,11 @@ export class Cluster extends Resource implements ICluster {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
-          this.construct.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
 
-        subnet.construct.applyAspect(new Tag(tag, '1'));
+        subnet.node.applyAspect(new Tag(tag, '1'));
       }
     };
 

@@ -77,7 +77,7 @@ export = testCase({
   'asset metadata is added to the cloudformation resource'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    stack.construct.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+    stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
     // WHEN
     new lambda.LayerVersion(stack, 'layer', {

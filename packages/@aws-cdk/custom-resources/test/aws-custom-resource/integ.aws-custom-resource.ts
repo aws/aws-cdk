@@ -33,7 +33,7 @@ const listTopics = new AwsCustomResource(stack, 'ListTopics', {
   },
   policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
 });
-listTopics.construct.addDependency(topic);
+listTopics.node.addDependency(topic);
 
 const ssmParameter = new ssm.StringParameter(stack, 'DummyParameter', {
   stringValue: '1337',

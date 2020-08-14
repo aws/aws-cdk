@@ -314,7 +314,7 @@ new KubernetesManifest(this, 'hello-kub', {
   manifest: [ deployment, service ]
 });
 
-// or, option2: use `addResource`
+// or, option2: use `addManifest`
 cluster.addManifest('hello-kub', service, deployment);
 ```
 
@@ -397,16 +397,16 @@ new KubernetesPatch(this, 'hello-kub-deployment-label', {
 })
 ```
 
-### Querying Kubernetes Resources
+### Querying Kubernetes Object Values
 
-The `KubernetesResourceAttribute` construct can be used to query for information about kubernetes resources,
+The `KubernetesObjectValue` construct can be used to query for information about kubernetes objects,
 and use that as part of your CDK application.
 
 For example, you can fetch the address of a [`LoadBalancer`](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) type service:
 
 ```typescript
 // query the load balancer address
-const myServiceAddress = new KubernetesResourceAttribute(this, 'LoadBalancerAttribute', {
+const myServiceAddress = new KubernetesObjectValue(this, 'LoadBalancerAttribute', {
   cluster: cluster,
   resourceType: 'service',
   resourceName: 'my-service',

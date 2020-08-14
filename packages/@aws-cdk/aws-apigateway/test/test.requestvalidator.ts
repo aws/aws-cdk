@@ -22,7 +22,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
-      RestApiId: { Ref: stack.getLogicalId(api.construct.findChild('Resource') as cdk.CfnElement) },
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
     }));
@@ -49,7 +49,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
-      RestApiId: { Ref: stack.getLogicalId(api.construct.findChild('Resource') as cdk.CfnElement) },
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       Name: 'my-model',
       ValidateRequestBody: false,
       ValidateRequestParameters: true,

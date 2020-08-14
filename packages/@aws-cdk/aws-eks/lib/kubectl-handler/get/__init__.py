@@ -30,16 +30,16 @@ def get_handler(event, context):
         '--kubeconfig', kubeconfig
     ])
 
-    resource_type       = props['ResourceType']
-    resource_name       = props['ResourceName']
-    resource_namespace  = props['ResourceNamespace']
+    object_type         = props['ObjectType']
+    object_name         = props['ObjectName']
+    object_namespace    = props['ObjectNamespace']
     json_path           = props['JsonPath']
     timeout_seconds     = props['TimeoutSeconds']
 
     # json path should be surrouded with '{}'
     path = '{{{0}}}'.format(json_path)
     if request_type == 'Create' or request_type == 'Update':
-        output = wait_for_output(['get', '-n', resource_namespace, resource_type, resource_name, "-o=jsonpath='{{{0}}}'".format(json_path)], int(timeout_seconds))
+        output = wait_for_output(['get', '-n', object_namespace, object_type, object_name, "-o=jsonpath='{{{0}}}'".format(json_path)], int(timeout_seconds))
         return {'Data': {'Value': output}}
     elif request_type == 'Delete':
         pass
