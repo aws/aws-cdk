@@ -36,7 +36,7 @@
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.0.4",
     "constructs": "^3.0.2"
   },
   "repository": {
