@@ -231,18 +231,15 @@ export default class CodeGenerator {
     this.code.line(' * containing the CloudFormation properties of this resource.');
     this.code.line(' * Used in the @aws-cdk/cloudformation-include module.');
     this.code.line(' *');
-    this.code.line(' * @experimental');
+    this.code.line(' * @internal');
     this.code.line(' */');
     // eslint-disable-next-line max-len
-    this.code.openBlock(`public static fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CORE}.FromCloudFormationOptions): ` +
+    this.code.openBlock(`public static _fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CFN_PARSE}.FromCloudFormationOptions): ` +
       `${resourceName.className}`);
     this.code.line('resourceAttributes = resourceAttributes || {};');
-    this.code.indent('const cfnParser = new cfn_parse.CfnParser({');
-    this.code.line('finder: options.finder,');
-    this.code.unindent('});');
     if (propsType) {
       // translate the template properties to CDK objects
-      this.code.line('const resourceProperties = cfnParser.parseValue(resourceAttributes.Properties);');
+      this.code.line('const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);');
       // translate to props, using a (module-private) factory function
       this.code.line(`const props = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
       // finally, instantiate the resource class
@@ -253,7 +250,7 @@ export default class CodeGenerator {
     }
     // handle all non-property attributes
     // (retention policies, conditions, metadata, etc.)
-    this.code.line('cfnParser.handleAttributes(ret, resourceAttributes, id);');
+    this.code.line('options.parser.handleAttributes(ret, resourceAttributes, id);');
 
     this.code.line('return ret;');
     this.code.closeBlock();
