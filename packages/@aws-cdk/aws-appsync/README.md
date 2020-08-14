@@ -242,29 +242,14 @@ Intermediate Types include:
 intermediate types. They are useful for eliminating duplication and can be used
 to generate Object Types with less work.
 
-You can create Interface Types in two ways:
-
-1. Interface Types can be created ***externally***.
-    ```ts
-    const node = new appsync.InterfaceType('Node', {
-      definition: {
-        id: appsync.GraphqlType.string({ isRequired: true }),
-      },
-    });
-    ```
-2. Interface Types can be created ***externally*** from another Interface Type.
-    ```ts
-    const node = new appsync.InterfaceType('Node', {
-      definition: {
-        id: appsync.GraphqlType.string({ isRequired: true }),
-      },
-    });
-    const superNode = new appsync.InterfaceType.extendInterface('SuperNode', node, {
-      definition: {
-        speicalId: appsync.GraphqlType.string(),
-      },
-    });
-    ```
+You can create Interface Types ***externally***.
+```ts
+const node = new appsync.InterfaceType('Node', {
+  definition: {
+    id: appsync.GraphqlType.string({ isRequired: true }),
+  },
+});
+```
 
 #### Object Types
 
@@ -321,7 +306,8 @@ You can create Object Types in three ways:
         id: appsync.GraphqlType.string({ isRequired: true }),
       },
     });
-    const demo = new appsync.ObjectType.implementInterface('Demo', node, {
+    const demo = new appsync.ObjectType.implementInterface('Demo', {
+      interfaceTypes: [ node ],
       defintion: {
         version: appsync.GraphqlType.string({ isRequired: true }),
       },

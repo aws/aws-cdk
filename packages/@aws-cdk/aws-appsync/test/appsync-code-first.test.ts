@@ -270,24 +270,6 @@ describe('testing InterfaceType properties', () => {
     });
   });
 
-  test('nested InterfaceTypes produce correct schema', () => {
-    // WHEN
-    const test = appsync.InterfaceType.extendInterface('Test', {
-      interfaceType: baseTest,
-      definition: {
-        id2: t.id,
-      },
-    });
-    api.appendToSchema(baseTest.toString());
-    api.appendToSchema(test.toString());
-    const out = 'interface baseTest {\n  id: ID\n}\ninterface Test implements baseTest {\n  id2: ID\n  id: ID\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
   test('Interface Type can be a Graphql Type', () => {
     // WHEN
     const graphqlType = baseTest.attribute();
@@ -309,31 +291,83 @@ describe('testing InterfaceType properties', () => {
 
 describe('testing Object Type properties', () => {
 
-  test('ObjectType can extend from interface types', () => {
+  test('errors when no InterfaceTypes are specified', () => {
+    // WHEN
+    const when = () => {
+      appsync.ObjectType.implementInterface('objectTest', {
+        definition: {
+          id2: t.id,
+        },
+      });
+    };
+
+    // THEN
+    expect(when).toThrowError('Static function `implementInterface` requires an interfaceType to implement');
+  });
+
+  test('errors when implementing empty InterfaceTypes properties', () => {
+    // WHEN
+    const when = () => {
+      appsync.ObjectType.implementInterface('objectTest', {
+        interfaceTypes: [],
+        definition: {
+          id2: t.id,
+        },
+      });
+    };
+
+    // THEN
+    expect(when).toThrowError('Static function `implementInterface` requires an interfaceType to implement');
+  });
+
+  test('ObjectType can implement from interface types', () => {
     // WHEN
     const baseTest = new appsync.InterfaceType('baseTest', {
       definition: {
         id: t.id,
       },
     });
-    const test = appsync.InterfaceType.extendInterface('Test', {
-      interfaceType: baseTest,
+    const objectTest = appsync.ObjectType.implementInterface('objectTest', {
+      interfaceTypes: [baseTest],
       definition: {
         id2: t.id,
-      },
-    });
-    const objectTest = appsync.ObjectType.implementInterface('objectTest', {
-      interfaceType: test,
-      definition: {
-        id3: t.id,
       },
       directives: [appsync.Directive.custom('@test')],
     });
 
-    api.appendToSchema(test.toString());
+    api.appendToSchema(baseTest.toString());
     api.appendToSchema(objectTest.toString());
-    const gql_interface = 'interface Test implements baseTest {\n  id2: ID\n  id: ID\n}\n';
-    const gql_object = 'type objectTest implements Test @test {\n  id3: ID\n  id2: ID\n  id: ID\n}\n';
+    const gql_interface = 'interface baseTest {\n  id: ID\n}\n';
+    const gql_object = 'type objectTest implements baseTest @test {\n  id2: ID\n  id: ID\n}\n';
+    const out = `${gql_interface}${gql_object}`;
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('ObjectType can implement from multiple interface types', () => {
+    // WHEN
+    const baseTest = new appsync.InterfaceType('baseTest', {
+      definition: { id: t.id },
+    });
+    const anotherTest = new appsync.InterfaceType('anotherTest', {
+      definition: { id2: t.id },
+    });
+    const objectTest = appsync.ObjectType.implementInterface('objectTest', {
+      interfaceTypes: [anotherTest, baseTest],
+      definition: {
+        id3: t.id,
+      },
+    });
+
+    api.appendToSchema(baseTest.toString());
+    api.appendToSchema(anotherTest.toString());
+    api.appendToSchema(objectTest.toString());
+
+    const gql_interface = 'interface baseTest {\n  id: ID\n}\ninterface anotherTest {\n  id2: ID\n}\n';
+    const gql_object = 'type objectTest implements anotherTest, baseTest {\n  id3: ID\n  id2: ID\n  id: ID\n}\n';
     const out = `${gql_interface}${gql_object}`;
 
     // THEN
