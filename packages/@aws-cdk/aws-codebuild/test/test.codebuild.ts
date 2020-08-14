@@ -606,8 +606,8 @@ export = {
               { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED' },
               { Type: 'FILE_PATH', Pattern: 'ReadMe.md' },
             ],
-          ]
-        }
+          ],
+        },
       }));
 
       test.done();
