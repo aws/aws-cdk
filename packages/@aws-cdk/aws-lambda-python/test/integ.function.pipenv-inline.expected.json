@@ -36,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters822ec544787c04e6b27b02f2408e4c322d48fbd352adb46d5aa2d6b3553a1adeS3Bucket0552B5BB"
+            "Ref": "AssetParametersa5dba616c783f16fed2817a61a953ec1e2512027d2a9cc7804572bbd3e6eb730S3BucketC9BC791E"
           },
           "S3Key": {
             "Fn::Join": [
@@ -49,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters822ec544787c04e6b27b02f2408e4c322d48fbd352adb46d5aa2d6b3553a1adeS3VersionKey9522AC10"
+                          "Ref": "AssetParametersa5dba616c783f16fed2817a61a953ec1e2512027d2a9cc7804572bbd3e6eb730S3VersionKeyA1BB39FA"
                         }
                       ]
                     }
@@ -62,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters822ec544787c04e6b27b02f2408e4c322d48fbd352adb46d5aa2d6b3553a1adeS3VersionKey9522AC10"
+                          "Ref": "AssetParametersa5dba616c783f16fed2817a61a953ec1e2512027d2a9cc7804572bbd3e6eb730S3VersionKeyA1BB39FA"
                         }
                       ]
                     }
@@ -79,7 +79,7 @@
             "Arn"
           ]
         },
-        "Runtime": "python3.8"
+        "Runtime": "python3.7"
       },
       "DependsOn": [
         "myhandlerServiceRole77891068"
@@ -87,26 +87,23 @@
     }
   },
   "Parameters": {
-    "AssetParameters822ec544787c04e6b27b02f2408e4c322d48fbd352adb46d5aa2d6b3553a1adeS3Bucket0552B5BB": {
+    "AssetParametersa5dba616c783f16fed2817a61a953ec1e2512027d2a9cc7804572bbd3e6eb730S3BucketC9BC791E": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"822ec544787c04e6b27b02f2408e4c322d48fbd352adb46d5aa2d6b3553a1ade\""
+      "Description": "S3 bucket for asset \"a5dba616c783f16fed2817a61a953ec1e2512027d2a9cc7804572bbd3e6eb730\""
     },
-    "AssetParameters822ec544787c04e6b27b02f2408e4c322d48fbd352adb46d5aa2d6b3553a1adeS3VersionKey9522AC10": {
+    "AssetParametersa5dba616c783f16fed2817a61a953ec1e2512027d2a9cc7804572bbd3e6eb730S3VersionKeyA1BB39FA": {
       "Type": "String",
-      "Description": "S3 key for asset version \"822ec544787c04e6b27b02f2408e4c322d48fbd352adb46d5aa2d6b3553a1ade\""
+      "Description": "S3 key for asset version \"a5dba616c783f16fed2817a61a953ec1e2512027d2a9cc7804572bbd3e6eb730\""
     },
-    "AssetParameters822ec544787c04e6b27b02f2408e4c322d48fbd352adb46d5aa2d6b3553a1adeArtifactHash3CE06D09": {
+    "AssetParametersa5dba616c783f16fed2817a61a953ec1e2512027d2a9cc7804572bbd3e6eb730ArtifactHash2162F9FE": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"822ec544787c04e6b27b02f2408e4c322d48fbd352adb46d5aa2d6b3553a1ade\""
+      "Description": "Artifact hash for asset \"a5dba616c783f16fed2817a61a953ec1e2512027d2a9cc7804572bbd3e6eb730\""
     }
   },
   "Outputs": {
-    "FunctionArn": {
+    "FunctionName": {
       "Value": {
-        "Fn::GetAtt": [
-          "myhandlerD202FA8E",
-          "Arn"
-        ]
+        "Ref": "myhandlerD202FA8E"
       }
     }
   }

@@ -80,18 +80,10 @@ enum PipCommand {
 }
 
 export function pipenvInstallCommands(options: InstallDependenciesCommandsOptions) {
-  const runtime = options.runtime;
-
-  // We're unprivileged and don't have a home, so we need to install pipenv
-  // somewhere else so that we can use it.
-  const pipenvHome = '/tmp/pipenv';
-  const pipCommand = `HOME=${pipenvHome} ${getPipCommand(runtime)}`;
-  const pipenvCommand = `HOME=${pipenvHome} python -m pipenv`;
-
+  const pipenvCommand = 'HOME=/tmp/pipenv python -m pipenv';
   const requirementsTxtPath = '/tmp/requirements.txt';
 
   return [
-    `${pipCommand} install --user pipenv`,
     `${pipenvCommand} lock -r >${requirementsTxtPath}`,
     ...pipInstallCommands({ ...options, requirementsTxtPath }),
   ];

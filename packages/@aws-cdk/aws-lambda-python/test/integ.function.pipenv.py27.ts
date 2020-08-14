@@ -1,10 +1,10 @@
 import * as path from 'path';
+import { Runtime } from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Construct, Stack, StackProps } from '@aws-cdk/core';
 import * as lambda from '../lib';
 
 /*
  * Stack verification steps:
- * cdk deploy --app "node integ.function.pipenv-layer.js"
  * aws lambda invoke --function-name <function name> --invocation-type Event --payload $(base64 <<<'"OK"') response.json
  */
 
@@ -15,6 +15,7 @@ class TestStack extends Stack {
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler-pipenv'),
       dependenciesLocation: lambda.DependenciesLocation.LAYER,
+      runtime: Runtime.PYTHON_2_7,
     });
 
     new CfnOutput(this, 'FunctionName', {
@@ -24,5 +25,5 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-lambda-pipenv-layer');
+new TestStack(app, 'cdk-integ-lambda-python-pipenv-py27');
 app.synth();

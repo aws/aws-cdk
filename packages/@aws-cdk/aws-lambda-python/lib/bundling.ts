@@ -1,6 +1,7 @@
+import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { installDependenciesCommands } from './dependencies';
+import { installDependenciesCommands, getDependenciesType, DependencyType } from './dependencies';
 
 /**
  * Options for bundling
@@ -43,12 +44,9 @@ export function bundle(options: BundlingOptions): lambda.AssetCode {
 
   return lambda.Code.fromAsset(options.entry, {
     bundling: {
-      image: options.runtime.bundlingDockerImage,
+      image: getBundlingImage(options),
       command: ['bash', '-c', depsCommand],
     },
-    // XXX: Temporary until bundling options are hashed with source hash
-    assetHashType: cdk.AssetHashType.BUNDLE,
-    exclude: ['*.pyc'],
   });
 }
 
@@ -78,11 +76,22 @@ export function bundleDependencies(options: DependencyBundlingOptions): lambda.A
 
   return lambda.Code.fromAsset(options.entry, {
     bundling: {
-      image: options.runtime.bundlingDockerImage,
+      image: getBundlingImage(options),
       command: ['bash', '-c', depsCommand],
     },
-    // XXX: Temporary until bundling options are hashed with source hash
-    assetHashType: cdk.AssetHashType.BUNDLE,
-    exclude: ['*.pyc'],
+    exclude: ['*', '!requirements.txt','!Pipfile*'],
   });
+}
+
+function getBundlingImage(options: DependencyBundlingOptions): cdk.BundlingDockerImage {
+  switch (getDependenciesType(options.entry)) {
+    case DependencyType.PIPENV:
+      return cdk.BundlingDockerImage.fromAsset(path.join(__dirname, 'pipenv-bundler'), {
+        buildArgs: {
+          FROM: options.runtime.bundlingDockerImage.image,
+        },
+      });
+    default:
+      return options.runtime.bundlingDockerImage;
+  }
 }

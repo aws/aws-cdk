@@ -5,7 +5,6 @@ import * as lambda from '../lib';
 
 /*
  * Stack verification steps:
- * cdk deploy --app "node integ.function.dependencies-layer.js"
  * aws lambda invoke --function-name <function name> --invocation-type Event --payload $(base64 <<<'"OK"') response.json
  */
 
@@ -14,9 +13,9 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const fn = new lambda.PythonFunction(this, 'my_handler', {
-      entry: path.join(__dirname, 'lambda-handler2'),
-      runtime: Runtime.PYTHON_3_8,
+      entry: path.join(__dirname, 'lambda-handler-pipenv'),
       dependenciesLocation: lambda.DependenciesLocation.LAYER,
+      runtime: Runtime.PYTHON_3_8,
     });
 
     new CfnOutput(this, 'FunctionName', {
@@ -26,5 +25,5 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-lambda-dependencies-layer');
+new TestStack(app, 'cdk-integ-lambda-python-pipenv-py38');
 app.synth();
