@@ -46,7 +46,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
  * (They will in turn recurse again)
  */
 function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions) {
-  for (const child of root.construct.children) {
+  for (const child of root.node.children) {
     if (Stage.isStage(child)) {
       child.synth(options);
     } else {
@@ -68,7 +68,7 @@ function invokeAspects(root: IConstruct) {
   recurse(root, []);
 
   function recurse(construct: IConstruct, inheritedAspects: constructs.IAspect[]) {
-    const node = construct.construct;
+    const node = construct.node;
     const aspects = Aspects.of(construct);
     const allAspectsHere = [...inheritedAspects ?? [], ...aspects.aspects];
     const nodeAspectsCount = aspects.aspects.length;
@@ -93,7 +93,7 @@ function invokeAspects(root: IConstruct) {
       invoked.push(aspect);
     }
 
-    for (const child of construct.construct.children) {
+    for (const child of construct.node.children) {
       if (!Stage.isStage(child)) {
         recurse(child, allAspectsHere);
       }
@@ -147,7 +147,7 @@ function validateTree(root: IConstruct) {
   });
 
   if (errors.length > 0) {
-    const errorList = errors.map(e => `[${e.source.construct.path}] ${e.message}`).join('\n  ');
+    const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
     throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
   }
 }
@@ -160,7 +160,7 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstr
     cb(root as IProtectedConstructMethods);
   }
 
-  for (const child of root.construct.children) {
+  for (const child of root.node.children) {
     if (Stage.isStage(child)) { continue; }
     visit(child, order, cb);
   }
