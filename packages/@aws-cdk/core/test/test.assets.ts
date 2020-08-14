@@ -16,7 +16,7 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.construct.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
     test.ok(assetMetadata && assetMetadata.data);
 
@@ -83,7 +83,7 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.construct.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
     test.ok(assetMetadata && assetMetadata.data);
 
@@ -111,7 +111,7 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.construct.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
     test.ok(assetMetadata && assetMetadata.data);
 
@@ -131,7 +131,7 @@ export = {
   'addDockerImageAsset supports overriding repository name through a context key as a workaround until we have API for that'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    stack.construct.setContext('assets-ecr-repository-name', 'my-custom-repo-name');
+    stack.node.setContext('assets-ecr-repository-name', 'my-custom-repo-name');
 
     // WHEN
     stack.addDockerImageAsset({
@@ -140,7 +140,7 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.construct.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
     test.ok(assetMetadata && assetMetadata.data);
 

@@ -160,7 +160,7 @@ export class BackupVault extends Resource implements IBackupVault {
 
   private uniqueVaultName() {
     // Max length of 50 chars, get the last 50 chars
-    const id = this.construct.uniqueId;
+    const id = this.node.uniqueId;
     return id.substring(Math.max(id.length - 50, 0), id.length);
   }
 }

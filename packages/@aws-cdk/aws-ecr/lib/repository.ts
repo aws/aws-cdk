@@ -394,8 +394,9 @@ export class Repository extends RepositoryBase {
    * Returns an ECR ARN for a repository that resides in the same account/region
    * as the current stack.
    */
-  public static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
+  public static arnForLocalRepository(repositoryName: string, scope: IConstruct, account?: string): string {
     return Stack.of(scope).formatArn({
+      account,
       service: 'ecr',
       resource: 'repository',
       resourceName: repositoryName,
