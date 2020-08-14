@@ -50,7 +50,7 @@ export class CfnOutput extends CfnElement {
     super(scope, id);
 
     if (props.value === undefined) {
-      throw new Error(`Missing value for CloudFormation output at path "${this.construct.path}"`);
+      throw new Error(`Missing value for CloudFormation output at path "${this.node.path}"`);
     }
 
     this._description = props.description;

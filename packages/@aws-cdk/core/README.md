@@ -214,7 +214,7 @@ you.
 
 If you need to add an ordering dependency that is not automatically inferred,
 you do so by adding a dependency relationship using
-`constructA.construct.addDependency(constructB)`. This will add a dependency
+`constructA.node.addDependency(constructB)`. This will add a dependency
 relationship between all resources in the scope of `constructA` and all
 resources in the scope of `constructB`.
 
@@ -230,7 +230,7 @@ bAndC.add(constructB);
 bAndC.add(constructC);
 
 // Take the dependency
-constructA.construct.addDependency(bAndC);
+constructA.node.addDependency(bAndC);
 ```
 
 ### Stack Dependencies
@@ -319,7 +319,7 @@ examples ensures that only a single SNS topic is defined:
 function getOrCreate(scope: Construct): sns.Topic {
   const stack = Stack.of(this);
   const uniqueid = 'GloballyUniqueIdForSingleton';
-  return stack.construct.tryFindChild(uniqueid) as sns.Topic  ?? new sns.Topic(stack, uniqueid);
+  return stack.node.tryFindChild(uniqueid) as sns.Topic  ?? new sns.Topic(stack, uniqueid);
 }
 ```
 
@@ -675,7 +675,7 @@ accessing those through the `cfnOptions` property:
 ```ts
 const rawBucket = new s3.CfnBucket(this, 'Bucket', { /* ... */ });
 // -or-
-const rawBucket = bucket.construct.defaultChild as s3.CfnBucket;
+const rawBucket = bucket.node.defaultChild as s3.CfnBucket;
 
 // then
 rawBucket.cfnOptions.condition = new CfnCondition(this, 'EnableBucket', { /* ... */ });
@@ -734,7 +734,7 @@ const stage = Fn.conditionIf(isProd.logicalId, 'Beta', 'Prod').toString();
 // Make Bucket creation condition to IsProduction by accessing
 // and overriding the CloudFormation resource
 const bucket = new s3.Bucket(this, 'Bucket');
-const cfnBucket = bucket.construct.defaultChild as s3.CfnBucket;
+const cfnBucket = bucket.node.defaultChild as s3.CfnBucket;
 cfnBucket.cfnOptions.condition = isProd;
 ```
 
