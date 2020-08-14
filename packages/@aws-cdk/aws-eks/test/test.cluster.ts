@@ -368,7 +368,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -396,7 +396,7 @@ export = {
     test.done();
   },
 
-  'addResource can be used to apply k8s manifests on this cluster'(test: Test) {
+  'addManifest can be used to apply k8s manifests on this cluster'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -406,15 +406,15 @@ export = {
     });
 
     // WHEN
-    cluster.addResource('manifest1', { foo: 123 });
-    cluster.addResource('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
+    cluster.addManifest('manifest1', { foo: 123 });
+    cluster.addManifest('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: '[{"foo":123}]',
     }));
 
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: '[{"bar":123},{"boor":[1,2,3]}]',
     }));
 
@@ -428,7 +428,7 @@ export = {
 
     // WHEN resource is under stack2
     const stack2 = new cdk.Stack(app, 'stack2', { env: { account: stack.account, region: stack.region } });
-    new eks.KubernetesResource(stack2, 'myresource', {
+    new eks.KubernetesManifest(stack2, 'myresource', {
       cluster,
       manifest: [{ foo: 'bar' }],
     });
@@ -473,7 +473,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -524,7 +524,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -1277,7 +1277,7 @@ export = {
       const sanitized = YAML.parse(fileContents);
 
       // THEN
-      expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+      expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([sanitized]),
       }));
       test.done();
@@ -1290,7 +1290,7 @@ export = {
 
       // WHEN
       cluster.addFargateProfile('profile1', { selectors: [{ namespace: 'profile1' }] });
-      cluster.addResource('resource1', { foo: 123 });
+      cluster.addManifest('resource1', { foo: 123 });
       cluster.addFargateProfile('profile2', { selectors: [{ namespace: 'profile2' }] });
       new eks.HelmChart(stack, 'chart', { cluster, chart: 'mychart' });
       cluster.addFargateProfile('profile3', { selectors: [{ namespace: 'profile3' }] });
@@ -1340,9 +1340,9 @@ export = {
       // WHEN
 
       // activate kubectl provider
-      c1.addResource('c1a', { foo: 123 });
-      c1.addResource('c1b', { foo: 123 });
-      c2.addResource('c2', { foo: 123 });
+      c1.addManifest('c1a', { foo: 123 });
+      c1.addManifest('c1b', { foo: 123 });
+      c2.addManifest('c2', { foo: 123 });
 
       // THEN
       const template = app.synth().getStackArtifact(stack.artifactId).template;
@@ -1374,7 +1374,7 @@ export = {
       },
     });
 
-    cluster.addResource('resource', {
+    cluster.addManifest('resource', {
       kind: 'ConfigMap',
       apiVersion: 'v1',
       data: {
@@ -1576,7 +1576,7 @@ export = {
         vpc,
       });
 
-      cluster.addResource('resource', {
+      cluster.addManifest('resource', {
         kind: 'ConfigMap',
         apiVersion: 'v1',
         data: {
@@ -1640,7 +1640,7 @@ export = {
         vpc: vpc2,
       });
 
-      cluster.addResource('resource', {
+      cluster.addManifest('resource', {
         kind: 'ConfigMap',
         apiVersion: 'v1',
         data: {
@@ -1689,7 +1689,7 @@ export = {
         vpcSubnets: [{subnetGroupName: 'Private1'}, {subnetGroupName: 'Private2'}],
       });
 
-      cluster.addResource('resource', {
+      cluster.addManifest('resource', {
         kind: 'ConfigMap',
         apiVersion: 'v1',
         data: {
@@ -1767,5 +1767,49 @@ export = {
       test.done();
     },
 
+  },
+
+  'getServiceLoadBalancerAddress'(test: Test) {
+
+    const { stack } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION });
+
+    const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('myservice');
+
+    new cdk.CfnOutput(stack, 'LoadBalancerAddress', {
+      value: loadBalancerAddress,
+    });
+
+    const expectedKubernetesGetId = 'Cluster1myserviceLoadBalancerAddress198CCB03';
+
+    const rawTemplate = expect(stack).value;
+
+    // make sure the custom resource is created correctly
+    test.deepEqual(rawTemplate.Resources[expectedKubernetesGetId].Properties, {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
+          'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+        ],
+      },
+      ClusterName: {
+        Ref: 'Cluster1B02DD5A2',
+      },
+      RoleArn: {
+        'Fn::GetAtt': [
+          'Cluster1CreationRoleA231BE8D',
+          'Arn',
+        ],
+      },
+      ObjectType: 'service',
+      ObjectName: 'myservice',
+      ObjectNamespace: 'default',
+      JsonPath: '.status.loadBalancer.ingress[0].hostname',
+      TimeoutSeconds: 300,
+    });
+
+    // make sure the attribute points to the expected custom resource and extracts the correct attribute
+    test.deepEqual(rawTemplate.Outputs.LoadBalancerAddress.Value, { 'Fn::GetAtt': [ expectedKubernetesGetId, 'Value' ] });
+    test.done();
   },
 };
