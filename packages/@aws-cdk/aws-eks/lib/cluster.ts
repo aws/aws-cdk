@@ -4,15 +4,16 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tag, Token, Duration } from '@aws-cdk/core';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { clusterArnComponents, ClusterResource } from './cluster-resource';
 import { CfnClusterProps } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
+import { KubernetesManifest } from './k8s-manifest';
+import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
-import { KubernetesResource } from './k8s-resource';
 import { KubectlProvider, KubectlProviderProps } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
@@ -417,6 +418,27 @@ export class KubernetesVersion {
 }
 
 /**
+ * Options for fetching a ServiceLoadBalancerAddress.
+ */
+export interface ServiceLoadBalancerAddressOptions {
+
+  /**
+   * Timeout for waiting on the load balancer address.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly timeout?: Duration;
+
+  /**
+   * The namespace the service belongs to.
+   *
+   * @default 'default'
+   */
+  readonly namespace?: string;
+
+}
+
+/**
  * A Cluster represents a managed Kubernetes Service (EKS)
  *
  * This is a fully managed cluster of API Servers (control-plane)
@@ -524,7 +546,7 @@ export class Cluster extends Resource implements ICluster {
 
   private _spotInterruptHandler?: HelmChart;
 
-  private _neuronDevicePlugin?: KubernetesResource;
+  private _neuronDevicePlugin?: KubernetesManifest;
 
   private readonly endpointAccess: EndpointAccess;
 
@@ -712,6 +734,27 @@ export class Cluster extends Resource implements ICluster {
     }
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
+  }
+
+  /**
+   * Fetch the load balancer address of a service of type 'LoadBalancer'.
+   *
+   * @param serviceName The name of the service.
+   * @param options Additional operation options.
+   */
+  public getServiceLoadBalancerAddress(serviceName: string, options: ServiceLoadBalancerAddressOptions = {}): string {
+
+    const loadBalancerAddress = new KubernetesObjectValue(this, `${serviceName}LoadBalancerAddress`, {
+      cluster: this,
+      objectType: 'service',
+      objectName: serviceName,
+      objectNamespace: options.namespace,
+      jsonPath: '.status.loadBalancer.ingress[0].hostname',
+      timeout: options.timeout,
+    });
+
+    return loadBalancerAddress.value;
+
   }
 
   /**
@@ -913,16 +956,16 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Defines a Kubernetes resource in this cluster.
+   * Defines a Kubernetes manifest in this cluster.
    *
    * The manifest will be applied/deleted using kubectl as needed.
    *
    * @param id logical id of this manifest
    * @param manifest a list of Kubernetes resource specifications
-   * @returns a `KubernetesResource` object.
+   * @returns a `KubernetesManifest` object.
    */
-  public addResource(id: string, ...manifest: any[]) {
-    return new KubernetesResource(this, `manifest-${id}`, { cluster: this, manifest });
+  public addManifest(id: string, ...manifest: any[]) {
+    return new KubernetesManifest(this, `manifest-${id}`, { cluster: this, manifest });
   }
 
   /**
@@ -1018,13 +1061,20 @@ export class Cluster extends Resource implements ICluster {
       };
 
       if (!this.endpointAccess._config.publicAccess) {
+
+        const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+
+        if (privateSubents.length === 0) {
+          throw new Error('Vpc must contain private subnets to configure private endpoint access');
+        }
+
         // endpoint access is private only, we need to attach the
         // provider to the VPC so that it can access the cluster.
         providerProps = {
           ...providerProps,
           vpc: this.vpc,
           // lambda can only be accociated with max 16 subnets and they all need to be private.
-          vpcSubnets: {subnets: this.selectPrivateSubnets().slice(0, 16)},
+          vpcSubnets: {subnets: privateSubents},
           securityGroups: [this.kubctlProviderSecurityGroup],
         };
       }
@@ -1049,7 +1099,26 @@ export class Cluster extends Resource implements ICluster {
     const privateSubnets: ec2.ISubnet[] = [];
 
     for (const placement of this.vpcSubnets) {
-      privateSubnets.push(...this.vpc.selectSubnets(placement).subnets.filter(s => s instanceof ec2.PrivateSubnet));
+
+      for (const subnet of this.vpc.selectSubnets(placement).subnets) {
+
+        if (this.vpc.privateSubnets.includes(subnet)) {
+          // definitely private, take it.
+          privateSubnets.push(subnet);
+          continue;
+        }
+
+        if (this.vpc.publicSubnets.includes(subnet)) {
+          // definitely public, skip it.
+          continue;
+        }
+
+        // neither public and nor private - what is it then? this means its a subnet instance that was explicitly passed
+        // in the subnet selection. since ISubnet doesn't contain information on type, we have to assume its private and let it
+        // fail at deploy time :\ (its better than filtering it out and preventing a possibly successful deployment)
+        privateSubnets.push(subnet);
+      }
+
     }
 
     return privateSubnets;
@@ -1083,7 +1152,7 @@ export class Cluster extends Resource implements ICluster {
     if (!this._neuronDevicePlugin) {
       const fileContents = fs.readFileSync(path.join(__dirname, 'addons/neuron-device-plugin.yaml'), 'utf8');
       const sanitized = YAML.parse(fileContents);
-      this._neuronDevicePlugin = this.addResource('NeuronDevicePlugin', sanitized);
+      this._neuronDevicePlugin = this.addManifest('NeuronDevicePlugin', sanitized);
     }
 
     return this._neuronDevicePlugin;

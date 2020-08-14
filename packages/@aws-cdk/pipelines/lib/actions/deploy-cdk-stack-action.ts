@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
@@ -5,7 +6,6 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Arn, Construct, Fn, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as path from 'path';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
 
 /**
