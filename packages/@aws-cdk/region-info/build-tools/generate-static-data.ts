@@ -2,7 +2,10 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { Default } from '../lib/default';
 import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
-import { AWS_CDK_METADATA, AWS_OLDER_REGIONS, ELBV2_ACCOUNTS, PARTITION_MAP, ROUTE_53_BUCKET_WEBSITE_ZONE_IDS } from './fact-tables';
+import {
+  AWS_CDK_METADATA, AWS_OLDER_REGIONS, DLC_REPOSITORY_ACCOUNTS, ELBV2_ACCOUNTS, PARTITION_MAP,
+  ROUTE_53_BUCKET_WEBSITE_ZONE_IDS,
+} from './fact-tables';
 
 async function main(): Promise<void> {
   const lines = [
@@ -48,6 +51,8 @@ async function main(): Promise<void> {
     registerFact(region, 'S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID', ROUTE_53_BUCKET_WEBSITE_ZONE_IDS[region] || '');
 
     registerFact(region, 'ELBV2_ACCOUNT', ELBV2_ACCOUNTS[region]);
+
+    registerFact(region, 'DLC_REPOSITORY_ACCOUNT', DLC_REPOSITORY_ACCOUNTS[region]);
 
     const vpcEndpointServiceNamePrefix = `${domainSuffix.split('.').reverse().join('.')}.vpce`;
     registerFact(region, 'VPC_ENDPOINT_SERVICE_NAME_PREFIX', vpcEndpointServiceNamePrefix);

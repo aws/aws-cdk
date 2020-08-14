@@ -417,7 +417,7 @@ export class Role extends Resource implements IRole {
    */
   public withoutPolicyUpdates(): IRole {
     if (!this.immutableRole) {
-      this.immutableRole = new ImmutableRole(this.construct.scope as Construct, `ImmutableRole${this.construct.id}`, this);
+      this.immutableRole = new ImmutableRole(this.node.scope as Construct, `ImmutableRole${this.node.id}`, this);
     }
 
     return this.immutableRole;

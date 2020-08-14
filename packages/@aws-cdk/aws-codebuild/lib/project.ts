@@ -16,12 +16,10 @@ import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { IFileSystemLocation } from './file-location';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
+import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
-
-const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
-const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
 export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
@@ -796,6 +794,12 @@ export class Project extends ProjectBase {
     if (props.encryptionKey) {
       this.encryptionKey = props.encryptionKey;
     }
+
+    // bind
+    const bindFunction = (this.buildImage as any).bind;
+    if (bindFunction) {
+      bindFunction.call(this.buildImage, this, this, {});
+    }
   }
 
   /**
@@ -1007,7 +1011,7 @@ export class Project extends ProjectBase {
     } else {
       const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
-        description: 'Automatic generated security group for CodeBuild ' + this.construct.uniqueId,
+        description: 'Automatic generated security group for CodeBuild ' + this.node.uniqueId,
         allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];
@@ -1060,7 +1064,7 @@ export class Project extends ProjectBase {
     // add an explicit dependency between the EC2 Policy and this Project -
     // otherwise, creating the Project fails, as it requires these permissions
     // to be already attached to the Project's Role
-    project.construct.addDependency(policy);
+    project.node.addDependency(policy);
   }
 
   private validateCodePipelineSettings(artifacts: IArtifacts) {
@@ -1194,6 +1198,21 @@ export interface IBuildImage {
    * Make a buildspec to run the indicated script
    */
   runScriptBuildspec(entrypoint: string): BuildSpec;
+}
+
+/** Optional arguments to {@link IBuildImage.binder} - currently empty. */
+export interface BuildImageBindOptions {}
+
+/** The return type from {@link IBuildImage.binder} - currently empty. */
+export interface BuildImageConfig {}
+
+// @deprecated(not in tsdoc on purpose): add bind() to IBuildImage
+// and get rid of IBindableBuildImage
+
+/** A variant of {@link IBuildImage} that allows binding to the project. */
+export interface IBindableBuildImage extends IBuildImage {
+  /** Function that allows the build image access to the construct tree. */
+  bind(scope: Construct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
 }
 
 class ArmBuildImage implements IBuildImage {
@@ -1421,34 +1440,6 @@ export class LinuxBuildImage implements IBuildImage {
   public runScriptBuildspec(entrypoint: string): BuildSpec {
     return runScriptLinuxBuildSpec(entrypoint);
   }
-}
-
-function runScriptLinuxBuildSpec(entrypoint: string) {
-  return BuildSpec.fromObject({
-    version: '0.2',
-    phases: {
-      pre_build: {
-        commands: [
-          // Better echo the location here; if this fails, the error message only contains
-          // the unexpanded variables by default. It might fail if you're running an old
-          // definition of the CodeBuild project--the permissions will have been changed
-          // to only allow downloading the very latest version.
-          `echo "Downloading scripts from s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}}"`,
-          `aws s3 cp s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}} /tmp`,
-          'mkdir -p /tmp/scriptdir',
-          `unzip /tmp/$(basename \$${S3_KEY_ENV}) -d /tmp/scriptdir`,
-        ],
-      },
-      build: {
-        commands: [
-          'export SCRIPT_DIR=/tmp/scriptdir',
-          `echo "Running ${entrypoint}"`,
-          `chmod +x /tmp/scriptdir/${entrypoint}`,
-          `/tmp/scriptdir/${entrypoint}`,
-        ],
-      },
-    },
-  });
 }
 
 /**

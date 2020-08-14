@@ -81,7 +81,7 @@ export class RequestValidator extends Resource implements IRequestValidator {
 
     const deployment = (props.restApi instanceof RestApi) ? props.restApi.latestDeployment : undefined;
     if (deployment) {
-      deployment.construct.addDependency(resource);
+      deployment.node.addDependency(resource);
       deployment.addToLogicalId({ validator: validatorProps });
     }
   }
