@@ -3,6 +3,22 @@ import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnProfilingGroup } from './codeguruprofiler.generated';
 
 /**
+ * The compute platform of the profiling group.
+ */
+export enum ComputePlatform {
+  /**
+   * Use AWS_LAMBDA if your application runs on AWS Lambda.
+   */
+  AWS_LAMBDA = 'AWSLambda',
+
+  /**
+   * Use Default if your application runs on a compute platform that is not AWS Lambda,
+   * such an Amazon EC2 instance, an on-premises server, or a different platform.
+   */
+  DEFAULT = 'Default',
+}
+
+/**
  * IResource represents a Profiling Group.
  */
 export interface IProfilingGroup extends IResource {
@@ -97,6 +113,13 @@ export interface ProfilingGroupProps {
    */
   readonly profilingGroupName?: string;
 
+  /**
+   * The compute platform of the profiling group.
+   *
+   * @default ComputePlatform.DEFAULT
+   */
+  readonly computePlatform?: ComputePlatform;
+
 }
 
 /**
@@ -158,6 +181,7 @@ export class ProfilingGroup extends ProfilingGroupBase {
 
     const profilingGroup = new CfnProfilingGroup(this, 'ProfilingGroup', {
       profilingGroupName: this.physicalName,
+      computePlatform: props.computePlatform,
     });
 
     this.profilingGroupName = this.getResourceNameAttribute(profilingGroup.ref);
