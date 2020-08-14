@@ -10,10 +10,12 @@ export enum ComputePlatform {
    * Use AWS_LAMBDA if your application runs on AWS Lambda.
    */
   AWS_LAMBDA = 'AWSLambda',
+
   /**
-   * Use Default if your application runs on a compute platform that is not AWS Lambda, such an Amazon EC2 instance, an on-premises server, or a different platform.
+   * Use Default if your application runs on a compute platform that is not AWS Lambda,
+   * such an Amazon EC2 instance, an on-premises server, or a different platform.
    */
-  DEFAULT = 'Default'
+  DEFAULT = 'Default',
 }
 
 /**
@@ -113,7 +115,8 @@ export interface ProfilingGroupProps {
 
   /**
    * The compute platform of the profiling group.
-   * @default - ComputePlatform set to Default, to profile non AWS Lambda compute environments.
+   *
+   * @default ComputePlatform.DEFAULT
    */
   readonly computePlatform?: ComputePlatform;
 

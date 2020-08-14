@@ -188,23 +188,15 @@ describe('profiling group', () => {
     });
   });
 
-  test('default profiling group with ComputePlatform', () => {
+  test('allows setting its ComputePlatform', () => {
     const stack = new Stack();
     new ProfilingGroup(stack, 'MyProfilingGroup', {
       profilingGroupName: 'MyAwesomeProfilingGroup',
       computePlatform: ComputePlatform.AWS_LAMBDA,
     });
 
-    expect(stack).toMatch({
-      'Resources': {
-        'MyProfilingGroup829F0507': {
-          'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
-          'Properties': {
-            'ProfilingGroupName': 'MyAwesomeProfilingGroup',
-            'ComputePlatform': 'AWSLambda',
-          },
-        },
-      },
+    expect(stack).toHaveResourceLike('AWS::CodeGuruProfiler::ProfilingGroup', {
+      'ComputePlatform': 'AWSLambda',
     });
   });
 

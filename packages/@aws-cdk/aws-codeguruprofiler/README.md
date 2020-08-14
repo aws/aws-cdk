@@ -33,9 +33,10 @@ const profilingGroup = new ProfilingGroup(stack, 'MyProfilingGroup');
 profilingGroup.grantPublish(publishAppRole);
 ```
 
-### Compute Platform Configuration
+### Compute Platform configuration
 
-Code Guru Profiler supports multiple compute environments and this can be configured while setting up a Profiling Group
+Code Guru Profiler supports multiple compute environments.
+They can be configured when creating a Profiling Group by using the `computePlatform` property:
 
 ```ts
 const profilingGroup = new ProfilingGroup(stack, 'MyProfilingGroup', {
