@@ -263,7 +263,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       assumedBy: new iam.ServicePrincipal('chatbot.amazonaws.com'),
     });
 
-    const topicArns = !!props.notificationTopics
+    const topicArns = props.notificationTopics
       ? props.notificationTopics.map((topic) => topic.topicArn)
       : undefined;
 
