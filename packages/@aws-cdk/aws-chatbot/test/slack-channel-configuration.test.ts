@@ -117,7 +117,7 @@ describe('slack channel configuration tests', () => {
       slackWorkspaceId: 'ABC123',
       slackChannelId: 'DEF456',
       slackChannelConfigurationName: 'Test',
-      configurationRole: role,
+      role: role,
     });
 
     cdkAssert.expect(stack).to(cdkAssert.countResources('AWS::IAM::Role', 0));

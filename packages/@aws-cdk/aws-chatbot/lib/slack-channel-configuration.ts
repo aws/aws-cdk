@@ -18,7 +18,7 @@ export interface SlackChannelConfigurationProps {
    *
    * @default - A role will be created.
    */
-  readonly configurationRole?: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * The ID of the Slack workspace authorized with AWS Chatbot.
@@ -259,7 +259,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       physicalName: props.slackChannelConfigurationName,
     });
 
-    this.configurationRole = props.configurationRole || new iam.Role(this, 'ConfigurationRole', {
+    this.configurationRole = props.role || new iam.Role(this, 'ConfigurationRole', {
       assumedBy: new iam.ServicePrincipal('chatbot.amazonaws.com'),
     });
 
