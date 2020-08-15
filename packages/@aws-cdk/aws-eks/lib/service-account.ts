@@ -1,6 +1,7 @@
 import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role  } from '@aws-cdk/aws-iam';
 import { CfnJson, Construct  } from '@aws-cdk/core';
 import { Cluster } from './cluster';
+import { KubernetesManifest } from './k8s-manifest';
 
 /**
  * Options for `ServiceAccount`
@@ -78,7 +79,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     this.grantPrincipal = this.role.grantPrincipal;
     this.policyFragment = this.role.policyFragment;
 
-    cluster.addManifest(`${id}ServiceAccountResource`, {
+    new KubernetesManifest(this, `manifest-${id}ServiceAccountResource`, { cluster, manifest: [{
       apiVersion: 'v1',
       kind: 'ServiceAccount',
       metadata: {
@@ -91,7 +92,8 @@ export class ServiceAccount extends Construct implements IPrincipal {
           'eks.amazonaws.com/role-arn': this.role.roleArn,
         },
       },
-    });
+    }]});
+
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {

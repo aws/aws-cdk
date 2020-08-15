@@ -4,7 +4,6 @@ import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk
 import * as asg from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
@@ -37,12 +36,12 @@ export = {
 
         // this role creates a dependency between this stack and the cluster stack
         const role = new iam.Role(this, 'CrossRole', {
-          assumedBy: new ServicePrincipal('sqs.amazonaws.com'),
+          assumedBy: new iam.ServicePrincipal('sqs.amazonaws.com'),
           roleName: props.cluster.clusterArn,
         });
 
         // make sure this manifest doesn't create a dependency between the cluster stack
-        // and this stack (which would create a circular dependency between the two stacks)
+        // and this stack
         props.cluster.addManifest('cross-manifest', {
           kind: 'ConfigMap',
           apiVersion: 'v1',

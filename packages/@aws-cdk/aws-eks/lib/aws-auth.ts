@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Lazy, Stack } from '@aws-cdk/core';
+import { Construct, Lazy, Stack, NestedStack } from '@aws-cdk/core';
 import { AwsAuthMapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
@@ -21,7 +21,7 @@ export interface AwsAuthProps {
  *
  * @see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
  */
-export class AwsAuth extends Construct {
+export class AwsAuth extends NestedStack {
   private readonly stack: Stack;
   private readonly roleMappings = new Array<{ role: iam.IRole, mapping: AwsAuthMapping }>();
   private readonly userMappings = new Array<{ user: iam.IUser, mapping: AwsAuthMapping }>();
