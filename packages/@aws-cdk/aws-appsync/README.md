@@ -64,7 +64,7 @@ const demoTable = new db.Table(stack, 'DemoTable', {
   },
 });
 
-const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos"', demoTable);
+const demoDS = api.addDynamoDbDataSource('demoDataSource', demoTable);
 
 // Resolver for the Query "getDemos" that scans the DyanmoDb table and returns the entire list.
 demoDS.createResolver({
@@ -82,6 +82,24 @@ demoDS.createResolver({
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 ```
+
+## Imports
+
+Any GraphQL Api that has been created outside the stack can be imported from 
+another stack into your CDK app. Utilizing the `fromXxx` function, you have 
+the ability to add data sources and resolvers through a `IGraphQLApi` interface.
+
+```ts
+const importedApi = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'IApi', {
+  graphqlApiId: api.apiId,
+  graphqlArn: api.arn,
+});
+importedApi.addDynamoDbDataSource('TableDataSource', table);
+```
+
+If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
+the expected `arn` for the imported api, given the `apiId`. For creating data 
+sources and resolvers, an `apiId` is sufficient.
 
 ## Permissions
 

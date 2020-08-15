@@ -1,7 +1,9 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, IResource, Lazy, Resource, Stack, Token, Duration } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
+import { GeoRestriction } from './geo-restriction';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
 
@@ -55,6 +57,7 @@ export interface DistributionAttributes {
 
 interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
   readonly origin: IOrigin;
+  readonly originGroupId?: string;
 }
 
 /**
@@ -83,6 +86,83 @@ export interface DistributionProps {
   readonly certificate?: acm.ICertificate;
 
   /**
+   * Any comments you want to include about the distribution.
+   *
+   * @default - no comment
+   */
+  readonly comment?: string;
+
+  /**
+   * The object that you want CloudFront to request from your origin (for example, index.html)
+   * when a viewer requests the root URL for your distribution. If no default object is set, the
+   * request goes to the origin's root (e.g., example.com/).
+   *
+   * @default - no default root object
+   */
+  readonly defaultRootObject?: string;
+
+  /**
+   * Enable or disable the distribution.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * Whether CloudFront will respond to IPv6 DNS requests with an IPv6 address.
+   *
+   * If you specify false, CloudFront responds to IPv6 DNS requests with the DNS response code NOERROR and with no IP addresses.
+   * This allows viewers to submit a second request, for an IPv4 address for your distribution.
+   *
+   * @default true
+   */
+  readonly enableIpv6?: boolean;
+
+  /**
+   * Enable access logging for the distribution.
+   *
+   * @default - false, unless `loggingBucket` is specified.
+   */
+  readonly enableLogging?: boolean;
+
+  /**
+   * Controls the countries in which your content is distributed.
+   *
+   * @default - No geographic restrictions
+   */
+  readonly geoRestriction?: GeoRestriction;
+
+  /**
+   * Specify the maximum HTTP version that you want viewers to use to communicate with CloudFront.
+   *
+   * For viewers and CloudFront to use HTTP/2, viewers must support TLS 1.2 or later, and must support server name identification (SNI).
+   *
+   * @default HttpVersion.HTTP2
+   */
+  readonly httpVersion?: HttpVersion;
+
+  /**
+   * The Amazon S3 bucket to store the access logs in.
+   *
+   * @default - A bucket is created if `enableLogging` is true
+   */
+  readonly logBucket?: s3.IBucket;
+
+  /**
+   * Specifies whether you want CloudFront to include cookies in access logs
+   *
+   * @default false
+   */
+  readonly logIncludesCookies?: boolean;
+
+  /**
+   * An optional string that you want CloudFront to prefix to the access log filenames for this distribution.
+   *
+   * @default - no prefix
+   */
+  readonly logFilePrefix?: string;
+
+  /**
    * The price class that corresponds with the maximum price that you want to pay for CloudFront service.
    * If you specify PriceClass_All, CloudFront responds to requests for your objects from all CloudFront edge locations.
    * If you specify a price class other than PriceClass_All, CloudFront serves your objects from the CloudFront edge location
@@ -91,6 +171,20 @@ export interface DistributionProps {
    * @default PriceClass.PRICE_CLASS_ALL
    */
   readonly priceClass?: PriceClass;
+
+  /**
+   * Unique identifier that specifies the AWS WAF web ACL to associate with this CloudFront distribution.
+   *
+   * To specify a web ACL created using the latest version of AWS WAF, use the ACL ARN, for example
+   * `arn:aws:wafv2:us-east-1:123456789012:global/webacl/ExampleWebACL/473e64fd-f30b-4765-81a0-62ad96dd167a`.
+   * To specify a web ACL created using AWS WAF Classic, use the ACL ID, for example `473e64fd-f30b-4765-81a0-62ad96dd167a`.
+   *
+   * @see https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html
+   * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_CreateDistribution.html#API_CreateDistribution_RequestParameters.
+   *
+   * @default - No AWS Web Application Firewall web access control list (web ACL).
+   */
+  readonly webAclId?: string;
 
   /**
    * How CloudFront should handle requests that are not successful (e.g., PageNotFound).
@@ -158,15 +252,21 @@ export class Distribution extends Resource implements IDistribution {
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
 
-    const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
-      enabled: true,
+    const distribution = new CfnDistribution(this, 'Resource', { distributionConfig: {
+      enabled: props.enabled ?? true,
       origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
       originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
       defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
       cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
-      viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
+      comment: props.comment,
       customErrorResponses: this.renderErrorResponses(),
+      defaultRootObject: props.defaultRootObject,
+      httpVersion: props.httpVersion ?? HttpVersion.HTTP2,
+      ipv6Enabled: props.enableIpv6 ?? true,
+      logging: this.renderLogging(props),
       priceClass: props.priceClass ?? undefined,
+      restrictions: this.renderRestrictions(props.geoRestriction),
+      viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
     } });
 
     this.domainName = distribution.attrDomainName;
@@ -192,30 +292,35 @@ export class Distribution extends Resource implements IDistribution {
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
     const existingOrigin = this.boundOrigins.find(boundOrigin => boundOrigin.origin === origin);
     if (existingOrigin) {
-      return existingOrigin.originId;
+      return existingOrigin.originGroupId ?? existingOrigin.originId;
     } else {
       const originIndex = this.boundOrigins.length + 1;
       const scope = new Construct(this, `Origin${originIndex}`);
       const originId = scope.node.uniqueId;
       const originBindConfig = origin.bind(scope, { originId });
-      this.boundOrigins.push({ origin, originId, ...originBindConfig });
-      if (originBindConfig.failoverConfig) {
+      if (!originBindConfig.failoverConfig) {
+        this.boundOrigins.push({origin, originId, ...originBindConfig});
+      } else {
         if (isFailoverOrigin) {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
+        const groupIndex = this.originGroups.length + 1;
+        const originGroupId = new Construct(this, `OriginGroup${groupIndex}`).node.uniqueId;
+        this.boundOrigins.push({origin, originId, originGroupId, ...originBindConfig});
+
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
-        this.addOriginGroup(originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
+        this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
+        return originGroupId;
       }
       return originId;
     }
   }
 
-  private addOriginGroup(statusCodes: number[] | undefined, originId: string, failoverOriginId: string): void {
+  private addOriginGroup(originGroupId: string, statusCodes: number[] | undefined, originId: string, failoverOriginId: string): void {
     statusCodes = statusCodes ?? [500, 502, 503, 504];
     if (statusCodes.length === 0) {
       throw new Error('fallbackStatusCodes cannot be empty');
     }
-    const groupIndex = this.originGroups.length + 1;
     this.originGroups.push({
       failoverCriteria: {
         statusCodes: {
@@ -223,7 +328,7 @@ export class Distribution extends Resource implements IDistribution {
           quantity: statusCodes.length,
         },
       },
-      id: new Construct(this, `OriginGroup${groupIndex}`).node.uniqueId,
+      id: originGroupId,
       members: {
         items: [
           { originId },
@@ -280,6 +385,29 @@ export class Distribution extends Resource implements IDistribution {
     });
   }
 
+  private renderLogging(props: DistributionProps): CfnDistribution.LoggingProperty | undefined {
+    if (!props.enableLogging && !props.logBucket) { return undefined; }
+    if (props.enableLogging === false && props.logBucket) {
+      throw new Error('Explicitly disabled logging but provided a logging bucket.');
+    }
+
+    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket');
+    return {
+      bucket: bucket.bucketRegionalDomainName,
+      includeCookies: props.logIncludesCookies,
+      prefix: props.logFilePrefix,
+    };
+  }
+
+  private renderRestrictions(geoRestriction?: GeoRestriction) {
+    return geoRestriction ? {
+      geoRestriction: {
+        restrictionType: geoRestriction.restrictionType,
+        locations: geoRestriction.locations,
+      },
+    } : undefined;
+  }
+
   private renderViewerCertificate(certificate: acm.ICertificate): CfnDistribution.ViewerCertificateProperty {
     return {
       acmCertificateArn: certificate.certificateArn,
@@ -287,6 +415,14 @@ export class Distribution extends Resource implements IDistribution {
       minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2018,
     };
   }
+}
+
+/** Maximum HTTP version to support */
+export enum HttpVersion {
+  /** HTTP 1.1 */
+  HTTP1_1 = 'http1.1',
+  /** HTTP 2 */
+  HTTP2 = 'http2'
 }
 
 /**
