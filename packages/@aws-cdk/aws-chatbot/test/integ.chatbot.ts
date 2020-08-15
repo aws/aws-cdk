@@ -10,6 +10,7 @@ class ChatbotInteg extends cdk.Stack {
       slackChannelConfigurationName: 'test-channel',
       slackWorkspaceId: 'T49239U4W', // modify to your slack workspace id
       slackChannelId: 'C0187JABUE9',   // modify to your slack channel id
+      loggingLevel: chatbot.LoggingLevel.NONE,
     });
 
     slackChannel.addLambdaInvokeCommandPermissions();

@@ -5,55 +5,70 @@ import * as cdk from '@aws-cdk/core';
 import * as chatbot from '../lib';
 
 describe('slack channel configuration tests', () => {
-  test('new configuration with least properties', () => {
-    const stack = new cdk.Stack();
+  let stack: cdk.Stack;
 
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
+  test('created with minimal properties creates a new IAM Role', () => {
     new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
       slackWorkspaceId: 'ABC123',
       slackChannelId: 'DEF456',
       slackChannelConfigurationName: 'Test',
     });
 
-    cdkAssert.expect(stack).toMatch({
-      Resources: {
-        MySlackChannelConfigurationRole1D3F23AE: {
-          Type: 'AWS::IAM::Role',
-          Properties: {
-            AssumeRolePolicyDocument: {
-              Statement: [
-                {
-                  Action: 'sts:AssumeRole',
-                  Effect: 'Allow',
-                  Principal: {
-                    Service: 'chatbot.amazonaws.com',
-                  },
-                },
-              ],
-              Version: '2012-10-17',
-            },
-          },
-        },
-        MySlackChannelA8E0B56C: {
-          Type: 'AWS::Chatbot::SlackChannelConfiguration',
-          Properties: {
-            ConfigurationName: 'Test',
-            IamRoleArn: {
-              'Fn::GetAtt': [
-                'MySlackChannelConfigurationRole1D3F23AE',
-                'Arn',
-              ],
-            },
-            SlackChannelId: 'DEF456',
-            SlackWorkspaceId: 'ABC123',
-            LoggingLevel: 'NONE',
-          },
-        },
+    cdkAssert.expect(stack).to(cdkAssert.haveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+      ConfigurationName: 'Test',
+      IamRoleArn: {
+        'Fn::GetAtt': [
+          'MySlackChannelConfigurationRole1D3F23AE',
+          'Arn',
+        ],
       },
-    });
+      SlackChannelId: 'DEF456',
+      SlackWorkspaceId: 'ABC123',
+    }));
+
+    cdkAssert.expect(stack).to(cdkAssert.haveResourceLike('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'chatbot.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
   });
 
-  test('new configuration with new sns topic', () => {
-    const stack = new cdk.Stack();
+  test('created and pass loggingLevel parameter [LoggingLevel.ERROR], it should be set [ERROR] logging level in Cloudformation', () => {
+    new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackWorkspaceId: 'ABC123',
+      slackChannelId: 'DEF456',
+      slackChannelConfigurationName: 'Test',
+      loggingLevel: chatbot.LoggingLevel.ERROR,
+    });
+
+    cdkAssert.expect(stack).to(cdkAssert.haveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+      ConfigurationName: 'Test',
+      IamRoleArn: {
+        'Fn::GetAtt': [
+          'MySlackChannelConfigurationRole1D3F23AE',
+          'Arn',
+        ],
+      },
+      SlackChannelId: 'DEF456',
+      SlackWorkspaceId: 'ABC123',
+      LoggingLevel: 'ERROR',
+    }));
+  });
+
+  test('created with new sns topic', () => {
     const topic = new sns.Topic(stack, 'MyTopic');
 
     new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
@@ -63,54 +78,25 @@ describe('slack channel configuration tests', () => {
       notificationTopics: [topic],
     });
 
-    cdkAssert.expect(stack).toMatch({
-      Resources: {
-        MyTopic86869434: {
-          Type: 'AWS::SNS::Topic',
-        },
-        MySlackChannelConfigurationRole1D3F23AE: {
-          Type: 'AWS::IAM::Role',
-          Properties: {
-            AssumeRolePolicyDocument: {
-              Statement: [
-                {
-                  Action: 'sts:AssumeRole',
-                  Effect: 'Allow',
-                  Principal: {
-                    Service: 'chatbot.amazonaws.com',
-                  },
-                },
-              ],
-              Version: '2012-10-17',
-            },
-          },
-        },
-        MySlackChannelA8E0B56C: {
-          Type: 'AWS::Chatbot::SlackChannelConfiguration',
-          Properties: {
-            ConfigurationName: 'Test',
-            IamRoleArn: {
-              'Fn::GetAtt': [
-                'MySlackChannelConfigurationRole1D3F23AE',
-                'Arn',
-              ],
-            },
-            SlackChannelId: 'DEF456',
-            SlackWorkspaceId: 'ABC123',
-            LoggingLevel: 'NONE',
-            SnsTopicArns: [
-              {
-                Ref: 'MyTopic86869434',
-              },
-            ],
-          },
-        },
+    cdkAssert.expect(stack).to(cdkAssert.haveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+      ConfigurationName: 'Test',
+      IamRoleArn: {
+        'Fn::GetAtt': [
+          'MySlackChannelConfigurationRole1D3F23AE',
+          'Arn',
+        ],
       },
-    });
+      SlackChannelId: 'DEF456',
+      SlackWorkspaceId: 'ABC123',
+      SnsTopicArns: [
+        {
+          Ref: 'MyTopic86869434',
+        },
+      ],
+    }));
   });
 
-  test('new configuration with existing role', () => {
-    const stack = new cdk.Stack();
+  test('created with existing role', () => {
     const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam:::role/test-role');
 
     new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
@@ -123,9 +109,7 @@ describe('slack channel configuration tests', () => {
     cdkAssert.expect(stack).to(cdkAssert.countResources('AWS::IAM::Role', 0));
   });
 
-  test('new configuration with new role and add notification permissions', () => {
-    const stack = new cdk.Stack();
-
+  test('created with new role and add notification permissions', () => {
     const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
       slackWorkspaceId: 'ABC123',
       slackChannelId: 'DEF456',
@@ -155,9 +139,7 @@ describe('slack channel configuration tests', () => {
     }));
   });
 
-  test('new configuration with new role and add read-only command permissions', () => {
-    const stack = new cdk.Stack();
-
+  test('created with new role and add read-only command permissions', () => {
     const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
       slackWorkspaceId: 'ABC123',
       slackChannelId: 'DEF456',
@@ -232,9 +214,7 @@ describe('slack channel configuration tests', () => {
     }));
   });
 
-  test('new configuration with new role and add lambda invoke command permissions', () => {
-    const stack = new cdk.Stack();
-
+  test('created with new role and add lambda invoke command permissions', () => {
     const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
       slackWorkspaceId: 'ABC123',
       slackChannelId: 'DEF456',
@@ -263,9 +243,7 @@ describe('slack channel configuration tests', () => {
     }));
   });
 
-  test('new configuration with new role and add support command permissions', () => {
-    const stack = new cdk.Stack();
-
+  test('created with new role and add support command permissions', () => {
     const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
       slackWorkspaceId: 'ABC123',
       slackChannelId: 'DEF456',
@@ -304,9 +282,7 @@ describe('slack channel configuration tests', () => {
     }));
   });
 
-  test('new configuration with new role and extra iam policies', () => {
-    const stack = new cdk.Stack();
-
+  test('created with new role and extra iam policies', () => {
     const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
       slackWorkspaceId: 'ABC123',
       slackChannelId: 'DEF456',
@@ -336,7 +312,6 @@ describe('slack channel configuration tests', () => {
   });
 
   test('added a iam policy to a from slack channel configuration ARN will nothing to do', () => {
-    const stack = new cdk.Stack();
     const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
 
     (imported as chatbot.SlackChannelConfiguration).addToPrincipalPolicy(new iam.PolicyStatement({
@@ -352,7 +327,6 @@ describe('slack channel configuration tests', () => {
   });
 
   test('from slack channel configuration ARN', () => {
-    const stack = new cdk.Stack();
     const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
 
     expect(imported.configurationName).toEqual('my-slack');

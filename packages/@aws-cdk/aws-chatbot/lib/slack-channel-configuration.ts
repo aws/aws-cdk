@@ -273,7 +273,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       slackWorkspaceId: props.slackWorkspaceId,
       slackChannelId: props.slackChannelId,
       snsTopicArns: topicArns,
-      loggingLevel: props.loggingLevel || LoggingLevel.NONE,
+      loggingLevel: props.loggingLevel?.toString(),
     });
 
     this.slackChannelConfigurationArn = configuration.ref;
