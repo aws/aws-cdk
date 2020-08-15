@@ -4,6 +4,7 @@ import { ManagedPolicy, Role, ServicePrincipal, Grant, IGrantable } from '@aws-c
 import { CfnResource, Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
 import { CfnApiKey,  CfnGraphQLApi,  CfnGraphQLSchema } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
+import { ObjectType, ObjectTypeProps } from './schema-types';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -673,32 +674,19 @@ export class GraphQLApi extends GraphqlApiBase {
   }
 
   /**
-   * Sets schema defintiion to input if schema mode is configured with SchemaDefinition.CODE
-   *
-   * @param definition string that is the graphql representation of schema
-   * @experimental temporary
-   */
-  public updateDefinition (definition: string): void{
-    if ( this.schemaMode != SchemaDefinition.CODE ) {
-      throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
-    }
-    this.schema.definition = definition;
-  }
-
-  /**
    * Define schema based on props configuration
    * @param file the file name/s3 location of Schema
    */
   private defineSchema(file?: string): CfnGraphQLSchema {
     let definition;
 
-    if ( this.schemaMode == SchemaDefinition.FILE && !file) {
+    if ( this.schemaMode === SchemaDefinition.FILE && !file) {
       throw new Error('schemaDefinitionFile must be configured if using FILE definition mode.');
-    } else if ( this.schemaMode == SchemaDefinition.FILE && file ) {
+    } else if ( this.schemaMode === SchemaDefinition.FILE && file ) {
       definition = readFileSync(file).toString('UTF-8');
-    } else if ( this.schemaMode == SchemaDefinition.CODE && !file ) {
+    } else if ( this.schemaMode === SchemaDefinition.CODE && !file ) {
       definition = '';
-    } else if ( this.schemaMode == SchemaDefinition.CODE && file) {
+    } else if ( this.schemaMode === SchemaDefinition.CODE && file) {
       throw new Error('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
     }
 
@@ -706,5 +694,43 @@ export class GraphQLApi extends GraphqlApiBase {
       apiId: this.apiId,
       definition,
     });
+  }
+
+  /**
+   * Escape hatch to append to Schema as desired. Will always result
+   * in a newline.
+   *
+   * @param addition the addition to add to schema
+   * @param delimiter the delimiter between schema and addition
+   * @default - ''
+   *
+   * @experimental
+   */
+  public appendToSchema(addition: string, delimiter?: string): void {
+    if ( this.schemaMode != SchemaDefinition.CODE ) {
+      throw new Error('API cannot append to schema because schema definition mode is not configured as CODE.');
+    }
+    const sep = delimiter ?? '';
+    this.schema.definition = `${this.schema.definition}${sep}${addition}\n`;
+  }
+
+  /**
+   * Add an object type to the schema
+   *
+   * @param name the name of the object type
+   * @param props the definition
+   *
+   * @experimental
+   */
+  public addType(name: string, props: ObjectTypeProps): ObjectType {
+    if ( this.schemaMode != SchemaDefinition.CODE ) {
+      throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
+    };
+    const type = new ObjectType(name, {
+      definition: props.definition,
+      directives: props.directives,
+    });
+    this.appendToSchema(type.toString());
+    return type;
   }
 }
