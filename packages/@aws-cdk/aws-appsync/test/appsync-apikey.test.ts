@@ -82,4 +82,32 @@ describe('AppSync Authorization Config', () => {
     // THEN
     expect(stack).not.toHaveResource('AWS::AppSync::ApiKey');
   });
+
+  test('appsync creates configured api key with additionalAuthorizationModes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new appsync.GraphQLApi(stack, 'api', {
+      name: 'api',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.IAM,
+        },
+        additionalAuthorizationModes: [{
+          authorizationType: appsync.AuthorizationType.API_KEY,
+          apiKeyConfig: {
+            description: 'Custom Description',
+          },
+        }],
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::ApiKey', {
+      Description: 'Custom Description',
+    });
+  });
 });

@@ -396,21 +396,20 @@ export class GraphQLApi extends GraphqlApiBase {
 
   /**
    * the configured API key, if present
+   *
+   * @default - no api key
    */
-  public get apiKey(): string | undefined {
-    return this._apiKey;
-  }
+  public readonly apiKey?: CfnApiKey;
 
   private schemaMode: SchemaDefinition;
   private api: CfnGraphQLApi;
-  private _apiKey?: string;
 
   constructor(scope: Construct, id: string, props: GraphQLApiProps) {
     super(scope, id);
 
     this.validateAuthorizationProps(props);
     const defaultAuthorizationType =
-      props.authorizationConfig?.defaultAuthorization?.authorizationType ||
+      props.authorizationConfig?.defaultAuthorization?.authorizationType ??
       AuthorizationType.API_KEY;
 
     let apiLogsRole;
@@ -461,22 +460,20 @@ export class GraphQLApi extends GraphqlApiBase {
     this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
     this.schemaMode = props.schemaDefinition;
-
-    if (
-      defaultAuthorizationType === AuthorizationType.API_KEY ||
-      props.authorizationConfig?.additionalAuthorizationModes?.some(
-        (authMode) => authMode.authorizationType === AuthorizationType.API_KEY
-      )
-    ) {
-      const apiKeyConfig: ApiKeyConfig = props.authorizationConfig
-        ?.defaultAuthorization?.apiKeyConfig || {
-          name: 'DefaultAPIKey',
-          description: 'Default API Key created by CDK',
-        };
-      this._apiKey = this.createAPIKey(apiKeyConfig);
-    }
-
     this.schema = this.defineSchema(props.schemaDefinitionFile);
+
+
+    if (defaultAuthorizationType === AuthorizationType.API_KEY ||
+      props.authorizationConfig?.additionalAuthorizationModes?.some(
+        (authMode) => authMode.authorizationType === AuthorizationType.API_KEY)
+    ) {
+      const apiKeyConfig = props.authorizationConfig?.defaultAuthorization?.apiKeyConfig ||
+      props.authorizationConfig?.additionalAuthorizationModes?.map((mode) => {
+        return mode.apiKeyConfig;
+      })[0];
+      this.apiKey = this.createAPIKey(apiKeyConfig);
+      this.apiKey.addDependsOn(this.schema);
+    }
   }
 
   /**
@@ -624,9 +621,9 @@ export class GraphQLApi extends GraphqlApiBase {
     };
   }
 
-  private createAPIKey(config: ApiKeyConfig) {
+  private createAPIKey(config?: ApiKeyConfig) {
     let expires: number | undefined;
-    if (config.expires) {
+    if (config?.expires) {
       expires = new Date(config.expires).valueOf();
       const days = (d: number) =>
         Date.now() + Duration.days(d).toMilliseconds();
@@ -635,12 +632,11 @@ export class GraphQLApi extends GraphqlApiBase {
       }
       expires = Math.round(expires / 1000);
     }
-    const key = new CfnApiKey(this, `${config.name || 'DefaultAPIKey'}ApiKey`, {
+    return new CfnApiKey(this, `${config?.name || 'Default'}ApiKey`, {
       expires,
-      description: config.description || 'Default API Key created by CDK',
+      description: config?.description,
       apiId: this.apiId,
     });
-    return key.attrApiKey;
   }
 
   private formatAdditionalAuthorizationModes(
