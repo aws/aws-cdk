@@ -15,6 +15,29 @@ import { testFixture, testFixtureNoVpc } from './util';
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
+
+  'when specifying a machine image the default update type is'(test: Test) {
+
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+
+    // WHEN
+    cluster.addCapacity('Bottlerocket', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+      machineImageType: eks.MachineImageType.BOTTLEROCKET,
+    });
+
+  },
+
+  'when machine image is not passed the default update type is'(test: Test) {
+
+  },
+
   'a default cluster spans all subnets'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
