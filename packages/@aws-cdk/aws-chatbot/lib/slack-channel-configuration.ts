@@ -89,7 +89,7 @@ export interface ISlackChannelConfiguration extends cdk.IResource {
    * The name of Slack channel configuration
    * @attribute
    */
-  readonly configurationName: string;
+  readonly slackChannelConfigurationName: string;
 
   /**
    * The permission role of Slack channel configuration
@@ -106,7 +106,7 @@ export interface ISlackChannelConfiguration extends cdk.IResource {
 abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISlackChannelConfiguration {
   abstract readonly slackChannelConfigurationArn: string;
 
-  abstract readonly configurationName: string;
+  abstract readonly slackChannelConfigurationName: string;
 
   abstract readonly role?: iam.IRole;
 
@@ -234,14 +234,15 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
        * The ArnComponents API will return `slack-channel/my-slack`
        * So i need to handle that to gets a correct name.`my-slack`
        */
-      readonly configurationName = (() => {
-        const resourceName = cdk
-          .Stack
-          .of(scope)
-          .parseArn(slackChannelConfigurationArn)
-          .resourceName as string;
+      readonly slackChannelConfigurationName = (() => {
+        const re = /^slack-channel\//;
+        const resourceName = cdk.Stack.of(scope).parseArn(slackChannelConfigurationArn).resourceName as string;
 
-        return resourceName.replace(/^slack-channel\//, '');
+        if (!re.test(resourceName)) {
+          throw new Error('The ARN of a Slack integration must be in the form: arn:aws:chatbot:accountId:chat-configuration/slack-channel/slackChannelName');
+        }
+
+        return resourceName.substring('slack-channel/'.length);
       })();
     }
 
@@ -250,7 +251,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
   readonly slackChannelConfigurationArn: string;
 
-  readonly configurationName: string;
+  readonly slackChannelConfigurationName: string;
 
   readonly role?: iam.IRole;
 
@@ -263,21 +264,17 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       assumedBy: new iam.ServicePrincipal('chatbot.amazonaws.com'),
     });
 
-    const topicArns = props.notificationTopics
-      ? props.notificationTopics.map((topic) => topic.topicArn)
-      : undefined;
-
     const configuration = new CfnSlackChannelConfiguration(this, 'Resource', {
       configurationName: props.slackChannelConfigurationName,
       iamRoleArn: this.role.roleArn,
       slackWorkspaceId: props.slackWorkspaceId,
       slackChannelId: props.slackChannelId,
-      snsTopicArns: topicArns,
+      snsTopicArns: props.notificationTopics?.map(topic => topic.topicArn),
       loggingLevel: props.loggingLevel?.toString(),
     });
 
     this.slackChannelConfigurationArn = configuration.ref;
-    this.configurationName = props.slackChannelConfigurationName;
+    this.slackChannelConfigurationName = props.slackChannelConfigurationName;
   }
 }
 

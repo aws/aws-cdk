@@ -4,7 +4,7 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as chatbot from '../lib';
 
-describe('slack channel configuration tests', () => {
+describe('created slack channel configuration tests', () => {
   let stack: cdk.Stack;
 
   beforeEach(() => {
