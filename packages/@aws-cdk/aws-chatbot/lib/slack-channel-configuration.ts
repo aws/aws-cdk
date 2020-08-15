@@ -97,7 +97,7 @@ export interface ISlackChannelConfiguration extends cdk.IResource {
    *
    * @default - A role will be created.
    */
-  readonly configurationRole?: iam.IRole;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -108,25 +108,25 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
 
   abstract readonly configurationName: string;
 
-  abstract readonly configurationRole?: iam.IRole;
+  abstract readonly role?: iam.IRole;
 
   /**
    * Adds extra permission to iam-role of Slack channel configuration
    * @param statement
    */
   public addToPrincipalPolicy(statement: iam.PolicyStatement): void {
-    if (!this.configurationRole) {
+    if (!this.role) {
       return;
     }
 
-    this.configurationRole!.addToPrincipalPolicy(statement);
+    this.role!.addToPrincipalPolicy(statement);
   }
 
   /**
    * Allows AWS chatbot to retrieve metric graphs from AWS CloudWatch.
    */
   public addNotificationPermissions(): void {
-    this.configurationRole!.addManagedPolicy(new iam.ManagedPolicy(this, 'NotificationsOnlyPolicy', {
+    this.role!.addManagedPolicy(new iam.ManagedPolicy(this, 'NotificationsOnlyPolicy', {
       managedPolicyName: 'AWS-Chatbot-NotificationsOnly-Policy',
       description: 'NotificationsOnly policy for AWS Chatbot',
       statements: [
@@ -147,9 +147,9 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
    * Allows read-only commands in supported clients.
    */
   public addReadOnlyCommandPermissions(): void {
-    this.configurationRole!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'));
+    this.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'));
 
-    this.configurationRole!.addManagedPolicy(new iam.ManagedPolicy(this, 'ReadonlyCommandsPolicy', {
+    this.role!.addManagedPolicy(new iam.ManagedPolicy(this, 'ReadonlyCommandsPolicy', {
       managedPolicyName: 'AWS-Chatbot-ReadonlyCommands',
       description: 'ReadonlyCommands policy for AWS Chatbot',
       statements: [
@@ -183,7 +183,7 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
    * Allows Lambda-invoke commands in supported clients.
    */
   public addLambdaInvokeCommandPermissions(): void {
-    this.configurationRole!.addManagedPolicy(new iam.ManagedPolicy(this, 'LambdaInvokePolicy', {
+    this.role!.addManagedPolicy(new iam.ManagedPolicy(this, 'LambdaInvokePolicy', {
       managedPolicyName: 'AWS-Chatbot-LambdaInvoke-Policy',
       description: 'LambdaInvoke policy for AWS Chatbot',
       statements: [
@@ -203,7 +203,7 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
    * Allows calling AWS Support APIs in supported clients.
    */
   public addSupportCommandPermissions(): void {
-    this.configurationRole!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSSupportAccess'));
+    this.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSSupportAccess'));
   }
 }
 
@@ -227,7 +227,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
        * @attribute
        */
       readonly slackChannelConfigurationArn = slackChannelConfigurationArn;
-      readonly configurationRole?: iam.IRole = undefined;
+      readonly role?: iam.IRole = undefined;
 
       /**
        * For example: arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack
@@ -252,14 +252,14 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
   readonly configurationName: string;
 
-  readonly configurationRole?: iam.IRole;
+  readonly role?: iam.IRole;
 
   constructor(scope: cdk.Construct, id: string, props: SlackChannelConfigurationProps) {
     super(scope, id, {
       physicalName: props.slackChannelConfigurationName,
     });
 
-    this.configurationRole = props.role || new iam.Role(this, 'ConfigurationRole', {
+    this.role = props.role || new iam.Role(this, 'ConfigurationRole', {
       assumedBy: new iam.ServicePrincipal('chatbot.amazonaws.com'),
     });
 
@@ -269,7 +269,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
     const configuration = new CfnSlackChannelConfiguration(this, 'Resource', {
       configurationName: props.slackChannelConfigurationName,
-      iamRoleArn: this.configurationRole.roleArn,
+      iamRoleArn: this.role.roleArn,
       slackWorkspaceId: props.slackWorkspaceId,
       slackChannelId: props.slackChannelId,
       snsTopicArns: topicArns,
