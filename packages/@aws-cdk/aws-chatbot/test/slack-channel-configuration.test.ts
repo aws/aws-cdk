@@ -1,4 +1,4 @@
-import * as cdkAssert from '@aws-cdk/assert';
+import { expect, haveResourceLike, countResources } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
@@ -18,7 +18,7 @@ describe('slack channel configuration tests', () => {
       slackChannelConfigurationName: 'Test',
     });
 
-    cdkAssert.expect(stack).to(cdkAssert.haveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+    expect(stack).to(haveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -30,7 +30,7 @@ describe('slack channel configuration tests', () => {
       SlackWorkspaceId: 'ABC123',
     }));
 
-    cdkAssert.expect(stack).to(cdkAssert.haveResourceLike('AWS::IAM::Role', {
+    expect(stack).to(haveResourceLike('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -54,7 +54,7 @@ describe('slack channel configuration tests', () => {
       loggingLevel: chatbot.LoggingLevel.ERROR,
     });
 
-    cdkAssert.expect(stack).to(cdkAssert.haveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+    expect(stack).to(haveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -78,7 +78,7 @@ describe('slack channel configuration tests', () => {
       notificationTopics: [topic],
     });
 
-    cdkAssert.expect(stack).to(cdkAssert.haveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+    expect(stack).to(haveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -106,7 +106,7 @@ describe('slack channel configuration tests', () => {
       role: role,
     });
 
-    cdkAssert.expect(stack).to(cdkAssert.countResources('AWS::IAM::Role', 0));
+    expect(stack).to(countResources('AWS::IAM::Role', 0));
   });
 
   test('created with new role and add notification permissions', () => {
@@ -118,7 +118,7 @@ describe('slack channel configuration tests', () => {
 
     slackChannel.addNotificationPermissions();
 
-    cdkAssert.expect(stack).to(cdkAssert.haveResource('AWS::IAM::ManagedPolicy', {
+    expect(stack).to(haveResourceLike('AWS::IAM::ManagedPolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -148,7 +148,7 @@ describe('slack channel configuration tests', () => {
 
     slackChannel.addReadOnlyCommandPermissions();
 
-    cdkAssert.expect(stack).to(cdkAssert.haveResource('AWS::IAM::Role', {
+    expect(stack).to(haveResourceLike('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -180,7 +180,7 @@ describe('slack channel configuration tests', () => {
       ],
     }));
 
-    cdkAssert.expect(stack).to(cdkAssert.haveResource('AWS::IAM::ManagedPolicy', {
+    expect(stack).to(haveResourceLike('AWS::IAM::ManagedPolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -223,7 +223,7 @@ describe('slack channel configuration tests', () => {
 
     slackChannel.addLambdaInvokeCommandPermissions();
 
-    cdkAssert.expect(stack).to(cdkAssert.haveResource('AWS::IAM::ManagedPolicy', {
+    expect(stack).to(haveResourceLike('AWS::IAM::ManagedPolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -252,7 +252,7 @@ describe('slack channel configuration tests', () => {
 
     slackChannel.addSupportCommandPermissions();
 
-    cdkAssert.expect(stack).to(cdkAssert.haveResource('AWS::IAM::Role', {
+    expect(stack).to(haveResourceLike('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -297,7 +297,7 @@ describe('slack channel configuration tests', () => {
       resources: ['arn:aws:s3:::abc/xyz/123.txt'],
     }));
 
-    cdkAssert.expect(stack).to(cdkAssert.haveResource('AWS::IAM::Policy', {
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -322,14 +322,7 @@ describe('slack channel configuration tests', () => {
       resources: ['arn:aws:s3:::abc/xyz/123.txt'],
     }));
 
-    cdkAssert.expect(stack).to(cdkAssert.countResources('AWS::IAM::Role', 0));
-    cdkAssert.expect(stack).to(cdkAssert.countResources('AWS::IAM::Policy', 0));
-  });
-
-  test('from slack channel configuration ARN', () => {
-    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
-
-    expect(imported.configurationName).toEqual('my-slack');
-    expect(imported.slackChannelConfigurationArn).toEqual('arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+    expect(stack).to(countResources('AWS::IAM::Role', 0));
+    expect(stack).to(countResources('AWS::IAM::Policy', 0));
   });
 });
