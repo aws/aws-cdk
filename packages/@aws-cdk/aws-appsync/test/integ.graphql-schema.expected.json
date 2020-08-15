@@ -31,7 +31,7 @@
         "Definition": "type Planet {\n  name: String\n  diameter: Int\n  rotationPeriod: Int\n  orbitalPeriod: Int\n  gravity: String\n  population: [String]\n  climates: [String]\n  terrains: [String]\n  surfaceWater: Float\n  created: String\n  edited: String\n  id: ID!\n}\ntype Species {\n  name: String\n  classification: String\n  designation: String\n  averageHeight: Float\n  averageLifespan: Int\n  eyeColors: [String]\n  hairColors: [String]\n  skinColors: [String]\n  language: String\n  homeworld: Planet\n  created: String\n  edited: String\n  id: ID!\n}\n\ntype Query {\n  getPlanets: [Planet]\n}\n"
       }
     },
-    "codefirstapiplanetsDSServiceRoleCC9B598D": {
+    "codefirstapiplanetsServiceRole2F4AA8E7": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -48,7 +48,7 @@
         }
       }
     },
-    "codefirstapiplanetsDSServiceRoleDefaultPolicy772878B1": {
+    "codefirstapiplanetsServiceRoleDefaultPolicy76FE4F2C": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -82,15 +82,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "codefirstapiplanetsDSServiceRoleDefaultPolicy772878B1",
+        "PolicyName": "codefirstapiplanetsServiceRoleDefaultPolicy76FE4F2C",
         "Roles": [
           {
-            "Ref": "codefirstapiplanetsDSServiceRoleCC9B598D"
+            "Ref": "codefirstapiplanetsServiceRole2F4AA8E7"
           }
         ]
       }
     },
-    "codefirstapiplanetsDSD0C53925": {
+    "codefirstapiplanets0F6BB479": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -101,7 +101,6 @@
         },
         "Name": "planets",
         "Type": "AMAZON_DYNAMODB",
-        "Description": "table for planets",
         "DynamoDBConfig": {
           "AwsRegion": {
             "Ref": "AWS::Region"
@@ -112,13 +111,13 @@
         },
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "codefirstapiplanetsDSServiceRoleCC9B598D",
+            "codefirstapiplanetsServiceRole2F4AA8E7",
             "Arn"
           ]
         }
       }
     },
-    "codefirstapiplanetsDSQuerygetPlanetsResolver07AC768F": {
+    "codefirstapiplanetsQuerygetPlanetsResolver633EA597": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -135,7 +134,7 @@
         "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
       },
       "DependsOn": [
-        "codefirstapiplanetsDSD0C53925",
+        "codefirstapiplanets0F6BB479",
         "codefirstapiSchema148B6CDE"
       ]
     },
