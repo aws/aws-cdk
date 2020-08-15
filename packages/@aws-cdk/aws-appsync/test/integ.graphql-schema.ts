@@ -54,7 +54,7 @@ const table = new db.Table(stack, 'table', {
   },
 });
 
-const tableDS = api.addDynamoDbDataSource('planets', 'table for planets', table);
+const tableDS = api.addDynamoDbDataSource('planets', table);
 
 tableDS.createResolver({
   typeName: 'Query',

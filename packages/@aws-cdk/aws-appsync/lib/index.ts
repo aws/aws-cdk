@@ -7,3 +7,4 @@ export * from './resolver';
 export * from './schema-types';
 export * from './schema-utils';
 export * from './graphqlapi';
+export * from './graphqlapi-base';
