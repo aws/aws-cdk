@@ -12,6 +12,7 @@ import {
   UserPoolDefaultAction,
   Values,
   IamResource,
+  SchemaDefinition,
 } from '../lib';
 
 /*
@@ -37,6 +38,7 @@ const userPool = new UserPool(stack, 'Pool', {
 
 const api = new GraphQLApi(stack, 'Api', {
   name: 'Integ_Test_IAM',
+  schemaDefinition: SchemaDefinition.FILE,
   schemaDefinitionFile: join(__dirname, 'integ.graphql-iam.graphql'),
   authorizationConfig: {
     defaultAuthorization: {
@@ -63,7 +65,7 @@ const testTable = new Table(stack, 'TestTable', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
-const testDS = api.addDynamoDbDataSource('testDataSource', 'Table for Tests"', testTable);
+const testDS = api.addDynamoDbDataSource('ds', testTable, {name: 'testDataSource'});
 
 testDS.createResolver({
   typeName: 'Query',

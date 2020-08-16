@@ -36,7 +36,8 @@ for more complex use cases.
 
 CloudFront distributions deliver your content from one or more origins; an origin is the location where you store the original version of your
 content. Origins can be created from S3 buckets or a custom origin (HTTP server). Each distribution has a default behavior which applies to all
-requests to that distribution, and routes requests to a primary origin.
+requests to that distribution, and routes requests to a primary origin. Constructs to define origins are in the `@aws-cdk/aws-cloudfront-origins`
+module.
 
 #### From an S3 Bucket
 
@@ -132,12 +133,11 @@ const myWebDistribution = new cloudfront.Distribution(this, 'myDist', {
 
 Additional behaviors can be specified at creation, or added after the initial creation. Each additional behavior is associated with an origin,
 and enable customization for a specific set of resources based on a URL path pattern. For example, we can add a behavior to `myWebDistribution` to
-override the default time-to-live (TTL) for all of the images.
+override the default viewer protocol policy for all of the images.
 
 ```ts
 myWebDistribution.addBehavior('/images/*.jpg', new origins.S3Origin(myBucket), {
   viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-  defaultTtl: cdk.Duration.days(7),
 });
 ```
 
@@ -155,7 +155,6 @@ new cloudfront.Distribution(this, 'myDist', {
     '/images/*.jpg': {
       origin: bucketOrigin,
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      defaultTtl: cdk.Duration.days(7),
     },
   },
 });
@@ -219,6 +218,28 @@ myDistribution.addBehavior('images/*', myOrigin, {
       eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
     },
   ],
+});
+```
+
+### Logging
+
+You can configure CloudFront to create log files that contain detailed information about every user request that CloudFront receives.
+The logs can go to either an existing bucket, or a bucket will be created for you.
+
+```ts
+// Simplest form - creates a new bucket and logs to it.
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+  enableLogging: true,
+});
+
+// You can optionally log to a specific bucket, configure whether cookies are logged, and give the log files a prefix.
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+  enableLogging: true, // Optional, this is implied if loggingBucket is specified
+  loggingBucket: new s3.Bucket(this, 'LoggingBucket'),
+  loggingFilePrefix: 'distribution-access-logs/',
+  loggingIncludesCookies: true,
 });
 ```
 
@@ -322,7 +343,6 @@ const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
 
 In case the origin source is not available and answers with one of the
 specified status code the failover origin source will be used.
-
 
 ```ts
 new CloudFrontWebDistribution(stack, 'ADistribution', {

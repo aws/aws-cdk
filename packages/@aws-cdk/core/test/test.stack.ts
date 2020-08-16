@@ -2,8 +2,9 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack, Tag, validateString } from '../lib';
+  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
+import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
 
@@ -128,9 +129,9 @@ export = {
     const o = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
     const c = new CfnCondition(stack, 'MyCondition');
 
-    test.equal(stack.node.findChild(p.node.path), p);
-    test.equal(stack.node.findChild(o.node.path), o);
-    test.equal(stack.node.findChild(c.node.path), c);
+    test.equal(stack.node.findChild(p.node.id), p);
+    test.equal(stack.node.findChild(o.node.id), o);
+    test.equal(stack.node.findChild(c.node.id), c);
 
     test.done();
   },
@@ -225,6 +226,43 @@ export = {
     const stack1 = new Stack(app, 'Stack1');
     const resource1 = new CfnResource(stack1, 'Resource', { type: 'BLA' });
     const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another resource
+    new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
+      someProperty: new Intrinsic(resource1.ref),
+    }});
+
+    // THEN
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    test.deepEqual(template2, {
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::Some::Resource',
+          Properties: {
+            someProperty: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefResource1D5D905A' },
+          },
+        },
+      },
+    });
+    test.done();
+  },
+
+  'Cross-stack reference export names are relative to the stack (when the flag is set)'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': 'true',
+      },
+    });
+    const indifferentScope = new Construct(app, 'ExtraScope');
+
+    const stack1 = new Stack(indifferentScope, 'Stack1', {
+      stackName: 'Stack1',
+    });
+    const resource1 = new CfnResource(stack1, 'Resource', { type: 'BLA' });
+    const stack2 = new Stack(indifferentScope, 'Stack2');
 
     // WHEN - used in another resource
     new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
@@ -410,7 +448,8 @@ export = {
     new CfnTest(stack, 'MyThing', { type: 'AWS::Type' });
 
     // THEN
-    ConstructNode.prepare(stack.node);
+    resolveReferences(app);
+
     test.done();
   },
 
@@ -524,7 +563,7 @@ export = {
     new CfnParameter(stack1, 'SomeParameter', { type: 'String', default: account2 });
 
     test.throws(() => {
-      ConstructNode.prepare(app.node);
+      app.synth();
       // eslint-disable-next-line max-len
     }, "'Stack2' depends on 'Stack1' (Stack2/SomeParameter -> Stack1.AWS::AccountId). Adding this dependency (Stack1/SomeParameter -> Stack2.AWS::AccountId) would create a cyclic reference.");
 
@@ -541,7 +580,7 @@ export = {
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    ConstructNode.prepare(app.node);
+    app.synth();
 
     // THEN
     test.deepEqual(stack2.dependencies.map(s => s.node.id), ['Stack1']);
@@ -560,7 +599,7 @@ export = {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     test.throws(() => {
-      ConstructNode.prepare(app.node);
+      app.synth();
     }, /Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
 
     test.done();
@@ -838,7 +877,7 @@ export = {
     const stack2 = new Stack(stack1, 'stack2');
 
     // WHEN
-    Tag.add(app, 'foo', 'bar');
+    Tags.of(app).add('foo', 'bar');
 
     // THEN
     const asm = app.synth();
@@ -864,6 +903,25 @@ export = {
 
     test.equals(artifact.terminationProtection, true);
 
+    test.done();
+  },
+
+  'users can (still) override "synthesize()" in stack'(test: Test) {
+    let called = false;
+
+    class MyStack extends Stack {
+      synthesize(session: ISynthesisSession) {
+        called = true;
+        test.ok(session.outdir);
+        test.equal(session.assembly.outdir, session.outdir);
+      }
+    }
+
+    const app = new App();
+    new MyStack(app, 'my-stack');
+
+    app.synth();
+    test.ok(called, 'synthesize() not called for Stack');
     test.done();
   },
 };

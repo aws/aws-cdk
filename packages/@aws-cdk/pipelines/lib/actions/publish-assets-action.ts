@@ -81,6 +81,10 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
 
     const project = new codebuild.PipelineProject(this, 'Default', {
       projectName: this.props.projectName,
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
+        privileged: (props.assetType === AssetType.DOCKER_IMAGE) ? true : undefined,
+      },
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
         phases: {
@@ -92,8 +96,6 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
           },
         },
       }),
-      // Needed to perform Docker builds
-      environment: props.assetType === AssetType.DOCKER_IMAGE ? { privileged: true } : undefined,
       role: props.role,
     });
 
