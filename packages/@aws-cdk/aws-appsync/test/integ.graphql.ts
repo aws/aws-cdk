@@ -54,7 +54,7 @@ const api = new GraphQLApi(stack, 'Api', {
   },
 });
 
-const noneDS = api.addNoneDataSource('none', {name: 'None'});
+const noneDS = api.addNoneDataSource('none', { name: 'None' });
 
 noneDS.createResolver({
   typeName: 'Query',
@@ -99,9 +99,9 @@ new Table(stack, 'PaymentTable', {
 
 const paymentTable = Table.fromTableName(stack, 'ImportedPaymentTable', 'PaymentTable');
 
-const customerDS = api.addDynamoDbDataSource('customerDs', customerTable, {name: 'Customer'});
-const orderDS = api.addDynamoDbDataSource('orderDs', orderTable, {name: 'Order'});
-const paymentDS = api.addDynamoDbDataSource('paymentDs', paymentTable, {name: 'Payment'});
+const customerDS = api.addDynamoDbDataSource('customerDs', customerTable, { name: 'Customer' });
+const orderDS = api.addDynamoDbDataSource('orderDs', orderTable, { name: 'Order' });
+const paymentDS = api.addDynamoDbDataSource('paymentDs', paymentTable, { name: 'Payment' });
 
 customerDS.createResolver({
   typeName: 'Query',
@@ -189,7 +189,7 @@ paymentDS.createResolver({
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
-const httpDS = api.addHttpDataSource('ds', 'https://aws.amazon.com/', {name: 'http'});
+const httpDS = api.addHttpDataSource('ds', 'https://aws.amazon.com/', { name: 'http' });
 
 httpDS.createResolver({
   typeName: 'Mutation',
