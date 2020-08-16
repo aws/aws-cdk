@@ -19,13 +19,15 @@ export interface BundlingOptions {
   readonly runtime: lambda.Runtime;
 
   /**
-   * The location
+   * The location to install dependencies.
    */
   readonly dependenciesLocation: DependenciesLocation;
 }
 
 /**
- * Produce bundled Lambda asset code. When there
+ * Produce bundled Lambda asset code. When there are no dependencies, we
+ * short-circuit and simply create an asset from the directory, leaving the user
+ * code alone.
  */
 export function bundle(options: BundlingOptions): lambda.AssetCode {
   const { dependenciesLocation, entry } = options;
@@ -59,7 +61,10 @@ export const IMAGE_LAYER_DIR = '/var/task.layer';
  */
 export const DEPENDENCY_EXCLUDES = ['*.pyc'];
 
-export function bundleDependenciesInline(options: BundlingOptions): lambda.AssetCode {
+/**
+ * Bundles dependencies into an asset that is inline with the user code.
+ */
+function bundleDependenciesInline(options: BundlingOptions): lambda.AssetCode {
   const { entry, runtime } = options;
 
   return lambda.Code.fromAsset(entry, {
@@ -76,22 +81,7 @@ export function bundleDependenciesInline(options: BundlingOptions): lambda.Asset
   });
 }
 
-/**
- * Gets a built layer bundler image. We can be pretty liberal about how we use
- * this as the docker layer cache is pretty quick.
- */
-export function getLayerBundlerImage(options: BundlingOptions): cdk.BundlingDockerImage {
-  const { runtime } = options;
-
-  return cdk.BundlingDockerImage.fromAsset(options.entry, {
-    buildArgs: {
-      FROM: runtime.bundlingDockerImage.image,
-    },
-    file: path.join(__dirname, 'layer-bundler/Dockerfile'),
-  });
-}
-
-export function bundleLayerDependentFunction(options: BundlingOptions): lambda.AssetCode {
+function bundleLayerDependentFunction(options: BundlingOptions): lambda.AssetCode {
   const { entry } = options;
 
   return lambda.Code.fromAsset(entry, {
@@ -114,6 +104,24 @@ export function bundleLayer(options: BundlingOptions): lambda.AssetCode {
     },
     assetHashType: cdk.AssetHashType.BUNDLE,
     exclude: DEPENDENCY_EXCLUDES,
+  });
+}
+
+/**
+ * Note: This image does a double-duty of building the assets for both the
+ * lambda layer and the function. The assets are stored in the built image
+ * in dedicated directories. To access the assets, we run the image with a copy
+ * command from the right image source directory. We can be pretty liberal about
+ * how we call this function, as it hits the docker layer cache.
+ */
+export function getLayerBundlerImage(options: BundlingOptions): cdk.BundlingDockerImage {
+  const { runtime } = options;
+
+  return cdk.BundlingDockerImage.fromAsset(options.entry, {
+    buildArgs: {
+      FROM: runtime.bundlingDockerImage.image,
+    },
+    file: path.join(__dirname, 'layer-bundler/Dockerfile'),
   });
 }
 
