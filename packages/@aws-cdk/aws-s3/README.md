@@ -312,3 +312,20 @@ const bucket = new Bucket(this, 'MyRedirectedBucket', {
 To put files into a bucket as part of a deployment (for example, to host a
 website), see the `@aws-cdk/aws-s3-deployment` package, which provides a
 resource that can do just that.
+
+### Bucket deletion
+
+By default, when a bucket is removed from a stack (or the stack is deleted),
+the S3 bucket will be removed according to its removal policy (which by
+default, will simply orphan the bucket and leave it in your AWS account).
+However, even if the removal policy is set to DESTROY, the bucket will get
+skipped by default if it still has objects inside.
+
+To override this, enable the `autoDeleteObjects` property.
+
+```ts
+const bucket = new Bucket(this, 'MyTempFileBucket', {
+  removalPolicy: RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
+```

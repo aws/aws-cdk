@@ -2,7 +2,8 @@ import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, CfnResource } from '@aws-cdk/core';
+import { AutoDeleteObjectsResourceHandler } from './auto-delete-objects-handler/auto-delete-objects-handler';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
@@ -996,6 +997,17 @@ export interface BucketProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
+   * Whether all objects should be automatically deleted when the bucket is
+   * removed from the stack. Prevents the bucket deletion from getting skipped
+   * because there are still objects inside.
+   *
+   * Requires the removal policy to be set to destroy.
+   *
+   * @default false
+   */
+  readonly autoDeleteObjects?: boolean;
+
+  /**
    * Whether this bucket should have versioning turned on or not.
    *
    * @default false
@@ -1266,6 +1278,24 @@ export class Bucket extends BucketBase {
 
     if (props.publicReadAccess) {
       this.grantPublicAccess();
+    }
+
+    if (props.autoDeleteObjects) {
+      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
+        throw new Error("Cannot use 'autoDeleteObjects' property on a bucket without setting removal policy to 'destroy'.");
+      }
+
+      const handler = AutoDeleteObjectsResourceHandler.singleton(this);
+
+      new CfnResource(this, 'AutoDeleteBucketResource', {
+        type: 'Custom::AutoDeleteBucketObjects',
+        properties: {
+          ServiceToken: handler.functionArn,
+          BucketName: this.bucketName,
+        },
+      });
+
+      this.grantReadWrite(handler.role);
     }
   }
 
