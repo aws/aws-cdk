@@ -202,7 +202,7 @@ export = {
     test.done();
   },
 
-  'adding capacity creates an ASG with a default update policy of None'(test: Test) {
+  'adding capacity creates an ASG without a rolling update policy'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
