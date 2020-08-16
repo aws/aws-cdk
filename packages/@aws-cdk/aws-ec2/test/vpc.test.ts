@@ -1366,7 +1366,21 @@ nodeunitShim({
       }));
       test.done();
     },
+    'SubnetSelection doesnt throw error when selecting imported subnets'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
 
+      // WHEN
+      const vpc = new Vpc(stack, 'VPC');
+
+      // THEN
+      test.doesNotThrow(() => vpc.selectSubnets({
+        subnets: [
+          Subnet.fromSubnetId(stack, 'Subnet', 'sub-1'),
+        ],
+      }));
+      test.done();
+    },
   },
 });
 

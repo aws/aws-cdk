@@ -348,7 +348,7 @@ abstract class VpcBase extends Resource implements IVpc {
 
     return {
       subnetIds: subnets.map(s => s.subnetId),
-      availabilityZones: subnets.map(s => s.availabilityZone),
+      get availabilityZones(): string[] { return subnets.map(s => s.availabilityZone); },
       internetConnectivityEstablished: tap(new CompositeDependable(), d => subnets.forEach(s => d.add(s.internetConnectivityEstablished))),
       subnets,
       hasPublic: subnets.some(s => pubs.has(s)),
