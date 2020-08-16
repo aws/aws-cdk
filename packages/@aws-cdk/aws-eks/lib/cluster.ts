@@ -904,7 +904,7 @@ export class Cluster extends Resource implements ICluster {
    */
   public get awsAuth() {
     if (!this._awsAuth) {
-      this._awsAuth = new AwsAuth(this.stack, 'AwsAuth', { cluster: this });
+      this._awsAuth = new AwsAuth(this, 'AwsAuth', { cluster: this });
     }
 
     return this._awsAuth;
