@@ -763,6 +763,10 @@ export class Cluster extends Resource implements ICluster {
    * The nodes will automatically be configured with the right VPC and AMI
    * for the instance type and Kubernetes version.
    *
+   * Note that if you specify `updateType: RollingUpdate` or `updateType: ReplacingUpdate`, your nodes might be replaced at deploy
+   * time without notice in case the recommended AMI for your machine image type has been updated by AWS.
+   * The default behavior for `updateType` is `None`, which means only new instances will be launched using the new AMI.
+   *
    * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
    * In addition, the [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
    * daemon will be installed on all spot instances to handle
