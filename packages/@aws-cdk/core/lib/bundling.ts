@@ -79,6 +79,7 @@ export class BundlingDockerImage {
 
     const dockerArgs: string[] = [
       'build', '-q',
+      ...(options.file ? ['-f', options.file] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
@@ -222,6 +223,13 @@ export interface DockerBuildOptions {
    * @default - no build args
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Name of the Dockerfile
+   *
+   * @default - The Dockerfile immediately within the build context path
+   */
+  readonly file?: string;
 }
 
 function flatten(x: string[][]) {

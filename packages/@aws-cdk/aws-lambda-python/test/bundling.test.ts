@@ -1,10 +1,15 @@
+/* eslint-disable import/order */
 import * as fs from 'fs';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { bundle, bundleDependencies } from '../lib/bundling';
+import { bundle, hasDependencies } from '../lib/bundling';
+import { DependenciesLocation } from '../lib';
+import * as child_process from 'child_process';
+import * as cdk from '@aws-cdk/core';
 
 jest.mock('@aws-cdk/aws-lambda');
 const existsSyncOriginal = fs.existsSync;
 const existsSyncMock = jest.spyOn(fs, 'existsSync');
+const spawnSyncMock = jest.spyOn(child_process, 'spawnSync');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -14,24 +19,27 @@ test('Bundling', () => {
   bundle({
     entry: '/project/folder',
     runtime: Runtime.PYTHON_3_7,
-    installDependencies: true,
+    dependenciesLocation: DependenciesLocation.INLINE,
   });
 
   // Correctly bundles
-  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', {
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'cp -au . /asset-output',
-      ],
-    }),
-  });
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder');
 
   // Searches for requirements.txt in entry
   expect(existsSyncMock).toHaveBeenCalledWith('/project/folder/requirements.txt');
 });
 
 test('Bundling with requirements.txt installed', () => {
+  const MOCK_BUILD_IMAGE_ID = '1234567890abcdef';
+  spawnSyncMock.mockImplementation(() => ({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from(`sha256:${MOCK_BUILD_IMAGE_ID}`),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  }));
+
   existsSyncMock.mockImplementation((p: fs.PathLike) => {
     if (/requirements.txt/.test(p.toString())) {
       return true;
@@ -42,21 +50,30 @@ test('Bundling with requirements.txt installed', () => {
   bundle({
     entry: '/project/folder',
     runtime: Runtime.PYTHON_3_7,
-    installDependencies: true,
+    dependenciesLocation: DependenciesLocation.INLINE,
   });
 
   // Correctly bundles with requirements.txt pip installed
-  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', {
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', expect.objectContaining({
     bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'pip3 install -r requirements.txt -t /asset-output && cp -au . /asset-output',
-      ],
+      image: { image: MOCK_BUILD_IMAGE_ID },
     }),
-  });
+    assetHashType: cdk.AssetHashType.BUNDLE,
+    exclude: ['*.pyc'],
+  }));
 });
 
 test('Bundling Python 2.7 with requirements.txt installed', () => {
+  const MOCK_BUILD_IMAGE_ID = '1234567890abcdef';
+  spawnSyncMock.mockImplementation(() => ({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from(`sha256:${MOCK_BUILD_IMAGE_ID}`),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  }));
+
   existsSyncMock.mockImplementation((p: fs.PathLike) => {
     if (/requirements.txt/.test(p.toString())) {
       return true;
@@ -67,18 +84,17 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
   bundle({
     entry: '/project/folder',
     runtime: Runtime.PYTHON_2_7,
-    installDependencies: true,
+    dependenciesLocation: DependenciesLocation.INLINE,
   });
 
   // Correctly bundles with requirements.txt pip installed
-  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', {
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', expect.objectContaining({
     bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output',
-      ],
+      image: { image: MOCK_BUILD_IMAGE_ID },
     }),
-  });
+    assetHashType: cdk.AssetHashType.BUNDLE,
+    exclude: ['*.pyc'],
+  }));
 });
 
 test('Bundling can dependencies can be switched off', () => {
@@ -92,33 +108,38 @@ test('Bundling can dependencies can be switched off', () => {
   bundle({
     entry: '/project/folder',
     runtime: Runtime.PYTHON_3_7,
-    installDependencies: false,
+    dependenciesLocation: DependenciesLocation.NONE,
   });
 
   // Does not install dependencies when instructed not to.
-  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', {
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'cp -au . /asset-output',
-      ],
-    }),
-  });
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder');
 });
 
-test('Bundling dependencies for a lambda layer', () => {
+describe('Dependency detection', () => {
+  test('Detects pipenv', () => {
+    existsSyncMock.mockImplementation((p: fs.PathLike) => {
+      if (/Pipfile/.test(p.toString())) {
+        return true;
+      }
+      return existsSyncOriginal(p);
+    });
 
-  bundleDependencies({
-    entry: '/project/folder',
-    runtime: Runtime.PYTHON_3_7,
+    expect(hasDependencies('/asset-input')).toEqual(true);
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'pip3 install -r requirements.txt -t /asset-output/python',
-      ],
-    }),
-  }));
+  test('Detects requirements.txt', () => {
+    existsSyncMock.mockImplementation((p: fs.PathLike) => {
+      if (/requirements.txt/.test(p.toString())) {
+        return true;
+      }
+      return existsSyncOriginal(p);
+    });
+
+    expect(hasDependencies('/asset-input')).toEqual(true);
+  });
+
+  test('No known dependencies', () => {
+    existsSyncMock.mockImplementation(() => false);
+    expect(hasDependencies('/asset-input')).toEqual(false);
+  });
 });

@@ -119,4 +119,24 @@ export = {
     test.throws(() => image._run(), /\[Status -1\]/);
     test.done();
   },
+
+  'custom dockerfile is passed through to docker exec'(test: Test) {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('sha256:1234567890abcdef'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    BundlingDockerImage.fromAsset('/some-path', {
+      file: 'my-dockerfile',
+    });
+
+    test.ok(spawnSyncStub.calledOnce);
+    test.ok(/-f my-dockerfile/.test(spawnSyncStub.firstCall.args[1]?.join(' ') ?? ''));
+
+    test.done();
+  },
 };

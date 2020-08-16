@@ -2,8 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { bundle, bundleDependencies } from './bundling';
-import { hasDependencies } from './dependencies';
+import { bundleLayer, bundle, hasDependencies } from './bundling';
 
 /**
  * Properties for a PythonFunction
@@ -93,10 +92,9 @@ export class PythonFunction extends lambda.Function {
       ...props,
       runtime,
       code: bundle({
-        ...props,
         entry,
         runtime,
-        installDependencies: dependenciesLocation === DependenciesLocation.INLINE,
+        dependenciesLocation,
       }),
       handler: `${index.slice(0, -3)}.${handler}`,
     });
@@ -104,9 +102,10 @@ export class PythonFunction extends lambda.Function {
     if (dependenciesLocation === DependenciesLocation.LAYER && hasDependencies(entry)) {
       this.addLayers(new lambda.LayerVersion(this, 'Dependencies', {
         compatibleRuntimes: [runtime],
-        code: bundleDependencies({
+        code: bundleLayer({
           entry,
           runtime,
+          dependenciesLocation,
         }),
       }));
     }
