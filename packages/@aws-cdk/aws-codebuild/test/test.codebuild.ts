@@ -1661,6 +1661,14 @@ export = {
       test.done();
     },
 
+    'can have FILE_PATH filters if the Group contains PUSH and PR_CREATED events'(test: Test) {
+      codebuild.FilterGroup.inEventOf(
+        codebuild.EventAction.PULL_REQUEST_CREATED,
+        codebuild.EventAction.PUSH)
+        .andFilePathIsNot('.*\\.java');
+      test.done();
+    },
+
     'BitBucket sources do not support the PULL_REQUEST_REOPENED event action'(test: Test) {
       const stack = new cdk.Stack();
 
