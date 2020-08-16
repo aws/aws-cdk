@@ -4,4 +4,6 @@ export * from './key';
 export * from './data-source';
 export * from './mapping-template';
 export * from './resolver';
+export * from './schema-types';
 export * from './graphqlapi';
+export * from './graphqlapi-base';

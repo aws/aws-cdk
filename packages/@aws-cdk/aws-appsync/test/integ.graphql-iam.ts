@@ -65,7 +65,7 @@ const testTable = new Table(stack, 'TestTable', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
-const testDS = api.addDynamoDbDataSource('testDataSource', 'Table for Tests"', testTable);
+const testDS = api.addDynamoDbDataSource('ds', testTable, {name: 'testDataSource'});
 
 testDS.createResolver({
   typeName: 'Query',
