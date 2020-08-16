@@ -16,28 +16,6 @@ const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
 
-  'when specifying a machine image the default update type is'(test: Test) {
-
-    // GIVEN
-    const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
-    });
-
-    // WHEN
-    cluster.addCapacity('Bottlerocket', {
-      instanceType: new ec2.InstanceType('t2.medium'),
-      machineImageType: eks.MachineImageType.BOTTLEROCKET,
-    });
-
-  },
-
-  'when machine image is not passed the default update type is'(test: Test) {
-
-  },
-
   'a default cluster spans all subnets'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -221,6 +199,24 @@ export = {
       ],
     }));
 
+    test.done();
+  },
+
+  'adding capacity creates an ASG with a default update policy of None'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+
+    // WHEN
+    cluster.addCapacity('Default', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+    });
+
+    test.deepEqual(expect(stack).value.Resources.ClusterASG0E4BA723.UpdatePolicy, { AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: true } });
     test.done();
   },
 

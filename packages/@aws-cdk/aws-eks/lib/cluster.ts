@@ -781,7 +781,7 @@ export class Cluster extends Resource implements ICluster {
           nodeType: nodeTypeForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
         }),
-      updateType: options.updateType || autoscaling.UpdateType.ROLLING_UPDATE,
+      updateType: options.updateType,
       instanceType: options.instanceType,
     });
 
