@@ -1086,15 +1086,27 @@ export class Domain extends DomainBase implements IDomain {
 
     const defaultInstanceType = 'r5.large.elasticsearch';
 
-    const dedicatedMasterType = props.capacity?.masterNodeInstanceType?.toLowerCase() ?? defaultInstanceType;
+    const dedicatedMasterType =
+      props.capacity?.masterNodeInstanceType?.toLowerCase() ??
+      defaultInstanceType;
     const dedicatedMasterCount = props.capacity?.masterNodes ?? 0;
     const dedicatedMasterEnabled = dedicatedMasterCount > 0;
 
-    const instanceType = props.capacity?.dataNodeInstanceType?.toLowerCase() ?? defaultInstanceType;
+    const instanceType =
+      props.capacity?.dataNodeInstanceType?.toLowerCase() ??
+      defaultInstanceType;
     const instanceCount = props.capacity?.dataNodes ?? 1;
 
-    const zoneAwarenessEnabled = props.zoneAwareness?.enabled ?? false;
-    const availabilityZoneCount = props.zoneAwareness?.availabilityZoneCount ?? 2;
+    const availabilityZoneCount =
+      props.zoneAwareness?.availabilityZoneCount ?? 2;
+
+    if (![1, 2, 3].includes(availabilityZoneCount)) {
+      throw new Error('Invalid zone awareness configuration; availabilityZoneCount must be 1, 2, or 3');
+    }
+
+    const zoneAwarenessEnabled =
+      props.zoneAwareness?.enabled ??
+      props.zoneAwareness?.availabilityZoneCount != null;
 
     if ([dedicatedMasterType, instanceType].some(t => !t.endsWith('.elasticsearch'))) {
       throw new Error('Master and data node instance types must end with ".elasticsearch".');
@@ -1278,7 +1290,7 @@ export class Domain extends DomainBase implements IDomain {
       },
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
-        kmsKeyId: props.encryptionAtRest?.kmsKey?.keyId,
+        kmsKeyId: encryptionAtRestEnabled ? props.encryptionAtRest?.kmsKey?.keyId : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: props.nodeToNodeEncryption ?? false },
       logPublishingOptions: {

@@ -613,6 +613,42 @@ describe('custom error responses', () => {
     })).toThrow(/EBS volumes are required for all instance types except R3 and I3/);
   });
 
+  test('error when availabilityZoneCount is not 1, 2, or 3', () => {
+    const vpc = new Vpc(stack, 'Vpc');
+
+    expect(() => new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      vpcOptions: {
+        subnets: [
+          new Subnet(stack, 'Subnet1', {
+            availabilityZone: 'testaz1',
+            cidrBlock: vpc.vpcCidrBlock,
+            vpcId: vpc.vpcId,
+          }),
+          new Subnet(stack, 'Subnet2', {
+            availabilityZone: 'testaz2',
+            cidrBlock: vpc.vpcCidrBlock,
+            vpcId: vpc.vpcId,
+          }),
+          new Subnet(stack, 'Subnet3', {
+            availabilityZone: 'testaz3',
+            cidrBlock: vpc.vpcCidrBlock,
+            vpcId: vpc.vpcId,
+          }),
+          new Subnet(stack, 'Subnet4', {
+            availabilityZone: 'testaz4',
+            cidrBlock: vpc.vpcCidrBlock,
+            vpcId: vpc.vpcId,
+          }),
+        ],
+        securityGroups: [],
+      },
+      zoneAwareness: {
+        availabilityZoneCount: 4,
+      },
+    })).toThrow(/Invalid zone awareness configuration; availabilityZoneCount must be 1, 2, or 3/);
+  });
+
 });
 
 test('can specify future version', () => {
