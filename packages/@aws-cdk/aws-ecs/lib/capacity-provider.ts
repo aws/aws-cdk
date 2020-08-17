@@ -4,9 +4,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import { ICluster, AddCapacityOptions } from './cluster';
+import { AddCapacityOptions } from './cluster';
 import { CfnCapacityProvider } from './ecs.generated';
-import { CustomResource } from '@aws-cdk/core';
 
 /**
  * Represents the CapacityProvider
@@ -206,66 +205,3 @@ export interface CapacityProviderStrategy {
 }
 
 
-/**
- * Options for addCapacityProviderConfiguration
- */
-export interface CapacityProviderConfigurationOpts {
-  /**
-   * the capacity provisers to be configured with
-   */
-  readonly capacityProvider: any;
-}
-
-
-/**
- * Properties of the CapacityProviderConfiguration construct
- */
-export interface CapacityProviderConfigurationProps extends CapacityProviderConfigurationOpts {
-  /**
-   * the cluster for the capacity providers
-   */
-  readonly cluster: ICluster;
-
-  readonly runsAfter?: cdk.IDependable[];
-}
-
-
-/**
- * create and configure capacity provider(s)
- */
-export class CapacityProviderConfiguration extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: CapacityProviderConfigurationProps ) {
-    super(scope, id);
-
-    const stack = cdk.Stack.of(this);
-
-    const onEvent = new lambda.Function(this, 'CapacityProviderConfigurationHandler', {
-      runtime: lambda.Runtime.PYTHON_3_8,
-      handler: 'index.on_event',
-      timeout: cdk.Duration.seconds(60),
-      code: lambda.Code.fromAsset(path.join(__dirname, './capacity-provider-config-handler')),
-    });
-
-    onEvent.addToRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'ecs:PutClusterCapacityProviders',
-      ],
-      resources: [ '*' ],
-    }));
-
-    const capacityProviderConfigurationProvider = new cr.Provider(this, 'CapacityProviderConfigurationProvider', {
-      onEventHandler: onEvent,
-    });
-
-    const configurationResource = new CustomResource(this, 'CapacityProviderConfiguration', {
-      serviceToken: capacityProviderConfigurationProvider.serviceToken,
-      properties: {
-        cluster: props.cluster.clusterName,
-        capacityProviders: stack.toJsonString(props.capacityProvider),
-      }
-    })
-    if(props.runsAfter){
-      configurationResource.node.addDependency(...props.runsAfter)
-    }
-  }
-}

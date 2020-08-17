@@ -9,13 +9,12 @@ const env = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
 };
 
-const stack = new cdk.Stack(app, 'integ-capacity-provider8', { env });
+const stack = new cdk.Stack(app, 'integ-capacity-provider22', { env });
 
 // const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1});
 const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { isDefault: true })
 
 const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-Array.isArray(cluster)
 
 // create the 1st capacity provider with on-demand t3.large instances
 cluster.addCapacityProvider('CP', {
@@ -28,24 +27,14 @@ cluster.addCapacityProvider('CP', {
   defaultStrategy: { base: 1, weight: 1 },
 });
 
-// // create the 2nd capacity provider with ec2 spot t3.large instances
+// create the 2nd capacity provider with ec2 spot t3.large instances
 cluster.addCapacityProvider('CPSpot', {
   capacityOptions: {
     instanceType: new ec2.InstanceType('t3.large'),
-    minCapacity: 3,
+    minCapacity: 1,
     spotPrice: '0.1',
   },
   managedScaling: true,
   managedTerminationProtection: true,
   defaultStrategy: { weight: 3 },
 });
-
-
-// // register both capacity providers to the cluster
-// cluster.addCapacityProviderConfiguration('CapacityProviderConfiguration', {
-//   capacityProvider: [cp, cpSpot],
-//   defaultStrategy: [
-//     { capacityProvider: cp, base: 1, weight: 1 },
-//     { capacityProvider: cpSpot, weight: 3 },
-//   ],
-// });

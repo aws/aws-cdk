@@ -5,8 +5,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Construct, Duration, IResource, Resource, Stack, Lazy } from '@aws-cdk/core';
-import { CapacityProviderOpts, CapacityProviderConfiguration, CapacityProvider  } from './capacity-provider';
-import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
+import { CapacityProviderOpts, CapacityProvider, CapacityProviderStrategy  } from './capacity-provider';
+import { InstanceDrainHook, InstanceDrainHookOpts } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
 /**
@@ -48,6 +48,10 @@ export interface ClusterProps {
    * @default - Container Insights will be disabled for this cluser.
    */
   readonly containerInsights?: boolean;
+
+  readonly capacityProviders?: CapacityProvider[];
+
+  readonly defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
 }
 
 /**
@@ -111,10 +115,21 @@ export class Cluster extends Resource implements ICluster {
 
     const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
     const clusterSettings = containerInsights ? [{name: 'containerInsights', value: 'enabled'}] : undefined;
+    this.clusterName = props.clusterName ?? `${Stack.of(this).stackName}-${id}`
 
     const cluster = new CfnCluster(this, 'Resource', {
-      clusterName: this.physicalName,
+      clusterName: this.clusterName,
       clusterSettings,
+      capacityProviders: Lazy.listValue({
+        produce: () => this.capacityProviders.map(m => m.name)
+      }, { omitEmpty: true }),
+      defaultCapacityProviderStrategy: Lazy.anyValue({
+        produce: () => this.capacityProviders.map(m => ({
+          capacityProvider: m.name,
+          base: m.defaultStrategy.base,
+          weight: m.defaultStrategy.weight,
+        }))
+      }),
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
@@ -122,7 +137,6 @@ export class Cluster extends Resource implements ICluster {
       resource: 'cluster',
       resourceName: this.physicalName,
     });
-    this.clusterName = this.getResourceNameAttribute(cluster.ref);
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
 
@@ -133,13 +147,6 @@ export class Cluster extends Resource implements ICluster {
     this._autoscalingGroup = props.capacity !== undefined
       ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
       : undefined;
-
-    // configure the capacity providers
-    new CapacityProviderConfiguration(this, 'CapacityProviderConfiguration', {
-      cluster: this,
-      capacityProvider: this.synthesizeCapacityProviders(),
-      runsAfter: [ cluster ],
-    })
   }
   
   
@@ -259,12 +266,23 @@ export class Cluster extends Resource implements ICluster {
 
     // 0 disables, otherwise forward to underlying implementation which picks the sane default
     if (!options.taskDrainTime || options.taskDrainTime.toSeconds() !== 0) {
-      new InstanceDrainHook(autoScalingGroup, 'DrainECSHook', {
+      this.addInstanceDrainHook(autoScalingGroup, {
         autoScalingGroup,
-        cluster: this,
         drainTime: options.taskDrainTime,
-      });
+      })
     }
+  }
+
+  /**
+   * Create instance draining lifecycle hook for this autoscaling group
+   * @param scope - the scope of this resource
+   * @param options - the options to create the hook
+   */
+  public addInstanceDrainHook(scope: Construct,  options: InstanceDrainHookOpts) {
+    new InstanceDrainHook(scope,'DrainECSHook', {
+      clusterName: this.clusterName,
+      ...options
+    })
   }
 
   /**
@@ -315,15 +333,15 @@ export class Cluster extends Resource implements ICluster {
   * Configure capacity providers as well as their default strategies with the cluster
   * @param options options to create the CapacityProviderConfiguration
   */
-  private synthesizeCapacityProviders() {
-    return Lazy.anyValue({
-      produce: () => this.capacityProviders.map(m => ({
-        cluster: this.clusterName,
-        name: m.name,
-        defaultStrategy: m.defaultStrategy,
-      }))
-    }, { omitEmptyArray: false})
-  };
+  // private synthesizeCapacityProviders() {
+  //   return Lazy.anyValue({
+  //     produce: () => this.capacityProviders.map(m => ({
+  //       cluster: this.clusterName,
+  //       name: m.name,
+  //       defaultStrategy: m.defaultStrategy,
+  //     }))
+  //   }, { omitEmptyArray: false})
+  // };
 }
 
 /**

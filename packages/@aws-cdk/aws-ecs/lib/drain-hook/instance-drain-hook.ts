@@ -5,25 +5,16 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ICluster } from '../cluster';
 
 // Reference for the source in this package:
 //
 // https://github.com/aws-samples/ecs-refarch-cloudformation/blob/master/infrastructure/lifecyclehook.yaml
 
-/**
- * Properties for instance draining hook
- */
-export interface InstanceDrainHookProps {
+export interface InstanceDrainHookOpts {
   /**
    * The AutoScalingGroup to install the instance draining hook for
    */
   autoScalingGroup: autoscaling.IAutoScalingGroup;
-
-  /**
-   * The cluster on which tasks have been scheduled
-   */
-  cluster: ICluster;
 
   /**
    * How many seconds to give tasks to drain before the instance is terminated anyway
@@ -33,6 +24,16 @@ export interface InstanceDrainHookProps {
    * @default Duration.minutes(15)
    */
   drainTime?: cdk.Duration;
+}
+
+/**
+ * Properties for instance draining hook
+ */
+export interface InstanceDrainHookProps extends InstanceDrainHookOpts {
+  /**
+   * The cluster name on which tasks have been scheduled
+   */
+  clusterName: string;
 }
 
 /**
@@ -47,6 +48,11 @@ export class InstanceDrainHook extends cdk.Construct {
     super(scope, id);
 
     const drainTime = props.drainTime || cdk.Duration.minutes(5);
+    const clusterArn = cdk.Stack.of(this).formatArn({
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: props.clusterName,
+    });
 
     // Invoke Lambda via SNS Topic
     const fn = new lambda.Function(this, 'Function', {
@@ -57,7 +63,7 @@ export class InstanceDrainHook extends cdk.Construct {
       // up to a maximum of 15 minutes.
       timeout: cdk.Duration.seconds(Math.min(drainTime.toSeconds() + 10, 900)),
       environment: {
-        CLUSTER: props.cluster.clusterName,
+        CLUSTER: props.clusterName,
       },
     });
 
@@ -99,7 +105,7 @@ export class InstanceDrainHook extends cdk.Construct {
         'ecs:SubmitContainerStateChange',
         'ecs:SubmitTaskStateChange',
       ],
-      resources: [props.cluster.clusterArn],
+      resources: [clusterArn],
     }));
 
     // Restrict the container-instance operations to the ECS Cluster
@@ -109,7 +115,7 @@ export class InstanceDrainHook extends cdk.Construct {
         'ecs:ListTasks',
       ],
       conditions: {
-        ArnEquals: {'ecs:cluster': props.cluster.clusterArn},
+        ArnEquals: {'ecs:cluster': clusterArn},
       },
       resources: ['*'],
     }));
