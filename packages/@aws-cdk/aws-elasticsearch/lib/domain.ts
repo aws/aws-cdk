@@ -12,7 +12,7 @@ import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import * as perms from './perms';
 
 /**
- * Supported Elasticsearch Versions
+ * Elasticsearch version
  */
 export class ElasticsearchVersion {
   /** AWS Elasticsearch 1.5 */
@@ -59,6 +59,9 @@ export class ElasticsearchVersion {
 
   /** AWS Elasticsearch 7.4 */
   public static readonly V7_4 = ElasticsearchVersion.of('7.4');
+
+  /** AWS Elasticsearch 7.7 */
+  public static readonly V7_7 = ElasticsearchVersion.of('7.7');
 
   /**
    * Custom Elasticsearch version
@@ -324,8 +327,8 @@ export interface DomainProps {
    * The Elasticsearch version that your domain will leverage.
    *
    * Per https://aws.amazon.com/elasticsearch-service/faqs/, Amazon Elasticsearch Service
-   * currently supports Elasticsearch versions 7.4, 7.1, 6.8, 6.7, 6.5, 6.4, 6.3, 6.2, 6.0,
-   * 5.6, 5.5, 5.3, 5.1, 2.3, and 1.5.
+   * currently supports Elasticsearch versions 7.7, 7.4, 7.1, 6.8, 6.7, 6.5, 6.4, 6.3, 6.2,
+   * 6.0, 5.6, 5.5, 5.3, 5.1, 2.3, and 1.5.
    *
    */
   readonly version: ElasticsearchVersion;
@@ -1068,10 +1071,11 @@ export class Domain extends DomainBase implements IDomain {
     }
 
     if (
-      elasticsearchVersionNum <= 7.4 &&
+      elasticsearchVersionNum <= 7.7 &&
       ![
         1.5, 2.3, 5.1, 5.3, 5.5, 5.6, 6.0,
         6.2, 6.3, 6.4, 6.5, 6.7, 6.8, 7.1, 7.4,
+        7.7,
       ].includes(elasticsearchVersionNum)
     ) {
       throw new Error(`Unknown Elasticsearch version: ${elasticsearchVersion}`);
