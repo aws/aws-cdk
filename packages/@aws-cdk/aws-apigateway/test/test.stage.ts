@@ -251,8 +251,8 @@ export = {
   'if only the custom log destination log group is set'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', {cloudWatchRole: false, deploy: false});
-    const deployment = new apigateway.Deployment(stack, 'my-deployment', {api});
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
 
     // WHEN
@@ -282,8 +282,8 @@ export = {
   'if the custom log destination log group and format is set'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', {cloudWatchRole: false, deploy: false});
-    const deployment = new apigateway.Deployment(stack, 'my-deployment', {api});
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
 
     // WHEN

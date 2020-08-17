@@ -3,7 +3,7 @@ import '@aws-cdk/assert/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { CfnOutput, Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
 import * as cdkp from '../lib';
-import {  } from './testmatchers';
+import { } from './testmatchers';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;
@@ -110,7 +110,7 @@ test('can use additional files from source', () => {
       Actions: [
         deepObjectLike({
           Name: 'UseSources',
-          InputArtifacts: [ { Name: 'Artifact_Source_GitHub' } ],
+          InputArtifacts: [{ Name: 'Artifact_Source_GitHub' }],
         }),
       ],
     }),
@@ -149,7 +149,7 @@ test('can use additional files from build', () => {
       Actions: [
         deepObjectLike({
           Name: 'UseBuildArtifact',
-          InputArtifacts: [ { Name: 'IntegTests' } ],
+          InputArtifacts: [{ Name: 'IntegTests' }],
         }),
       ],
     }),

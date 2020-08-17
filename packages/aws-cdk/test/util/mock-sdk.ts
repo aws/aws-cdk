@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
 
-const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN '});
+const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN ' });
 
 const FAKE_CREDENTIAL_CHAIN = new AWS.CredentialProviderChain([
   () => FAKE_CREDENTIALS,

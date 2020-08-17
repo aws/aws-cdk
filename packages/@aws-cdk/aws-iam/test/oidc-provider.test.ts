@@ -54,15 +54,15 @@ describe('OpenIdConnectProvider resource', () => {
     // WHEN
     new iam.OpenIdConnectProvider(stack, 'MyProvider', {
       url: 'https://my-url',
-      clientIds: [ 'client1', 'client2' ],
-      thumbprints: [ 'thumb1' ],
+      clientIds: ['client1', 'client2'],
+      thumbprints: ['thumb1'],
     });
 
     // THEN
     expect(stack).toHaveResource('Custom::AWSCDKOpenIdConnectProvider', {
       Url: 'https://my-url',
-      ClientIDList: [ 'client1', 'client2' ],
-      ThumbprintList: [ 'thumb1' ],
+      ClientIDList: ['client1', 'client2'],
+      ThumbprintList: ['thumb1'],
     });
   });
 
@@ -145,7 +145,7 @@ describe('custom resource provider handler', () => {
       ResourceProperties: {
         ServiceToken: 'Foo',
         Url: 'https://my-urlx',
-        ThumbprintList: [ 'MyThumbprint' ],
+        ThumbprintList: ['MyThumbprint'],
       },
     });
 
@@ -154,7 +154,7 @@ describe('custom resource provider handler', () => {
     sinon.assert.calledWithExactly(createOpenIDConnectProvider, {
       ClientIDList: [],
       Url: 'https://my-urlx',
-      ThumbprintList: [ 'MyThumbprint' ],
+      ThumbprintList: ['MyThumbprint'],
     });
 
     expect(response).toStrictEqual({
@@ -177,7 +177,7 @@ describe('custom resource provider handler', () => {
     sinon.assert.calledWithExactly(createOpenIDConnectProvider, {
       ClientIDList: [],
       Url: 'https://my-urlx',
-      ThumbprintList: [ 'FAKE-THUMBPRINT' ],
+      ThumbprintList: ['FAKE-THUMBPRINT'],
     });
 
     expect(response).toStrictEqual({
@@ -207,7 +207,7 @@ describe('custom resource provider handler', () => {
       ResourceProperties: {
         ServiceToken: 'Foo',
         Url: 'https://new',
-        ThumbprintList: [ 'THUMB1', 'THUMB2' ],
+        ThumbprintList: ['THUMB1', 'THUMB2'],
       },
       OldResourceProperties: {
         Url: 'https://old',
@@ -222,7 +222,7 @@ describe('custom resource provider handler', () => {
     sinon.assert.calledWithExactly(createOpenIDConnectProvider, {
       ClientIDList: [],
       Url: 'https://new',
-      ThumbprintList: [ 'THUMB1', 'THUMB2' ],
+      ThumbprintList: ['THUMB1', 'THUMB2'],
     });
   });
 
@@ -247,7 +247,7 @@ describe('custom resource provider handler', () => {
     sinon.assert.calledOnceWithExactly(createOpenIDConnectProvider, {
       ClientIDList: [],
       Url: 'https://new',
-      ThumbprintList: [ 'FAKE-THUMBPRINT' ],
+      ThumbprintList: ['FAKE-THUMBPRINT'],
     });
     sinon.assert.notCalled(deleteOpenIDConnectProvider);
   });
@@ -260,11 +260,11 @@ describe('custom resource provider handler', () => {
       ResourceProperties: {
         ServiceToken: 'Foo',
         Url: 'https://url',
-        ThumbprintList: [ 'Foo', 'Bar' ],
+        ThumbprintList: ['Foo', 'Bar'],
       },
       OldResourceProperties: {
         Url: 'https://url',
-        ThumbprintList: [ 'Foo' ],
+        ThumbprintList: ['Foo'],
       },
     });
 
@@ -274,7 +274,7 @@ describe('custom resource provider handler', () => {
     sinon.assert.notCalled(deleteOpenIDConnectProvider);
     sinon.assert.calledOnceWithExactly(updateOpenIDConnectProviderThumbprint, {
       OpenIDConnectProviderArn: 'FAKE-PhysicalResourceId',
-      ThumbprintList: [ 'Bar', 'Foo' ],
+      ThumbprintList: ['Bar', 'Foo'],
     });
   });
 
@@ -286,11 +286,11 @@ describe('custom resource provider handler', () => {
       ResourceProperties: {
         ServiceToken: 'Foo',
         Url: 'https://url',
-        ClientIDList: [ 'A', 'B', 'C' ],
+        ClientIDList: ['A', 'B', 'C'],
       },
       OldResourceProperties: {
         Url: 'https://url',
-        ClientIDList: [ 'A', 'D' ],
+        ClientIDList: ['A', 'D'],
       },
     });
 
@@ -319,13 +319,13 @@ describe('custom resource provider handler', () => {
       ResourceProperties: {
         ServiceToken: 'Foo',
         Url: 'https://url',
-        ThumbprintList: [ 'NEW-LIST' ],
-        ClientIDList: [ 'A' ],
+        ThumbprintList: ['NEW-LIST'],
+        ClientIDList: ['A'],
       },
       OldResourceProperties: {
         Url: 'https://url',
-        ThumbprintList: [ 'OLD-LIST' ],
-        ClientIDList: [ ],
+        ThumbprintList: ['OLD-LIST'],
+        ClientIDList: [],
       },
     });
 
@@ -336,7 +336,7 @@ describe('custom resource provider handler', () => {
     sinon.assert.notCalled(removeClientIDFromOpenIDConnectProvider);
     sinon.assert.calledOnceWithExactly(updateOpenIDConnectProviderThumbprint, {
       OpenIDConnectProviderArn: 'FAKE-PhysicalResourceId',
-      ThumbprintList: [ 'NEW-LIST' ],
+      ThumbprintList: ['NEW-LIST'],
     });
     sinon.assert.calledOnceWithExactly(addClientIDToOpenIDConnectProvider, {
       OpenIDConnectProviderArn: 'FAKE-PhysicalResourceId',
@@ -352,12 +352,12 @@ describe('custom resource provider handler', () => {
       ResourceProperties: {
         ServiceToken: 'Foo',
         Url: 'https://new-url',
-        ClientIDList: [ 'A' ],
+        ClientIDList: ['A'],
       },
       OldResourceProperties: {
         Url: 'https://old-url',
-        ThumbprintList: [ 'OLD-LIST' ],
-        ClientIDList: [ ],
+        ThumbprintList: ['OLD-LIST'],
+        ClientIDList: [],
       },
     });
 
@@ -368,8 +368,8 @@ describe('custom resource provider handler', () => {
     sinon.assert.notCalled(addClientIDToOpenIDConnectProvider);
     sinon.assert.calledOnceWithExactly(downloadThumbprint, 'https://new-url'); // since thumbprint list is empty
     sinon.assert.calledOnceWithExactly(createOpenIDConnectProvider, {
-      ClientIDList: [ 'A' ],
-      ThumbprintList: [ 'FAKE-THUMBPRINT' ],
+      ClientIDList: ['A'],
+      ThumbprintList: ['FAKE-THUMBPRINT'],
       Url: 'https://new-url',
     });
   });
@@ -378,13 +378,13 @@ describe('custom resource provider handler', () => {
 
 describe('arrayDiff', () => {
   test('calculates the difference between two arrays', () => {
-    expect(arrayDiff([ 'a', 'b', 'c' ], [ 'a', 'd' ])).toStrictEqual({ adds: [ 'd' ], deletes: [ 'b', 'c' ]});
-    expect(arrayDiff([ 'a', 'b', 'c' ], [ ])).toStrictEqual({ adds: [], deletes: [ 'a', 'b', 'c' ] });
-    expect(arrayDiff([ 'a', 'b', 'c' ], [ 'a', 'c', 'b' ])).toStrictEqual({ adds: [], deletes: [] });
-    expect(arrayDiff([ ], [ 'a', 'c', 'b' ])).toStrictEqual({ adds: [ 'a', 'c', 'b' ], deletes: [] });
-    expect(arrayDiff([ 'x', 'y' ], [ 'a', 'c', 'b' ])).toStrictEqual({ adds: [ 'a', 'c', 'b' ], deletes: [ 'x', 'y' ]});
-    expect(arrayDiff([ ], [ ])).toStrictEqual({ adds: [], deletes: [] });
-    expect(arrayDiff([ 'a', 'a' ], [ 'a', 'b', 'a', 'b', 'b' ])).toStrictEqual({ adds: [ 'b' ], deletes: [] });
+    expect(arrayDiff(['a', 'b', 'c'], ['a', 'd'])).toStrictEqual({ adds: ['d'], deletes: ['b', 'c'] });
+    expect(arrayDiff(['a', 'b', 'c'], [])).toStrictEqual({ adds: [], deletes: ['a', 'b', 'c'] });
+    expect(arrayDiff(['a', 'b', 'c'], ['a', 'c', 'b'])).toStrictEqual({ adds: [], deletes: [] });
+    expect(arrayDiff([], ['a', 'c', 'b'])).toStrictEqual({ adds: ['a', 'c', 'b'], deletes: [] });
+    expect(arrayDiff(['x', 'y'], ['a', 'c', 'b'])).toStrictEqual({ adds: ['a', 'c', 'b'], deletes: ['x', 'y'] });
+    expect(arrayDiff([], [])).toStrictEqual({ adds: [], deletes: [] });
+    expect(arrayDiff(['a', 'a'], ['a', 'b', 'a', 'b', 'b'])).toStrictEqual({ adds: ['b'], deletes: [] });
   });
 });
 

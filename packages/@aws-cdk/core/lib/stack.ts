@@ -163,7 +163,7 @@ export class Stack extends Construct implements ITaggable {
       return value;
     }
 
-    function _lookup(c: IConstruct): Stack  {
+    function _lookup(c: IConstruct): Stack {
       if (Stack.isStack(c)) {
         return c;
       }
@@ -862,16 +862,17 @@ export class Stack extends Construct implements ITaggable {
     // between producer and consumer anyway, so we can just assume that they are).
     const containingAssembly = Stage.of(this);
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
-    const region  = env.region  ?? containingAssembly?.region ?? Aws.REGION;
+    const region = env.region ?? containingAssembly?.region ?? Aws.REGION;
 
     // this is the "aws://" env specification that will be written to the cloud assembly
     // manifest. it will use "unknown-account" and "unknown-region" to indicate
     // environment-agnosticness.
     const envAccount = !Token.isUnresolved(account) ? account : cxapi.UNKNOWN_ACCOUNT;
-    const envRegion  = !Token.isUnresolved(region)  ? region  : cxapi.UNKNOWN_REGION;
+    const envRegion = !Token.isUnresolved(region) ? region : cxapi.UNKNOWN_REGION;
 
     return {
-      account, region,
+      account,
+      region,
       environment: cxapi.EnvironmentUtils.format(envAccount, envRegion),
     };
   }
@@ -887,7 +888,7 @@ export class Stack extends Construct implements ITaggable {
     for (const dep of Object.values(this._stackDependencies)) {
       const ret = dep.stack.stackDependencyReasons(other);
       if (ret !== undefined) {
-        return [ ...dep.reasons, ...ret ];
+        return [...dep.reasons, ...ret];
       }
     }
     return undefined;
@@ -914,7 +915,7 @@ export class Stack extends Construct implements ITaggable {
    * Stage, and prefix the path components of the Stage before it.
    */
   private generateStackName() {
-    const assembly  = Stage.of(this);
+    const assembly = Stage.of(this);
     const prefix = (assembly && assembly.stageName) ? `${assembly.stageName}-` : '';
     return `${prefix}${this.generateStackId(assembly)}`;
   }
