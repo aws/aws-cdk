@@ -333,7 +333,7 @@ export interface DomainProps {
    *
    * @default - No logs are published
    */
-  readonly logPublishingOptions?: LoggingOptions;
+  readonly logging?: LoggingOptions;
 
 
   /**
