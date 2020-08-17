@@ -13,11 +13,6 @@ class ChatbotInteg extends cdk.Stack {
       loggingLevel: chatbot.LoggingLevel.NONE,
     });
 
-    slackChannel.addLambdaInvokeCommandPermissions();
-    slackChannel.addNotificationPermissions();
-    slackChannel.addSupportCommandPermissions();
-    slackChannel.addReadOnlyCommandPermissions();
-
     slackChannel.addToRolePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: [
