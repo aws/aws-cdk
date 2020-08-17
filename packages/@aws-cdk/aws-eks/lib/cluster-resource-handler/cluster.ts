@@ -284,12 +284,12 @@ function parseProps(props: any): aws.EKS.CreateClusterRequest {
 }
 
 interface UpdateMap {
-  replaceName: boolean;     // name
-  replaceVpc: boolean;      // resourcesVpcConfig.subnetIds and securityGroupIds
-  replaceRole: boolean;     // roleArn
-  updateVersion: boolean;   // version
-  updateLogging: boolean;   // logging
-  updateAccess: boolean;    // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
+  replaceName: boolean; // name
+  replaceVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
+  replaceRole: boolean; // roleArn
+  updateVersion: boolean; // version
+  updateLogging: boolean; // logging
+  updateAccess: boolean; // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
 }
 
 function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps: aws.EKS.CreateClusterRequest): UpdateMap {

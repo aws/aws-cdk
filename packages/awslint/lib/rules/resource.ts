@@ -112,10 +112,10 @@ export class ResourceReflection {
         if (this.cfn.attributeNames.includes(name)) {
           // special case: there is a cloudformation resource type in the attribute name
           // for example 'RoleId'.
-          cfnAttributeNames = [ name ];
+          cfnAttributeNames = [name];
         } else if (p.name.startsWith(basename)) {
           // begins with the resource name, just trim it
-          cfnAttributeNames = [ name.substring(this.cfn.basename.length) ];
+          cfnAttributeNames = [name.substring(this.cfn.basename.length)];
         } else {
           // we couldn't determine CFN attribute name, so we don't account for this
           // as an attribute. this could be, for example, when a construct implements
@@ -278,7 +278,7 @@ function guessResourceName(fqn: string) {
   const match = /@aws-cdk\/([a-z]+)-([a-z0-9]+)\.([A-Z][a-zA-Z0-9]+)/.exec(fqn);
   if (!match) { return undefined; }
 
-  const [ , org, ns, rs ] = match;
+  const [, org, ns, rs] = match;
   if (!org || !ns || !rs) { return undefined; }
 
   return `${org}::${ns}::${rs}`;

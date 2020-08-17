@@ -1,7 +1,7 @@
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import {StreamEventSource, StreamEventSourceProps} from './stream';
+import { StreamEventSource, StreamEventSourceProps } from './stream';
 
 export interface KinesisEventSourceProps extends StreamEventSourceProps {
 }
@@ -24,7 +24,7 @@ export class KinesisEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     const eventSourceMapping = target.addEventSourceMapping(`KinesisEventSource:${this.stream.node.uniqueId}`,
-      this.enrichMappingOptions({eventSourceArn: this.stream.streamArn}),
+      this.enrichMappingOptions({ eventSourceArn: this.stream.streamArn }),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 

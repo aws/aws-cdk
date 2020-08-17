@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { CfnResolver } from './appsync.generated';
 import { BaseDataSource } from './data-source';
-import { GraphQLApi } from './graphqlapi';
+import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 
 /**
@@ -44,7 +44,7 @@ export interface ResolverProps extends BaseResolverProps {
   /**
    * The API this resolver is attached to
    */
-  readonly api: GraphQLApi;
+  readonly api: IGraphqlApi;
   /**
    * The data source this resolver is using
    *
@@ -79,7 +79,7 @@ export class Resolver extends Construct {
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
     });
-    this.resolver.addDependsOn(props.api.schema);
+    props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {
       this.resolver.addDependsOn(props.dataSource.ds);
     }
