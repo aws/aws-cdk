@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import {AnyPrincipal, PolicyDocument, PolicyStatement} from '../lib';
+import { AnyPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 
 describe('IAM policy statement', () => {
 
@@ -153,7 +153,7 @@ describe('IAM policy statement', () => {
               'arn:aws:s3:::confidential-data',
               'arn:aws:s3:::confidential-data/*',
             ],
-            Condition: {Bool: {'aws:MultiFactorAuthPresent': 'true'}},
+            Condition: { Bool: { 'aws:MultiFactorAuthPresent': 'true' } },
           },
         ],
       };

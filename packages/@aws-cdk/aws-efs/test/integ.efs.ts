@@ -5,7 +5,7 @@ import { FileSystem } from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'test-efs-integ');
 
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1});
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
 const fileSystem = new FileSystem(stack, 'FileSystem', {
   vpc,

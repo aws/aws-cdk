@@ -17,7 +17,7 @@ class TestStack extends Stack {
       priceClass: cloudfront.PriceClass.PRICE_CLASS_200,
       originConfigs: [
         {
-          behaviors: [ { isDefaultBehavior: true } ],
+          behaviors: [{ isDefaultBehavior: true }],
           customOriginSource: {
             originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
             domainName: bucket.bucketWebsiteDomainName,

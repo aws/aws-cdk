@@ -5,7 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
+import { AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
 export = {
   'creating a Cluster also creates 2 DB Instances'(test: Test) {
@@ -33,7 +33,7 @@ export = {
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
-        VpcSecurityGroupIds: [ {'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId']}],
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
       },
       DeletionPolicy: ABSENT,
       UpdateReplacePolicy: 'Snapshot',
@@ -73,7 +73,7 @@ export = {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
-      VpcSecurityGroupIds: [ {'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId']}],
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
     }));
 
     test.done();
@@ -108,7 +108,7 @@ export = {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
-      VpcSecurityGroupIds: [ 'SecurityGroupId12345' ],
+      VpcSecurityGroupIds: ['SecurityGroupId12345'],
     }));
 
     test.done();
@@ -120,8 +120,8 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    const group = new ClusterParameterGroup(stack, 'Params', {
-      family: 'hello',
+    const group = new ParameterGroup(stack, 'Params', {
+      engine: DatabaseClusterEngine.AURORA,
       description: 'bye',
       parameters: {
         param: 'value',
@@ -263,7 +263,7 @@ export = {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
-      family: 'hello',
+      engine: DatabaseClusterEngine.AURORA,
       parameters: {
         key: 'value',
       },
@@ -300,7 +300,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.auroraMysql({
-        version: '5.7.mysql_aurora.2.04.4',
+        version: AuroraMysqlEngineVersion.VER_2_04_4,
       }),
       masterUser: {
         username: 'admin',
@@ -328,7 +328,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.auroraPostgres({
-        version: '10.7',
+        version: AuroraPostgresEngineVersion.VER_10_7,
       }),
       masterUser: {
         username: 'admin',
@@ -888,8 +888,8 @@ export = {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
-    const parameterGroup = new ClusterParameterGroup(stack, 'ParameterGroup', {
-      family: 'family',
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      engine: DatabaseClusterEngine.AURORA,
       parameters: {
         key: 'value',
       },
@@ -935,7 +935,7 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::RDS::DBClusterParameterGroup', {
-      Family: 'family',
+      Family: 'aurora5.6',
       Parameters: {
         key: 'value',
         aurora_load_from_s3_role: {
@@ -965,7 +965,9 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_11_4,
+      }),
       instances: 1,
       masterUser: {
         username: 'admin',
@@ -1111,7 +1113,7 @@ export = {
 };
 
 function testStack() {
-  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' }});
+  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }

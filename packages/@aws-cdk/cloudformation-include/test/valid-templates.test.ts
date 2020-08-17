@@ -1,9 +1,9 @@
+import * as path from 'path';
 import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
-import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
@@ -184,11 +184,96 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a UserData script, and output it unchanged', () => {
+    includeTestTemplate(stack, 'user-data.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('user-data.json'),
+    );
+  });
+
   test('can ingest a template with intrinsic functions and conditions, and output it unchanged', () => {
     includeTestTemplate(stack, 'functions-and-conditions.json');
 
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('functions-and-conditions.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub in string form with escaped and unescaped references and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-string.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-string.json'),
+    );
+  });
+
+  test('can parse the string argument Fn::Sub with escaped references that contain whitespace', () => {
+    includeTestTemplate(stack, 'fn-sub-escaping.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-escaping.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub in map form and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-map-dotted-attributes.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-map-dotted-attributes.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub shadowing a logical ID from the template and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-shadow.json'),
+    );
+  });
+
+  test('can ingest a template with Fn::Sub attribute expression shadowing a logical ID from the template, and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow-attribute.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-shadow-attribute.json'),
+    );
+  });
+
+  test('can modify resources used in Fn::Sub in map form references and see the changes in the template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'fn-sub-shadow.json');
+
+    cfnTemplate.getResource('AnotherBucket').overrideLogicalId('NewBucket');
+
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "BucketName": {
+        "Fn::Sub": [
+          "${AnotherBucket}",
+          {
+            "AnotherBucket": { "Ref": "NewBucket" },
+          },
+        ],
+      },
+    });
+  });
+
+  test('can modify resources used in Fn::Sub in string form and see the changes in the template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'fn-sub-override.json');
+
+    cfnTemplate.getResource('Bucket').overrideLogicalId('NewBucket');
+
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "BucketName": {
+        "Fn::Sub": "${NewBucket}-${!Bucket}-${NewBucket.DomainName}",
+      },
+    });
+  });
+
+  test('can ingest a template with Fn::Sub with brace edge cases and output it unchanged', () => {
+    includeTestTemplate(stack, 'fn-sub-brace-edges.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-brace-edges.json'),
     );
   });
 
@@ -251,6 +336,40 @@ describe('CDK Include', () => {
     );
   });
 
+  test('correctly change references to Conditions when renaming them', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'condition-same-name-as-resource.json');
+    const alwaysFalse = cfnTemplate.getCondition('AlwaysFalse');
+    alwaysFalse.overrideLogicalId('TotallyFalse');
+
+    expect(stack).toMatchTemplate({
+      "Parameters": {
+        "Param": {
+          "Type": "String",
+        },
+      },
+      "Conditions": {
+        "AlwaysTrue": {
+          "Fn::Not": [{ "Condition": "TotallyFalse" }],
+        },
+        "TotallyFalse": {
+          "Fn::Equals": [{ "Ref": "Param" }, 2],
+        },
+      },
+      "Resources": {
+        "AlwaysTrue": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::If": ["TotallyFalse",
+                { "Ref": "Param" },
+                { "Ref": "AWS::NoValue" }],
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('correctly parses templates with parameters', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
@@ -283,6 +402,52 @@ describe('CDK Include', () => {
     expect(() => {
       cfnTemplate.getParameter('FakeBucketNameThatDoesNotExist');
     }).toThrow(/Parameter with name 'FakeBucketNameThatDoesNotExist' was not found in the template/);
+  });
+
+  test('reflects changes to a retrieved CfnParameter object in the resulting template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
+    const stringParam = cfnTemplate.getParameter('BucketName');
+    const numberParam = cfnTemplate.getParameter('CorsMaxAge');
+
+    stringParam.default = 'MyDefault';
+    stringParam.allowedPattern = '[0-9]*$';
+    stringParam.allowedValues = ['123123', '456789'];
+    stringParam.constraintDescription = 'MyNewConstraint';
+    stringParam.description = 'a string of numeric characters';
+    stringParam.maxLength = 6;
+    stringParam.minLength = 2;
+
+    numberParam.maxValue = 100;
+    numberParam.minValue = 4;
+    numberParam.noEcho = false;
+    numberParam.type = "NewType";
+    const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        ...originalTemplate.Resources,
+      },
+      "Parameters": {
+        ...originalTemplate.Parameters,
+        "BucketName": {
+          ...originalTemplate.Parameters.BucketName,
+          "Default": "MyDefault",
+          "AllowedPattern": "[0-9]*$",
+          "AllowedValues": ["123123", "456789"],
+          "ConstraintDescription": "MyNewConstraint",
+          "Description": "a string of numeric characters",
+          "MaxLength": 6,
+          "MinLength": 2,
+        },
+        "CorsMaxAge": {
+          ...originalTemplate.Parameters.CorsMaxAge,
+          "MaxValue": 100,
+          "MinValue": 4,
+          "NoEcho": false,
+          "Type": "NewType",
+        },
+      },
+    });
   });
 
   test('reflects changes to a retrieved CfnCondition object in the resulting template', () => {
@@ -409,10 +574,20 @@ describe('CDK Include', () => {
     });
   });
 
-  test("throws an exception when encountering a Resource type it doesn't recognize", () => {
+  test('can include a template with a custom resource that uses attributes', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'custom-resource-with-attributes.json');
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('custom-resource-with-attributes.json'),
+    );
+
+    const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');
+    expect(cfnTemplate.getResource('CustomBucket').cfnOptions.condition).toBe(alwaysFalseCondition);
+  });
+
+  test("throws an exception when a custom resource uses a Condition attribute that doesn't exist in the template", () => {
     expect(() => {
-      includeTestTemplate(stack, 'non-existent-resource-type.json');
-    }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
+      includeTestTemplate(stack, 'custom-resource-with-bad-condition.json');
+    }).toThrow(/Resource 'CustomResource' uses Condition 'AlwaysFalseCond' that doesn't exist/);
   });
 
   test('can ingest a template that contains outputs and modify them', () => {
@@ -481,16 +656,144 @@ describe('CDK Include', () => {
       cfnTemplate.getOutput('FakeOutput');
     }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);
   });
+
+  test('replaces references to parameters with the user-specified values in Resources, Conditions, Metadata, and Options', () => {
+    includeTestTemplate(stack, 'parameter-references.json', {
+      parameters: {
+        'MyParam': 'my-s3-bucket',
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Transform": {
+        "Name": "AWS::Include",
+        "Parameters": {
+          "Location": "my-s3-bucket",
+        },
+      },
+      "Metadata": {
+        "Field": {
+          "Fn::If": [
+            "AlwaysFalse",
+            "AWS::NoValue",
+            "my-s3-bucket",
+          ],
+        },
+      },
+      "Conditions": {
+        "AlwaysFalse": {
+          "Fn::Equals": ["my-s3-bucket", "Invalid?BucketName"],
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Metadata": {
+            "Field": "my-s3-bucket",
+          },
+          "Properties": {
+            "BucketName": "my-s3-bucket",
+          },
+        },
+      },
+      "Outputs": {
+        "MyOutput": {
+          "Value": "my-s3-bucket",
+        },
+      },
+    });
+  });
+
+  test('can replace parameters in Fn::Sub', () => {
+    includeTestTemplate(stack, 'fn-sub-parameters.json', {
+      parameters: {
+        'MyParam': 'my-s3-bucket',
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::Sub": "my-s3-bucket",
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('does not modify Fn::Sub variables shadowing a replaced parameter', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow-parameter.json', {
+      parameters: {
+        'MyParam': 'MyValue',
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::Sub": [
+                "${MyParam}",
+                {
+                  "MyParam": "MyValue",
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('throws an exception when parameters are passed a resource name', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'bucket-with-parameters.json', {
+        parameters: {
+          'Bucket': 'noChange',
+        },
+      });
+    }).toThrow(/Parameter with logical ID 'Bucket' was not found in the template/);
+  });
+
+  test('throws an exception when provided a parameter to replace that is not in the template with parameters', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'bucket-with-parameters.json', {
+        parameters: {
+          'FakeParameter': 'DoesNotExist',
+        },
+      });
+    }).toThrow(/Parameter with logical ID 'FakeParameter' was not found in the template/);
+  });
+
+  test('throws an exception when provided a parameter to replace in a template with no parameters', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'only-empty-bucket.json', {
+        parameters: {
+          'FakeParameter': 'DoesNotExist',
+        },
+      });
+    }).toThrow(/Parameter with logical ID 'FakeParameter' was not found in the template/);
+  });
 });
 
 interface IncludeTestTemplateProps {
   /** @default true */
   readonly preserveLogicalIds?: boolean;
+
+  /** @default {} */
+  readonly parameters?: { [parameterName: string]: any }
 }
 
-function includeTestTemplate(scope: core.Construct, testTemplate: string, _props: IncludeTestTemplateProps = {}): inc.CfnInclude {
+function includeTestTemplate(scope: core.Construct, testTemplate: string, props: IncludeTestTemplateProps = {}): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
+    parameters: props.parameters,
     // preserveLogicalIds: props.preserveLogicalIds,
   });
 }
