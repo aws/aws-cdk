@@ -208,7 +208,7 @@ describe('userdata', () => {
 });
 
 const ASSET_STATEMENT = {
-  Action: [ 's3:GetObject*', 's3:GetBucket*', 's3:List*' ],
+  Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
   Effect: 'Allow',
   Resource: [
     {
@@ -238,7 +238,7 @@ describe('assets n buckets', () => {
     [''],
   ])('InitFile.from%sAsset', (existing: string) => {
     // GIVEN
-    const asset = new s3_assets.Asset(stack, 'Asset', { path: __filename});
+    const asset = new s3_assets.Asset(stack, 'Asset', { path: __filename });
     const init = ec2.CloudFormationInit.fromElements(
       existing
         ? ec2.InitFile.fromExistingAsset('/etc/fun.js', asset)
@@ -296,7 +296,7 @@ describe('assets n buckets', () => {
     const init = ec2.CloudFormationInit.fromElements(
       existing
         ? ec2.InitSource.fromExistingAsset('/etc/fun', asset)
-        : ec2.InitSource.fromAsset('/etc/fun', path.join(__dirname, 'asset-fixture') ),
+        : ec2.InitSource.fromAsset('/etc/fun', path.join(__dirname, 'asset-fixture')),
     );
 
     // WHEN
@@ -355,8 +355,8 @@ describe('assets n buckets', () => {
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
-            { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket' ] ] },
-            { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.js' ] ] },
+            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']] },
+            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.js']] },
           ],
         }),
         Version: '2012-10-17',
@@ -367,7 +367,7 @@ describe('assets n buckets', () => {
         config: {
           files: {
             '/etc/fun.js': {
-              source: { 'Fn::Join': [ '', [ 'https://s3.testregion.', { Ref: 'AWS::URLSuffix' }, '/my-bucket/file.js' ] ] },
+              source: { 'Fn::Join': ['', ['https://s3.testregion.', { Ref: 'AWS::URLSuffix' }, '/my-bucket/file.js']] },
             },
           },
         },
@@ -376,7 +376,7 @@ describe('assets n buckets', () => {
         S3AccessCreds: {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
-          buckets: [ 'my-bucket' ] ,
+          buckets: ['my-bucket'],
         },
       },
     });
@@ -398,8 +398,8 @@ describe('assets n buckets', () => {
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
-            { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket' ] ] },
-            { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.zip' ] ] },
+            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']] },
+            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.zip']] },
           ],
         }),
         Version: '2012-10-17',
@@ -409,7 +409,7 @@ describe('assets n buckets', () => {
       'AWS::CloudFormation::Init': {
         config: {
           sources: {
-            '/etc/fun': { 'Fn::Join': [ '', [ 'https://s3.testregion.', { Ref: 'AWS::URLSuffix' }, '/my-bucket/file.zip' ] ] },
+            '/etc/fun': { 'Fn::Join': ['', ['https://s3.testregion.', { Ref: 'AWS::URLSuffix' }, '/my-bucket/file.zip']] },
           },
         },
       },
@@ -417,7 +417,7 @@ describe('assets n buckets', () => {
         S3AccessCreds: {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
-          buckets: [ 'my-bucket' ] ,
+          buckets: ['my-bucket'],
         },
       },
     });
@@ -427,7 +427,7 @@ describe('assets n buckets', () => {
     // GIVEN
     const init = ec2.CloudFormationInit.fromElements(
       ec2.InitFile.fromAsset('/etc/fun.js', __filename),
-      ec2.InitSource.fromAsset('/etc/fun', path.join(__dirname, 'asset-fixture') ),
+      ec2.InitSource.fromAsset('/etc/fun', path.join(__dirname, 'asset-fixture')),
     );
 
     // WHEN
@@ -452,7 +452,7 @@ describe('assets n buckets', () => {
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket');
     const init = ec2.CloudFormationInit.fromElements(
       ec2.InitFile.fromS3Object('/etc/fun.js', bucket, 'file.js'),
-      ec2.InitSource.fromAsset('/etc/fun', path.join(__dirname, 'asset-fixture') ),
+      ec2.InitSource.fromAsset('/etc/fun', path.join(__dirname, 'asset-fixture')),
     );
 
     // WHEN
