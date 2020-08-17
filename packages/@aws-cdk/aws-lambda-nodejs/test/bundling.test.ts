@@ -1,8 +1,10 @@
+import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, BundlingDockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
+import { LocalBundler, Installer, LockFile } from '../lib/bundlers';
 import { Bundling } from '../lib/bundling';
 import * as util from '../lib/util';
 
@@ -198,4 +200,50 @@ test('with Docker build args', () => {
       HELLO: 'WORLD',
     }),
   }));
+});
+
+test('Local bundling', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  const bundler = new LocalBundler({
+    installer: Installer.NPM,
+    projectRoot: '/project',
+    relativeEntryPath: 'folder/entry.ts',
+    dependencies: {
+      dep: 'version',
+    },
+    environment: {
+      KEY: 'value',
+    },
+    lockFile: LockFile.NPM,
+  });
+
+  bundler.tryBundle('/outdir');
+
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'bash', [
+      '-c',
+      [
+        '$(node -p \"require.resolve(\'parcel\')\") build /project/folder/entry.ts --target cdk-lambda --dist-dir /outdir --no-autoinstall --no-scope-hoist',
+        'mv /outdir/entry.js /outdir/index.js',
+        'echo \'{\"dependencies\":{\"dep\":\"version\"}}\' > /outdir/package.json',
+        'cp /project/package-lock.json /outdir/package-lock.json',
+        'cd /outdir',
+        'npm install',
+      ].join(' && '),
+    ],
+    expect.objectContaining({
+      env: expect.objectContaining({ KEY: 'value' }),
+    }),
+  );
+
+  // Docker image is not built
+  expect(fromAssetMock).not.toHaveBeenCalled();
 });
