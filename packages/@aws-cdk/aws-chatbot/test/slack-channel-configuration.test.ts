@@ -1,10 +1,10 @@
-import { expect, haveResourceLike, countResources } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as chatbot from '../lib';
 
-describe('created slack channel configuration tests', () => {
+describe('SlackChannelConfiguration', () => {
   let stack: cdk.Stack;
 
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe('created slack channel configuration tests', () => {
       slackChannelConfigurationName: 'Test',
     });
 
-    expect(stack).to(haveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+    expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -28,9 +28,9 @@ describe('created slack channel configuration tests', () => {
       },
       SlackChannelId: 'DEF456',
       SlackWorkspaceId: 'ABC123',
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Role', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -43,7 +43,7 @@ describe('created slack channel configuration tests', () => {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
   });
 
   test('created and pass loggingLevel parameter [LoggingLevel.ERROR], it should be set [ERROR] logging level in Cloudformation', () => {
@@ -54,7 +54,7 @@ describe('created slack channel configuration tests', () => {
       loggingLevel: chatbot.LoggingLevel.ERROR,
     });
 
-    expect(stack).to(haveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+    expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -65,7 +65,7 @@ describe('created slack channel configuration tests', () => {
       SlackChannelId: 'DEF456',
       SlackWorkspaceId: 'ABC123',
       LoggingLevel: 'ERROR',
-    }));
+    });
   });
 
   test('created with new sns topic', () => {
@@ -78,7 +78,7 @@ describe('created slack channel configuration tests', () => {
       notificationTopics: [topic],
     });
 
-    expect(stack).to(haveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+    expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -93,7 +93,7 @@ describe('created slack channel configuration tests', () => {
           Ref: 'MyTopic86869434',
         },
       ],
-    }));
+    });
   });
 
   test('created with existing role', () => {
@@ -106,7 +106,7 @@ describe('created slack channel configuration tests', () => {
       role: role,
     });
 
-    expect(stack).to(countResources('AWS::IAM::Role', 0));
+    expect(stack).toCountResources('AWS::IAM::Role', 0);
   });
 
   test('created with new role and add notification permissions', () => {
@@ -118,7 +118,7 @@ describe('created slack channel configuration tests', () => {
 
     slackChannel.addNotificationPermissions();
 
-    expect(stack).to(haveResourceLike('AWS::IAM::ManagedPolicy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -133,10 +133,7 @@ describe('created slack channel configuration tests', () => {
         ],
         Version: '2012-10-17',
       },
-      Description: 'NotificationsOnly policy for AWS Chatbot',
-      ManagedPolicyName: 'AWS-Chatbot-NotificationsOnly-Policy',
-      Path: '/',
-    }));
+    });
   });
 
   test('created with new role and add read-only command permissions', () => {
@@ -148,7 +145,7 @@ describe('created slack channel configuration tests', () => {
 
     slackChannel.addReadOnlyCommandPermissions();
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Role', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -174,13 +171,10 @@ describe('created slack channel configuration tests', () => {
             ],
           ],
         },
-        {
-          Ref: 'MySlackChannelReadonlyCommandsPolicyD69F9CE1',
-        },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::IAM::ManagedPolicy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -208,10 +202,7 @@ describe('created slack channel configuration tests', () => {
         ],
         Version: '2012-10-17',
       },
-      Description: 'ReadonlyCommands policy for AWS Chatbot',
-      ManagedPolicyName: 'AWS-Chatbot-ReadonlyCommands',
-      Path: '/',
-    }));
+    });
   });
 
   test('created with new role and add lambda invoke command permissions', () => {
@@ -223,7 +214,7 @@ describe('created slack channel configuration tests', () => {
 
     slackChannel.addLambdaInvokeCommandPermissions();
 
-    expect(stack).to(haveResourceLike('AWS::IAM::ManagedPolicy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -237,10 +228,7 @@ describe('created slack channel configuration tests', () => {
         ],
         Version: '2012-10-17',
       },
-      Description: 'LambdaInvoke policy for AWS Chatbot',
-      ManagedPolicyName: 'AWS-Chatbot-LambdaInvoke-Policy',
-      Path: '/',
-    }));
+    });
   });
 
   test('created with new role and add support command permissions', () => {
@@ -252,7 +240,7 @@ describe('created slack channel configuration tests', () => {
 
     slackChannel.addSupportCommandPermissions();
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Role', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -279,7 +267,7 @@ describe('created slack channel configuration tests', () => {
           ],
         },
       ],
-    }));
+    });
   });
 
   test('created with new role and extra iam policies', () => {
@@ -289,7 +277,7 @@ describe('created slack channel configuration tests', () => {
       slackChannelConfigurationName: 'Test',
     });
 
-    slackChannel.addToPrincipalPolicy(new iam.PolicyStatement({
+    slackChannel.addToRolePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: [
         's3:GetObject',
@@ -297,7 +285,7 @@ describe('created slack channel configuration tests', () => {
       resources: ['arn:aws:s3:::abc/xyz/123.txt'],
     }));
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -308,13 +296,13 @@ describe('created slack channel configuration tests', () => {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
   });
 
   test('added a iam policy to a from slack channel configuration ARN will nothing to do', () => {
     const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
 
-    (imported as chatbot.SlackChannelConfiguration).addToPrincipalPolicy(new iam.PolicyStatement({
+    (imported as chatbot.SlackChannelConfiguration).addToRolePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: [
         's3:GetObject',
@@ -322,7 +310,52 @@ describe('created slack channel configuration tests', () => {
       resources: ['arn:aws:s3:::abc/xyz/123.txt'],
     }));
 
-    expect(stack).to(countResources('AWS::IAM::Role', 0));
-    expect(stack).to(countResources('AWS::IAM::Policy', 0));
+    expect(stack).toCountResources('AWS::IAM::Role', 0);
+    expect(stack).toCountResources('AWS::IAM::Policy', 0);
+  });
+
+  test('call addNotificationPermissions() method with imported slack channel configuration will nothing todo', () => {
+    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+    (imported as chatbot.SlackChannelConfiguration).addNotificationPermissions();
+
+    expect(stack).toCountResources('AWS::IAM::Role', 0);
+    expect(stack).toCountResources('AWS::IAM::Policy', 0);
+  });
+
+  test('call addReadOnlyCommandPermissions() method with imported slack channel configuration will nothing todo', () => {
+    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+    (imported as chatbot.SlackChannelConfiguration).addReadOnlyCommandPermissions();
+
+    expect(stack).toCountResources('AWS::IAM::Role', 0);
+    expect(stack).toCountResources('AWS::IAM::Policy', 0);
+  });
+
+  test('call addLambdaInvokeCommandPermissions() method with imported slack channel configuration will nothing todo', () => {
+    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+    (imported as chatbot.SlackChannelConfiguration).addLambdaInvokeCommandPermissions();
+
+    expect(stack).toCountResources('AWS::IAM::Role', 0);
+    expect(stack).toCountResources('AWS::IAM::Policy', 0);
+  });
+
+  test('call addSupportCommandPermissions() method with imported slack channel configuration will nothing todo', () => {
+    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+    (imported as chatbot.SlackChannelConfiguration).addSupportCommandPermissions();
+
+    expect(stack).toCountResources('AWS::IAM::Role', 0);
+    expect(stack).toCountResources('AWS::IAM::Policy', 0);
+  });
+
+  test('should throw error if ARN invalid', () => {
+    expect(() => chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/my-slack')).toThrow(
+      /The ARN of a Slack integration must be in the form: arn:aws:chatbot:accountId:chat-configuration\/slack-channel\/slackChannelName/,
+    );
+  });
+
+  test('from slack channel configuration ARN', () => {
+    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+
+    expect(imported.slackChannelConfigurationName).toEqual('my-slack');
+    expect(imported.slackChannelConfigurationArn).toEqual('arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
   });
 });

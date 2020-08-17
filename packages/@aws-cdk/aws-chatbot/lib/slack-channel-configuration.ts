@@ -77,7 +77,7 @@ export enum LoggingLevel {
 /**
  * Represents a Slack channel configuration
  */
-export interface ISlackChannelConfiguration extends cdk.IResource {
+export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantable {
 
   /**
    * The ARN of the Slack channel configuration
@@ -98,6 +98,11 @@ export interface ISlackChannelConfiguration extends cdk.IResource {
    * @default - A role will be created.
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Adds a statement to the IAM role.
+   */
+  addToRolePolicy(statement: iam.PolicyStatement): void;
 }
 
 /**
@@ -108,38 +113,34 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
 
   abstract readonly slackChannelConfigurationName: string;
 
+  abstract readonly grantPrincipal: iam.IPrincipal;
+
   abstract readonly role?: iam.IRole;
 
   /**
    * Adds extra permission to iam-role of Slack channel configuration
    * @param statement
    */
-  public addToPrincipalPolicy(statement: iam.PolicyStatement): void {
+  public addToRolePolicy(statement: iam.PolicyStatement): void {
     if (!this.role) {
       return;
     }
 
-    this.role!.addToPrincipalPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
    * Allows AWS chatbot to retrieve metric graphs from AWS CloudWatch.
    */
   public addNotificationPermissions(): void {
-    this.role!.addManagedPolicy(new iam.ManagedPolicy(this, 'NotificationsOnlyPolicy', {
-      managedPolicyName: 'AWS-Chatbot-NotificationsOnly-Policy',
-      description: 'NotificationsOnly policy for AWS Chatbot',
-      statements: [
-        new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
-          actions: [
-            'cloudwatch:Describe*',
-            'cloudwatch:Get*',
-            'cloudwatch:List*',
-          ],
-          resources: ['*'],
-        }),
+    this.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'cloudwatch:Describe*',
+        'cloudwatch:Get*',
+        'cloudwatch:List*',
       ],
+      resources: ['*'],
     }));
   }
 
@@ -147,35 +148,33 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
    * Allows read-only commands in supported clients.
    */
   public addReadOnlyCommandPermissions(): void {
-    this.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'));
+    if (!this.role) {
+      return;
+    }
 
-    this.role!.addManagedPolicy(new iam.ManagedPolicy(this, 'ReadonlyCommandsPolicy', {
-      managedPolicyName: 'AWS-Chatbot-ReadonlyCommands',
-      description: 'ReadonlyCommands policy for AWS Chatbot',
-      statements: [
-        new iam.PolicyStatement({
-          effect: iam.Effect.DENY,
-          actions: [
-            'iam:*',
-            's3:GetBucketPolicy',
-            'ssm:*',
-            'sts:*',
-            'kms:*',
-            'cognito-idp:GetSigningCertificate',
-            'ec2:GetPasswordData',
-            'ecr:GetAuthorizationToken',
-            'gamelift:RequestUploadCredentials',
-            'gamelift:GetInstanceAccess',
-            'lightsail:DownloadDefaultKeyPair',
-            'lightsail:GetInstanceAccessDetails',
-            'lightsail:GetKeyPair',
-            'lightsail:GetKeyPairs',
-            'redshift:GetClusterCredentials',
-            'storagegateway:DescribeChapCredentials',
-          ],
-          resources: ['*'],
-        }),
+    this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'));
+
+    this.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.DENY,
+      actions: [
+        'iam:*',
+        's3:GetBucketPolicy',
+        'ssm:*',
+        'sts:*',
+        'kms:*',
+        'cognito-idp:GetSigningCertificate',
+        'ec2:GetPasswordData',
+        'ecr:GetAuthorizationToken',
+        'gamelift:RequestUploadCredentials',
+        'gamelift:GetInstanceAccess',
+        'lightsail:DownloadDefaultKeyPair',
+        'lightsail:GetInstanceAccessDetails',
+        'lightsail:GetKeyPair',
+        'lightsail:GetKeyPairs',
+        'redshift:GetClusterCredentials',
+        'storagegateway:DescribeChapCredentials',
       ],
+      resources: ['*'],
     }));
   }
 
@@ -183,19 +182,13 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
    * Allows Lambda-invoke commands in supported clients.
    */
   public addLambdaInvokeCommandPermissions(): void {
-    this.role!.addManagedPolicy(new iam.ManagedPolicy(this, 'LambdaInvokePolicy', {
-      managedPolicyName: 'AWS-Chatbot-LambdaInvoke-Policy',
-      description: 'LambdaInvoke policy for AWS Chatbot',
-      statements: [
-        new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
-          actions: [
-            'lambda:invokeAsync',
-            'lambda:invokeFunction',
-          ],
-          resources: ['*'],
-        }),
+    this.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'lambda:invokeAsync',
+        'lambda:invokeFunction',
       ],
+      resources: ['*'],
     }));
   }
 
@@ -203,7 +196,11 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
    * Allows calling AWS Support APIs in supported clients.
    */
   public addSupportCommandPermissions(): void {
-    this.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSSupportAccess'));
+    if (!this.role) {
+      return;
+    }
+
+    this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSSupportAccess'));
   }
 }
 
@@ -228,6 +225,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
        */
       readonly slackChannelConfigurationArn = slackChannelConfigurationArn;
       readonly role?: iam.IRole = undefined;
+      readonly grantPrincipal: iam.IPrincipal;
 
       /**
        * For example: arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack
@@ -244,6 +242,11 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
         return resourceName.substring('slack-channel/'.length);
       })();
+
+      constructor(s: cdk.Construct, i: string) {
+        super(s, i);
+        this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
+      }
     }
 
     return new Import(scope, id);
@@ -255,6 +258,8 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
   readonly role?: iam.IRole;
 
+  readonly grantPrincipal: iam.IPrincipal;
+
   constructor(scope: cdk.Construct, id: string, props: SlackChannelConfigurationProps) {
     super(scope, id, {
       physicalName: props.slackChannelConfigurationName,
@@ -263,6 +268,8 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
     this.role = props.role || new iam.Role(this, 'ConfigurationRole', {
       assumedBy: new iam.ServicePrincipal('chatbot.amazonaws.com'),
     });
+
+    this.grantPrincipal = this.role;
 
     const configuration = new CfnSlackChannelConfiguration(this, 'Resource', {
       configurationName: props.slackChannelConfigurationName,

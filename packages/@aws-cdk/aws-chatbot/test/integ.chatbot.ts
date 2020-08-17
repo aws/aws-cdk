@@ -18,7 +18,7 @@ class ChatbotInteg extends cdk.Stack {
     slackChannel.addSupportCommandPermissions();
     slackChannel.addReadOnlyCommandPermissions();
 
-    slackChannel.addToPrincipalPolicy(new iam.PolicyStatement({
+    slackChannel.addToRolePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: [
         's3:GetObject',

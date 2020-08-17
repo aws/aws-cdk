@@ -17,12 +17,6 @@
         },
         "ManagedPolicyArns": [
           {
-            "Ref": "MySlackChannelLambdaInvokePolicy276508B8"
-          },
-          {
-            "Ref": "MySlackChannelNotificationsOnlyPolicy54A7013D"
-          },
-          {
             "Fn::Join": [
               "",
               [
@@ -45,9 +39,6 @@
                 ":iam::aws:policy/ReadOnlyAccess"
               ]
             ]
-          },
-          {
-            "Ref": "MySlackChannelReadonlyCommandsPolicyD69F9CE1"
           }
         ]
       }
@@ -57,6 +48,45 @@
       "Properties": {
         "PolicyDocument": {
           "Statement": [
+            {
+              "Action": [
+                "lambda:invokeAsync",
+                "lambda:invokeFunction"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "cloudwatch:Describe*",
+                "cloudwatch:Get*",
+                "cloudwatch:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "iam:*",
+                "s3:GetBucketPolicy",
+                "ssm:*",
+                "sts:*",
+                "kms:*",
+                "cognito-idp:GetSigningCertificate",
+                "ec2:GetPasswordData",
+                "ecr:GetAuthorizationToken",
+                "gamelift:RequestUploadCredentials",
+                "gamelift:GetInstanceAccess",
+                "lightsail:DownloadDefaultKeyPair",
+                "lightsail:GetInstanceAccessDetails",
+                "lightsail:GetKeyPair",
+                "lightsail:GetKeyPairs",
+                "redshift:GetClusterCredentials",
+                "storagegateway:DescribeChapCredentials"
+              ],
+              "Effect": "Deny",
+              "Resource": "*"
+            },
             {
               "Action": "s3:GetObject",
               "Effect": "Allow",
@@ -86,84 +116,6 @@
         "SlackChannelId": "C0187JABUE9",
         "SlackWorkspaceId": "T49239U4W",
         "LoggingLevel": "NONE"
-      }
-    },
-    "MySlackChannelLambdaInvokePolicy276508B8": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "lambda:invokeAsync",
-                "lambda:invokeFunction"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Description": "LambdaInvoke policy for AWS Chatbot",
-        "ManagedPolicyName": "AWS-Chatbot-LambdaInvoke-Policy",
-        "Path": "/"
-      }
-    },
-    "MySlackChannelNotificationsOnlyPolicy54A7013D": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "cloudwatch:Describe*",
-                "cloudwatch:Get*",
-                "cloudwatch:List*"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Description": "NotificationsOnly policy for AWS Chatbot",
-        "ManagedPolicyName": "AWS-Chatbot-NotificationsOnly-Policy",
-        "Path": "/"
-      }
-    },
-    "MySlackChannelReadonlyCommandsPolicyD69F9CE1": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "iam:*",
-                "s3:GetBucketPolicy",
-                "ssm:*",
-                "sts:*",
-                "kms:*",
-                "cognito-idp:GetSigningCertificate",
-                "ec2:GetPasswordData",
-                "ecr:GetAuthorizationToken",
-                "gamelift:RequestUploadCredentials",
-                "gamelift:GetInstanceAccess",
-                "lightsail:DownloadDefaultKeyPair",
-                "lightsail:GetInstanceAccessDetails",
-                "lightsail:GetKeyPair",
-                "lightsail:GetKeyPairs",
-                "redshift:GetClusterCredentials",
-                "storagegateway:DescribeChapCredentials"
-              ],
-              "Effect": "Deny",
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Description": "ReadonlyCommands policy for AWS Chatbot",
-        "ManagedPolicyName": "AWS-Chatbot-ReadonlyCommands",
-        "Path": "/"
       }
     }
   }
