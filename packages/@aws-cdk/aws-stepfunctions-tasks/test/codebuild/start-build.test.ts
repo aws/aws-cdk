@@ -1,20 +1,7 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import {
-  CodeBuildStartBuild,
-  ArtifactNamespace,
-  ArtifactPackaging,
-  ArtifactsType,
-  CacheMode,
-  CacheType,
-  ComputeType,
-  EnvironmentType,
-  ImagePullCredentialsType,
-  LogStatus,
-  SourceAuthType,
-  SourceType,
-} from '../../lib';
+import { CodeBuildStartBuild, CacheMode, EnvironmentType, SourceType } from '../../lib';
 
 let stack: cdk.Stack;
 let codebuildProject: codebuild.Project;
@@ -79,11 +66,11 @@ test('Task with all the parameters', () => {
       encryptionDisabled: false,
       location: 'string',
       name: 'string',
-      namespaceType: ArtifactNamespace.BUILD_ID,
+      namespaceType: 'BUILD_ID',
       overrideArtifactName: false,
-      packaging: ArtifactPackaging.ZIP,
+      packaging: 'ZIP',
       path: 'string',
-      type: ArtifactsType.S3,
+      type: 'S3',
     },
     buildspecOverride: 'string',
     buildStatusConfigOverride: {
@@ -93,10 +80,10 @@ test('Task with all the parameters', () => {
     cacheOverride: {
       location: 'string',
       modes: [CacheMode.LOCAL_CUSTOM_CACHE],
-      type: CacheType.S3,
+      type: 'S3',
     },
     certificateOverride: 'string',
-    computeTypeOverride: ComputeType.BUILD_GENERAL1_MEDIUM,
+    computeTypeOverride: codebuild.ComputeType.BUILD_GENERAL1_MEDIUM,
     debugSessionEnabled: false,
     encryptionKeyOverride: 'string',
     environmentTypeOverride: EnvironmentType.LINUX_CONTAINER,
@@ -113,18 +100,18 @@ test('Task with all the parameters', () => {
     },
     idempotencyToken: 'string',
     imageOverride: 'string',
-    imagePullCredentialsTypeOverride: ImagePullCredentialsType.CODEBUILD,
+    imagePullCredentialsTypeOverride: 'CODEBUILD',
     insecureSslOverride: false,
     logsConfigOverride: {
       cloudWatchLogs: {
         groupName: 'string',
-        status: LogStatus.ENABLED,
+        status: 'ENABLED',
         streamName: 'string',
       },
       s3Logs: {
         encryptionDisabled: false,
         location: 'string',
-        status: LogStatus.ENABLED,
+        status: 'ENABLED',
       },
     },
     privilegedModeOverride: false,
@@ -140,18 +127,18 @@ test('Task with all the parameters', () => {
         encryptionDisabled: false,
         location: 'string',
         name: 'string',
-        namespaceType: ArtifactNamespace.BUILD_ID,
+        namespaceType: 'BUILD_ID',
         overrideArtifactName: false,
-        packaging: ArtifactPackaging.ZIP,
+        packaging: 'ZIP',
         path: 'string',
-        type: ArtifactsType.S3,
+        type: 'S3',
       },
     ],
     secondarySourcesOverride: [
       {
         auth: {
           resource: 'string',
-          type: SourceAuthType.OAUTH,
+          type: 'OAUTH',
         },
         buildspec: 'string',
         buildStatusConfig: {
@@ -178,7 +165,7 @@ test('Task with all the parameters', () => {
     serviceRoleOverride: 'string',
     sourceAuthOverride: {
       resource: 'string',
-      type: SourceAuthType.OAUTH,
+      type: 'OAUTH',
     },
     sourceLocationOverride: 'string',
     sourceTypeOverride: SourceType.S3,
@@ -212,11 +199,11 @@ test('Task with all the parameters', () => {
         EncryptionDisabled: false,
         Location: 'string',
         Name: 'string',
-        NamespaceType: ArtifactNamespace.BUILD_ID,
+        NamespaceType: 'BUILD_ID',
         OverrideArtifactName: false,
-        Packaging: ArtifactPackaging.ZIP,
+        Packaging: 'ZIP',
         Path: 'string',
-        Type: ArtifactsType.S3,
+        Type: 'S3',
       },
       BuildspecOverride: 'string',
       BuildStatusConfigOverride: {
@@ -226,10 +213,10 @@ test('Task with all the parameters', () => {
       CacheOverride: {
         Location: 'string',
         Modes: [CacheMode.LOCAL_CUSTOM_CACHE],
-        Type: CacheType.S3,
+        Type: 'S3',
       },
       CertificateOverride: 'string',
-      ComputeTypeOverride: ComputeType.BUILD_GENERAL1_MEDIUM,
+      ComputeTypeOverride: codebuild.ComputeType.BUILD_GENERAL1_MEDIUM,
       DebugSessionEnabled: false,
       EncryptionKeyOverride: 'string',
       EnvironmentTypeOverride: EnvironmentType.LINUX_CONTAINER,
@@ -246,18 +233,18 @@ test('Task with all the parameters', () => {
       },
       IdempotencyToken: 'string',
       ImageOverride: 'string',
-      ImagePullCredentialsTypeOverride: ImagePullCredentialsType.CODEBUILD,
+      ImagePullCredentialsTypeOverride: 'CODEBUILD',
       InsecureSslOverride: false,
       LogsConfigOverride: {
         CloudWatchLogs: {
           GroupName: 'string',
-          Status: LogStatus.ENABLED,
+          Status: 'ENABLED',
           StreamName: 'string',
         },
         S3Logs: {
           EncryptionDisabled: false,
           Location: 'string',
-          Status: LogStatus.ENABLED,
+          Status: 'ENABLED',
         },
       },
       PrivilegedModeOverride: false,
@@ -273,18 +260,18 @@ test('Task with all the parameters', () => {
           EncryptionDisabled: false,
           Location: 'string',
           Name: 'string',
-          NamespaceType: ArtifactNamespace.BUILD_ID,
+          NamespaceType: 'BUILD_ID',
           OverrideArtifactName: false,
-          Packaging: ArtifactPackaging.ZIP,
+          Packaging: 'ZIP',
           Path: 'string',
-          Type: ArtifactsType.S3,
+          Type: 'S3',
         },
       ],
       SecondarySourcesOverride: [
         {
           Auth: {
             Resource: 'string',
-            Type: SourceAuthType.OAUTH,
+            Type: 'OAUTH',
           },
           Buildspec: 'string',
           BuildStatusConfig: {
@@ -311,7 +298,7 @@ test('Task with all the parameters', () => {
       ServiceRoleOverride: 'string',
       SourceAuthOverride: {
         Resource: 'string',
-        Type: SourceAuthType.OAUTH,
+        Type: 'OAUTH',
       },
       SourceLocationOverride: 'string',
       SourceTypeOverride: SourceType.S3,

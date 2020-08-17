@@ -216,7 +216,7 @@ export interface CloudWatchLogsConfig {
   /**
    * The current status of the logs in Amazon CloudWatch Logs for a build project.
    */
-  readonly status: 'ENALBE' | 'DISABLED';
+  readonly status: 'ENABLED' | 'DISABLED';
   /**
    * The prefix of the stream name of the Amazon CloudWatch Logs.
    */
@@ -238,7 +238,7 @@ export interface S3LogsConfig {
   /**
    * The current status of the S3 build logs.
    */
-  readonly status: 'ENALBE' | 'DISABLED';
+  readonly status: 'ENABLED' | 'DISABLED';
 }
 
 /**
