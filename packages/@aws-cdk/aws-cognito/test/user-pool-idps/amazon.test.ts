@@ -37,7 +37,7 @@ describe('UserPoolIdentityProvider', () => {
         userPool: pool,
         clientId: 'amzn-client-id',
         clientSecret: 'amzn-client-secret',
-        scopes: [ 'scope1', 'scope2' ],
+        scopes: ['scope1', 'scope2'],
       });
 
       expect(stack).toHaveResource('AWS::Cognito::UserPoolIdentityProvider', {

@@ -12,7 +12,9 @@ export = {
       Parameters: { MyParam: { Type: 'String', Default: 'Hello' } },
       Resources: {
         MyResource1: { Type: 'ResourceType1', Properties: { P1: 1, P2: 2 } },
-        MyResource2: { Type: 'ResourceType2' } } });
+        MyResource2: { Type: 'ResourceType2' },
+      },
+    });
 
     test.done();
   },
@@ -28,13 +30,15 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Parameters: {
         MyParam: { Type: 'String', Default: 'Hello' },
-        MyParam2: { Type: 'Integer' } },
+        MyParam2: { Type: 'Integer' },
+      },
       Resources: {
         MyResource1: { Type: 'ResourceType1', Properties: { P1: 1, P2: 2 } },
         MyResource2: { Type: 'ResourceType2' },
-        MyResource3: { Type: 'ResourceType3', Properties: { P3: 'Hello' } } },
-      Outputs: {
-        MyOutput: { Description: 'Out!', Value: 'hey' } } });
+        MyResource3: { Type: 'ResourceType3', Properties: { P3: 'Hello' } },
+      },
+      Outputs: { MyOutput: { Description: 'Out!', Value: 'hey' } },
+    });
 
     test.done();
   },

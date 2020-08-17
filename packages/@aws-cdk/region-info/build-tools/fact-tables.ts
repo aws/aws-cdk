@@ -104,3 +104,29 @@ export const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'cn-north-1': '638102146993',
   'cn-northwest-1': '037604701340',
 };
+
+// https://aws.amazon.com/releasenotes/available-deep-learning-containers-images
+export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
+  'us-east-1': '763104351884',
+  'us-east-2': '763104351884',
+  'us-west-1': '763104351884',
+  'us-west-2': '763104351884',
+  'ca-central-1': '763104351884',
+  'eu-west-1': '763104351884',
+  'eu-west-2': '763104351884',
+  'eu-west-3': '763104351884',
+  'eu-central-1': '763104351884',
+  'eu-north-1': '763104351884',
+  'sa-east-1': '763104351884',
+  'ap-south-1': '763104351884',
+  'ap-northeast-1': '763104351884',
+  'ap-northeast-2': '763104351884',
+  'ap-southeast-1': '763104351884',
+  'ap-southeast-2': '763104351884',
+
+  'ap-east-1': '871362719292',
+  'me-south-1': '217643126080',
+
+  'cn-north-1': '727897471807',
+  'cn-northwest-1': '727897471807',
+};

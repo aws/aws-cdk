@@ -254,6 +254,16 @@ export interface AwsCustomResourceProps {
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * Whether to install the latest AWS SDK v2. Allows to use the latest API
+   * calls documented at https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html.
+   *
+   * The installation takes around 60 seconds.
+   *
+   * @default true
+   */
+  readonly installLatestAwsSdk?: boolean;
 }
 
 /**
@@ -349,6 +359,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
         create: formatCall(create),
         update: formatCall(props.onUpdate),
         delete: formatCall(props.onDelete),
+        installLatestAwsSdk: props.installLatestAwsSdk ?? true,
       },
     });
   }

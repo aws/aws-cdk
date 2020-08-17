@@ -9,7 +9,7 @@ class GaStack extends testfixture.TestStack {
   constructor(scope: cdk.Construct, id: string) {
     super(scope, id);
 
-    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 3, natGateways: 1});
+    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 3, natGateways: 1 });
     const accelerator = new ga.Accelerator(this, 'Accelerator');
     const listener = new ga.Listener(this, 'Listener', {
       accelerator,
@@ -21,7 +21,7 @@ class GaStack extends testfixture.TestStack {
       ],
     });
     const endpointGroup = new ga.EndpointGroup(this, 'Group', { listener });
-    const alb = new elbv2.ApplicationLoadBalancer(this, 'ALB', { vpc, internetFacing: true  });
+    const alb = new elbv2.ApplicationLoadBalancer(this, 'ALB', { vpc, internetFacing: true });
     const nlb = new elbv2.NetworkLoadBalancer(this, 'NLB', { vpc, internetFacing: true });
     const eip = new ec2.CfnEIP(this, 'ElasticIpAddress');
     const instances = new Array<ec2.Instance>();
