@@ -65,7 +65,7 @@ export = {
     // WHEN
     const stack = new Stack();
     const widget = new GraphWidget({
-      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000' }) ],
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000' })],
     });
 
     // THEN
@@ -93,7 +93,7 @@ export = {
 
     // WHEN
     const widget = new SingleValueWidget({
-      metrics: [ metric ],
+      metrics: [metric],
     });
 
     // THEN
@@ -116,7 +116,7 @@ export = {
   'query result widget'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const logGroup = {logGroupName: 'my-log-group'};
+    const logGroup = { logGroupName: 'my-log-group' };
 
     // WHEN
     const widget = new LogQueryWidget({
@@ -287,7 +287,7 @@ export = {
         view: 'timeSeries',
         region: { Ref: 'AWS::Region' },
         annotations: {
-          alarms: [{ 'Fn::GetAtt': [ 'Alarm7103F465', 'Arn' ] }],
+          alarms: [{ 'Fn::GetAtt': ['Alarm7103F465', 'Arn'] }],
         },
         yAxis: {},
       },
@@ -324,13 +324,15 @@ export = {
         metrics: [
           ['CDK', 'Test'],
         ],
-        annotations: { horizontal: [{
-          yAxis: 'left',
-          value: 1000,
-          color: '667788',
-          fill: 'below',
-          label: 'this is the annotation',
-        }] },
+        annotations: {
+          horizontal: [{
+            yAxis: 'left',
+            value: 1000,
+            color: '667788',
+            fill: 'below',
+            label: 'this is the annotation',
+          }],
+        },
         yAxis: {},
       },
     }]);
@@ -352,8 +354,8 @@ export = {
 
     // WHEN
     const widget = new GraphWidget({
-      right: [ metric ],
-      rightAnnotations: [ alarm.toAnnotation() ],
+      right: [metric],
+      rightAnnotations: [alarm.toAnnotation()],
     });
 
     // THEN
@@ -418,7 +420,8 @@ export = {
         ],
         yAxis: {
           left: { label: 'Left yAxis', max: 100 },
-          right: { label: 'Right yAxis', min: 10, showUnits: false } },
+          right: { label: 'Right yAxis', min: 10, showUnits: false },
+        },
       },
     }]);
 
@@ -479,7 +482,7 @@ export = {
 
     // WHEN
     const widget = new SingleValueWidget({
-      metrics: [ metric ],
+      metrics: [metric],
       setPeriodToTimeRange: true,
     });
 
@@ -542,7 +545,7 @@ export = {
       ],
     });
 
-    test.deepEqual(stack.resolve(widget.toJson())[0].properties.metrics[0], [ 'CDK', 'Test', { color: '#1f77b4' } ]);
+    test.deepEqual(stack.resolve(widget.toJson())[0].properties.metrics[0], ['CDK', 'Test', { color: '#1f77b4' }]);
     test.deepEqual(stack.resolve(widget.toJson())[0].properties.annotations.horizontal[0], { yAxis: 'left', value: 100, color: '#d62728' });
     test.done();
   },
@@ -551,7 +554,7 @@ export = {
     // WHEN
     const stack = new Stack();
     const widget = new GraphWidget({
-      left: [new Metric({ namespace: 'CDK', metricName: 'Test' }) ],
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
       legendPosition: LegendPosition.RIGHT,
     });
 

@@ -531,7 +531,7 @@ export = {
             logging: {
               clusterLogging: [
                 {
-                  types: [ 'api' ],
+                  types: ['api'],
                   enabled: true,
                 },
               ],
@@ -546,7 +546,7 @@ export = {
             logging: {
               clusterLogging: [
                 {
-                  types: [ 'api' ],
+                  types: ['api'],
                   enabled: true,
                 },
               ],
@@ -587,7 +587,7 @@ export = {
             logging: {
               clusterLogging: [
                 {
-                  types: [ 'api', 'audit', 'authenticator', 'controllerManager', 'scheduler' ],
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
                   enabled: true,
                 },
               ],
@@ -595,7 +595,7 @@ export = {
             resourcesVpcConfig: {
               endpointPrivateAccess: true,
               endpointPublicAccess: true,
-              publicAccessCidrs: [ '0.0.0.0/0' ],
+              publicAccessCidrs: ['0.0.0.0/0'],
             },
           }, {
             logging: undefined,
@@ -609,7 +609,7 @@ export = {
             logging: {
               clusterLogging: [
                 {
-                  types: [ 'api', 'audit', 'authenticator', 'controllerManager', 'scheduler' ],
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
                   enabled: true,
                 },
               ],
@@ -617,7 +617,7 @@ export = {
             resourcesVpcConfig: {
               endpointPrivateAccess: true,
               endpointPublicAccess: true,
-              publicAccessCidrs: [ '0.0.0.0/0' ],
+              publicAccessCidrs: ['0.0.0.0/0'],
             },
           });
           test.equal(mocks.actualRequest.createClusterRequest, undefined);
