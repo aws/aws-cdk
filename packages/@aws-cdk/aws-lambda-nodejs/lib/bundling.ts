@@ -168,7 +168,7 @@ export class Bundling {
       // Always rename dist file to index.js because Lambda doesn't support filenames
       // with multiple dots and we can end up with multiple dots when using automatic
       // entry lookup
-      `mv ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${distFile} ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/index.js`,
+      distFile !== 'index.js' ? `mv ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${distFile} ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/index.js` : '',
     ]);
 
     let installer = Installer.NPM;

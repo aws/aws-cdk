@@ -152,7 +152,8 @@ export default class CodeGenerator {
         context: resource,
         propName,
         spec: propSpec,
-        additionalDocs: quoteCode(additionalDocs)},
+        additionalDocs: quoteCode(additionalDocs),
+      },
       container,
       );
       propertyMap[propName] = newName;
@@ -230,18 +231,15 @@ export default class CodeGenerator {
     this.code.line(' * containing the CloudFormation properties of this resource.');
     this.code.line(' * Used in the @aws-cdk/cloudformation-include module.');
     this.code.line(' *');
-    this.code.line(' * @experimental');
+    this.code.line(' * @internal');
     this.code.line(' */');
     // eslint-disable-next-line max-len
-    this.code.openBlock(`public static fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CORE}.FromCloudFormationOptions): ` +
+    this.code.openBlock(`public static _fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CFN_PARSE}.FromCloudFormationOptions): ` +
       `${resourceName.className}`);
     this.code.line('resourceAttributes = resourceAttributes || {};');
-    this.code.indent('const cfnParser = new cfn_parse.CfnParser({');
-    this.code.line('finder: options.finder,');
-    this.code.unindent('});');
     if (propsType) {
       // translate the template properties to CDK objects
-      this.code.line('const resourceProperties = cfnParser.parseValue(resourceAttributes.Properties);');
+      this.code.line('const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);');
       // translate to props, using a (module-private) factory function
       this.code.line(`const props = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
       // finally, instantiate the resource class
@@ -252,7 +250,7 @@ export default class CodeGenerator {
     }
     // handle all non-property attributes
     // (retention policies, conditions, metadata, etc.)
-    this.code.line('cfnParser.handleAttributes(ret, resourceAttributes, id);');
+    this.code.line('options.parser.handleAttributes(ret, resourceAttributes, id);');
 
     this.code.line('return ret;');
     this.code.closeBlock();
@@ -620,7 +618,7 @@ export default class CodeGenerator {
 
       const deserializer = genspec.typeDispatch<string>(resource, propSpec, new FromCloudFormationFactoryVisitor());
       const deserialized = `${deserializer}(${simpleCfnPropAccessExpr})`;
-      let valueExpression =  propSpec.Required ? deserialized : `${simpleCfnPropAccessExpr} != null ? ${deserialized} : undefined`;
+      let valueExpression = propSpec.Required ? deserialized : `${simpleCfnPropAccessExpr} != null ? ${deserialized} : undefined`;
 
       if (schema.isTagPropertyName(cfnName)) {
         // Properties that have names considered to denote tags

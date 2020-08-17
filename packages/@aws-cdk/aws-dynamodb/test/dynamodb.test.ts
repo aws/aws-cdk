@@ -1715,7 +1715,8 @@ describe('grants', () => {
   test('"grantReadWriteData" allows the principal to read/write data', () => {
     testGrant([
       'BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan',
-      'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem'], (p, t) => t.grantReadWriteData(p));
+      'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem',
+    ], (p, t) => t.grantReadWriteData(p));
   });
 
   test('"grantFullAccess" allows the principal to perform any action on the table ("*")', () => {

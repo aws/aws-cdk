@@ -45,6 +45,7 @@ jobs:
            {"keywords":["[@aws-cdk/aws-cloud9]","[aws-cloud9]","[cloud9]","[cloud 9]"],"labels":["@aws-cdk/aws-cloud9"],"assignees":["skinny85"]},
            {"keywords":["[@aws-cdk/aws-cloudformation]","[aws-cloudformation]","[cloudformation]","[cloud formation]"],"labels":["@aws-cdk/aws-cloudformation"],"assignees":["eladb"]},
            {"keywords":["[@aws-cdk/aws-cloudfront]","[aws-cloudfront]","[cloudfront]","[cloud front]"],"labels":["@aws-cdk/aws-cloudfront"],"assignees":["iliapolo"]},
+           {"keywords":["[@aws-cdk/aws-cloudfront-origins]","[aws-cloudfront-origins]","[cloudfront-origins]","[cloudfront origins]"],"labels":["@aws-cdk/aws-cloudfront-origins"],"assignees":["iliapolo"]},
            {"keywords":["[@aws-cdk/aws-cloudtrail]","[aws-cloudtrail]","[cloudtrail]","[cloud trail]"],"labels":["@aws-cdk/aws-cloudtrail"],"assignees":["rix0rrr"]},
            {"keywords":["[@aws-cdk/aws-cloudwatch]","[aws-cloudwatch]","[cloudwatch]","[cloud watch]"],"labels":["@aws-cdk/aws-cloudwatch"],"assignees":["rix0rrr"]},
            {"keywords":["[@aws-cdk/aws-cloudwatch-actions]","[aws-cloudwatch-actions]","[cloudwatch-actions]","[cloudwatch actions]"],"labels":["@aws-cdk/aws-cloudwatch-actions"],"assignees":["rix0rrr"]},
