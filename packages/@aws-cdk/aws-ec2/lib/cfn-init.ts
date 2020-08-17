@@ -196,7 +196,7 @@ export class InitConfig {
     // Must be last!
     const servicesConfig = this.bindForType(InitElementType.SERVICE, bindOptions);
 
-    const authentication = [ packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig ]
+    const authentication = [packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig]
       .map(c => c?.authentication)
       .reduce(deepMerge, undefined);
 

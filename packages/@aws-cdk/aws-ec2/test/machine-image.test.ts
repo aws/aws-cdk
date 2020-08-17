@@ -63,11 +63,11 @@ test('LookupMachineImage default search', () => {
       props: {
         account: '1234',
         region: 'testregion',
-        owners: [ 'amazon' ],
+        owners: ['amazon'],
         filters: {
-          'name': [ 'bla*' ],
-          'state': [ 'available' ],
-          'image-type': [ 'machine' ],
+          'name': ['bla*'],
+          'state': ['available'],
+          'image-type': ['machine'],
         },
       },
       provider: 'ami',

@@ -178,7 +178,7 @@ function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): co
     stages: [
       {
         stageName: 'Source',
-        actions: [ sourceAction ],
+        actions: [sourceAction],
       },
     ],
   });

@@ -40,7 +40,7 @@ export class CfnReference extends Reference {
   public static for(target: CfnElement, attribute: string, fnSub: boolean = false) {
     return CfnReference.singletonReference(target, attribute, fnSub, () => {
       const cfnIntrinsic = fnSub
-        ? ('${' + target.logicalId + (attribute === 'Ref' ? '' :  `.${attribute}`) + '}')
+        ? ('${' + target.logicalId + (attribute === 'Ref' ? '' : `.${attribute}`) + '}')
         : (attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [target.logicalId, attribute] });
       return new CfnReference(cfnIntrinsic, attribute, target);
     });
