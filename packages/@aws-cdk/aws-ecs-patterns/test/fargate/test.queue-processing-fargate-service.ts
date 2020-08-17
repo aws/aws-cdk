@@ -43,7 +43,7 @@ export = {
       MessageRetentionPeriod: 1209600,
     }));
 
-    expect(stack).to(haveResource('AWS::IAM::Policy',  {
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -140,7 +140,7 @@ export = {
       MessageRetentionPeriod: 604800,
     }));
 
-    expect(stack).to(haveResource('AWS::IAM::Policy',  {
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {

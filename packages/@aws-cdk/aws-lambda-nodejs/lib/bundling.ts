@@ -322,7 +322,7 @@ function createBundlingCommand(options: BundlingCommandOptions): string {
     // Always rename dist file to index.js because Lambda doesn't support filenames
     // with multiple dots and we can end up with multiple dots when using automatic
     // entry lookup
-    `mv ${options.outputDir}/${distFile} ${options.outputDir}/index.js`,
+    distFile !== 'index.js' ? `mv ${options.outputDir}/${distFile} ${options.outputDir}/index.js` : '',
   ]);
 
   let depsCommand = '';

@@ -81,6 +81,25 @@ test('Parcel bundling', () => {
   expect(findUpMock).toHaveBeenCalledWith('package.json', '/project/folder');
 });
 
+test('Parcel bundling with handler named index.ts', () => {
+  Bundling.parcel({
+    entry: '/project/folder/index.ts',
+    runtime: Runtime.NODEJS_12_X,
+    projectRoot: '/project',
+  });
+
+  // Correctly bundles with parcel
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.BUNDLE,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/index.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
+      ],
+    }),
+  });
+});
+
 test('Parcel with Windows paths', () => {
   Bundling.parcel({
     entry: 'C:\\my-project\\lib\\entry.ts',

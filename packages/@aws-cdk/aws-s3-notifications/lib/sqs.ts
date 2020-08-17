@@ -34,7 +34,7 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
     return {
       arn: this.queue.queueArn,
       type: s3.BucketNotificationDestinationType.QUEUE,
-      dependencies: [ this.queue ],
+      dependencies: [this.queue],
     };
   }
 
