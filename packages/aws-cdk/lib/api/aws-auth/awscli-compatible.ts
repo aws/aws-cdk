@@ -175,7 +175,7 @@ async function isEc2Instance() {
 }
 
 
-var isEc2InstanceCache: boolean | undefined = undefined;
+let isEc2InstanceCache: boolean | undefined = undefined;
 
 /**
  * Attempts to get a Instance Metadata Service V2 token
