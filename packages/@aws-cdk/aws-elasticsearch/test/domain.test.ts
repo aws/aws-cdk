@@ -613,7 +613,7 @@ describe('custom error responses', () => {
     })).toThrow(/EBS volumes are required for all instance types except R3 and I3/);
   });
 
-  test('error when availabilityZoneCount is not 1, 2, or 3', () => {
+  test('error when availabilityZoneCount is not 2 or 3', () => {
     const vpc = new Vpc(stack, 'Vpc');
 
     expect(() => new Domain(stack, 'Domain1', {
@@ -646,7 +646,7 @@ describe('custom error responses', () => {
       zoneAwareness: {
         availabilityZoneCount: 4,
       },
-    })).toThrow(/Invalid zone awareness configuration; availabilityZoneCount must be 1, 2, or 3/);
+    })).toThrow(/Invalid zone awareness configuration; availabilityZoneCount must be 2 or 3/);
   });
 
 });

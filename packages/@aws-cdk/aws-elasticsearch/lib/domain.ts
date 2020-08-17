@@ -1100,8 +1100,8 @@ export class Domain extends DomainBase implements IDomain {
     const availabilityZoneCount =
       props.zoneAwareness?.availabilityZoneCount ?? 2;
 
-    if (![1, 2, 3].includes(availabilityZoneCount)) {
-      throw new Error('Invalid zone awareness configuration; availabilityZoneCount must be 1, 2, or 3');
+    if (![2, 3].includes(availabilityZoneCount)) {
+      throw new Error('Invalid zone awareness configuration; availabilityZoneCount must be 2 or 3');
     }
 
     const zoneAwarenessEnabled =
