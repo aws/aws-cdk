@@ -145,7 +145,7 @@ export = {
   'query result widget - bar'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const logGroup = {logGroupName: 'my-log-group'};
+    const logGroup = { logGroupName: 'my-log-group' };
 
     // WHEN
     const widget = new LogQueryWidget({
@@ -175,7 +175,7 @@ export = {
   'query result widget - pie'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const logGroup = {logGroupName: 'my-log-group'};
+    const logGroup = { logGroupName: 'my-log-group' };
 
     // WHEN
     const widget = new LogQueryWidget({
@@ -205,7 +205,7 @@ export = {
   'query result widget - line'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const logGroup = {logGroupName: 'my-log-group'};
+    const logGroup = { logGroupName: 'my-log-group'} ;
 
     // WHEN
     const widget = new LogQueryWidget({
@@ -236,7 +236,7 @@ export = {
   'query result widget - stackedarea'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const logGroup = {logGroupName: 'my-log-group'};
+    const logGroup = { logGroupName: 'my-log-group' };
 
     // WHEN
     const widget = new LogQueryWidget({
