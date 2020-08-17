@@ -108,6 +108,8 @@ same version will be used for installation. If a lock file is detected (`package
 If Parcel v2 is available it will be used to bundle your code in your environment. Otherwise,
 bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
 
+For macOS this is the recommendend approach as Docker volume performance is really poor.
+
 Parcel v2 can be installed with:
 
 ```bash
@@ -120,5 +122,6 @@ OR
 $ yarn add --dev @parcel@next
 ```
 
-To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This is useful
-when installing node modules with native dependencies.
+To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This
+is useful if your function relies on node modules that should be installed (`nodeModules` prop, see [above](#install-modules)) in a Lambda compatible environment. This is usually the
+case with modules using native dependencies.

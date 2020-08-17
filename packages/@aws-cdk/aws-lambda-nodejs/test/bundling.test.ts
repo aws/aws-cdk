@@ -1,4 +1,3 @@
-
 import * as fs from 'fs';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
@@ -104,7 +103,6 @@ test('Parcel with Windows paths', () => {
   Bundling.parcel({
     entry: 'C:\\my-project\\lib\\entry.ts',
     runtime: Runtime.NODEJS_12_X,
-    cacheDir: '/cache-dir',
     projectRoot: 'C:\\my-project',
   });
 

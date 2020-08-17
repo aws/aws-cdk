@@ -68,7 +68,7 @@ export interface ParcelBaseOptions {
   readonly nodeModules?: string[];
 
   /**
-   * The version of Parcel to use.
+   * The version of Parcel to use when running in a Docker container.
    *
    * @default - 2.0.0-beta.1
    */
@@ -83,8 +83,9 @@ export interface ParcelBaseOptions {
 
   /**
    * Force bundling in a Docker container even if local bundling is
-   * possible. This is useful when installing node modules with
-   * native dependencies.
+   * possible.This  is useful if your function relies on node modules
+   * that should be installed (`nodeModules`) in a Lambda compatible
+   * environment.
    *
    * @default false
    */
@@ -327,7 +328,7 @@ function createBundlingCommand(options: BundlingCommandOptions): string {
 
   let depsCommand = '';
   if (options.dependencies) {
-    // create dummy package.json, move lock file and then install
+    // create dummy package.json, copy lock file if any and then install
     depsCommand = chain([
       `echo '${JSON.stringify({ dependencies: options.dependencies })}' > ${options.outputDir}/package.json`,
       options.lockFile ? `cp ${options.projectRoot}/${options.lockFile} ${options.outputDir}/${options.lockFile}` : '',
