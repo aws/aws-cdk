@@ -582,7 +582,7 @@ export class Function extends FunctionBase {
       };
     }
 
-    const env = { ...profilingGroupEnvironmentVariables, ...(props.environment || {}) };
+    const env = { ...profilingGroupEnvironmentVariables, ...(props.environment ?? {}) };
     for (const [key, value] of Object.entries(env)) {
       this.addEnvironment(key, value);
     }
@@ -778,10 +778,9 @@ export class Function extends FunctionBase {
     }
     const envKeys = Object.keys(this.environment);
     if (envKeys.length !== 0) {
-      throw new Error(`The function ${this.node.path} is not compatible for Lambda@Edge because it contains environment variables that are not marked for removal when used for Lambda@Edge: ${envKeys}. Use \`addEnvironment()\` to allow edge removal.`);
+      throw new Error(`The function ${this.node.path} contains environment variables [${envKeys}] and is not compatible with Lambda@Edge. \
+Environment variables can be marked for removal when used in Lambda@Edge by setting the \'removeInEdge\' property in the \'addEnvironment()\' API.`);
     }
-
-    // TODO: additional checks, see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-requirements-lambda-function-configuration
 
     return;
   }

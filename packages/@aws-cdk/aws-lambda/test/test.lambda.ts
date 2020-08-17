@@ -1561,7 +1561,7 @@ export = {
     fn.addEnvironment('OTHER_KEY', 'other_value', { removeInEdge: true });
 
     // THEN
-    test.throws(() => fn.checkEdgeCompatibility(), /The function Default\/fn is not compatible for Lambda@Edge because it contains environment variables that are not marked for removal when used for Lambda@Edge: KEY/);
+    test.throws(() => fn.checkEdgeCompatibility(), /The function Default\/fn contains environment variables [KEY] and is not compatible with Lambda@Edge/);
 
     test.done();
   },
