@@ -215,8 +215,7 @@ export interface EncryptionAtRestOptions {
 
 /**
  * Configures Amazon ES to use Amazon Cognito authentication for Kibana.
- 
-@see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html
+ * @see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html
  */
 export interface CognitoOptions {
   /**
@@ -1067,8 +1066,8 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error(`Unknown Elasticsearch version: ${elasticsearchVersion}`);
     }
 
-    const encryptionAtRestEnabled = props.encryptionAtRestOptions?.enabled ?? (props.encryptionAtRestOptions?.kmsKey != null);
-    const ebsEnabled = props.ebsOptions != null;
+    const encryptionAtRestEnabled = props.encryptionAtRest?.enabled ?? (props.encryptionAtRest?.kmsKey != null);
+    const ebsEnabled = props.ebs != null;
 
     function isInstanceType(instanceType: string): Boolean {
       return masterInstanceType.startsWith(instanceType) || dataInstanceType.startsWith(instanceType);
@@ -1087,16 +1086,16 @@ export class Domain extends DomainBase implements IDomain {
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-features-by-version.html
     if (elasticsearchVersionNum < 5.1) {
       if (
-        props.logPublishingOptions?.slowIndexLogEnabled
-        || props.logPublishingOptions?.appLogEnabled
-        || props.logPublishingOptions?.slowSearchLogEnabled
+        props.logging?.slowIndexLogEnabled
+        || props.logging?.appLogEnabled
+        || props.logging?.slowSearchLogEnabled
       ) {
         throw new Error('Error and slow logs publishing requires Elasticsearch version 5.1 or later.');
       }
-      if (props.encryptionAtRestOptions?.enabled) {
+      if (props.encryptionAtRest?.enabled) {
         throw new Error('Encryption of data at rest requires Elasticsearch version 5.1 or later.');
       }
-      if (props.cognitoOptions != null) {
+      if (props.cognitoKibanaAuth != null) {
         throw new Error('Cognito authentication for Kibana requires Elasticsearch version 5.1 or later.');
       }
       if (isSomeInstanceType('c5', 'i3', 'm5', 'r5')) {
@@ -1105,7 +1104,7 @@ export class Domain extends DomainBase implements IDomain {
     }
 
     if (elasticsearchVersionNum < 6.0) {
-      if (props.nodeToNodeEncryptionEnabled) {
+      if (props.nodeToNodeEncryption) {
         throw new Error('Node-to-node encryption requires Elasticsearch version 6.0 or later.');
       }
     }
@@ -1141,8 +1140,8 @@ export class Domain extends DomainBase implements IDomain {
     // Setup logging
     const logGroups: logs.ILogGroup[] = [];
 
-    if (props.logPublishingOptions?.slowSearchLogEnabled) {
-      this.slowSearchLogGroup = props.logPublishingOptions.slowSearchLogGroup ??
+    if (props.logging?.slowSearchLogEnabled) {
+      this.slowSearchLogGroup = props.logging.slowSearchLogGroup ??
         new logs.LogGroup(scope, 'SlowSearchLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
@@ -1150,8 +1149,8 @@ export class Domain extends DomainBase implements IDomain {
       logGroups.push(this.slowSearchLogGroup);
     };
 
-    if (props.logPublishingOptions?.slowIndexLogEnabled) {
-      this.slowIndexLogGroup = props.logPublishingOptions.slowIndexLogGroup ??
+    if (props.logging?.slowIndexLogEnabled) {
+      this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
         new logs.LogGroup(scope, 'SlowIndexLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
@@ -1159,8 +1158,8 @@ export class Domain extends DomainBase implements IDomain {
       logGroups.push(this.slowIndexLogGroup);
     };
 
-    if (props.logPublishingOptions?.appLogEnabled) {
-      this.appLogGroup = props.logPublishingOptions.appLogGroup ??
+    if (props.logging?.appLogEnabled) {
+      this.appLogGroup = props.logging.appLogGroup ??
         new logs.LogGroup(scope, 'AppLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
@@ -1203,15 +1202,15 @@ export class Domain extends DomainBase implements IDomain {
       },
       ebsOptions: {
         ebsEnabled,
-        volumeSize: props.ebsOptions?.volumeSize,
-        volumeType: props.ebsOptions?.volumeType,
-        iops: props.ebsOptions?.iops,
+        volumeSize: props.ebs?.volumeSize,
+        volumeType: props.ebs?.volumeType,
+        iops: props.ebs?.iops,
       },
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
-        kmsKeyId: props.encryptionAtRestOptions?.kmsKey?.keyId,
+        kmsKeyId: props.encryptionAtRest?.kmsKey?.keyId,
       },
-      nodeToNodeEncryptionOptions: { enabled: props.nodeToNodeEncryptionEnabled ?? false },
+      nodeToNodeEncryptionOptions: { enabled: props.nodeToNodeEncryption ?? false },
       logPublishingOptions: {
         ES_APPLICATION_LOGS: {
           enabled: this.appLogGroup != null,
@@ -1227,10 +1226,10 @@ export class Domain extends DomainBase implements IDomain {
         },
       },
       cognitoOptions: {
-        enabled: props.cognitoOptions != null,
-        identityPoolId: props.cognitoOptions?.identityPoolId,
-        roleArn: props.cognitoOptions?.role.roleArn,
-        userPoolId: props.cognitoOptions?.userPoolId,
+        enabled: props.cognitoKibanaAuth != null,
+        identityPoolId: props.cognitoKibanaAuth?.identityPoolId,
+        roleArn: props.cognitoKibanaAuth?.role.roleArn,
+        userPoolId: props.cognitoKibanaAuth?.userPoolId,
       },
       vpcOptions: cfnVpcOptions,
       snapshotOptions: props.automatedSnapshotStartHour

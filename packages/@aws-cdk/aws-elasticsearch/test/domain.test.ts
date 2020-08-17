@@ -78,7 +78,7 @@ describe('log groups', () => {
   test('slowSearchLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       clusterConfig: defaultClusterConfig,
-      logPublishingOptions: {
+      logging: {
         slowSearchLogEnabled: true,
       },
     });
@@ -107,7 +107,7 @@ describe('log groups', () => {
   test('slowIndexLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       clusterConfig: defaultClusterConfig,
-      logPublishingOptions: {
+      logging: {
         slowIndexLogEnabled: true,
       },
     });
@@ -136,7 +136,7 @@ describe('log groups', () => {
   test('appLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       clusterConfig: defaultClusterConfig,
-      logPublishingOptions: {
+      logging: {
         appLogEnabled: true,
       },
     });
@@ -485,21 +485,21 @@ describe('custom error responses', () => {
     expect(() => new Domain(stack, 'Domain1', {
       elasticsearchVersion: Version.ES_2_3,
       clusterConfig: defaultClusterConfig,
-      logPublishingOptions: {
+      logging: {
         appLogEnabled: true,
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain2', {
       elasticsearchVersion: Version.ES_1_5,
       clusterConfig: defaultClusterConfig,
-      logPublishingOptions: {
+      logging: {
         slowSearchLogEnabled: true,
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain3', {
       elasticsearchVersion: Version.ES_1_5,
       clusterConfig: defaultClusterConfig,
-      logPublishingOptions: {
+      logging: {
         slowIndexLogEnabled: true,
       },
     })).toThrow(error);
@@ -509,7 +509,7 @@ describe('custom error responses', () => {
     expect(() => new Domain(stack, 'Domain1', {
       elasticsearchVersion: Version.ES_2_3,
       clusterConfig: defaultClusterConfig,
-      encryptionAtRestOptions: {
+      encryptionAtRest: {
         enabled: true,
       },
     })).toThrow(/Encryption of data at rest requires Elasticsearch version 5.1 or later/);
@@ -520,7 +520,7 @@ describe('custom error responses', () => {
     expect(() => new Domain(stack, 'Domain1', {
       elasticsearchVersion: Version.ES_2_3,
       clusterConfig: defaultClusterConfig,
-      cognitoOptions: {
+      cognitoKibanaAuth: {
         identityPoolId: 'test-identity-pool-id',
         role: new iam.Role(stack, 'Role', { assumedBy: user }),
         userPoolId: 'test-user-pool-id',
@@ -564,7 +564,7 @@ describe('custom error responses', () => {
     expect(() => new Domain(stack, 'Domain1', {
       elasticsearchVersion: Version.ES_5_6,
       clusterConfig: defaultClusterConfig,
-      nodeToNodeEncryptionEnabled: true,
+      nodeToNodeEncryption: true,
     })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later/);
   });
 
@@ -574,7 +574,7 @@ describe('custom error responses', () => {
         ...defaultClusterConfig,
         masterNodeInstanceType: 'i3.2xlarge.elasticsearch',
       },
-      ebsOptions: {
+      ebs: {
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
@@ -588,7 +588,7 @@ describe('custom error responses', () => {
         ...defaultClusterConfig,
         masterNodeInstanceType: 'm3.2xlarge.elasticsearch',
       },
-      encryptionAtRestOptions: {
+      encryptionAtRest: {
         enabled: true,
       },
     })).toThrow(error);
@@ -597,7 +597,7 @@ describe('custom error responses', () => {
         ...defaultClusterConfig,
         dataNodeInstanceType: 'r3.2xlarge.elasticsearch',
       },
-      encryptionAtRestOptions: {
+      encryptionAtRest: {
         enabled: true,
       },
     })).toThrow(error);
@@ -606,7 +606,7 @@ describe('custom error responses', () => {
         ...defaultClusterConfig,
         masterNodeInstanceType: 't2.2xlarge.elasticsearch',
       },
-      encryptionAtRestOptions: {
+      encryptionAtRest: {
         enabled: true,
       },
     })).toThrow(error);

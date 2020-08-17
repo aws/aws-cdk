@@ -14,16 +14,16 @@ class TestStack extends Stack {
         dataNodes: 3,
         dataNodeInstanceType: 'm5.large.elasticsearch',
       },
-      ebsOptions: {
+      ebs: {
         volumeSize: 10,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-      logPublishingOptions: {
+      logging: {
         slowSearchLogEnabled: true,
         appLogEnabled: true,
       },
-      nodeToNodeEncryptionEnabled: true,
-      encryptionAtRestOptions: {
+      nodeToNodeEncryption: true,
+      encryptionAtRest: {
         enabled: true,
       },
     });
