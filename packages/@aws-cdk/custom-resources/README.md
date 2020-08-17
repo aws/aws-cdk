@@ -369,8 +369,9 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
 ### Assumed Role
 
 In addition to specifying an execution policy or a role that applies to all resources you can
-specify a role (via `assumedRole`) that should be assumed prior to issuing the sdk call.
-Remember that the role must be assumable by the lambda handler of the custom resource.
+specify a role (via `assumedRole`) that should be assumed prior to issuing the API call.
+Remember that the role must be assumable by the lambda handler of the custom resource and must
+have the permissions to make the call.
 
 ```ts
 const awsCustom = new AwsCustomResource(this, 'Custom', {
