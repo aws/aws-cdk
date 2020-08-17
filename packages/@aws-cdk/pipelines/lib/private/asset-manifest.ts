@@ -1,7 +1,7 @@
 // FIXME: copied from `ckd-assets`, because this tool needs to read the asset manifest aswell.
-import { AssetManifest, DockerImageDestination, DockerImageSource, FileDestination, FileSource, Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as path from 'path';
+import { AssetManifest, DockerImageDestination, DockerImageSource, FileDestination, FileSource, Manifest } from '@aws-cdk/cloud-assembly-schema';
 
 /**
  * A manifest of assets
@@ -67,7 +67,7 @@ export class AssetManifestReader {
 
     for (const assetType of ASSET_TYPES) {
       for (const [assetId, asset] of Object.entries(this.manifest[assetType] || {})) {
-        const filteredDestinations =  filterDict(
+        const filteredDestinations = filterDict(
           asset.destinations,
           (_, destId) => selection.some(sel => sel.matches(new DestinationIdentifier(assetId, destId))));
 

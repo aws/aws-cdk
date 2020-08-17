@@ -35,7 +35,8 @@ test.each([
   [false, false],
   [false, true],
   [true, false],
-  [true, true]])('given override, always use the override (parameter has a default: %p, parameter previously supplied: %p)',
+  [true, true],
+])('given override, always use the override (parameter has a default: %p, parameter previously supplied: %p)',
   (haveDefault, havePrevious) => {
     expect(makeParams(haveDefault, havePrevious, true)).toEqual({
       apiParameters: [USE_OVERRIDE],
@@ -79,10 +80,10 @@ test('if a parameter is retrieved from SSM, the parameters always count as chang
   });
 
   // If we don't pass a new value
-  expect(params.diff({}, {Foo: '/Some/Key'}).changed).toEqual(true);
+  expect(params.diff({}, { Foo: '/Some/Key' }).changed).toEqual(true);
 
   // If we do pass a new value but it's the same as the old one
-  expect(params.diff({Foo: '/Some/Key'}, {Foo: '/Some/Key'}).changed).toEqual(true);
+  expect(params.diff({ Foo: '/Some/Key' }, { Foo: '/Some/Key' }).changed).toEqual(true);
 });
 
 test('unknown parameter in overrides, pass it anyway', () => {
@@ -109,8 +110,8 @@ function makeParams(defaultValue: boolean, hasPrevValue: boolean, override: bool
       },
     },
   });
-  const prevParams: Record<string, string> = hasPrevValue ? {[PARAM]: 'Foo'} : {};
-  const stackParams =  params.diff({ [PARAM]: override ? OVERRIDE : undefined }, prevParams);
+  const prevParams: Record<string, string> = hasPrevValue ? { [PARAM]: 'Foo' } : {};
+  const stackParams = params.diff({ [PARAM]: override ? OVERRIDE : undefined }, prevParams);
 
   return { apiParameters: stackParams.apiParameters, changed: stackParams.changed };
 }

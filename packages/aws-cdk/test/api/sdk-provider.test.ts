@@ -8,6 +8,11 @@ import { ISDK, Mode, SdkProvider } from '../../lib/api/aws-auth';
 import * as logging from '../../lib/logging';
 import * as bockfs from '../bockfs';
 
+// Mock promptly prompt to test MFA support
+jest.mock('promptly', () => ({
+  prompt: jest.fn().mockRejectedValue(new Error('test')),
+}));
+
 SDKMock.setSDKInstance(AWS);
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
@@ -40,6 +45,10 @@ beforeEach(() => {
       [assumer]
       aws_access_key_id=${uid}assumer
       aws_secret_access_key=secret
+
+      [mfa]
+      aws_access_key_id=${uid}mfaccess
+      aws_secret_access_key=secret
     `),
     '/home/me/.bxt/config': dedent(`
       [default]
@@ -59,6 +68,14 @@ beforeEach(() => {
 
       [profile assumer]
       region=us-east-2
+
+      [profile mfa]
+      region=eu-west-1
+
+      [profile mfa-role]
+      source_profile=mfa
+      role_arn=arn:aws:iam::account:role/role
+      mfa_serial=arn:aws:iam::account:mfa/user
     `),
   });
 
@@ -144,16 +161,29 @@ describe('CLI compatible credentials loading', () => {
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'boo' });
 
     // THEN
-    expect(provider.defaultRegion).toEqual('eu-bla-5');  // Fall back to default config
+    expect(provider.defaultRegion).toEqual('eu-bla-5'); // Fall back to default config
     await expect(provider.defaultAccount()).resolves.toEqual({ accountId: `${uid}the_account_#`, partition: 'aws-here' });
     const sdk = await provider.forEnvironment(defaultEnv, Mode.ForReading);
     expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}booccess`);
   });
 
+  test('mfa_serial in profile will ask user for token', async () => {
+    // WHEN
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'mfa-role' });
+
+    // THEN
+    try {
+      await provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined);
+    } catch (e) {
+      // Mock response was set to fail with message test to make sure we don't call STS
+      expect(e.message).toEqual('Error fetching MFA token: test');
+    }
+  });
+
   test('different account throws', async () => {
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'boo' });
 
-    await expect(provider.forEnvironment({...defaultEnv, account: `${uid}some_account_#` }, Mode.ForReading)).rejects.toThrow('Need to perform AWS calls');
+    await expect(provider.forEnvironment({ ...defaultEnv, account: `${uid}some_account_#` }, Mode.ForReading)).rejects.toThrow('Need to perform AWS calls');
   });
 
   test('even when using a profile to assume another profile, STS calls goes through the proxy', async () => {
@@ -179,7 +209,8 @@ describe('CLI compatible credentials loading', () => {
     });
 
     // WHEN
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions,
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({
+      ...defaultCredOptions,
       profile: 'assumable',
       httpOptions: {
         proxyAddress: 'http://DOESNTMATTER/',
@@ -228,7 +259,7 @@ describe('Plugins', () => {
 
   test('uses plugin for other account', async () => {
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
-    await provider.forEnvironment({...defaultEnv, account: `${uid}plugin_account_#`}, Mode.ForReading);
+    await provider.forEnvironment({ ...defaultEnv, account: `${uid}plugin_account_#` }, Mode.ForReading);
     expect(pluginQueried).toEqual(true);
   });
 });
@@ -247,7 +278,7 @@ function dedent(x: string): string {
     return [ws, s.substr(ws.length)];
   });
 
-  if (lineParts.length === 0) { return ''; }  // Reduce won't work well in this case
+  if (lineParts.length === 0) { return ''; } // Reduce won't work well in this case
 
   // Calculate common whitespace only for non-empty lines
   const sharedWs = lineParts.reduce((commonWs: string, [ws, text]) => text !== '' ? commonPrefix(commonWs, ws) : commonWs, lineParts[0][0]);

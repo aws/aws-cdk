@@ -55,7 +55,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   const commandLine = await guessExecutable(appToArray(app));
 
-  const outdir = config.settings.get([ 'output' ]);
+  const outdir = config.settings.get(['output']);
   if (!outdir) {
     throw new Error('unexpected: --output is required');
   }

@@ -1,0 +1,54 @@
+{
+  "Transform" : {
+    "Name" : "AWS::Include",
+    "Parameters" : {
+      "Location" : {
+        "Ref": "MyParam"
+      }
+    }
+  },
+  "Parameters": {
+    "MyParam": {
+      "Type": "String",
+      "Default": "MyValue"
+    }
+  },
+  "Conditions": {
+    "AlwaysFalse": {
+      "Fn::Equals": [ { "Ref": "MyParam" }, "Invalid?BucketName"]
+    }
+  },
+  "Metadata": {
+    "Field": {
+      "Fn::If": [
+        "AlwaysFalse",
+        "AWS::NoValue",
+        {
+          "Ref": "MyParam"
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Metadata": {
+        "Field": {
+          "Ref": "MyParam"
+        }
+      },
+      "Properties": {
+        "BucketName": {
+          "Ref": "MyParam"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "MyOutput": {
+      "Value": {
+        "Ref": "MyParam"
+      }
+    }
+  }
+}
