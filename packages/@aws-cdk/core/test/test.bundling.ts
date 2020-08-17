@@ -40,7 +40,7 @@ export = {
       '-w', '/working-directory',
       'alpine',
       'cool', 'command',
-    ]));
+    ], { stdio: ['ignore', process.stderr, 'inherit'] }));
     test.done();
   },
 

@@ -1,8 +1,18 @@
 # awslint
+<!--BEGIN STABILITY BANNER-->
+---
+
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are in **developer preview** before they become stable. We will only make breaking changes to address unforeseen API issues. Therefore, these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes will be announced in release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+
+---
+<!--END STABILITY BANNER-->
+
 
 A linter for the AWS Construct Library's API. It reflects a construct library's
 module via it's `.jsii` manifest and checks that the module adheres to the [AWS
-Resource Construct Design Guidelines](../../design/aws-guidelines.md).
+Resource Construct Design Guidelines](../../DESIGN_GUIDELINES.md).
 
 ## Usage
 
@@ -58,7 +68,6 @@ $ npm run awslint -- -i resource-props -i import
 # evaluate only the "import" rule in all scopes besides ones that begin with "@aws-cdk/aws-s3"
 $ npm run awslint -- -i import -x "*:@aws-cdk/aws-s3*"
 ```
-
 
 Filters are specified using the following pattern:
 
@@ -125,6 +134,6 @@ resource-class: every resource must have a resource class (L2)
 ...
 ```
 
-The [AWS Resource Construct Design Guidelines](../../design/aws-guidelines.md) document
-includes references for all rules. For example, see [#resource-class](../../design/aws-guidelines.md#resource-class)
-for a discussion about the "resource-class" rule.
+The [AWS Resource Construct Design Guidelines](../../DESIGN_GUIDELINES.md) document
+includes references for all rules. For example, see [#construct-interface](../../DESIGN_GUIDELINES.md#construct-interface)
+for a discussion about the "construct-interface" rule.

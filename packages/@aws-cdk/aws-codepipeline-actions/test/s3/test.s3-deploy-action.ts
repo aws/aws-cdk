@@ -5,7 +5,7 @@ import { Duration, SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'S3 Deploy Action': {
@@ -178,7 +178,7 @@ function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): co
     stages: [
       {
         stageName: 'Source',
-        actions: [ sourceAction ],
+        actions: [sourceAction],
       },
     ],
   });

@@ -129,7 +129,6 @@ export class Alias extends AliasBase {
    * @param attrs the properties of the referenced KMS Alias
    */
   public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
-    // tslint:disable-next-line: class-name
     class _Alias extends AliasBase {
       public get aliasName() { return attrs.aliasName; }
       public get aliasTargetKey() { return attrs.aliasTargetKey; }
@@ -148,7 +147,7 @@ export class Alias extends AliasBase {
    */
   public static fromAliasName(scope: Construct, id: string, aliasName: string): IAlias {
     class Import extends Resource implements IAlias {
-      public readonly keyArn = Stack.of(this).formatArn({service: 'kms', resource: aliasName});
+      public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
       public readonly keyId = aliasName;
       public readonly aliasName = aliasName;
       public get aliasTargetKey(): IKey { throw new Error('Cannot access aliasTargetKey on an Alias imnported by Alias.fromAliasName().'); }

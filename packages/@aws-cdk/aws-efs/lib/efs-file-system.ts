@@ -4,38 +4,36 @@ import { ConcreteDependable, Construct, IDependable, IResource, RemovalPolicy, R
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
-// tslint:disable:max-line-length
 /**
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access.
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
-// tslint:enable
 export enum LifecyclePolicy {
   /**
    * After 7 days of not being accessed.
    */
-  AFTER_7_DAYS,
+  AFTER_7_DAYS = 'AFTER_7_DAYS',
 
   /**
    * After 14 days of not being accessed.
    */
-  AFTER_14_DAYS,
+  AFTER_14_DAYS = 'AFTER_14_DAYS',
 
   /**
    * After 30 days of not being accessed.
    */
-  AFTER_30_DAYS,
+  AFTER_30_DAYS = 'AFTER_30_DAYS',
 
   /**
    * After 60 days of not being accessed.
    */
-  AFTER_60_DAYS,
+  AFTER_60_DAYS = 'AFTER_60_DAYS',
 
   /**
    * After 90 days of not being accessed.
    */
-  AFTER_90_DAYS
+  AFTER_90_DAYS = 'AFTER_90_DAYS'
 }
 
 /**
@@ -249,9 +247,7 @@ export class FileSystem extends Resource implements IFileSystem {
     const filesystem = new CfnFileSystem(this, 'Resource', {
       encrypted: props.encrypted,
       kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
-      lifecyclePolicies: (props.lifecyclePolicy ? Array.of({
-        transitionToIa: LifecyclePolicy[props.lifecyclePolicy],
-      } as CfnFileSystem.LifecyclePolicyProperty) : undefined),
+      lifecyclePolicies: (props.lifecyclePolicy ? [{ transitionToIa: props.lifecyclePolicy }] : undefined),
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),

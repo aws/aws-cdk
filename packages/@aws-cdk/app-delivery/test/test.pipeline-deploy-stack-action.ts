@@ -504,7 +504,7 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
     stageName: 'build',
     actions: [buildAction],
   });
-  return {synthesizedApp: buildOutput, pipeline};
+  return { synthesizedApp: buildOutput, pipeline };
 }
 
 function hasPipelineAction(expectedAction: any): (props: any) => boolean {

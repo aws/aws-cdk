@@ -15,3 +15,6 @@ nyc.config.js
 *.snk
 !.eslintrc.js
 !jest.config.js
+
+!test/verify/*.js
+junit.xml

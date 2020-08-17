@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import { App, CfnElement, Lazy, Stack } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, IRole, Policy, PolicyStatement, Role } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 const roleAccount = '123456789012';
 const notRoleAccount = '012345678901';
@@ -292,7 +292,7 @@ describe('IAM Role.fromRoleArn', () => {
 
         describe('that belongs to a stack with account equal to the account in the imported role ARN', () => {
           beforeEach(() => {
-            policyStack = new Stack(app, 'PolicyStack', { env: { account : roleAccount } });
+            policyStack = new Stack(app, 'PolicyStack', { env: { account: roleAccount } });
             importedRole.attachInlinePolicy(somePolicy(policyStack, 'MyPolicy'));
           });
 
@@ -312,12 +312,9 @@ describe('IAM Role.fromRoleArn', () => {
           'Fn::Split': ['/',
             {
               'Fn::Select': [5,
-                { 'Fn::Split': [':', 'role-arn'] },
-              ],
-            },
-          ],
-        },
-      ],
+                { 'Fn::Split': [':', 'role-arn'] }],
+            }],
+        }],
     };
 
     describe('into an env-agnostic stack', () => {

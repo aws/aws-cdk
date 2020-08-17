@@ -1,9 +1,9 @@
-import { _objectContaining, arrayWith, deepObjectLike } from '@aws-cdk/assert';
+import { anything, arrayWith, deepObjectLike, encodedJson } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { CfnOutput, Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
 import * as cdkp from '../lib';
-import { anything, encodedJson } from './testmatchers';
+import { } from './testmatchers';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;
@@ -75,6 +75,9 @@ test('can use stack outputs as validation inputs', () => {
   });
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -107,12 +110,15 @@ test('can use additional files from source', () => {
       Actions: [
         deepObjectLike({
           Name: 'UseSources',
-          InputArtifacts: [ { Name: 'Artifact_Source_GitHub' } ],
+          InputArtifacts: [{ Name: 'Artifact_Source_GitHub' }],
         }),
       ],
     }),
   });
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -143,12 +149,15 @@ test('can use additional files from build', () => {
       Actions: [
         deepObjectLike({
           Name: 'UseBuildArtifact',
-          InputArtifacts: [ { Name: 'IntegTests' } ],
+          InputArtifacts: [{ Name: 'IntegTests' }],
         }),
       ],
     }),
   });
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {

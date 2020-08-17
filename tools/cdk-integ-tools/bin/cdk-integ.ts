@@ -3,7 +3,7 @@
 import * as yargs from 'yargs';
 import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 async function main() {
   const argv = yargs
@@ -42,7 +42,7 @@ async function main() {
         console.error('Skipping deployment (--dry-run), updating snapshot.');
       } else {
         console.error(`Deploying ${test.name}...`);
-        await test.invokeCli([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
+        await test.invokeCli([...args, 'deploy', '--require-approval', 'never', ...stackToDeploy], {
           verbose: argv.verbose,
           // Note: no "context" and "env", so use default user settings!
         });
@@ -58,7 +58,7 @@ async function main() {
       if (!dryRun) {
         if (argv.clean) {
           console.error('Cleaning up.');
-          await test.invokeCli(['destroy', '--force', ...stackToDeploy ]);
+          await test.invokeCli(['destroy', '--force', ...stackToDeploy]);
         } else {
           console.error('Skipping clean up (--no-clean).');
         }

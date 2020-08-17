@@ -1,4 +1,4 @@
-import { spawnSync } from 'child_process';
+import { spawnSync, SpawnSyncOptions } from 'child_process';
 
 /**
  * Bundling options
@@ -12,7 +12,7 @@ export interface BundlingOptions {
   readonly image: BundlingDockerImage;
 
   /**
-   * The command to run in the container.
+   * The command to run in the Docker container.
    *
    * @example ['npm', 'install']
    *
@@ -30,21 +30,21 @@ export interface BundlingOptions {
   readonly volumes?: DockerVolume[];
 
   /**
-   * The environment variables to pass to the container.
+   * The environment variables to pass to the Docker container.
    *
    * @default - no environment variables.
    */
   readonly environment?: { [key: string]: string; };
 
   /**
-   * Working directory inside the container.
+   * Working directory inside the Docker container.
    *
    * @default /asset-input
    */
   readonly workingDirectory?: string;
 
   /**
-   * The user to use when running the container.
+   * The user to use when running the Docker container.
    *
    *   user | user:group | uid | uid:gid | user:gid | uid:group
    *
@@ -53,6 +53,36 @@ export interface BundlingOptions {
    * @default - uid:gid of the current user or 1000:1000 on Windows
    */
   readonly user?: string;
+
+  /**
+   * Local bundling provider.
+   *
+   * The provider implements a method `tryBundle()` which should return `true`
+   * if local bundling was performed. If `false` is returned, docker bundling
+   * will be done.
+   *
+   * @default - bundling will only be performed in a Docker container
+   *
+   * @experimental
+   */
+  readonly local?: ILocalBundling;
+}
+
+/**
+ * Local bundling
+ *
+ * @experimental
+ */
+export interface ILocalBundling {
+  /**
+   * This method is called before attempting docker bundling to allow the
+   * bundler to be executed locally. If the local bundler exists, and bundling
+   * was performed locally, return `true`. Otherwise, return `false`.
+   *
+   * @param outputDir the directory where the bundled asset should be output
+   * @param options bundling options for this asset
+   */
+  tryBundle(outputDir: string, options: BundlingOptions): boolean;
 }
 
 /**
@@ -121,7 +151,13 @@ export class BundlingDockerImage {
       ...command,
     ];
 
-    dockerExec(dockerArgs);
+    dockerExec(dockerArgs, {
+      stdio: [ // show Docker output
+        'ignore', // ignore stdio
+        process.stderr, // redirect stdout to stderr
+        'inherit', // inherit stderr
+      ],
+    });
   }
 }
 
@@ -222,16 +258,19 @@ function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
 }
 
-function dockerExec(args: string[]) {
+function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
-  const proc = spawnSync(prog, args);
+  const proc = spawnSync(prog, args, options);
 
   if (proc.error) {
     throw proc.error;
   }
 
   if (proc.status !== 0) {
-    throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+    if (proc.stdout || proc.stderr) {
+      throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+    }
+    throw new Error(`${prog} exited with status ${proc.status}`);
   }
 
   return proc;

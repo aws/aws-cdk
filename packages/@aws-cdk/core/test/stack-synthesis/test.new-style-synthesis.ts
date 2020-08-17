@@ -1,6 +1,6 @@
+import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import { App, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
 import { evaluateCFN } from '../evaluate-cfn';
@@ -166,7 +166,7 @@ export = {
       assumeRoleExternalId: 'file-external-id',
     });
 
-    test.deepEqual(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'] , {
+    test.deepEqual(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'], {
       repositoryName: 'image-ecr-repository',
       imageTag: 'docker-asset-hash',
       assumeRoleArn: 'image:role:arn',

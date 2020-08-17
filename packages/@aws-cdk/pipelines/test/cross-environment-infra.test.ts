@@ -1,8 +1,7 @@
-import { arrayWith, objectLike } from '@aws-cdk/assert';
+import { arrayWith, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
 import * as cdkp from '../lib';
-import { stringLike } from './testmatchers';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;
@@ -30,7 +29,7 @@ test('in a cross-account/cross-region setup, artifact bucket can be read by depl
   const supportStack = app.node.findAll().filter(Stack.isStack).find(s => s.stackName === 'PipelineStack-support-us-elsewhere');
   expect(supportStack).not.toBeUndefined();
 
-  expect(supportStack).toHaveResourceLike('AWS::S3::BucketPolicy',  {
+  expect(supportStack).toHaveResourceLike('AWS::S3::BucketPolicy', {
     PolicyDocument: {
       Statement: arrayWith(objectLike({
         Action: arrayWith('s3:GetObject*', 's3:GetBucket*', 's3:List*'),
@@ -51,7 +50,7 @@ test('in a cross-account/same-region setup, artifact bucket can be read by deplo
   }));
 
   // THEN
-  expect(pipelineStack).toHaveResourceLike('AWS::S3::BucketPolicy',  {
+  expect(pipelineStack).toHaveResourceLike('AWS::S3::BucketPolicy', {
     PolicyDocument: {
       Statement: arrayWith(objectLike({
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],

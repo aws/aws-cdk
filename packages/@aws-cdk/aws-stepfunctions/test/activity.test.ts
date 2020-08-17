@@ -29,7 +29,7 @@ describe('Activity', () => {
     const sharedMetric = {
       period: cdk.Duration.minutes(5),
       namespace: 'AWS/States',
-      dimensions: { ActivityArn: { Ref: 'Activity04690B0A' }},
+      dimensions: { ActivityArn: { Ref: 'Activity04690B0A' } },
     };
     expect((stack.resolve(activity.metricRunTime()))).toEqual({
       ...sharedMetric,

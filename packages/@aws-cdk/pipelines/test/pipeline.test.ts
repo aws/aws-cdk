@@ -1,8 +1,7 @@
-import { arrayWith, deepObjectLike, objectLike } from '@aws-cdk/assert';
+import { anything, arrayWith, deepObjectLike, encodedJson, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
 import * as cdkp from '../lib';
-import { anything, encodedJson, stringLike } from './testmatchers';
 import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;
@@ -41,7 +40,6 @@ test('references stack template in subassembly', () => {
   });
 });
 
-// tslint:disable: max-line-length
 test('action has right settings for same-env deployment', () => {
   // WHEN
   pipeline.addApplicationStage(new OneStackApp(app, 'Same'));
@@ -73,7 +71,7 @@ test('action has right settings for same-env deployment', () => {
 
 test('action has right settings for cross-account deployment', () => {
   // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' }}));
+  pipeline.addApplicationStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' } }));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -102,7 +100,7 @@ test('action has right settings for cross-account deployment', () => {
 
 test('action has right settings for cross-region deployment', () => {
   // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossRegion', { env: { region: 'elsewhere' }}));
+  pipeline.addApplicationStage(new OneStackApp(app, 'CrossRegion', { env: { region: 'elsewhere' } }));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -133,7 +131,7 @@ test('action has right settings for cross-region deployment', () => {
 
 test('action has right settings for cross-account/cross-region deployment', () => {
   // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossBoth', { env: { account: 'you', region: 'elsewhere' }}));
+  pipeline.addApplicationStage(new OneStackApp(app, 'CrossBoth', { env: { account: 'you', region: 'elsewhere' } }));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -162,8 +160,6 @@ test('action has right settings for cross-account/cross-region deployment', () =
   });
 });
 
-// tslint:enable: max-line-length
-
 test('pipeline has self-mutation stage', () => {
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -181,6 +177,9 @@ test('pipeline has self-mutation stage', () => {
   });
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -204,6 +203,9 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
 
   // THEN
   expect(stackTemplate(nestedPipelineStack)).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {

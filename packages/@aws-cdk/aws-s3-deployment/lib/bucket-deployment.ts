@@ -1,11 +1,11 @@
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as crypto from 'crypto';
-import * as fs from 'fs';
-import * as path from 'path';
 import { ISource, SourceConfig } from './source';
 
 const now = Date.now();
@@ -298,7 +298,7 @@ export class CacheControl {
   public static proxyRevalidate() { return new CacheControl('proxy-revalidate'); }
   public static maxAge(t: cdk.Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
   public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
-  public static fromString(s: string) {  return new CacheControl(s); }
+  public static fromString(s: string) { return new CacheControl(s); }
 
   private constructor(public readonly value: any) {}
 }
