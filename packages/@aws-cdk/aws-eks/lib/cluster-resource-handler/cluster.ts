@@ -196,7 +196,11 @@ export class ClusterResourceHandler extends ResourceHandler {
     // if cluster is undefined (shouldnt happen) or status is not ACTIVE, we are
     // not complete. note that the custom resource provider framework forbids
     // returning attributes (Data) if isComplete is false.
-    if (cluster?.status !== 'ACTIVE') {
+    if (cluster?.status === 'FAILED') {
+      // not very informative, unfortunately the response doesn't contain any error
+      // information :\
+      throw new Error('Cluster is in a FAILED status');
+    } else if (cluster?.status !== 'ACTIVE') {
       return {
         IsComplete: false,
       };
@@ -280,12 +284,12 @@ function parseProps(props: any): aws.EKS.CreateClusterRequest {
 }
 
 interface UpdateMap {
-  replaceName: boolean;     // name
-  replaceVpc: boolean;      // resourcesVpcConfig.subnetIds and securityGroupIds
-  replaceRole: boolean;     // roleArn
-  updateVersion: boolean;   // version
-  updateLogging: boolean;   // logging
-  updateAccess: boolean;    // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
+  replaceName: boolean; // name
+  replaceVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
+  replaceRole: boolean; // roleArn
+  updateVersion: boolean; // version
+  updateLogging: boolean; // logging
+  updateAccess: boolean; // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
 }
 
 function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps: aws.EKS.CreateClusterRequest): UpdateMap {

@@ -224,7 +224,7 @@ export enum PredefinedMetric {
    */
   ECS_SERVICE_AVERAGE_CPU_UTILIZATION = 'ECSServiceAverageCPUUtilization',
   /**
-   * ECS_SERVICE_AVERAGE_CPU_UTILIZATION
+   * ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
    */
   ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION = 'ECSServiceAverageMemoryUtilization',

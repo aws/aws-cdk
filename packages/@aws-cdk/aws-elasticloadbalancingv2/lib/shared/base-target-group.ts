@@ -235,13 +235,13 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
       name: baseProps.targetGroupName,
-      targetGroupAttributes: cdk.Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true}),
+      targetGroupAttributes: cdk.Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
       targetType: cdk.Lazy.stringValue({ produce: () => this.targetType }),
-      targets: cdk.Lazy.anyValue({ produce: () => this.targetsJson}, { omitEmptyArray: true }),
-      vpcId: cdk.Lazy.stringValue({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined}),
+      targets: cdk.Lazy.anyValue({ produce: () => this.targetsJson }, { omitEmptyArray: true }),
+      vpcId: cdk.Lazy.stringValue({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined }),
 
       // HEALTH CHECK
-      healthCheckEnabled: cdk.Lazy.anyValue({ produce: () => this.healthCheck && this.healthCheck.enabled}),
+      healthCheckEnabled: cdk.Lazy.anyValue({ produce: () => this.healthCheck && this.healthCheck.enabled }),
       healthCheckIntervalSeconds: cdk.Lazy.numberValue({
         produce: () => this.healthCheck && this.healthCheck.interval && this.healthCheck.interval.toSeconds(),
       }),
@@ -253,9 +253,11 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
       }),
       healthyThresholdCount: cdk.Lazy.numberValue({ produce: () => this.healthCheck && this.healthCheck.healthyThresholdCount }),
       unhealthyThresholdCount: cdk.Lazy.numberValue({ produce: () => this.healthCheck && this.healthCheck.unhealthyThresholdCount }),
-      matcher: cdk.Lazy.anyValue({ produce: () => this.healthCheck && this.healthCheck.healthyHttpCodes !== undefined ? {
-        httpCode: this.healthCheck.healthyHttpCodes,
-      } : undefined }),
+      matcher: cdk.Lazy.anyValue({
+        produce: () => this.healthCheck && this.healthCheck.healthyHttpCodes !== undefined ? {
+          httpCode: this.healthCheck.healthyHttpCodes,
+        } : undefined,
+      }),
 
       ...additionalProps,
     });
@@ -309,7 +311,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     }
   }
 
-  protected validate(): string[]  {
+  protected validate(): string[] {
     const ret = super.validate();
 
     if (this.targetType === undefined && this.targetsJson.length === 0) {
