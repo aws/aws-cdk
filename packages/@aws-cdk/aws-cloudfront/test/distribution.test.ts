@@ -77,7 +77,7 @@ test('exhaustive example of props renders correctly', () => {
       HttpVersion: 'http1.1',
       IPV6Enabled: false,
       Logging: {
-        Bucket: {'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName']},
+        Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
         IncludeCookies: true,
         Prefix: 'logs/',
       },
@@ -401,7 +401,7 @@ describe('logging', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
-          Bucket: {'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName']},
+          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
         },
       },
     });
@@ -418,7 +418,7 @@ describe('logging', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
-          Bucket: {'Fn::GetAtt': ['MyLoggingBucket4382CD04', 'RegionalDomainName']},
+          Bucket: { 'Fn::GetAtt': ['MyLoggingBucket4382CD04', 'RegionalDomainName'] },
         },
       },
     });
@@ -436,7 +436,7 @@ describe('logging', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
-          Bucket: {'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName']},
+          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
           IncludeCookies: true,
           Prefix: 'logs/',
         },

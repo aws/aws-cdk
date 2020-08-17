@@ -35,13 +35,15 @@ beforeEach(() => {
       // First call, no stacks exist
       .mockImplementationOnce(() => ({ Stacks: [] }))
       // Second call, stack has been created
-      .mockImplementationOnce(() => ({ Stacks: [
-        {
-          StackStatus: 'CREATE_COMPLETE',
-          StackStatusReason: 'It is magic',
-          EnableTerminationProtection: false,
-        },
-      ] })),
+      .mockImplementationOnce(() => ({
+        Stacks: [
+          {
+            StackStatus: 'CREATE_COMPLETE',
+            StackStatusReason: 'It is magic',
+            EnableTerminationProtection: false,
+          },
+        ],
+      })),
     createChangeSet: jest.fn((_o) => ({})),
     describeChangeSet: jest.fn((_o) => ({
       Status: 'CREATE_COMPLETE',
@@ -252,9 +254,9 @@ test('deploy is not skipped if parameters are different', async () => {
 test('if existing stack failed to create, it is deleted and recreated', async () => {
   // GIVEN
   givenStackExists(
-    { StackStatus: 'ROLLBACK_COMPLETE' },    // This is for the initial check
-    { StackStatus: 'DELETE_COMPLETE' },      // Poll the successful deletion
-    { StackStatus: 'CREATE_COMPLETE' },      // Poll the recreation
+    { StackStatus: 'ROLLBACK_COMPLETE' }, // This is for the initial check
+    { StackStatus: 'DELETE_COMPLETE' }, // Poll the successful deletion
+    { StackStatus: 'CREATE_COMPLETE' }, // Poll the recreation
   );
   givenTemplateIs({
     DifferentThan: 'TheDefault',
@@ -278,9 +280,9 @@ test('if existing stack failed to create, it is deleted and recreated', async ()
 test('if existing stack failed to create, it is deleted and recreated even if the template did not change', async () => {
   // GIVEN
   givenStackExists(
-    { StackStatus: 'ROLLBACK_COMPLETE' },    // This is for the initial check
-    { StackStatus: 'DELETE_COMPLETE' },      // Poll the successful deletion
-    { StackStatus: 'CREATE_COMPLETE' },      // Poll the recreation
+    { StackStatus: 'ROLLBACK_COMPLETE' }, // This is for the initial check
+    { StackStatus: 'DELETE_COMPLETE' }, // Poll the successful deletion
+    { StackStatus: 'CREATE_COMPLETE' }, // Poll the recreation
   );
 
   // WHEN
@@ -404,8 +406,8 @@ test('deploy not skipped if template did not change but one tag removed', async 
 test('existing stack in UPDATE_ROLLBACK_COMPLETE state can be updated', async () => {
   // GIVEN
   givenStackExists(
-    { StackStatus: 'UPDATE_ROLLBACK_COMPLETE' },    // This is for the initial check
-    { StackStatus: 'UPDATE_COMPLETE' },      // Poll the update
+    { StackStatus: 'UPDATE_ROLLBACK_COMPLETE' }, // This is for the initial check
+    { StackStatus: 'UPDATE_COMPLETE' }, // Poll the update
   );
   givenTemplateIs({ changed: 123 });
 
@@ -624,11 +626,11 @@ function givenStackExists(...overrides: Array<Partial<AWS.CloudFormation.Stack>>
 
   for (const override of overrides.slice(0, overrides.length - 1)) {
     cfnMocks.describeStacks!.mockImplementationOnce(() => ({
-      Stacks: [ {...baseResponse, ...override }],
+      Stacks: [{ ...baseResponse, ...override }],
     }));
   }
   cfnMocks.describeStacks!.mockImplementation(() => ({
-    Stacks: [ {...baseResponse, ...overrides[overrides.length - 1] }],
+    Stacks: [{ ...baseResponse, ...overrides[overrides.length - 1] }],
   }));
 }
 
