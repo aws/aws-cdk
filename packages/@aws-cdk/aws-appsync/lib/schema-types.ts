@@ -1,6 +1,5 @@
-import { BaseDataSource } from './data-source';
 import { Resolver } from './resolver';
-import { Directive, Type, ResolvableField, ResolvableFieldOptions } from './schema-utils';
+import { Directive, Type, ResolvableFieldOptions } from './schema-utils';
 
 /**
  * Base options for GraphQL Types
@@ -285,6 +284,13 @@ export class GraphqlType {
   public readonly isRequiredList: boolean;
 
   /**
+   * The options to make this field resolvable
+   *
+   * @default - not a resolvable field
+   */
+  public fieldOptions?: ResolvableFieldOptions;
+
+  /**
    * the intermediate type linked to this attribute
    * (i.e. an interface or an object)
    *
@@ -301,6 +307,26 @@ export class GraphqlType {
   }
 
   /**
+   * Make this field resolvable
+   *
+   * @param options the options to a field resolvable
+   * - dataSource
+   * - args
+   * - requestMappingTemplate
+   * - responseMappingTemplate
+   */
+  public addResolvableField(options: ResolvableFieldOptions): GraphqlType{
+    let type = new GraphqlType(this.type, {
+      isList: this.isList,
+      isRequired: this.isRequired,
+      isRequiredList: this.isRequiredList,
+      intermediateType: this.intermediateType,
+    });
+    type.fieldOptions = options;
+    return type;
+  }
+
+  /**
    * Generate the string for this attribute
    */
   public toString(): string{
@@ -313,6 +339,21 @@ export class GraphqlType {
     // If configured with isRequiredList, the list becomes required
     type = this.isRequiredList ? `${type}!` : type;
     return type;
+  }
+
+  /**
+   * Generate the arguments for this field
+   */
+  public argsToString(): string {
+    if(this.fieldOptions) {
+      let args = '( ';
+      Object.keys(this.fieldOptions.args ?? {}).forEach((key) => {
+        const type = this.fieldOptions?.args?.[key].toString();
+        args = `${args}${key}: ${type} `;
+      });
+      return `${args})`;
+    }
+    return '';
   }
 }
 
@@ -328,7 +369,7 @@ export interface IntermediateTypeProps {
   /**
    * the attributes of this type
    */
-  readonly definition: { [key: string]: GraphqlType | ResolvableField };
+  readonly definition: { [key: string]: GraphqlType };
 }
 
 /**
@@ -345,7 +386,7 @@ export class InterfaceType {
   /**
    * the attributes of this type
    */
-  public readonly definition: { [key: string]: GraphqlType | ResolvableField };
+  public readonly definition: { [key: string]: GraphqlType };
 
   public constructor(name: string, props: IntermediateTypeProps) {
     this.name = name;
@@ -453,8 +494,8 @@ export class ObjectType extends InterfaceType {
 
     Object.keys(this.definition).forEach((fieldName) => {
       const fieldInfo = this.definition[fieldName];
-      if(fieldInfo instanceof ResolvableField) {
-        this.resolvers?.push(this.generateResolver(fieldName, fieldInfo));
+      if(fieldInfo.fieldOptions) {
+        this.resolvers?.push(this.generateResolver(fieldName, fieldInfo.fieldOptions));
       }
     });
   }
@@ -464,12 +505,12 @@ export class ObjectType extends InterfaceType {
    *
    * @param fieldName - The name of the resolvable field
    * @param type - the type for this resolvable field
-   * @param dataSource - the data source linked to this resolvable field
-   * @param options - the options for this resolvable field (args, requestMappingTemplate, responseMappingTemplate)
+   * @param options - the options for this resolvable field
+   * (dataSource, args, requestMappingTemplate, responseMappingTemplate)
    */
-  public addResolvableField(fieldName: string, type: GraphqlType, dataSource: BaseDataSource, options?: ResolvableFieldOptions): Resolver{
-    const resolvableField = new ResolvableField(type, dataSource, options);
-    const resolver = this.generateResolver(fieldName, resolvableField);
+  public addResolvableField(fieldName: string, type: GraphqlType, options: ResolvableFieldOptions): Resolver{
+    const resolvableField = type.addResolvableField(options);
+    const resolver = this.generateResolver(fieldName, options);
     this.resolvers?.push(resolver);
     this.definition[fieldName] = resolvableField;
     return resolver;
@@ -491,7 +532,7 @@ export class ObjectType extends InterfaceType {
     let schemaAddition = `type ${title} ${directives}{\n`;
     Object.keys(this.definition).forEach( (key) => {
       const attribute = this.definition[key];
-      const args = attribute instanceof ResolvableField ? attribute.argsToString() : '';
+      const args = attribute.argsToString();
       schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
     });
     return `${schemaAddition}}`;
@@ -516,12 +557,12 @@ export class ObjectType extends InterfaceType {
   /**
    * Generate the resolvers linked to this Object Type
    */
-  protected generateResolver(fieldName: string, resolvableField: ResolvableField): Resolver{
-    return resolvableField.dataSource.createResolver({
+  protected generateResolver(fieldName: string, options: ResolvableFieldOptions): Resolver{
+    return options.dataSource.createResolver({
       typeName: this.name,
       fieldName: fieldName,
-      requestMappingTemplate: resolvableField.requestMappingTemplate,
-      responseMappingTemplate: resolvableField.responseMappingTemplate,
+      requestMappingTemplate: options.requestMappingTemplate,
+      responseMappingTemplate: options.responseMappingTemplate,
     });
   }
 }

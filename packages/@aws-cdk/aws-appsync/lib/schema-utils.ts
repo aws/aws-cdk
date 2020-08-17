@@ -36,6 +36,7 @@ export class Directive {
 /**
  * Properties for configuring a resolvable field
  *
+ * @options dataSource - the data source linked to this resolvable field
  * @options args - the variables and types that define the arguments
  *
  * i.e. { string: GraphqlType, string: GraphqlType }
@@ -44,39 +45,6 @@ export class Directive {
  * @options responseMappingTemplate - the mapping template for responses from this resolver
  */
 export interface ResolvableFieldOptions {
-  /**
-   * The arguments for this resolvable field.
-   *
-   * i.e. type Example (first: String second: String) {}
-   * - where 'first' and 'second' are key values for args
-   * and 'String' is the GraphqlType
-   *
-   * @default - no arguments
-   */
-  readonly args?: { [key: string]: GraphqlType };
-  /**
-   * The request mapping template for this resolver
-   *
-   * @default - No mapping template
-   */
-  readonly requestMappingTemplate?: MappingTemplate;
-  /**
-   * The response mapping template for this resolver
-   *
-   * @default - No mapping template
-   */
-  readonly responseMappingTemplate?: MappingTemplate;
-}
-
-/**
- * Resolvable Fields build upon Graphql Types and provide fields
- * that can resolve into operations on a data source.
- */
-export class ResolvableField {
-  /**
-   * The return type for this field
-   */
-  readonly graphqlType: GraphqlType;
   /**
    * The data source creating linked to this resolvable field
    */
@@ -103,34 +71,71 @@ export class ResolvableField {
    * @default - No mapping template
    */
   readonly responseMappingTemplate?: MappingTemplate;
-
-  public constructor(type: GraphqlType, dataSource: BaseDataSource, options?: ResolvableFieldOptions) {
-    this.graphqlType = type;
-    this.dataSource = dataSource;
-    this.args = options?.args;
-    this.requestMappingTemplate = options?.requestMappingTemplate;
-    this.responseMappingTemplate = options?.responseMappingTemplate;
-  }
-
-  /**
-   * Generate the string of this resolvable field
-   */
-  public toString(): string{
-    return this.graphqlType.toString();
-  }
-
-  /**
-   * Generate the args string of this resolvable field
-   */
-  public argsToString(): string{
-    let args = '( ';
-    Object.keys(this.args ?? {}).forEach((key) => {
-      const type = this.args?.[key].toString();
-      args = `${args}${key}: ${type} `;
-    });
-    return `${args})`;
-  }
 }
+
+// /**
+//  * Resolvable Fields build upon Graphql Types and provide fields
+//  * that can resolve into operations on a data source.
+//  */
+// export class ResolvableField {
+//   /**
+//    * The return type for this field
+//    */
+//   readonly graphqlType: GraphqlType;
+//   /**
+//    * The data source creating linked to this resolvable field
+//    */
+//   readonly dataSource: BaseDataSource;
+//   /**
+//    * The arguments for this resolvable field.
+//    *
+//    * i.e. type Example (first: String second: String) {}
+//    * - where 'first' and 'second' are key values for args
+//    * and 'String' is the GraphqlType
+//    *
+//    * @default - no arguments
+//    */
+//   readonly args?: { [key: string]: GraphqlType };
+//   /**
+//    * The request mapping template for this resolver
+//    *
+//    * @default - No mapping template
+//    */
+//   readonly requestMappingTemplate?: MappingTemplate;
+//   /**
+//    * The response mapping template for this resolver
+//    *
+//    * @default - No mapping template
+//    */
+//   readonly responseMappingTemplate?: MappingTemplate;
+
+//   public constructor(type: GraphqlType, dataSource: BaseDataSource, options?: ResolvableFieldOptions) {
+//     this.graphqlType = type;
+//     this.dataSource = dataSource;
+//     this.args = options?.args;
+//     this.requestMappingTemplate = options?.requestMappingTemplate;
+//     this.responseMappingTemplate = options?.responseMappingTemplate;
+//   }
+
+//   /**
+//    * Generate the string of this resolvable field
+//    */
+//   public toString(): string{
+//     return this.graphqlType.toString();
+//   }
+
+//   /**
+//    * Generate the args string of this resolvable field
+//    */
+//   public argsToString(): string{
+//     let args = '( ';
+//     Object.keys(this.args ?? {}).forEach((key) => {
+//       const type = this.args?.[key].toString();
+//       args = `${args}${key}: ${type} `;
+//     });
+//     return `${args})`;
+//   }
+// }
 
 /**
  * Enum containing the Types that can be used to define ObjectTypes
