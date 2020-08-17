@@ -305,7 +305,7 @@ export class StateMachine extends StateMachineBase {
       loggingConfiguration,
     });
 
-    resource.construct.addDependency(this.role);
+    resource.node.addDependency(this.role);
 
     for (const statement of graph.policyStatements) {
       this.addToRolePolicy(statement);

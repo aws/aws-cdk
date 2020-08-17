@@ -1,8 +1,8 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { App, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import { Staging } from '../lib';
 
 export = {
@@ -23,7 +23,7 @@ export = {
   'staging can be disabled through context'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    stack.construct.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
+    stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
     const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // WHEN

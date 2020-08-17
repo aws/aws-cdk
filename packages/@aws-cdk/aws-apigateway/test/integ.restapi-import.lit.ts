@@ -30,7 +30,7 @@ class RootStack extends Stack {
     });
     new DeployStack(this, {
       restApiId: restApi.restApiId,
-      methods: [ ...petsStack.methods, ...booksStack.methods ],
+      methods: [...petsStack.methods, ...booksStack.methods],
     });
 
     new CfnOutput(this, 'PetsURL', {
@@ -69,7 +69,7 @@ class PetsStack extends NestedStack {
         'application/json': '{ "statusCode": 200 }',
       },
     }), {
-      methodResponses: [ { statusCode: '200' } ],
+      methodResponses: [{ statusCode: '200' }],
     });
 
     this.methods.push(method);
@@ -96,7 +96,7 @@ class BooksStack extends NestedStack {
         'application/json': '{ "statusCode": 200 }',
       },
     }), {
-      methodResponses: [ { statusCode: '200' } ],
+      methodResponses: [{ statusCode: '200' }],
     });
 
     this.methods.push(method);
@@ -116,7 +116,7 @@ class DeployStack extends NestedStack {
     const deployment = new Deployment(this, 'Deployment', {
       api: RestApi.fromRestApiId(this, 'RestApi', props.restApiId),
     });
-    (props.methods ?? []).forEach((method) => deployment.construct.addDependency(method));
+    (props.methods ?? []).forEach((method) => deployment.node.addDependency(method));
     new Stage(this, 'Stage', { deployment });
   }
 }

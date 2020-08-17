@@ -17,7 +17,7 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
       s3OriginSource: {
         s3BucketSource: sourceBucket,
       },
-      behaviors: [ {isDefaultBehavior: true}],
+      behaviors: [{ isDefaultBehavior: true }],
     },
   ],
   enableIpV6: false,

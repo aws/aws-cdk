@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { IProfilingGroup, ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
+import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -344,14 +344,16 @@ export class Function extends FunctionBase {
     // override the version's logical ID with a lazy string which includes the
     // hash of the function itself, so a new version resource is created when
     // the function configuration changes.
-    const cfn = this._currentVersion.construct.defaultChild as CfnResource;
+    const cfn = this._currentVersion.node.defaultChild as CfnResource;
     const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
 
-    cfn.overrideLogicalId(Lazy.stringValue({ produce: _ => {
-      const hash = calculateFunctionHash(this);
-      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
-      return `${logicalId}${hash}`;
-    }}));
+    cfn.overrideLogicalId(Lazy.stringValue({
+      produce: _ => {
+        const hash = calculateFunctionHash(this);
+        const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+        return `${logicalId}${hash}`;
+      },
+    }));
 
     return this._currentVersion;
   }
@@ -570,7 +572,9 @@ export class Function extends FunctionBase {
       };
     } else if (props.profiling) {
       this.validateProfilingEnvironmentVariables(props);
-      const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup');
+      const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup', {
+        computePlatform: ComputePlatform.AWS_LAMBDA,
+      });
       profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
         AWS_CODEGURU_PROFILER_GROUP_ARN: profilingGroup.profilingGroupArn,
@@ -604,7 +608,7 @@ export class Function extends FunctionBase {
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
     });
 
-    resource.construct.addDependency(this.role);
+    resource.node.addDependency(this.role);
 
     this.functionName = this.getResourceNameAttribute(resource.ref);
     this.functionArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -652,7 +656,7 @@ export class Function extends FunctionBase {
     if (props.filesystem) {
       const config = props.filesystem.config;
       if (config.dependency) {
-        this.construct.addDependency(...config.dependency);
+        this.node.addDependency(...config.dependency);
       }
 
       resource.addPropertyOverride('FileSystemConfigs',
@@ -755,7 +759,7 @@ export class Function extends FunctionBase {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: logs.RetentionDays.INFINITE,
       });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.construct.id}-LogGroup`, logretention.logGroupArn);
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
     }
     return this._logGroup;
   }
@@ -814,7 +818,7 @@ export class Function extends FunctionBase {
     } else {
       const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
-        description: 'Automatic security group for Lambda Function ' + this.construct.uniqueId,
+        description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
         allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];

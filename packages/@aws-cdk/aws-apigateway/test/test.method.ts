@@ -297,7 +297,7 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
-        Credentials: { 'Fn::GetAtt': [ 'MyRoleF48FFE04', 'Arn' ] },
+        Credentials: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
       },
     }));
     test.done();
@@ -319,7 +319,7 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
-        Credentials: { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::*:user/*' ] ] },
+        Credentials: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::*:user/*']] },
       },
     }));
     test.done();
@@ -351,8 +351,7 @@ export = {
             'application/json': apigw.Model.EMPTY_MODEL,
             'text/plain': apigw.Model.ERROR_MODEL,
           },
-        },
-        ],
+        }],
       },
     });
 
@@ -375,8 +374,7 @@ export = {
           'application/json': 'Empty',
           'text/plain': 'Error',
         },
-      },
-      ],
+      }],
     }));
 
     test.done();
@@ -422,7 +420,7 @@ export = {
           },
         ],
         Type: 'AWS',
-        Uri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':foo-service:action/BarAction']]},
+        Uri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':foo-service:action/BarAction']] },
       },
     }));
     test.done();
@@ -474,7 +472,7 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       RequestModels: {
-        'application/json': { Ref: stack.getLogicalId(model.construct.findChild('Resource') as cdk.CfnElement) },
+        'application/json': { Ref: stack.getLogicalId(model.node.findChild('Resource') as cdk.CfnElement) },
       },
     }));
 
@@ -516,8 +514,7 @@ export = {
             'text/plain': apigw.Model.ERROR_MODEL,
             'text/html': htmlModel,
           },
-        },
-        ],
+        }],
       },
     });
 
@@ -539,10 +536,9 @@ export = {
         ResponseModels: {
           'application/json': 'Empty',
           'text/plain': 'Error',
-          'text/html': { Ref: stack.getLogicalId(htmlModel.construct.findChild('Resource') as cdk.CfnElement) },
+          'text/html': { Ref: stack.getLogicalId(htmlModel.node.findChild('Resource') as cdk.CfnElement) },
         },
-      },
-      ],
+      }],
     }));
 
     test.done();
@@ -568,10 +564,10 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      RequestValidatorId: { Ref: stack.getLogicalId(validator.construct.findChild('Resource') as cdk.CfnElement) },
+      RequestValidatorId: { Ref: stack.getLogicalId(validator.node.findChild('Resource') as cdk.CfnElement) },
     }));
     expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
-      RestApiId: { Ref: stack.getLogicalId(api.construct.findChild('Resource') as cdk.CfnElement) },
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
     }));
@@ -586,7 +582,7 @@ export = {
       cloudWatchRole: false,
       deploy: false,
       defaultMethodOptions: {
-        requestParameters: {'method.request.path.proxy': true},
+        requestParameters: { 'method.request.path.proxy': true },
       },
     });
 

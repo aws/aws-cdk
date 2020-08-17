@@ -1,14 +1,17 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-  IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import {
+  ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
+  IDependable, IResource, Lazy, Resource, Stack, Tag, Token,
+} from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
-  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation } from './ec2.generated';
+  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
+} from './ec2.generated';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
-import { allRouteTableIds, defaultSubnetName, flatten, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
+import { allRouteTableIds, defaultSubnetName, flatten, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
@@ -345,7 +348,7 @@ abstract class VpcBase extends Resource implements IVpc {
 
     return {
       subnetIds: subnets.map(s => s.subnetId),
-      availabilityZones: subnets.map(s => s.availabilityZone),
+      get availabilityZones(): string[] { return subnets.map(s => s.availabilityZone); },
       internetConnectivityEstablished: tap(new CompositeDependable(), d => subnets.forEach(s => d.add(s.internetConnectivityEstablished))),
       subnets,
       hasPublic: subnets.some(s => pubs.has(s)),
@@ -377,7 +380,7 @@ abstract class VpcBase extends Resource implements IVpc {
     const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => this.selectSubnets(s).subnets)));
 
     if (routeTableIds.length === 0) {
-      this.construct.addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+      this.node.addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
     }
 
     const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
@@ -387,7 +390,7 @@ abstract class VpcBase extends Resource implements IVpc {
     // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
     // until it has successfully attached to the VPC.
     // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
-    routePropagation.construct.addDependency(attachment);
+    routePropagation.node.addDependency(attachment);
   }
 
   /**
@@ -469,7 +472,7 @@ abstract class VpcBase extends Resource implements IVpc {
   }
 
   private selectSubnetObjectsByName(groupName: string) {
-    const allSubnets =  [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
+    const allSubnets = [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
     const subnets = allSubnets.filter(s => subnetGroupNameFromConstructId(s) === groupName);
 
     if (subnets.length === 0 && !this.incompleteSubnetDefinition) {
@@ -511,7 +514,7 @@ abstract class VpcBase extends Resource implements IVpc {
       if (placement.subnetGroupName !== undefined) {
         throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');
       }
-      placement = {...placement, subnetGroupName: placement.subnetName };
+      placement = { ...placement, subnetGroupName: placement.subnetName };
     }
 
     const exclusiveSelections: Array<keyof SubnetSelection> = ['subnets', 'subnetType', 'subnetGroupName'];
@@ -526,18 +529,21 @@ abstract class VpcBase extends Resource implements IVpc {
         return {
           subnetType: SubnetType.PRIVATE,
           onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones};
+          availabilityZones: placement.availabilityZones,
+        };
       }
       if (this.isolatedSubnets.length > 0) {
         return {
           subnetType: SubnetType.ISOLATED,
           onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones };
+          availabilityZones: placement.availabilityZones,
+        };
       }
       return {
         subnetType: SubnetType.PUBLIC,
         onePerAz: placement.onePerAz,
-        availabilityZones: placement.availabilityZones };
+        availabilityZones: placement.availabilityZones,
+      };
     }
 
     return placement;
@@ -1176,7 +1182,7 @@ export class Vpc extends VpcBase {
     this.vpcDefaultSecurityGroup = this.resource.attrDefaultSecurityGroup;
     this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
 
-    this.construct.applyAspect(new Tag(NAME_TAG, this.construct.path));
+    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
 
     this.availabilityZones = stack.availabilityZones;
 
@@ -1363,8 +1369,8 @@ export class Vpc extends VpcBase {
 
       // These values will be used to recover the config upon provider import
       const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
-      subnet.construct.applyAspect(new Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
-      subnet.construct.applyAspect(new Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
+      subnet.node.applyAspect(new Tag(SUBNETNAME_TAG, subnetConfig.name, { includeResourceTypes }));
+      subnet.node.applyAspect(new Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { includeResourceTypes }));
     });
   }
 }
@@ -1482,7 +1488,7 @@ export class Subnet extends Resource implements ISubnet {
 
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
-    this.construct.applyAspect(new Tag(NAME_TAG, this.construct.path));
+    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -1500,7 +1506,7 @@ export class Subnet extends Resource implements ISubnet {
     // was just created. However, the ACL can be replaced at a later time.
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
     this.subnetNetworkAclAssociationId = Lazy.stringValue({ produce: () => this._networkAcl.networkAclId });
-    this.construct.defaultChild = subnet;
+    this.node.defaultChild = subnet;
 
     const table = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
@@ -1529,7 +1535,7 @@ export class Subnet extends Resource implements ISubnet {
       destinationCidrBlock: '0.0.0.0/0',
       gatewayId,
     });
-    route.construct.addDependency(gatewayAttachment);
+    route.node.addDependency(gatewayAttachment);
 
     // Since the 'route' depends on the gateway attachment, just
     // depending on the route is enough.
@@ -1587,7 +1593,7 @@ export class Subnet extends Resource implements ISubnet {
 
     const scope = Construct.isConstruct(networkAcl) ? networkAcl : this;
     const other = Construct.isConstruct(networkAcl) ? this : networkAcl;
-    new SubnetNetworkAclAssociation(scope, id + other.construct.uniqueId, {
+    new SubnetNetworkAclAssociation(scope, id + other.node.uniqueId, {
       networkAcl,
       subnet: this,
     });
@@ -1891,10 +1897,10 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 
     if (!attrs.routeTableId) {
       const ref = Token.isUnresolved(attrs.subnetId)
-        ? `at '${scope.construct.path}/${id}'`
+        ? `at '${scope.node.path}/${id}'`
         : `'${attrs.subnetId}'`;
       // eslint-disable-next-line max-len
-      scope.construct.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
+      scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
     this._availabilityZone = attrs.availabilityZone;
@@ -1916,7 +1922,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {
     const scope = Construct.isConstruct(networkAcl) ? networkAcl : this;
     const other = Construct.isConstruct(networkAcl) ? this : networkAcl;
-    new SubnetNetworkAclAssociation(scope, id + other.construct.uniqueId, {
+    new SubnetNetworkAclAssociation(scope, id + other.node.uniqueId, {
       networkAcl,
       subnet: this,
     });

@@ -191,7 +191,7 @@ export class HttpApi extends Resource implements IHttpApi {
 
       // to ensure the domain is ready before creating the default stage
       if(props?.defaultDomainMapping) {
-        this.defaultStage.construct.addDependency(props.defaultDomainMapping.domainName);
+        this.defaultStage.node.addDependency(props.defaultDomainMapping.domainName);
       }
     }
 
@@ -225,7 +225,7 @@ export class HttpApi extends Resource implements IHttpApi {
    * methods.
    */
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
-    const methods = options.methods ?? [ HttpMethod.ANY ];
+    const methods = options.methods ?? [HttpMethod.ANY];
     return methods.map((method) => new HttpRoute(this, `${method}${options.path}`, {
       httpApi: this,
       routeKey: HttpRouteKey.with(options.path, method),

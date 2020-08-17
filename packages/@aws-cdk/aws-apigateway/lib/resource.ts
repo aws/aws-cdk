@@ -283,7 +283,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     const integrationResponseParams: { [p: string]: string } = { };
     const methodReponseParams: { [p: string]: boolean } = { };
 
-    for (const [ name, value ] of Object.entries(headers)) {
+    for (const [name, value] of Object.entries(headers)) {
       const key = `method.response.header.${name}`;
       integrationResponseParams[key] = value;
       methodReponseParams[key] = true;
@@ -410,7 +410,7 @@ export class Resource extends ResourceBase {
 
     const deployment = props.parent.api.latestDeployment;
     if (deployment) {
-      deployment.construct.addDependency(resource);
+      deployment.node.addDependency(resource);
       deployment.addToLogicalId({ resource: resourceProps });
     }
 
@@ -488,7 +488,7 @@ export class ProxyResource extends Resource {
     // the root so that empty paths are proxied as well.
     if (this.parentResource && this.parentResource.path === '/') {
       // skip if the root resource already has this method defined
-      if (!(this.parentResource.construct.tryFindChild(httpMethod) instanceof Method)) {
+      if (!(this.parentResource.node.tryFindChild(httpMethod) instanceof Method)) {
         this.parentResource.addMethod(httpMethod, integration, options);
       }
     }

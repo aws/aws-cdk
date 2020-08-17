@@ -266,7 +266,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
     super(scope, id);
 
-    this.family = props.family || this.construct.uniqueId;
+    this.family = props.family || this.node.uniqueId;
     this.compatibility = props.compatibility;
 
     if (props.volumes) {
@@ -306,8 +306,9 @@ export class TaskDefinition extends TaskDefinitionBase {
         ...(isFargateCompatible(props.compatibility) ? ['FARGATE'] : []),
       ],
       networkMode: this.renderNetworkMode(this.networkMode),
-      placementConstraints: Lazy.anyValue({ produce: () =>
-        !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
+      placementConstraints: Lazy.anyValue({
+        produce: () =>
+          !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
       }, { omitEmptyArray: true }),
       proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,

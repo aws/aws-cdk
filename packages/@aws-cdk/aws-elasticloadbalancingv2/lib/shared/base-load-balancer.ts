@@ -129,7 +129,7 @@ export abstract class BaseLoadBalancer extends Resource {
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
     const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
-      (internetFacing ? {subnetType: ec2.SubnetType.PUBLIC} : {}) );
+      (internetFacing ? { subnetType: ec2.SubnetType.PUBLIC } : {}) );
     const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
@@ -138,11 +138,11 @@ export abstract class BaseLoadBalancer extends Resource {
       name: this.physicalName,
       subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
-      loadBalancerAttributes: Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, {omitEmptyArray: true} ),
+      loadBalancerAttributes: Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
       ...additionalProps,
     });
     if (internetFacing) {
-      resource.construct.addDependency(internetConnectivityEstablished);
+      resource.node.addDependency(internetConnectivityEstablished);
     }
 
     if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }
@@ -180,7 +180,7 @@ export abstract class BaseLoadBalancer extends Resource {
     bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + '/' : '')}AWSLogs/${Stack.of(this).account}/*`);
 
     // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
-    this.construct.addDependency(bucket);
+    this.node.addDependency(bucket);
   }
 
   /**

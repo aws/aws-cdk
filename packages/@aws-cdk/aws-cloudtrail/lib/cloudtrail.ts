@@ -295,14 +295,14 @@ export class Trail extends Resource {
 
     // Add a dependency on the bucket policy being updated, CloudTrail will test this upon creation.
     if (this.s3bucket.policy) {
-      trail.construct.addDependency(this.s3bucket.policy);
+      trail.node.addDependency(this.s3bucket.policy);
     }
 
     // If props.sendToCloudWatchLogs is set to true then the trail needs to depend on the created logsRole
     // so that it can create the log stream for the log group. This ensures the logsRole is created and propagated
     // before the trail tries to create the log stream.
     if (logsRole !== undefined) {
-      trail.construct.addDependency(logsRole);
+      trail.node.addDependency(logsRole);
     }
   }
 
@@ -361,7 +361,7 @@ export class Trail extends Resource {
    * @default false
    */
   public logAllLambdaDataEvents(options: AddEventSelectorOptions = {}) {
-    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [ `arn:${this.stack.partition}:lambda` ], options);
+    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [`arn:${this.stack.partition}:lambda`], options);
   }
 
   /**
@@ -388,7 +388,7 @@ export class Trail extends Resource {
    * @default false
    */
   public logAllS3DataEvents(options: AddEventSelectorOptions = {}) {
-    return this.addEventSelector(DataResourceType.S3_OBJECT, [ `arn:${this.stack.partition}:s3:::` ], options);
+    return this.addEventSelector(DataResourceType.S3_OBJECT, [`arn:${this.stack.partition}:s3:::`], options);
   }
 
   /**

@@ -29,8 +29,8 @@ export = {
     });
 
     // WHEN
-    const innerAcct = new Stage(outer, 'Acct', { env: { account: 'tnuocca' }});
-    const innerRegion = new Stage(outer, 'Rgn', { env: { region: 'elsewhere' }});
+    const innerAcct = new Stage(outer, 'Acct', { env: { account: 'tnuocca' } });
+    const innerRegion = new Stage(outer, 'Rgn', { env: { region: 'elsewhere' } });
     const innerNeither = new Stage(outer, 'Neither');
 
     // THEN
@@ -152,7 +152,7 @@ export = {
 
     // THEN
     app.synth();
-    test.deepEqual(aspect.visits.map(c => c.construct.path), [
+    test.deepEqual(aspect.visits.map(c => c.node.path), [
       'MyStage/Stack',
       'MyStage/Stack/Resource',
     ]);
@@ -172,7 +172,7 @@ export = {
 
     // THEN
     app.synth();
-    test.deepEqual(aspect.visits.map(c => c.construct.path), [
+    test.deepEqual(aspect.visits.map(c => c.node.path), [
       '',
       'Tree',
     ]);

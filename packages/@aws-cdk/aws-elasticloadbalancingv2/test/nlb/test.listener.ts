@@ -155,7 +155,7 @@ export = {
     lb.addListener('Listener', {
       port: 443,
       protocol: elbv2.Protocol.TLS,
-      certificates: [ elbv2.ListenerCertificate.fromCertificateManager(cert) ],
+      certificates: [elbv2.ListenerCertificate.fromCertificateManager(cert)],
       sslPolicy: elbv2.SslPolicy.TLS12,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
@@ -309,7 +309,7 @@ export = {
     test.throws(() => lb.addListener('Listener', {
       port: 443,
       protocol: elbv2.Protocol.TCP,
-      certificates: [ { certificateArn: cert.certificateArn } ],
+      certificates: [{ certificateArn: cert.certificateArn }],
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
     }), /Protocol must be TLS when certificates have been specified/);
 
@@ -339,6 +339,6 @@ export = {
 class ResourceWithLBDependency extends cdk.CfnResource {
   constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
     super(scope, id, { type: 'Test::Resource' });
-    this.construct.addDependency(targetGroup.loadBalancerAttached);
+    this.node.addDependency(targetGroup.loadBalancerAttached);
   }
 }

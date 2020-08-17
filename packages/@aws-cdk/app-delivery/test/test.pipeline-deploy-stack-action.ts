@@ -390,7 +390,7 @@ export = nodeunit.testCase({
 
           const deployedStack = new cdk.Stack(app, 'DeployedStack');
           for (let i = 0 ; i < assetCount ; i++) {
-            deployedStack.construct.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, {});
+            deployedStack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, {});
           }
 
           test.throws(() => {
@@ -504,7 +504,7 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
     stageName: 'build',
     actions: [buildAction],
   });
-  return {synthesizedApp: buildOutput, pipeline};
+  return { synthesizedApp: buildOutput, pipeline };
 }
 
 function hasPipelineAction(expectedAction: any): (props: any) => boolean {

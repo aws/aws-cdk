@@ -6,7 +6,7 @@ import { CfnOutput, Construct, Resource, Stack, Tag, Token } from '@aws-cdk/core
 import { ICluster, ClusterAttributes, KubernetesVersion, NodeType, DefaultCapacityType, EksOptimizedImage, CapacityOptions, MachineImageType, AutoScalingGroupOptions, CommonClusterOptions } from './cluster';
 import { clusterArnComponents } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
-import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
+import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -198,7 +198,7 @@ export class LegacyCluster extends Resource implements ICluster {
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
-    const commonCommandOptions = [ `--region ${stack.region}` ];
+    const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.outputClusterName) {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
@@ -230,10 +230,6 @@ export class LegacyCluster extends Resource implements ICluster {
    * for the instance type and Kubernetes version.
    *
    * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
-   * If kubectl is enabled, the
-   * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
-   * daemon will be installed on all spot instances to handle
-   * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
   public addCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined ) {
@@ -361,11 +357,11 @@ export class LegacyCluster extends Resource implements ICluster {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
-          this.construct.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
 
-        subnet.construct.applyAspect(new Tag(tag, '1'));
+        subnet.node.applyAspect(new Tag(tag, '1'));
       }
     };
 

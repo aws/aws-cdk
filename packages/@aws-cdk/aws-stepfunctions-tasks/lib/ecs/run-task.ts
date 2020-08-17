@@ -260,7 +260,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     for (const override of this.props.containerOverrides ?? []) {
       const name = override.containerDefinition.containerName;
       if (!cdk.Token.isUnresolved(name)) {
-        const cont = this.props.taskDefinition.construct.tryFindChild(name);
+        const cont = this.props.taskDefinition.node.tryFindChild(name);
         if (!cont) {
           throw new Error(`Overrides mention container with name '${name}', but no such container in task definition`);
         }
@@ -281,7 +281,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
-        ...this.props.launchTarget.bind(this, {taskDefinition: this.props.taskDefinition, cluster: this.props.cluster}).parameters,
+        ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
       }),
     };
   }

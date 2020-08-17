@@ -62,7 +62,7 @@ export = {
     'adds code asset metadata'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      stack.construct.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
       const location = path.join(__dirname, 'my-lambda-handler');
 
@@ -193,7 +193,8 @@ function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runt
   const stack = new cdk.Stack();
   return new lambda.Function(stack, 'Func', {
     handler: 'foom',
-    code, runtime,
+    code,
+    runtime,
   });
 }
 

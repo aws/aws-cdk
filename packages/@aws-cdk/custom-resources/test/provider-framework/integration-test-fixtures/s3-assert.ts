@@ -54,7 +54,7 @@ class S3AssertProvider extends Construct {
   public static getOrCreate(scope: Construct) {
     const providerId = 'com.amazonaws.cdk.custom-resources.s3assert-provider';
     const stack = Stack.of(scope);
-    const group = stack.construct.tryFindChild(providerId) as S3AssertProvider || new S3AssertProvider(stack, providerId);
+    const group = stack.node.tryFindChild(providerId) as S3AssertProvider || new S3AssertProvider(stack, providerId);
     return group.provider.serviceToken;
   }
 
@@ -75,7 +75,7 @@ class S3AssertProvider extends Construct {
       handler: 'index.is_complete',
       initialPolicy: [
         new iam.PolicyStatement({
-          resources: [ '*' ],
+          resources: ['*'],
           actions: [
             's3:GetObject*',
             's3:GetBucket*',

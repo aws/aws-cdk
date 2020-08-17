@@ -63,7 +63,7 @@ export class SecretRotationApplication {
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS PostgreSQL using the multi user rotation scheme
    */
-  public static readonly POSTGRES_ROTATION_MULTI_USER  = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationMultiUser', '1.1.3', {
+  public static readonly POSTGRES_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationMultiUser', '1.1.3', {
     isMultiUser: true,
   });
 
@@ -206,12 +206,12 @@ export class SecretRotation extends Construct {
       throw new Error('The `target` connections must have a default port range.');
     }
 
-    if (props.application.isMultiUser && !props.masterSecret)  {
+    if (props.application.isMultiUser && !props.masterSecret) {
       throw new Error('The `masterSecret` must be specified for application using the multi user scheme.');
     }
 
     // Max length of 64 chars, get the last 64 chars
-    const uniqueId = this.construct.uniqueId;
+    const uniqueId = this.node.uniqueId;
     const rotationFunctionName = uniqueId.substring(Math.max(uniqueId.length - 64, 0), uniqueId.length);
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
