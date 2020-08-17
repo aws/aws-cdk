@@ -177,19 +177,17 @@ export class ObjectType extends InterfaceType {
   }
 
   /**
-   * Add a resolvable field to this Object Type
+   * Add a field to this Object Type
    *
-   * @param fieldName - The name of the resolvable field
-   * @param type - the type for this resolvable field
-   * @param options - the options for this resolvable field
-   * (dataSource, args, requestMappingTemplate, responseMappingTemplate)
+   * @param fieldName - The name of the field
+   * @param field - the field to add
    */
-  public addResolvableField(fieldName: string, type: GraphqlType, options: ResolvableFieldOptions): Resolver{
-    const resolvableField = type.addResolvableField(options);
-    const resolver = this.generateResolver(fieldName, options);
-    this.resolvers?.push(resolver);
-    this.definition[fieldName] = resolvableField;
-    return resolver;
+  public addField(fieldName: string, field: IField): void {
+    if(field.fieldOptions){
+      const resolver = this.generateResolver(fieldName, field.fieldOptions);
+      this.resolvers?.push(resolver);
+    }
+    this.definition[fieldName] = field;
   }
 
   /**

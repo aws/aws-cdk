@@ -397,4 +397,77 @@ describe('testing Object Type properties', () => {
       Definition: `${out}`,
     });
   });
+
+  test('Object Type can implement Resolvable Field in definition', () => {
+    // WHEN
+    const field = new appsync.ResolvableField(appsync.Type.STRING, {
+      fieldOptions: {
+        dataSource: api.addNoneDataSource('none'),
+        args: {
+          arg: t.int,
+        },
+      },
+    });
+    const test = new appsync.ObjectType('Test', {
+      definition: {
+        test: t.string,
+        resolve: field,
+      },
+    });
+    api.appendToSchema(test.toString());
+    const out = 'type Test {\n  test: String\n  resolve( arg: Int ): String\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('Object Type can implement Resolvable Field from GraphqlType', () => {
+    // WHEN
+    const field = t.string.addResolvableField({
+      dataSource: api.addNoneDataSource('none'),
+      args: {
+        arg: t.int,
+      },
+    });
+    const test = new appsync.ObjectType('Test', {
+      definition: {
+        test: t.string,
+        resolve: field,
+      },
+    });
+    api.appendToSchema(test.toString());
+    const out = 'type Test {\n  test: String\n  resolve( arg: Int ): String\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('Object Type can dynamically add Fields', () => {
+    // WHEN
+    const test = new appsync.ObjectType('Test', {
+      definition: {
+        test: t.string,
+      },
+    });
+    test.addField('resolve', t.string.addResolvableField({
+      dataSource: api.addNoneDataSource('none'),
+      args: {
+        arg: t.int,
+      },
+    }));
+
+    test.addField('dynamic', t.string);
+
+    api.appendToSchema(test.toString());
+    const out = 'type Test {\n  test: String\n  resolve( arg: Int ): String\n  dynamic: String\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
 });
