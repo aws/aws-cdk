@@ -20,7 +20,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
   }
   const child = child_process.spawn(command[0], command.slice(1), {
     ...options,
-    stdio: [ options.input ? 'pipe' : 'ignore', 'pipe', 'pipe' ],
+    stdio: [options.input ? 'pipe' : 'ignore', 'pipe', 'pipe'],
   });
 
   return new Promise<string>((resolve, reject) => {
