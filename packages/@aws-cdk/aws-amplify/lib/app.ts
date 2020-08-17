@@ -92,6 +92,14 @@ export interface AppProps {
   readonly autoBranchCreation?: AutoBranchCreation;
 
   /**
+   * Automatically disconnect a branch in the Amplify Console when you delete a
+   * branch from your Git repository.
+   *
+   * @default false
+   */
+  readonly autoBranchDeletion?: boolean;
+
+  /**
    * The Basic Auth configuration. Use this to set password protection at an
    * app level to all your branches.
    *
@@ -215,6 +223,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
         pullRequestEnvironmentName: props.autoBranchCreation.pullRequestEnvironmentName,
         stage: props.autoBranchCreation.stage,
       },
+      enableBranchAutoDeletion: props.autoBranchDeletion,
       basicAuthConfig: props.basicAuth && props.basicAuth.bind(this, 'AppBasicAuth'),
       buildSpec: props.buildSpec && props.buildSpec.toBuildSpec(),
       customRules: Lazy.anyValue({ produce: () => this.customRules }, { omitEmptyArray: true }),
