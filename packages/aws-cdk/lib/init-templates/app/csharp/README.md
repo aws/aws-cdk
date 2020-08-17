@@ -8,7 +8,7 @@ It uses the [.NET Core CLI](https://docs.microsoft.com/dotnet/articles/core/) to
 
 ## Useful commands
 
-* `dotnet build src` compile this app
-* `cdk deploy`       deploy this stack to your default AWS account/region
-* `cdk diff`         compare deployed stack with current state
-* `cdk synth`        emits the synthesized CloudFormation template
+* `dotnet build` compile this app
+* `cdk deploy`   deploy this stack to your default AWS account/region
+* `cdk diff`     compare deployed stack with current state
+* `cdk synth`    emits the synthesized CloudFormation template
