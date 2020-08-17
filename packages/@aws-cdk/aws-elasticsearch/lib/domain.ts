@@ -215,6 +215,8 @@ export interface EncryptionAtRestOptions {
 
 /**
  * Configures Amazon ES to use Amazon Cognito authentication for Kibana.
+ 
+@see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html
  */
 export interface CognitoOptions {
   /**
