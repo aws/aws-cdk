@@ -379,7 +379,7 @@ const awsCustom = new AwsCustomResource(this, 'Custom', {
     service: '...',
     action: '...',
     physicalResourceId: PhysicalResourceId.of('...'),
-    assumedRole: iam.Role.fromRoleArn("...")
+    assumedRole: iam.Role.fromRoleArn('...')
   },
   policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
