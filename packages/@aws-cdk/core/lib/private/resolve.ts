@@ -49,7 +49,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
       resolve(x: any) { return resolve(x, { ...options, prefix: newPrefix }); },
     };
 
-    return [context, { postProcess(x) { return postProcessor ? postProcessor.postProcess(x, context) : x; }}];
+    return [context, { postProcess(x) { return postProcessor ? postProcessor.postProcess(x, context) : x; } }];
   }
 
   // protect against cyclic references by limiting depth.

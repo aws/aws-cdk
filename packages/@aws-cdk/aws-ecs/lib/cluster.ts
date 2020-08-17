@@ -105,7 +105,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
-    const clusterSettings = containerInsights ? [{name: 'containerInsights', value: 'enabled'}] : undefined;
+    const clusterSettings = containerInsights ? [{ name: 'containerInsights', value: 'enabled' }] : undefined;
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
@@ -371,7 +371,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
    */
   constructor(props?: EcsOptimizedAmiProps) {
     this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
-    if (props && props.generation) {      // generation defined in the props object
+    if (props && props.generation) { // generation defined in the props object
       if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
         throw new Error('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
       } else if (props.windowsVersion) {
@@ -385,7 +385,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       } else {
         this.windowsVersion = props.windowsVersion;
       }
-    } else {                              // generation not defined in props object
+    } else { // generation not defined in props object
       // always default to Amazon Linux v2 regardless of HW
       this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX_2;
     }

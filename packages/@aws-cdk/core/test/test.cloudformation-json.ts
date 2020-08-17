@@ -89,7 +89,7 @@ export = {
     const resolved = stack.resolve(stack.toJsonString({ theBucket: bucketName }));
 
     // THEN
-    const context = {MyBucket: 'TheName'};
+    const context = { MyBucket: 'TheName' };
     test.equal(evaluateCFN(resolved, context), '{"theBucket":"TheName"}');
 
     test.done();
@@ -121,7 +121,7 @@ export = {
   'embedded string literals in intrinsics are escaped when calling TokenJSON.stringify()'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const token = Fn.join('', [ 'Hello', 'This\nIs', 'Very "cool"' ]);
+    const token = Fn.join('', ['Hello', 'This\nIs', 'Very "cool"']);
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({
@@ -140,13 +140,13 @@ export = {
     // GIVEN
     const stack = new Stack();
     const bucketName = new Intrinsic({ Ref: 'MyBucket' });
-    const combinedName = Fn.join('', [ 'The bucket name is ', bucketName.toString() ]);
+    const combinedName = Fn.join('', ['The bucket name is ', bucketName.toString()]);
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({ theBucket: combinedName }));
 
     // THEN
-    const context = {MyBucket: 'TheName'};
+    const context = { MyBucket: 'TheName' };
     test.equal(evaluateCFN(resolved, context), '{"theBucket":"The bucket name is TheName"}');
 
     test.done();
@@ -179,7 +179,7 @@ export = {
     }));
 
     // THEN
-    const context = {Something: 'woof woof'};
+    const context = { Something: 'woof woof' };
     test.deepEqual(evaluateCFN(resolved, context), '{"information":"Did you know that Fido says: woof woof"}');
 
     test.done();
@@ -208,10 +208,12 @@ export = {
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN
-    new CfnOutput(stack2, 'Stack1Id', { value: stack2.toJsonString({
-      Stack1Id: stack1.stackId,
-      Stack2Id: stack2.stackId,
-    })});
+    new CfnOutput(stack2, 'Stack1Id', {
+      value: stack2.toJsonString({
+        Stack1Id: stack1.stackId,
+        Stack2Id: stack2.stackId,
+      }),
+    });
 
     // THEN
     const asm = app.synth();
@@ -219,13 +221,13 @@ export = {
       Outputs: {
         Stack1Id: {
           Value: {
-            'Fn::Join': [ '', [
+            'Fn::Join': ['', [
               '{"Stack1Id":"',
               { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
               '","Stack2Id":"',
               { Ref: 'AWS::StackId' },
               '"}',
-            ] ],
+            ]],
           },
         },
       },

@@ -102,6 +102,17 @@ export interface DistributionProps {
   readonly defaultRootObject?: string;
 
   /**
+   * Alternative domain names for this distribution.
+   *
+   * If you want to use your own domain name, such as www.example.com, instead of the cloudfront.net domain name,
+   * you can add an alternate domain name to your distribution. If you attach a certificate to the distribution,
+   * you must add (at least one of) the domain names of the certificate to this list.
+   *
+   * @default - The distribution will only support the default generated name (e.g., d111111abcdef8.cloudfront.net)
+   */
+  readonly domainNames?: string[];
+
+  /**
    * Enable or disable the distribution.
    *
    * @default true
@@ -239,6 +250,10 @@ export class Distribution extends Resource implements IDistribution {
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
       }
+
+      if ((props.domainNames ?? []).length === 0) {
+        throw new Error('Must specify at least one domain name to use a certificate with a distribution');
+      }
     }
 
     const originId = this.addOrigin(props.defaultBehavior.origin);
@@ -252,22 +267,25 @@ export class Distribution extends Resource implements IDistribution {
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
 
-    const distribution = new CfnDistribution(this, 'Resource', { distributionConfig: {
-      enabled: props.enabled ?? true,
-      origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
-      originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
-      defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
-      cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
-      comment: props.comment,
-      customErrorResponses: this.renderErrorResponses(),
-      defaultRootObject: props.defaultRootObject,
-      httpVersion: props.httpVersion ?? HttpVersion.HTTP2,
-      ipv6Enabled: props.enableIpv6 ?? true,
-      logging: this.renderLogging(props),
-      priceClass: props.priceClass ?? undefined,
-      restrictions: this.renderRestrictions(props.geoRestriction),
-      viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
-    } });
+    const distribution = new CfnDistribution(this, 'Resource', {
+      distributionConfig: {
+        enabled: props.enabled ?? true,
+        origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
+        originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
+        defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
+        aliases: props.domainNames,
+        cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
+        comment: props.comment,
+        customErrorResponses: this.renderErrorResponses(),
+        defaultRootObject: props.defaultRootObject,
+        httpVersion: props.httpVersion ?? HttpVersion.HTTP2,
+        ipv6Enabled: props.enableIpv6 ?? true,
+        logging: this.renderLogging(props),
+        priceClass: props.priceClass ?? undefined,
+        restrictions: this.renderRestrictions(props.geoRestriction),
+        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
+      },
+    });
 
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
@@ -299,14 +317,14 @@ export class Distribution extends Resource implements IDistribution {
       const originId = scope.node.uniqueId;
       const originBindConfig = origin.bind(scope, { originId });
       if (!originBindConfig.failoverConfig) {
-        this.boundOrigins.push({origin, originId, ...originBindConfig});
+        this.boundOrigins.push({ origin, originId, ...originBindConfig });
       } else {
         if (isFailoverOrigin) {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
         const originGroupId = new Construct(this, `OriginGroup${groupIndex}`).node.uniqueId;
-        this.boundOrigins.push({origin, originId, originGroupId, ...originBindConfig});
+        this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
         this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);

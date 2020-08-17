@@ -290,11 +290,11 @@ test('resource replacement is tracked through references', () => {
       },
       Queue: {
         Type: 'AWS::SQS::Queue',
-        Properties: { QueueName: { Ref: 'Bucket' }}, // Immutable prop
+        Properties: { QueueName: { Ref: 'Bucket' } }, // Immutable prop
       },
       Topic: {
         Type: 'AWS::SNS::Topic',
-        Properties: { TopicName: { Ref: 'Queue' }}, // Immutable prop
+        Properties: { TopicName: { Ref: 'Queue' } }, // Immutable prop
       },
     },
   };
@@ -308,11 +308,11 @@ test('resource replacement is tracked through references', () => {
       },
       Queue: {
         Type: 'AWS::SQS::Queue',
-        Properties: { QueueName: { Ref: 'Bucket' }},
+        Properties: { QueueName: { Ref: 'Bucket' } },
       },
       Topic: {
         Type: 'AWS::SNS::Topic',
-        Properties: { TopicName: { Ref: 'Queue' }},
+        Properties: { TopicName: { Ref: 'Queue' } },
       },
     },
   };
@@ -320,4 +320,57 @@ test('resource replacement is tracked through references', () => {
 
   // THEN
   expect(differences.resources.differenceCount).toBe(3);
+});
+
+test('adding and removing quotes from a numeric property causes no changes', () => {
+  const currentTemplate = {
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          CorsConfiguration: {
+            CorsRules: [
+              {
+                AllowedMethods: [
+                  'GET',
+                ],
+                AllowedOrigins: [
+                  '*',
+                ],
+                MaxAge: 10,
+              },
+            ],
+          },
+        },
+      },
+    },
+  };
+
+  const newTemplate = {
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          CorsConfiguration: {
+            CorsRules: [
+              {
+                AllowedMethods: [
+                  'GET',
+                ],
+                AllowedOrigins: [
+                  '*',
+                ],
+                MaxAge: '10',
+              },
+            ],
+          },
+        },
+      },
+    },
+  };
+  let differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.resources.differenceCount).toBe(0);
+
+  differences = diffTemplate(newTemplate, currentTemplate);
+  expect(differences.resources.differenceCount).toBe(0);
 });

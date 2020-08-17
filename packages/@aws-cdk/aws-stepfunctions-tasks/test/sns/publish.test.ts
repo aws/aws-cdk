@@ -114,7 +114,7 @@ describe('Publish', () => {
         ],
       },
       Parameters: {
-        TopicArn: {Ref: 'TopicBFC7AF6E'},
+        TopicArn: { Ref: 'TopicBFC7AF6E' },
         Message: {
           default: 'A message',
           sqs: 'A message for Amazon SQS',
