@@ -1,4 +1,6 @@
-ARG FROM
+# The correct AWS SAM build image based on the runtime of the function will be
+# passed as build arg. The default allows to do `docker build .` when testing.
+ARG FROM=amazon/aws-sam-cli-build-image-python3.7
 
 FROM ${FROM}
 
