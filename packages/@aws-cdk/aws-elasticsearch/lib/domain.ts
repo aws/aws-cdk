@@ -282,7 +282,7 @@ export interface DomainProps {
    *
    * @default - Cognito not used for authentication to Kibana.
    */
-  readonly cognitoOptions?: CognitoOptions;
+  readonly cognitoKibanaAuth?: CognitoOptions;
 
   /**
    * Enforces a particular physical domain name.
