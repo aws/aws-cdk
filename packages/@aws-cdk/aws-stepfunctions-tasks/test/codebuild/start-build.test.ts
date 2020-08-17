@@ -1,7 +1,7 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { CodeBuildStartBuild, CacheMode, EnvironmentType, SourceType } from '../../lib';
+import { CodeBuildStartBuild, CacheMode } from '../../lib';
 
 let stack: cdk.Stack;
 let codebuildProject: codebuild.Project;
@@ -86,7 +86,7 @@ test('Task with all the parameters', () => {
     computeTypeOverride: codebuild.ComputeType.MEDIUM,
     debugSessionEnabled: false,
     encryptionKeyOverride: 'string',
-    environmentTypeOverride: EnvironmentType.LINUX_CONTAINER,
+    environmentTypeOverride: 'LINUX_CONTAINER',
     environmentVariablesOverride: [
       {
         name: 'string',
@@ -100,7 +100,7 @@ test('Task with all the parameters', () => {
     },
     idempotencyToken: 'string',
     imageOverride: 'string',
-    imagePullCredentialsTypeOverride: 'CODEBUILD',
+    imagePullCredentialsTypeOverride: codebuild.ImagePullPrincipalType.CODEBUILD,
     insecureSslOverride: false,
     logsConfigOverride: {
       cloudWatchLogs: {
@@ -153,7 +153,7 @@ test('Task with all the parameters', () => {
         location: 'string',
         reportBuildStatus: false,
         sourceIdentifier: 'string',
-        type: SourceType.S3,
+        type: 'S3',
       },
     ],
     secondarySourcesVersionOverride: [
@@ -168,7 +168,7 @@ test('Task with all the parameters', () => {
       type: 'OAUTH',
     },
     sourceLocationOverride: 'string',
-    sourceTypeOverride: SourceType.S3,
+    sourceTypeOverride: 'S3',
     sourceVersion: 'string',
     timeoutInMinutesOverride: 60,
   });
@@ -219,7 +219,7 @@ test('Task with all the parameters', () => {
       ComputeTypeOverride: codebuild.ComputeType.MEDIUM,
       DebugSessionEnabled: false,
       EncryptionKeyOverride: 'string',
-      EnvironmentTypeOverride: EnvironmentType.LINUX_CONTAINER,
+      EnvironmentTypeOverride: 'LINUX_CONTAINER',
       EnvironmentVariablesOverride: [
         {
           Name: 'string',
@@ -286,7 +286,7 @@ test('Task with all the parameters', () => {
           Location: 'string',
           ReportBuildStatus: false,
           SourceIdentifier: 'string',
-          Type: SourceType.S3,
+          Type: 'S3',
         },
       ],
       SecondarySourcesVersionOverride: [
@@ -301,7 +301,7 @@ test('Task with all the parameters', () => {
         Type: 'OAUTH',
       },
       SourceLocationOverride: 'string',
-      SourceTypeOverride: SourceType.S3,
+      SourceTypeOverride: 'S3',
       SourceVersion: 'string',
       TimeoutInMinutesOverride: 60,
     },

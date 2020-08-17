@@ -6,29 +6,8 @@ import * as cdk from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
- * A source input type, for this build, that overrides the source input defined in the build project.
+ * Contains information that defines how the build project reports the build status to the source provider.
  */
-export enum SourceType {
-  CODECOMMIT = 'CODECOMMIT',
-  CODEPIPELINE = 'CODEPIPELINE',
-  GITHUB = 'GITHUB',
-  S3 = 'S3',
-  BITBUCKET = 'BITBUCKET',
-  GITHUB_ENTERPRISE = 'GITHUB_ENTERPRISE',
-  NO_SOURCE = 'NO_SOURCE',
-}
-
-/**
- * A container type for this build that overrides the one specified in the build project.
- */
-export enum EnvironmentType {
-  WINDOWS_CONTAINER = 'WINDOWS_CONTAINER',
-  LINUX_CONTAINER = 'LINUX_CONTAINER',
-  LINUX_GPU_CONTAINER = 'LINUX_GPU_CONTAINER',
-  ARM_CONTAINER = 'ARM_CONTAINER',
-  WINDOWS_SERVER_2019_CONTAINER = 'WINDOWS_SERVER_2019_CONTAINER',
-}
-
 export interface BuildStatusConfig {
   /**
    * Specifies the context of the build status CodeBuild sends to the source provider.
@@ -40,46 +19,68 @@ export interface BuildStatusConfig {
   readonly targetUrl: string;
 }
 
+/**
+ * Information about the build output artifacts for the build project.
+ */
 export interface ProjectArtifacts {
   /**
    * An identifier for this artifact definition.
+   *
+   * @default none
    */
-  readonly artifactIdentifier: string;
+  readonly artifactIdentifier?: string;
   /**
    *  Information that tells you if encryption for build artifacts is disabled.
+   *
+   * @default false
    */
-  readonly encryptionDisabled: boolean;
+  readonly encryptionDisabled?: boolean;
   /**
    * If this flag is set, a name specified in the buildspec file overrides the artifact name.
+   *
+   * @default false
    */
-  readonly overrideArtifactName: boolean;
+  readonly overrideArtifactName?: boolean;
   /**
    * The type of build output artifact.
    */
   readonly type: 'CODEPIPELINE' | 'S3' | 'NO_ARTIFACTS';
   /**
    * Information about the build output artifact location.
+   *
+   * @default none
    */
   readonly location?: String;
   /**
    * Along with namespaceType and name, the pattern that AWS CodeBuild will use to name and store the output artifact.
+   *
+   * @default none
    */
   readonly path?: String;
   /**
    * Along with path and name, the pattern that AWS CodeBuild will
    * use to determine the name and location to store the output artifact.
+   *
+   * @default NONE
    */
   readonly namespaceType?: 'BUILD_ID' | 'NONE';
   /**
    * Along with path and namespaceType, the pattern that AWS CodeBuild will use to name and store the output artifact.
+   *
+   * @default NONE
    */
   readonly name?: String;
   /**
    * The type of build output artifact to create.
+   *
+   * @default NONE
    */
   readonly packaging?: 'NONE' | 'ZIP';
 }
 
+/**
+ * Information about an environment variable for a build project or a build.
+ */
 export interface EnvironmentVariable {
   /**
    * The name or key of the environment variable.
@@ -91,50 +92,73 @@ export interface EnvironmentVariable {
   readonly value: String;
   /**
    * The type of environment variable.
+   *
+   * @default PLAINTEXT
    */
   readonly type?: codebuild.BuildEnvironmentVariableType;
 }
 
+/**
+ * Information about the build input source code for the build project.
+ */
 export interface ProjectSource {
   /**
    * The type of repository that contains the source code to be built.
    */
-  readonly type: SourceType;
+  readonly type: string;
   /**
    * Information about the location of the source code to be built.
+   *
+   * @default none
    */
   readonly location?: String;
   /**
    * Information about the git clone depth for the build project.
+   *
+   * @default 0
    */
   readonly gitCloneDepth?: number;
   /**
    * Information about the Git submodules configuration for the build project.
+   *
+   * @default none
    */
   readonly gitSubmodulesConfig?: GitSubmodulesConfig;
   /**
    * The build spec declaration to use for the builds in this build project.
+   *
+   * @default none
    */
   readonly buildspec?: String;
   /**
    * Contains information that defines how the AWS CodeBuild build project
    * reports the build status to the source provider.
+   *
+   * @default none
    */
   readonly buildStatusConfig?: BuildStatusConfig;
   /**
    * Information about the authorization settings for AWS CodeBuild to access the source code to be built.
+   *
+   * @default none
    */
   readonly auth?: SourceAuth;
   /**
    *  Set to true to report the status of a build's start and finish to your source provider.
+   *
+   * @default false
    */
   readonly reportBuildStatus?: boolean;
   /**
    * Enable this flag to ignore SSL warnings while connecting to the project source code.
+   *
+   * @default false
    */
   readonly insecureSsl?: boolean;
   /**
    *  An identifier for this project source.
+   *
+   * @default none
    */
   readonly sourceIdentifier?: String;
 }
@@ -149,6 +173,8 @@ export interface SourceAuth {
   readonly type: 'OAUTH';
   /**
    * The resource value that applies to the specified authorization type.
+   *
+   * @default none
    */
   readonly resource?: String;
 }
@@ -163,6 +189,8 @@ export interface SourceVersion {
   readonly sourceIdentifier: string;
   /**
    * The source version for the corresponding source identifier.
+   *
+   * @default none
    */
   readonly sourceVersion?: string;
 }
@@ -182,8 +210,17 @@ export interface GitSubmodulesConfig {
  * You can use one or more local cache modes at the same time.
  */
 export enum CacheMode {
+  /**
+   * LOCAL_DOCKER_LAYER_CACHE mode caches existing Docker layers.
+   */
   LOCAL_DOCKER_LAYER_CACHE = 'LOCAL_DOCKER_LAYER_CACHE',
+  /**
+   * LOCAL_SOURCE_CACHE mode caches Git metadata for primary and secondary sources.
+   */
   LOCAL_SOURCE_CACHE = 'LOCAL_SOURCE_CACHE',
+  /**
+   * LOCAL_CUSTOM_CACHE mode caches directories you specify in the buildspec file.
+   */
   LOCAL_CUSTOM_CACHE = 'LOCAL_CUSTOM_CACHE',
 }
 
@@ -193,10 +230,14 @@ export enum CacheMode {
 export interface ProjectCache {
   /**
    * Information about the cache location.
+   *
+   * @default none
    */
   readonly location?: string;
   /**
    * If you use a LOCAL cache, the local cache mode. You can use one or more local cache modes at the same time.
+   *
+   * @default none
    */
   readonly modes?: CacheMode[];
   /**
@@ -211,6 +252,8 @@ export interface ProjectCache {
 export interface CloudWatchLogsConfig {
   /**
    * The group name of the logs in Amazon CloudWatch Logs.
+   *
+   * @default none
    */
   readonly groupName?: string;
   /**
@@ -219,6 +262,8 @@ export interface CloudWatchLogsConfig {
   readonly status: 'ENABLED' | 'DISABLED';
   /**
    * The prefix of the stream name of the Amazon CloudWatch Logs.
+   *
+   * @default none
    */
   readonly streamName?: string;
 }
@@ -229,10 +274,14 @@ export interface CloudWatchLogsConfig {
 export interface S3LogsConfig {
   /**
    * Set to true if you do not want your S3 build log output encrypted. By default S3 build logs are encrypted.
+   *
+   * @default false
    */
   readonly encryptionDisabled?: boolean;
   /**
    * The ARN of an S3 bucket and the path prefix for S3 logs.
+   *
+   * @default none
    */
   readonly location?: string;
   /**
@@ -246,7 +295,17 @@ export interface S3LogsConfig {
  * These can be logs in Amazon CloudWatch Logs, built in a specified S3 bucket, or both.
  */
 export interface LogsConfig {
+  /**
+   * Information about Amazon CloudWatch Logs for a build project.
+   *
+   * @default none
+   */
   readonly cloudWatchLogs?: CloudWatchLogsConfig;
+  /**
+   * Information about logs built to an S3 bucket for a build project.
+   *
+   * @default none
+   */
   readonly s3Logs?: S3LogsConfig;
 }
 
@@ -271,14 +330,18 @@ export interface CodeBuildStartBuildProps extends sfn.TaskStateBaseProps {
   /**
    * CodeBuild project to start
    */
-  readonly project: codebuild.Project;
+  readonly project: codebuild.IProject;
   /**
    * An array of ProjectSource objects.
+   *
+   * @default No override
    */
   readonly secondarySourcesOverride?: ProjectSource[];
   /**
    * An array of ProjectSourceVersion objects that specify one or more versions
    * of the project's secondary sources to be used for this build only.
+   *
+   * @default No override
    */
   readonly secondarySourcesVersionOverride?: SourceVersion[];
   /**
@@ -291,98 +354,140 @@ export interface CodeBuildStartBuildProps extends sfn.TaskStateBaseProps {
   /**
    * Build output artifact settings that override, for this build only,
    * the latest ones already defined in the build project.
+   *
+   * @default No override
    */
   readonly artifactsOverride?: ProjectArtifacts;
   /**
    * An array of ProjectArtifacts objects.
+   *
+   * @default No override
    */
   readonly secondaryArtifactsOverride?: ProjectArtifacts[];
   /**
    * A set of environment variables that overrides, for this build only,
    * the latest ones already defined in the build project.
+   *
+   * @default No override
    */
   readonly environmentVariablesOverride?: EnvironmentVariable[];
   /**
    * A source input type, for this build, that overrides the source input defined in the build project.
+   *
+   * @default No override
    */
-  readonly sourceTypeOverride?: SourceType;
+  readonly sourceTypeOverride?: string;
   /**
    * A location that overrides, for this build, the source location for the one defined in the build project.
+   *
+   * @default No override
    */
   readonly sourceLocationOverride?: String;
   /**
    * An authorization type for this build that overrides the one defined in the build project.
    * This override applies only if the build project's source is BitBucket or GitHub.
+   *
+   * @default No override
    */
   readonly sourceAuthOverride?: SourceAuth;
   /**
    * The user-defined depth of history, with a minimum value of 0, that overrides, for this build only,
    * any previous depth of history defined in the build project.
+   *
+   * @default No override
    */
   readonly gitCloneDepthOverride?: number;
   /**
    *  Information about the Git submodules configuration for this build of an AWS CodeBuild build project.
+   *
+   * @default No override
    */
   readonly gitSubmodulesConfigOverride?: GitSubmodulesConfig;
   /**
    * A buildspec file declaration that overrides, for this build only,
    * the latest one already defined in the build project.
+   *
+   * @default No override
    */
   readonly buildspecOverride?: String;
   /**
    * Contains information that defines how the build project reports the build status to the source provider.
    * This option is only used when the source provider is GITHUB, GITHUB_ENTERPRISE, or BITBUCKET.
+   *
+   * @default No override
    */
   readonly buildStatusConfigOverride?: BuildStatusConfig;
   /**
    * Enable this flag to override the insecure SSL setting that is specified in the build project.
    * The insecure SSL setting determines whether to ignore SSL warnings while connecting to the project source code.
    * This override applies only if the build's source is GitHub Enterprise.
+   *
+   * @default No override
    */
   readonly insecureSslOverride?: boolean;
   /**
    * Set to true to report to your source provider the status of a build's start and completion.
    * If you use this option with a source provider other than GitHub, GitHub Enterprise, or Bitbucket,
    * an invalidInputException is thrown.
+   *
+   * @default No override
    */
   readonly reportBuildStatusOverride?: boolean;
   /**
    * A container type for this build that overrides the one specified in the build project.
+   *
+   * @default No override
    */
-  readonly environmentTypeOverride?: EnvironmentType;
+  readonly environmentTypeOverride?: string;
   /**
    * The name of an image for this build that overrides the one specified in the build project.
+   *
+   * @default No override
    */
   readonly imageOverride?: String;
   /**
    * The name of a compute type for this build that overrides the one specified in the build project.
+   *
+   * @default No override
    */
   readonly computeTypeOverride?: codebuild.ComputeType;
   /**
    * The name of a certificate for this build that overrides the one specified in the build project.
+   *
+   * @default No override
    */
   readonly certificateOverride?: String;
   /**
    * A ProjectCache object specified for this build that overrides the one defined in the build project.
+   *
+   * @default No override
    */
   readonly cacheOverride?: ProjectCache;
   /**
    * The name of a service role for this build that overrides the one specified in the build project.
+   *
+   * @default No override
    */
   readonly serviceRoleOverride?: String;
   /**
    * The number of build timeout minutes, from 5 to 480 (8 hours), that overrides, for this build only,
    * the latest setting already defined in the build project.
+   *
+   * @default No override
    */
   readonly timeoutInMinutesOverride?: number;
   /**
    * The number of minutes a build is allowed to be queued before it times out.
+   *
+   * @default No override
    */
   readonly queuedTimeoutInMinutesOverride?: number;
   /**
    * The AWS Key Management Service (AWS KMS) customer master key (CMK)
    * that overrides the one specified in the build project.
    * The CMK key encrypts the build output artifacts.
+   *
+   * @default No override
    */
   readonly encryptionKeyOverride?: String;
   /**
@@ -396,22 +501,32 @@ export interface CodeBuildStartBuildProps extends sfn.TaskStateBaseProps {
   readonly idempotencyToken?: String;
   /**
    *  Log settings for this build that override the log settings defined in the build project.
+   *
+   * @default No override
    */
   readonly logsConfigOverride?: LogsConfig;
   /**
    *  The credentials for access to a private registry.
+   *
+   * @default No override
    */
   readonly registryCredentialOverride?: RegistryCredential;
   /**
    * The type of credentials AWS CodeBuild uses to pull images in your build.
+   *
+   * @default No override
    */
-  readonly imagePullCredentialsTypeOverride?: 'CODEBUILD' | 'SERVICE_ROLE';
+  readonly imagePullCredentialsTypeOverride?: codebuild.ImagePullPrincipalType;
   /**
    * Specifies if session debugging is enabled for this build
+   *
+   * @default No override
    */
   readonly debugSessionEnabled?: boolean;
   /**
    * Enable this flag to override privileged mode in the build project.
+   *
+   * @default No override
    */
   readonly privilegedModeOverride?: boolean;
 }
@@ -635,23 +750,4 @@ export class CodeBuildStartBuild extends sfn.TaskStateBase {
       }
       : undefined;
   }
-}
-
-/**
- * Invocation type of CodeBuild Job
- */
-export enum CodeBuildStartJobType {
-  /**
-   * Start the build asynchronously.
-   *
-   * Step Functions will not wait for the build to complete
-   */
-  REQUEST_RESPONSE = 'RequestResponse',
-
-  /**
-   * Start the build synchronously.
-   *
-   * Step Functions will wait for the build to complete before progressing to the next state
-   */
-  RUN_JOB = 'RunJob',
 }
