@@ -98,6 +98,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('correctly parse strings as integers as needed', () => {
+    includeTestTemplate(stack, 'parsing-as-numbers.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('parsing-as-numbers.json'),
+    );
+  });
+
   xtest('correctly changes the logical IDs, including references, if imported with preserveLogicalIds=false', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-encryption-key.json', {
       preserveLogicalIds: false,
