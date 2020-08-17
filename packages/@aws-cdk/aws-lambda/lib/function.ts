@@ -578,7 +578,8 @@ export class Function extends FunctionBase {
       };
     }
 
-    for (const [key, value] of Object.entries({ ...profilingGroupEnvironmentVariables, ...(props.environment || {}) })) {
+    const env = { ...profilingGroupEnvironmentVariables, ...(props.environment || {}) };
+    for (const [key, value] of Object.entries(env)) {
       this.addEnvironment(key, value);
     }
 
@@ -924,8 +925,9 @@ export class Function extends FunctionBase {
  */
 export interface EnvironmentOptions {
   /**
-   * Whether to allow automatic removal of this environment variable when the
-   * function is used in Lambda@Edge.
+   * When used in Lambda@Edge via edgeArn() API, these environment
+   * variables will be removed. If not set, an error will be thrown.
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-requirements-lambda-function-configuration
    *
    * @default false - using the function in Lambda@Edge will throw
    */
