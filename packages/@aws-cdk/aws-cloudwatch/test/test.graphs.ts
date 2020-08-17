@@ -205,7 +205,7 @@ export = {
   'query result widget - line'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const logGroup = { logGroupName: 'my-log-group'} ;
+    const logGroup = { logGroupName: 'my-log-group' } ;
 
     // WHEN
     const widget = new LogQueryWidget({
