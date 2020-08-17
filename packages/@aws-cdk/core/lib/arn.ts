@@ -82,7 +82,7 @@ export class Arn {
     const account = components.account !== undefined ? components.account : stack.account;
     const sep = components.sep !== undefined ? components.sep : '/';
 
-    const values = [ 'arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource ];
+    const values = ['arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource];
 
     if (sep !== '/' && sep !== ':' && sep !== '') {
       throw new Error('resourcePathSep may only be ":", "/" or an empty string');
@@ -145,7 +145,7 @@ export class Arn {
       throw new Error('ARNs must have at least 6 components: ' + arn);
     }
 
-    const [ arnPrefix, partition, service, region, account, sixth, ...rest ] = components;
+    const [arnPrefix, partition, service, region, account, sixth, ...rest] = components;
 
     if (arnPrefix !== 'arn') {
       throw new Error('ARNs must start with "arn:": ' + arn);

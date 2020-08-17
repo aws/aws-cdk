@@ -200,7 +200,7 @@ export class InitConfig {
     // Must be last!
     const servicesConfig = this.bindForType(InitElementType.SERVICE, bindOptions);
 
-    const authentication = [ packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig ]
+    const authentication = [packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig]
       .map(c => c?.authentication)
       .reduce(deepMerge, undefined);
 
@@ -312,7 +312,6 @@ function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B | undefined): Re
 function contentHash(content: string) {
   return crypto.createHash('sha256').update(content).digest('hex');
 }
-
 
 /**
  * Options for attach a CloudFormationInit to a resource

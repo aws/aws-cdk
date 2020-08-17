@@ -13,12 +13,18 @@ export = {
       value: ref,
       description: 'CfnOutput properties',
     });
-    test.deepEqual(toCloudFormation(stack), { Resources: { MyResource: { Type: 'R' } },
+    test.deepEqual(toCloudFormation(stack), {
+      Resources: { MyResource: { Type: 'R' } },
       Outputs:
-     { MyOutput:
-      { Description: 'CfnOutput properties',
+     {
+       MyOutput:
+      {
+        Description: 'CfnOutput properties',
         Export: { Name: 'ExportName' },
-        Value: { Ref: 'MyResource' } } } });
+        Value: { Ref: 'MyResource' },
+      },
+     },
+    });
     test.done();
   },
 

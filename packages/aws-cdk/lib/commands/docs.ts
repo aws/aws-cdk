@@ -2,7 +2,7 @@ import * as childProcess from 'child_process';
 import * as process from 'process';
 import * as colors from 'colors/safe';
 import * as yargs from 'yargs';
-import { debug,  print, warning } from '../../lib/logging';
+import { debug, print, warning } from '../../lib/logging';
 import { CommandOptions } from '../command-api';
 
 export const command = 'docs';

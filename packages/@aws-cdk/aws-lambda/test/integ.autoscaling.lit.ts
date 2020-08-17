@@ -31,12 +31,12 @@ class TestStack extends cdk.Stack {
     });
 
     scalingTarget.scaleOnSchedule('ScaleUpInTheMorning', {
-      schedule: appscaling.Schedule.cron({ hour: '8', minute: '0'}),
+      schedule: appscaling.Schedule.cron({ hour: '8', minute: '0' }),
       minCapacity: 20,
     });
 
     scalingTarget.scaleOnSchedule('ScaleDownAtNight', {
-      schedule: appscaling.Schedule.cron({ hour: '20', minute: '0'}),
+      schedule: appscaling.Schedule.cron({ hour: '20', minute: '0' }),
       maxCapacity: 20,
     });
 
