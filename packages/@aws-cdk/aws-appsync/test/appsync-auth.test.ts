@@ -15,6 +15,7 @@ describe('AuthorizationType ApiKey', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'API', {
       name: 'apiKeyUnitTest',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
       schemaDefinitionFile: join(__dirname, 'appsync.auth.graphql'),
       authorizationConfig: {
         defaultAuthorization: {
@@ -25,7 +26,7 @@ describe('AuthorizationType ApiKey', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::AppSync::ApiKey', {
-      ApiId: { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId' ] },
+      ApiId: { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
       Description: 'Default API Key created by CDK',
     });
   });
@@ -36,6 +37,7 @@ describe('AuthorizationType ApiKey', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'API', {
       name: 'apiKeyUnitTest',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
       schemaDefinitionFile: join(__dirname, 'appsync.auth.graphql'),
       authorizationConfig: {
         defaultAuthorization: {
@@ -49,7 +51,7 @@ describe('AuthorizationType ApiKey', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::ApiKey', {
-      ApiId: { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId' ] },
+      ApiId: { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
       Description: 'Default API Key created by CDK',
       Expires: expirationDate,
     });
@@ -59,6 +61,7 @@ describe('AuthorizationType ApiKey', () => {
     // WHEN
     const when = () => { new appsync.GraphQLApi(stack, 'API', {
       name: 'apiKeyUnitTest',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
       schemaDefinitionFile: join(__dirname, 'appsync.auth.graphql'),
       authorizationConfig: {
         defaultAuthorization: {
@@ -78,6 +81,7 @@ describe('AuthorizationType ApiKey', () => {
     // WHEN
     const when = () => {new appsync.GraphQLApi(stack, 'API', {
       name: 'apiKeyUnitTest',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
       schemaDefinitionFile: join(__dirname, 'appsync.auth.graphql'),
       authorizationConfig: {
         defaultAuthorization: {

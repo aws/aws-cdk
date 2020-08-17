@@ -32,7 +32,7 @@
         "Definition": "type test {\n  id: Int!\n  version: String!\n}\n\ntype Query {\n  getTests: [ test! ]\n}\n\ntype Mutation {\n  addTest(version: String!): test!\n}"
       }
     },
-    "ApitestDataSourceDSServiceRoleE543E310": {
+    "ApitestDataSourceServiceRoleACBC3F3D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -49,7 +49,7 @@
         }
       }
     },
-    "ApitestDataSourceDSServiceRoleDefaultPolicy53D2252C": {
+    "ApitestDataSourceServiceRoleDefaultPolicy897CD912": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -83,15 +83,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ApitestDataSourceDSServiceRoleDefaultPolicy53D2252C",
+        "PolicyName": "ApitestDataSourceServiceRoleDefaultPolicy897CD912",
         "Roles": [
           {
-            "Ref": "ApitestDataSourceDSServiceRoleE543E310"
+            "Ref": "ApitestDataSourceServiceRoleACBC3F3D"
           }
         ]
       }
     },
-    "ApitestDataSourceDS776EA507": {
+    "ApitestDataSource96AE54D5": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -102,7 +102,6 @@
         },
         "Name": "testDataSource",
         "Type": "AMAZON_DYNAMODB",
-        "Description": "Table for Tests\"",
         "DynamoDBConfig": {
           "AwsRegion": {
             "Ref": "AWS::Region"
@@ -113,13 +112,13 @@
         },
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "ApitestDataSourceDSServiceRoleE543E310",
+            "ApitestDataSourceServiceRoleACBC3F3D",
             "Arn"
           ]
         }
       }
     },
-    "ApitestDataSourceDSQuerygetTestsResolver61ED88B6": {
+    "ApitestDataSourceQuerygetTestsResolverA3BBB672": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -137,10 +136,10 @@
       },
       "DependsOn": [
         "ApiSchema510EECD7",
-        "ApitestDataSourceDS776EA507"
+        "ApitestDataSource96AE54D5"
       ]
     },
-    "ApitestDataSourceDSMutationaddTestResolver0D3A4591": {
+    "ApitestDataSourceMutationaddTestResolver36203D6B": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -158,7 +157,7 @@
       },
       "DependsOn": [
         "ApiSchema510EECD7",
-        "ApitestDataSourceDS776EA507"
+        "ApitestDataSource96AE54D5"
       ]
     },
     "TestTable5769773A": {

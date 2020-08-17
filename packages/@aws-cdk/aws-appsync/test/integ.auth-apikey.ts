@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, RemovalPolicy, Stack, Expiration } from '@aws-cdk/core';
-import { AuthorizationType, GraphQLApi, MappingTemplate, PrimaryKey, Values } from '../lib';
+import { AuthorizationType, GraphQLApi, MappingTemplate, PrimaryKey, SchemaDefinition, Values } from '../lib';
 
 /*
  * Creates an Appsync GraphQL API with API_KEY authorization.
@@ -23,6 +23,7 @@ const stack = new Stack(app, 'aws-appsync-integ');
 
 const api = new GraphQLApi(stack, 'Api', {
   name: 'Integ_Test_APIKey',
+  schemaDefinition: SchemaDefinition.FILE,
   schemaDefinitionFile: join(__dirname, 'appsync.auth.graphql'),
   authorizationConfig: {
     defaultAuthorization: {
@@ -44,7 +45,7 @@ const testTable = new Table(stack, 'TestTable', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
-const testDS = api.addDynamoDbDataSource('testDataSource', 'Table for Tests"', testTable);
+const testDS = api.addDynamoDbDataSource('testDataSource', testTable);
 
 testDS.createResolver({
   typeName: 'Query',
