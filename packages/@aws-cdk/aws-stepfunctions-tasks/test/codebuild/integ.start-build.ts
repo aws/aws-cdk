@@ -43,6 +43,109 @@ class StartBuildStack extends cdk.Stack {
         type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         value: sfn.JsonPath.stringAt('$.envVariables.zone'),
       }],
+      artifactsOverride: {
+        artifactIdentifier: 'id',
+        encryptionDisabled: false,
+        location: 'string',
+        name: 'string',
+        namespaceType: 'BUILD_ID',
+        overrideArtifactName: false,
+        packaging: 'ZIP',
+        path: 'string',
+        type: 'S3',
+      },
+      buildspecOverride: 'string',
+      buildStatusConfigOverride: {
+        context: 'string',
+        targetUrl: 'string',
+      },
+      cacheOverride: {
+        location: 'string',
+        modes: ['LOCAL_SOURCE_CACHE'],
+        type: 'S3',
+      },
+      certificateOverride: 'string',
+      computeTypeOverride: codebuild.ComputeType.MEDIUM,
+      debugSessionEnabled: false,
+      encryptionKeyOverride: 'string',
+      environmentTypeOverride: 'LINUX_CONTAINER',
+      gitCloneDepthOverride: 0,
+      gitSubmodulesConfigOverride: {
+        fetchSubmodules: false,
+      },
+      idempotencyToken: 'string',
+      imageOverride: 'string',
+      imagePullCredentialsTypeOverride: codebuild.ImagePullPrincipalType.CODEBUILD,
+      insecureSslOverride: false,
+      logsConfigOverride: {
+        cloudWatchLogs: {
+          groupName: 'string',
+          status: 'ENABLED',
+          streamName: 'string',
+        },
+        s3Logs: {
+          encryptionDisabled: false,
+          location: 'string',
+          status: 'ENABLED',
+        },
+      },
+      privilegedModeOverride: false,
+      queuedTimeoutInMinutesOverride: 60,
+      registryCredentialOverride: {
+        credential: 'string',
+        credentialProvider: 'SECRETS_MANAGER',
+      },
+      reportBuildStatusOverride: false,
+      secondaryArtifactsOverride: [
+        {
+          artifactIdentifier: 'string',
+          encryptionDisabled: false,
+          location: 'string',
+          name: 'string',
+          namespaceType: 'BUILD_ID',
+          overrideArtifactName: false,
+          packaging: 'ZIP',
+          path: 'string',
+          type: 'S3',
+        },
+      ],
+      secondarySourcesOverride: [
+        {
+          auth: {
+            resource: 'string',
+            type: 'OAUTH',
+          },
+          buildspec: 'string',
+          buildStatusConfig: {
+            context: 'string',
+            targetUrl: 'string',
+          },
+          gitCloneDepth: 0,
+          gitSubmodulesConfig: {
+            fetchSubmodules: false,
+          },
+          insecureSsl: false,
+          location: 'string',
+          reportBuildStatus: false,
+          sourceIdentifier: 'string',
+          type: 'S3',
+        },
+      ],
+      secondarySourcesVersionOverride: [
+        {
+          sourceIdentifier: 'string',
+          sourceVersion: 'string',
+        },
+      ],
+      serviceRoleOverride: 'string',
+      sourceAuthOverride: {
+        resource: 'string',
+        type: 'OAUTH',
+      },
+      sourceLocationOverride: 'string',
+      sourceTypeOverride: 'S3',
+      sourceVersion: 'string',
+      timeoutInMinutesOverride: 60,
     });
 
     const definition = new sfn.Pass(this, 'Start', {

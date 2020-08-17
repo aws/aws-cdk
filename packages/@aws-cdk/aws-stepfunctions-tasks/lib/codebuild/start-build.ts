@@ -206,25 +206,6 @@ export interface GitSubmodulesConfig {
 }
 
 /**
- * If you use a LOCAL cache, the local cache mode.
- * You can use one or more local cache modes at the same time.
- */
-export enum CacheMode {
-  /**
-   * LOCAL_DOCKER_LAYER_CACHE mode caches existing Docker layers.
-   */
-  LOCAL_DOCKER_LAYER_CACHE = 'LOCAL_DOCKER_LAYER_CACHE',
-  /**
-   * LOCAL_SOURCE_CACHE mode caches Git metadata for primary and secondary sources.
-   */
-  LOCAL_SOURCE_CACHE = 'LOCAL_SOURCE_CACHE',
-  /**
-   * LOCAL_CUSTOM_CACHE mode caches directories you specify in the buildspec file.
-   */
-  LOCAL_CUSTOM_CACHE = 'LOCAL_CUSTOM_CACHE',
-}
-
-/**
  * Information about the cache for the build project.
  */
 export interface ProjectCache {
@@ -239,7 +220,7 @@ export interface ProjectCache {
    *
    * @default none
    */
-  readonly modes?: CacheMode[];
+  readonly modes?: ('LOCAL_DOCKER_LAYER_CACHE' | 'LOCAL_SOURCE_CACHE' | 'LOCAL_CUSTOM_CACHE')[];
   /**
    * The type of cache used by the build project.
    */

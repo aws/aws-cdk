@@ -1,7 +1,7 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { CodeBuildStartBuild, CacheMode } from '../../lib';
+import { CodeBuildStartBuild } from '../../lib';
 
 let stack: cdk.Stack;
 let codebuildProject: codebuild.Project;
@@ -79,7 +79,7 @@ test('Task with all the parameters', () => {
     },
     cacheOverride: {
       location: 'string',
-      modes: [CacheMode.LOCAL_CUSTOM_CACHE],
+      modes: ['LOCAL_CUSTOM_CACHE'],
       type: 'S3',
     },
     certificateOverride: 'string',
@@ -212,7 +212,7 @@ test('Task with all the parameters', () => {
       },
       CacheOverride: {
         Location: 'string',
-        Modes: [CacheMode.LOCAL_CUSTOM_CACHE],
+        Modes: ['LOCAL_CUSTOM_CACHE'],
         Type: 'S3',
       },
       CertificateOverride: 'string',
