@@ -126,7 +126,6 @@ class MyPipelineStack extends Stack {
         actionName: 'GitHub',
         output: sourceArtifact,
         oauthToken: SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
-        trigger: codepipeline_actions.GitHubTrigger.POLL,
         // Replace these with your actual GitHub project name
         owner: 'OWNER',
         repo: 'REPO',

@@ -99,7 +99,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
           produce: () => this.listOfTags,
         }, { omitEmptyArray: true }),
         resources: Lazy.listValue({
-          produce: () => [...this.resources, ...this.backupableResourcesCollector.resources ],
+          produce: () => [...this.resources, ...this.backupableResourcesCollector.resources],
         }, { omitEmpty: true }),
       },
     });

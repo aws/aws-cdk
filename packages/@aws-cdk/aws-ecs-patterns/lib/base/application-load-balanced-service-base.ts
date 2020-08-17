@@ -1,8 +1,10 @@
 import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate} from '@aws-cdk/aws-elasticloadbalancingv2';
+import {
+  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
+  IApplicationLoadBalancer, ListenerCertificate,
+} from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -41,6 +43,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default true
    */
   readonly publicLoadBalancer?: boolean;
+
+  /**
+   * Determines whether or not the Security Group for the Load Balancer's Listener will be open to all traffic by default.
+   *
+   * @default true -- The security group allows ingress from all IP addresses.
+   */
+  readonly openListener?: boolean;
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
@@ -323,7 +332,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
-      open: true,
+      open: props.openListener ?? true,
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 

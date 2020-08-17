@@ -238,6 +238,40 @@ The following example shows how to define an image from a private docker registr
 
 [Docker Registry example](./test/integ.docker-registry.lit.ts)
 
+### GPU images
+
+The class `LinuxGpuBuildImage` contains constants for working with
+[AWS Deep Learning Container images](https://aws.amazon.com/releasenotes/available-deep-learning-containers-images):
+
+
+```typescript
+new codebuild.Project(this, 'Project', {
+  environment: {
+    buildImage: codebuild.LinuxGpuBuildImage.DLC_TENSORFLOW_2_1_0_INFERENCE,
+  },
+  ...
+})
+```
+
+One complication is that the repositories for the DLC images are in
+different accounts in different AWS regions.
+In most cases, the CDK will handle providing the correct account for you;
+in rare cases (for example, deploying to new regions)
+where our information might be out of date,
+you can always specify the account
+(along with the repository name and tag)
+explicitly using the `awsDeepLearningContainersImage` method:
+
+```typescript
+new codebuild.Project(this, 'Project', {
+  environment: {
+    buildImage: codebuild.LinuxGpuBuildImage.awsDeepLearningContainersImage(
+      'tensorflow-inference', '2.1.0-gpu-py36-cu101-ubuntu18.04', '123456789012'),
+  },
+  ...
+})
+```
+
 ## Credentials
 
 CodeBuild allows you to store credentials used when communicating with various sources,
