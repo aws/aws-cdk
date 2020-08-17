@@ -90,8 +90,7 @@ describe('adding none data source from imported api', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'NONE',
-      ApiId: { 'Fn::GetAtt': [ 'baseApiCDA4D43A', 'ApiId' ],
-      },
+      ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
   });
 
@@ -106,8 +105,7 @@ describe('adding none data source from imported api', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'NONE',
-      ApiId: { 'Fn::GetAtt': [ 'baseApiCDA4D43A', 'ApiId' ],
-      },
+      ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
   });
 });

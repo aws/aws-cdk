@@ -1,7 +1,9 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { HttpApi, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
-  PayloadFormatVersion } from '../../lib';
+import {
+  HttpApi, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
+  PayloadFormatVersion,
+} from '../../lib';
 
 describe('HttpRoute', () => {
   test('default', () => {
@@ -79,7 +81,7 @@ describe('HttpRoute', () => {
 
 class DummyIntegration implements IHttpRouteIntegration {
   public bind(): HttpRouteIntegrationConfig {
-    return  {
+    return {
       type: HttpIntegrationType.HTTP_PROXY,
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
       uri: 'some-uri',

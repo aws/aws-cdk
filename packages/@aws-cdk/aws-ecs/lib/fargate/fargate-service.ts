@@ -157,7 +157,7 @@ export class FargateService extends BaseService implements IFargateService {
 
     let securityGroups;
     if (props.securityGroup !== undefined) {
-      securityGroups = [ props.securityGroup ];
+      securityGroups = [props.securityGroup];
     } else if (props.securityGroups !== undefined) {
       securityGroups = props.securityGroups;
     }
