@@ -223,8 +223,11 @@ async function getRegionFromImds(metadataService: AWS.MetadataService, token: st
         } else if (!instanceIdentityDocument) {
           reject(new Error('IMDS did not return an Instance Identity Document.'));
         } else {
-          const region = JSON.parse(instanceIdentityDocument).region;
-          resolve(region);
+          try {
+            resolve(JSON.parse(instanceIdentityDocument).region);
+          } catch (e) {
+            reject(e);
+          }
         }
       });
   });
