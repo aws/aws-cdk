@@ -1,10 +1,9 @@
-/* eslint-disable import/order */
+import * as child_process from 'child_process';
 import * as fs from 'fs';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { bundle, hasDependencies, IMAGE_LAYER_DIR, IMAGE_FUNCTION_DIR, bundleLayer } from '../lib/bundling';
-import { DependenciesLocation } from '../lib';
-import * as child_process from 'child_process';
 import * as cdk from '@aws-cdk/core';
+import { DependenciesLocation } from '../lib';
+import { bundle, hasDependencies, IMAGE_LAYER_DIR, IMAGE_FUNCTION_DIR, bundleLayer } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
 const existsSyncOriginal = fs.existsSync;
