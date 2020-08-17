@@ -1,8 +1,50 @@
-import { IBucket } from '@aws-cdk/aws-s3';
 import { Construct, Duration, Token } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
-import { OriginProtocolPolicy } from './distribution';
-import { OriginAccessIdentity } from './origin_access_identity';
+
+/**
+ * The failover configuration used for Origin Groups,
+ * returned in {@link OriginBindConfig.failoverConfig}.
+ */
+export interface OriginFailoverConfig {
+  /** The origin to use as the fallback origin. */
+  readonly failoverOrigin: IOrigin;
+
+  /**
+   * The HTTP status codes of the response that trigger querying the failover Origin.
+   *
+   * @default - 500, 502, 503 and 504
+   */
+  readonly statusCodes?: number[];
+}
+
+/** The struct returned from {@link IOrigin.bind}. */
+export interface OriginBindConfig {
+  /**
+   * The CloudFormation OriginProperty configuration for this Origin.
+   *
+   * @default - nothing is returned
+   */
+  readonly originProperty?: CfnDistribution.OriginProperty;
+
+  /**
+   * The failover configuration for this Origin.
+   *
+   * @default - nothing is returned
+   */
+  readonly failoverConfig?: OriginFailoverConfig;
+}
+
+/**
+ * Represents the concept of a CloudFront Origin.
+ * You provide one or more origins when creating a Distribution.
+ */
+export interface IOrigin {
+  /**
+   * The method called when a given Origin is added
+   * (for the first time) to a Distribution.
+   */
+  bind(scope: Construct, options: OriginBindOptions): OriginBindConfig;
+}
 
 /**
  * Properties to define an Origin.
@@ -48,9 +90,10 @@ export interface OriginProps {
  */
 export interface OriginBindOptions {
   /**
-   * The positional index of this origin within the distribution. Used for ensuring unique IDs.
+   * The identifier of this Origin,
+   * as assigned by the Distribution this Origin has been used added to.
    */
-  readonly originIndex: number;
+  readonly originId: string;
 }
 
 /**
@@ -59,19 +102,12 @@ export interface OriginBindOptions {
  *
  * @experimental
  */
-export abstract class Origin {
-
-  /**
-   * The domain name of the origin.
-   */
-  public readonly domainName: string;
-
+export abstract class OriginBase implements IOrigin {
+  private readonly domainName: string;
   private readonly originPath?: string;
   private readonly connectionTimeout?: Duration;
   private readonly connectionAttempts?: number;
   private readonly customHeaders?: Record<string, string>;
-
-  private originId?: string;
 
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
@@ -85,26 +121,9 @@ export abstract class Origin {
   }
 
   /**
-   * The unique id for this origin.
-   *
-   * Cannot be accesed until bind() is called.
-   */
-  public get id(): string {
-    if (!this.originId) { throw new Error('Cannot access originId until `bind` is called.'); }
-    return this.originId;
-  }
-
-  /**
    * Binds the origin to the associated Distribution. Can be used to grant permissions, create dependent resources, etc.
    */
-  public bind(scope: Construct, options: OriginBindOptions): void {
-    this.originId = new Construct(scope, `Origin${options.originIndex}`).node.uniqueId;
-  }
-
-  /**
-   * Creates and returns the CloudFormation representation of this origin.
-   */
-  public renderOrigin(): CfnDistribution.OriginProperty {
+  public bind(_scope: Construct, options: OriginBindOptions): OriginBindConfig {
     const s3OriginConfig = this.renderS3OriginConfig();
     const customOriginConfig = this.renderCustomOriginConfig();
 
@@ -113,14 +132,16 @@ export abstract class Origin {
     }
 
     return {
-      domainName: this.domainName,
-      id: this.id,
-      originPath: this.originPath,
-      connectionAttempts: this.connectionAttempts,
-      connectionTimeout: this.connectionTimeout?.toSeconds(),
-      originCustomHeaders: this.renderCustomHeaders(),
-      s3OriginConfig,
-      customOriginConfig,
+      originProperty: {
+        domainName: this.domainName,
+        id: options.originId,
+        originPath: this.originPath,
+        connectionAttempts: this.connectionAttempts,
+        connectionTimeout: this.connectionTimeout?.toSeconds(),
+        originCustomHeaders: this.renderCustomHeaders(),
+        s3OriginConfig,
+        customOriginConfig,
+      },
     };
   }
 
@@ -152,117 +173,6 @@ export abstract class Origin {
     if (!path.startsWith('/')) { path = '/' + path; }
     if (path.endsWith('/')) { path = path.substr(0, path.length - 1); }
     return path;
-  }
-
-}
-
-/**
- * Properties for an Origin backed by an S3 bucket
- *
- * @experimental
- */
-export interface S3OriginProps extends OriginProps {
-  /**
-   * The bucket to use as an origin.
-   */
-  readonly bucket: IBucket;
-}
-
-/**
- * An Origin specific to a S3 bucket (not configured for website hosting).
- *
- * Contains additional logic around bucket permissions and origin access identities.
- *
- * @experimental
- */
-export class S3Origin extends Origin {
-  private readonly bucket: IBucket;
-  private originAccessIdentity!: OriginAccessIdentity;
-
-  constructor(props: S3OriginProps) {
-    super(props.bucket.bucketRegionalDomainName, props);
-    this.bucket = props.bucket;
-  }
-
-  public bind(scope: Construct, options: OriginBindOptions) {
-    super.bind(scope, options);
-    if (!this.originAccessIdentity) {
-      this.originAccessIdentity = new OriginAccessIdentity(scope, `S3Origin${options.originIndex}`);
-      this.bucket.grantRead(this.originAccessIdentity);
-    }
-  }
-
-  protected renderS3OriginConfig(): CfnDistribution.S3OriginConfigProperty | undefined {
-    return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.originAccessIdentityName}` };
-  }
-}
-
-/**
- * Properties for an Origin backed by an S3 website-configured bucket, load balancer, or custom HTTP server.
- *
- * @experimental
- */
-export interface HttpOriginProps extends OriginProps {
-  /**
-   * Specifies the protocol (HTTP or HTTPS) that CloudFront uses to connect to the origin.
-   *
-   * @default OriginProtocolPolicy.HTTPS_ONLY
-   */
-  readonly protocolPolicy?: OriginProtocolPolicy;
-
-  /**
-   * The HTTP port that CloudFront uses to connect to the origin.
-   *
-   * @default 80
-   */
-  readonly httpPort?: number;
-
-  /**
-   * The HTTPS port that CloudFront uses to connect to the origin.
-   *
-   * @default 443
-   */
-  readonly httpsPort?: number;
-
-  /**
-   * Specifies how long, in seconds, CloudFront waits for a response from the origin, also known as the origin response timeout.
-   * The valid range is from 1 to 60 seconds, inclusive.
-   *
-   * @default Duration.seconds(30)
-   */
-  readonly readTimeout?: Duration;
-
-  /**
-   * Specifies how long, in seconds, CloudFront persists its connection to the origin.
-   * The valid range is from 1 to 60 seconds, inclusive.
-   *
-   * @default Duration.seconds(5)
-   */
-  readonly keepaliveTimeout?: Duration;
-}
-
-/**
- * An Origin for an HTTP server or S3 bucket configured for website hosting.
- *
- * @experimental
- */
-export class HttpOrigin extends Origin {
-
-  constructor(domainName: string, private readonly props: HttpOriginProps = {}) {
-    super(domainName, props);
-
-    validateIntInRangeOrUndefined('readTimeout', 1, 60, props.readTimeout?.toSeconds());
-    validateIntInRangeOrUndefined('keepaliveTimeout', 1, 60, props.keepaliveTimeout?.toSeconds());
-  }
-
-  protected renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
-    return {
-      originProtocolPolicy: this.props.protocolPolicy ?? OriginProtocolPolicy.HTTPS_ONLY,
-      httpPort: this.props.httpPort,
-      httpsPort: this.props.httpsPort,
-      originReadTimeout: this.props.readTimeout?.toSeconds(),
-      originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
-    };
   }
 }
 

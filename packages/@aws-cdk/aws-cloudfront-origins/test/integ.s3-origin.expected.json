@@ -23,7 +23,7 @@
               "Principal": {
                 "CanonicalUser": {
                   "Fn::GetAtt": [
-                    "DistributionS3Origin115FD918D",
+                    "DistributionOrigin1S3Origin5F5C0696",
                     "S3CanonicalUserId"
                   ]
                 }
@@ -56,7 +56,7 @@
         }
       }
     },
-    "DistributionS3Origin115FD918D": {
+    "DistributionOrigin1S3Origin5F5C0696": {
       "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
       "Properties": {
         "CloudFrontOriginAccessIdentityConfig": {
@@ -64,7 +64,7 @@
         }
       }
     },
-    "DistributionCFDistribution882A7313": {
+    "Distribution830FAC52": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
@@ -76,6 +76,8 @@
             "ViewerProtocolPolicy": "allow-all"
           },
           "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
           "Origins": [
             {
               "DomainName": {
@@ -92,7 +94,7 @@
                     [
                       "origin-access-identity/cloudfront/",
                       {
-                        "Ref": "DistributionS3Origin115FD918D"
+                        "Ref": "DistributionOrigin1S3Origin5F5C0696"
                       }
                     ]
                   ]

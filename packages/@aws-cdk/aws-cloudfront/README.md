@@ -36,7 +36,8 @@ for more complex use cases.
 
 CloudFront distributions deliver your content from one or more origins; an origin is the location where you store the original version of your
 content. Origins can be created from S3 buckets or a custom origin (HTTP server). Each distribution has a default behavior which applies to all
-requests to that distribution, and routes requests to a primary origin.
+requests to that distribution, and routes requests to a primary origin. Constructs to define origins are in the `@aws-cdk/aws-cloudfront-origins`
+module.
 
 #### From an S3 Bucket
 
@@ -96,7 +97,9 @@ new cloudfront.Distribution(this, 'myDist', {
 When you create a distribution, CloudFront assigns a domain name for the distribution, for example: `d111111abcdef8.cloudfront.net`; this value can
 be retrieved from `distribution.distributionDomainName`. CloudFront distributions use a default certificate (`*.cloudfront.net`) to support HTTPS by
 default. If you want to use your own domain name, such as `www.example.com`, you must associate a certificate with your distribution that contains
-your domain name. The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate
+your domain name, and provide one (or more) domain names from the certificate for the distribution.
+
+The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate
 may either be created by ACM, or created elsewhere and imported into ACM. When a certificate is used, the distribution will support HTTPS connections
 from SNI only and a minimum protocol version of TLSv1.2_2018.
 
@@ -107,6 +110,7 @@ const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
 });
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.S3Origin(myBucket) },
+  domainNames: ['www.example.com'],
   certificate: myCertificate,
 });
 ```
@@ -132,12 +136,11 @@ const myWebDistribution = new cloudfront.Distribution(this, 'myDist', {
 
 Additional behaviors can be specified at creation, or added after the initial creation. Each additional behavior is associated with an origin,
 and enable customization for a specific set of resources based on a URL path pattern. For example, we can add a behavior to `myWebDistribution` to
-override the default time-to-live (TTL) for all of the images.
+override the default viewer protocol policy for all of the images.
 
 ```ts
 myWebDistribution.addBehavior('/images/*.jpg', new origins.S3Origin(myBucket), {
   viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-  defaultTtl: cdk.Duration.days(7),
 });
 ```
 
@@ -155,9 +158,91 @@ new cloudfront.Distribution(this, 'myDist', {
     '/images/*.jpg': {
       origin: bucketOrigin,
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      defaultTtl: cdk.Duration.days(7),
     },
   },
+});
+```
+
+### Lambda@Edge
+
+Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute functions that customize the content that CloudFront delivers.
+You can author Node.js or Python functions in the US East (N. Virginia) region,
+and then execute them in AWS locations globally that are closer to the viewer,
+without provisioning or managing servers.
+Lambda@Edge functions are associated with a specific behavior and event type.
+Lambda@Edge can be used rewrite URLs,
+alter responses based on headers or cookies,
+or authorize requests based on headers or authorization tokens.
+
+The following shows a Lambda@Edge function added to the default behavior and triggered on every request:
+
+```typescript
+const myFunc = new lambda.Function(...);
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: new origins.S3Origin(myBucket),
+    edgeLambdas: [
+      {
+        functionVersion: myFunc.currentVersion,
+        eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+      }
+    ],
+  },
+});
+```
+
+Lambda@Edge functions can also be associated with additional behaviors,
+either at Distribution creation time,
+or after.
+
+```typescript
+// assigning at Distribution creation
+const myOrigin = new origins.S3Origin(myBucket);
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: myOrigin },
+  additionalBehaviors: {
+    'images/*': {
+      origin: myOrigin,
+      edgeLambdas: [
+        {
+          functionVersion: myFunc.currentVersion,
+          eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
+        },
+      ],
+    },
+  },
+});
+
+// assigning after creation
+myDistribution.addBehavior('images/*', myOrigin, {
+  edgeLambdas: [
+    {
+      functionVersion: myFunc.currentVersion,
+      eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
+    },
+  ],
+});
+```
+
+### Logging
+
+You can configure CloudFront to create log files that contain detailed information about every user request that CloudFront receives.
+The logs can go to either an existing bucket, or a bucket will be created for you.
+
+```ts
+// Simplest form - creates a new bucket and logs to it.
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+  enableLogging: true,
+});
+
+// You can optionally log to a specific bucket, configure whether cookies are logged, and give the log files a prefix.
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+  enableLogging: true, // Optional, this is implied if loggingBucket is specified
+  loggingBucket: new s3.Bucket(this, 'LoggingBucket'),
+  loggingFilePrefix: 'distribution-access-logs/',
+  loggingIncludesCookies: true,
 });
 ```
 
@@ -261,7 +346,6 @@ const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
 
 In case the origin source is not available and answers with one of the
 specified status code the failover origin source will be used.
-
 
 ```ts
 new CloudFrontWebDistribution(stack, 'ADistribution', {

@@ -171,7 +171,7 @@ class FakeCloudFormation extends CloudFormationDeployments {
     for (const [stackName, tags] of Object.entries(expectedTags)) {
       this.expectedTags[stackName] =
         Object.entries(tags).map(([Key, Value]) => ({ Key, Value }))
-          .sort((l, r) =>  l.Key.localeCompare(r.Key));
+          .sort((l, r) => l.Key.localeCompare(r.Key));
     }
     if (expectedNotificationArns) {
       this.expectedNotificationArns = expectedNotificationArns;

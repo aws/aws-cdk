@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { expect, haveOutput, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
@@ -8,7 +8,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as _ from 'lodash';
-import {Test, testCase} from 'nodeunit';
+import { Test, testCase } from 'nodeunit';
 import * as lambda from '../lib';
 
 /* eslint-disable quote-props */
@@ -197,6 +197,7 @@ export = testCase({
 
     expect(stack).to(haveResource('AWS::CodeGuruProfiler::ProfilingGroup', {
       ProfilingGroupName: 'MyLambdaProfilingGroupC5B6CCD8',
+      ComputePlatform: 'AWSLambda',
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -390,18 +391,13 @@ export = testCase({
       });
 
       // THEN
-      expect(stack1).to(haveOutput({
-        outputName: 'CurrentVersionArn',
-        outputValue: {
-          Ref: 'MyFunctionCurrentVersion197490AF1a9a73cf5c46aec5e40fb202042eb60b',
-        },
-      }));
-      expect(stack2).to(haveOutput({
-        outputName: 'CurrentVersionArn',
-        outputValue: {
-          Ref: 'MyFunctionCurrentVersion197490AF8360a045031060e3117269037b7bffd6',
-        },
-      }));
+      const template1 = SynthUtils.synthesize(stack1).template;
+      const template2 = SynthUtils.synthesize(stack2).template;
+
+      // these functions are different in their configuration but the original
+      // logical ID of the version would be the same unless the logical ID
+      // includes the hash of function's configuration.
+      test.notDeepEqual(template1.Outputs.CurrentVersionArn.Value, template2.Outputs.CurrentVersionArn.Value);
       test.done();
     },
   },
@@ -456,7 +452,8 @@ export = testCase({
               ],
             },
             LocalMountPath: '/mnt/msg',
-          }],
+          },
+        ],
       }));
       test.done();
     },

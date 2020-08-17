@@ -72,17 +72,17 @@ export = {
 
     new Rule(stack, 'MyRule', {
       eventPattern: {
-        account: [ 'account1', 'account2' ],
+        account: ['account1', 'account2'],
         detail: {
-          foo: [ 1, 2 ],
+          foo: [1, 2],
         },
-        detailType: [ 'detailType1' ],
-        id: [ 'id1', 'id2' ],
-        region: [ 'region1', 'region2', 'region3' ],
-        resources: [ 'r1' ],
-        source: [ 'src1', 'src2' ],
-        time: [ 't1' ],
-        version: [ '0' ],
+        detailType: ['detailType1'],
+        id: ['id1', 'id2'],
+        region: ['region1', 'region2', 'region3'],
+        resources: ['r1'],
+        source: ['src1', 'src2'],
+        time: ['t1'],
+        version: ['0'],
       },
     });
 
@@ -92,15 +92,15 @@ export = {
           'Type': 'AWS::Events::Rule',
           'Properties': {
             'EventPattern': {
-              account: [ 'account1', 'account2' ],
-              detail: { foo: [ 1, 2 ] },
-              'detail-type': [ 'detailType1' ],
-              id: [ 'id1', 'id2' ],
-              region: [ 'region1', 'region2', 'region3' ],
-              resources: [ 'r1' ],
-              source: [ 'src1', 'src2' ],
-              time: [ 't1' ],
-              version: [ '0' ],
+              account: ['account1', 'account2'],
+              detail: { foo: [1, 2] },
+              'detail-type': ['detailType1'],
+              id: ['id1', 'id2'],
+              region: ['region1', 'region2', 'region3'],
+              resources: ['r1'],
+              source: ['src1', 'src2'],
+              time: ['t1'],
+              version: ['0'],
             },
             'State': 'ENABLED',
           },
@@ -124,18 +124,18 @@ export = {
 
     const rule = new Rule(stack, 'MyRule');
     rule.addEventPattern({
-      account: [ '12345' ],
+      account: ['12345'],
       detail: {
-        foo: [ 'hello' ],
+        foo: ['hello'],
       },
     });
 
     rule.addEventPattern({
-      source: [ 'aws.source' ],
+      source: ['aws.source'],
       detail: {
-        foo: [ 'bar' ],
+        foo: ['bar'],
         goo: {
-          hello: [ 'world' ],
+          hello: ['world'],
         },
       },
     });
@@ -191,7 +191,7 @@ export = {
     };
 
     const rule = new Rule(stack, 'EventRule', {
-      targets: [ t1 ],
+      targets: [t1],
       schedule: Schedule.rate(cdk.Duration.minutes(5)),
     });
 
@@ -249,8 +249,9 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: '',
-        arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
-        input: RuleTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()),
+        arn: 'ARN1',
+        kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+        input: RuleTargetInput.fromText(cdk.Fn.join('', ['a', 'b']).toString()),
       }),
     });
 
@@ -344,7 +345,7 @@ export = {
         {
           'Arn': 'ARN2',
           'Id': 'Target0',
-          'RoleArn': {'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn']},
+          'RoleArn': { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
         },
       ],
     }));
@@ -471,7 +472,7 @@ export = {
 
     new Rule(stack, 'EventRule', {
       schedule: Schedule.rate(cdk.Duration.minutes(5)),
-      targets: [ t1 ],
+      targets: [t1],
     });
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
@@ -574,42 +575,6 @@ export = {
       test.throws(() => {
         rule.addTarget(new SomeTarget('T', resource));
       }, /You need to provide a concrete region for the target stack when using cross-account events/);
-
-      test.done();
-    },
-
-    'requires that the source stack be part of an App'(test: Test) {
-      const app = new cdk.App();
-
-      const sourceAccount = '123456789012';
-      const sourceStack = new cdk.Stack(undefined, 'SourceStack', { env: { account: sourceAccount, region: 'us-west-2' } });
-      const rule = new Rule(sourceStack, 'Rule');
-
-      const targetAccount = '234567890123';
-      const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount, region: 'us-west-2' } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
-
-      test.throws(() => {
-        rule.addTarget(new SomeTarget('T', resource));
-      }, /Event stack which uses cross-account targets must be part of a CDK app/);
-
-      test.done();
-    },
-
-    'requires that the target stack be part of an App'(test: Test) {
-      const app = new cdk.App();
-
-      const sourceAccount = '123456789012';
-      const sourceStack = new cdk.Stack(app, 'SourceStack', { env: { account: sourceAccount, region: 'us-west-2' } });
-      const rule = new Rule(sourceStack, 'Rule');
-
-      const targetAccount = '234567890123';
-      const targetStack = new cdk.Stack(undefined, 'TargetStack', { env: { account: targetAccount, region: 'us-west-2' } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
-
-      test.throws(() => {
-        rule.addTarget(new SomeTarget('T', resource));
-      }, /Target stack which uses cross-account event targets must be part of a CDK app/);
 
       test.done();
     },
@@ -778,7 +743,8 @@ class SomeTarget implements IRuleTarget {
   public bind(): RuleTargetConfig {
     return {
       id: this.id || '',
-      arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+      arn: 'ARN1',
+      kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
       targetResource: this.resource,
     };
   }
