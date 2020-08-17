@@ -1,9 +1,9 @@
+import * as path from 'path';
 import * as glue from '@aws-cdk/aws-glue';
 import * as iam from '@aws-cdk/aws-iam';
 import * as assets from '@aws-cdk/aws-s3-assets';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import { GlueStartJobRun } from '../../lib/glue/start-job-run';
 
 /*
