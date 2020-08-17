@@ -55,6 +55,7 @@ test('custom resource exists', () => {
           responsePath: 'SecurityGroups.0.GroupId',
         },
       },
+      InstallLatestAwsSdk: true,
     },
     DependsOn: [
       'GroupC77FDACD',
