@@ -65,7 +65,7 @@ const testTable = new Table(stack, 'TestTable', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
-const testDS = api.addDynamoDbDataSource('testDataSource', 'Table for Tests"', testTable);
+const testDS = api.addDynamoDbDataSource('ds', testTable, { name: 'testDataSource' });
 
 testDS.createResolver({
   typeName: 'Query',
@@ -88,7 +88,7 @@ testDS.createResolver({
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
-const lambdaIAM = new Role(stack, 'LambdaIAM', {assumedBy: new ServicePrincipal('lambda')});
+const lambdaIAM = new Role(stack, 'LambdaIAM', { assumedBy: new ServicePrincipal('lambda') });
 
 
 api.grant(lambdaIAM, IamResource.custom('types/Query/fields/getTests'), 'appsync:graphql');
@@ -99,14 +99,14 @@ new Function(stack, 'testQuery', {
   code: Code.fromAsset('verify'),
   handler: 'iam-query.handler',
   runtime: Runtime.NODEJS_12_X,
-  environment: {APPSYNC_ENDPOINT: api.graphQlUrl },
+  environment: { APPSYNC_ENDPOINT: api.graphQlUrl },
   role: lambdaIAM,
 });
 new Function(stack, 'testFail', {
   code: Code.fromAsset('verify'),
   handler: 'iam-query.handler',
   runtime: Runtime.NODEJS_12_X,
-  environment: {APPSYNC_ENDPOINT: api.graphQlUrl },
+  environment: { APPSYNC_ENDPOINT: api.graphQlUrl },
 });
 
 app.synth();

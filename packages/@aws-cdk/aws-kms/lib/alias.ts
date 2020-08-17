@@ -147,7 +147,7 @@ export class Alias extends AliasBase {
    */
   public static fromAliasName(scope: Construct, id: string, aliasName: string): IAlias {
     class Import extends Resource implements IAlias {
-      public readonly keyArn = Stack.of(this).formatArn({service: 'kms', resource: aliasName});
+      public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
       public readonly keyId = aliasName;
       public readonly aliasName = aliasName;
       public get aliasTargetKey(): IKey { throw new Error('Cannot access aliasTargetKey on an Alias imnported by Alias.fromAliasName().'); }

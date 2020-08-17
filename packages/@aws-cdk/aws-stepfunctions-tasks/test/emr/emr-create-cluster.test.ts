@@ -291,7 +291,7 @@ test('Create Cluster with Bootstrap Actions', () => {
       name: 'Bootstrap',
       scriptBootstrapAction: {
         path: 's3://null',
-        args: [ 'Arg' ],
+        args: ['Arg'],
       },
     }],
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -332,7 +332,7 @@ test('Create Cluster with Bootstrap Actions', () => {
         Name: 'Bootstrap',
         ScriptBootstrapAction: {
           Path: 's3://null',
-          Args: [ 'Arg' ],
+          Args: ['Arg'],
         },
       }],
     },
@@ -519,7 +519,8 @@ test('Create Cluster without Roles', () => {
       Version: '2012-10-17',
       Statement: [
         {
-          Principal: { Service:
+          Principal: {
+            Service:
             {
               'Fn::Join': [
                 '',

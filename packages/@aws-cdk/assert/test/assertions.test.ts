@@ -92,8 +92,8 @@ passingExample('expect <synthStack> to be a superset of <template> with paramete
     // Added
     new TestResource(stack, 'NewResource', { type: 'AWS::S3::Bucket' });
     // Expected
-    new TestParameter(stack, 'TestParameterA', {type: parameterType});
-    new TestParameter(stack, 'TestParameterB', {type: parameterType, default: { Foo: 'Bar' } });
+    new TestParameter(stack, 'TestParameterA', { type: parameterType });
+    new TestParameter(stack, 'TestParameterB', { type: parameterType, default: { Foo: 'Bar' } });
   });
   const expected = {
     Parameters: {
@@ -261,7 +261,7 @@ passingExample('expect <stack> to count resources like props - expected no resou
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'R1', { type: resourceType, properties: { parentId: 123, name: 'A' } });
     new TestResource(stack, 'R2', { type: resourceType });
-    new TestResource(stack, 'R3', { type: 'Foo', properties: { parentId: 456} });
+    new TestResource(stack, 'R3', { type: 'Foo', properties: { parentId: 456 } });
   });
   cdkExpect(synthStack).to(countResourcesLike(resourceType, 0, { parentId: 456 }));
 });
