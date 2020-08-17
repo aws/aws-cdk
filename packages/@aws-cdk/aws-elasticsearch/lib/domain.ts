@@ -325,7 +325,7 @@ export interface DomainProps {
    *
    * @default - No encryption at rest
    */
-  readonly encryptionAtRestOptions?: EncryptionAtRestOptions;
+  readonly encryptionAtRest?: EncryptionAtRestOptions;
 
 
   /**
