@@ -150,7 +150,6 @@ export class Bundling {
       }
     }
 
-
     // Configure target in package.json for Parcel
     packageJsonManager.update({
       targets: {
