@@ -27,6 +27,7 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
     stack,
     node: stack.node,
   },
+  redirectHTTP: true,
 });
 
 app.synth();
