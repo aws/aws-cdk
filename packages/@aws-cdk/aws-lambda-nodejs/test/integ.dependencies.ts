@@ -16,6 +16,7 @@ class TestStack extends Stack {
       // (delay is a zero dependency package and its version is fixed
       // in the package.json to ensure a stable hash for this integ test)
       nodeModules: ['delay'],
+      forceDockerBundling: true,
     });
   }
 }
