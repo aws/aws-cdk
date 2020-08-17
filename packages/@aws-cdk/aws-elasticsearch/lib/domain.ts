@@ -342,7 +342,7 @@ export interface DomainProps {
    *
    * @default - Node to node encryption is not enabled.
    */
-  readonly nodeToNodeEncryptionEnabled?: boolean;
+  readonly nodeToNodeEncryption?: boolean;
 
   /**
    * The hour in UTC during which the service takes an automated daily snapshot
