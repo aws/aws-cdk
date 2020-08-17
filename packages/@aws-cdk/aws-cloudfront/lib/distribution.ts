@@ -251,7 +251,7 @@ export class Distribution extends Resource implements IDistribution {
         throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
       }
 
-      if (!props.domainNames || props.domainNames.length === 0) {
+      if ((props.domainNames ?? []).length === 0) {
         throw new Error('Must specify at least one domain name to use a certificate with a distribution');
       }
     }
