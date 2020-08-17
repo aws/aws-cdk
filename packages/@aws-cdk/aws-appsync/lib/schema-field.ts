@@ -1,5 +1,7 @@
-import { Resolver } from './resolver';
-import { Directive, Type, ResolvableFieldOptions } from './schema-utils';
+import { BaseDataSource } from './data-source';
+import { MappingTemplate } from './mapping-template';
+import { Type, IField } from './schema-base';
+import { InterfaceType } from './schema-intermediate';
 
 /**
  * Base options for GraphQL Types
@@ -64,7 +66,7 @@ export interface GraphqlTypeOptions extends BaseGraphqlTypeOptions {
  *
  * GraphQL Types are used to define the entirety of schema.
  */
-export class GraphqlType {
+export class GraphqlType implements IField {
   /**
    * `ID` scalar type is a unique identifier. `ID` type is serialized similar to `String`.
    *
@@ -298,7 +300,7 @@ export class GraphqlType {
    */
   public readonly intermediateType?: InterfaceType;
 
-  private constructor(type: Type, options?: GraphqlTypeOptions) {
+  protected constructor(type: Type, options?: GraphqlTypeOptions) {
     this.type = type;
     this.isList = options?.isList ?? false;
     this.isRequired = options?.isRequired ?? false;
@@ -315,15 +317,14 @@ export class GraphqlType {
    * - requestMappingTemplate
    * - responseMappingTemplate
    */
-  public addResolvableField(options: ResolvableFieldOptions): GraphqlType{
-    let type = new GraphqlType(this.type, {
+  public addResolvableField(options: ResolvableFieldOptions): ResolvableField{
+    return new ResolvableField(this.type, {
       isList: this.isList,
       isRequired: this.isRequired,
       isRequiredList: this.isRequiredList,
       intermediateType: this.intermediateType,
+      fieldOptions: options,
     });
-    type.fieldOptions = options;
-    return type;
   }
 
   /**
@@ -345,224 +346,81 @@ export class GraphqlType {
    * Generate the arguments for this field
    */
   public argsToString(): string {
-    if(this.fieldOptions) {
-      let args = '( ';
-      Object.keys(this.fieldOptions.args ?? {}).forEach((key) => {
-        const type = this.fieldOptions?.args?.[key].toString();
-        args = `${args}${key}: ${type} `;
-      });
-      return `${args})`;
-    }
     return '';
   }
 }
 
 /**
- * Properties for configuring an Intermediate Type
+ * Properties for configuring a resolvable field
  *
- * @param definition - the variables and types that define this type
+ * @options dataSource - the data source linked to this resolvable field
+ * @options args - the variables and types that define the arguments
+ *
  * i.e. { string: GraphqlType, string: GraphqlType }
  *
- * @experimental
+ * @options requestMappingTemplate - the mapping template for requests to this resolver
+ * @options responseMappingTemplate - the mapping template for responses from this resolver
  */
-export interface IntermediateTypeProps {
+export interface ResolvableFieldOptions {
   /**
-   * the attributes of this type
+   * The data source creating linked to this resolvable field
    */
-  readonly definition: { [key: string]: GraphqlType };
+  readonly dataSource: BaseDataSource;
+  /**
+   * The arguments for this resolvable field.
+   *
+   * i.e. type Example (first: String second: String) {}
+   * - where 'first' and 'second' are key values for args
+   * and 'String' is the GraphqlType
+   *
+   * @default - no arguments
+   */
+  readonly args?: { [key: string]: GraphqlType };
+  /**
+   * The request mapping template for this resolver
+   *
+   * @default - No mapping template
+   */
+  readonly requestMappingTemplate?: MappingTemplate;
+  /**
+   * The response mapping template for this resolver
+   *
+   * @default - No mapping template
+   */
+  readonly responseMappingTemplate?: MappingTemplate;
 }
 
 /**
- * Interface Types are abstract types that includes a certain set of fields
- * that other types must include if they implement the interface.
+ * Properties for configuring a resolvable field
  *
- * @experimental
+ * @options fieldOptions - the properties to create this resolvable field
  */
-export class InterfaceType {
+export interface ResolvableFieldProps extends GraphqlTypeOptions {
   /**
-   * the name of this type
+   * the properties to configure a resolvable field
    */
-  public readonly name: string;
-  /**
-   * the attributes of this type
-   */
-  public readonly definition: { [key: string]: GraphqlType };
-
-  public constructor(name: string, props: IntermediateTypeProps) {
-    this.name = name;
-    this.definition = props.definition;
-  }
-
-  /**
-   * Create an GraphQL Type representing this Intermediate Type
-   *
-   * @param options the options to configure this attribute
-   * - isList
-   * - isRequired
-   * - isRequiredList
-   */
-  public attribute(options?: BaseGraphqlTypeOptions): GraphqlType{
-    return GraphqlType.intermediate({
-      isList: options?.isList,
-      isRequired: options?.isRequired,
-      isRequiredList: options?.isRequiredList,
-      intermediateType: this,
-    });
-  }
-
-  /**
-   * Generate the string of this object type
-   */
-  public toString(): string {
-    let schemaAddition = `interface ${this.name} {\n`;
-    Object.keys(this.definition).forEach( (key) => {
-      const attribute = this.definition[key];
-      schemaAddition = `${schemaAddition}  ${key}: ${attribute.toString()}\n`;
-    });
-    return `${schemaAddition}}`;
-  }
-}
-
-
-/**
- * Properties for configuring an Object Type
- *
- * @param definition - the variables and types that define this type
- * i.e. { string: GraphqlType, string: GraphqlType }
- * @param interfaceTypes - the interfaces that this object type implements
- * @param directives - the directives for this object type
- *
- * @experimental
- */
-export interface ObjectTypeProps extends IntermediateTypeProps {
-  /**
-   * The Interface Types this Object Type implements
-   *
-   * @default - no interface types
-   */
-  readonly interfaceTypes?: InterfaceType[];
-  /**
-   * the directives for this object type
-   *
-   * @default - no directives
-   */
-  readonly directives?: Directive[];
+  readonly fieldOptions: ResolvableFieldOptions;
 }
 
 /**
- * Object Types are types declared by you.
- *
- * @experimental
+ * Resolvable Fields build upon Graphql Types and provide fields
+ * that can resolve into operations on a data source.
  */
-export class ObjectType extends InterfaceType {
-  /**
-   * A method to define Object Types from an interface
-   */
-  public static implementInterface(name: string, props: ObjectTypeProps): ObjectType {
-    if (!props.interfaceTypes || !props.interfaceTypes.length) {
-      throw new Error('Static function `implementInterface` requires an interfaceType to implement');
-    }
-    return new ObjectType(name, {
-      interfaceTypes: props.interfaceTypes,
-      definition: props.interfaceTypes.reduce((def, interfaceType) => {
-        return Object.assign({}, def, interfaceType.definition);
-      }, props.definition),
-      directives: props.directives,
-    });
-  }
-  /**
-   * The Interface Types this Object Type implements
-   *
-   * @default - no interface types
-   */
-  public readonly interfaceTypes?: InterfaceType[];
-  /**
-   * the directives for this object type
-   *
-   * @default - no directives
-   */
-  public readonly directives?: Directive[];
-  /**
-   * The resolvers linked to this data source
-   */
-  public resolvers?: Resolver[];
-
-  public constructor(name: string, props: ObjectTypeProps) {
-    super(name, props);
-    this.interfaceTypes = props.interfaceTypes;
-    this.directives = props.directives;
-
-    Object.keys(this.definition).forEach((fieldName) => {
-      const fieldInfo = this.definition[fieldName];
-      if(fieldInfo.fieldOptions) {
-        this.resolvers?.push(this.generateResolver(fieldName, fieldInfo.fieldOptions));
-      }
-    });
+export class ResolvableField extends GraphqlType {
+  public constructor(type: Type, props: ResolvableFieldProps) {
+    super(type, props);
+    this.fieldOptions = props.fieldOptions;
   }
 
   /**
-   * Add a resolvable field to this Object Type
-   *
-   * @param fieldName - The name of the resolvable field
-   * @param type - the type for this resolvable field
-   * @param options - the options for this resolvable field
-   * (dataSource, args, requestMappingTemplate, responseMappingTemplate)
+   * Generate the args string of this resolvable field
    */
-  public addResolvableField(fieldName: string, type: GraphqlType, options: ResolvableFieldOptions): Resolver{
-    const resolvableField = type.addResolvableField(options);
-    const resolver = this.generateResolver(fieldName, options);
-    this.resolvers?.push(resolver);
-    this.definition[fieldName] = resolvableField;
-    return resolver;
-  }
-
-  /**
-   * Generate the string of this object type
-   */
-  public toString(): string {
-    let title = this.name;
-    if(this.interfaceTypes && this.interfaceTypes.length){
-      title = `${title} implements`;
-      this.interfaceTypes.map((interfaceType) => {
-        title = `${title} ${interfaceType.name},`;
-      });
-      title = title.slice(0, -1);
-    }
-    const directives = this.generateDirectives(this.directives);
-    let schemaAddition = `type ${title} ${directives}{\n`;
-    Object.keys(this.definition).forEach( (key) => {
-      const attribute = this.definition[key];
-      const args = attribute.argsToString();
-      schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
+  public argsToString(): string{
+    let args = '( ';
+    Object.keys(this.fieldOptions?.args ?? {}).forEach((key) => {
+      const type = this.fieldOptions?.args?.[key].toString();
+      args = `${args}${key}: ${type} `;
     });
-    return `${schemaAddition}}`;
-  }
-
-  /**
-   * Utility function to generate directives
-   *
-   * @param directives the directives of a given type
-   * @param delimiter the separator betweeen directives
-   * @default - ' '
-   */
-  private generateDirectives(directives?: Directive[], delimiter?: string): string{
-    let schemaAddition = '';
-    if (!directives){ return schemaAddition; }
-    directives.map((directive) => {
-      schemaAddition = `${schemaAddition}${directive.statement}${delimiter ?? ' '}`;
-    });
-    return schemaAddition;
-  }
-
-  /**
-   * Generate the resolvers linked to this Object Type
-   */
-  protected generateResolver(fieldName: string, options: ResolvableFieldOptions): Resolver{
-    return options.dataSource.createResolver({
-      typeName: this.name,
-      fieldName: fieldName,
-      requestMappingTemplate: options.requestMappingTemplate,
-      responseMappingTemplate: options.responseMappingTemplate,
-    });
+    return `${args})`;
   }
 }
