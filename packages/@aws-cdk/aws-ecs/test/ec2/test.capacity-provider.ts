@@ -18,6 +18,7 @@ export = {
       });
       new ecs.CapacityProvider(stack, 'CP', {
         autoscalingGroup: asg,
+        defaultStrategy: { weight: 1, base: 1},
       });
 
       // THEN
@@ -55,6 +56,7 @@ export = {
       maximumScalingStepSize: 100,
       minimumScalingStepSize: 1,
       targetCapacity: 90,
+      defaultStrategy: { weight: 1, base: 1 },
     });
 
     // THEN
@@ -89,6 +91,7 @@ export = {
       capacityProviderName: 'MyCapacityProvider',
       managedScaling: false,
       managedTerminationProtection: false,
+      defaultStrategy: { weight: 1, base: 1 },
     });
 
     // THEN
@@ -113,9 +116,9 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     // WHEN
-    const cp = ecs.CapacityProvider.fromCapacityProviderName(stack, 'CP', 'foo');
+    const cp = ecs.CapacityProvider.fromCapacityProviderName(stack, 'CP', 'foo', { weight: 1});
     // THEN
-    test.equal(cp.capacityProviderName, 'foo');
+    test.equal(cp.name, 'foo');
     test.done();
   },
 };

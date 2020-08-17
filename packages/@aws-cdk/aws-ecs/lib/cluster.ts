@@ -4,9 +4,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
-import { CapacityProviderOpts, CapacityProvider, CapacityProviderConfigurationOpts,
-  CapacityProviderConfiguration } from './capacity-provider';
+import { Construct, Duration, IResource, Resource, Stack, Lazy } from '@aws-cdk/core';
+import { CapacityProviderOpts, CapacityProviderConfiguration, CapacityProvider  } from './capacity-provider';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -83,6 +82,11 @@ export class Cluster extends Resource implements ICluster {
   public readonly clusterName: string;
 
   /**
+   * capacity providers for this cluster
+   */
+  public readonly capacityProviders: CapacityProvider[] = [];
+
+  /**
    * The AWS Cloud Map namespace to associate with the cluster.
    */
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
@@ -129,31 +133,29 @@ export class Cluster extends Resource implements ICluster {
     this._autoscalingGroup = props.capacity !== undefined
       ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
       : undefined;
+
+    // configure the capacity providers
+    new CapacityProviderConfiguration(this, 'CapacityProviderConfiguration', {
+      cluster: this,
+      capacityProvider: this.synthesizeCapacityProviders(),
+      runsAfter: [ cluster ],
+    })
   }
+  
+  
 
   /**
    * Add the CapacityProvider to the cluster
-   * @param options options to create the CapacityProvider
+   * @param options - the options to create the CapacityProvider
    */
   public addCapacityProvider(id: string, options: CapacityProviderOpts ): CapacityProvider {
     const asg = this.addCapacity(`${id}-capacity`, options.capacityOptions);
-    return new CapacityProvider(this, `${id}-capacityProvider`, {
+    const cp = new CapacityProvider(this, `${id}-capacityProvider`, {
       autoscalingGroup: asg,
       ...options,
     });
-  }
-
-  /**
-  * Configure capacity providers as well as their default strategies with the cluster
-  * @param options options to create the CapacityProviderConfiguration
-  */
-  public addCapacityProviderConfiguration(id: string, options: CapacityProviderConfigurationOpts):
-  CapacityProviderConfiguration {
-    return new CapacityProviderConfiguration(this, id, {
-      cluster: this,
-      capacityProvider: options.capacityProvider,
-      defaultStrategy: options.defaultStrategy,
-    });
+    this.capacityProviders.push(cp);
+    return cp
   }
 
   /**
@@ -308,6 +310,20 @@ export class Cluster extends Resource implements ICluster {
       ...props,
     }).attachTo(this);
   }
+
+  /**
+  * Configure capacity providers as well as their default strategies with the cluster
+  * @param options options to create the CapacityProviderConfiguration
+  */
+  private synthesizeCapacityProviders() {
+    return Lazy.anyValue({
+      produce: () => this.capacityProviders.map(m => ({
+        cluster: this.clusterName,
+        name: m.name,
+        defaultStrategy: m.defaultStrategy,
+      }))
+    }, { omitEmptyArray: false})
+  };
 }
 
 /**

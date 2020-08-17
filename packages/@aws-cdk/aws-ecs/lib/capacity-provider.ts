@@ -6,6 +6,7 @@ import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { ICluster, AddCapacityOptions } from './cluster';
 import { CfnCapacityProvider } from './ecs.generated';
+import { CustomResource } from '@aws-cdk/core';
 
 /**
  * Represents the CapacityProvider
@@ -15,7 +16,12 @@ export interface ICapacityProvider extends cdk.IResource {
    * The name of the CapacityProvider.
    * @attribute
    */
-  readonly capacityProviderName: string;
+  readonly name: string;
+
+  /**
+   * default strategy for the CapacityProvider
+   */
+  readonly defaultStrategy: CapacityProviderStrategy;
 }
 
 /**
@@ -30,19 +36,19 @@ export interface CapacityProviderBase {
   readonly capacityProviderName?: string;
 
   /**
-   * Whether to enable the managed termination protection
+   * Whether to enable the managed scaling. 
+   *
+   * @default True
+   */
+  readonly managedScaling?: boolean;
+
+  /**
+   * Whether to enable the managed termination protection. Will be ignored and set to `False` if
+   * `managedScaling` is `False`
    *
    * @default True
    */
   readonly managedTerminationProtection?: boolean;
-
-  /**
-   * Whether to enable the managed scaling. This value will be overrided to be True
-   * if the `managedTerminationProtection` is enabled.
-   *
-   * @default - True.
-   */
-  readonly managedScaling?: boolean;
 
   /**
    * The maximum number of container instances that Amazon ECS will scale in or scale out at one time
@@ -66,6 +72,11 @@ export interface CapacityProviderBase {
    * @default 100;
    */
   readonly targetCapacity?: number;
+
+  /**
+   * The default strategy for this CapacityProvider.
+   */
+  readonly defaultStrategy: CapacityProviderStrategy;
 
 }
 
@@ -98,9 +109,10 @@ export class CapacityProvider extends cdk.Resource implements ICapacityProvider 
   /**
    * Import an existing CapacityProvider into this CDK app.
    */
-  public static fromCapacityProviderName(scope: cdk.Construct, id: string, capacityProviderName: string): ICapacityProvider {
+  public static fromCapacityProviderName(scope: cdk.Construct, id: string, capacityProviderName: string, defaultStrategy: CapacityProviderStrategy): ICapacityProvider {
     class Import extends cdk.Resource implements ICapacityProvider {
-      public readonly capacityProviderName = capacityProviderName;
+      public readonly name = capacityProviderName;
+      public readonly defaultStrategy = defaultStrategy;
     }
     return new Import(scope, id);
   }
@@ -108,20 +120,23 @@ export class CapacityProvider extends cdk.Resource implements ICapacityProvider 
   /**
    * The name of the CapacityProvider
    */
-  public readonly capacityProviderName: string;
-  private _managedTerminationProtection: boolean
+  public readonly name: string;
+
+  /**
+   * default strategy for this capacity provider
+   */
+  public readonly defaultStrategy: CapacityProviderStrategy;
   constructor(scope: cdk.Construct, id: string, props: CapacityProviderProps) {
     super(scope, id);
 
-    this._managedTerminationProtection = props.managedTerminationProtection ?? true;
+    const managedScaling = (props.managedScaling === false) ? false : true;
+    const managedTerminationProtection = (managedScaling === false) ? false : 
+      props.managedTerminationProtection ?? true
 
     const onEvent = new lambda.Function(this, 'InstanceProtectionHandler',  {
       runtime: lambda.Runtime.PYTHON_3_8,
       handler: 'index.on_event',
       timeout: cdk.Duration.seconds(60),
-      environment: {
-        autoscaling_group_name: props.autoscalingGroup.autoScalingGroupName,
-      },
       code: lambda.Code.fromAsset(path.join(__dirname, './instance-protection-handler')),
     });
 
@@ -147,7 +162,8 @@ export class CapacityProvider extends cdk.Resource implements ICapacityProvider 
     const instanceProtection= new cdk.CustomResource(this, 'EnforcedInstanceProtection', {
       serviceToken: instanceProtectionProvider.serviceToken,
       properties: {
-        ManagedTerminationProtection: this._managedTerminationProtection,
+        ManagedTerminationProtection: managedTerminationProtection,
+        AutoscalingGroupName: props.autoscalingGroup.autoScalingGroupName,
       },
     });
 
@@ -159,29 +175,21 @@ export class CapacityProvider extends cdk.Resource implements ICapacityProvider 
         managedScaling: {
           maximumScalingStepSize: props.maximumScalingStepSize ?? 10000,
           minimumScalingStepSize: props.minimumScalingStepSize ?? 1,
-          status: (this._managedTerminationProtection === false && props.managedScaling === false)
-            ? 'DISABLED' : 'ENABLED',
+          status: managedScaling ? 'ENABLED' : 'DISABLED',
           targetCapacity: props.targetCapacity ?? 100,
         },
-        managedTerminationProtection: this._managedTerminationProtection ? 'ENABLED' :  'DISABLED',
+        managedTerminationProtection: managedTerminationProtection ? 'ENABLED' :  'DISABLED',
       },
       name: props.capacityProviderName,
     });
     resource.node.addDependency(instanceProtection);
-    this.capacityProviderName = resource.ref;
+    this.name = resource.ref;
+    this.defaultStrategy = props.defaultStrategy;
   }
 }
 
 
-/**
- * The capacity provider strategy to use by default for the cluster
- */
 export interface CapacityProviderStrategy {
-  /**
-   * The capacity provider
-   */
-  readonly capacityProvider: ICapacityProvider;
-
   /**
    * The `weight` value designates the relative percentage of the total number of tasks launched that should
    * use the specified capacity provider.
@@ -205,12 +213,7 @@ export interface CapacityProviderConfigurationOpts {
   /**
    * the capacity provisers to be configured with
    */
-  readonly capacityProvider: ICapacityProvider[];
-
-  /**
-   * default strategy for each capacity provider
-   */
-  readonly defaultStrategy: CapacityProviderStrategy[];
+  readonly capacityProvider: any;
 }
 
 
@@ -222,41 +225,47 @@ export interface CapacityProviderConfigurationProps extends CapacityProviderConf
    * the cluster for the capacity providers
    */
   readonly cluster: ICluster;
+
+  readonly runsAfter?: cdk.IDependable[];
 }
 
+
 /**
- * capacity provider configurations for the cluster
+ * create and configure capacity provider(s)
  */
 export class CapacityProviderConfiguration extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: CapacityProviderConfigurationProps ) {
     super(scope, id);
 
-    new cr.AwsCustomResource(this, 'CapacityProviderConfiguration', {
-      onUpdate: {
-        service: 'ECS',
-        action: 'putClusterCapacityProviders',
-        parameters: {
-          cluster: props.cluster.clusterName,
-          capacityProviders: props.capacityProvider.map(cp => cp.capacityProviderName),
-          defaultCapacityProviderStrategy: props.defaultStrategy.map(s => ({
-            capacityProvider: s.capacityProvider.capacityProviderName,
-            base: s.base,
-            weight: s.weight,
-          })),
-        },
-        physicalResourceId: cr.PhysicalResourceId.of(id),
-      },
-      onDelete: {
-        service: 'ECS',
-        action: 'putClusterCapacityProviders',
-        parameters: {
-          cluster: props.cluster.clusterName,
-          capacityProviders: [],
-          defaultCapacityProviderStrategy: [],
-        },
-        physicalResourceId: cr.PhysicalResourceId.of(id),
-      },
-      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE }),
+    const stack = cdk.Stack.of(this);
+
+    const onEvent = new lambda.Function(this, 'CapacityProviderConfigurationHandler', {
+      runtime: lambda.Runtime.PYTHON_3_8,
+      handler: 'index.on_event',
+      timeout: cdk.Duration.seconds(60),
+      code: lambda.Code.fromAsset(path.join(__dirname, './capacity-provider-config-handler')),
     });
+
+    onEvent.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'ecs:PutClusterCapacityProviders',
+      ],
+      resources: [ '*' ],
+    }));
+
+    const capacityProviderConfigurationProvider = new cr.Provider(this, 'CapacityProviderConfigurationProvider', {
+      onEventHandler: onEvent,
+    });
+
+    const configurationResource = new CustomResource(this, 'CapacityProviderConfiguration', {
+      serviceToken: capacityProviderConfigurationProvider.serviceToken,
+      properties: {
+        cluster: props.cluster.clusterName,
+        capacityProviders: stack.toJsonString(props.capacityProvider),
+      }
+    })
+    if(props.runsAfter){
+      configurationResource.node.addDependency(...props.runsAfter)
+    }
   }
 }

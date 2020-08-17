@@ -599,7 +599,7 @@ their clusters. You can use the managed scaling feature to have Amazon ECS manag
 actions of the Auto Scaling group or you can manage the scaling actions yourself. This enables you to effectively
 use cluster auto scaling.
 
-The following sample creates two Autoscaling Group Capacity Providers and register them to the cluster.
+The following sample creates two Auto Scaling group capacity providers and register them to the cluster.
 
 ```ts
 const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
