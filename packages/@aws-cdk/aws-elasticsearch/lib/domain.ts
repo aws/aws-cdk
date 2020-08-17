@@ -14,51 +14,63 @@ import * as perms from './perms';
 /**
  * Supported Elasticsearch Versions
  */
-export class Version {
+export class ElasticsearchVersion {
   /** AWS Elasticsearch 1.5 */
-  public static readonly ES_1_5 = '1.5';
+  public static readonly V1_5 = ElasticsearchVersion.of('1.5');
 
   /** AWS Elasticsearch 2.3 */
-  public static readonly ES_2_3 = '2.3';
+  public static readonly V2_3 = ElasticsearchVersion.of('2.3');
 
   /** AWS Elasticsearch 5.1 */
-  public static readonly ES_5_1 = '5.1';
+  public static readonly V5_1 = ElasticsearchVersion.of('5.1');
 
   /** AWS Elasticsearch 5.3 */
-  public static readonly ES_5_3 = '5.3';
+  public static readonly V5_3 = ElasticsearchVersion.of('5.3');
 
   /** AWS Elasticsearch 5.5 */
-  public static readonly ES_5_5 = '5.5';
+  public static readonly V5_5 = ElasticsearchVersion.of('5.5');
 
   /** AWS Elasticsearch 5.6 */
-  public static readonly ES_5_6 = '5.6';
+  public static readonly V5_6 = ElasticsearchVersion.of('5.6');
 
   /** AWS Elasticsearch 6.0 */
-  public static readonly ES_6_0 = '6.0';
+  public static readonly V6_0 = ElasticsearchVersion.of('6.0');
 
   /** AWS Elasticsearch 6.2 */
-  public static readonly ES_6_2 = '6.2';
+  public static readonly V6_2 = ElasticsearchVersion.of('6.2');
 
   /** AWS Elasticsearch 6.3 */
-  public static readonly ES_6_3 = '6.3';
+  public static readonly V6_3 = ElasticsearchVersion.of('6.3');
 
   /** AWS Elasticsearch 6.4 */
-  public static readonly ES_6_4 = '6.4';
+  public static readonly V6_4 = ElasticsearchVersion.of('6.4');
 
   /** AWS Elasticsearch 6.5 */
-  public static readonly ES_6_5 = '6.5';
+  public static readonly V6_5 = ElasticsearchVersion.of('6.5');
 
   /** AWS Elasticsearch 6.7 */
-  public static readonly ES_6_7 = '6.7';
+  public static readonly V6_7 = ElasticsearchVersion.of('6.7');
 
   /** AWS Elasticsearch 6.8 */
-  public static readonly ES_6_8 = '6.8';
+  public static readonly V6_8 = ElasticsearchVersion.of('6.8');
 
   /** AWS Elasticsearch 7.1 */
-  public static readonly ES_7_1 = '7.1';
+  public static readonly V7_1 = ElasticsearchVersion.of('7.1');
 
   /** AWS Elasticsearch 7.4 */
-  public static readonly ES_7_4 = '7.4';
+  public static readonly V7_4 = ElasticsearchVersion.of('7.4');
+
+  /**
+   * Custom Elasticsearch version
+   * @param version custom version number
+   */
+  public static of(version: string) { return new ElasticsearchVersion(version); }
+
+  /**
+   *
+   * @param version Elasticsearch version number
+   */
+  private constructor(public readonly version: string) { }
 }
 
 /**
@@ -315,9 +327,8 @@ export interface DomainProps {
    * currently supports Elasticsearch versions 7.4, 7.1, 6.8, 6.7, 6.5, 6.4, 6.3, 6.2, 6.0,
    * 5.6, 5.5, 5.3, 5.1, 2.3, and 1.5.
    *
-   * @default '7.4'
    */
-  readonly elasticsearchVersion?: string;
+  readonly version: ElasticsearchVersion;
 
   /**
    * Encryption at rest options for the cluster.
@@ -1033,7 +1044,7 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error('Master and data node instance types must end with ".elasticsearch".');
     }
 
-    const elasticsearchVersion = props.elasticsearchVersion ?? '7.4';
+    const elasticsearchVersion = props.version.version;
     const elasticsearchVersionNum = parseVersion(elasticsearchVersion);
 
     function parseVersion(version: string): number {
@@ -1187,7 +1198,7 @@ export class Domain extends DomainBase implements IDomain {
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
-      elasticsearchVersion: elasticsearchVersion.toString(),
+      elasticsearchVersion,
       elasticsearchClusterConfig: {
         dedicatedMasterEnabled: props.clusterConfig.masterNodes != null,
         dedicatedMasterCount: props.clusterConfig.masterNodes,
