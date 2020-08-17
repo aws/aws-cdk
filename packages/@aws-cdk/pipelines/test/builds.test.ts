@@ -81,7 +81,7 @@ test.each([['npm'], ['yarn']])('%s assumes no build step by default', (npmYarn) 
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     sourceArtifact,
     cloudAssemblyArtifact,
-    synthAction: npmYarnBuild(npmYarn)({ sourceArtifact,  cloudAssemblyArtifact }),
+    synthAction: npmYarnBuild(npmYarn)({ sourceArtifact, cloudAssemblyArtifact }),
   });
 
   // THEN

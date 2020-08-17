@@ -91,7 +91,7 @@ export class CustomResourceProvider extends Construct {
   public static getOrCreate(scope: Construct, uniqueid: string, props: CustomResourceProviderProps) {
     const id = `${uniqueid}CustomResourceProvider`;
     const stack = Stack.of(scope);
-    const provider = stack.construct.tryFindChild(id) as CustomResourceProvider
+    const provider = stack.node.tryFindChild(id) as CustomResourceProvider
       ?? new CustomResourceProvider(stack, id, props);
 
     return provider.serviceToken;
@@ -149,7 +149,7 @@ export class CustomResourceProvider extends Construct {
       properties: {
         AssumeRolePolicyDocument: {
           Version: '2012-10-17',
-          Statement: [ { Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } } ],
+          Statement: [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }],
         },
         ManagedPolicyArns: [
           { 'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },

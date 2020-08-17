@@ -285,9 +285,11 @@ export class JobDefinition extends Resource implements IJobDefinition {
       containerProperties: this.buildJobContainer(props.container),
       type: 'container',
       nodeProperties: props.nodeProps
-        ? { mainNode: props.nodeProps.mainNode,
+        ? {
+          mainNode: props.nodeProps.mainNode,
           nodeRangeProperties: this.buildNodeRangeProps(props.nodeProps),
-          numNodes: props.nodeProps.count }
+          numNodes: props.nodeProps.count,
+        }
         : undefined,
       parameters: props.parameters,
       retryStrategy: {

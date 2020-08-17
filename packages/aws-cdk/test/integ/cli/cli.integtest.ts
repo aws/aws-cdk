@@ -2,8 +2,10 @@ import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { cloudFormation, iam, lambda, retry, sleep, sns, sts, testEnv } from './aws-helpers';
-import { cdk, cdkDeploy, cdkDestroy, cleanup, cloneDirectory, fullStackName,
-  INTEG_TEST_DIR, log, prepareAppFixture, shell, STACK_NAME_PREFIX } from './cdk-helpers';
+import {
+  cdk, cdkDeploy, cdkDestroy, cleanup, cloneDirectory, fullStackName,
+  INTEG_TEST_DIR, log, prepareAppFixture, shell, STACK_NAME_PREFIX,
+} from './cdk-helpers';
 import { integTest } from './test-helpers';
 
 jest.setTimeout(600 * 1000);
@@ -22,14 +24,14 @@ afterEach(async () => {
 
 integTest('VPC Lookup', async () => {
   log('Making sure we are clean before starting.');
-  await cdkDestroy('define-vpc', { modEnv: { ENABLE_VPC_TESTING: 'DEFINE' }});
+  await cdkDestroy('define-vpc', { modEnv: { ENABLE_VPC_TESTING: 'DEFINE' } });
 
   log('Setting up: creating a VPC with known tags');
-  await cdkDeploy('define-vpc', { modEnv: { ENABLE_VPC_TESTING: 'DEFINE' }});
+  await cdkDeploy('define-vpc', { modEnv: { ENABLE_VPC_TESTING: 'DEFINE' } });
   log('Setup complete!');
 
   log('Verifying we can now import that VPC');
-  await cdkDeploy('import-vpc', { modEnv: { ENABLE_VPC_TESTING: 'IMPORT' }});
+  await cdkDeploy('import-vpc', { modEnv: { ENABLE_VPC_TESTING: 'IMPORT' } });
 });
 
 integTest('Two ways of shoing the version', async () => {
@@ -74,8 +76,7 @@ integTest('cdk synth', async () => {
 integTest('ssm parameter provider error', async () => {
   await expect(cdk(['synth',
     fullStackName('missing-ssm-parameter'),
-    '-c', 'test:ssm-parameter-name=/does/not/exist',
-  ], {
+    '-c', 'test:ssm-parameter-name=/does/not/exist'], {
     allowErrExit: true,
   })).resolves.toContain('SSM parameter not available in account');
 });
@@ -532,7 +533,7 @@ integTest('cdk ls', async () => {
 
 integTest('deploy stack without resource', async () => {
   // Deploy the stack without resources
-  await cdkDeploy('conditional-resource', { modEnv: { NO_RESOURCE: 'TRUE' }});
+  await cdkDeploy('conditional-resource', { modEnv: { NO_RESOURCE: 'TRUE' } });
 
   // This should have succeeded but not deployed the stack.
   await expect(cloudFormation('describeStacks', { StackName: fullStackName('conditional-resource') }))
@@ -601,7 +602,7 @@ integTest('failed deploy does not hang', async () => {
 });
 
 integTest('can still load old assemblies', async () => {
-  const cxAsmDir =  path.join(os.tmpdir(), 'cdk-integ-cx');
+  const cxAsmDir = path.join(os.tmpdir(), 'cdk-integ-cx');
 
   const testAssembliesDirectory = path.join(__dirname, 'cloud-assemblies');
   for (const asmdir of await listChildDirs(testAssembliesDirectory)) {
@@ -626,7 +627,8 @@ integTest('can still load old assemblies', async () => {
     const output = await cdk([
       '--app', cxAsmDir,
       '-v',
-      'synth']);
+      'synth',
+    ]);
 
     // Assert that there was no providerError in CDK's stderr
     // Because we rely on the app/framework to actually error in case the

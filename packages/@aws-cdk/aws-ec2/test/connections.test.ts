@@ -13,7 +13,7 @@ import {
 nodeunitShim({
   'peering between two security groups does not recursive infinitely'(test: Test) {
     // GIVEN
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' }});
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' } });
 
     const vpc = new Vpc(stack, 'VPC');
     const sg1 = new SecurityGroup(stack, 'SG1', { vpc });
@@ -43,7 +43,7 @@ nodeunitShim({
 
     // THEN: rule to generated security group to connect to imported
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
-      GroupId: { 'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ] },
+      GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
       IpProtocol: 'tcp',
       Description: 'Connect there',
       DestinationSecurityGroupId: 'sg-12345',
@@ -57,7 +57,7 @@ nodeunitShim({
       Description: 'Connect there',
       FromPort: 0,
       GroupId: 'sg-12345',
-      SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ] },
+      SourceSecurityGroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
       ToPort: 65535,
     }));
 
@@ -123,15 +123,15 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      GroupId: { 'Fn::GetAtt': [ 'SecurityGroup23BE86BB7', 'GroupId' ] },
-      SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
+      GroupId: { 'Fn::GetAtt': ['SecurityGroup23BE86BB7', 'GroupId'] },
+      SourceSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
       FromPort: 88,
       ToPort: 88,
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      GroupId: { 'Fn::GetAtt': [ 'SecurityGroup3E5E374B9', 'GroupId' ] },
-      SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
+      GroupId: { 'Fn::GetAtt': ['SecurityGroup3E5E374B9', 'GroupId'] },
+      SourceSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
       FromPort: 88,
       ToPort: 88,
     }));
@@ -153,15 +153,15 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      GroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
-      SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
+      GroupId: { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
+      SourceSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
       FromPort: 88,
       ToPort: 88,
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
-      DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
-      GroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
+      DestinationSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
+      GroupId: { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
       FromPort: 88,
       ToPort: 88,
     }));
@@ -188,13 +188,13 @@ nodeunitShim({
     app.synth();
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      GroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
+      GroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
       SourceSecurityGroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
     }));
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
-      DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
+      DestinationSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
     }));
 
     test.done();
@@ -220,11 +220,11 @@ nodeunitShim({
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
       GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
-      SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
+      SourceSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
     }));
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
-      GroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
+      GroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
       DestinationSecurityGroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
     }));
 
@@ -253,12 +253,12 @@ nodeunitShim({
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupAED40ADC5GroupId1D10C76A' },
-      DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
+      DestinationSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
     }));
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupB04591F90GroupIdFA7208D5' },
-      DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
+      DestinationSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
     }));
 
     test.done();
@@ -277,7 +277,7 @@ nodeunitShim({
 
     // THEN: rule to generated security group to connect to imported
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      GroupId: { 'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ] },
+      GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
       IpProtocol: 'tcp',
       Description: 'Connect there',
       SourceSecurityGroupId: 'sg-12345',
@@ -306,7 +306,7 @@ nodeunitShim({
 
     // THEN: rule to generated security group to connect to imported
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      GroupId: { 'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ] },
+      GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
       IpProtocol: 'tcp',
       Description: 'Connect there',
       SourceSecurityGroupId: 'sg-12345',
@@ -320,7 +320,7 @@ nodeunitShim({
       Description: 'Connect there',
       FromPort: 0,
       GroupId: 'sg-12345',
-      DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ] },
+      DestinationSecurityGroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
       ToPort: 65535,
     }));
 

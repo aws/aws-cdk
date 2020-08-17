@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { IProfilingGroup, ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
+import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -299,6 +299,15 @@ export interface FunctionProps extends FunctionOptions {
    * @default - will not mount any filesystem
    */
   readonly filesystem?: FileSystem;
+
+  /**
+   * Lambda Functions in a public subnet can NOT access the internet.
+   * Use this property to acknowledge this limitation and still place the function in a public subnet.
+   * @see https://stackoverflow.com/questions/52992085/why-cant-an-aws-lambda-function-inside-a-public-subnet-in-a-vpc-connect-to-the/52994841#52994841
+   *
+   * @default false
+   */
+  readonly allowPublicSubnet?: boolean;
 }
 
 /**
@@ -338,11 +347,13 @@ export class Function extends FunctionBase {
     const cfn = this._currentVersion.node.defaultChild as CfnResource;
     const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
 
-    cfn.overrideLogicalId(Lazy.stringValue({ produce: _ => {
-      const hash = calculateFunctionHash(this);
-      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
-      return `${logicalId}${hash}`;
-    }}));
+    cfn.overrideLogicalId(Lazy.stringValue({
+      produce: _ => {
+        const hash = calculateFunctionHash(this);
+        const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+        return `${logicalId}${hash}`;
+      },
+    }));
 
     return this._currentVersion;
   }
@@ -561,7 +572,9 @@ export class Function extends FunctionBase {
       };
     } else if (props.profiling) {
       this.validateProfilingEnvironmentVariables(props);
-      const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup');
+      const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup', {
+        computePlatform: ComputePlatform.AWS_LAMBDA,
+      });
       profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
         AWS_CODEGURU_PROFILER_GROUP_ARN: profilingGroup.profilingGroupArn,
@@ -819,15 +832,13 @@ export class Function extends FunctionBase {
       }
     }
 
-    // Pick subnets, make sure they're not Public. Routing through an IGW
-    // won't work because the ENIs don't get a Public IP.
-    // Why are we not simply forcing vpcSubnets? Because you might still be choosing
-    // Isolated networks or selecting among 2 sets of Private subnets by name.
+    const allowPublicSubnet = props.allowPublicSubnet ?? false;
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
     for (const subnetId of subnetIds) {
-      if (publicSubnetIds.has(subnetId)) {
-        throw new Error('Not possible to place Lambda Functions in a Public subnet');
+      if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
+        throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
+          'If you are aware of this limitation and would still like to place the function int a public subnet, set `allowPublicSubnet` to true');
       }
     }
 

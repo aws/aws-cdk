@@ -28,7 +28,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
     return {
       type: s3.BucketNotificationDestinationType.LAMBDA,
       arn: this.fn.functionArn,
-      dependencies: permission ? [ permission ] : undefined,
+      dependencies: permission ? [permission] : undefined,
     };
   }
 }

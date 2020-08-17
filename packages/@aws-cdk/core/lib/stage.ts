@@ -73,7 +73,7 @@ export class Stage extends Construct {
    * @experimental
    */
   public static of(construct: IConstruct): Stage | undefined {
-    return construct.construct.scopes.reverse().slice(1).find(Stage.isStage);
+    return construct.node.scopes.reverse().slice(1).find(Stage.isStage);
   }
 
   /**
@@ -140,7 +140,7 @@ export class Stage extends Construct {
     this.account = props.env?.account ?? this.parentStage?.account;
 
     this._assemblyBuilder = this.createBuilder(props.outdir);
-    this.stageName = [ this.parentStage?.stageName, id ].filter(x => x).join('-');
+    this.stageName = [this.parentStage?.stageName, id].filter(x => x).join('-');
   }
 
   /**
@@ -159,8 +159,8 @@ export class Stage extends Construct {
    * @experimental
    */
   public get artifactId() {
-    if (!this.construct.path) { return ''; }
-    return `assembly-${this.construct.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
+    if (!this.node.path) { return ''; }
+    return `assembly-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
   }
 
   /**
@@ -171,7 +171,7 @@ export class Stage extends Construct {
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
     if (!this.assembly || options.force) {
-      const runtimeInfo = this.construct.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
+      const runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         runtimeInfo,
@@ -191,7 +191,7 @@ export class Stage extends Construct {
     // to write sub-assemblies (which must happen before we actually get to this app's
     // synthesize() phase).
     return this.parentStage
-      ? this.parentStage._assemblyBuilder.createNestedAssembly(this.artifactId, this.construct.path)
+      ? this.parentStage._assemblyBuilder.createNestedAssembly(this.artifactId, this.node.path)
       : new cxapi.CloudAssemblyBuilder(outdir);
   }
 }

@@ -290,11 +290,11 @@ test('resource replacement is tracked through references', () => {
       },
       Queue: {
         Type: 'AWS::SQS::Queue',
-        Properties: { QueueName: { Ref: 'Bucket' }}, // Immutable prop
+        Properties: { QueueName: { Ref: 'Bucket' } }, // Immutable prop
       },
       Topic: {
         Type: 'AWS::SNS::Topic',
-        Properties: { TopicName: { Ref: 'Queue' }}, // Immutable prop
+        Properties: { TopicName: { Ref: 'Queue' } }, // Immutable prop
       },
     },
   };
@@ -308,11 +308,11 @@ test('resource replacement is tracked through references', () => {
       },
       Queue: {
         Type: 'AWS::SQS::Queue',
-        Properties: { QueueName: { Ref: 'Bucket' }},
+        Properties: { QueueName: { Ref: 'Bucket' } },
       },
       Topic: {
         Type: 'AWS::SNS::Topic',
-        Properties: { TopicName: { Ref: 'Queue' }},
+        Properties: { TopicName: { Ref: 'Queue' } },
       },
     },
   };

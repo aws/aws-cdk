@@ -23,7 +23,7 @@ export function addStackArtifactToAssembly(
   // level and are not needed in the cloud assembly.
   // TODO: move these to the cloud assembly artifact properties instead of metadata
   if (stack.tags.hasTags()) {
-    stack.construct.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, stack.tags.renderTags());
+    stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, stack.tags.renderTags());
   }
 
   const deps = [
@@ -77,12 +77,12 @@ function collectStackMetadata(stack: Stack) {
       return;
     }
 
-    if (node.construct.metadata.length > 0) {
+    if (node.node.metadata.length > 0) {
       // Make the path absolute
-      output[ConstructNode.PATH_SEP + node.construct.path] = node.construct.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
+      output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
     }
 
-    for (const child of node.construct.children) {
+    for (const child of node.node.children) {
       visit(child);
     }
   }
@@ -92,11 +92,11 @@ function collectStackMetadata(stack: Stack) {
       return node;
     }
 
-    if (!node.construct.scope) {
+    if (!node.node.scope) {
       return undefined;
     }
 
-    return findParentStack(node.construct.scope);
+    return findParentStack(node.node.scope);
   }
 }
 
