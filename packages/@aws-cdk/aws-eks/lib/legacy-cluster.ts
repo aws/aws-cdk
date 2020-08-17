@@ -230,10 +230,6 @@ export class LegacyCluster extends Resource implements ICluster {
    * for the instance type and Kubernetes version.
    *
    * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
-   * If kubectl is enabled, the
-   * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
-   * daemon will be installed on all spot instances to handle
-   * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
   public addCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined ) {
