@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { IProfilingGroup, ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
+import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -347,11 +347,13 @@ export class Function extends FunctionBase {
     const cfn = this._currentVersion.node.defaultChild as CfnResource;
     const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
 
-    cfn.overrideLogicalId(Lazy.stringValue({ produce: _ => {
-      const hash = calculateFunctionHash(this);
-      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
-      return `${logicalId}${hash}`;
-    }}));
+    cfn.overrideLogicalId(Lazy.stringValue({
+      produce: _ => {
+        const hash = calculateFunctionHash(this);
+        const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+        return `${logicalId}${hash}`;
+      },
+    }));
 
     return this._currentVersion;
   }
@@ -570,7 +572,9 @@ export class Function extends FunctionBase {
       };
     } else if (props.profiling) {
       this.validateProfilingEnvironmentVariables(props);
-      const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup');
+      const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup', {
+        computePlatform: ComputePlatform.AWS_LAMBDA,
+      });
       profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
         AWS_CODEGURU_PROFILER_GROUP_ARN: profilingGroup.profilingGroupArn,

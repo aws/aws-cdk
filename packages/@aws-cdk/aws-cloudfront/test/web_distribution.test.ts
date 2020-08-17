@@ -569,17 +569,17 @@ nodeunitShim({
     const s3BucketSource = new s3.Bucket(stack, 'Bucket');
 
     const originConfigs = [{
-      s3OriginSource: {s3BucketSource},
+      s3OriginSource: { s3BucketSource },
       behaviors: [{ isDefaultBehavior: true }],
     }];
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
       originConfigs,
-      aliasConfiguration: {acmCertRef: 'acm_ref', names: ['www.example.com']},
+      aliasConfiguration: { acmCertRef: 'acm_ref', names: ['www.example.com'] },
     });
     new CloudFrontWebDistribution(stack, 'AnotherAmazingWebsiteProbably', {
       originConfigs,
-      aliasConfiguration: {acmCertRef: 'another_acm_ref', names: ['ftp.example.com']},
+      aliasConfiguration: { acmCertRef: 'another_acm_ref', names: ['ftp.example.com'] },
     });
 
     expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
@@ -814,7 +814,7 @@ nodeunitShim({
               s3OriginSource: { s3BucketSource: sourceBucket },
               behaviors: [{ isDefaultBehavior: true }],
             }],
-            aliasConfiguration: {acmCertRef: 'test', names: ['ftp.example.com']},
+            aliasConfiguration: { acmCertRef: 'test', names: ['ftp.example.com'] },
             viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate('example.com', 'www.example.com'),
           });
         }, /You cannot set both aliasConfiguration and viewerCertificate properties/);
@@ -890,7 +890,8 @@ nodeunitShim({
           s3OriginSource: { s3BucketSource: sourceBucket },
           behaviors: [
             {
-              isDefaultBehavior: true, lambdaFunctionAssociations: [
+              isDefaultBehavior: true,
+              lambdaFunctionAssociations: [
                 {
                   eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
                   lambdaFunction: lambdaVersion,
@@ -940,7 +941,8 @@ nodeunitShim({
           s3OriginSource: { s3BucketSource: sourceBucket },
           behaviors: [
             {
-              isDefaultBehavior: true, lambdaFunctionAssociations: [
+              isDefaultBehavior: true,
+              lambdaFunctionAssociations: [
                 {
                   eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
                   lambdaFunction: lambdaVersion,
@@ -964,8 +966,8 @@ nodeunitShim({
 
         new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
           originConfigs: [{
-            s3OriginSource: {s3BucketSource: sourceBucket},
-            behaviors: [{isDefaultBehavior: true}],
+            s3OriginSource: { s3BucketSource: sourceBucket },
+            behaviors: [{ isDefaultBehavior: true }],
           }],
           geoRestriction: GeoRestriction.whitelist('US', 'UK'),
         });
@@ -1013,7 +1015,7 @@ nodeunitShim({
                     'ViewerProtocolPolicy': 'redirect-to-https',
                     'ForwardedValues': {
                       'QueryString': false,
-                      'Cookies': {'Forward': 'none'},
+                      'Cookies': { 'Forward': 'none' },
                     },
                     'Compress': true,
                   },
@@ -1040,8 +1042,8 @@ nodeunitShim({
 
         new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
           originConfigs: [{
-            s3OriginSource: {s3BucketSource: sourceBucket},
-            behaviors: [{isDefaultBehavior: true}],
+            s3OriginSource: { s3BucketSource: sourceBucket },
+            behaviors: [{ isDefaultBehavior: true }],
           }],
           geoRestriction: GeoRestriction.blacklist('US'),
         });
@@ -1089,7 +1091,7 @@ nodeunitShim({
                     'ViewerProtocolPolicy': 'redirect-to-https',
                     'ForwardedValues': {
                       'QueryString': false,
-                      'Cookies': {'Forward': 'none'},
+                      'Cookies': { 'Forward': 'none' },
                     },
                     'Compress': true,
                   },

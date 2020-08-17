@@ -232,7 +232,7 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(topic.metricNumberOfMessagesPublished()), {
-      dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
+      dimensions: { TopicName: { 'Fn::GetAtt': ['TopicBFC7AF6E', 'TopicName'] } },
       namespace: 'AWS/SNS',
       metricName: 'NumberOfMessagesPublished',
       period: cdk.Duration.minutes(5),
@@ -240,7 +240,7 @@ export = {
     });
 
     test.deepEqual(stack.resolve(topic.metricPublishSize()), {
-      dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
+      dimensions: { TopicName: { 'Fn::GetAtt': ['TopicBFC7AF6E', 'TopicName'] } },
       namespace: 'AWS/SNS',
       metricName: 'PublishSize',
       period: cdk.Duration.minutes(5),

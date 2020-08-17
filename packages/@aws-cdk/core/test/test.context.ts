@@ -15,7 +15,7 @@ export = {
   'AvailabilityZoneProvider will return context list if available'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
-    test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+    test.deepEqual(before, ['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
 
     stack.node.setContext(key, ['us-east-1a', 'us-east-1b']);
@@ -29,7 +29,7 @@ export = {
   'AvailabilityZoneProvider will complain if not given a list'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
-    test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+    test.deepEqual(before, ['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
 
     stack.node.setContext(key, 'not-a-list');
@@ -142,7 +142,7 @@ export = {
 
   'context provider errors are attached to tree'(test: Test) {
     const contextProps = { provider: 'availability-zones' };
-    const contextKey = 'availability-zones:account=12345:region=us-east-1';  // Depends on the mangling algo
+    const contextKey = 'availability-zones:account=12345:region=us-east-1'; // Depends on the mangling algo
 
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });

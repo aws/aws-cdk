@@ -60,11 +60,11 @@ const api = new appsync.GraphQLApi(stack, 'Api', {
 const demoTable = new db.Table(stack, 'DemoTable', {
   partitionKey: {
     name: 'id',
-    type: AttributeType.STRING,
+    type: db.AttributeType.STRING,
   },
 });
 
-const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos"', demoTable);
+const demoDS = api.addDynamoDbDataSource('demoDataSource', demoTable);
 
 // Resolver for the Query "getDemos" that scans the DyanmoDb table and returns the entire list.
 demoDS.createResolver({
@@ -82,6 +82,24 @@ demoDS.createResolver({
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 ```
+
+## Imports
+
+Any GraphQL Api that has been created outside the stack can be imported from 
+another stack into your CDK app. Utilizing the `fromXxx` function, you have 
+the ability to add data sources and resolvers through a `IGraphQLApi` interface.
+
+```ts
+const importedApi = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'IApi', {
+  graphqlApiId: api.apiId,
+  graphqlArn: api.arn,
+});
+importedApi.addDynamoDbDataSource('TableDataSource', table);
+```
+
+If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
+the expected `arn` for the imported api, given the `apiId`. For creating data 
+sources and resolvers, an `apiId` is sufficient.
 
 ## Permissions
 
@@ -161,3 +179,172 @@ api.grantMutation(role, 'updateExample');
 // For custom types and granular design
 api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```
+
+### Code-First Schema
+
+CDK offers the ability to generate your schema in a code-first approach. 
+A code-first approach offers a developer workflow with:
+- **modularity**: organizing schema type definitions into different files
+- **reusability**: simplifying down boilerplate/repetitive code
+- **consistency**: resolvers and schema definition will always be synced
+
+The code-first approach allows for dynamic schema generation. You can generate your schema based on variables and templates to reduce code duplication.
+
+#### Code-First Example
+
+We are going to reference the [example](#Example) through a code-first approach.
+
+```ts
+import * as appsync from '@aws-cdk/aws-appsync';
+import * as db from '@aws-cdk/aws-dynamodb';
+
+const api = new appsync.GraphQLApi(stack, 'Api', {
+  name: 'demo',
+  schemaDefinition: appsync.SchemaDefinition.CODE,
+  authorizationConfig: {
+    defaultAuthorization: {
+      authorizationType: appsync.AuthorizationType.IAM
+    },
+  },
+});
+
+const demoTable = new db.Table(stack, 'DemoTable', {
+  partitionKey: {
+    name: 'id',
+    type: db.AttributeType.STRING,
+  },
+});
+
+const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos', demoTable);
+
+// Schema Definition starts here
+
+const demo = api.addType('demo', {
+  definition: {
+    id: appsync.GraphqlType.string({ isRequired: true }),
+    version: appsync.GraphqlType.string({ isRequired: true }),
+  },
+});
+
+```
+
+#### GraphQL Types
+
+One of the benefits of GraphQL is its strongly typed nature. We define the 
+types within an object, query, mutation, interface, etc. as **GraphQL Types**. 
+
+GraphQL Types are the building blocks of types, whether they are scalar, objects, 
+interfaces, etc. GraphQL Types can be:
+- [**Scalar Types**](https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html): Id, Int, String, AWSDate, etc. 
+- **Object Types**: types that you generate (i.e. `demo` from the example above)
+- **Interface Types**: abstract types that define the base implementation of other 
+Intermediate Types
+
+More concretely, GraphQL Types are simply the types appended to variables. 
+Referencing the object type `Demo` in the previous example, the GraphQL Types 
+is `String!` and is applied to both the names `id` and `version`.
+
+#### Intermediate Types
+
+Intermediate Types are abstractions above Scalar Types. They have a set of defined 
+fields, where each field corresponds to another type in the system. Intermediate 
+Types will be the meat of your GraphQL Schema as they are the types defined by you.
+
+Intermediate Types include:
+- [**Interface Types**](#Interface-Types)
+- [**Object Types**](#Object-Types)
+
+#### Interface Types
+
+**Interface Types** are abstract types that define the implementation of other
+intermediate types. They are useful for eliminating duplication and can be used
+to generate Object Types with less work.
+
+You can create Interface Types ***externally***.
+```ts
+const node = new appsync.InterfaceType('Node', {
+  definition: {
+    id: appsync.GraphqlType.string({ isRequired: true }),
+  },
+});
+```
+
+#### Object Types
+
+**Object Types** are types that you declare. For example, in the [code-first example](#code-first-example)
+the `demo` variable is an **Object Type**. **Object Types** are defined by 
+GraphQL Types and are only usable when linked to a GraphQL Api.
+
+You can create Object Types in three ways:
+
+1. Object Types can be created ***externally***.
+    ```ts
+    const api = new appsync.GraphQLApi(stack, 'Api', {
+      name: 'demo',
+      schemaDefinition: appsync.SchemaDefinition.CODE,
+    });
+    const demo = new appsync.ObjectType('Demo', {
+      defintion: {
+        id: appsync.GraphqlType.string({ isRequired: true }),
+        version: appsync.GraphqlType.string({ isRequired: true }),
+      },
+    });
+
+    api.appendToSchema(object.toString());
+    ```
+    > This method allows for reusability and modularity, ideal for larger projects. 
+    For example, imagine moving all Object Type definition outside the stack.
+
+    `scalar-types.ts` - a file for scalar type definitions
+    ```ts
+    export const required_string = new appsync.GraphqlType.string({ isRequired: true });
+    ```
+
+    `object-types.ts` - a file for object type definitions
+    ```ts
+    import { required_string } from './scalar-types';
+    export const demo = new appsync.ObjectType('Demo', {
+      defintion: {
+        id: required_string,
+        version: required_string,
+      },
+    });
+    ```
+
+    `cdk-stack.ts` - a file containing our cdk stack
+    ```ts
+    import { demo } from './object-types';
+    api.appendToSchema(demo.toString());
+    ```
+
+2. Object Types can be created ***externally*** from an Interface Type.
+    ```ts
+    const node = new appsync.InterfaceType('Node', {
+      definition: {
+        id: appsync.GraphqlType.string({ isRequired: true }),
+      },
+    });
+    const demo = new appsync.ObjectType.implementInterface('Demo', {
+      interfaceTypes: [ node ],
+      defintion: {
+        version: appsync.GraphqlType.string({ isRequired: true }),
+      },
+    });
+    ```
+    > This method allows for reusability and modularity, ideal for reducing code duplication. 
+
+3. Object Types can be created ***internally*** within the GraphQL API.
+    ```ts
+    const api = new appsync.GraphQLApi(stack, 'Api', {
+      name: 'demo',
+      schemaDefinition: appsync.SchemaDefinition.CODE,
+    });
+    api.addType('Demo', {
+      defintion: {
+        id: appsync.GraphqlType.string({ isRequired: true }),
+        version: appsync.GraphqlType.string({ isRequired: true }),
+      },
+    });
+    ```
+    > This method provides easy use and is ideal for smaller projects.
+    

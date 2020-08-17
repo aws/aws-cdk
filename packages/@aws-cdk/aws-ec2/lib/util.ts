@@ -17,7 +17,7 @@ export function defaultSubnetName(type: SubnetType) {
   switch (type) {
     case SubnetType.PUBLIC: return 'Public';
     case SubnetType.PRIVATE: return 'Private';
-    case SubnetType.ISOLATED: return  'Isolated';
+    case SubnetType.ISOLATED: return 'Isolated';
   }
 }
 

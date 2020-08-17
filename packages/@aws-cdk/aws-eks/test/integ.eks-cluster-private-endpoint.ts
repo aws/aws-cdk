@@ -26,7 +26,7 @@ class EksClusterStack extends TestStack {
     });
 
     // this is the valdiation. it won't work if the private access is not setup properly.
-    cluster.addResource('config-map', {
+    cluster.addManifest('config-map', {
       kind: 'ConfigMap',
       apiVersion: 'v1',
       data: {
