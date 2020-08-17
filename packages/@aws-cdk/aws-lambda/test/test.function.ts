@@ -8,7 +8,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as _ from 'lodash';
-import {Test, testCase} from 'nodeunit';
+import { Test, testCase } from 'nodeunit';
 import * as lambda from '../lib';
 
 /* eslint-disable quote-props */
@@ -451,7 +451,8 @@ export = testCase({
               ],
             },
             LocalMountPath: '/mnt/msg',
-          }],
+          },
+        ],
       }));
       test.done();
     },
