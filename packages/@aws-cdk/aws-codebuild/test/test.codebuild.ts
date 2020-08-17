@@ -582,36 +582,6 @@ export = {
 
       test.done();
     },
-    'with GitHub source including PULL_REQUEST_CREATED Event and FILE_PATH filter'(test: Test) {
-      const stack = new cdk.Stack();
-
-      new codebuild.Project(stack, 'Project', {
-        source: codebuild.Source.gitHub({
-          owner: 'testowner',
-          repo: 'testrepo',
-          cloneDepth: 3,
-          webhook: true,
-          reportBuildStatus: false,
-          webhookFilters: [
-            codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_CREATED).andFilePathIs('ReadMe.md'),
-          ],
-        }),
-      });
-
-      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-        Triggers: {
-          Webhook: true,
-          FilterGroups: [
-            [
-              { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED' },
-              { Type: 'FILE_PATH', Pattern: 'ReadMe.md' },
-            ],
-          ],
-        },
-      }));
-
-      test.done();
-    },
     'with GitHubEnterprise source'(test: Test) {
       const stack = new cdk.Stack();
 
@@ -1666,6 +1636,7 @@ export = {
         codebuild.EventAction.PULL_REQUEST_CREATED,
         codebuild.EventAction.PUSH)
         .andFilePathIsNot('.*\\.java');
+
       test.done();
     },
 
