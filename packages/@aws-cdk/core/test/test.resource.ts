@@ -1,8 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { App, App as Root, CfnCondition,
+import {
+  App, App as Root, CfnCondition,
   CfnDeletionPolicy, CfnResource, Construct,
-  Fn, RemovalPolicy, Stack } from '../lib';
+  Fn, RemovalPolicy, Stack,
+} from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 import { toCloudFormation } from './util';
 
@@ -86,9 +88,9 @@ export = {
         YourResource: {
           Type: 'Type',
           Properties: {
-            CounterName: { 'Fn::GetAtt': [ 'MyResource', 'Name' ] },
-            CounterArn: { 'Fn::GetAtt': [ 'MyResource', 'Arn' ] } ,
-            CounterURL: { 'Fn::GetAtt': [ 'MyResource', 'URL' ] },
+            CounterName: { 'Fn::GetAtt': ['MyResource', 'Name'] },
+            CounterArn: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
+            CounterURL: { 'Fn::GetAtt': ['MyResource', 'URL'] },
           },
         },
       },
@@ -114,7 +116,7 @@ export = {
           Type: 'Type',
           Properties: {
             Perm: {
-              'Fn::GetAtt': [ 'MyResource', 'Arn' ],
+              'Fn::GetAtt': ['MyResource', 'Arn'],
             },
           },
         },
@@ -196,7 +198,7 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: { Resource: { Type: 'Type', Condition: 'MyCondition' } },
-      Conditions: { MyCondition: { 'Fn::Not': [ { 'Fn::Equals': [ 'a', 'b' ] } ] } },
+      Conditions: { MyCondition: { 'Fn::Not': [{ 'Fn::Equals': ['a', 'b'] }] } },
     });
 
     test.done();
@@ -308,7 +310,7 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
-        Retain: { Type: 'T1', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain'  },
+        Retain: { Type: 'T1', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' },
         Destroy: { Type: 'T3', DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' },
         Default1: { Type: 'T4', DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' }, // explicit default
         Default2: { Type: 'T4', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' }, // implicit default
@@ -362,18 +364,24 @@ export = {
 
     synthesize(stack);
 
-    test.deepEqual(toCloudFormation(stack), { Resources:
-      { MyC1R1FB2A562F: { Type: 'T1' },
+    test.deepEqual(toCloudFormation(stack), {
+      Resources:
+      {
+        MyC1R1FB2A562F: { Type: 'T1' },
         MyC1R2AE2B5066: { Type: 'T2' },
         MyC2R3809EEAD6: { Type: 'T3' },
         MyC3C2R38CE6F9F7: { Type: 'T3' },
         MyResource:
-        { Type: 'R',
+        {
+          Type: 'R',
           DependsOn:
-          [ 'MyC1R1FB2A562F',
+          ['MyC1R1FB2A562F',
             'MyC1R2AE2B5066',
             'MyC2R3809EEAD6',
-            'MyC3C2R38CE6F9F7' ] } } });
+            'MyC3C2R38CE6F9F7'],
+        },
+      },
+    });
     test.done();
   },
 
@@ -397,11 +405,17 @@ export = {
       r.addOverride('Use.Dot.Notation', 'To create subtrees');
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), { Resources:
-        { MyResource:
-          { Type: 'YouCanEvenOverrideTheType',
+      test.deepEqual(toCloudFormation(stack), {
+        Resources:
+        {
+          MyResource:
+          {
+            Type: 'YouCanEvenOverrideTheType',
             Use: { Dot: { Notation: 'To create subtrees' } },
-            Metadata: { Key: 12 } } } });
+            Metadata: { Key: 12 },
+          },
+        },
+      });
 
       test.done();
     },
@@ -426,10 +440,16 @@ export = {
       r.addOverride('Properties.Hello.World.Value2', null);
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), { Resources:
-        { MyResource:
-          { Type: 'AWS::Resource::Type',
-            Properties: { Hello: { World: { Value1: 'Hello', Value2: null } } } } } });
+      test.deepEqual(toCloudFormation(stack), {
+        Resources:
+        {
+          MyResource:
+          {
+            Type: 'AWS::Resource::Type',
+            Properties: { Hello: { World: { Value1: 'Hello', Value2: null } } },
+          },
+        },
+      });
 
       test.done();
     },
@@ -454,10 +474,16 @@ export = {
       r.addOverride('Properties.Hello.World.Value2', undefined);
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), { Resources:
-        { MyResource:
-          { Type: 'AWS::Resource::Type',
-            Properties: { Hello: { World: { Value1: 'Hello' } } } } } });
+      test.deepEqual(toCloudFormation(stack), {
+        Resources:
+        {
+          MyResource:
+          {
+            Type: 'AWS::Resource::Type',
+            Properties: { Hello: { World: { Value1: 'Hello' } } },
+          },
+        },
+      });
 
       test.done();
     },
@@ -473,10 +499,16 @@ export = {
       r.addPropertyOverride('Tree.Does.Not.Exist', undefined);
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), { Resources:
-        { MyResource:
-          { Type: 'AWS::Resource::Type',
-            Properties: { Tree: { Exists: 42 } } } } });
+      test.deepEqual(toCloudFormation(stack), {
+        Resources:
+        {
+          MyResource:
+          {
+            Type: 'AWS::Resource::Type',
+            Properties: { Tree: { Exists: 42 } },
+          },
+        },
+      });
 
       test.done();
     },
@@ -492,7 +524,7 @@ export = {
             World: {
               Value1: 'Hello',
               Value2: 129,
-              Value3: [ 'foo', 'bar' ],
+              Value3: ['foo', 'bar'],
             },
           },
         },
@@ -503,10 +535,16 @@ export = {
       r.addPropertyDeletionOverride('Hello.World.Value3');
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), { Resources:
-        { MyResource:
-          { Type: 'AWS::Resource::Type',
-            Properties: { Hello: { World: { Value1: 'Hello' } } } } } });
+      test.deepEqual(toCloudFormation(stack), {
+        Resources:
+        {
+          MyResource:
+          {
+            Type: 'AWS::Resource::Type',
+            Properties: { Hello: { World: { Value1: 'Hello' } } },
+          },
+        },
+      });
 
       test.done();
     },
@@ -524,19 +562,27 @@ export = {
       });
 
       // WHEN
-      r.addOverride('Properties.Override1', [ 'Hello', 123 ]);
-      r.addOverride('Properties.Override1.Override2', { Heyy: [ 1 ] });
+      r.addOverride('Properties.Override1', ['Hello', 123]);
+      r.addOverride('Properties.Override1.Override2', { Heyy: [1] });
       r.addOverride('Properties.Hello.World.Foo.Bar', 42);
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), { Resources:
-        { MyResource:
-          { Type: 'AWS::Resource::Type',
+      test.deepEqual(toCloudFormation(stack), {
+        Resources:
+        {
+          MyResource:
+          {
+            Type: 'AWS::Resource::Type',
             Properties:
-            { Hello: { World: { Foo: { Bar: 42 } } },
+            {
+              Hello: { World: { Foo: { Bar: 42 } } },
               Override1: {
-                Override2: { Heyy: [ 1] },
-              } } } } });
+                Override2: { Heyy: [1] },
+              },
+            },
+          },
+        },
+      });
       test.done();
     },
 
@@ -552,10 +598,16 @@ export = {
       r.addPropertyOverride('Hello.World', { Hey: 'Jude' });
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), { Resources:
-        { MyResource:
-          { Type: 'AWS::Resource::Type',
-            Properties: { Hello: { World: { Hey: 'Jude' } } } } } });
+      test.deepEqual(toCloudFormation(stack), {
+        Resources:
+        {
+          MyResource:
+          {
+            Type: 'AWS::Resource::Type',
+            Properties: { Hello: { World: { Hey: 'Jude' } } },
+          },
+        },
+      });
       test.done();
     },
 
@@ -602,10 +654,16 @@ export = {
 
         r.prop2 = 'bar';
 
-        test.deepEqual(toCloudFormation(stack), { Resources:
-          { MyResource:
-            { Type: 'MyResourceType',
-              Properties: { PROP1: 'foo', PROP2: 'bar' } } } });
+        test.deepEqual(toCloudFormation(stack), {
+          Resources:
+          {
+            MyResource:
+            {
+              Type: 'MyResourceType',
+              Properties: { PROP1: 'foo', PROP2: 'bar' },
+            },
+          },
+        });
         test.done();
       },
 
@@ -616,10 +674,16 @@ export = {
 
         r.prop3 = 'zoo';
 
-        test.deepEqual(toCloudFormation(stack), { Resources:
-          { MyResource:
-            { Type: 'MyResourceType',
-              Properties: { PROP3: 'zoo' } } } });
+        test.deepEqual(toCloudFormation(stack), {
+          Resources:
+          {
+            MyResource:
+            {
+              Type: 'MyResourceType',
+              Properties: { PROP3: 'zoo' },
+            },
+          },
+        });
         test.done();
       },
 
@@ -631,10 +695,16 @@ export = {
         r.prop3 = 'zoo';
         r.prop2 = 'hey';
 
-        test.deepEqual(toCloudFormation(stack), { Resources:
-          { MyResource:
-            { Type: 'MyResourceType',
-              Properties: { PROP2: 'hey', PROP3: 'zoo' } } } });
+        test.deepEqual(toCloudFormation(stack), {
+          Resources:
+          {
+            MyResource:
+            {
+              Type: 'MyResourceType',
+              Properties: { PROP2: 'hey', PROP3: 'zoo' },
+            },
+          },
+        });
         test.done();
       },
     },
@@ -650,10 +720,16 @@ export = {
       type: 'MyResourceType',
     });
 
-    test.deepEqual(toCloudFormation(stack), { Resources:
-      { ParentMyResource4B1FDBCC:
-         { Type: 'MyResourceType',
-           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Default/Parent/MyResource' } } } });
+    test.deepEqual(toCloudFormation(stack), {
+      Resources:
+      {
+        ParentMyResource4B1FDBCC:
+         {
+           Type: 'MyResourceType',
+           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Default/Parent/MyResource' },
+         },
+      },
+    });
 
     test.done();
   },
@@ -731,7 +807,7 @@ class Counter extends CfnResource {
   }
 
   protected get cfnProperties(): { [key: string]: any } {
-    return {Count: this.count};
+    return { Count: this.count };
   }
 }
 
