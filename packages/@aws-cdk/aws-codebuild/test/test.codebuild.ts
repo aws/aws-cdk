@@ -1631,13 +1631,11 @@ export = {
       test.done();
     },
 
-    'cannot have file path conditions if the Group contains any action other than PUSH'(test: Test) {
-      const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_CREATED,
-        codebuild.EventAction.PUSH);
-
-      test.throws(() => {
-        filterGroup.andFilePathIsNot('.*\\.java');
-      }, /A file path condition cannot be added if a Group contains any event action other than PUSH/);
+    'can have FILE_PATH filters if the Group contains PUSH and PR_CREATED events'(test: Test) {
+      codebuild.FilterGroup.inEventOf(
+        codebuild.EventAction.PULL_REQUEST_CREATED,
+        codebuild.EventAction.PUSH)
+        .andFilePathIsNot('.*\\.java');
 
       test.done();
     },
