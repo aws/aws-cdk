@@ -297,7 +297,7 @@ export interface DomainProps {
    *
    * @default - No EBS volumes attached.
    */
-  readonly ebsOptions?: EbsOptions;
+  readonly ebs?: EbsOptions;
 
   /**
    * The cluster configuration for the Amazon ES domain.
