@@ -448,6 +448,27 @@ export interface IDomain extends cdk.IResource {
   readonly domainEndpoint: string;
 
   /**
+   * Log group that slow searches are logged to.
+   *
+   * @attribute
+   */
+  readonly slowSearchLogGroup?: logs.ILogGroup;
+
+  /**
+   * Log group that slow indices are logged to.
+   *
+   * @attribute
+   */
+  readonly slowIndexLogGroup?: logs.ILogGroup;
+
+  /**
+   * Log group that application logs are logged to.
+   *
+   * @attribute
+   */
+  readonly appLogGroup?: logs.ILogGroup;
+
+  /**
    * Grant read permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
@@ -1067,12 +1088,12 @@ export class Domain extends DomainBase implements IDomain {
   public readonly domainArn: string;
   public readonly domainName: string;
   public readonly domainEndpoint: string;
+  public readonly slowSearchLogGroup?: logs.ILogGroup;
+  public readonly slowIndexLogGroup?: logs.ILogGroup;
+  public readonly appLogGroup?: logs.ILogGroup;
 
 
   private readonly domain: CfnDomain;
-  private readonly slowSearchLogGroup?: logs.ILogGroup;
-  private readonly slowIndexLogGroup?: logs.ILogGroup;
-  private readonly appLogGroup?: logs.ILogGroup;
 
   constructor(scope: cdk.Construct, id: string, props: DomainProps) {
     super(scope, id, {
