@@ -499,5 +499,5 @@ test('can specify assumedRole', async () => {
 
   expect(request.isDone()).toBeTruthy();
 
-  sinon.assert.calledWith(assumeRoleFake, {RoleArn: 'role', RoleSessionName: 'CustomResource_SNS_publish'});
+  sinon.assert.calledWith(assumeRoleFake, { RoleArn: 'role', RoleSessionName: 'CustomResource_SNS_publish' });
 });

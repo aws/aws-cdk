@@ -435,7 +435,7 @@ function formatCall(call?: AwsSdkCall): EncodedAwsSdkCall | undefined {
     return undefined;
   }
 
-  const {assumedRole, ...rest} = call;
+  const { assumedRole, ...rest } = call;
   return {
     assumedRole: assumedRole?.roleArn,
     ...encodeBooleans(rest),
