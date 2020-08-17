@@ -8,6 +8,11 @@ import { ISDK, Mode, SdkProvider } from '../../lib/api/aws-auth';
 import * as logging from '../../lib/logging';
 import * as bockfs from '../bockfs';
 
+// Mock promptly prompt to test MFA support
+jest.mock('promptly', () => ({
+  prompt: jest.fn().mockRejectedValue(new Error('test')),
+}));
+
 SDKMock.setSDKInstance(AWS);
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
@@ -40,6 +45,10 @@ beforeEach(() => {
       [assumer]
       aws_access_key_id=${uid}assumer
       aws_secret_access_key=secret
+
+      [mfa]
+      aws_access_key_id=${uid}mfaccess
+      aws_secret_access_key=secret
     `),
     '/home/me/.bxt/config': dedent(`
       [default]
@@ -59,6 +68,14 @@ beforeEach(() => {
 
       [profile assumer]
       region=us-east-2
+
+      [profile mfa]
+      region=eu-west-1
+
+      [profile mfa-role]
+      source_profile=mfa
+      role_arn=arn:aws:iam::account:role/role
+      mfa_serial=arn:aws:iam::account:mfa/user
     `),
   });
 
@@ -148,6 +165,19 @@ describe('CLI compatible credentials loading', () => {
     await expect(provider.defaultAccount()).resolves.toEqual({ accountId: `${uid}the_account_#`, partition: 'aws-here' });
     const sdk = await provider.forEnvironment(defaultEnv, Mode.ForReading);
     expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}booccess`);
+  });
+
+  test('mfa_serial in profile will ask user for token', async () => {
+    // WHEN
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'mfa-role' });
+
+    // THEN
+    try {
+      await provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined);
+    } catch (e) {
+      // Mock response was set to fail with message test to make sure we don't call STS
+      expect(e.message).toEqual('Error fetching MFA token: test');
+    }
   });
 
   test('different account throws', async () => {
