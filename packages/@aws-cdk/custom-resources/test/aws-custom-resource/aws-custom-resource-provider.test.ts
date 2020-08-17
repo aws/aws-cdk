@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import { AwsSdkCall, PhysicalResourceId } from '../../lib';
+import { EncodedAwsSdkCall } from '../../lib/aws-custom-resource/lambda-handler-types';
 import { flatten, handler, forceSdkInstallation } from '../../lib/aws-custom-resource/runtime';
 
 /* eslint-disable no-console */
@@ -451,4 +452,48 @@ test('installs the latest SDK', async () => {
   expect(request.isDone()).toBeTruthy();
 
   expect(() => require.resolve(tmpPath)).not.toThrow();
+});
+
+test('can specify assumedRole', async () => {
+  const publishFake = sinon.fake.resolves({});
+
+  AWS.mock('SNS', 'publish', publishFake);
+
+  const assumeRoleFake = sinon.fake.resolves({
+    Credentials: {
+      AccessKeyId: 'id',
+      SecretAccessKey: 'secret',
+      SessionToken: 'session',
+    },
+  } as SDK.STS.AssumeRoleResponse);
+
+  AWS.mock('STS', 'assumeRole', assumeRoleFake);
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: {
+        service: 'SNS',
+        action: 'publish',
+        parameters: {
+          Message: 'message',
+          TopicArn: 'topic',
+        },
+        assumedRole: 'role',
+        physicalResourceId: PhysicalResourceId.of('id'),
+      } as EncodedAwsSdkCall,
+    },
+  };
+
+  const request = createRequest(body =>
+    body.Status === 'SUCCESS',
+  );
+
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
+
+  sinon.assert.calledWith(assumeRoleFake, {RoleArn: 'role', RoleSessionName: 'CustomResource_SNS_publish'});
 });
