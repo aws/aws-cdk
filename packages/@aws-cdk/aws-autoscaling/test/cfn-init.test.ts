@@ -193,7 +193,7 @@ test('Using init config in ASG leads to correct UserData and permissions', () =>
   expect(stack).to(haveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
     UserData: {
       'Fn::Base64': {
-        'Fn::Join': [ '', [
+        'Fn::Join': ['', [
           '#!/bin/bash\n# fingerprint: f8292e775c37d567\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
           { Ref: 'AWS::Region' },
           ' --stack ',
@@ -210,7 +210,7 @@ test('Using init config in ASG leads to correct UserData and permissions', () =>
   expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: arrayWith({
-        Action: [ 'cloudformation:DescribeStackResource', 'cloudformation:SignalResource' ],
+        Action: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
         Effect: 'Allow',
         Resource: { Ref: 'AWS::StackId' },
       }),
