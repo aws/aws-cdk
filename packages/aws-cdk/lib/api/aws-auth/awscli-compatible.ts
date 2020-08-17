@@ -168,12 +168,9 @@ async function isEc2Instance() {
         }
       }
     }
+    debug(instance ? 'Looks like an EC2 instance.' : 'Does not look like an EC2 instance.');
     isEc2InstanceCache = instance;
   }
-  else {
-    debug("Looking in the cache to see if we're on an EC2 instance.");
-  }
-  debug(isEc2InstanceCache ? 'Looks like an EC2 instance.' : 'Does not look like an EC2 instance.');
   return isEc2InstanceCache;
 }
 
