@@ -79,7 +79,7 @@ export = {
                 'Version': '1',
               },
               'Configuration': {
-                'TemplateFilePath': 'SourceArtifact::template.yaml',
+                'TemplateFilePath': 'template.yaml',
                 'ProductVersionName': 'VersionName',
                 'ProductType': 'CLOUD_FORMATION_TEMPLATE',
                 'ProductId': 'prod-xxxxxxxxx',
