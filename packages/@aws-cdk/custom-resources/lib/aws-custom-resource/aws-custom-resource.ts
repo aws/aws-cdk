@@ -346,9 +346,9 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       serviceToken: provider.functionArn,
       pascalCaseProperties: true,
       properties: {
-        create: create && encodeAwsSdkCall(create),
-        update: props.onUpdate && encodeAwsSdkCall(props.onUpdate),
-        delete: props.onDelete && encodeAwsSdkCall(props.onDelete),
+        create: formatCall(create),
+        update: formatCall(props.onUpdate),
+        delete: formatCall(props.onDelete),
       },
     });
   }
@@ -419,7 +419,11 @@ function encodeBooleans(object: object) {
   });
 }
 
-function encodeAwsSdkCall(call: AwsSdkCall): EncodedAwsSdkCall {
+function formatCall(call?: AwsSdkCall): EncodedAwsSdkCall | undefined {
+  if(!call){
+    return undefined;
+  }
+
   const {assumedRole, ...rest} = call;
   return {
     assumedRole: assumedRole?.roleArn,
