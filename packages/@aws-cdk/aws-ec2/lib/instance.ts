@@ -385,15 +385,17 @@ export class Instance extends Resource implements IInstance {
 
     // Trigger replacement (via new logical ID) on user data change, if specified or cfn-init is being used.
     const originalLogicalId = Stack.of(this).getLogicalId(this.instance);
-    this.instance.overrideLogicalId(Lazy.stringValue({ produce: () => {
-      let logicalId = originalLogicalId;
-      if (props.userDataCausesReplacement ?? props.initOptions) {
-        const md5 = crypto.createHash('md5');
-        md5.update(this.userData.render());
-        logicalId += md5.digest('hex').substr(0, 16);
-      }
-      return logicalId;
-    }}));
+    this.instance.overrideLogicalId(Lazy.stringValue({
+      produce: () => {
+        let logicalId = originalLogicalId;
+        if (props.userDataCausesReplacement ?? props.initOptions) {
+          const md5 = crypto.createHash('md5');
+          md5.update(this.userData.render());
+          logicalId += md5.digest('hex').substr(0, 16);
+        }
+        return logicalId;
+      },
+    }));
   }
 
   /**

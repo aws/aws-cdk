@@ -102,7 +102,7 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
 
   const asset = new Asset(stack, 'MyAsset', {
     path: path.join(__dirname, 'sample-asset-directory'),
-    readers: [ user ],
+    readers: [user],
   });
 
   asset.grantRead(group);
@@ -115,8 +115,8 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
-            { 'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':s3:::', {Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B'} ] ] },
-            { 'Fn::Join': ['', [ 'arn:', {Ref: 'AWS::Partition'}, ':s3:::', {Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B'}, '/*' ] ] },
+            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B' }]] },
+            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B' }, '/*']] },
           ],
         },
       ],
@@ -132,7 +132,7 @@ test('"grantRead" also gives KMS permissions when using the new bootstrap stack'
 
   const asset = new Asset(stack, 'MyAsset', {
     path: path.join(__dirname, 'sample-asset-directory'),
-    readers: [ group ],
+    readers: [group],
   });
 
   asset.grantRead(group);

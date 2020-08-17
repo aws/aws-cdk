@@ -1,5 +1,5 @@
 import { Writable } from 'stream';
-import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
+import { NodeStringDecoder, StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
@@ -23,7 +23,7 @@ beforeEach(() => {
     {
       stackName: 'C',
       depends: ['A'],
-      template: { resource: 'C'},
+      template: { resource: 'C' },
       metadata: {
         '/resource': [
           {

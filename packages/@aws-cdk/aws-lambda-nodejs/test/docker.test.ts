@@ -22,7 +22,8 @@ test('can npm install with non root user', async () => {
       'mkdir /tmp/test',
       'cd /tmp/test',
       'npm i constructs',
-    ].join(' && ')]);
+    ].join(' && '),
+  ]);
   expect(proc.status).toEqual(0);
 });
 
@@ -34,6 +35,7 @@ test('can yarn install with non root user', async () => {
       'mkdir /tmp/test',
       'cd /tmp/test',
       'yarn add constructs',
-    ].join(' && ')]);
+    ].join(' && '),
+  ]);
   expect(proc.status).toEqual(0);
 });

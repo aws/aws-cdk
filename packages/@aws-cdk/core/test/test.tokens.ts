@@ -9,7 +9,7 @@ import { reEnableStackTraceCollection, restoreStackTraceColection } from './util
 
 export = {
   'resolve a plain old object should just return the object'(test: Test) {
-    const obj = { PlainOldObject: 123, Array: [ 1, 2, 3 ] };
+    const obj = { PlainOldObject: 123, Array: [1, 2, 3] };
     test.deepEqual(resolve(obj), obj);
     test.done();
   },
@@ -82,17 +82,17 @@ export = {
 
   'empty arrays or objects are kept'(test: Test) {
     test.deepEqual(resolve({ }), { });
-    test.deepEqual(resolve([ ]), [ ]);
+    test.deepEqual(resolve([]), []);
 
     const obj = {
       Prop1: 1234,
       Prop2: { },
-      Prop3: [ ],
+      Prop3: [],
       Prop4: 'hello',
       Prop5: {
         PropA: { },
         PropB: {
-          PropC: [ undefined, undefined ],
+          PropC: [undefined, undefined],
           PropD: 'Yoohoo',
         },
       },
@@ -101,12 +101,12 @@ export = {
     test.deepEqual(resolve(obj), {
       Prop1: 1234,
       Prop2: { },
-      Prop3: [ ],
+      Prop3: [],
       Prop4: 'hello',
       Prop5: {
         PropA: { },
         PropB: {
-          PropC: [ ],
+          PropC: [],
           PropD: 'Yoohoo',
         },
       },
@@ -116,8 +116,8 @@ export = {
   },
 
   'if an object has a "resolve" property that is not a function, it is not considered a token'(test: Test) {
-    test.deepEqual(resolve({ a_token: { resolve: () => 78787 }}), { a_token: 78787 });
-    test.deepEqual(resolve({ not_a_token: { resolve: 12 } }),   { not_a_token: { resolve: 12 } });
+    test.deepEqual(resolve({ a_token: { resolve: () => 78787 } }), { a_token: 78787 });
+    test.deepEqual(resolve({ not_a_token: { resolve: 12 } }), { not_a_token: { resolve: 12 } });
     test.done();
   },
 
@@ -137,7 +137,7 @@ export = {
   'Token can be used to create tokens that contain a constant value'(test: Test) {
     test.equal(resolve(new Intrinsic(12)), 12);
     test.equal(resolve(new Intrinsic('hello')), 'hello');
-    test.deepEqual(resolve(new Intrinsic([ 'hi', 'there' ])), [ 'hi', 'there' ]);
+    test.deepEqual(resolve(new Intrinsic(['hi', 'there'])), ['hi', 'there']);
     test.done();
   },
 
@@ -222,7 +222,7 @@ export = {
       const resolved = resolve(`my bucket is named ${bucketName}`);
 
       // THEN
-      const context = {MyBucket: 'TheName'};
+      const context = { MyBucket: 'TheName' };
       test.equal(evaluateCFN(resolved, context), 'my bucket is named TheName');
     }
 
@@ -343,7 +343,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        XYZ: { Ref: 'Other'},
+        XYZ: { Ref: 'Other' },
       });
 
       test.done();
@@ -390,7 +390,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        'Fn::Select': [1, { Ref: 'Other'}],
+        'Fn::Select': [1, { Ref: 'Other' }],
       });
 
       test.done();
@@ -405,7 +405,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        'Fn::Join': ['/', { Ref: 'Other'}],
+        'Fn::Join': ['/', { Ref: 'Other' }],
       });
 
       test.done();
@@ -420,7 +420,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        'Fn::Join': ['/', { Ref: 'Other'}],
+        'Fn::Join': ['/', { Ref: 'Other' }],
       });
 
       test.done();
@@ -527,7 +527,7 @@ export = {
       'a string',
       1234,
       { an_object: 1234 },
-      [ 1, 2, 3 ],
+      [1, 2, 3],
       false,
     ];
 
@@ -671,7 +671,7 @@ class Promise2 implements IResolvable {
 
 class Promise1 implements IResolvable {
   public readonly creationStack = [];
-  public p2 = [ new Promise2(), new Promise2() ];
+  public p2 = [new Promise2(), new Promise2()];
 
   public resolve() {
     return this.p2;

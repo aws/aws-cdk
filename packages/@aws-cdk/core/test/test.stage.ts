@@ -29,8 +29,8 @@ export = {
     });
 
     // WHEN
-    const innerAcct = new Stage(outer, 'Acct', { env: { account: 'tnuocca' }});
-    const innerRegion = new Stage(outer, 'Rgn', { env: { region: 'elsewhere' }});
+    const innerAcct = new Stage(outer, 'Acct', { env: { account: 'tnuocca' } });
+    const innerRegion = new Stage(outer, 'Rgn', { env: { region: 'elsewhere' } });
     const innerNeither = new Stage(outer, 'Neither');
 
     // THEN

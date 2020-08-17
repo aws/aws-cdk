@@ -306,8 +306,9 @@ export class TaskDefinition extends TaskDefinitionBase {
         ...(isFargateCompatible(props.compatibility) ? ['FARGATE'] : []),
       ],
       networkMode: this.renderNetworkMode(this.networkMode),
-      placementConstraints: Lazy.anyValue({ produce: () =>
-        !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
+      placementConstraints: Lazy.anyValue({
+        produce: () =>
+          !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
       }, { omitEmptyArray: true }),
       proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,

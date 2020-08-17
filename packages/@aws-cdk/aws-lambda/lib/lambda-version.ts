@@ -237,7 +237,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
     }
 
-    return {provisionedConcurrentExecutions: props.provisionedConcurrentExecutions};
+    return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };
   }
 }
 

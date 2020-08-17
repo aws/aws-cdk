@@ -310,7 +310,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     });
   }
 
-  protected validate(): string[]  {
+  protected validate(): string[] {
     const ret = super.validate();
 
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA

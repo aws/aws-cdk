@@ -554,7 +554,7 @@ export = {
     // THEN
     expect(stack2).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'FARGATE',
-      LoadBalancers: [{ContainerName: 'myContainer', ContainerPort: 80}],
+      LoadBalancers: [{ ContainerName: 'myContainer', ContainerPort: 80 }],
     }));
     expect(stack2).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
     expect(stack2).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
@@ -613,7 +613,7 @@ export = {
       cpu: 1024,
       memoryLimitMiB: 1024,
     });
-    const container = taskDef.addContainer('Container',  {
+    const container = taskDef.addContainer('Container', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       memoryLimitMiB: 1024,
     });
@@ -631,7 +631,7 @@ export = {
     // THEN
     expect(stack1).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'FARGATE',
-      LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}],
+      LoadBalancers: [{ ContainerName: 'Container', ContainerPort: 80 }],
     }));
     expect(stack1).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
     expect(stack1).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {

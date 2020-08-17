@@ -1,5 +1,5 @@
 import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
-import { AccessLogFormat, IAccessLogDestination} from './access-log';
+import { AccessLogFormat, IAccessLogDestination } from './access-log';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -305,7 +305,8 @@ export class Stage extends Resource implements IStage {
       const { httpMethod, resourcePath } = parseMethodOptionsPath(path);
 
       return {
-        httpMethod, resourcePath,
+        httpMethod,
+        resourcePath,
         cacheDataEncrypted: options.cacheDataEncrypted,
         cacheTtlInSeconds: options.cacheTtl && options.cacheTtl.toSeconds(),
         cachingEnabled: options.cachingEnabled,

@@ -6,7 +6,7 @@ import { findPackageJsons, ValidationRule } from '../lib';
 /* eslint-disable no-shadow */
 const argv = yargs
   .usage('$0 [directory]')
-  .option('fix', { type: 'boolean', alias: 'f', desc: 'Fix package.json in addition to reporting mistakes'})
+  .option('fix', { type: 'boolean', alias: 'f', desc: 'Fix package.json in addition to reporting mistakes' })
   .argv;
 
 // Our version of yargs doesn't support positional arguments yet

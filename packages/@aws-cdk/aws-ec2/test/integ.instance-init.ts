@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cdk from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
 const app = new cdk.App();

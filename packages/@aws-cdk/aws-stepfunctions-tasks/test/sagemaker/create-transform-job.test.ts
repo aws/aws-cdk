@@ -161,12 +161,12 @@ test('create complex transform job', () => {
       },
       TransformOutput: {
         S3OutputPath: 's3://outputbucket/prefix',
-        KmsKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+        KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
       },
       TransformResources: {
         InstanceCount: 1,
         InstanceType: 'ml.p3.2xlarge',
-        VolumeKmsKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+        VolumeKmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
       },
       Tags: [
         { Key: 'Project', Value: 'MyProject' },

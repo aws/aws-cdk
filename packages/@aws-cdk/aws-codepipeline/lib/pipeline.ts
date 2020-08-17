@@ -119,8 +119,8 @@ abstract class PipelineBase extends Resource implements IPipeline {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
-      source: [ 'aws.codepipeline' ],
-      resources: [ this.pipelineArn ],
+      source: ['aws.codepipeline'],
+      resources: [this.pipelineArn],
     });
     return rule;
   }
@@ -135,7 +135,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
   public onStateChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'CodePipeline Pipeline Execution State Change' ],
+      detailType: ['CodePipeline Pipeline Execution State Change'],
     });
     return rule;
   }
@@ -343,7 +343,7 @@ export class Pipeline extends PipelineBase {
    * @experimental
    */
   public get crossRegionSupport(): { [region: string]: CrossRegionSupport } {
-    const ret: { [region: string]: CrossRegionSupport }  = {};
+    const ret: { [region: string]: CrossRegionSupport } = {};
     Object.keys(this._crossRegionSupport).forEach((key) => {
       ret[key] = this._crossRegionSupport[key];
     });

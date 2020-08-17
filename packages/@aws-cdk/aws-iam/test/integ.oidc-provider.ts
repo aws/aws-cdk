@@ -11,7 +11,7 @@ new iam.OpenIdConnectProvider(stack, 'NoClientsNoThumbprint', {
 
 new iam.OpenIdConnectProvider(stack, 'Clients', {
   url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test3',
-  clientIds: [ 'foo', 'bar' ],
+  clientIds: ['foo', 'bar'],
 });
 
 new iam.OpenIdConnectProvider(stack, 'Thumbprints', {

@@ -140,7 +140,7 @@ export class Stage extends Construct {
     this.account = props.env?.account ?? this.parentStage?.account;
 
     this._assemblyBuilder = this.createBuilder(props.outdir);
-    this.stageName = [ this.parentStage?.stageName, id ].filter(x => x).join('-');
+    this.stageName = [this.parentStage?.stageName, id].filter(x => x).join('-');
   }
 
   /**

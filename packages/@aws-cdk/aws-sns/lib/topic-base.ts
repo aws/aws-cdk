@@ -92,7 +92,7 @@ export abstract class TopicBase extends Resource implements ITopic {
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new TopicPolicy(this, 'Policy', { topics: [ this ] });
+      this.policy = new TopicPolicy(this, 'Policy', { topics: [this] });
     }
 
     if (this.policy) {

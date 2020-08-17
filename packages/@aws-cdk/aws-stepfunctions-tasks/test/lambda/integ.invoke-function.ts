@@ -1,7 +1,7 @@
+import * as path from 'path';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import * as tasks from '../../lib';
 
 const app = new cdk.App();

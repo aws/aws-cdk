@@ -53,12 +53,12 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
     const uniqueId = crypto.createHash('md5').update(this.node.path).digest('hex');
     const version = props.version || KUBECTL_APP_VERSION;
 
-    this.stack.templateOptions.transforms = [ 'AWS::Serverless-2016-10-31' ]; // required for AWS::Serverless
+    this.stack.templateOptions.transforms = ['AWS::Serverless-2016-10-31']; // required for AWS::Serverless
     const resource = new CfnResource(this, 'Resource', {
       type: 'AWS::Serverless::Application',
       properties: {
         Location: {
-          ApplicationId: this.isChina() ? KUBECTL_APP_CN_ARN :  KUBECTL_APP_ARN,
+          ApplicationId: this.isChina() ? KUBECTL_APP_CN_ARN : KUBECTL_APP_ARN,
           SemanticVersion: version,
         },
         Parameters: {

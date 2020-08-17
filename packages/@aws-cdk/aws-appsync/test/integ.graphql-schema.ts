@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
 import * as db from '@aws-cdk/aws-dynamodb';
+import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 import * as ObjectType from './object-type-definitions';
 import * as ScalarType from './scalar-type-defintions';

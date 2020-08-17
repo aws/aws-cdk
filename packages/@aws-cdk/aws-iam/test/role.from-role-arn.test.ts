@@ -312,12 +312,9 @@ describe('IAM Role.fromRoleArn', () => {
           'Fn::Split': ['/',
             {
               'Fn::Select': [5,
-                { 'Fn::Split': [':', 'role-arn'] },
-              ],
-            },
-          ],
-        },
-      ],
+                { 'Fn::Split': [':', 'role-arn'] }],
+            }],
+        }],
     };
 
     describe('into an env-agnostic stack', () => {

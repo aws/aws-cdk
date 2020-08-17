@@ -1,6 +1,6 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import * as assets from '../lib';
 
 const app = new cdk.App();

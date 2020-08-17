@@ -38,7 +38,7 @@ export class UserPoolIdentityProviderFacebook extends UserPoolIdentityProviderBa
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderFacebookProps) {
     super(scope, id, props);
 
-    const scopes = props.scopes ?? [ 'public_profile' ];
+    const scopes = props.scopes ?? ['public_profile'];
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
       userPoolId: props.userPool.userPoolId,

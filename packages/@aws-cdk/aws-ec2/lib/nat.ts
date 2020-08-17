@@ -191,7 +191,7 @@ class NatGatewayProvider extends NatProvider {
   }
 
   public get configuredGateways(): GatewayConfig[] {
-    return this.gateways.values().map(x => ({az: x[0], gatewayId: x[1]}));
+    return this.gateways.values().map(x => ({ az: x[0], gatewayId: x[1] }));
   }
 }
 
@@ -230,7 +230,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
       const natInstance = new Instance(sub, 'NatInstance', {
         instanceType: this.props.instanceType,
         machineImage,
-        sourceDestCheck: false,  // Required for NAT
+        sourceDestCheck: false, // Required for NAT
         vpc: options.vpc,
         vpcSubnets: { subnets: [sub] },
         securityGroup: this._securityGroup,
@@ -268,7 +268,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
   }
 
   public get configuredGateways(): GatewayConfig[] {
-    return this.gateways.values().map(x => ({az: x[0], gatewayId: x[1].instanceId}));
+    return this.gateways.values().map(x => ({ az: x[0], gatewayId: x[1].instanceId }));
   }
 
   public configureSubnet(subnet: PrivateSubnet) {

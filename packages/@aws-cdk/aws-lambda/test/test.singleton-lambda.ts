@@ -38,7 +38,7 @@ export = {
             },
             ManagedPolicyArns: [
               {
-                'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' ] ],
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']],
               },
             ],
           },
@@ -50,11 +50,11 @@ export = {
               ZipFile: 'def hello(): pass',
             },
             Handler: 'index.hello',
-            Role: { 'Fn::GetAtt': [ 'SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235', 'Arn' ] },
+            Role: { 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235', 'Arn'] },
             Runtime: 'python2.7',
             Timeout: 300,
           },
-          DependsOn: [ 'SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235' ],
+          DependsOn: ['SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235'],
         },
       },
     }));
@@ -133,11 +133,11 @@ export = {
       Action: 'lambda:InvokeFunction',
       Principal: 'events.amazonaws.com',
     }));
-    test.deepEqual(statement.action, [ 'lambda:InvokeFunction' ]);
-    test.deepEqual(statement.principal, { Service: [ 'events.amazonaws.com' ] });
+    test.deepEqual(statement.action, ['lambda:InvokeFunction']);
+    test.deepEqual(statement.principal, { Service: ['events.amazonaws.com'] });
     test.deepEqual(statement.effect, 'Allow');
     test.deepEqual(statement.resource, [{
-      'Fn::GetAtt': [ 'SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn' ],
+      'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'],
     }]);
     test.done();
   },

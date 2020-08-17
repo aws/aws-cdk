@@ -32,7 +32,7 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
   const config = metric.toMetricConfig();
 
   const ret: any[] = [];
-  const options: any = {...config.renderingProperties};
+  const options: any = { ...config.renderingProperties };
 
   dispatchMetric(metric, {
     withStat(stat) {

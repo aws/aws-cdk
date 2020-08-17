@@ -52,7 +52,7 @@ test('Can create target groups with instance target', () => {
     Port: 80,
     Protocol: 'HTTP',
     Targets: [
-      { Id: {Ref: 'InstanceC1063A87'} },
+      { Id: { Ref: 'InstanceC1063A87' } },
     ],
     TargetType: 'instance',
   }));

@@ -450,7 +450,7 @@ export = {
     // WHEN
     resource.addCorsPreflight({
       allowOrigins: ['https://amazon.com'],
-      exposeHeaders: [ 'Authorization', 'Foo' ],
+      exposeHeaders: ['Authorization', 'Foo'],
     });
 
     // THEN
@@ -534,7 +534,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
-      ResourceId: { 'Fn::GetAtt': [ 'apiC8550315', 'RootResourceId' ] },
+      ResourceId: { 'Fn::GetAtt': ['apiC8550315', 'RootResourceId'] },
     }));
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
@@ -561,7 +561,7 @@ export = {
 
     api.root.addResource('AllowSpecific', {
       defaultCorsPreflightOptions: {
-        allowOrigins: [ 'http://specific.com' ],
+        allowOrigins: ['http://specific.com'],
       },
     });
 
@@ -641,7 +641,7 @@ export = {
     // WHEN
     test.throws(() => api.root.addResource('AllowAll', {
       defaultCorsPreflightOptions: {
-        allowOrigins: [ 'https://bla.com', '*', 'https://specific' ],
+        allowOrigins: ['https://bla.com', '*', 'https://specific'],
       },
     }), /Invalid "allowOrigins" - cannot mix "\*" with specific origins: https:\/\/bla\.com,\*,https:\/\/specific/);
 
@@ -692,7 +692,7 @@ export = {
 
     // WHEN
     const api = new apigw.RestApi(stack, 'API', {
-      defaultCorsPreflightOptions: { allowOrigins: [ '*' ] },
+      defaultCorsPreflightOptions: { allowOrigins: ['*'] },
     });
 
     api.root.addProxy();

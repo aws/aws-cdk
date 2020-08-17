@@ -78,7 +78,7 @@ describe('Lambda Data Source configuration', () => {
   });
 });
 
-describe('adding lambda data source from imported api',() => {
+describe('adding lambda data source from imported api', () => {
   let func: lambda.Function;
   beforeEach(() => {
     func = new lambda.Function(stack, 'func', {
@@ -98,8 +98,7 @@ describe('adding lambda data source from imported api',() => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
-      ApiId: { 'Fn::GetAtt': [ 'baseApiCDA4D43A', 'ApiId' ],
-      },
+      ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
   });
 
@@ -114,8 +113,7 @@ describe('adding lambda data source from imported api',() => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
-      ApiId: { 'Fn::GetAtt': [ 'baseApiCDA4D43A', 'ApiId' ],
-      },
+      ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
   });
 });

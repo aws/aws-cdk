@@ -61,7 +61,7 @@ describe('With bucket', () => {
       PolicyDocument: {
         Statement: [{
           Principal: {
-            CanonicalUser: { 'Fn::GetAtt': [ 'DistOrigin1S3Origin87D64058', 'S3CanonicalUserId' ] },
+            CanonicalUser: { 'Fn::GetAtt': ['DistOrigin1S3Origin87D64058', 'S3CanonicalUserId'] },
           },
         }],
       },

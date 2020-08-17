@@ -7,11 +7,13 @@ export function mockAws() {
 
   // Sane defaults which can be overridden
   mockS3.getBucketLocation = mockedApiResult({});
-  mockEcr.describeRepositories = mockedApiResult({ repositories: [
-    {
-      repositoryUri: '12345.amazonaws.com/repo',
-    },
-  ] });
+  mockEcr.describeRepositories = mockedApiResult({
+    repositories: [
+      {
+        repositoryUri: '12345.amazonaws.com/repo',
+      },
+    ],
+  });
 
   return {
     mockEcr,

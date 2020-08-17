@@ -196,7 +196,7 @@ export function validatorName(typeName: CodeName): CodeName {
 export function attributeDefinition(attributeName: string, spec: schema.Attribute): Attribute {
   const descriptiveName = attributeName.replace(/\./g, '');
   const suffixName = codemaker.toPascalCase(cloudFormationToScriptName(descriptiveName));
-  const propertyName = `attr${suffixName}`;      // "attrArn"
+  const propertyName = `attr${suffixName}`; // "attrArn"
 
   let attrType: string;
   if ('PrimitiveType' in spec && spec.PrimitiveType === 'String') {

@@ -247,7 +247,7 @@ export class Evaluation<T> {
       }
 
       // filter format is "code:scope" and both support "*" suffix to indicate startsWith
-      const [ codeFilter, scopeFilter ] = filter.split(':');
+      const [codeFilter, scopeFilter] = filter.split(':');
       return matchPattern(code, codeFilter) && matchPattern(scope, scopeFilter);
     }
 

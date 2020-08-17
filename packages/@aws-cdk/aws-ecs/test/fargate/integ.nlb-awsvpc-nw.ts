@@ -34,7 +34,7 @@ const scaling = service.autoScaleTaskCount({ maxCapacity: 10 });
 scaling.scaleOnCpuUtilization('ReasonableCpu', { targetUtilizationPercent: 10 });
 
 const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc, internetFacing: true });
-const listener = lb.addListener('PublicListener', { port: 80});
+const listener = lb.addListener('PublicListener', { port: 80 });
 
 service.registerLoadBalancerTargets(
   {
