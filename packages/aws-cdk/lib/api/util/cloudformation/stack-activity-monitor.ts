@@ -1,8 +1,8 @@
+import * as util from 'util';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
-import * as util from 'util';
 import { error, logLevel, LogLevel, setLogLevel } from '../../../logging';
 import { RewritableBlock } from '../display';
 
@@ -177,7 +177,7 @@ export class StackActivityMonitor {
         throw e;
       });
 
-    let events = output && output.StackEvents || [ ];
+    let events = output && output.StackEvents || [];
     let allNew = true;
 
     // merge events into the activity and dedup by event id

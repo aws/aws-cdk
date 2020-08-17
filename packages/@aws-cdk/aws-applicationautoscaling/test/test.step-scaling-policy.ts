@@ -74,7 +74,7 @@ export = {
         return steps.every(step => {
           return reportFalse(intervals.find(interval => {
             const acceptableLowerBounds = step.MetricIntervalLowerBound === -Infinity ? [undefined, 0] : [undefined, step.MetricIntervalLowerBound];
-            // tslint:disable-next-line:max-line-length
+            // eslint-disable-next-line max-len
             const acceptableUpperBounds = step.MetricIntervalUpperBound === Infinity ? [undefined, Infinity] : [undefined, step.MetricIntervalUpperBound];
 
             return (acceptableLowerBounds.includes(interval.lower) && acceptableUpperBounds.includes(interval.upper));
@@ -209,7 +209,7 @@ class ScalingStackTemplate {
     return this.template.Resources[id];
   }
 
-  private threshold(id: string): number | undefined  {
+  private threshold(id: string): number | undefined {
     return apply(this.resource(id), x => x.Properties.Threshold);
   }
 
@@ -259,7 +259,7 @@ function apply<T, U>(x: T | undefined, f: (x: T) => U | undefined): U | undefine
  */
 function reportFalse(cond: boolean, ...repr: any[]) {
   if (!cond) {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.error('PROPERTY FAILS ON:', ...repr);
   }
   return cond;

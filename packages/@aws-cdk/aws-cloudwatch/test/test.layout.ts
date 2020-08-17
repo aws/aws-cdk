@@ -54,7 +54,7 @@ export = {
 
       // WHEN
       const row = new Row(...widgets);
-      row.position(1000, 1000);  // Check that we correctly offset all inner widgets
+      row.position(1000, 1000); // Check that we correctly offset all inner widgets
 
       // THEN
       test.equal(21, row.width);

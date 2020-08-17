@@ -1,4 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -7,6 +8,7 @@ import { CfnResource, Construct, Duration, Fn, Lazy, Stack } from '@aws-cdk/core
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
+import { FileSystem } from './filesystem';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Version, VersionOptions } from './lambda-version';
@@ -190,6 +192,22 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly tracing?: Tracing;
 
   /**
+   * Enable profiling.
+   * @see https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html
+   *
+   * @default - No profiling.
+   */
+  readonly profiling?: boolean;
+
+  /**
+   * Profiling Group.
+   * @see https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html
+   *
+   * @default - A new profiling group will be created if `profiling` is set.
+   */
+  readonly profilingGroup?: IProfilingGroup;
+
+  /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
    * additional code during initialization in the form of layers. Layers are packages of libraries or other dependencies
    * that can be used by mulitple functions.
@@ -274,6 +292,22 @@ export interface FunctionProps extends FunctionOptions {
    * the handler.
    */
   readonly handler: string;
+
+  /**
+   * The filesystem configuration for the lambda function
+   *
+   * @default - will not mount any filesystem
+   */
+  readonly filesystem?: FileSystem;
+
+  /**
+   * Lambda Functions in a public subnet can NOT access the internet.
+   * Use this property to acknowledge this limitation and still place the function in a public subnet.
+   * @see https://stackoverflow.com/questions/52992085/why-cant-an-aws-lambda-function-inside-a-public-subnet-in-a-vpc-connect-to-the/52994841#52994841
+   *
+   * @default false
+   */
+  readonly allowPublicSubnet?: boolean;
 }
 
 /**
@@ -306,6 +340,20 @@ export class Function extends FunctionBase {
       lambda: this,
       ...this.currentVersionOptions,
     });
+
+    // override the version's logical ID with a lazy string which includes the
+    // hash of the function itself, so a new version resource is created when
+    // the function configuration changes.
+    const cfn = this._currentVersion.node.defaultChild as CfnResource;
+    const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
+
+    cfn.overrideLogicalId(Lazy.stringValue({
+      produce: _ => {
+        const hash = calculateFunctionHash(this);
+        const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+        return `${logicalId}${hash}`;
+      },
+    }));
 
     return this._currentVersion;
   }
@@ -477,8 +525,6 @@ export class Function extends FunctionBase {
       physicalName: props.functionName,
     });
 
-    this.environment = props.environment || {};
-
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -495,12 +541,48 @@ export class Function extends FunctionBase {
     });
     this.grantPrincipal = this.role;
 
+    // add additonal managed policies when necessary
+    if (props.filesystem) {
+      const config = props.filesystem.config;
+      if (config.policies) {
+        config.policies.forEach(p => {
+          this.role?.addToPolicy(p);
+        });
+      }
+    }
+
     for (const statement of (props.initialPolicy || [])) {
       this.role.addToPolicy(statement);
     }
 
     const code = props.code.bind(this);
     verifyCodeConfig(code, props.runtime);
+
+    let profilingGroupEnvironmentVariables = {};
+    if (props.profilingGroup && props.profiling !== false) {
+      this.validateProfilingEnvironmentVariables(props);
+      props.profilingGroup.grantPublish(this.role);
+      profilingGroupEnvironmentVariables = {
+        AWS_CODEGURU_PROFILER_GROUP_ARN: Stack.of(scope).formatArn({
+          service: 'codeguru-profiler',
+          resource: 'profilingGroup',
+          resourceName: props.profilingGroup.profilingGroupName,
+        }),
+        AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+      };
+    } else if (props.profiling) {
+      this.validateProfilingEnvironmentVariables(props);
+      const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup', {
+        computePlatform: ComputePlatform.AWS_LAMBDA,
+      });
+      profilingGroup.grantPublish(this.role);
+      profilingGroupEnvironmentVariables = {
+        AWS_CODEGURU_PROFILER_GROUP_ARN: profilingGroup.profilingGroupArn,
+        AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+      };
+    }
+
+    this.environment = { ...profilingGroupEnvironmentVariables, ...(props.environment || {}) };
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
 
@@ -570,6 +652,22 @@ export class Function extends FunctionBase {
     }
 
     this.currentVersionOptions = props.currentVersionOptions;
+
+    if (props.filesystem) {
+      const config = props.filesystem.config;
+      if (config.dependency) {
+        this.node.addDependency(...config.dependency);
+      }
+
+      resource.addPropertyOverride('FileSystemConfigs',
+        [
+          {
+            LocalMountPath: config.localMountPath,
+            Arn: config.arn,
+          },
+        ],
+      );
+    }
   }
 
   /**
@@ -666,23 +764,6 @@ export class Function extends FunctionBase {
     return this._logGroup;
   }
 
-  protected prepare() {
-    super.prepare();
-
-    // if we have a current version resource, override it's logical id
-    // so that it includes the hash of the function code and it's configuration.
-    if (this._currentVersion) {
-      const stack = Stack.of(this);
-      const cfn = this._currentVersion.node.defaultChild as CfnResource;
-      const originalLogicalId: string = stack.resolve(cfn.logicalId);
-
-      const hash = calculateFunctionHash(this);
-
-      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
-      cfn.overrideLogicalId(`${logicalId}${hash}`);
-    }
-  }
-
   private renderEnvironment() {
     if (!this.environment || Object.keys(this.environment).length === 0) {
       return undefined;
@@ -701,7 +782,7 @@ export class Function extends FunctionBase {
     // sort environment so the hash of the function used to create
     // `currentVersion` is not affected by key order (this is how lambda does
     // it).
-    const variables: { [key: string]: string } = { };
+    const variables: { [key: string]: string } = {};
     for (const key of Object.keys(this.environment).sort()) {
       variables[key] = this.environment[key];
     }
@@ -745,15 +826,19 @@ export class Function extends FunctionBase {
 
     this._connections = new ec2.Connections({ securityGroups });
 
-    // Pick subnets, make sure they're not Public. Routing through an IGW
-    // won't work because the ENIs don't get a Public IP.
-    // Why are we not simply forcing vpcSubnets? Because you might still be choosing
-    // Isolated networks or selecting among 2 sets of Private subnets by name.
+    if (props.filesystem) {
+      if (props.filesystem.config.connections) {
+        props.filesystem.config.connections.allowDefaultPortFrom(this);
+      }
+    }
+
+    const allowPublicSubnet = props.allowPublicSubnet ?? false;
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
     for (const subnetId of subnetIds) {
-      if (publicSubnetIds.has(subnetId)) {
-        throw new Error('Not possible to place Lambda Functions in a Public subnet');
+      if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
+        throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
+          'If you are aware of this limitation and would still like to place the function int a public subnet, set `allowPublicSubnet` to true');
       }
     }
 
@@ -811,6 +896,12 @@ export class Function extends FunctionBase {
     return {
       mode: props.tracing,
     };
+  }
+
+  private validateProfilingEnvironmentVariables(props: FunctionProps) {
+    if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
+      throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
+    }
   }
 }
 

@@ -15,7 +15,7 @@
 
 ## Introduction
 
-AWS Global Accelerator is a service that improves the availability and performance of your applications with local or global users. It provides static IP addresses that act as a fixed entry point to your application endpoints in a single or multiple AWS Regions, such as your Application Load Balancers, Network Load Balancers or Amazon EC2 instances.
+AWS Global Accelerator (AGA) is a service that improves the availability and performance of your applications with local or global users. It provides static IP addresses that act as a fixed entry point to your application endpoints in a single or multiple AWS Regions, such as your Application Load Balancers, Network Load Balancers or Amazon EC2 instances.
 
 This module supports features under [AWS Global Accelerator](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_GlobalAccelerator.html) that allows users set up resources using the `@aws-cdk/aws-globalaccelerator` module. 
 
@@ -92,4 +92,39 @@ endpointGroup.addLoadBalancer('NlbEndpoint', nlb);
 endpointGroup.addElasticIpAddress('EipEndpoint', eip);
 endpointGroup.addEc2Instance('InstanceEndpoint', instances[0]);
 endpointGroup.addEndpoint('InstanceEndpoint2', instances[1].instanceId);
+```
+
+## Accelerator Security Groups
+
+When using certain AGA features (client IP address preservation), AGA creates elastic network interfaces (ENI) in your AWS account which are
+associated with a Security Group, and which are reused for all AGAs associated with that VPC. Per the 
+[best practices](https://docs.aws.amazon.com/global-accelerator/latest/dg/best-practices-aga.html) page, AGA creates a specific security group 
+called `GlobalAccelerator` for each VPC it has an ENI in. You can use the security group created by AGA as a source group in other security 
+groups, such as those for EC2 instances or Elastic Load Balancers, in order to implement least-privilege security group rules.
+
+CloudFormation doesn't support referencing the security group created by AGA. CDK has a library that enables you to reference the AGA security group
+for a VPC using an AwsCustomResource.
+
+```
+const vpc = new Vpc(stack, 'VPC', {});
+const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc, internetFacing: false  });
+const accelerator = new ga.Accelerator(stack, 'Accelerator');
+const listener = new ga.Listener(stack, 'Listener', {
+  accelerator,
+  portRanges: [
+    {
+      fromPort: 443,
+      toPort: 443,
+    },
+  ],
+});
+const endpointGroup = new ga.EndpointGroup(stack, 'Group', { listener });
+endpointGroup.addLoadBalancer('AlbEndpoint', alb);
+
+// Remember that there is only one AGA security group per VPC.
+// This code will fail at CloudFormation deployment time if you do not have an AGA
+const agaSg = ga.AcceleratorSecurityGroup.fromVpc(stack, 'GlobalAcceleratorSG', vpc);
+
+// Allow connections from the AGA to the ALB
+alb.connections.allowFrom(agaSg, Port.tcp(443));
 ```

@@ -1,13 +1,13 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Lazy, Stack } from '@aws-cdk/core';
-import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import { DockerImageAsset } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'test instantiating Asset Image'(test: Test) {

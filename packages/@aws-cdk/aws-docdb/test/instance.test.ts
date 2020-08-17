@@ -24,6 +24,34 @@ describe('DatabaseInstance', () => {
       Properties: {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
         DBInstanceClass: EXPECTED_SYNTH_INSTANCE_TYPE,
+        AutoMinorVersionUpgrade: true,
+      },
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition));
+  });
+
+  test.each([
+    [undefined, true],
+    [true, true],
+    [false, false],
+  ])('check that autoMinorVersionUpdate works: %p', (given: boolean | undefined, expected: boolean) => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new DatabaseInstance(stack, 'Instance', {
+      cluster: stack.cluster,
+      instanceClass: SINGLE_INSTANCE_TYPE,
+      autoMinorVersionUpgrade: given,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::DocDB::DBInstance', {
+      Properties: {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: EXPECTED_SYNTH_INSTANCE_TYPE,
+        AutoMinorVersionUpgrade: expected,
       },
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
@@ -52,9 +80,9 @@ describe('DatabaseInstance', () => {
         'Fn::Join': [
           '',
           [
-            { 'Fn::GetAtt': [ 'InstanceC1063A87', 'Endpoint' ] },
+            { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint'] },
             ':',
-            { 'Fn::GetAtt': [ 'InstanceC1063A87', 'Port' ] },
+            { 'Fn::GetAtt': ['InstanceC1063A87', 'Port'] },
           ],
         ],
       },

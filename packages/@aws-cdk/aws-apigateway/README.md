@@ -38,6 +38,7 @@ running on AWS Lambda, or any web application.
 - [Private Integrations](#private-integrations)
 - [Gateway Response](#gateway-response)
 - [OpenAPI Definition](#openapi-definition)
+  - [Endpoint configuration](#endpoint-configuration)
 - [APIGateway v2](#apigateway-v2)
 
 ## Defining APIs
@@ -200,6 +201,12 @@ const key = api.addApiKey('ApiKey', {
 });
 ```
 
+Existing API keys can also be imported into a CDK app using its id.
+
+```ts
+const importedKey = ApiKey.fromApiKeyId(this, 'imported-key', '<api-key-id>');
+```
+
 In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
 This construct lets you specify rate limiting properties which should be applied only to the api key being created.
 The API key created has the specified rate limits, such as quota and throttles, applied.
@@ -275,7 +282,7 @@ const integration = new LambdaIntegration(hello, {
       // We will set the response status code to 200
       statusCode: "200",
       responseTemplates: {
-        // This template takes the "message" result from the Lambda function, adn embeds it in a JSON response
+        // This template takes the "message" result from the Lambda function, and embeds it in a JSON response
         // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
         'application/json': JSON.stringify({ state: 'ok', greeting: '$util.escapeJavaScript($input.body)' })
       },
@@ -986,10 +993,28 @@ to configure these.
 There are a number of limitations in using OpenAPI definitions in API Gateway. Read the [Amazon API Gateway important
 notes for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-rest-apis)
 for more details.
-
+ 
 **Note:** When starting off with an OpenAPI definition using `SpecRestApi`, it is not possible to configure some
 properties that can be configured directly in the OpenAPI specification file. This is to prevent people duplication
 of these properties and potential confusion.
+
+### Endpoint configuration
+
+By default, `SpecRestApi` will create an edge optimized endpoint.
+
+This can be modified as shown below:
+
+```ts
+const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
+  // ...
+  endpointTypes: [apigateway.EndpointType.PRIVATE]
+});
+```
+
+**Note:** For private endpoints you will still need to provide the 
+[`x-amazon-apigateway-policy`](https://docs.aws.amazon.com/apigateway/latest/developerguide/openapi-extensions-policy.html) and 
+[`x-amazon-apigateway-endpoint-configuration`](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-endpoint-configuration.html) 
+in your openApi file. 
 
 ## APIGateway v2
 

@@ -132,12 +132,10 @@ export class OAuthScope {
     return new OAuthScope(name);
   }
 
-  // tslint:disable:max-line-length
   /**
    * The name of this scope as recognized by CloudFormation.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-allowedoauthscopes
    */
-  // tslint:enable:max-line-length
   public readonly scopeName: string;
 
   private constructor(scopeName: string) {
@@ -303,7 +301,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     let callbackUrls: string[] | undefined = props.oAuth?.callbackUrls;
     if (this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) {
       if (callbackUrls === undefined) {
-        callbackUrls = [ 'https://example.com' ];
+        callbackUrls = ['https://example.com'];
       } else if (callbackUrls.length === 0) {
         throw new Error('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.');
       }
@@ -367,10 +365,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureOAuthScopes(oAuth?: OAuthSettings): string[] {
-    const scopes = oAuth?.scopes ?? [ OAuthScope.PROFILE, OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID,
-      OAuthScope.COGNITO_ADMIN ];
+    const scopes = oAuth?.scopes ?? [OAuthScope.PROFILE, OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID,
+      OAuthScope.COGNITO_ADMIN];
     const scopeNames = new Set(scopes.map((x) => x.scopeName));
-    const autoOpenIdScopes = [ OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.PROFILE ];
+    const autoOpenIdScopes = [OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.PROFILE];
     if (autoOpenIdScopes.reduce((agg, s) => agg || scopeNames.has(s.scopeName), false)) {
       scopeNames.add(OAuthScope.OPENID.scopeName);
     }
