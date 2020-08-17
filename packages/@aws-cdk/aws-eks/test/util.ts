@@ -13,7 +13,7 @@ export function testFixture() {
 
 export function testFixtureNoVpc() {
   const app = new App();
-  const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1' }});
+  const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1' } });
   return { stack, app };
 }
 

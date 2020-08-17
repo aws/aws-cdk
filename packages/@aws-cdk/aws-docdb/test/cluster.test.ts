@@ -30,7 +30,7 @@ describe('DatabaseCluster', () => {
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
-        VpcSecurityGroupIds: [ {'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId']}],
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         StorageEncrypted: true,
       },
       DeletionPolicy: 'Retain',
@@ -74,7 +74,7 @@ describe('DatabaseCluster', () => {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
-      VpcSecurityGroupIds: [ {'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId']}],
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
     }));
   });
 
@@ -175,7 +175,7 @@ describe('DatabaseCluster', () => {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
-      VpcSecurityGroupIds: [ 'SecurityGroupId12345' ],
+      VpcSecurityGroupIds: ['SecurityGroupId12345'],
     }));
   });
 
@@ -606,14 +606,14 @@ describe('DatabaseCluster', () => {
           ],
         },
         vpcSecurityGroupIds: {
-          'Fn::GetAtt': [ 'DatabaseRotationSingleUserSecurityGroupAC6E0E73', 'GroupId' ],
+          'Fn::GetAtt': ['DatabaseRotationSingleUserSecurityGroupAC6E0E73', 'GroupId'],
         },
       },
     }));
     expectCDK(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
       SecretId: { Ref: 'DatabaseSecretAttachmentE5D1B020' },
       RotationLambdaARN: {
-        'Fn::GetAtt': [ 'DatabaseRotationSingleUser65F55654', 'Outputs.RotationLambdaARN' ],
+        'Fn::GetAtt': ['DatabaseRotationSingleUser65F55654', 'Outputs.RotationLambdaARN'],
       },
       RotationRules: {
         AutomaticallyAfterDays: 5,
@@ -724,7 +724,7 @@ describe('DatabaseCluster', () => {
           ],
         },
         vpcSecurityGroupIds: {
-          'Fn::GetAtt': [ 'DatabaseRotationSecurityGroup17736B63', 'GroupId' ],
+          'Fn::GetAtt': ['DatabaseRotationSecurityGroup17736B63', 'GroupId'],
         },
         masterSecretArn: { Ref: 'DatabaseSecretAttachmentE5D1B020' },
       },
@@ -732,7 +732,7 @@ describe('DatabaseCluster', () => {
     expectCDK(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
       SecretId: { Ref: 'UserSecret0463E4F5' },
       RotationLambdaARN: {
-        'Fn::GetAtt': [ 'DatabaseRotation6B6E1D86', 'Outputs.RotationLambdaARN' ],
+        'Fn::GetAtt': ['DatabaseRotation6B6E1D86', 'Outputs.RotationLambdaARN'],
       },
       RotationRules: {
         AutomaticallyAfterDays: 5,
@@ -774,7 +774,7 @@ describe('DatabaseCluster', () => {
 });
 
 function testStack() {
-  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' }});
+  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }
