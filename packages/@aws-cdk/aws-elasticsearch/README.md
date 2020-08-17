@@ -22,17 +22,7 @@ import * as es from '@aws-cdk/aws-elasticsearch';
 
 const domain = new es.Domain(this, 'Domain', {
     version: es.ElasticsearchVersion.V7_1,
-    clusterConfig: {
-        masterNodes: 3,
-        masterNodeInstanceType: 'c5.large.elasticsearch',
-        dataNodes: 3,
-        dataNodeInstanceType: 'r5.large.elasticsearch',
-    },
-    ebsOptions: {
-        volumeSize: 100,
-        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
-    },
-    logPublishingOptions: {
+    logging: {
         slowSearchLogEnabled: true,
         appLogEnabled: true
     },
@@ -75,12 +65,6 @@ The domain can also be created with encryption enabled:
 ```ts
 const domain = new es.Domain(this, 'Domain', {
     version: es.ElasticsearchVersion.V7_4,
-    clusterConfig: {
-        masterNodes: 3,
-        masterNodeInstanceType: 'c5.large.elasticsearch',
-        dataNodes: 3,
-        dataNodeInstanceType: 'r5.large.elasticsearch',
-    },
     ebs: {
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,

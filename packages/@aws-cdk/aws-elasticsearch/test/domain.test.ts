@@ -17,13 +17,6 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-const defaultClusterConfig = {
-  masterNodes: 3,
-  masterNodeInstanceType: 'i3.large.elasticsearch',
-  dataNodes: 3,
-  dataNodeInstanceType: 'r3.large.elasticsearch',
-};
-
 const readActions = ['ESHttpGet', 'ESHttpHead'];
 const writeActions = ['ESHttpDelete', 'ESHttpPost', 'ESHttpPut', 'ESHttpPatch'];
 const readWriteActions = [
@@ -32,24 +25,21 @@ const readWriteActions = [
 ];
 
 test('minimal example renders correctly', () => {
-  new Domain(stack, 'Domain', {
-    version: ElasticsearchVersion.V7_1,
-    clusterConfig: defaultClusterConfig,
-  });
+  new Domain(stack, 'Domain', { version: ElasticsearchVersion.V7_1 });
 
   expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
     CognitoOptions: {
       Enabled: false,
     },
     EBSOptions: {
-      EBSEnabled: false,
+      EBSEnabled: true,
+      VolumeSize: 10,
+      VolumeType: 'gp2',
     },
     ElasticsearchClusterConfig: {
-      DedicatedMasterCount: 3,
-      DedicatedMasterEnabled: true,
-      DedicatedMasterType: 'i3.large.elasticsearch',
-      InstanceCount: 3,
-      InstanceType: 'r3.large.elasticsearch',
+      DedicatedMasterEnabled: false,
+      InstanceCount: 1,
+      InstanceType: 'r5.large.elasticsearch',
       ZoneAwarenessEnabled: false,
     },
     ElasticsearchVersion: '7.1',
@@ -78,7 +68,6 @@ describe('log groups', () => {
   test('slowSearchLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
-      clusterConfig: defaultClusterConfig,
       logging: {
         slowSearchLogEnabled: true,
       },
@@ -108,7 +97,6 @@ describe('log groups', () => {
   test('slowIndexLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
-      clusterConfig: defaultClusterConfig,
       logging: {
         slowIndexLogEnabled: true,
       },
@@ -138,7 +126,6 @@ describe('log groups', () => {
   test('appLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
-      clusterConfig: defaultClusterConfig,
       logging: {
         appLogEnabled: true,
       },
@@ -444,8 +431,8 @@ describe('custom error responses', () => {
 
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
-      clusterConfig: {
-        ...defaultClusterConfig,
+      zoneAwareness: {
+        enabled: true,
         availabilityZoneCount: 2,
       },
       vpcOptions: {
@@ -465,15 +452,13 @@ describe('custom error responses', () => {
     const error = /instance types must end with ".elasticsearch"/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
-      clusterConfig: {
-        ...defaultClusterConfig,
+      capacity: {
         masterNodeInstanceType: 'c5.large',
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain2', {
       version: ElasticsearchVersion.V7_4,
-      clusterConfig: {
-        ...defaultClusterConfig,
+      capacity: {
         dataNodeInstanceType: 'c5.2xlarge',
       },
     })).toThrow(error);
@@ -481,7 +466,6 @@ describe('custom error responses', () => {
 
   test('error when elasticsearchVersion is unsupported/unknown', () => {
     expect(() => new Domain(stack, 'Domain1', {
-      clusterConfig: defaultClusterConfig,
       version: ElasticsearchVersion.of('5.4'),
     })).toThrow(/Unknown Elasticsearch version: 5\.4/);
   });
@@ -490,21 +474,18 @@ describe('custom error responses', () => {
     const error = /logs publishing requires Elasticsearch version 5.1 or later/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V2_3,
-      clusterConfig: defaultClusterConfig,
       logging: {
         appLogEnabled: true,
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain2', {
       version: ElasticsearchVersion.V1_5,
-      clusterConfig: defaultClusterConfig,
       logging: {
         slowSearchLogEnabled: true,
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain3', {
       version: ElasticsearchVersion.V1_5,
-      clusterConfig: defaultClusterConfig,
       logging: {
         slowIndexLogEnabled: true,
       },
@@ -514,7 +495,6 @@ describe('custom error responses', () => {
   test('error when encryption at rest is enabled for elasticsearch version < 5.1', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V2_3,
-      clusterConfig: defaultClusterConfig,
       encryptionAtRest: {
         enabled: true,
       },
@@ -525,7 +505,6 @@ describe('custom error responses', () => {
     const user = new iam.User(stack, 'user');
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V2_3,
-      clusterConfig: defaultClusterConfig,
       cognitoKibanaAuth: {
         identityPoolId: 'test-identity-pool-id',
         role: new iam.Role(stack, 'Role', { assumedBy: user }),
@@ -538,29 +517,25 @@ describe('custom error responses', () => {
     const error = /C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V2_3,
-      clusterConfig: {
-        ...defaultClusterConfig,
+      capacity: {
         masterNodeInstanceType: 'c5.medium.elasticsearch',
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain2', {
       version: ElasticsearchVersion.V1_5,
-      clusterConfig: {
-        ...defaultClusterConfig,
+      capacity: {
         dataNodeInstanceType: 'i3.2xlarge.elasticsearch',
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain3', {
       version: ElasticsearchVersion.V1_5,
-      clusterConfig: {
-        ...defaultClusterConfig,
+      capacity: {
         dataNodeInstanceType: 'm5.2xlarge.elasticsearch',
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain4', {
       version: ElasticsearchVersion.V1_5,
-      clusterConfig: {
-        ...defaultClusterConfig,
+      capacity: {
         masterNodeInstanceType: 'r5.2xlarge.elasticsearch',
       },
     })).toThrow(error);
@@ -569,7 +544,6 @@ describe('custom error responses', () => {
   test('error when node to node encryption is enabled for elasticsearch version < 6.0', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V5_6,
-      clusterConfig: defaultClusterConfig,
       nodeToNodeEncryption: true,
     })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later/);
   });
@@ -577,9 +551,8 @@ describe('custom error responses', () => {
   test('error when i3 instance types are specified with EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
-      clusterConfig: {
-        ...defaultClusterConfig,
-        masterNodeInstanceType: 'i3.2xlarge.elasticsearch',
+      capacity: {
+        dataNodeInstanceType: 'i3.2xlarge.elasticsearch',
       },
       ebs: {
         volumeSize: 100,
@@ -592,8 +565,7 @@ describe('custom error responses', () => {
     const error = /M3, R3, and T2 instance types do not support encryption of data at rest/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
-      clusterConfig: {
-        ...defaultClusterConfig,
+      capacity: {
         masterNodeInstanceType: 'm3.2xlarge.elasticsearch',
       },
       encryptionAtRest: {
@@ -602,8 +574,7 @@ describe('custom error responses', () => {
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain2', {
       version: ElasticsearchVersion.V7_4,
-      clusterConfig: {
-        ...defaultClusterConfig,
+      capacity: {
         dataNodeInstanceType: 'r3.2xlarge.elasticsearch',
       },
       encryptionAtRest: {
@@ -612,8 +583,7 @@ describe('custom error responses', () => {
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain3', {
       version: ElasticsearchVersion.V7_4,
-      clusterConfig: {
-        ...defaultClusterConfig,
+      capacity: {
         masterNodeInstanceType: 't2.2xlarge.elasticsearch',
       },
       encryptionAtRest: {
@@ -625,8 +595,7 @@ describe('custom error responses', () => {
   test('error when t2.micro is specified with elasticsearch version > 2.3', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V6_7,
-      clusterConfig: {
-        ...defaultClusterConfig,
+      capacity: {
         masterNodeInstanceType: 't2.micro.elasticsearch',
       },
     })).toThrow(/t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3/);
@@ -635,8 +604,10 @@ describe('custom error responses', () => {
   test('error when any instance type other than R3 and I3 are specified without EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
-      clusterConfig: {
-        ...defaultClusterConfig,
+      ebs: {
+        enabled: false,
+      },
+      capacity: {
         masterNodeInstanceType: 'm5.large.elasticsearch',
       },
     })).toThrow(/EBS volumes are required for all instance types except R3 and I3/);
@@ -645,10 +616,7 @@ describe('custom error responses', () => {
 });
 
 test('can specify future version', () => {
-  new Domain(stack, 'Domain', {
-    version: ElasticsearchVersion.of('8.2'),
-    clusterConfig: defaultClusterConfig,
-  });
+  new Domain(stack, 'Domain', { version: ElasticsearchVersion.of('8.2') });
 
   expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
     ElasticsearchVersion: '8.2',
@@ -662,10 +630,7 @@ function testGrant(
   appliesToDomainRoot: Boolean = true,
   paths: string[] = ['/*'],
 ) {
-  const domain = new Domain(stack, 'Domain', {
-    version: ElasticsearchVersion.V7_4,
-    clusterConfig: defaultClusterConfig,
-  });
+  const domain = new Domain(stack, 'Domain', { version: ElasticsearchVersion.V7_4 });
   const user = new iam.User(stack, 'user');
 
   invocation(user, domain);
@@ -720,10 +685,7 @@ function testMetric(
   statistic: string = Statistic.SUM,
   period: Duration = Duration.minutes(5),
 ) {
-  const domain = new Domain(stack, 'Domain', {
-    version: ElasticsearchVersion.V7_4,
-    clusterConfig: defaultClusterConfig,
-  });
+  const domain = new Domain(stack, 'Domain', { version: ElasticsearchVersion.V7_4 });
 
   const metric = invocation(domain);
 

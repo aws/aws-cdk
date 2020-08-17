@@ -77,14 +77,16 @@ export class ElasticsearchVersion {
 }
 
 /**
- * Configures the makeup of the cluster such as number of nodes and instance
- * type.
+ * Configures the capacity of the cluster such as the instance type and the
+ * number of instances.
  */
-export interface ClusterConfig {
+export interface CapacityConfig {
   /**
-   * The number of instances to use for the master node
+   * The number of instances to use for the master node.
+   *
+   * @default - no dedicated master nodes
    */
-  readonly masterNodes: number;
+  readonly masterNodes?: number;
 
   /**
    * The hardware configuration of the computer that hosts the dedicated master
@@ -92,31 +94,53 @@ export interface ClusterConfig {
    * Instance Types]
    * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-supported-instance-types.html)
    * in the Amazon Elasticsearch Service Developer Guide.
+   *
+   * @default - r5.large.elasticsearch
    */
-  readonly masterNodeInstanceType: string;
+  readonly masterNodeInstanceType?: string;
 
   /**
-   * The number of data nodes to use in the Amazon ES domain.
+   * The number of data nodes (instances) to use in the Amazon ES domain.
+   *
+   * @default - 1
    */
-  readonly dataNodes: number;
+  readonly dataNodes?: number;
 
   /**
    * The instance type for your data nodes, such as
    * `m3.medium.elasticsearch`. For valid values, see [Supported Instance
    * Types](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-supported-instance-types.html)
    * in the Amazon Elasticsearch Service Developer Guide.
+   *
+   * @default - r5.large.elasticsearch
    */
-  readonly dataNodeInstanceType: string;
+  readonly dataNodeInstanceType?: string;
+}
 
+/**
+ * Specifies zone awareness configuration options.
+ */
+export interface ZoneAwarenessConfig {
   /**
-   * The number of AZs that you want the domain to use. When you enable zone
-   * awareness, Amazon ES allocates the nodes and replica index shards that
-   * belong to a cluster across the specified number of Availability Zones (AZs)
+   * Indicates whether to enable zone awareness for the Amazon ES domain.
+   * When you enable zone awareness, Amazon ES allocates the nodes and replica
+   * index shards that belong to a cluster across two Availability Zones (AZs)
    * in the same region to prevent data loss and minimize downtime in the event
    * of node or data center failure. Don't enable zone awareness if your cluster
-   * has no replica index shards or is a single-node cluster.
+   * has no replica index shards or is a single-node cluster. For more information,
+   * see [Configuring a Multi-AZ Domain]
+   * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-managedomains-multiaz)
+   * in the Amazon Elasticsearch Service Developer Guide.
    *
-   * @default - Zone awareness is not enabled.
+   * @default - false
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * If you enabled multiple Availability Zones (AZs), the number of AZs that you
+   * want the domain to use. Valid values are 2 and 3.
+   *
+   * @default - 2 if zone awareness is enabled.
    */
   readonly availabilityZoneCount?: number;
 }
@@ -129,6 +153,14 @@ export interface ClusterConfig {
  * in the Amazon Elasticsearch Service Developer Guide.
  */
 export interface EbsOptions {
+  /**
+   * Specifies whether Amazon EBS volumes are attached to data nodes in the
+   * Amazon ES domain.
+   *
+   * @default - true
+   */
+  readonly enabled?: boolean;
+
   /**
    * The number of I/O operations per second (IOPS) that the volume
    * supports. This property applies only to the Provisioned IOPS (SSD) EBS
@@ -144,17 +176,21 @@ export interface EbsOptions {
    * instance type to which it is attached.  For more information, see
    * [Configuring EBS-based Storage]
    * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-ebs)
-   * in the Amazon Elasticsearch Service Developer Guide
+   * in the Amazon Elasticsearch Service Developer Guide.
+   *
+   * @default 10
    */
-  readonly volumeSize: number;
+  readonly volumeSize?: number;
 
   /**
    * The EBS volume type to use with the Amazon ES domain, such as standard, gp2, io1, st1, or sc1.
    * For more information, see[Configuring EBS-based Storage]
    * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-ebs)
-   * in the Amazon Elasticsearch Service Developer Guide
+   * in the Amazon Elasticsearch Service Developer Guide.
+   *
+   * @default gp2
    */
-  readonly volumeType: ec2.EbsDeviceVolumeType;
+  readonly volumeType?: ec2.EbsDeviceVolumeType;
 }
 
 /**
@@ -313,15 +349,23 @@ export interface DomainProps {
    * The configurations of Amazon Elastic Block Store (Amazon EBS) volumes that
    * are attached to data nodes in the Amazon ES domain.
    *
-   * @default - No EBS volumes attached.
+   * @default - 10 GiB General Purpose (SSD) volumes per node.
    */
   readonly ebs?: EbsOptions;
 
   /**
-   * The cluster configuration for the Amazon ES domain.
+   * The cluster capacity configuration for the Amazon ES domain.
    *
+   * @default - 1 r5.large.elasticsearch data node; no dedicated master nodes.
    */
-  readonly clusterConfig: ClusterConfig;
+  readonly capacity?: CapacityConfig;
+
+  /**
+   * The cluster zone awareness configuration for the Amazon ES domain.
+   *
+   * @default - no zone awareness (1 AZ)
+   */
+  readonly zoneAwareness?: ZoneAwarenessConfig;
 
   /**
    * The Elasticsearch version that your domain will leverage.
@@ -1036,14 +1080,23 @@ export class Domain extends DomainBase implements IDomain {
     });
 
     // If VPC options are supplied ensure that the number of subnets matches the number AZ
-    if (props.vpcOptions?.subnets.map((subnet) => subnet.availabilityZone).length != props?.clusterConfig.availabilityZoneCount) {
+    if (props.vpcOptions?.subnets.map((subnet) => subnet.availabilityZone).length != props?.zoneAwareness?.availabilityZoneCount) {
       throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
     };
 
-    const masterInstanceType = props.clusterConfig.masterNodeInstanceType.toLowerCase();
-    const dataInstanceType = props.clusterConfig.dataNodeInstanceType.toLowerCase();
+    const defaultInstanceType = 'r5.large.elasticsearch';
 
-    if ([masterInstanceType, dataInstanceType].some(instanceType => !instanceType.endsWith('.elasticsearch'))) {
+    const dedicatedMasterType = props.capacity?.masterNodeInstanceType?.toLowerCase() ?? defaultInstanceType;
+    const dedicatedMasterCount = props.capacity?.masterNodes ?? 0;
+    const dedicatedMasterEnabled = dedicatedMasterCount > 0;
+
+    const instanceType = props.capacity?.dataNodeInstanceType?.toLowerCase() ?? defaultInstanceType;
+    const instanceCount = props.capacity?.dataNodes ?? 1;
+
+    const zoneAwarenessEnabled = props.zoneAwareness?.enabled ?? false;
+    const availabilityZoneCount = props.zoneAwareness?.availabilityZoneCount ?? 2;
+
+    if ([dedicatedMasterType, instanceType].some(t => !t.endsWith('.elasticsearch'))) {
       throw new Error('Master and data node instance types must end with ".elasticsearch".');
     }
 
@@ -1082,10 +1135,12 @@ export class Domain extends DomainBase implements IDomain {
     }
 
     const encryptionAtRestEnabled = props.encryptionAtRest?.enabled ?? (props.encryptionAtRest?.kmsKey != null);
-    const ebsEnabled = props.ebs != null;
+    const volumeSize = props.ebs?.volumeSize ?? 10;
+    const volumeType = props.ebs?.volumeType ?? ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
+    const ebsEnabled = props.ebs?.enabled ?? true;
 
-    function isInstanceType(instanceType: string): Boolean {
-      return masterInstanceType.startsWith(instanceType) || dataInstanceType.startsWith(instanceType);
+    function isInstanceType(t: string): Boolean {
+      return dedicatedMasterType.startsWith(t) || instanceType.startsWith(t);
     };
 
     function isSomeInstanceType(...instanceTypes: string[]): Boolean {
@@ -1093,8 +1148,8 @@ export class Domain extends DomainBase implements IDomain {
     };
 
     function isEveryInstanceType(...instanceTypes: string[]): Boolean {
-      return instanceTypes.some(t => masterInstanceType.startsWith(t))
-        && instanceTypes.some(t => dataInstanceType.startsWith(t));
+      return instanceTypes.some(t => dedicatedMasterType.startsWith(t))
+        && instanceTypes.some(t => instanceType.startsWith(t));
     };
 
     // Validate feature support for the given Elasticsearch version, per
@@ -1204,22 +1259,22 @@ export class Domain extends DomainBase implements IDomain {
       domainName: this.physicalName,
       elasticsearchVersion,
       elasticsearchClusterConfig: {
-        dedicatedMasterEnabled: props.clusterConfig.masterNodes != null,
-        dedicatedMasterCount: props.clusterConfig.masterNodes,
-        dedicatedMasterType: props.clusterConfig.masterNodeInstanceType,
-        instanceCount: props.clusterConfig.dataNodes,
-        instanceType: props.clusterConfig.dataNodeInstanceType,
-        zoneAwarenessEnabled: props.clusterConfig.availabilityZoneCount != null,
+        dedicatedMasterEnabled,
+        dedicatedMasterCount: dedicatedMasterEnabled ? dedicatedMasterCount : undefined,
+        dedicatedMasterType: dedicatedMasterEnabled ? dedicatedMasterType : undefined,
+        instanceCount,
+        instanceType,
+        zoneAwarenessEnabled,
         zoneAwarenessConfig:
-          props.clusterConfig.availabilityZoneCount != null
-            ? { availabilityZoneCount: props.clusterConfig.availabilityZoneCount }
+          zoneAwarenessEnabled
+            ? { availabilityZoneCount }
             : undefined,
       },
       ebsOptions: {
         ebsEnabled,
-        volumeSize: props.ebs?.volumeSize,
-        volumeType: props.ebs?.volumeType,
-        iops: props.ebs?.iops,
+        volumeSize: ebsEnabled ? volumeSize : undefined,
+        volumeType: ebsEnabled ? volumeType : undefined,
+        iops: ebsEnabled ? props.ebs?.iops : undefined,
       },
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,

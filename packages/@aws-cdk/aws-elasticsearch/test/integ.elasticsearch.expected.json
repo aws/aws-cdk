@@ -97,11 +97,9 @@
           "VolumeType": "gp2"
         },
         "ElasticsearchClusterConfig": {
-          "DedicatedMasterCount": 3,
-          "DedicatedMasterEnabled": true,
-          "DedicatedMasterType": "m5.large.elasticsearch",
-          "InstanceCount": 3,
-          "InstanceType": "m5.large.elasticsearch",
+          "DedicatedMasterEnabled": false,
+          "InstanceCount": 1,
+          "InstanceType": "r5.large.elasticsearch",
           "ZoneAwarenessEnabled": false
         },
         "ElasticsearchVersion": "7.1",

@@ -8,12 +8,6 @@ class TestStack extends Stack {
 
     new es.Domain(this, 'Domain', {
       version: es.ElasticsearchVersion.V7_1,
-      clusterConfig: {
-        masterNodes: 3,
-        masterNodeInstanceType: 'm5.large.elasticsearch',
-        dataNodes: 3,
-        dataNodeInstanceType: 'm5.large.elasticsearch',
-      },
       ebs: {
         volumeSize: 10,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
