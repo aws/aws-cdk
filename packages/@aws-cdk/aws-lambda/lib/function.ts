@@ -582,7 +582,7 @@ export class Function extends FunctionBase {
       };
     }
 
-    const env = { ...profilingGroupEnvironmentVariables, ...(props.environment ?? {}) };
+    const env = { ...profilingGroupEnvironmentVariables, ...props.environment };
     for (const [key, value] of Object.entries(env)) {
       this.addEnvironment(key, value);
     }
