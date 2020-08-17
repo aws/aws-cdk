@@ -4,13 +4,13 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
 import * as sinon from 'sinon';
-import { App, AssetHashType, AssetStaging, BundlingDockerImage, Stack } from '../lib';
+import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, Stack } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 
 enum DockerStubCommand {
-  SUCCESS           = 'DOCKER_STUB_SUCCESS',
-  FAIL              = 'DOCKER_STUB_FAIL',
+  SUCCESS = 'DOCKER_STUB_SUCCESS',
+  FAIL = 'DOCKER_STUB_FAIL',
   SUCCESS_NO_OUTPUT = 'DOCKER_STUB_SUCCESS_NO_OUTPUT'
 }
 
@@ -115,7 +115,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
     });
 
@@ -156,7 +156,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS_NO_OUTPUT ],
+        command: [DockerStubCommand.SUCCESS_NO_OUTPUT],
       },
     }), /Bundling did not produce any output/);
 
@@ -178,7 +178,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
       assetHashType: AssetHashType.BUNDLE,
     });
@@ -223,7 +223,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
       assetHash: 'my-custom-hash',
       assetHashType: AssetHashType.BUNDLE,
@@ -279,13 +279,76 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('this-is-an-invalid-docker-image'),
-        command: [ DockerStubCommand.FAIL ],
+        command: [DockerStubCommand.FAIL],
       },
-    }), /Failed to run bundling Docker image for asset stack\/Asset/);
+    }), /Failed to bundle asset stack\/Asset/);
     test.equal(
       readDockerStubInput(),
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
     );
+
+    test.done();
+  },
+
+  'with local bundling'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    let dir: string | undefined;
+    let opts: BundlingOptions | undefined;
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        local: {
+          tryBundle(outputDir: string, options: BundlingOptions): boolean {
+            dir = outputDir;
+            opts = options;
+            fs.writeFileSync(path.join(outputDir, 'hello.txt'), 'hello'); // output cannot be empty
+            return true;
+          },
+        },
+      },
+    });
+
+    // THEN
+    test.ok(dir && /asset-bundle-/.test(dir));
+    test.equals(opts?.command?.[0], DockerStubCommand.SUCCESS);
+    test.throws(() => readDockerStubInput());
+
+    if (dir) {
+      fs.removeSync(path.join(dir, 'hello.txt'));
+    }
+
+    test.done();
+  },
+
+  'with local bundling returning false'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        local: {
+          tryBundle(_bundleDir: string): boolean {
+            return false;
+          },
+        },
+      },
+    });
+
+    // THEN
+    test.ok(readDockerStubInput());
 
     test.done();
   },

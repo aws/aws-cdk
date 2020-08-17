@@ -46,7 +46,7 @@ test('Parcel bundling', () => {
       workingDirectory: '/asset-input/folder',
       command: [
         'bash', '-c',
-        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --no-autoinstall --no-scope-hoist --cache-dir /parcel-cache',
+        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist --cache-dir /parcel-cache && mv /asset-output/entry.js /asset-output/index.js',
       ],
     }),
   });
@@ -55,8 +55,7 @@ test('Parcel bundling', () => {
   const call = writeFileSyncMock.mock.calls[0];
   expect(call[0]).toMatch('package.json');
   expect(JSON.parse(call[1])).toEqual(expect.objectContaining({
-    'cdk-lambda': '/asset-output/index.js',
-    'targets': {
+    targets: {
       'cdk-lambda': {
         context: 'node',
         includeNodeModules: {
@@ -73,6 +72,25 @@ test('Parcel bundling', () => {
 
   // Searches for the package.json starting in the directory of the entry file
   expect(findUpMock).toHaveBeenCalledWith('package.json', '/project/folder');
+});
+
+test('Parcel bundling with handler named index.ts', () => {
+  Bundling.parcel({
+    entry: '/project/folder/index.ts',
+    runtime: Runtime.NODEJS_12_X,
+    projectRoot: '/project',
+  });
+
+  // Correctly bundles with parcel
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.BUNDLE,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/index.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
+      ],
+    }),
+  });
 });
 
 test('Parcel with Windows paths', () => {
@@ -107,7 +125,7 @@ test('Parcel bundling with externals and dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --no-autoinstall --no-scope-hoist && mv /asset-input/.package.json /asset-output/package.json && cd /asset-output && npm install',
+        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist && mv /asset-output/entry.js /asset-output/index.js && mv /asset-input/.package.json /asset-output/package.json && cd /asset-output && npm install',
       ],
     }),
   });

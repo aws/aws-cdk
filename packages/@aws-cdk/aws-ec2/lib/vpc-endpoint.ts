@@ -555,7 +555,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const availableAZs = ContextProvider.getValue(this, {
       provider: cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
       dummyValue: this.stack.availabilityZones,
-      props: {serviceName},
+      props: { serviceName },
     }).value;
     if (!Array.isArray(availableAZs)) {
       throw new Error(`Discovered AZs for endpoint service ${serviceName} must be an array`);

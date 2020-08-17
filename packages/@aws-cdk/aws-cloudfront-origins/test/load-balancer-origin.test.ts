@@ -21,9 +21,9 @@ test('Renders minimal example with just a load balancer', () => {
   });
 
   const origin = new LoadBalancerV2Origin(loadBalancer);
-  origin.bind(stack, { originIndex: 0 });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-  expect(origin.renderOrigin()).toEqual({
+  expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
     domainName: loadBalancer.loadBalancerDnsName,
     customOriginConfig: {
@@ -43,9 +43,9 @@ test('Can customize properties of the origin', () => {
     connectionTimeout: Duration.seconds(5),
     protocolPolicy: cloudfront.OriginProtocolPolicy.MATCH_VIEWER,
   });
-  origin.bind(stack, { originIndex: 0 });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-  expect(origin.renderOrigin()).toEqual({
+  expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
     domainName: loadBalancer.loadBalancerDnsName,
     connectionAttempts: 3,
