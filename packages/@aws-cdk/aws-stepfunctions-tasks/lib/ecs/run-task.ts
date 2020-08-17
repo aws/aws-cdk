@@ -281,7 +281,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
-        ...this.props.launchTarget.bind(this, {taskDefinition: this.props.taskDefinition, cluster: this.props.cluster}).parameters,
+        ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
       }),
     };
   }

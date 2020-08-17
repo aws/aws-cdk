@@ -164,7 +164,7 @@ describe('User Pool Client', () => {
       });
       const client = pool.addClient('Client', {
         oAuth: {
-          callbackUrls: [ 'https://example.com' ],
+          callbackUrls: ['https://example.com'],
         },
       });
 
@@ -200,7 +200,7 @@ describe('User Pool Client', () => {
       });
       const client = pool.addClient('Client', {
         oAuth: {
-          callbackUrls: [ 'https://example.com' ],
+          callbackUrls: ['https://example.com'],
         },
       });
 

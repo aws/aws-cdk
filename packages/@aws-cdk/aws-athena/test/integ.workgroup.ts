@@ -17,7 +17,8 @@ new CfnWorkGroup(stack, 'AthenaWorkgroup', {
     {
       key: 'key2',
       value: 'value2',
-    }],
+    },
+  ],
 });
 
 app.synth();
