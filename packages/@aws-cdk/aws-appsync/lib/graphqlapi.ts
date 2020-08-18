@@ -463,15 +463,15 @@ export class GraphQLApi extends GraphqlApiBase {
     this.schemaMode = props.schemaDefinition;
     this.schema = this.defineSchema(props.schemaDefinitionFile);
 
-
     if (defaultAuthorizationType === AuthorizationType.API_KEY ||
       props.authorizationConfig?.additionalAuthorizationModes?.some(
         (authMode) => authMode.authorizationType === AuthorizationType.API_KEY)
     ) {
       const apiKeyConfig = props.authorizationConfig?.defaultAuthorization?.apiKeyConfig ||
-      props.authorizationConfig?.additionalAuthorizationModes?.map((mode) => {
-        return mode.apiKeyConfig;
-      })[0];
+        props.authorizationConfig?.additionalAuthorizationModes?.
+          filter((mode: AuthorizationMode) => {
+            return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
+          })[0]?.apiKeyConfig;
       this.apiKey = this.createAPIKey(apiKeyConfig);
       this.apiKey.addDependsOn(this.schema);
     }
@@ -532,6 +532,9 @@ export class GraphQLApi extends GraphqlApiBase {
       props.authorizationConfig?.defaultAuthorization?.authorizationType ||
       AuthorizationType.API_KEY;
 
+    let api_key_count = defaultAuthorizationType === AuthorizationType.API_KEY ? 1 : 0;
+    let iam_count = defaultAuthorizationType === AuthorizationType.IAM ? 1 : 0;
+
     if (
       defaultAuthorizationType === AuthorizationType.OIDC &&
       !props.authorizationConfig?.defaultAuthorization?.openIdConnectConfig
@@ -549,19 +552,18 @@ export class GraphQLApi extends GraphqlApiBase {
     if (props.authorizationConfig?.additionalAuthorizationModes) {
       props.authorizationConfig.additionalAuthorizationModes.forEach(
         (authorizationMode) => {
-          if (
-            authorizationMode.authorizationType === AuthorizationType.API_KEY &&
-            defaultAuthorizationType === AuthorizationType.API_KEY
-          ) {
+          if (authorizationMode.authorizationType === AuthorizationType.API_KEY) {
+            api_key_count++;
+          }
+          if(api_key_count > 1){
             throw new Error(
               "You can't duplicate API_KEY in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
             );
           }
-
-          if (
-            authorizationMode.authorizationType === AuthorizationType.IAM &&
-            defaultAuthorizationType === AuthorizationType.IAM
-          ) {
+          if (authorizationMode.authorizationType === AuthorizationType.IAM) {
+            iam_count++;
+          }
+          if(iam_count > 1){
             throw new Error(
               "You can't duplicate IAM in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
             );
