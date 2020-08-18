@@ -1,6 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CfnDeletionPolicy, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
@@ -122,6 +124,31 @@ export interface DatabaseClusterProps {
    * @default - RemovalPolicy.SNAPSHOT (remove the cluster and instances, but retain a snapshot of the data)
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The list of log types that need to be enabled for exporting to
+   * CloudWatch Logs.
+   *
+   * @default - no log exports
+   */
+  readonly cloudwatchLogsExports?: string[];
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs. When updating
+   * this property, unsetting it doesn't remove the log retention policy. To
+   * remove the retention policy, set the value to `Infinity`.
+   *
+   * @default - logs never expire
+   */
+  readonly cloudwatchLogsRetention?: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - a new role is created.
+   */
+  readonly cloudwatchLogsRetentionRole?: IRole;
 
   /**
    * The interval, in seconds, between points when Amazon RDS collects enhanced
@@ -438,6 +465,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       preferredBackupWindow: props.backup && props.backup.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
+      enableCloudwatchLogsExports: props.cloudwatchLogsExports,
       // Encryption
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
@@ -460,6 +488,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
     this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
     this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
+
+    this.setLogRetention(props);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -573,6 +603,18 @@ export class DatabaseCluster extends DatabaseClusterBase {
       vpcSubnets: this.vpcSubnets,
       target: this,
     });
+  }
+
+  private setLogRetention(props: DatabaseClusterProps) {
+    if (props.cloudwatchLogsExports && props.cloudwatchLogsRetention) {
+      for (const log of props.cloudwatchLogsExports) {
+        new lambda.LogRetention(this, `LogRetention${log}`, {
+          logGroupName: `/aws/rds/cluster/${this.clusterIdentifier}/${log}`,
+          retention: props.cloudwatchLogsRetention,
+          role: props.cloudwatchLogsRetentionRole,
+        });
+      }
+    }
   }
 }
 
