@@ -290,36 +290,6 @@ describe('testing InterfaceType properties', () => {
 });
 
 describe('testing Object Type properties', () => {
-
-  test('errors when no InterfaceTypes are specified', () => {
-    // WHEN
-    const when = () => {
-      appsync.ObjectType.implementInterface('objectTest', {
-        definition: {
-          id2: t.id,
-        },
-      });
-    };
-
-    // THEN
-    expect(when).toThrowError('Static function `implementInterface` requires an interfaceType to implement');
-  });
-
-  test('errors when implementing empty InterfaceTypes properties', () => {
-    // WHEN
-    const when = () => {
-      appsync.ObjectType.implementInterface('objectTest', {
-        interfaceTypes: [],
-        definition: {
-          id2: t.id,
-        },
-      });
-    };
-
-    // THEN
-    expect(when).toThrowError('Static function `implementInterface` requires an interfaceType to implement');
-  });
-
   test('ObjectType can implement from interface types', () => {
     // WHEN
     const baseTest = new appsync.InterfaceType('baseTest', {
@@ -327,7 +297,7 @@ describe('testing Object Type properties', () => {
         id: t.id,
       },
     });
-    const objectTest = appsync.ObjectType.implementInterface('objectTest', {
+    const objectTest = new appsync.ObjectType('objectTest', {
       interfaceTypes: [baseTest],
       definition: {
         id2: t.id,
@@ -355,7 +325,7 @@ describe('testing Object Type properties', () => {
     const anotherTest = new appsync.InterfaceType('anotherTest', {
       definition: { id2: t.id },
     });
-    const objectTest = appsync.ObjectType.implementInterface('objectTest', {
+    const objectTest = new appsync.ObjectType('objectTest', {
       interfaceTypes: [anotherTest, baseTest],
       definition: {
         id3: t.id,

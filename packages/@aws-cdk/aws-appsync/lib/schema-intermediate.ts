@@ -132,21 +132,6 @@ export interface ObjectTypeProps extends IntermediateTypeProps {
  */
 export class ObjectType extends InterfaceType {
   /**
-   * A method to define Object Types from an interface
-   */
-  public static implementInterface(name: string, props: ObjectTypeProps): ObjectType {
-    if (!props.interfaceTypes || !props.interfaceTypes.length) {
-      throw new Error('Static function `implementInterface` requires an interfaceType to implement');
-    }
-    return new ObjectType(name, {
-      interfaceTypes: props.interfaceTypes,
-      definition: props.interfaceTypes.reduce((def, interfaceType) => {
-        return Object.assign({}, def, interfaceType.definition);
-      }, props.definition),
-      directives: props.directives,
-    });
-  }
-  /**
    * The Interface Types this Object Type implements
    *
    * @default - no interface types
@@ -164,7 +149,12 @@ export class ObjectType extends InterfaceType {
   public resolvers?: Resolver[];
 
   public constructor(name: string, props: ObjectTypeProps) {
-    super(name, props);
+    const options = {
+      definition: props.interfaceTypes?.reduce((def, interfaceType) => {
+        return Object.assign({}, def, interfaceType.definition);
+      }, props.definition) ?? props.definition,
+    };
+    super(name, options);
     this.interfaceTypes = props.interfaceTypes;
     this.directives = props.directives;
 
