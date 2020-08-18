@@ -302,19 +302,6 @@ export class GraphqlType implements IField {
   }
 
   /**
-   * Make this field resolvable
-   *
-   * @param options the options to a field resolvable
-   * - dataSource
-   * - args
-   * - requestMappingTemplate
-   * - responseMappingTemplate
-   */
-  public createResolvableField(options: ResolvableFieldOptions): ResolvableField{
-    return new ResolvableField(this, options);
-  }
-
-  /**
    * Generate the string for this attribute
    */
   public toString(): string{
