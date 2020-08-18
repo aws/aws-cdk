@@ -423,7 +423,7 @@ describe('testing Object Type properties', () => {
 
   test('Object Type can implement Resolvable Field from GraphqlType', () => {
     // WHEN
-    const field = t.string.createResolvableField({
+    const field = new appsync.ResolvableField(t.string, {
       dataSource: api.addNoneDataSource('none'),
       args: {
         arg: t.int,
@@ -455,10 +455,9 @@ describe('testing Object Type properties', () => {
     const test = new appsync.ObjectType('Test', {
       definition: {
         test: t.string,
-        resolve: field,
       },
     });
-
+    test.addField('resolve', field);
     // test.addField('resolve', field);
     test.addField('dynamic', t.string);
 

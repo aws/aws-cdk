@@ -361,6 +361,7 @@ export class Field extends GraphqlType implements IField {
       isList: type.isList,
       isRequired: type.isRequired,
       isRequiredList: type.isRequiredList,
+      intermediateType: type.intermediateType,
     };
     super(type.type, props);
     this.fieldOptions = options;
