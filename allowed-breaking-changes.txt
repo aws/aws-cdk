@@ -7,3 +7,24 @@ removed:@aws-cdk/core.BootstraplessSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
 removed:@aws-cdk/core.DefaultStackSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
 removed:@aws-cdk/core.DefaultStackSynthesizerProps.assetPublishingExternalId
 removed:@aws-cdk/core.DefaultStackSynthesizerProps.assetPublishingRoleArn
+
+# merge asset manifest schema into cloud assembly schema
+removed:@aws-cdk/cdk-assets-schema.AssetManifestSchema
+removed:@aws-cdk/cdk-assets-schema.AwsDestination
+removed:@aws-cdk/cdk-assets-schema.DockerImageAsset
+removed:@aws-cdk/cdk-assets-schema.DockerImageDestination
+removed:@aws-cdk/cdk-assets-schema.DockerImageSource
+removed:@aws-cdk/cdk-assets-schema.FileAsset
+removed:@aws-cdk/cdk-assets-schema.FileDestination
+removed:@aws-cdk/cdk-assets-schema.FileSource
+removed:@aws-cdk/cdk-assets-schema.ManifestFile
+removed:@aws-cdk/cdk-assets-schema.FileAssetPackaging
+
+changed-type:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.autoScalingGroups
+changed-type:@aws-cdk/aws-codedeploy.ServerDeploymentGroup.autoScalingGroups
+
+# We were leaking L1 types in L2 APIs, which now have changed required -> optional
+# when ECS moved to the CloudFormation Registry spec.
+change-return-type:@aws-cdk/aws-ecs.ContainerDefinition.renderContainerDefinition
+change-return-type:@aws-cdk/aws-ecs.FirelensLogRouter.renderContainerDefinition
+change-return-type:@aws-cdk/aws-ecs.LinuxParameters.renderLinuxParameters

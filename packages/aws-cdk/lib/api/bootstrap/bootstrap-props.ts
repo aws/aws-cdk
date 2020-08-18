@@ -70,4 +70,18 @@ export interface BootstrappingParameters {
    * @default - Default qualifier
    */
   readonly qualifier?: string;
+
+  /**
+   * Whether or not to enable S3 Staging Bucket Public Access Block Configuration
+   *
+   * @default true
+   */
+  readonly publicAccessBlockConfiguration?: boolean;
+
+  /**
+   * Whether the stacks created by the bootstrap process should be protected from termination.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-protect-stacks.html
+   * @default true
+   */
+  readonly terminationProtection?: boolean;
 }

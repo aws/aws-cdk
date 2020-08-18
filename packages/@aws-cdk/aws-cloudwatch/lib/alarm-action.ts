@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/core';
-import { IAlarm } from './alarm';
+import { IAlarm } from './alarm-base';
 
 /**
  * Interface for objects that can be the targets of CloudWatch alarm actions

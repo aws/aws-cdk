@@ -26,7 +26,7 @@ export function generateArbitraryIntervals(mrng: IRandomGenerator): ArbitraryInt
   ret.push({ lower: 20, upper: 60, change: 0 + bias });
   ret.push({ lower: 60, upper: 80, change: 0 + bias });
   ret.push({ lower: 80, upper: 90, change: 1 * factor + bias });
-  ret.push({ lower: 90, upper: Infinity, change: 2 * factor + bias});
+  ret.push({ lower: 90, upper: Infinity, change: 2 * factor + bias });
 
   // Take away parts from this. First we see if we do something to the 0-change alarms.
   // The actions can be: remove it OR turn it into a regular change value.

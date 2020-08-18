@@ -1,0 +1,48 @@
+{
+  "Parameters": {
+    "BucketName": {
+      "Default": "MyS3Bucket",
+      "AllowedPattern": "^[a-zA-Z0-9]*$",
+      "ConstraintDescription": "a string consisting only of alphanumeric characters",
+      "Description": "The name of your bucket",
+      "MaxLength": "10",
+      "MinLength": "1",
+      "Type": "String",
+      "NoEcho": "true"
+    },
+    "CorsMaxAge": {
+      "Default": "3",
+      "Description": "the time in seconds that a browser will cache the preflight response",
+      "MaxValue": "300",
+      "MinValue": "0",
+      "AllowedValues": [1, 2, 3, 10, 100, 300],
+      "Type": "Number",
+      "NoEcho": "true"
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Ref": "BucketName"
+        },
+        "CorsConfiguration": {
+          "CorsRules": [{
+            "AllowedMethods": [
+              "GET",
+              "POST"
+            ],
+            "AllowedOrigins": [
+              "origin1",
+              "origin2"
+            ],
+            "MaxAge": {
+              "Ref": "CorsMaxAge"
+            }
+          }]
+        }
+      }
+    }
+  }
+}

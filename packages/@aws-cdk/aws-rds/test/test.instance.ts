@@ -18,7 +18,7 @@ export = {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
       licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
       masterUsername: 'syscdk',
@@ -196,7 +196,6 @@ export = {
 
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
       engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
       configurations: [
         {
           name: 'XMLDB',
@@ -205,7 +204,9 @@ export = {
     });
 
     const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
-      family: 'hello',
+      engine: rds.DatabaseInstanceEngine.sqlServerEe({
+        version: rds.SqlServerEngineVersion.VER_11,
+      }),
       description: 'desc',
       parameters: {
         key: 'value',
@@ -215,7 +216,7 @@ export = {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'syscdk',
       masterUserPassword: cdk.SecretValue.plainText('tooshort'),
       vpc,
@@ -244,7 +245,7 @@ export = {
     new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
       engine: rds.DatabaseInstanceEngine.POSTGRES,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
     });
 
@@ -264,7 +265,7 @@ export = {
     test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
       engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
       generateMasterUserPassword: true,
     }), '`masterUsername` must be specified when `generateMasterUserPassword` is set to true.');
@@ -281,7 +282,7 @@ export = {
     test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
       engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
       masterUsername: 'superadmin',
     }), 'Cannot specify `masterUsername` when `generateMasterUserPassword` is set to false.');
@@ -298,7 +299,7 @@ export = {
     test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
       engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
       masterUserPassword: cdk.SecretValue.plainText('supersecret'),
       generateMasterUserPassword: true,
@@ -313,7 +314,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc,
     });
@@ -321,8 +322,7 @@ export = {
     // WHEN
     new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
       sourceDatabaseInstance: sourceInstance,
-      engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
     });
 
@@ -354,7 +354,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc,
     });
@@ -421,7 +421,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc,
     });
@@ -474,7 +474,7 @@ export = {
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc,
     });
@@ -499,7 +499,7 @@ export = {
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc,
     });
@@ -530,7 +530,7 @@ export = {
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc,
       backupRetention: cdk.Duration.seconds(0),
@@ -583,7 +583,7 @@ export = {
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc,
       monitoringInterval: cdk.Duration.minutes(1),
@@ -612,7 +612,7 @@ export = {
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc,
       securityGroups: [securityGroup],
@@ -649,7 +649,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'syscdk',
       masterUserPassword: cdk.SecretValue.plainText('tooshort'),
       vpc,
@@ -667,7 +667,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'syscdk',
       vpc,
     });
@@ -685,16 +685,16 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'vpc');
-    const tzSupportedEngines = [ rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
-      rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB ];
-    const tzUnsupportedEngines = [ rds.DatabaseInstanceEngine.MYSQL, rds.DatabaseInstanceEngine.POSTGRES,
-      rds.DatabaseInstanceEngine.ORACLE_EE, rds.DatabaseInstanceEngine.MARIADB ];
+    const tzSupportedEngines = [rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
+      rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB];
+    const tzUnsupportedEngines = [rds.DatabaseInstanceEngine.MYSQL, rds.DatabaseInstanceEngine.POSTGRES,
+      rds.DatabaseInstanceEngine.ORACLE_EE, rds.DatabaseInstanceEngine.MARIADB];
 
     // THEN
     tzSupportedEngines.forEach((engine) => {
-      test.ok(new rds.DatabaseInstance(stack, `${engine.name}-db`, {
+      test.ok(new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
         engine,
-        instanceClass: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
         masterUsername: 'master',
         timezone: 'Europe/Zurich',
         vpc,
@@ -702,9 +702,9 @@ export = {
     });
 
     tzUnsupportedEngines.forEach((engine) => {
-      test.throws(() => new rds.DatabaseInstance(stack, `${engine.name}-db`, {
+      test.throws(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
         engine,
-        instanceClass: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
         masterUsername: 'master',
         timezone: 'Europe/Zurich',
         vpc,
@@ -723,7 +723,7 @@ export = {
     new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
       engine: rds.DatabaseInstanceEngine.POSTGRES,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
       maxAllocatedStorage: 200,
     });
@@ -744,7 +744,7 @@ export = {
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc,
       backupRetention: cdk.Duration.seconds(0),

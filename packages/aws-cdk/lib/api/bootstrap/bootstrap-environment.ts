@@ -1,5 +1,5 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as path from 'path';
+import * as cxapi from '@aws-cdk/cx-api';
 import { loadStructuredFile } from '../../serialize';
 import { SdkProvider } from '../aws-auth';
 import { DeployStackResult } from '../deploy-stack';
@@ -7,14 +7,14 @@ import { BootstrapEnvironmentOptions } from './bootstrap-props';
 import { deployBootstrapStack } from './deploy-bootstrap';
 import { legacyBootstrapTemplate } from './legacy-template';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 /**
  * Deploy legacy bootstrap stack
  *
  * @experimental
  */
-export async function bootstrapEnvironment(environment: cxapi.Environment, sdkProvider: SdkProvider, options: BootstrapEnvironmentOptions): Promise<DeployStackResult> {
+export async function bootstrapEnvironment(environment: cxapi.Environment, sdkProvider: SdkProvider, options: BootstrapEnvironmentOptions = {}): Promise<DeployStackResult> {
   const params = options.parameters ?? {};
 
   if (params.trustedAccounts?.length) {
@@ -43,7 +43,7 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
 export async function bootstrapEnvironment2(
   environment: cxapi.Environment,
   sdkProvider: SdkProvider,
-  options: BootstrapEnvironmentOptions): Promise<DeployStackResult> {
+  options: BootstrapEnvironmentOptions = {}): Promise<DeployStackResult> {
 
   const params = options.parameters ?? {};
 
@@ -62,6 +62,7 @@ export async function bootstrapEnvironment2(
       TrustedAccounts: params.trustedAccounts?.join(','),
       CloudFormationExecutionPolicies: params.cloudFormationExecutionPolicies?.join(','),
       Qualifier: params.qualifier,
+      PublicAccessBlockConfiguration: params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
     },
     environment,
     sdkProvider,

@@ -12,7 +12,7 @@ import { App, CfnOutput, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Key } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 const ACTIONS: string[] = [
   'kms:Create*',
   'kms:Describe*',
@@ -433,6 +433,34 @@ export = {
         ],
       },
     }));
+    test.done();
+  },
+
+  'fails if key policy has no actions'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const key = new Key(stack, 'MyKey');
+
+    key.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    test.done();
+  },
+
+  'fails if key policy has no IAM principals'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const key = new Key(stack, 'MyKey');
+
+    key.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['kms:*'],
+    }));
+
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
     test.done();
   },
 

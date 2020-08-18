@@ -38,7 +38,7 @@ async function main() {
     }))
     .demandCommand()
     .help()
-    .strict()  // Error on wrong command
+    .strict() // Error on wrong command
     .version(VERSION)
     .showHelpOnFail(false)
     .argv;
@@ -61,7 +61,7 @@ function wrapHandler<A extends { verbose?: number }, R>(handler: (x: A) => Promi
 }
 
 main().catch(e => {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.error(e.stack);
   process.exitCode = 1;
 });

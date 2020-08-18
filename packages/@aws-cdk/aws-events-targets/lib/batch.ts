@@ -13,7 +13,7 @@ export interface BatchJobProps {
    *
    * This will be the payload sent to the Lambda Function.
    *
-   * @default the entire CloudWatch event
+   * @default the entire EventBridge event
    */
   readonly event?: events.RuleTargetInput;
 
@@ -54,7 +54,7 @@ export class BatchJob implements events.IRuleTarget {
 
   /**
    * Returns a RuleTarget that can be used to trigger queue this batch job as a
-   * result from a CloudWatch event.
+   * result from an EventBridge event.
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const batchParameters: events.CfnRule.BatchParametersProperty = {

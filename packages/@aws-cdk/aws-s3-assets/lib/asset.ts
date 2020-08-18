@@ -1,13 +1,14 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as assets from '@aws-cdk/assets';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
-import * as path from 'path';
 import { toSymlinkFollow } from './compat';
 
-const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
+const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
 
 export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
   /**
@@ -19,7 +20,9 @@ export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
   readonly readers?: iam.IGrantable[];
 
   /**
-   * Custom source hash to use when identifying the specific version of the asset.
+   * Custom hash to use when identifying the specific version of the asset. For consistency,
+   * this custom hash will be SHA256 hashed and encoded as hex. The resulting hash will be
+   * the asset hash.
    *
    * NOTE: the source hash is used in order to identify a specific revision of the asset,
    * and used for optimizing and caching deployment activities related to this asset such as
@@ -144,7 +147,12 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
     this.httpUrl = location.httpUrl;
     this.s3Url = location.httpUrl; // for backwards compatibility
 
-    this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
+    const kmsKey = location.kmsKeyArn ? kms.Key.fromKeyArn(this, 'Key', location.kmsKeyArn) : undefined;
+
+    this.bucket = s3.Bucket.fromBucketAttributes(this, 'AssetBucket', {
+      bucketName: this.s3BucketName,
+      encryptionKey: kmsKey,
+    });
 
     for (const reader of (props.readers ?? [])) {
       this.grantRead(reader);

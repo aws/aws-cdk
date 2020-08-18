@@ -21,7 +21,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    *
    * If true, each task will receive a public IP address.
    *
-   * @default - Use subnet default.
+   * @default false
    */
   readonly assignPublicIp?: boolean;
 
@@ -157,7 +157,7 @@ export class FargateService extends BaseService implements IFargateService {
 
     let securityGroups;
     if (props.securityGroup !== undefined) {
-      securityGroups = [ props.securityGroup ];
+      securityGroups = [props.securityGroup];
     } else if (props.securityGroups !== undefined) {
       securityGroups = props.securityGroups;
     }

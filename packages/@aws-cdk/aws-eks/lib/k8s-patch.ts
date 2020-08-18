@@ -70,7 +70,7 @@ export class KubernetesPatch extends Construct {
     super(scope, id);
 
     const stack = Stack.of(this);
-    const provider = props.cluster._kubectlProvider;
+    const provider = props.cluster._attachKubectlResourceScope(this);
 
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
@@ -81,7 +81,7 @@ export class KubernetesPatch extends Construct {
         ApplyPatchJson: stack.toJsonString(props.applyPatch),
         RestorePatchJson: stack.toJsonString(props.restorePatch),
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
+        RoleArn: props.cluster._kubectlCreationRole.roleArn,
         PatchType: props.patchType ?? PatchType.STRATEGIC,
       },
     });

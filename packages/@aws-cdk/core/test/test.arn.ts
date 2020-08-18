@@ -93,13 +93,14 @@ export = {
     test.throws(() => stack.formatArn({
       service: 'foo',
       resource: 'bar',
-      sep: 'x' }));
+      sep: 'x',
+    }));
     test.done();
   },
 
   'Arn.parse(s)': {
 
-    'fails': {
+    fails: {
       'if doesn\'t start with "arn:"'(test: Test) {
         const stack = new Stack();
         test.throws(() => stack.parseArn('barn:foo:x:a:1:2'), /ARNs must start with "arn:": barn:foo/);
@@ -185,12 +186,12 @@ export = {
       const theToken = { Ref: 'SomeParameter' };
       const parsed = stack.parseArn(new Intrinsic(theToken).toString(), ':');
 
-      test.deepEqual(stack.resolve(parsed.partition), { 'Fn::Select': [ 1, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(stack.resolve(parsed.service), { 'Fn::Select': [ 2, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(stack.resolve(parsed.region), { 'Fn::Select': [ 3, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(stack.resolve(parsed.account), { 'Fn::Select': [ 4, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [ 6, { 'Fn::Split': [ ':', theToken ]} ]});
+      test.deepEqual(stack.resolve(parsed.partition), { 'Fn::Select': [1, { 'Fn::Split': [':', theToken] }] });
+      test.deepEqual(stack.resolve(parsed.service), { 'Fn::Select': [2, { 'Fn::Split': [':', theToken] }] });
+      test.deepEqual(stack.resolve(parsed.region), { 'Fn::Select': [3, { 'Fn::Split': [':', theToken] }] });
+      test.deepEqual(stack.resolve(parsed.account), { 'Fn::Select': [4, { 'Fn::Split': [':', theToken] }] });
+      test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] });
+      test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [6, { 'Fn::Split': [':', theToken] }] });
       test.equal(parsed.sep, ':');
 
       test.done();
@@ -203,10 +204,10 @@ export = {
 
       test.equal(parsed.sep, '/');
 
-      // tslint:disable-next-line:max-line-length
-      test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [ 0, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
-      // tslint:disable-next-line:max-line-length
-      test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
+      // eslint-disable-next-line max-len
+      test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
+      // eslint-disable-next-line max-len
+      test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
 
       test.done();
     },
@@ -231,8 +232,8 @@ export = {
 
   'can use a fully specified ARN from a different stack without incurring an import'(test: Test) {
     // GIVEN
-    const stack1 = new Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-5' }});
-    const stack2 = new Stack(undefined, 'Stack2', { env: { account: '87654321', region: 'us-turbo-1' }});
+    const stack1 = new Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-5' } });
+    const stack2 = new Stack(undefined, 'Stack2', { env: { account: '87654321', region: 'us-turbo-1' } });
 
     // WHEN
     const arn = stack1.formatArn({
@@ -249,7 +250,8 @@ export = {
         SomeValue: {
           Value: {
             // Look ma, no Fn::ImportValue!
-            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':bla:us-turbo-5:12345678:thing/thong']] },
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':bla:us-turbo-5:12345678:thing/thong']],
+          },
         },
       },
     });

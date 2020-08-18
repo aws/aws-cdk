@@ -296,4 +296,41 @@ export = {
 
     test.done();
   },
+
+  async 'custom log retention retry options'(test: Test) {
+    AWS.mock('CloudWatchLogs', 'createLogGroup', sinon.fake.resolves({}));
+    AWS.mock('CloudWatchLogs', 'putRetentionPolicy', sinon.fake.resolves({}));
+    AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', sinon.fake.resolves({}));
+
+    const event = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        RetentionInDays: '30',
+        LogGroupName: 'group',
+        SdkRetry: {
+          maxRetries: '5',
+          base: '300',
+        },
+      },
+    };
+
+    const request = createRequest('SUCCESS');
+
+    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+
+    sinon.assert.calledWith(AWSSDK.CloudWatchLogs as any, {
+      apiVersion: '2014-03-28',
+      maxRetries: 5,
+      retryOptions: {
+        base: 300,
+      },
+    });
+
+    test.equal(request.isDone(), true);
+
+    test.done();
+  },
+
 };

@@ -1,9 +1,8 @@
-// tslint:disable-next-line:max-line-length
-import * as asset_schema from '@aws-cdk/cdk-assets-schema';
+// eslint-disable-next-line max-len
+import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors';
-import * as path from 'path';
 import { ToolkitInfo } from './api/toolkit-info';
 import { debug } from './logging';
 import { AssetManifestBuilder } from './util/asset-manifest-builder';
@@ -14,7 +13,7 @@ import { AssetManifestBuilder } from './util/asset-manifest-builder';
  * Returns the CloudFormation parameters that need to be sent to the template to
  * pass Asset coordinates.
  */
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationStackArtifact, assetManifest: AssetManifestBuilder, toolkitInfo?: ToolkitInfo, reuse?: string[]): Promise<Record<string, string>> {
   reuse = reuse || [];
   const assets = stack.assets;
@@ -24,7 +23,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
   }
 
   if (!toolkitInfo) {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue('cdk bootstrap ' + stack.environment!.name)}")`);
   }
 
@@ -51,7 +50,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
   return params;
 }
 
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
   switch (asset.packaging) {
     case 'zip':
@@ -60,11 +59,11 @@ async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: A
         asset,
         assetManifest,
         toolkitInfo,
-        asset.packaging === 'zip' ? asset_schema.FileAssetPackaging.ZIP_DIRECTORY : asset_schema.FileAssetPackaging.FILE);
+        asset.packaging === 'zip' ? cxschema.FileAssetPackaging.ZIP_DIRECTORY : cxschema.FileAssetPackaging.FILE);
     case 'container-image':
       return await prepareDockerImageAsset(asset, assetManifest, toolkitInfo);
     default:
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
   }
 }
@@ -73,9 +72,9 @@ function prepareFileAsset(
   asset: cxschema.FileAssetMetadataEntry,
   assetManifest: AssetManifestBuilder,
   toolkitInfo: ToolkitInfo,
-  packaging: asset_schema.FileAssetPackaging): Record<string, string> {
+  packaging: cxschema.FileAssetPackaging): Record<string, string> {
 
-  const extension = packaging === asset_schema.FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.path);
+  const extension = packaging === cxschema.FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.path);
   const baseName = `${asset.sourceHash}${extension}`;
   // Simplify key: assets/abcdef/abcdef.zip is kinda silly and unnecessary, so if they're the same just pick one component.
   const s3Prefix = asset.id === asset.sourceHash ? 'assets/' : `assets/${asset.id}/`;

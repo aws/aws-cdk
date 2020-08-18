@@ -1,6 +1,6 @@
-import * as colors from 'colors/safe';
 import { Writable } from 'stream';
 import * as util from 'util';
+import * as colors from 'colors/safe';
 
 type StyleFn = (str: string) => string;
 const { stdout, stderr } = process;
@@ -13,15 +13,20 @@ const logger = (stream: Writable, styles?: StyleFn[]) => (fmt: string, ...args: 
   stream.write(str + '\n');
 };
 
-export let isVerbose = false;
+export let logLevel = LogLevel.DEFAULT;
 
-export function setVerbose(enabled = true) {
-  isVerbose = enabled;
+export function setLogLevel(newLogLevel: LogLevel) {
+  logLevel = newLogLevel;
+}
+
+export function increaseVerbosity() {
+  logLevel += 1;
 }
 
 const _debug = logger(stderr, [colors.gray]);
 
-export const debug = (fmt: string, ...args: any[]) => isVerbose && _debug(fmt, ...args);
+export const trace = (fmt: string, ...args: any) => logLevel >= LogLevel.TRACE && _debug(fmt, ...args);
+export const debug = (fmt: string, ...args: any[]) => logLevel >= LogLevel.DEBUG && _debug(fmt, ...args);
 export const error = logger(stderr, [colors.red]);
 export const warning = logger(stderr, [colors.yellow]);
 export const success = logger(stderr, [colors.green]);
@@ -41,4 +46,13 @@ export type LoggerFunction = (fmt: string, ...args: any[]) => void;
  */
 export function prefix(prefixString: string, fn: LoggerFunction): LoggerFunction {
   return (fmt: string, ...args: any[]) => fn(`%s ${fmt}`, prefixString, ...args);
+}
+
+export const enum LogLevel {
+  /** Not verbose at all */
+  DEFAULT = 0,
+  /** Pretty verbose */
+  DEBUG = 1,
+  /** Extremely verbose */
+  TRACE = 2
 }

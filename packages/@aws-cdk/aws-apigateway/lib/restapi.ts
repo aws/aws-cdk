@@ -16,18 +16,58 @@ import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 import { UsagePlan, UsagePlanProps } from './usage-plan';
 
+const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
+
 export interface IRestApi extends IResourceBase {
   /**
    * The ID of this API Gateway RestApi.
    * @attribute
    */
   readonly restApiId: string;
+
+  /**
+   * The resource ID of the root resource.
+   * @attribute
+   */
+  readonly restApiRootResourceId: string;
+
+  /**
+   * API Gateway deployment that represents the latest changes of the API.
+   * This resource will be automatically updated every time the REST API model changes.
+   * `undefined` when no deployment is configured.
+   */
+  readonly latestDeployment?: Deployment;
+
+  /**
+   * API Gateway stage that points to the latest deployment (if defined).
+   */
+  deploymentStage: Stage;
+
+  /**
+   * Represents the root resource ("/") of this API. Use it to define the API model:
+   *
+   *    api.root.addMethod('ANY', redirectToHomePage); // "ANY /"
+   *    api.root.addResource('friends').addMethod('GET', getFriendsHandler); // "GET /friends"
+   *
+   */
+  readonly root: IResource;
+
+  /**
+   * Gets the "execute-api" ARN
+   * @returns The "execute-api" ARN.
+   * @default "*" returns the execute API ARN for all methods/resources in
+   * this API.
+   * @param method The method (default `*`)
+   * @param path The resource path. Must start with '/' (default `*`)
+   * @param stage The stage (default `*`)
+   */
+  arnForExecuteApi(method?: string, path?: string, stage?: string): string;
 }
 
 /**
  * Represents the props that all Rest APIs share
  */
-export interface RestApiOptions extends ResourceOptions {
+export interface RestApiBaseProps {
   /**
    * Indicates if a Deployment should be automatically created for this API,
    * and recreated when the API model (resources, methods) changes.
@@ -119,6 +159,21 @@ export interface RestApiOptions extends ResourceOptions {
    * @default - when no export name is given, output will be created without export
    */
   readonly endpointExportName?: string;
+
+  /**
+   * A list of the endpoint types of the API. Use this property when creating
+   * an API.
+   *
+   * @default EndpointType.EDGE
+   */
+  readonly endpointTypes?: EndpointType[];
+}
+
+/**
+ * Represents the props that all Rest APIs share.
+ * @deprecated - superceded by `RestApiBaseProps`
+ */
+export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {
 }
 
 /**
@@ -171,25 +226,16 @@ export interface RestApiProps extends RestApiOptions {
    * The EndpointConfiguration property type specifies the endpoint types of a REST API
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
    *
-   * @default - No endpoint configuration
+   * @default EndpointType.EDGE
    */
   readonly endpointConfiguration?: EndpointConfiguration;
-
-  /**
-   * A list of the endpoint types of the API. Use this property when creating
-   * an API.
-   *
-   * @default - No endpoint types.
-   * @deprecated this property is deprecated, use endpointConfiguration instead
-   */
-  readonly endpointTypes?: EndpointType[];
 }
 
 /**
  * Props to instantiate a new SpecRestApi
  * @experimental
  */
-export interface SpecRestApiProps extends RestApiOptions {
+export interface SpecRestApiProps extends RestApiBaseProps {
   /**
    * An OpenAPI definition compatible with API Gateway.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
@@ -197,7 +243,35 @@ export interface SpecRestApiProps extends RestApiOptions {
   readonly apiDefinition: ApiDefinition;
 }
 
-abstract class RestApiBase extends Resource implements IRestApi {
+/**
+ * Base implementation that are common to various implementations of IRestApi
+ */
+export abstract class RestApiBase extends Resource implements IRestApi {
+  /**
+   * Checks if the given object is an instance of RestApiBase.
+   * @internal
+   */
+  public static _isRestApiBase(x: any): x is RestApiBase {
+    return x !== null && typeof(x) === 'object' && RESTAPI_SYMBOL in x;
+  }
+
+  /**
+   * API Gateway deployment that represents the latest changes of the API.
+   * This resource will be automatically updated every time the REST API model changes.
+   * This will be undefined if `deploy` is false.
+   */
+  public get latestDeployment() {
+    return this._latestDeployment;
+  }
+
+  /**
+   * The first domain name mapped to this API, if defined through the `domainName`
+   * configuration prop, or added via `addDomainName`
+   */
+  public get domainName() {
+    return this._domainName;
+  }
+
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -211,6 +285,12 @@ abstract class RestApiBase extends Resource implements IRestApi {
   public abstract readonly restApiRootResourceId: string;
 
   /**
+   * Represents the root resource of this API endpoint ('/').
+   * Resources and Methods are added to this resource.
+   */
+  public abstract readonly root: IResource;
+
+  /**
    * API Gateway stage that points to the latest deployment (if defined).
    *
    * If `deploy` is disabled, you will need to explicitly assign this value in order to
@@ -221,10 +301,12 @@ abstract class RestApiBase extends Resource implements IRestApi {
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
-  constructor(scope: Construct, id: string, props: RestApiOptions = { }) {
+  constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
     super(scope, id, {
       physicalName: props.restApiName || id,
     });
+
+    Object.defineProperty(this, RESTAPI_SYMBOL, { value: true });
   }
 
   /**
@@ -238,15 +320,6 @@ abstract class RestApiBase extends Resource implements IRestApi {
     }
 
     return this.deploymentStage.urlForPath(path);
-  }
-
-  /**
-   * API Gateway deployment that represents the latest changes of the API.
-   * This resource will be automatically updated every time the REST API model changes.
-   * This will be undefined if `deploy` is false.
-   */
-  public get latestDeployment() {
-    return this._latestDeployment;
   }
 
   /**
@@ -272,23 +345,6 @@ abstract class RestApiBase extends Resource implements IRestApi {
     return new UsagePlan(this, id, props);
   }
 
-  /**
-   * The first domain name mapped to this API, if defined through the `domainName`
-   * configuration prop, or added via `addDomainName`
-   */
-  public get domainName() {
-    return this._domainName;
-  }
-
-  /**
-   * Gets the "execute-api" ARN
-   * @returns The "execute-api" ARN.
-   * @default "*" returns the execute API ARN for all methods/resources in
-   * this API.
-   * @param method The method (default `*`)
-   * @param path The resource path. Must start with '/' (default `*`)
-   * @param stage The stage (default `*`)
-   */
   public arnForExecuteApi(method: string = '*', path: string = '/*', stage: string = '*') {
     if (!path.startsWith('/')) {
       throw new Error(`"path" must begin with a "/": '${path}'`);
@@ -314,6 +370,25 @@ abstract class RestApiBase extends Resource implements IRestApi {
       restApi: this,
       ...options,
     });
+  }
+
+  /**
+   * Internal API used by `Method` to keep an inventory of methods at the API
+   * level for validation purposes.
+   *
+   * @internal
+   */
+  public _attachMethod(method: Method) {
+    ignore(method);
+  }
+
+  /**
+   * Associates a Deployment resource with this REST API.
+   *
+   * @internal
+   */
+  public _attachDeployment(deployment: Deployment) {
+    ignore(deployment);
   }
 
   protected configureCloudWatchRole(apiResource: CfnRestApi) {
@@ -355,6 +430,25 @@ abstract class RestApiBase extends Resource implements IRestApi {
       }
     }
   }
+
+  /**
+   * @internal
+   */
+  protected _configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
+    if (props.endpointTypes && props.endpointConfiguration) {
+      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
+    }
+    if (props.endpointConfiguration) {
+      return {
+        types: props.endpointConfiguration.types,
+        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
+      };
+    }
+    if (props.endpointTypes) {
+      return { types: props.endpointTypes };
+    }
+    return undefined;
+  }
 }
 
 /**
@@ -384,6 +478,8 @@ export class SpecRestApi extends RestApiBase {
    */
   public readonly restApiRootResourceId: string;
 
+  public readonly root: IResource;
+
   constructor(scope: Construct, id: string, props: SpecRestApiProps) {
     super(scope, id, props);
     const apiDefConfig = props.apiDefinition.bind(this);
@@ -393,11 +489,13 @@ export class SpecRestApi extends RestApiBase {
       failOnWarnings: props.failOnWarnings,
       body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
+      endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
     this.restApiRootResourceId = resource.attrRootResourceId;
+    this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
     this.configureDeployment(props);
     if (props.domainName) {
@@ -412,6 +510,21 @@ export class SpecRestApi extends RestApiBase {
 }
 
 /**
+ * Attributes that can be specified when importing a RestApi
+ */
+export interface RestApiAttributes {
+  /**
+   * The ID of the API Gateway RestApi.
+   */
+  readonly restApiId: string;
+
+  /**
+   * The resource ID of the root resource.
+   */
+  readonly rootResourceId: string;
+}
+
+/**
  * Represents a REST API in Amazon API Gateway.
  *
  * Use `addResource` and `addMethod` to configure the API model.
@@ -419,40 +532,55 @@ export class SpecRestApi extends RestApiBase {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
-export class RestApi extends RestApiBase implements IRestApi {
+export class RestApi extends RestApiBase {
+  /**
+   * Import an existing RestApi.
+   */
   public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
-    class Import extends Resource implements IRestApi {
+    class Import extends RestApiBase {
       public readonly restApiId = restApiId;
+
+      public get root(): IResource {
+        throw new Error('root is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.');
+      }
+
+      public get restApiRootResourceId(): string {
+        throw new Error('restApiRootResourceId is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.');
+      }
     }
 
     return new Import(scope, id);
   }
 
   /**
-   * The ID of this API Gateway RestApi.
+   * Import an existing RestApi that can be configured with additional Methods and Resources.
+   * @experimental
    */
+  public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): IRestApi {
+    class Import extends RestApiBase {
+      public readonly restApiId = attrs.restApiId;
+      public readonly restApiRootResourceId = attrs.rootResourceId;
+      public readonly root: IResource = new RootResource(this, {}, this.restApiRootResourceId);
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly restApiId: string;
 
-  /**
-   * Represents the root resource ("/") of this API. Use it to define the API model:
-   *
-   *    api.root.addMethod('ANY', redirectToHomePage); // "ANY /"
-   *    api.root.addResource('friends').addMethod('GET', getFriendsHandler); // "GET /friends"
-   *
-   */
   public readonly root: IResource;
 
-  /**
-   * The resource ID of the root resource.
-   *
-   * @attribute
-   */
   public readonly restApiRootResourceId: string;
 
   /**
    * The list of methods bound to this RestApi
    */
   public readonly methods = new Array<Method>();
+
+  /**
+   * This list of deployments bound to this RestApi
+   */
+  private readonly deployments = new Array<Deployment>();
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id, props);
@@ -464,7 +592,7 @@ export class RestApi extends RestApiBase implements IRestApi {
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
-      endpointConfiguration: this.configureEndpoints(props),
+      endpointConfiguration: this._configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters,
@@ -531,6 +659,29 @@ export class RestApi extends RestApiBase implements IRestApi {
    */
   public _attachMethod(method: Method) {
     this.methods.push(method);
+
+    // add this method as a dependency to all deployments defined for this api
+    // when additional deployments are added, _attachDeployment is called and
+    // this method will be added there.
+    for (const dep of this.deployments) {
+      dep._addMethodDependency(method);
+    }
+  }
+
+  /**
+   * Attaches a deployment to this REST API.
+   *
+   * @internal
+   */
+  public _attachDeployment(deployment: Deployment) {
+    this.deployments.push(deployment);
+
+    // add all methods that were already defined as dependencies of this
+    // deployment when additional methods are added, _attachMethod is called and
+    // it will be added as a dependency to this deployment.
+    for (const method of this.methods) {
+      deployment._addMethodDependency(method);
+    }
   }
 
   /**
@@ -538,26 +689,10 @@ export class RestApi extends RestApiBase implements IRestApi {
    */
   protected validate() {
     if (this.methods.length === 0) {
-      return [ "The REST API doesn't contain any methods" ];
+      return ["The REST API doesn't contain any methods"];
     }
 
     return [];
-  }
-
-  private configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
-    if (props.endpointTypes && props.endpointConfiguration) {
-      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
-    }
-    if (props.endpointConfiguration) {
-      return {
-        types: props.endpointConfiguration.types,
-        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
-      };
-    }
-    if (props.endpointTypes) {
-      return { types: props.endpointTypes };
-    }
-    return undefined;
   }
 }
 
@@ -570,7 +705,7 @@ export interface EndpointConfiguration {
   /**
    * A list of endpoint types of an API or its custom domain name.
    *
-   * @default - no endpoint types.
+   * @default EndpointType.EDGE
    */
   readonly types: EndpointType[];
 
@@ -613,26 +748,47 @@ export enum EndpointType {
 
 class RootResource extends ResourceBase {
   public readonly parentResource?: IResource;
-  public readonly restApi: RestApi;
+  public readonly api: RestApiBase;
   public readonly resourceId: string;
   public readonly path: string;
   public readonly defaultIntegration?: Integration | undefined;
   public readonly defaultMethodOptions?: MethodOptions | undefined;
   public readonly defaultCorsPreflightOptions?: CorsOptions | undefined;
 
-  constructor(api: RestApi, props: RestApiProps, resourceId: string) {
+  private readonly _restApi?: RestApi;
+
+  constructor(api: RestApiBase, props: ResourceOptions, resourceId: string) {
     super(api, 'Default');
 
     this.parentResource = undefined;
     this.defaultIntegration = props.defaultIntegration;
     this.defaultMethodOptions = props.defaultMethodOptions;
     this.defaultCorsPreflightOptions = props.defaultCorsPreflightOptions;
-    this.restApi = api;
+    this.api = api;
     this.resourceId = resourceId;
     this.path = '/';
+
+    if (api instanceof RestApi) {
+      this._restApi = api;
+    }
 
     if (this.defaultCorsPreflightOptions) {
       this.addCorsPreflight(this.defaultCorsPreflightOptions);
     }
   }
+
+  /**
+   * Get the RestApi associated with this Resource.
+   * @deprecated - Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
+   */
+  public get restApi(): RestApi {
+    if (!this._restApi) {
+      throw new Error('RestApi is not available on Resource not connected to an instance of RestApi. Use `api` instead');
+    }
+    return this._restApi;
+  }
+}
+
+function ignore(_x: any) {
+  return;
 }

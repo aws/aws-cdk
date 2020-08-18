@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -5,10 +6,9 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import * as lambda from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default function'(test: Test) {
@@ -40,7 +40,7 @@ export = {
             },
             ManagedPolicyArns:
               // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
           },
         },
@@ -88,7 +88,7 @@ export = {
               Version: '2012-10-17',
             },
             ManagedPolicyArns:
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
           },
         },
@@ -171,7 +171,7 @@ export = {
                 'Version': '2012-10-17',
               },
               'ManagedPolicyArns':
-                // tslint:disable-next-line:max-line-length
+                // eslint-disable-next-line max-len
                 [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
             },
           },
@@ -237,7 +237,7 @@ export = {
       const role = new iam.Role(stack, 'SomeRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
-      role.addToPolicy(new iam.PolicyStatement({ actions: ['confirm:itsthesame'] }));
+      role.addToPolicy(new iam.PolicyStatement({ actions: ['confirm:itsthesame'], resources: ['*'] }));
 
       // WHEN
       const fn = new lambda.Function(stack, 'Function', {
@@ -246,20 +246,20 @@ export = {
         handler: 'index.test',
         role,
         initialPolicy: [
-          new iam.PolicyStatement({ actions: ['inline:inline'] }),
+          new iam.PolicyStatement({ actions: ['inline:inline'], resources: ['*'] }),
         ],
       });
 
-      fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'] }));
+      fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'], resources: ['*'] }));
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Version': '2012-10-17',
           'Statement': [
-            { 'Action': 'confirm:itsthesame', 'Effect': 'Allow' },
-            { 'Action': 'inline:inline', 'Effect': 'Allow' },
-            { 'Action': 'explicit:explicit', 'Effect': 'Allow' },
+            { 'Action': 'confirm:itsthesame', 'Effect': 'Allow', 'Resource': '*' },
+            { 'Action': 'inline:inline', 'Effect': 'Allow', 'Resource': '*' },
+            { 'Action': 'explicit:explicit', 'Effect': 'Allow', 'Resource': '*' },
           ],
         },
       }));
@@ -1305,7 +1305,7 @@ export = {
             },
             ManagedPolicyArns:
               // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
           },
         },

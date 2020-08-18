@@ -1,16 +1,24 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as AWS from 'aws-sdk';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { RetryDelayOptions } from 'aws-sdk/lib/config';
+
+interface SdkRetryOptions {
+  maxRetries?: number;
+  retryOptions?: RetryDelayOptions;
+}
 
 /**
  * Creates a log group and doesn't throw if it exists.
  *
- * @param logGroupName the name of the log group to create
+ * @param logGroupName the name of the log group to create.
+ * @param options CloudWatch API SDK options.
  */
-async function createLogGroupSafe(logGroupName: string) {
+async function createLogGroupSafe(logGroupName: string, options?: SdkRetryOptions) {
   try { // Try to create the log group
-    const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
+    const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...options });
     await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
   } catch (e) {
     if (e.code !== 'ResourceAlreadyExistsException') {
@@ -23,10 +31,11 @@ async function createLogGroupSafe(logGroupName: string) {
  * Puts or deletes a retention policy on a log group.
  *
  * @param logGroupName the name of the log group to create
+ * @param options CloudWatch API SDK options.
  * @param retentionInDays the number of days to retain the log events in the specified log group.
  */
-async function setRetentionPolicy(logGroupName: string, retentionInDays?: number) {
-  const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
+async function setRetentionPolicy(logGroupName: string, options?: SdkRetryOptions, retentionInDays?: number) {
+  const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...options });
   if (!retentionInDays) {
     await cloudwatchlogs.deleteRetentionPolicy({ logGroupName }).promise();
   } else {
@@ -41,10 +50,13 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     // The target log group
     const logGroupName = event.ResourceProperties.LogGroupName;
 
+    // Parse to AWS SDK retry options
+    const retryOptions = parseRetryOptions(event.ResourceProperties.SdkRetry);
+
     if (event.RequestType === 'Create' || event.RequestType === 'Update') {
       // Act on the target log group
-      await createLogGroupSafe(logGroupName);
-      await setRetentionPolicy(logGroupName, parseInt(event.ResourceProperties.RetentionInDays, 10));
+      await createLogGroupSafe(logGroupName, retryOptions);
+      await setRetentionPolicy(logGroupName, retryOptions, parseInt(event.ResourceProperties.RetentionInDays, 10));
 
       if (event.RequestType === 'Create') {
         // Set a retention policy of 1 day on the logs of this function. The log
@@ -56,8 +68,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         // same time. This can sometime result in an OperationAbortedException. To
         // avoid this and because this operation is not critical we catch all errors.
         try {
-          await createLogGroupSafe(`/aws/lambda/${context.functionName}`);
-          await setRetentionPolicy(`/aws/lambda/${context.functionName}`, 1);
+          await createLogGroupSafe(`/aws/lambda/${context.functionName}`, retryOptions);
+          await setRetentionPolicy(`/aws/lambda/${context.functionName}`, retryOptions, 1);
         } catch (e) {
           console.log(e);
         }
@@ -107,5 +119,20 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         reject(e);
       }
     });
+  }
+
+  function parseRetryOptions(rawOptions: any): SdkRetryOptions {
+    const retryOptions: SdkRetryOptions = {};
+    if (rawOptions) {
+      if (rawOptions.maxRetries) {
+        retryOptions.maxRetries = parseInt(rawOptions.maxRetries, 10);
+      }
+      if (rawOptions.base) {
+        retryOptions.retryOptions = {
+          base: parseInt(rawOptions.base, 10),
+        };
+      }
+    }
+    return retryOptions;
   }
 }

@@ -48,7 +48,7 @@ export = {
     test.done();
   },
 
-  'Listener default to open'(test: Test) {
+  'Listener default to open - IPv4'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -66,6 +66,41 @@ export = {
         {
           Description: 'Allow from anyone on port 80',
           CidrIp: '0.0.0.0/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'Listener default to open - IPv4 and IPv6 (dualstack)'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, ipAddressType: elbv2.IpAddressType.DUAL_STACK });
+
+    // WHEN
+    loadBalancer.addListener('MyListener', {
+      port: 80,
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIp: '0.0.0.0/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIpv6: '::/0',
           FromPort: 80,
           IpProtocol: 'tcp',
           ToPort: 80,
@@ -484,16 +519,15 @@ export = {
       const loadBalancerArn = { Ref: 'LBSomeListenerCA01F1A0' };
 
       test.deepEqual(stack.resolve(metric.dimensions), {
-        TargetGroup: { 'Fn::GetAtt': [ 'TargetGroup3D7CD9B8', 'TargetGroupFullName' ] },
-        LoadBalancer: { 'Fn::Join':
-            [ '',
-              [ { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', loadBalancerArn ] } ] },
+        TargetGroup: { 'Fn::GetAtt': ['TargetGroup3D7CD9B8', 'TargetGroupFullName'] },
+        LoadBalancer: {
+          'Fn::Join':
+            ['',
+              [{ 'Fn::Select': [1, { 'Fn::Split': ['/', loadBalancerArn] }] },
                 '/',
-                { 'Fn::Select': [ 2, { 'Fn::Split': [ '/', loadBalancerArn ] } ] },
+                { 'Fn::Select': [2, { 'Fn::Split': ['/', loadBalancerArn] }] },
                 '/',
-                { 'Fn::Select': [ 3, { 'Fn::Split': [ '/', loadBalancerArn ] } ] },
-              ],
-            ],
+                { 'Fn::Select': [3, { 'Fn::Split': ['/', loadBalancerArn] }] }]],
         },
       });
     }
@@ -1283,7 +1317,7 @@ export = {
 
     // WHEN
     test.throws(() => {
-      new elbv2.ApplicationListenerRule(stack, 'Rule1',  {
+      new elbv2.ApplicationListenerRule(stack, 'Rule1', {
         ...baseProps,
         fixedResponse: { statusCode: '200' },
         action: elbv2.ListenerAction.fixedResponse(200),
@@ -1291,7 +1325,7 @@ export = {
     }, /specify only one/);
 
     test.throws(() => {
-      new elbv2.ApplicationListenerRule(stack, 'Rule2',  {
+      new elbv2.ApplicationListenerRule(stack, 'Rule2', {
         ...baseProps,
         targetGroups: [group],
         action: elbv2.ListenerAction.fixedResponse(200),

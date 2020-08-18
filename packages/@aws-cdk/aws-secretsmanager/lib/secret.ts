@@ -42,7 +42,7 @@ export interface ISecret extends IResource {
   grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant;
 
   /**
-   * Grants writing the secret value to some role.
+   * Grants writing and updating the secret value to some role.
    *
    * @param grantee       the principal being granted permission.
    */
@@ -166,7 +166,7 @@ abstract class SecretBase extends Resource implements ISecret {
     // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
     const result = iam.Grant.addToPrincipal({
       grantee,
-      actions: ['secretsmanager:PutSecretValue'],
+      actions: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
       resourceArns: [this.secretArn],
       scope: this,
     });
@@ -206,6 +206,12 @@ abstract class SecretBase extends Resource implements ISecret {
       return { statementAdded: true, policyDependable: this.policy };
     }
     return { statementAdded: false };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
   }
 
   public denyAccountRootDelete() {
@@ -359,6 +365,11 @@ export enum AttachmentTargetType {
    * AWS::RDS::DBCluster
    */
   RDS_DB_CLUSTER = 'AWS::RDS::DBCluster',
+
+  /**
+   * AWS::RDS::DBProxy
+   */
+  RDS_DB_PROXY = 'AWS::RDS::DBProxy',
 
   /**
    * AWS::Redshift::Cluster

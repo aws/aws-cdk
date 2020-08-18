@@ -1,7 +1,7 @@
-import * as archiver from 'archiver';
 import { createWriteStream, promises as fs } from 'fs';
-import * as glob from 'glob';
 import * as path from 'path';
+import * as archiver from 'archiver';
+import * as glob from 'glob';
 
 export function zipDirectory(directory: string, outputFile: string): Promise<void> {
   return new Promise(async (ok, fail) => {
@@ -40,7 +40,7 @@ export function zipDirectory(directory: string, outputFile: string): Promise<voi
       });
     }
 
-    archive.finalize();
+    await archive.finalize();
 
   });
 }

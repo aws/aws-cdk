@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';
@@ -6,7 +7,6 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import * as ecs from '../../lib';
 
 export = {
@@ -420,7 +420,7 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::ECR::Repository', {
         LifecyclePolicy: {
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
           RegistryId: '123456789101',
         },

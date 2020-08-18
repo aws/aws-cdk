@@ -30,13 +30,15 @@ the actual handler.
 
 ```ts
 import { CustomResource } from '@aws-cdk/core';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cr from '@aws-cdk/custom-resources';
 
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
 
 const myProvider = new cr.Provider(this, 'MyProvider', {
   onEventHandler: onEvent,
-  isCompleteHandler: isComplete // optional async "waiter"
+  isCompleteHandler: isComplete,        // optional async "waiter"
+  logRetention: logs.RetentionDays.ONE_DAY   // default is INFINITE
 });
 
 new CustomResource(this, 'Resource1', { serviceToken: myProvider.serviceToken });
@@ -260,8 +262,8 @@ This module includes a few examples for custom resource implementations:
 
 Provisions an object in an S3 bucket with textual contents. See the source code
 for the
-[construct](test/provider-framework/integration-test-fixtures/s3-file.ts) and
-[handler](test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
+[construct](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
+[handler](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
 
 The following example will create the file `folder/file1.txt` inside `myBucket`
 with the contents `hello!`.
@@ -324,6 +326,11 @@ parameters can be found in the [API documentation](https://docs.aws.amazon.com/A
 Path to data must be specified using a dot notation, e.g. to get the string value
 of the `Title` attribute for the first item returned by `dynamodb.query` it should
 be `Items.0.Title.S`.
+
+To make sure that the newest API calls are available the latest AWS SDK v2 is installed
+in the Lambda function implementing the custom resource. The installation takes around 60
+seconds. If you prefer to optimize for speed, you can disable the installation by setting
+the `installLatestAwsSdk` prop to `false`.
 
 ### Execution Policy
 

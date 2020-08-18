@@ -22,4 +22,8 @@ module.exports = {
         "<rootDir>/lib/.*\\.generated\\.[jt]s",
         "<rootDir>/test/.*\\.[jt]s",
     ],
+	reporters: [
+        "default",
+          [ "jest-junit", { suiteName: "jest tests", outputDirectory: "coverage" } ]
+    ]
 };

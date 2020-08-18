@@ -1,4 +1,4 @@
-import { AssetManifestSchema } from '@aws-cdk/cdk-assets-schema';
+import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
 import { AssetManifest, AssetPublishing } from '../lib';
 import { mockAws, mockedApiResult, mockUpload } from './mock-aws';
@@ -7,7 +7,7 @@ let aws: ReturnType<typeof mockAws>;
 beforeEach(() => {
   mockfs({
     '/simple/cdk.out/assets.json': JSON.stringify({
-      version: AssetManifestSchema.currentVersion(),
+      version: Manifest.version(),
       files: {
         theAsset: {
           source: {
@@ -26,7 +26,7 @@ beforeEach(() => {
     }),
     '/simple/cdk.out/some_file': 'FILE_CONTENTS',
     '/abs/cdk.out/assets.json': JSON.stringify({
-      version: AssetManifestSchema.currentVersion(),
+      version: Manifest.version(),
       files: {
         theAsset: {
           source: {
@@ -64,7 +64,7 @@ test('pass destination properties to AWS client', async () => {
 });
 
 test('Do nothing if file already exists', async () => {
-  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out') , { aws });
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
 
   aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: [{ Key: 'some_key' }] });
 

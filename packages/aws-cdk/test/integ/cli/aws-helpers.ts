@@ -36,7 +36,7 @@ async function awsCall<
   B extends keyof ServiceCalls<A>,
 >(ctor: new (config: any) => A, call: B, request: First<ServiceCalls<A>[B]>): Promise<Second<ServiceCalls<A>[B]>> {
   const env = await testEnv();
-  const cfn = new ctor({ region: env.region });
+  const cfn = new ctor({ region: env.region, maxRetries: 6, retryDelayOptions: { base: 500 } });
   const response = cfn[call](request);
   try {
     return await response.promise();
@@ -93,6 +93,10 @@ export async function deleteStacks(...stackNames: string[]) {
   if (stackNames.length === 0) { return; }
 
   for (const stackName of stackNames) {
+    await cloudFormation('updateTerminationProtection', {
+      EnableTerminationProtection: false,
+      StackName: stackName,
+    });
     await cloudFormation('deleteStack', {
       StackName: stackName,
     });

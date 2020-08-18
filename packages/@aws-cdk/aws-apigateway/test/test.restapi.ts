@@ -4,7 +4,7 @@ import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'minimal setup'(test: Test) {
@@ -28,7 +28,7 @@ export = {
           Type: 'AWS::ApiGateway::Method',
           Properties: {
             HttpMethod: 'GET',
-            ResourceId: { 'Fn::GetAtt': [ 'myapi4C7BF186', 'RootResourceId' ] },
+            ResourceId: { 'Fn::GetAtt': ['myapi4C7BF186', 'RootResourceId'] },
             RestApiId: { Ref: 'myapi4C7BF186' },
             AuthorizationType: 'NONE',
             Integration: {
@@ -66,22 +66,22 @@ export = {
               Version: '2012-10-17',
             },
             ManagedPolicyArns: [
-              { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs' ] ] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs']] },
             ],
           },
         },
         myapiAccountEC421A0A: {
           Type: 'AWS::ApiGateway::Account',
           Properties: {
-            CloudWatchRoleArn: { 'Fn::GetAtt': [ 'myapiCloudWatchRole095452E5', 'Arn' ] },
+            CloudWatchRoleArn: { 'Fn::GetAtt': ['myapiCloudWatchRole095452E5', 'Arn'] },
           },
-          DependsOn: [ 'myapi4C7BF186' ],
+          DependsOn: ['myapi4C7BF186'],
         },
       },
       Outputs: {
         myapiEndpoint3628AFE3: {
           Value: {
-            'Fn::Join': [ '', [
+            'Fn::Join': ['', [
               'https://',
               { Ref: 'myapi4C7BF186' },
               '.execute-api.',
@@ -161,12 +161,12 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
-      ParentId: { 'Fn::GetAtt': [ 'restapiC5611D27', 'RootResourceId'] },
+      ParentId: { 'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'] },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'bar',
-      ParentId: { 'Fn::GetAtt': [ 'restapiC5611D27', 'RootResourceId'] },
+      ParentId: { 'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'] },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
@@ -335,18 +335,6 @@ export = {
     test.done();
   },
 
-  'fromRestApiId'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const imported = apigw.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
-
-    // THEN
-    test.deepEqual(stack.resolve(imported.restApiId), 'api-rxt4498f');
-    test.done();
-  },
-
   '"url" and "urlForPath" return the URL endpoints of the deployed API'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -354,9 +342,10 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.deepEqual(stack.resolve(api.url), { 'Fn::Join':
-    [ '',
-      [ 'https://',
+    test.deepEqual(stack.resolve(api.url), {
+      'Fn::Join':
+    ['',
+      ['https://',
         { Ref: 'apiC8550315' },
         '.execute-api.',
         { Ref: 'AWS::Region' },
@@ -364,10 +353,12 @@ export = {
         { Ref: 'AWS::URLSuffix' },
         '/',
         { Ref: 'apiDeploymentStageprod896C8101' },
-        '/' ] ] });
-    test.deepEqual(stack.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
-    [ '',
-      [ 'https://',
+        '/']],
+    });
+    test.deepEqual(stack.resolve(api.urlForPath('/foo/bar')), {
+      'Fn::Join':
+    ['',
+      ['https://',
         { Ref: 'apiC8550315' },
         '.execute-api.',
         { Ref: 'AWS::Region' },
@@ -375,7 +366,8 @@ export = {
         { Ref: 'AWS::URLSuffix' },
         '/',
         { Ref: 'apiDeploymentStageprod896C8101' },
-        '/foo/bar' ] ] });
+        '/foo/bar']],
+    });
     test.done();
   },
 
@@ -412,9 +404,10 @@ export = {
     const arn = api.arnForExecuteApi('method', '/path', 'stage');
 
     // THEN
-    test.deepEqual(stack.resolve(arn), { 'Fn::Join':
-    [ '',
-      [ 'arn:',
+    test.deepEqual(stack.resolve(arn), {
+      'Fn::Join':
+    ['',
+      ['arn:',
         { Ref: 'AWS::Partition' },
         ':execute-api:',
         { Ref: 'AWS::Region' },
@@ -422,7 +415,8 @@ export = {
         { Ref: 'AWS::AccountId' },
         ':',
         { Ref: 'apiC8550315' },
-        '/stage/method/path' ] ] });
+        '/stage/method/path']],
+    });
     test.done();
   },
 
@@ -445,9 +439,10 @@ export = {
     const method = api.root.addMethod('ANY');
 
     // THEN
-    test.deepEqual(stack.resolve(method.methodArn), { 'Fn::Join':
-    [ '',
-      [ 'arn:',
+    test.deepEqual(stack.resolve(method.methodArn), {
+      'Fn::Join':
+    ['',
+      ['arn:',
         { Ref: 'AWS::Partition' },
         ':execute-api:',
         { Ref: 'AWS::Region' },
@@ -457,7 +452,8 @@ export = {
         { Ref: 'apiC8550315' },
         '/',
         { Ref: 'apiDeploymentStageprod896C8101' },
-        '/*/'] ] });
+        '/*/']],
+    });
     test.done();
   },
 
@@ -467,7 +463,7 @@ export = {
 
     // WHEN
     const api = new apigw.RestApi(stack, 'api', {
-      endpointTypes: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ],
+      endpointTypes: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
     });
 
     api.root.addMethod('GET');
@@ -491,7 +487,7 @@ export = {
     // WHEN
     const api = new apigw.RestApi(stack, 'api', {
       endpointConfiguration: {
-        types: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ],
+        types: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
       },
     });
 
@@ -500,7 +496,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
-        Types: [ 'EDGE', 'PRIVATE' ],
+        Types: ['EDGE', 'PRIVATE'],
       },
     }));
     test.done();
@@ -513,7 +509,7 @@ export = {
     // WHEN
     const api = new apigw.RestApi(stack, 'api', {
       endpointConfiguration: {
-        types: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ],
+        types: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
         vpcEndpoints: [
           GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint'),
           GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint2', 'vpcEndpoint2'),
@@ -546,10 +542,10 @@ export = {
     // THEN
     test.throws(() => new apigw.RestApi(stack, 'api', {
       endpointConfiguration: {
-        types: [ apigw.EndpointType.PRIVATE ],
-        vpcEndpoints: [ GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint')],
+        types: [apigw.EndpointType.PRIVATE],
+        vpcEndpoints: [GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint')],
       },
-      endpointTypes: [ apigw.EndpointType.PRIVATE ],
+      endpointTypes: [apigw.EndpointType.PRIVATE],
     }), /Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
     test.done();
   },
@@ -645,7 +641,7 @@ export = {
     // CASE #1
     expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      ResourceId: { 'Fn::GetAtt': [ 'myapi162F20B8', 'RootResourceId' ] },
+      ResourceId: { 'Fn::GetAtt': ['myapi162F20B8', 'RootResourceId'] },
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID',
       AuthorizationType: 'AWS_IAM',
@@ -788,18 +784,18 @@ export = {
             '',
             [
               'https://',
-              {Ref: 'myapi162F20B8'},
+              { Ref: 'myapi162F20B8' },
               '.execute-api.',
-              {Ref: 'AWS::Region'},
+              { Ref: 'AWS::Region' },
               '.',
-              {Ref: 'AWS::URLSuffix'},
+              { Ref: 'AWS::URLSuffix' },
               '/',
-              {Ref: 'myapiDeploymentStageprod329F21FF'},
+              { Ref: 'myapiDeploymentStageprod329F21FF' },
               '/',
             ],
           ],
         },
-        Export: {Name: 'my-given-export-name'},
+        Export: { Name: 'my-given-export-name' },
       },
     });
 
@@ -822,13 +818,13 @@ export = {
             '',
             [
               'https://',
-              {Ref: 'myapi162F20B8'},
+              { Ref: 'myapi162F20B8' },
               '.execute-api.',
-              {Ref: 'AWS::Region'},
+              { Ref: 'AWS::Region' },
               '.',
-              {Ref: 'AWS::URLSuffix'},
+              { Ref: 'AWS::URLSuffix' },
               '/',
-              {Ref: 'myapiDeploymentStageprod329F21FF'},
+              { Ref: 'myapiDeploymentStageprod329F21FF' },
               '/',
             ],
           ],
@@ -932,5 +928,127 @@ export = {
     }));
 
     test.done();
+  },
+
+  '"restApi" and "api" properties return the RestApi correctly'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'test-api');
+    const method = api.root.addResource('pets').addMethod('GET');
+
+    // THEN
+    test.ok(method.restApi);
+    test.ok(method.api);
+    test.deepEqual(stack.resolve(method.api.restApiId), stack.resolve(method.restApi.restApiId));
+
+    test.done();
+  },
+
+  '"restApi" throws an error on imported while "api" returns correctly'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = apigw.RestApi.fromRestApiAttributes(stack, 'test-api', {
+      restApiId: 'test-rest-api-id',
+      rootResourceId: 'test-root-resource-id',
+    });
+    const method = api.root.addResource('pets').addMethod('GET');
+
+    // THEN
+    test.throws(() => method.restApi, /not available on Resource not connected to an instance of RestApi/);
+    test.ok(method.api);
+
+    test.done();
+  },
+
+  Import: {
+    'fromRestApiId()'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const imported = apigw.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
+
+      // THEN
+      test.deepEqual(stack.resolve(imported.restApiId), 'api-rxt4498f');
+      test.done();
+    },
+
+    'fromRestApiAttributes()'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const imported = apigw.RestApi.fromRestApiAttributes(stack, 'imported-api', {
+        restApiId: 'test-restapi-id',
+        rootResourceId: 'test-root-resource-id',
+      });
+      const resource = imported.root.addResource('pets');
+      resource.addMethod('GET');
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+        PathPart: 'pets',
+        ParentId: stack.resolve(imported.restApiRootResourceId),
+      }));
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'GET',
+        ResourceId: stack.resolve(resource.resourceId),
+      }));
+
+      test.done();
+    },
+  },
+
+  SpecRestApi: {
+    'add Methods and Resources'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      });
+
+      // WHEN
+      const resource = api.root.addResource('pets');
+      resource.addMethod('GET');
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+        PathPart: 'pets',
+        ParentId: stack.resolve(api.restApiRootResourceId),
+      }));
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'GET',
+        ResourceId: stack.resolve(resource.resourceId),
+      }));
+      test.done();
+    },
+
+    '"endpointTypes" can be used to specify endpoint configuration for SpecRestApi'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.SpecRestApi(stack, 'api', {
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+        endpointTypes: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
+      });
+
+      api.root.addMethod('GET');
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+        EndpointConfiguration: {
+          Types: [
+            'EDGE',
+            'PRIVATE',
+          ],
+        },
+      }));
+      test.done();
+    },
   },
 };

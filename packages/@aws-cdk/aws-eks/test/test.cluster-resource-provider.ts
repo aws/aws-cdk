@@ -88,6 +88,30 @@ export = {
       test.done();
     },
 
+    async 'isCreateComplete throws if cluster is FAILED'(test: Test) {
+      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create'));
+      mocks.simulateResponse.describeClusterResponseMockStatus = 'FAILED';
+      try {
+        await handler.isComplete();
+        test.ok(false, 'expected error to be thrown');
+      } catch (err) {
+        test.equal(err.message, 'Cluster is in a FAILED status');
+      }
+      test.done();
+    },
+
+    async 'isUpdateComplete throws if cluster is FAILED'(test: Test) {
+      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update'));
+      mocks.simulateResponse.describeClusterResponseMockStatus = 'FAILED';
+      try {
+        await handler.isComplete();
+        test.ok(false, 'expected error to be thrown');
+      } catch (err) {
+        test.equal(err.message, 'Cluster is in a FAILED status');
+      }
+      test.done();
+    },
+
     async 'isCreateComplete is complete when cluster is ACTIVE'(test: Test) {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create'));
       mocks.simulateResponse.describeClusterResponseMockStatus = 'ACTIVE';
@@ -99,8 +123,10 @@ export = {
           Endpoint: 'http://endpoint',
           Arn: 'arn:cluster-arn',
           CertificateAuthorityData: 'certificateAuthority-data',
-          OpenIdConnectIssuerUrl: undefined,
-          OpenIdConnectIssuer: undefined,
+          ClusterSecurityGroupId: '',
+          EncryptionConfigKeyArn: '',
+          OpenIdConnectIssuerUrl: '',
+          OpenIdConnectIssuer: '',
         },
       });
       test.done();
@@ -272,7 +298,7 @@ export = {
         test.done();
       },
 
-      async '"roleArn" requires a replcement'(test: Test) {
+      async '"roleArn" requires a replacement'(test: Test) {
         const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
           roleArn: 'new-arn',
         }, {
@@ -422,8 +448,10 @@ export = {
             Endpoint: 'http://endpoint',
             Arn: 'arn:cluster-arn',
             CertificateAuthorityData: 'certificateAuthority-data',
-            OpenIdConnectIssuerUrl: undefined,
-            OpenIdConnectIssuer: undefined,
+            ClusterSecurityGroupId: '',
+            EncryptionConfigKeyArn: '',
+            OpenIdConnectIssuerUrl: '',
+            OpenIdConnectIssuer: '',
           },
         });
         test.done();
@@ -496,7 +524,106 @@ export = {
           test.done();
         },
       },
+
+      'logging or access change': {
+        async 'from undefined to partial logging enabled'(test: Test) {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api'],
+                  enabled: true,
+                },
+              ],
+            },
+          }, {
+            logging: undefined,
+          }));
+          const resp = await handler.onEvent();
+          test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          test.deepEqual(mocks.actualRequest.updateClusterConfigRequest!, {
+            name: 'physical-resource-id',
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api'],
+                  enabled: true,
+                },
+              ],
+            },
+          });
+          test.equal(mocks.actualRequest.createClusterRequest, undefined);
+          test.done();
+        },
+
+        async 'from partial vpc configuration to only private access enabled'(test: Test) {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            resourcesVpcConfig: {
+              securityGroupIds: ['sg1', 'sg2', 'sg3'],
+              endpointPrivateAccess: true,
+            },
+          }, {
+            resourcesVpcConfig: {
+              securityGroupIds: ['sg1', 'sg2', 'sg3'],
+            },
+          }));
+          const resp = await handler.onEvent();
+          test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          test.deepEqual(mocks.actualRequest.updateClusterConfigRequest!, {
+            name: 'physical-resource-id',
+            logging: undefined,
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: undefined,
+              publicAccessCidrs: undefined,
+            },
+          });
+          test.equal(mocks.actualRequest.createClusterRequest, undefined);
+          test.done();
+        },
+
+        async 'from undefined to both logging and access fully enabled'(test: Test) {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                  enabled: true,
+                },
+              ],
+            },
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['0.0.0.0/0'],
+            },
+          }, {
+            logging: undefined,
+            resourcesVpcConfig: undefined,
+          }));
+
+          const resp = await handler.onEvent();
+          test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          test.deepEqual(mocks.actualRequest.updateClusterConfigRequest!, {
+            name: 'physical-resource-id',
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                  enabled: true,
+                },
+              ],
+            },
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['0.0.0.0/0'],
+            },
+          });
+          test.equal(mocks.actualRequest.createClusterRequest, undefined);
+          test.done();
+        },
+      },
     },
   },
-
 };

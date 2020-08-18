@@ -1,9 +1,9 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import * as fs from 'fs';
-import * as path from 'path';
 
 // don't use "require" since the typescript compiler emits errors since this
 // file is not listed in tsconfig.json.
@@ -63,7 +63,7 @@ export interface AwsSdkCall {
   /**
    * The parameters for the service action
    *
-   * @default - no paramters
+   * @default - no parameters
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
   readonly parameters?: any;
@@ -244,6 +244,16 @@ export interface AwsCustomResourceProps {
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * Whether to install the latest AWS SDK v2. Allows to use the latest API
+   * calls documented at https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html.
+   *
+   * The installation takes around 60 seconds.
+   *
+   * @default true
+   */
+  readonly installLatestAwsSdk?: boolean;
 }
 
 /**
@@ -332,6 +342,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
         create: create && encodeBooleans(create),
         update: props.onUpdate && encodeBooleans(props.onUpdate),
         delete: props.onDelete && encodeBooleans(props.onDelete),
+        installLatestAwsSdk: props.installLatestAwsSdk ?? true,
       },
     });
   }

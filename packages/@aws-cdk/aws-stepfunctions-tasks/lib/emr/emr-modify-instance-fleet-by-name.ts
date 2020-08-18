@@ -1,14 +1,14 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Aws } from '@aws-cdk/core';
-import { getResourceArn } from '../resource-arn-suffix';
+import { Aws, Construct } from '@aws-cdk/core';
+import { integrationResourceArn } from '../private/task-utils';
 
 /**
  * Properties for EmrModifyInstanceFleetByName
  *
  * @experimental
  */
-export interface EmrModifyInstanceFleetByNameProps {
+export interface EmrModifyInstanceFleetByNameProps extends sfn.TaskStateBaseProps {
   /**
    * The ClusterId to update.
    */
@@ -24,7 +24,7 @@ export interface EmrModifyInstanceFleetByNameProps {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceFleetModifyConfig.html
    *
-   * @default None
+   * @default - None
    */
   readonly targetOnDemandCapacity: number;
 
@@ -33,7 +33,7 @@ export interface EmrModifyInstanceFleetByNameProps {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceFleetModifyConfig.html
    *
-   * @default None
+   * @default - None
    */
   readonly targetSpotCapacity: number;
 }
@@ -43,31 +43,40 @@ export interface EmrModifyInstanceFleetByNameProps {
  *
  * @experimental
  */
-export class EmrModifyInstanceFleetByName implements sfn.IStepFunctionsTask {
+export class EmrModifyInstanceFleetByName extends sfn.TaskStateBase {
 
-  constructor(private readonly props: EmrModifyInstanceFleetByNameProps) {}
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
+  constructor(scope: Construct, id: string, private readonly props: EmrModifyInstanceFleetByNameProps) {
+    super(scope, id, props);
+
+    this.taskPolicies = [
+      new iam.PolicyStatement({
+        actions: [
+          'elasticmapreduce:ModifyInstanceFleet',
+          'elasticmapreduce:ListInstanceFleets',
+        ],
+        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+      }),
+    ];
+  }
+
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
-      resourceArn: getResourceArn('elasticmapreduce', 'modifyInstanceFleetByName',
-        sfn.ServiceIntegrationPattern.FIRE_AND_FORGET),
-      policyStatements: [
-        new iam.PolicyStatement({
-          actions: [
-            'elasticmapreduce:ModifyInstanceFleet',
-            'elasticmapreduce:ListInstanceFleets',
-          ],
-          resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
-        }),
-      ],
-      parameters: {
+      Resource: integrationResourceArn('elasticmapreduce', 'modifyInstanceFleetByName',
+        sfn.IntegrationPattern.REQUEST_RESPONSE),
+      Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
         InstanceFleetName: this.props.instanceFleetName,
         InstanceFleet: {
           TargetOnDemandCapacity: this.props.targetOnDemandCapacity,
           TargetSpotCapacity: this.props.targetSpotCapacity,
         },
-      },
+      }),
     };
   }
 }

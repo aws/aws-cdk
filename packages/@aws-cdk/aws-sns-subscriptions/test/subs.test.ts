@@ -5,7 +5,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { CfnParameter, Duration, Stack, Token } from '@aws-cdk/core';
 import * as subs from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 let stack: Stack;
 let topic: sns.Topic;
@@ -154,8 +154,8 @@ test('url subscription (with raw delivery)', () => {
 });
 
 test('url subscription (unresolved url with protocol)', () => {
-  const urlToken = Token.asString({ Ref : 'my-url-1' });
-  topic.addSubscription(new subs.UrlSubscription(urlToken, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  const urlToken = Token.asString({ Ref: 'my-url-1' });
+  topic.addSubscription(new subs.UrlSubscription(urlToken, { protocol: sns.SubscriptionProtocol.HTTPS }));
 
   expect(stack).toMatchTemplate({
     'Resources': {
@@ -181,11 +181,11 @@ test('url subscription (unresolved url with protocol)', () => {
 });
 
 test('url subscription (double unresolved url with protocol)', () => {
-  const urlToken1 = Token.asString({ Ref : 'my-url-1' });
-  const urlToken2 = Token.asString({ Ref : 'my-url-2' });
+  const urlToken1 = Token.asString({ Ref: 'my-url-1' });
+  const urlToken2 = Token.asString({ Ref: 'my-url-2' });
 
-  topic.addSubscription(new subs.UrlSubscription(urlToken1, {protocol: sns.SubscriptionProtocol.HTTPS}));
-  topic.addSubscription(new subs.UrlSubscription(urlToken2, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  topic.addSubscription(new subs.UrlSubscription(urlToken1, { protocol: sns.SubscriptionProtocol.HTTPS }));
+  topic.addSubscription(new subs.UrlSubscription(urlToken2, { protocol: sns.SubscriptionProtocol.HTTPS }));
 
   expect(stack).toMatchTemplate({
     'Resources': {
@@ -200,7 +200,7 @@ test('url subscription (double unresolved url with protocol)', () => {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-url-1',
+            'Ref': 'my-url-1',
           },
           'Protocol': 'https',
           'TopicArn': { 'Ref': 'MyTopic86869434' },
@@ -210,7 +210,7 @@ test('url subscription (double unresolved url with protocol)', () => {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-url-2',
+            'Ref': 'my-url-2',
           },
           'Protocol': 'https',
           'TopicArn': { 'Ref': 'MyTopic86869434' },
@@ -226,7 +226,7 @@ test('url subscription (unknown protocol)', () => {
 });
 
 test('url subscription (unresolved url without protocol)', () => {
-  const urlToken = Token.asString({ Ref : 'my-url-1' });
+  const urlToken = Token.asString({ Ref: 'my-url-1' });
 
   expect(() => topic.addSubscription(new subs.UrlSubscription(urlToken)))
     .toThrowError(/Must provide protocol if url is unresolved/);
@@ -580,7 +580,7 @@ test('email subscription', () => {
 });
 
 test('email subscription with unresolved', () => {
-  const emailToken = Token.asString({ Ref : 'my-email-1' });
+  const emailToken = Token.asString({ Ref: 'my-email-1' });
   topic.addSubscription(new subs.EmailSubscription(emailToken));
 
   expect(stack).toMatchTemplate({
@@ -596,7 +596,7 @@ test('email subscription with unresolved', () => {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-email-1',
+            'Ref': 'my-email-1',
           },
           'Protocol': 'email',
           'TopicArn': {
@@ -609,10 +609,10 @@ test('email subscription with unresolved', () => {
 });
 
 test('email and url subscriptions with unresolved', () => {
-  const emailToken = Token.asString({ Ref : 'my-email-1' });
-  const urlToken = Token.asString({ Ref : 'my-url-1' });
+  const emailToken = Token.asString({ Ref: 'my-email-1' });
+  const urlToken = Token.asString({ Ref: 'my-url-1' });
   topic.addSubscription(new subs.EmailSubscription(emailToken));
-  topic.addSubscription(new subs.UrlSubscription(urlToken, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  topic.addSubscription(new subs.UrlSubscription(urlToken, { protocol: sns.SubscriptionProtocol.HTTPS }));
 
   expect(stack).toMatchTemplate({
     'Resources': {
@@ -627,7 +627,7 @@ test('email and url subscriptions with unresolved', () => {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-email-1',
+            'Ref': 'my-email-1',
           },
           'Protocol': 'email',
           'TopicArn': {
@@ -639,7 +639,7 @@ test('email and url subscriptions with unresolved', () => {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-url-1',
+            'Ref': 'my-url-1',
           },
           'Protocol': 'https',
           'TopicArn': {
@@ -652,10 +652,10 @@ test('email and url subscriptions with unresolved', () => {
 });
 
 test('email and url subscriptions with unresolved - four subscriptions', () => {
-  const emailToken1 = Token.asString({ Ref : 'my-email-1' });
-  const emailToken2 = Token.asString({ Ref : 'my-email-2' });
-  const emailToken3 = Token.asString({ Ref : 'my-email-3' });
-  const emailToken4 = Token.asString({ Ref : 'my-email-4' });
+  const emailToken1 = Token.asString({ Ref: 'my-email-1' });
+  const emailToken2 = Token.asString({ Ref: 'my-email-2' });
+  const emailToken3 = Token.asString({ Ref: 'my-email-3' });
+  const emailToken4 = Token.asString({ Ref: 'my-email-4' });
 
   topic.addSubscription(new subs.EmailSubscription(emailToken1));
   topic.addSubscription(new subs.EmailSubscription(emailToken2));
@@ -675,7 +675,7 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-email-1',
+            'Ref': 'my-email-1',
           },
           'Protocol': 'email',
           'TopicArn': {
@@ -687,7 +687,7 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-email-2',
+            'Ref': 'my-email-2',
           },
           'Protocol': 'email',
           'TopicArn': {
@@ -699,7 +699,7 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-email-3',
+            'Ref': 'my-email-3',
           },
           'Protocol': 'email',
           'TopicArn': {
@@ -711,7 +711,7 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-email-4',
+            'Ref': 'my-email-4',
           },
           'Protocol': 'email',
           'TopicArn': {
@@ -887,7 +887,7 @@ test('throws with mutliple subscriptions of the same subscriber', () => {
   topic.addSubscription(new subs.SqsSubscription(queue));
 
   expect(() => topic.addSubscription(new subs.SqsSubscription(queue)))
-    .toThrowError(/A subscription with id \"MyTopic\" already exists under the scope MyQueue/);
+    .toThrowError(/A subscription with id \"MyTopic\" already exists under the scope Default\/MyQueue/);
 });
 
 test('with filter policy', () => {
@@ -963,7 +963,7 @@ test('region property on an imported topic as a parameter - sqs', () => {
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
     Region: {
-      'Fn::Select': [ 3, { 'Fn::Split': [ ':', { 'Ref': 'topicArn' } ] } ],
+      'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'topicArn' }] }],
     },
   });
 });
@@ -994,7 +994,62 @@ test('region property on an imported topic as a parameter - lambda', () => {
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
     Region: {
-      'Fn::Select': [ 3, { 'Fn::Split': [ ':', { 'Ref': 'topicArn' } ] } ],
+      'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'topicArn' }] }],
+    },
+  });
+});
+
+test('sms subscription', () => {
+  topic.addSubscription(new subs.SmsSubscription('+15551231234'));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+      'MyTopic155512312349C8DEEEE': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'sms',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434',
+          },
+          'Endpoint': '+15551231234',
+        },
+      },
+    },
+  });
+});
+
+test('sms subscription with unresolved', () => {
+  const smsToken = Token.asString({ Ref: 'my-sms-1' });
+  topic.addSubscription(new subs.SmsSubscription(smsToken));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+      'MyTopicTokenSubscription141DD1BE2': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref': 'my-sms-1',
+          },
+          'Protocol': 'sms',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434',
+          },
+        },
+      },
     },
   });
 });

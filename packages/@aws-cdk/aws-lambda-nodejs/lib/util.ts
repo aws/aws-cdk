@@ -1,3 +1,4 @@
+import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -51,28 +52,39 @@ export function nodeMajorVersion(): number {
 }
 
 /**
- * Finds the closest path containg a path
+ * Find a file by walking up parent directories
  */
-function findClosestPathContaining(p: string): string | undefined {
-  for (const nodeModulesPath of module.paths) {
-    if (fs.existsSync(path.join(path.dirname(nodeModulesPath), p))) {
-      return path.dirname(nodeModulesPath);
-    }
+export function findUp(name: string, directory: string = process.cwd()): string | undefined {
+  const absoluteDirectory = path.resolve(directory);
+
+  if (fs.existsSync(path.join(directory, name))) {
+    return directory;
   }
 
-  return undefined;
+  const { root } = path.parse(absoluteDirectory);
+  if (absoluteDirectory === root) {
+    return undefined;
+  }
+
+  return findUp(name, path.dirname(absoluteDirectory));
 }
 
 /**
- * Finds closest package.json path
+ * Spawn sync with error handling
  */
-export function findPkgPath(): string | undefined {
-  return findClosestPathContaining('package.json');
-}
+export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
+  const proc = spawnSync(cmd, args, options);
 
-/**
- * Finds closest .git/
- */
-export function findGitPath(): string | undefined {
-  return findClosestPathContaining(`.git${path.sep}`);
+  if (proc.error) {
+    throw proc.error;
+  }
+
+  if (proc.status !== 0) {
+    if (proc.stdout || proc.stderr) {
+      throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+    }
+    throw new Error(`${cmd} exited with status ${proc.status}`);
+  }
+
+  return proc;
 }

@@ -1,8 +1,11 @@
 import * as cdk from '@aws-cdk/core';
-import { BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
+import {
+  BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
+  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
+} from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
+import { validateNetworkProtocol } from '../shared/util';
 import { INetworkListener } from './network-listener';
 
 /**
@@ -13,6 +16,13 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    * The port on which the listener listens for requests.
    */
   readonly port: number;
+
+  /**
+   * Protocol for target group, expects TCP, TLS, UDP, or TCP_UDP.
+   *
+   * @default - TCP
+   */
+  readonly protocol?: Protocol;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.
@@ -56,8 +66,11 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
   private readonly listeners: INetworkListener[];
 
   constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
+    const proto = props.protocol || Protocol.TCP;
+    validateNetworkProtocol(proto);
+
     super(scope, id, props, {
-      protocol: Protocol.TCP,
+      protocol: proto,
       port: props.port,
     });
 
@@ -100,7 +113,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
 
-  protected validate(): string[]  {
+  protected validate(): string[] {
     const ret = super.validate();
 
     const healthCheck: HealthCheck = this.healthCheck || {};
@@ -140,7 +153,6 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 /**
  * A network target group
  */
-// tslint:disable-next-line:no-empty-interface
 export interface INetworkTargetGroup extends ITargetGroup {
   /**
    * Register a listener that is load balancing to this target group.
@@ -188,7 +200,7 @@ export interface INetworkLoadBalancerTarget {
 
 const NLB_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS, Protocol.TCP];
 const NLB_PATH_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS];
-const NLB_HEALTH_CHECK_TIMEOUTS: {[protocol in Protocol]?: number} =  {
+const NLB_HEALTH_CHECK_TIMEOUTS: {[protocol in Protocol]?: number} = {
   [Protocol.HTTP]: 6,
   [Protocol.HTTPS]: 10,
   [Protocol.TCP]: 10,

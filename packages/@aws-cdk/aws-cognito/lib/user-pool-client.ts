@@ -132,12 +132,10 @@ export class OAuthScope {
     return new OAuthScope(name);
   }
 
-  // tslint:disable:max-line-length
   /**
    * The name of this scope as recognized by CloudFormation.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-allowedoauthscopes
    */
-  // tslint:enable:max-line-length
   public readonly scopeName: string;
 
   private constructor(scopeName: string) {
@@ -206,8 +204,15 @@ export interface UserPoolClientOptions {
   readonly authFlows?: AuthFlow;
 
   /**
+   * Turns off all OAuth interactions for this client.
+   * @default false
+   */
+  readonly disableOAuth?: boolean;
+
+  /**
    * OAuth settings for this to client to interact with the app.
-   * @default - see defaults in `OAuthSettings`
+   * An error is thrown when this is specified and `disableOAuth` is set.
+   * @default - see defaults in `OAuthSettings`. meaningless if `disableOAuth` is set.
    */
   readonly oAuth?: OAuthSettings;
 
@@ -284,6 +289,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   constructor(scope: Construct, id: string, props: UserPoolClientProps) {
     super(scope, id);
 
+    if (props.disableOAuth && props.oAuth) {
+      throw new Error('OAuth settings cannot be specified when disableOAuth is set.');
+    }
+
     this.oAuthFlows = props.oAuth?.flows ?? {
       implicitCodeGrant: true,
       authorizationCodeGrant: true,
@@ -292,7 +301,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     let callbackUrls: string[] | undefined = props.oAuth?.callbackUrls;
     if (this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) {
       if (callbackUrls === undefined) {
-        callbackUrls = [ 'https://example.com' ];
+        callbackUrls = ['https://example.com'];
       } else if (callbackUrls.length === 0) {
         throw new Error('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.');
       }
@@ -303,10 +312,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       generateSecret: props.generateSecret,
       userPoolId: props.userPool.userPoolId,
       explicitAuthFlows: this.configureAuthFlows(props),
-      allowedOAuthFlows: this.configureOAuthFlows(),
-      allowedOAuthScopes: this.configureOAuthScopes(props.oAuth),
+      allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
+      allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
       callbackUrLs: callbackUrls && callbackUrls.length > 0 ? callbackUrls : undefined,
-      allowedOAuthFlowsUserPoolClient: props.oAuth ? true : undefined,
+      allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
       supportedIdentityProviders: this.configureIdentityProviders(props),
     });
@@ -356,10 +365,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureOAuthScopes(oAuth?: OAuthSettings): string[] {
-    const scopes = oAuth?.scopes ?? [ OAuthScope.PROFILE, OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID,
-      OAuthScope.COGNITO_ADMIN ];
+    const scopes = oAuth?.scopes ?? [OAuthScope.PROFILE, OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID,
+      OAuthScope.COGNITO_ADMIN];
     const scopeNames = new Set(scopes.map((x) => x.scopeName));
-    const autoOpenIdScopes = [ OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.PROFILE ];
+    const autoOpenIdScopes = [OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.PROFILE];
     if (autoOpenIdScopes.reduce((agg, s) => agg || scopeNames.has(s.scopeName), false)) {
       scopeNames.add(OAuthScope.OPENID.scopeName);
     }

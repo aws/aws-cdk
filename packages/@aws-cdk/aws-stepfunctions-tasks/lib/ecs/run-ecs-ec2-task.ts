@@ -41,6 +41,8 @@ export interface RunEcsEc2TaskProps extends CommonEcsRunTaskProps {
 
 /**
  * Run an ECS/EC2 Task in a StepFunctions workflow
+ *
+ * @deprecated - replaced by `EcsEc2RunTask`
  */
 export class RunEcsEc2Task extends EcsRunTaskBase {
   constructor(props: RunEcsEc2TaskProps) {
@@ -85,7 +87,7 @@ function validateNoNetworkingProps(props: RunEcsEc2TaskProps) {
 }
 
 function uppercaseKeys(obj: {[key: string]: any}): {[key: string]: any} {
-  const ret: {[key: string]: any}  = {};
+  const ret: {[key: string]: any} = {};
   for (const key of Object.keys(obj)) {
     ret[key.slice(0, 1).toUpperCase() + key.slice(1)] = obj[key];
   }
