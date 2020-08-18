@@ -73,7 +73,7 @@ describe('HttpApi', () => {
 
     httpApi.addRoutes({
       path: '/pets',
-      methods: [ HttpMethod.GET, HttpMethod.PATCH ],
+      methods: [HttpMethod.GET, HttpMethod.PATCH],
       integration: new LambdaProxyIntegration({
         handler: new Function(stack, 'fn', {
           code: Code.fromInline('foo'),

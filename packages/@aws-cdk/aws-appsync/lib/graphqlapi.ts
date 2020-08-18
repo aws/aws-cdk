@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { CfnResource, Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
-import { CfnApiKey,  CfnGraphQLApi,  CfnGraphQLSchema } from './appsync.generated';
+import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { ObjectType, ObjectTypeProps } from './schema-types';
 
@@ -290,7 +290,7 @@ export class IamResource {
    * Example: ofType('Query', 'GetExample')
    */
   public static ofType(type: string, ...fields: string[]): IamResource {
-    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [ `types/${type}/*` ];
+    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
     return new IamResource(arns);
   }
 
