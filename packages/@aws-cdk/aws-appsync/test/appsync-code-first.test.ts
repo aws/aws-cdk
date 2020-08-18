@@ -470,4 +470,36 @@ describe('testing Object Type properties', () => {
     });
     expect(stack).toHaveResource('AWS::AppSync::Resolver');
   });
+
+  test('Object Type can dynamically add Fields', () => {
+    // WHEN
+    const garbage = new appsync.InterfaceType('Garbage', {
+      definition: {
+        garbage: t.string,
+      },
+    });
+    const test = new appsync.ObjectType('Test', {
+      definition: {
+        test: t.string,
+      },
+    });
+    const field = new appsync.ResolvableField(garbage.attribute(), {
+      dataSource: api.addNoneDataSource('none'),
+      args: {
+        arg: garbage.attribute(),
+      },
+    });
+    test.addField('resolve', field);
+    // test.addField('resolve', field);
+    test.addField('dynamic', garbage.attribute());
+
+    api.appendToSchema(test.toString());
+    const out = 'type Test {\n  test: String\n  resolve(arg: Garbage): Garbage\n  dynamic: Garbage\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+    expect(stack).toHaveResource('AWS::AppSync::Resolver');
+  });
 });
