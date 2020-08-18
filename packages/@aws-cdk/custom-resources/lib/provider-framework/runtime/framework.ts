@@ -121,7 +121,7 @@ async function invokeUserFunction(functionArnEnv: string, payload: any) {
     const message = [
       errorMessage,
       '',
-      `Logs: /aws/lambda/${functionName}`,  // cloudwatch log group
+      `Logs: /aws/lambda/${functionName}`, // cloudwatch log group
       '',
     ].join('\n');
 
@@ -131,7 +131,7 @@ async function invokeUserFunction(functionArnEnv: string, payload: any) {
     // if we have a remote trace, construct a nice message with log group information
     if (jsonPayload.trace) {
       // skip first trace line because it's the message
-      e.stack = [ message, ...jsonPayload.trace.slice(1) ].join('\n');
+      e.stack = [message, ...jsonPayload.trace.slice(1)].join('\n');
     }
 
     throw e;

@@ -81,7 +81,7 @@ class S3FileProvider extends Construct {
         handler: 'index.onEvent',
         initialPolicy: [
           new iam.PolicyStatement({
-            resources: [ '*' ],
+            resources: ['*'],
             actions: [
               's3:GetObject*',
               's3:GetBucket*',
@@ -89,7 +89,8 @@ class S3FileProvider extends Construct {
               's3:DeleteObject*',
               's3:PutObject*',
               's3:Abort*',
-            ] }),
+            ],
+          }),
         ],
       }),
     });

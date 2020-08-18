@@ -34,7 +34,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^26.0.4",
-    "@types/node": "^10.17.27",
+    "@types/node": "^10.17.28",
     "cdk-build-tools": "0.0.0",
     "jest": "^25.5.4",
     "pkglint": "0.0.0",
