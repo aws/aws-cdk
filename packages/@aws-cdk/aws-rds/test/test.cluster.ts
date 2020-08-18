@@ -1155,6 +1155,29 @@ export = {
     test.done();
   },
 
+  'throws if given unsupported CloudWatch log exports'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    test.throws(() =>  {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        masterUser: {
+          username: 'admin',
+          password: cdk.SecretValue.plainText('tooshort'),
+        },
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        },
+        cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit', 'thislogdoesnotexist', 'neitherdoesthisone'],
+      });
+    }, /Unsupported logs for the current engine type: thislogdoesnotexist,neitherdoesthisone/);
+
+    test.done();
+  },
+
   'does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets'(test: Test) {
     // GIVEN
     const stack = testStack();
