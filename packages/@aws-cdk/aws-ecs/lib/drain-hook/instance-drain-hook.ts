@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as hooks from '@aws-cdk/aws-autoscaling-hooktargets';
 import * as iam from '@aws-cdk/aws-iam';
@@ -110,7 +108,7 @@ export class InstanceDrainHook extends cdk.Construct {
       actions: ['ecs:DescribeContainerInstances', 'ecs:DescribeTasks'],
       resources: ['*'],
       conditions: {
-        ArnEquals: { 'ecs:cluster': props.cluster.clusterArn },
+        ArnEquals: { 'ecs:cluster': clusterArn },
       },
     }));
 

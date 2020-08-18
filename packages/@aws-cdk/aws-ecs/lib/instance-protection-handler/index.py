@@ -11,7 +11,6 @@ def on_event(event, context):
   raise Exception("Invalid request type: %s" % request_type)
 
 def on_create(event):
-  # asg_name = os.environ['autoscaling_group_name']
   props = event['ResourceProperties']
   managed_termination_protection = props['ManagedTerminationProtection'] == 'true'
   asg_name = props['AutoscalingGroupName']
@@ -45,7 +44,6 @@ def on_delete(event):
   props = event['ResourceProperties']
   managed_termination_protection = props['ManagedTerminationProtection'] == 'true'
   asg_name = props['AutoscalingGroupName']
-  # asg_name = os.environ['autoscaling_group_name']
   # remove NewInstancesProtectedFromScaleIn for the ASG if managed_termination_protection
   if managed_termination_protection:
     client.update_auto_scaling_group(

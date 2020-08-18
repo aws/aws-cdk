@@ -133,11 +133,11 @@ export class Cluster extends Resource implements ICluster {
       }),
     });
 
-    this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
+    this.clusterArn = Stack.of(this).formatArn({
       service: 'ecs',
       resource: 'cluster',
-      resourceName: this.physicalName,
-    });
+      resourceName: this.clusterName,
+    })
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
 
@@ -355,20 +355,6 @@ export class Cluster extends Resource implements ICluster {
       ...props,
     }).attachTo(this);
   }
-
-  /**
-  * Configure capacity providers as well as their default strategies with the cluster
-  * @param options options to create the CapacityProviderConfiguration
-  */
-  // private synthesizeCapacityProviders() {
-  //   return Lazy.anyValue({
-  //     produce: () => this.capacityProviders.map(m => ({
-  //       cluster: this.clusterName,
-  //       name: m.name,
-  //       defaultStrategy: m.defaultStrategy,
-  //     }))
-  //   }, { omitEmptyArray: false})
-  // };
 }
 
 /**
