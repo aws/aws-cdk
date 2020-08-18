@@ -270,8 +270,7 @@ export class SecretRotation extends CoreConstruct {
       automaticallyAfter: props.automaticallyAfter,
     });
 
-    // Prevent secrets deletions when rotation is in place
-    props.secret.denyAccountRootDelete();
+    // Prevent master secret deletion when rotation is in place
     if (props.masterSecret) {
       props.masterSecret.denyAccountRootDelete();
     }
