@@ -99,7 +99,16 @@
     ]
   },
   "stability": "experimental",
-  "maturity": "experimental",
+  "features": [
+    {
+      "name": "Higher level constructs for HTTP APIs",
+      "stability": "Experimental"
+    },
+    {
+      "name": "Higher level constructs for Websocket APIs",
+      "stability": "Not Implemented"
+    }
+  ],
   "awscdkio": {
     "announce": false
   }
