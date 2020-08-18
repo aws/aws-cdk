@@ -290,7 +290,7 @@ You can create Object Types in three ways:
       },
     });
 
-    api.appendToSchema(object.toString());
+    api.appendToSchema(demo.toString());
     ```
     > This method allows for reusability and modularity, ideal for larger projects. 
     For example, imagine moving all Object Type definition outside the stack.
