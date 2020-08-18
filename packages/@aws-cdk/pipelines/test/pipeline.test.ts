@@ -71,7 +71,7 @@ test('action has right settings for same-env deployment', () => {
 
 test('action has right settings for cross-account deployment', () => {
   // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' }}));
+  pipeline.addApplicationStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' } }));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -100,7 +100,7 @@ test('action has right settings for cross-account deployment', () => {
 
 test('action has right settings for cross-region deployment', () => {
   // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossRegion', { env: { region: 'elsewhere' }}));
+  pipeline.addApplicationStage(new OneStackApp(app, 'CrossRegion', { env: { region: 'elsewhere' } }));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -131,7 +131,7 @@ test('action has right settings for cross-region deployment', () => {
 
 test('action has right settings for cross-account/cross-region deployment', () => {
   // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossBoth', { env: { account: 'you', region: 'elsewhere' }}));
+  pipeline.addApplicationStage(new OneStackApp(app, 'CrossBoth', { env: { account: 'you', region: 'elsewhere' } }));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -177,6 +177,9 @@ test('pipeline has self-mutation stage', () => {
   });
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -200,6 +203,9 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
 
   // THEN
   expect(stackTemplate(nestedPipelineStack)).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {

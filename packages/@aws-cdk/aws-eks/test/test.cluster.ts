@@ -15,6 +15,7 @@ import { testFixture, testFixtureNoVpc } from './util';
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
+
   'a default cluster spans all subnets'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -25,10 +26,10 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
       Config: {
-        roleArn: { 'Fn::GetAtt': [ 'ClusterRoleFA261979', 'Arn' ] },
+        roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
         version: '1.16',
         resourcesVpcConfig: {
-          securityGroupIds: [ { 'Fn::GetAtt': [ 'ClusterControlPlaneSecurityGroupD274242C', 'GroupId' ] } ],
+          securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
             { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
             { Ref: 'VPCPublicSubnet2Subnet74179F39' },
@@ -201,6 +202,24 @@ export = {
     test.done();
   },
 
+  'adding capacity creates an ASG without a rolling update policy'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+
+    // WHEN
+    cluster.addCapacity('Default', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+    });
+
+    test.deepEqual(expect(stack).value.Resources.ClusterASG0E4BA723.UpdatePolicy, { AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: true } });
+    test.done();
+  },
+
   'adding capacity creates an ASG with tags'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -368,7 +387,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -396,7 +415,7 @@ export = {
     test.done();
   },
 
-  'addResource can be used to apply k8s manifests on this cluster'(test: Test) {
+  'addManifest can be used to apply k8s manifests on this cluster'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -406,15 +425,15 @@ export = {
     });
 
     // WHEN
-    cluster.addResource('manifest1', { foo: 123 });
-    cluster.addResource('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
+    cluster.addManifest('manifest1', { foo: 123 });
+    cluster.addManifest('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: '[{"foo":123}]',
     }));
 
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: '[{"bar":123},{"boor":[1,2,3]}]',
     }));
 
@@ -428,7 +447,7 @@ export = {
 
     // WHEN resource is under stack2
     const stack2 = new cdk.Stack(app, 'stack2', { env: { account: stack.account, region: stack.region } });
-    new eks.KubernetesResource(stack2, 'myresource', {
+    new eks.KubernetesManifest(stack2, 'myresource', {
       cluster,
       manifest: [{ foo: 'bar' }],
     });
@@ -473,7 +492,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -524,7 +543,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -563,8 +582,8 @@ export = {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'ClusterMastersRole9AA35625', 'Arn' ] } ] ] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'ClusterMastersRole9AA35625', 'Arn' ] } ] ] } },
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['ClusterMastersRole9AA35625', 'Arn'] }]] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['ClusterMastersRole9AA35625', 'Arn'] }]] } },
       });
       test.done();
     },
@@ -1277,7 +1296,7 @@ export = {
       const sanitized = YAML.parse(fileContents);
 
       // THEN
-      expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+      expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([sanitized]),
       }));
       test.done();
@@ -1290,7 +1309,7 @@ export = {
 
       // WHEN
       cluster.addFargateProfile('profile1', { selectors: [{ namespace: 'profile1' }] });
-      cluster.addResource('resource1', { foo: 123 });
+      cluster.addManifest('resource1', { foo: 123 });
       cluster.addFargateProfile('profile2', { selectors: [{ namespace: 'profile2' }] });
       new eks.HelmChart(stack, 'chart', { cluster, chart: 'mychart' });
       cluster.addFargateProfile('profile3', { selectors: [{ namespace: 'profile3' }] });
@@ -1340,9 +1359,9 @@ export = {
       // WHEN
 
       // activate kubectl provider
-      c1.addResource('c1a', { foo: 123 });
-      c1.addResource('c1b', { foo: 123 });
-      c2.addResource('c2', { foo: 123 });
+      c1.addManifest('c1a', { foo: 123 });
+      c1.addManifest('c1b', { foo: 123 });
+      c2.addManifest('c2', { foo: 123 });
 
       // THEN
       const template = app.synth().getStackArtifact(stack.artifactId).template;
@@ -1368,13 +1387,14 @@ export = {
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster1', {
-      version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+      version: CLUSTER_VERSION,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
       kubectlEnvironment: {
         Foo: 'Bar',
       },
     });
 
-    cluster.addResource('resource', {
+    cluster.addManifest('resource', {
       kind: 'ConfigMap',
       apiVersion: 'v1',
       data: {
@@ -1399,6 +1419,108 @@ export = {
   },
 
   'endpoint access': {
+
+    'private endpoint access fails if selected subnets are empty'(test: Test) {
+
+      const { stack } = testFixture();
+
+      test.throws(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          vpc: new ec2.Vpc(stack, 'Vpc'),
+          version: CLUSTER_VERSION,
+          endpointAccess: eks.EndpointAccess.PRIVATE,
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+        });
+      }, /Vpc must contain private subnets to configure private endpoint access/);
+
+      test.done();
+    },
+
+    'private endpoint access selects only private subnets from looked up vpc'(test: Test) {
+
+      const vpcId = 'vpc-12345';
+      // can't use the regular fixture because it also adds a VPC to the stack, which prevents
+      // us from setting context.
+      const stack = new cdk.Stack(new cdk.App(), 'Stack', {
+        env: {
+          account: '11112222',
+          region: 'us-east-1',
+        },
+      });
+      stack.node.setContext(`vpc-provider:account=${stack.account}:filter.vpc-id=${vpcId}:region=${stack.region}:returnAsymmetricSubnets=true`, {
+        vpcId: vpcId,
+        vpcCidrBlock: '10.0.0.0/16',
+        subnetGroups: [
+          {
+            name: 'Private',
+            type: 'Private',
+            subnets: [
+              {
+                subnetId: 'subnet-private-in-us-east-1a',
+                cidr: '10.0.1.0/24',
+                availabilityZone: 'us-east-1a',
+                routeTableId: 'rtb-06068e4c4049921ef',
+              },
+            ],
+          },
+          {
+            name: 'Public',
+            type: 'Public',
+            subnets: [
+              {
+                subnetId: 'subnet-public-in-us-east-1c',
+                cidr: '10.0.0.0/24',
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rtb-0ff08e62195198dbb',
+              },
+            ],
+          },
+        ],
+      });
+      const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+        vpcId: vpcId,
+      });
+
+      new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
+        'subnet-private-in-us-east-1a',
+      ]);
+
+      test.done();
+    },
+
+    'private endpoint access considers specific subnet selection'(test: Test) {
+      const { stack } = testFixture();
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess:
+        eks.EndpointAccess.PRIVATE,
+        vpcSubnets: [{
+          subnets: [ec2.PrivateSubnet.fromSubnetAttributes(stack, 'Private1', {
+            subnetId: 'subnet1',
+            availabilityZone: 'us-east-1a',
+          })],
+        }],
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
+        'subnet1',
+      ]);
+
+      test.done();
+
+    },
 
     'can configure private endpoint access'(test: Test) {
       // GIVEN
@@ -1473,11 +1595,12 @@ export = {
       });
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
-        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc,
       });
 
-      cluster.addResource('resource', {
+      cluster.addManifest('resource', {
         kind: 'ConfigMap',
         apiVersion: 'v1',
         data: {
@@ -1518,14 +1641,14 @@ export = {
       const subnetConfiguration: ec2.SubnetConfiguration[] = [];
 
       for (let i = 0; i < 20; i++) {
-        subnetConfiguration.push(        {
+        subnetConfiguration.push( {
           subnetType: ec2.SubnetType.PRIVATE,
           name: `Private${i}`,
         },
         );
       }
 
-      subnetConfiguration.push(          {
+      subnetConfiguration.push( {
         subnetType: ec2.SubnetType.PUBLIC,
         name: 'Public1',
       });
@@ -1537,11 +1660,12 @@ export = {
       });
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
-        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc: vpc2,
       });
 
-      cluster.addResource('resource', {
+      cluster.addManifest('resource', {
         kind: 'ConfigMap',
         apiVersion: 'v1',
         data: {
@@ -1566,14 +1690,14 @@ export = {
       const subnetConfiguration: ec2.SubnetConfiguration[] = [];
 
       for (let i = 0; i < 20; i++) {
-        subnetConfiguration.push(        {
+        subnetConfiguration.push( {
           subnetType: ec2.SubnetType.PRIVATE,
           name: `Private${i}`,
         },
         );
       }
 
-      subnetConfiguration.push(          {
+      subnetConfiguration.push( {
         subnetType: ec2.SubnetType.PUBLIC,
         name: 'Public1',
       });
@@ -1585,12 +1709,13 @@ export = {
       });
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
-        version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE,
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc: vpc2,
-        vpcSubnets: [{subnetGroupName: 'Private1'}, {subnetGroupName: 'Private2'}],
+        vpcSubnets: [{ subnetGroupName: 'Private1' }, { subnetGroupName: 'Private2' }],
       });
 
-      cluster.addResource('resource', {
+      cluster.addManifest('resource', {
         kind: 'ConfigMap',
         apiVersion: 'v1',
         data: {
@@ -1668,5 +1793,49 @@ export = {
       test.done();
     },
 
+  },
+
+  'getServiceLoadBalancerAddress'(test: Test) {
+
+    const { stack } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION });
+
+    const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('myservice');
+
+    new cdk.CfnOutput(stack, 'LoadBalancerAddress', {
+      value: loadBalancerAddress,
+    });
+
+    const expectedKubernetesGetId = 'Cluster1myserviceLoadBalancerAddress198CCB03';
+
+    const rawTemplate = expect(stack).value;
+
+    // make sure the custom resource is created correctly
+    test.deepEqual(rawTemplate.Resources[expectedKubernetesGetId].Properties, {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
+          'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+        ],
+      },
+      ClusterName: {
+        Ref: 'Cluster1B02DD5A2',
+      },
+      RoleArn: {
+        'Fn::GetAtt': [
+          'Cluster1CreationRoleA231BE8D',
+          'Arn',
+        ],
+      },
+      ObjectType: 'service',
+      ObjectName: 'myservice',
+      ObjectNamespace: 'default',
+      JsonPath: '.status.loadBalancer.ingress[0].hostname',
+      TimeoutSeconds: 300,
+    });
+
+    // make sure the attribute points to the expected custom resource and extracts the correct attribute
+    test.deepEqual(rawTemplate.Outputs.LoadBalancerAddress.Value, { 'Fn::GetAtt': [expectedKubernetesGetId, 'Value'] });
+    test.done();
   },
 };

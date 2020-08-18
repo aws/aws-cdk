@@ -189,7 +189,7 @@ export class StackActivityMonitor {
         throw e;
       });
 
-    let events = output && output.StackEvents || [ ];
+    let events = output && output.StackEvents || [];
     let allNew = true;
 
     // merge events into the activity and dedup by event id
