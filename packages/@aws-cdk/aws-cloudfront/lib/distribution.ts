@@ -132,7 +132,7 @@ export interface DistributionProps {
   /**
    * Enable access logging for the distribution.
    *
-   * @default - false, unless `loggingBucket` is specified.
+   * @default - false, unless `logBucket` is specified.
    */
   readonly enableLogging?: boolean;
 

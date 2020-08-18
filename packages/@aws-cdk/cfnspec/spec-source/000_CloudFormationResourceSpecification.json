@@ -13430,6 +13430,58 @@
         }
       }
     },
+    "AWS::ECS::TaskDefinition.EfsVolumeConfiguration": {
+      "Documentation": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#specify-efs-config",
+      "Properties": {
+        "FileSystemId": {
+          "Documentation": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#specify-efs-config",
+          "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Immutable"
+        },
+        "RootDirectory": {
+          "Documentation": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#specify-efs-config",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Immutable"
+        },
+        "TransitEncryption": {
+          "Documentation": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#specify-efs-config",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Immutable"
+        },
+        "TransitEncryptionPort": {
+          "Documentation": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#specify-efs-config",
+          "PrimitiveType": "Integer",
+          "Required": false,
+          "UpdateType": "Immutable"
+        },
+        "AuthorizationConfig": {
+          "Documentation": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#specify-efs-config",
+          "Type": "AuthorizationConfig",
+          "Required": false,
+          "UpdateType": "Immutable"
+        }
+      }
+    },
+    "AWS::ECS::TaskDefinition.AuthorizationConfig": {
+      "Documentation": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#specify-efs-config",
+      "Properties": {
+        "AccessPointId": {
+          "Documentation": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#specify-efs-config",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Immutable"
+        },
+        "Iam": {
+          "Documentation": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#specify-efs-config",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Immutable"
+        }
+      }
+    },
     "AWS::ECS::TaskDefinition.FirelensConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-firelensconfiguration.html",
       "Properties": {
@@ -13856,6 +13908,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-volumes.html#cfn-ecs-taskdefinition-volumes-name",
           "PrimitiveType": "String",
           "Required": false,
+          "UpdateType": "Immutable"
+        },
+        "EfsVolumeConfiguration": {
+          "Documentation": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#specify-efs-config",
+          "Required": false,
+          "Type": "EfsVolumeConfiguration",
           "UpdateType": "Immutable"
         }
       }
