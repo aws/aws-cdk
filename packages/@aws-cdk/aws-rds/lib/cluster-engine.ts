@@ -120,7 +120,7 @@ interface MysqlClusterEngineBaseProps {
 }
 
 abstract class MySqlClusterEngineBase extends ClusterEngineBase {
-  public readonly logTypes: string[] = ['error','general','slowquery','audit'];
+  public readonly logTypes: string[] = ['error', 'general', 'slowquery', 'audit'];
 
   constructor(props: MysqlClusterEngineBaseProps) {
     super({

@@ -1160,7 +1160,7 @@ export = {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
-    test.throws(() =>  {
+    test.throws(() => {
       new DatabaseCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA,
         masterUser: {
