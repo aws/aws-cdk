@@ -469,9 +469,9 @@ export class GraphQLApi extends GraphqlApiBase {
     ) {
       const apiKeyConfig = props.authorizationConfig?.defaultAuthorization?.apiKeyConfig ||
         props.authorizationConfig?.additionalAuthorizationModes?.
-          filter((mode: AuthorizationMode) => {
+          find((mode: AuthorizationMode) => {
             return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
-          })[0]?.apiKeyConfig;
+          })?.apiKeyConfig;
       this.apiKey = this.createAPIKey(apiKeyConfig);
       this.apiKey.addDependsOn(this.schema);
     }
