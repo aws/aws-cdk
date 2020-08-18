@@ -55,7 +55,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.4",
     "@types/mock-fs": "^4.10.0",
-    "@types/semver": "^7.3.1",
+    "@types/semver": "^7.3.3",
     "cdk-build-tools": "0.0.0",
     "jest": "^25.5.4",
     "mock-fs": "^4.12.0",

@@ -3,6 +3,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
+import { PolicyStatement } from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
@@ -77,6 +78,15 @@ export interface SimpleSynthOptions {
    * @default - No additional artifacts generated
    */
   readonly additionalArtifacts?: AdditionalArtifact[];
+
+  /**
+   * Policy statements to add to role used during the synth
+   *
+   * Can be used to add acces to a CodeArtifact repository etc.
+   *
+   * @default - No policy statements added to CodeBuild Project Role
+   */
+  readonly rolePolicyStatements?: PolicyStatement[];
 }
 
 /**
@@ -234,6 +244,12 @@ export class SimpleSynthAction implements codepipeline.IAction {
         ...this.props.environmentVariables,
       },
     });
+
+    if (this.props.rolePolicyStatements !== undefined) {
+      this.props.rolePolicyStatements.forEach(policyStatement => {
+        project.addToRolePolicy(policyStatement);
+      });
+    }
 
     this._action = new codepipeline_actions.CodeBuildAction({
       actionName: this.actionProperties.actionName,
