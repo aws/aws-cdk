@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as util from 'util';
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
+import * as promptly from 'promptly';
 import { debug } from '../../logging';
 import { SharedIniFile } from './sdk_ini_file';
 
@@ -41,11 +42,21 @@ export class AwsCliCompatible {
     ];
 
     if (await fs.pathExists(credentialsFileName())) {
-      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions: options.httpOptions }));
+      sources.push(() => new AWS.SharedIniFileCredentials({
+        profile,
+        filename: credentialsFileName(),
+        httpOptions: options.httpOptions,
+        tokenCodeFn,
+      }));
     }
 
     if (await fs.pathExists(configFileName())) {
-      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions: options.httpOptions }));
+      sources.push(() => new AWS.SharedIniFileCredentials({
+        profile,
+        filename: credentialsFileName(),
+        httpOptions: options.httpOptions,
+        tokenCodeFn,
+      }));
     }
 
     if (options.containerCreds ?? hasEcsCredentials()) {
@@ -285,4 +296,24 @@ export interface CredentialChainOptions {
 export interface RegionOptions {
   readonly profile?: string;
   readonly ec2instance?: boolean;
+}
+
+/**
+ * Ask user for MFA token for given serial
+ *
+ * Result is send to callback function for SDK to authorize the request
+ */
+async function tokenCodeFn(serialArn: string, cb: (err?: Error, token?: string) => void): Promise<void> {
+  debug('Require MFA token for serial ARN', serialArn);
+  try {
+    const token: string = await promptly.prompt(`MFA token for ${serialArn}: `, {
+      trim: true,
+      default: '',
+    });
+    debug('Successfully got MFA token from user');
+    cb(undefined, token);
+  } catch (err) {
+    debug('Failed to get MFA token', err);
+    cb(err);
+  }
 }

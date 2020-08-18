@@ -172,7 +172,7 @@ export class SdkProvider {
       throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment');
     }
 
-    return  {
+    return {
       region,
       account,
       name: cxapi.EnvironmentUtils.format(account, region),

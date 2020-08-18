@@ -22,3 +22,9 @@ removed:@aws-cdk/cdk-assets-schema.FileAssetPackaging
 
 changed-type:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.autoScalingGroups
 changed-type:@aws-cdk/aws-codedeploy.ServerDeploymentGroup.autoScalingGroups
+
+# We were leaking L1 types in L2 APIs, which now have changed required -> optional
+# when ECS moved to the CloudFormation Registry spec.
+change-return-type:@aws-cdk/aws-ecs.ContainerDefinition.renderContainerDefinition
+change-return-type:@aws-cdk/aws-ecs.FirelensLogRouter.renderContainerDefinition
+change-return-type:@aws-cdk/aws-ecs.LinuxParameters.renderLinuxParameters
