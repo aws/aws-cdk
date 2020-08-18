@@ -20,11 +20,30 @@ To create an Elasticsearch domain:
 ```ts
 import * as es from '@aws-cdk/aws-elasticsearch';
 
-const domain = new es.Domain(this, 'Domain', {
+const devDomain = new es.Domain(this, 'Domain', {
     version: es.ElasticsearchVersion.V7_1,
     logging: {
         slowSearchLogEnabled: true,
         appLogEnabled: true
+    },
+});
+
+const prodDomain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_1,
+    capacity: {
+        masterNodes: 5,
+        dataNodes: 20
+    },
+    ebs: {
+        volumeSize: 20
+    },
+    zoneAwareness: {
+        availabilityZoneCount: 3
+    },
+    logging: {
+        slowSearchLogEnabled: true,
+        appLogEnabled: true,
+        slowIndexLogEnabled: true
     },
 });
 ```
