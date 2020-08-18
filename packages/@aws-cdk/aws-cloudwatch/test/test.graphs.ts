@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, AlarmWidget, Color, GraphWidget, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
 
 export = {
   'add stacked property to graphs'(test: Test) {
@@ -134,6 +134,128 @@ export = {
       height: 6,
       properties: {
         view: 'table',
+        region: { Ref: 'AWS::Region' },
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+      },
+    }]);
+
+    test.done();
+  },
+
+  'query result widget - bar'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.BAR,
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'bar',
+        region: { Ref: 'AWS::Region' },
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+      },
+    }]);
+
+    test.done();
+  },
+
+  'query result widget - pie'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.PIE,
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'pie',
+        region: { Ref: 'AWS::Region' },
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+      },
+    }]);
+
+    test.done();
+  },
+
+  'query result widget - line'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' } ;
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.LINE,
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        stacked: false,
+        region: { Ref: 'AWS::Region' },
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+      },
+    }]);
+
+    test.done();
+  },
+
+  'query result widget - stackedarea'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.STACKEDAREA,
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        stacked: true,
         region: { Ref: 'AWS::Region' },
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
