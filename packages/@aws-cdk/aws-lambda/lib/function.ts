@@ -678,6 +678,7 @@ export class Function extends FunctionBase {
    * If this is a ref to a Lambda function, this operation results in a no-op.
    * @param key The environment variable key.
    * @param value The environment variable's value.
+   * @param options Environment variable options.
    */
   public addEnvironment(key: string, value: string, options?: EnvironmentOptions): this {
     this.environment[key] = { value, ...options };
@@ -767,7 +768,8 @@ export class Function extends FunctionBase {
     return this._logGroup;
   }
 
-  public checkEdgeCompatibility(): void {
+  /** @internal */
+  public _checkEdgeCompatibility(): void {
     // Check env vars
     const envEntries = Object.entries(this.environment);
     for (const [key, config] of envEntries) {

@@ -1537,7 +1537,7 @@ export = {
     fn.addEnvironment('KEY', 'value', { removeInEdge: true });
 
     // WHEN
-    fn.checkEdgeCompatibility();
+    fn._checkEdgeCompatibility();
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Function', {
@@ -1561,7 +1561,7 @@ export = {
     fn.addEnvironment('OTHER_KEY', 'other_value', { removeInEdge: true });
 
     // THEN
-    test.throws(() => fn.checkEdgeCompatibility(), /The function Default\/fn contains environment variables \[KEY\] and is not compatible with Lambda@Edge/);
+    test.throws(() => fn._checkEdgeCompatibility(), /The function Default\/fn contains environment variables \[KEY\] and is not compatible with Lambda@Edge/);
 
     test.done();
   },

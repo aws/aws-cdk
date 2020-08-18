@@ -112,11 +112,6 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * Configures options for asynchronous invocation.
    */
   configureAsyncInvoke(options: EventInvokeConfigOptions): void;
-
-  /**
-   * Checks whether this function is compatible for Lambda@Edge.
-   */
-  checkEdgeCompatibility(): void;
 }
 
 /**
@@ -323,7 +318,12 @@ export abstract class FunctionBase extends Resource implements IFunction {
     });
   }
 
-  public checkEdgeCompatibility(): void {
+  /**
+   * Checks whether this function is compatible for Lambda@Edge.
+   *
+   * @internal
+   */
+  public _checkEdgeCompatibility(): void {
     return;
   }
 

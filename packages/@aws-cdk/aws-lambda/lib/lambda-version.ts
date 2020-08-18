@@ -3,7 +3,7 @@ import { Construct, Fn, RemovalPolicy } from '@aws-cdk/core';
 import { Alias, AliasOptions } from './alias';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
-import { IFunction, QualifiedFunctionBase } from './function-base';
+import { FunctionBase, IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
 import { addAlias } from './util';
 
@@ -249,7 +249,9 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     }
 
     // Validate that the underlying function can be used for Lambda@Edge
-    this.lambda.checkEdgeCompatibility();
+    if (this.lambda instanceof FunctionBase) {
+      this.lambda._checkEdgeCompatibility();
+    }
 
     return this.functionArn;
   }

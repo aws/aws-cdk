@@ -81,8 +81,11 @@ export class SingletonFunction extends FunctionBase {
     down.node.addDependency(this.lambdaFunction);
   }
 
-  public checkEdgeCompatibility() {
-    return this.lambdaFunction.checkEdgeCompatibility();
+  /** @internal */
+  public _checkEdgeCompatibility() {
+    if (this.lambdaFunction instanceof FunctionBase) {
+      return this.lambdaFunction._checkEdgeCompatibility();
+    }
   }
 
   /**
