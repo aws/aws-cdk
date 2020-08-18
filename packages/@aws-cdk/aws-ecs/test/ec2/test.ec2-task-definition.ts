@@ -981,6 +981,39 @@ export = {
 
       test.done();
     },
+
+    'correctly sets efsVolumeConfiguration'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const volume = {
+        name: 'scratch',
+        efsVolumeConfiguration: {
+          fileSystemId: 'local',
+        },
+      };
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        volumes: [volume],
+      });
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
+        Volumes: [{
+          Name: 'scratch',
+          EfsVolumeConfiguration: {
+            FileSystemId: 'local',
+          },
+        }],
+      }));
+
+      test.done();
+    },
   },
 
   'throws when setting proxyConfiguration without networkMode AWS_VPC'(test: Test) {
