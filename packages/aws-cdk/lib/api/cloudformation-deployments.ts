@@ -88,6 +88,13 @@ export interface DeployStackOptions {
    * @default true
    */
   usePreviousParameters?: boolean;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -156,6 +163,7 @@ export class CloudFormationDeployments {
       force: options.force,
       parameters: options.parameters,
       usePreviousParameters: options.usePreviousParameters,
+      ci: options.ci,
     });
   }
 
