@@ -1,8 +1,8 @@
 import { ABSENT, countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
-import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
+import { RetentionDays } from '../lib';
 import { LogRetention } from '../lib/log-retention';
 
 /* eslint-disable quote-props */
@@ -15,7 +15,7 @@ export = {
     // WHEN
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
-      retention: logs.RetentionDays.ONE_MONTH,
+      retention: RetentionDays.ONE_MONTH,
     });
 
     // THEN
@@ -33,10 +33,10 @@ export = {
         ],
         'Version': '2012-10-17',
       },
-      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicy13931C64',
       'Roles': [
         {
-          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole0B18ADA0',
         },
       ],
     }));
@@ -44,7 +44,7 @@ export = {
     expect(stack).to(haveResource('Custom::LogRetention', {
       'ServiceToken': {
         'Fn::GetAtt': [
-          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a',
           'Arn',
         ],
       },
@@ -64,7 +64,7 @@ export = {
     // WHEN
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
-      retention: logs.RetentionDays.ONE_MONTH,
+      retention: RetentionDays.ONE_MONTH,
       role,
     });
 
@@ -100,7 +100,7 @@ export = {
 
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
-      retention: logs.RetentionDays.INFINITE,
+      retention: RetentionDays.INFINITE,
     });
 
     expect(stack).to(haveResource('Custom::LogRetention', {
@@ -114,7 +114,7 @@ export = {
     const stack = new cdk.Stack();
     const group = new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
-      retention: logs.RetentionDays.ONE_MONTH,
+      retention: RetentionDays.ONE_MONTH,
     });
 
     const logGroupArn = group.logGroupArn;
