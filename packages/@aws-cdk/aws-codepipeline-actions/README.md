@@ -66,7 +66,8 @@ new codepipeline_actions.CodeBuildAction({
 
 If you want to use a GitHub repository as the source, you must create:
 
-* A [GitHub Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+* A [GitHub Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line),
+  with scopes **repo** and **admin:repo_hook**.
 * A [Secrets Manager PlainText Secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html)
   with the value of the **GitHub Access Token**. Pick whatever name you want
   (for example `my-github-token`) and pass it as the argument of `oauthToken`.
@@ -83,7 +84,6 @@ const sourceAction = new codepipeline_actions.GitHubSourceAction({
   oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
   output: sourceOutput,
   branch: 'develop', // default: 'master'
-  trigger: codepipeline_actions.GitHubTrigger.POLL // default: 'WEBHOOK', 'NONE' is also possible for no Source trigger
 });
 pipeline.addStage({
   stageName: 'Source',
@@ -694,7 +694,7 @@ new codepipeline_actions.AlexaSkillDeployAction({
 });
 ```
 
-### AWS Service Catalog 
+### AWS Service Catalog
 
 You can deploy a CloudFormation template to an existing Service Catalog product with the following action:
 
@@ -713,7 +713,7 @@ new codepipeline.Pipeline(this, 'Pipeline', {
                 productId: "prod-XXXXXXXX",
             }),
           },
-        ],     
+        ],
 });
 ```
 

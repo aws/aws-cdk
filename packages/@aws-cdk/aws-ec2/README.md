@@ -1,4 +1,5 @@
 ## Amazon EC2 Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -48,10 +49,9 @@ distinguishes three different subnet types:
   connected to from other instances in the same VPC. A default VPC configuration
   will not include isolated subnets,
 
-
 A default VPC configuration will create public and **private** subnets. However, if
-`natGateways:0` **and** `subnetConfiguration` is undefined, default VPC configuration 
-will create public and **isolated** subnets. See [*Advanced Subnet Configuration*](#advanced-subnet-configuration) 
+`natGateways:0` **and** `subnetConfiguration` is undefined, default VPC configuration
+will create public and **isolated** subnets. See [*Advanced Subnet Configuration*](#advanced-subnet-configuration)
 below for information on how to change the default subnet configuration.
 
 Constructs using the VPC will "launch instances" (or more accurately, create
@@ -67,7 +67,6 @@ internet connectivity, another option is to reduce the number of NAT gateways
 created by setting the `natGateways` property to a lower value (the default
 is one NAT gateway per availability zone). Be aware that this may have
 availability implications for your application.
-
 
 [Read more about
 subnets](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html).
@@ -89,6 +88,24 @@ itself to 2 Availability Zones.
 
 Therefore, to get the VPC to spread over 3 or more availability zones, you
 must specify the environment where the stack will be deployed.
+
+You can gain full control over the availability zones selection strategy by overriding the Stack's [`get availabilityZones()`](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/core/lib/stack.ts) method:
+
+```ts
+class MyStack extends Stack {
+
+  get availabilityZones(): string[] {
+    return ['us-west-2a', 'us-west-2b'];
+  }
+
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+    ...
+  }
+}
+```
+
+Note that overriding the `get availabilityZones()` method will override the default behavior for all constructs defined within the Stack.
 
 ### Choosing subnets for resources
 
@@ -262,9 +279,9 @@ const igwId = vpc.internetGatewayId;
 
 For a VPC with only `ISOLATED` subnets, this value will be undefined.
 
-This is only supported for VPC's created in the stack - currently you're 
+This is only supported for VPC's created in the stack - currently you're
 unable to get the ID for imported VPC's. To do that you'd have to specifically
-look up the Internet Gateway by name, which would require knowing the name 
+look up the Internet Gateway by name, which would require knowing the name
 beforehand.
 
 This can be useful for configuring routing using a combination of gateways:
@@ -483,7 +500,9 @@ examples of things you might want to use:
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
 
-## VPN connections to a VPC
+## Special VPC configurations
+
+### VPN connections to a VPC
 
 Create your VPC with VPN connections by specifying the `vpnConnections` props (keys are construct `id`s):
 
@@ -513,6 +532,7 @@ const vpc = new ec2.Vpc(this, 'MyVpc', {
 ```
 
 VPN connections can then be added:
+
 ```ts fixture=with-vpc
 vpc.addVpnConnection('Dynamic', {
   ip: '1.2.3.4'
@@ -536,14 +556,15 @@ const vpnConnection = vpc.addVpnConnection('Dynamic', {
 const state = vpnConnection.metricTunnelState();
 ```
 
-## VPC endpoints
+### VPC endpoints
+
 A VPC endpoint enables you to privately connect your VPC to supported AWS services and VPC endpoint services powered by PrivateLink without requiring an internet gateway, NAT device, VPN connection, or AWS Direct Connect connection. Instances in your VPC do not require public IP addresses to communicate with resources in the service. Traffic between your VPC and the other service does not leave the Amazon network.
 
 Endpoints are virtual devices. They are horizontally scaled, redundant, and highly available VPC components that allow communication between instances in your VPC and services without imposing availability risks or bandwidth constraints on your network traffic.
 
 [example of setting up VPC endpoints](test/integ.vpc-endpoint.lit.ts)
 
-By default, CDK will place a VPC endpoint in one subnet per AZ. If you wish to override the AZs CDK places the VPC endpoint in, 
+By default, CDK will place a VPC endpoint in one subnet per AZ. If you wish to override the AZs CDK places the VPC endpoint in,
 use the `subnets` parameter as follows:
 
 ```ts
@@ -573,7 +594,8 @@ new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
 });
 ```
 
-### Security groups for interface VPC endpoints
+#### Security groups for interface VPC endpoints
+
 By default, interface VPC endpoints create a new security group and traffic is **not**
 automatically allowed from the VPC CIDR.
 
@@ -585,7 +607,8 @@ myEndpoint.connections.allowDefaultPortFromAnyIpv4();
 
 Alternatively, existing security groups can be used by specifying the `securityGroups` prop.
 
-## VPC endpoint services
+### VPC endpoint services
+
 A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via whitelisted principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
 
 ```ts
@@ -596,17 +619,96 @@ new VpcEndpointService(this, 'EndpointService', {
 });
 ```
 
-## Bastion Hosts
+## Instances
+
+You can use the `Instance` class to start up a single EC2 instance. For production setups, we recommend
+you use an `AutoScalingGroup` from the `aws-autoscaling` module instead, as AutoScalingGroups will take
+care of restarting your instance if it ever fails.
+
+### Configuring Instances using CloudFormation Init (cfn-init)
+
+CloudFormation Init allows you to configure your instances by writing files to them, installing software
+packages, starting services and running arbitrary commands. By default, if any of the instance setup
+commands throw an error, the deployment will fail and roll back to the previously known good state.
+The following documentation also applies to `AutoScalingGroup`s.
+
+For the full set of capabilities of this system, see the documentation for
+[`AWS::CloudFormation::Init`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-init.html).
+Here is an example of applying some configuration to an instance:
+
+```ts
+new ec2.Instance(this, 'Instance', {
+  // Showing the most complex setup, if you have simpler requirements
+  // you can use `CloudFormationInit.fromElements()`.
+  init: ec2.CloudFormationInit.fromConfigSets({
+    configSets: {
+      // Applies the configs below in this order
+      default: ['yumPreinstall', 'config'],
+    },
+    configs: {
+      yumPreinstall: new ec2.InitConfig([
+        // Install an Amazon Linux package using yum
+        ec2.InitPackage.yum('git'),
+      ]),
+      config: new ec2.InitConfig([
+        // Create a JSON file from tokens (can also create other files)
+        ec2.InitFile.fromObject('/etc/stack.json', {
+          stackId: stack.stackId,
+          stackName: stack.stackName,
+          region: stack.region,
+        }),
+
+        // Create a group and user
+        ec2.InitGroup.fromName('my-group'),
+        ec2.InitUser.fromName('my-user'),
+
+        // Install an RPM from the internet
+        ec2.InitPackage.rpm('http://mirrors.ukfast.co.uk/sites/dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/r/rubygem-git-1.5.0-2.el8.noarch.rpm'),
+      ]),
+    },
+  }),
+  initOptions: {
+    // Optional, which configsets to activate (['default'] by default)
+    configSets: ['default'],
+
+    // Optional, how long the installation is expected to take (5 minutes by default)
+    timeout: Duration.minutes(30),
+  },
+});
+```
+
+You can have services restarted after the init process has made changes to the system.
+To do that, instantiate an `InitServiceRestartHandle` and pass it to the config elements
+that need to trigger the restart and the service itself. For example, the following
+config writes a config file for nginx, extracts an archive to the root directory, and then
+restarts nginx so that it picks up the new config and files:
+
+```ts
+const handle = new ec2.InitServiceRestartHandle();
+
+ec2.CloudFormationInit.fromElements(
+  ec2.InitFile.fromString('/etc/nginx/nginx.conf', '...', { serviceRestartHandles: [handle] }),
+  ec2.InitSource.fromBucket('/var/www/html', myBucket, 'html.zip', { serviceRestartHandles: [handle] }),
+  ec2.InitService.enable('nginx', {
+    serviceRestartHandle: handle,
+  })
+);
+```
+
+### Bastion Hosts
+
 A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.
 You can use bastion hosts using a standard SSH connection targetting port 22 on the host. As an alternative, you can connect the SSH connection
 feature of AWS Systems Manager Session Manager, which does not need an opened security group. (https://aws.amazon.com/about-aws/whats-new/2019/07/session-manager-launches-tunneling-support-for-ssh-and-scp/)
 
 A default bastion host for use via SSM can be configured like:
+
 ```ts fixture=with-vpc
 const host = new ec2.BastionHostLinux(this, 'BastionHost', { vpc });
 ```
 
 If you want to connect from the internet using SSH, you need to place the host into a public subnet. You can then configure allowed source hosts.
+
 ```ts fixture=with-vpc
 const host = new ec2.BastionHostLinux(this, 'BastionHost', {
   vpc,
@@ -619,6 +721,7 @@ As there are no SSH public keys deployed on this machine, you need to use [EC2 I
 with the command `aws ec2-instance-connect send-ssh-public-key` to provide your SSH public key.
 
 EBS volume for the bastion host can be encrypted like:
+
 ```ts
     const host = new ec2.BastionHostLinux(stack, 'BastionHost', {
       vpc,
@@ -631,7 +734,7 @@ EBS volume for the bastion host can be encrypted like:
     });
 ```
 
-## Block Devices
+### Block Devices
 
 To add EBS block device mappings, specify the `blockDeviceMappings` property. The follow example sets the EBS-backed
 root device (`/dev/sda1`) size to 50 GiB, and adds another EBS-backed device mapped to `/dev/sdm` that is 100 GiB in
@@ -654,7 +757,7 @@ new ec2.Instance(this, 'Instance', {
 
 ```
 
-## Volumes
+### Volumes
 
 Whereas a `BlockDeviceVolume` is an EBS volume that is created and destroyed as part of the creation and destruction of a specific instance. A `Volume` is for when you want an EBS volume separate from any particular instance. A `Volume` is an EBS block device that can be attached to, or detached from, any instance at any time. Some types of `Volume`s can also be attached to multiple instances at the same time to allow you to have shared storage between those instances.
 
@@ -678,7 +781,7 @@ const volume = new ec2.Volume(this, 'Volume', {
 volume.grantAttachVolume(role, [instance]);
 ```
 
-### Instances Attaching Volumes to Themselves
+#### Instances Attaching Volumes to Themselves
 
 If you need to grant an instance the ability to attach/detach an EBS volume to/from itself, then using `grantAttachVolume` and `grantDetachVolume` as outlined above
 will lead to an unresolvable circular reference between the instance role and the instance. In this case, use `grantAttachVolumeByResourceTag` and `grantDetachVolumeByResourceTag` as follows:
@@ -695,7 +798,7 @@ const attachGrant = volume.grantAttachVolumeByResourceTag(instance.grantPrincipa
 const detachGrant = volume.grantDetachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 ```
 
-### Attaching Volumes
+#### Attaching Volumes
 
 The Amazon EC2 documentation for
 [Linux Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html) and
@@ -723,7 +826,8 @@ instance.userData.addCommands(
 ```
 
 ## VPC Flow Logs
-VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html).
+
+VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (<https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html>).
 
 By default a flow log will be created with CloudWatch Logs as the destination.
 
@@ -734,6 +838,7 @@ new ec2.FlowLog(this, 'FlowLog', {
   resourceType: ec2.FlowLogResourceType.fromVpc(vpc)
 })
 ```
+
 Or you can add a Flow Log to a VPC by using the addFlowLog method like this:
 
 ```ts
@@ -763,6 +868,7 @@ the log group. In the case of an S3 destination, it will create the S3 bucket.
 If you want to customize any of the destination resources you can provide your own as part of the `destination`.
 
 *CloudWatch Logs*
+
 ```ts
 const logGroup = new logs.LogGroup(this, 'MyCustomLogGroup');
 
@@ -777,6 +883,7 @@ new ec2.FlowLog(this, 'FlowLog', {
 ```
 
 *S3*
+
 ```ts
 
 const bucket = new s3.Bucket(this, 'MyCustomBucket');
@@ -788,10 +895,12 @@ new ec2.FlowLog(this, 'FlowLog', {
 ```
 
 ## User Data
+
 User data enables you to run a script when your instances start up.  In order to configure these scripts you can add commands directly to the script
  or you can use the UserData's convenience functions to aid in the creation of your script.
 
 A user data could be configured to run a script found in an asset through the following:
+
 ```ts
 const asset = new Asset(this, 'Asset', {path: path.join(__dirname, 'configure.sh')});
 const instance = new ec2.Instance(this, 'Instance', {

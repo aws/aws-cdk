@@ -41,6 +41,9 @@ test('command line properly locates assets in subassembly', () => {
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -107,6 +110,7 @@ test('file image asset publishers do not use privilegedmode, have right AssumeRo
     },
     Environment: objectLike({
       PrivilegedMode: false,
+      Image: 'aws/codebuild/standard:4.0',
     }),
   });
 
@@ -137,6 +141,7 @@ test('docker image asset publishers use privilegedmode, have right AssumeRole', 
       })),
     },
     Environment: objectLike({
+      Image: 'aws/codebuild/standard:4.0',
       PrivilegedMode: true,
     }),
   });
@@ -161,6 +166,9 @@ test('can control fix/CLI version used in pipeline selfupdate', () => {
 
   // THEN
   expect(stack2).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -184,9 +192,11 @@ describe('asset roles and policies', () => {
           Effect: 'Allow',
           Principal: {
             Service: 'codebuild.amazonaws.com',
-            AWS: { 'Fn::Join': [ '', [
-              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-            ] ] },
+            AWS: {
+              'Fn::Join': ['', [
+                'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+              ]],
+            },
           },
         }],
       },
@@ -205,9 +215,11 @@ describe('asset roles and policies', () => {
           Effect: 'Allow',
           Principal: {
             Service: 'codebuild.amazonaws.com',
-            AWS: { 'Fn::Join': [ '', [
-              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-            ] ] },
+            AWS: {
+              'Fn::Join': ['', [
+                'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+              ]],
+            },
           },
         }],
       },
@@ -276,7 +288,7 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
         Resource: {
           'Fn::Join': ['', [
             'arn:',
-            {Ref: 'AWS::Partition'},
+            { Ref: 'AWS::Partition' },
             `:logs:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:log-group:/aws/codebuild/*`,
           ]],
         },
@@ -287,7 +299,7 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
         Resource: {
           'Fn::Join': ['', [
             'arn:',
-            {Ref: 'AWS::Partition'},
+            { Ref: 'AWS::Partition' },
             `:codebuild:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:report-group/*`,
           ]],
         },
@@ -306,16 +318,16 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
         Effect: 'Allow',
         Resource: [
-          { 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn' ] },
-          { 'Fn::Join': ['', [{'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn']}, '/*']] },
+          { 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] },
+          { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] }, '/*']] },
         ],
       },
       {
         Action: ['kms:Decrypt', 'kms:DescribeKey'],
         Effect: 'Allow',
-        Resource: { 'Fn::GetAtt': [ 'CdkPipelineArtifactsBucketEncryptionKeyDDD3258C', 'Arn' ]},
+        Resource: { 'Fn::GetAtt': ['CdkPipelineArtifactsBucketEncryptionKeyDDD3258C', 'Arn'] },
       }],
     },
-    Roles: [ {Ref: attachedRole} ],
+    Roles: [{ Ref: attachedRole }],
   };
 }

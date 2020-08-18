@@ -166,7 +166,7 @@ export = {
       assumeRoleExternalId: 'file-external-id',
     });
 
-    test.deepEqual(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'] , {
+    test.deepEqual(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'], {
       repositoryName: 'image-ecr-repository',
       imageTag: 'docker-asset-hash',
       assumeRoleArn: 'image:role:arn',
