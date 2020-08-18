@@ -1,6 +1,6 @@
 import { Resolver } from './resolver';
 import { IField } from './schema-base';
-import { BaseGraphqlTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-field';
+import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-field';
 
 /**
  * Directives for types
@@ -78,7 +78,7 @@ export class InterfaceType {
    * - isRequired
    * - isRequiredList
    */
-  public attribute(options?: BaseGraphqlTypeOptions): GraphqlType{
+  public attribute(options?: BaseTypeOptions): GraphqlType{
     return GraphqlType.intermediate({
       isList: options?.isList,
       isRequired: options?.isRequired,
@@ -94,9 +94,20 @@ export class InterfaceType {
     let schemaAddition = `interface ${this.name} {\n`;
     Object.keys(this.definition).forEach( (key) => {
       const attribute = this.definition[key];
-      schemaAddition = `${schemaAddition}  ${key}: ${attribute.toString()}\n`;
+      const args = attribute.argsToString();
+      schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
     });
     return `${schemaAddition}}`;
+  }
+
+  /**
+   * Add a field to this Object Type
+   *
+   * @param fieldName - The name of the field
+   * @param field - the field to add
+   */
+  public addField(fieldName: string, field: IField): void {
+    this.definition[fieldName] = field;
   }
 }
 
@@ -146,7 +157,7 @@ export class ObjectType extends InterfaceType {
   /**
    * The resolvers linked to this data source
    */
-  public resolvers?: Resolver[];
+  public resolvers: Resolver[];
 
   public constructor(name: string, props: ObjectTypeProps) {
     const options = {
@@ -157,10 +168,11 @@ export class ObjectType extends InterfaceType {
     super(name, options);
     this.interfaceTypes = props.interfaceTypes;
     this.directives = props.directives;
+    this.resolvers = [];
 
     Object.keys(this.definition).forEach((fieldName) => {
-      const fieldInfo = this.definition[fieldName];
-      this.generateResolver(fieldName, fieldInfo.fieldOptions);
+      const field = this.definition[fieldName];
+      this.generateResolver(fieldName, field.fieldOptions);
     });
   }
 
@@ -168,7 +180,7 @@ export class ObjectType extends InterfaceType {
    * Add a field to this Object Type
    *
    * @param fieldName - The name of the field
-   * @param field - the field to add
+   * @param field - the resolvable field to add
    */
   public addField(fieldName: string, field: IField): void {
     this.generateResolver(fieldName, field.fieldOptions);
@@ -217,8 +229,8 @@ export class ObjectType extends InterfaceType {
    * Generate the resolvers linked to this Object Type
    */
   protected generateResolver(fieldName: string, options?: ResolvableFieldOptions): void {
-    if (options && options.dataSource){
-      this.resolvers?.push(options.dataSource.createResolver({
+    if (options?.dataSource){
+      this.resolvers.push(options.dataSource.createResolver({
         typeName: this.name,
         fieldName: fieldName,
         requestMappingTemplate: options.requestMappingTemplate,

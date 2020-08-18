@@ -270,6 +270,36 @@ describe('testing InterfaceType properties', () => {
     });
   });
 
+  test('InterfaceType fields can have arguments', () => {
+    // WHEN
+    baseTest.addField('test', new appsync.Field(t.string, {
+      args: { success: t.int },
+    }));
+    api.appendToSchema(baseTest.toString());
+    const out = 'interface baseTest {\n  id: ID\n  test(success: Int): String\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('InterfaceType fields will not produce resolvers', () => {
+    // WHEN
+    baseTest.addField('test', new appsync.ResolvableField(t.string, {
+      args: { success: t.int },
+      dataSource: api.addNoneDataSource('none'),
+    }));
+    api.appendToSchema(baseTest.toString());
+    const out = 'interface baseTest {\n  id: ID\n  test(success: Int): String\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+    expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
+  });
+
   test('Interface Type can be a Graphql Type', () => {
     // WHEN
     const graphqlType = baseTest.attribute();
@@ -370,12 +400,10 @@ describe('testing Object Type properties', () => {
 
   test('Object Type can implement Resolvable Field in definition', () => {
     // WHEN
-    const field = new appsync.ResolvableField(appsync.Type.STRING, {
-      fieldOptions: {
-        dataSource: api.addNoneDataSource('none'),
-        args: {
-          arg: t.int,
-        },
+    const field = new appsync.ResolvableField(t.string, {
+      dataSource: api.addNoneDataSource('none'),
+      args: {
+        arg: t.int,
       },
     });
     const test = new appsync.ObjectType('Test', {
@@ -385,7 +413,7 @@ describe('testing Object Type properties', () => {
       },
     });
     api.appendToSchema(test.toString());
-    const out = 'type Test {\n  test: String\n  resolve( arg: Int ): String\n}\n';
+    const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
@@ -395,7 +423,7 @@ describe('testing Object Type properties', () => {
 
   test('Object Type can implement Resolvable Field from GraphqlType', () => {
     // WHEN
-    const field = t.string.addResolvableField({
+    const field = t.string.createResolvableField({
       dataSource: api.addNoneDataSource('none'),
       args: {
         arg: t.int,
@@ -408,7 +436,7 @@ describe('testing Object Type properties', () => {
       },
     });
     api.appendToSchema(test.toString());
-    const out = 'type Test {\n  test: String\n  resolve( arg: Int ): String\n}\n';
+    const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
@@ -418,26 +446,29 @@ describe('testing Object Type properties', () => {
 
   test('Object Type can dynamically add Fields', () => {
     // WHEN
-    const test = new appsync.ObjectType('Test', {
-      definition: {
-        test: t.string,
-      },
-    });
-    test.addField('resolve', t.string.addResolvableField({
+    const field = new appsync.ResolvableField(t.string, {
       dataSource: api.addNoneDataSource('none'),
       args: {
         arg: t.int,
       },
-    }));
+    });
+    const test = new appsync.ObjectType('Test', {
+      definition: {
+        test: t.string,
+        resolve: field,
+      },
+    });
 
+    // test.addField('resolve', field);
     test.addField('dynamic', t.string);
 
     api.appendToSchema(test.toString());
-    const out = 'type Test {\n  test: String\n  resolve( arg: Int ): String\n  dynamic: String\n}\n';
+    const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n  dynamic: String\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
+    expect(stack).toHaveResource('AWS::AppSync::Resolver');
   });
 });
