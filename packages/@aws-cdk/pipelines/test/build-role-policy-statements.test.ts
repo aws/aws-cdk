@@ -12,7 +12,7 @@ let sourceArtifact: codepipeline.Artifact;
 let cloudAssemblyArtifact: codepipeline.Artifact;
 
 beforeEach(() => {
-  app = new TestApp({ outdir: 'testcdk.out' });
+  app = new TestApp();
   pipelineStack = new Stack(app, 'PipelineStackPolicy', { env: PIPELINE_ENV });
   sourceArtifact = new codepipeline.Artifact();
   cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');
