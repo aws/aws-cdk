@@ -35,6 +35,15 @@ export interface StackActivityMonitorProps {
    * @default - Use value from logging.logLevel
    */
   readonly logLevel?: LogLevel;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * If so, disable the "optimized" stack monitor.
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 export class StackActivityMonitor {
@@ -79,8 +88,10 @@ export class StackActivityMonitor {
 
     const isWindows = process.platform === 'win32';
     const verbose = options.logLevel ?? logLevel;
-    const isCI = process.env.CI;
-    const fancyOutputAvailable = !isWindows && stream.isTTY && !isCI;
+    // On some CI systems (such as CircleCI) output still reports as a TTY so we also
+    // need an individual check for whether we're running on CI.
+    // see: https://discuss.circleci.com/t/circleci-terminal-is-a-tty-but-term-is-not-set/9965
+    const fancyOutputAvailable = !isWindows && stream.isTTY && !options.ci;
 
     this.printer = fancyOutputAvailable && !verbose
       ? new CurrentActivityPrinter(props)
