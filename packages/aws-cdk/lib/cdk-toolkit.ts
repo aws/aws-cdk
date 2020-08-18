@@ -190,6 +190,7 @@ export class CdkToolkit {
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
+          ci: options.ci,
         });
 
         const message = result.noOp
@@ -583,6 +584,13 @@ export interface DeployOptions {
    * @default - Outputs are not written to any file
    */
   outputsFile?: string;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 export interface DestroyOptions {
