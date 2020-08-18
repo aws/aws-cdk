@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
+import { OperatingSystemType } from '../machine-image';
 import { UserData } from '../user-data';
 
 /**
@@ -83,9 +84,9 @@ export interface AttachInitOptions {
   readonly instanceRole: iam.IRole;
 
   /**
-   * OS Platfrom the init config will be used for
+   * OS Platform the init config will be used for
    */
-  readonly platform: InitPlatform;
+  readonly platform: OperatingSystemType;
 
   /**
    * UserData to add commands to
