@@ -152,7 +152,8 @@ export default class CodeGenerator {
         context: resource,
         propName,
         spec: propSpec,
-        additionalDocs: quoteCode(additionalDocs)},
+        additionalDocs: quoteCode(additionalDocs),
+      },
       container,
       );
       propertyMap[propName] = newName;
@@ -617,7 +618,7 @@ export default class CodeGenerator {
 
       const deserializer = genspec.typeDispatch<string>(resource, propSpec, new FromCloudFormationFactoryVisitor());
       const deserialized = `${deserializer}(${simpleCfnPropAccessExpr})`;
-      let valueExpression =  propSpec.Required ? deserialized : `${simpleCfnPropAccessExpr} != null ? ${deserialized} : undefined`;
+      let valueExpression = propSpec.Required ? deserialized : `${simpleCfnPropAccessExpr} != null ? ${deserialized} : undefined`;
 
       if (schema.isTagPropertyName(cfnName)) {
         // Properties that have names considered to denote tags

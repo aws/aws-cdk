@@ -96,7 +96,7 @@ function sum(xs: number[]): number {
 const tableColor = colors.gray;
 
 // Unicode table characters with a color
-const TABLE_BORDER_CHARACTERS =  {
+const TABLE_BORDER_CHARACTERS = {
   topBody: tableColor('─'),
   topJoin: tableColor('┬'),
   topLeft: tableColor('┌'),
