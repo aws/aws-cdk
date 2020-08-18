@@ -158,6 +158,13 @@ export interface DeployStackOptions {
    * @default false
    */
   force?: boolean;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
