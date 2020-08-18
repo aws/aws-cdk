@@ -105,17 +105,20 @@ export class AwsCliCompatible {
         httpOptions: { timeout: 1000, connectTimeout: 1000 }, maxRetries: 2,
       };
       const metadataService = new AWS.MetadataService(imdsOptions);
-      const token = await getImdsV2Token(metadataService)
-        .catch((error) => {
-          debug(`No token returned from IMDS; Error: ${error}`);
-          return undefined;
-        });
-      region = await getRegionFromImds(metadataService, token)
-        .catch((error) => {
-          debug(`No Instance Identity Document returned from IMDS; Error: ${error}`);
-          return undefined;
-        });
-      debug(region ? `Retrieved AWS region "${region}" from the IMDS.` : 'Unable to retrieve the AWS region from the IMDS.');
+
+      let token;
+      try {
+        token = await getImdsV2Token(metadataService);
+      } catch (e) {
+        debug(`No IMDSv2 token: ${e}`);
+      }
+
+      try {
+        region = await getRegionFromImds(metadataService, token);
+        debug(`AWS region from IMDS: ${region}`);
+      } catch (e) {
+        debug(`Unable to retrieve AWS region from IMDS: ${e}`);
+      }
     }
 
     if (!region) {
