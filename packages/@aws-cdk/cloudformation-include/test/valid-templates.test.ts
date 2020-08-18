@@ -98,6 +98,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('correctly parse strings as integers as needed', () => {
+    includeTestTemplate(stack, 'parsing-as-numbers.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('parsing-as-numbers.json'),
+    );
+  });
+
   xtest('correctly changes the logical IDs, including references, if imported with preserveLogicalIds=false', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-encryption-key.json', {
       preserveLogicalIds: false,
@@ -362,8 +370,7 @@ describe('CDK Include', () => {
             "BucketName": {
               "Fn::If": ["TotallyFalse",
                 { "Ref": "Param" },
-                { "Ref": "AWS::NoValue" },
-              ],
+                { "Ref": "AWS::NoValue" }],
             },
           },
         },
@@ -434,7 +441,7 @@ describe('CDK Include', () => {
           ...originalTemplate.Parameters.BucketName,
           "Default": "MyDefault",
           "AllowedPattern": "[0-9]*$",
-          "AllowedValues": [ "123123", "456789" ],
+          "AllowedValues": ["123123", "456789"],
           "ConstraintDescription": "MyNewConstraint",
           "Description": "a string of numeric characters",
           "MaxLength": 6,
@@ -683,7 +690,7 @@ describe('CDK Include', () => {
       },
       "Conditions": {
         "AlwaysFalse": {
-          "Fn::Equals": [ "my-s3-bucket", "Invalid?BucketName"],
+          "Fn::Equals": ["my-s3-bucket", "Invalid?BucketName"],
         },
       },
       "Resources": {

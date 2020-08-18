@@ -17,5 +17,5 @@ export async function lintCurrentPackage(options: CDKBuildOptions, compilers: Co
     await shell(['pkglint']);
   }
 
-  await shell([ path.join(__dirname, '..', 'bin', 'cdk-awslint') ]);
+  await shell([path.join(__dirname, '..', 'bin', 'cdk-awslint')]);
 }

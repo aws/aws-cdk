@@ -283,7 +283,7 @@ can either be email and/or SMS. Read more at [Recovering User Accounts](https://
 ```ts
 new UserPool(this, 'UserPool', {
   ...,
-  accountRecoverySettings: AccountRecovery.EMAIL_ONLY,
+  accountRecovery: AccountRecovery.EMAIL_ONLY,
 })
 ```
 

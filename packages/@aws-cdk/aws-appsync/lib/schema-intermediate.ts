@@ -6,6 +6,8 @@ import { BaseGraphqlTypeOptions, GraphqlType, ResolvableFieldOptions } from './s
  * Directives for types
  *
  * i.e. @aws_iam or @aws_subscribe
+ *
+ * @experimental
  */
 export class Directive {
   /**
@@ -98,7 +100,6 @@ export class InterfaceType {
     return `${schemaAddition}}`;
   }
 }
-
 
 /**
  * Properties for configuring an Object Type

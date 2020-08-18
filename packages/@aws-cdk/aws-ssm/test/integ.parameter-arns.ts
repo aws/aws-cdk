@@ -11,9 +11,9 @@ const params = [
   new ssm.StringParameter(stack, 'StringAutogen', { stringValue: 'hello, world' }),
   new ssm.StringParameter(stack, 'StringSimple', { stringValue: 'hello, world', parameterName: 'simple-name' }),
   new ssm.StringParameter(stack, 'StringPath', { stringValue: 'hello, world', parameterName: '/path/name/foo/bar' }),
-  new ssm.StringListParameter(stack, 'ListAutogen', { stringListValue: [ 'hello', 'world' ] }),
-  new ssm.StringListParameter(stack, 'ListSimple', { stringListValue: [ 'hello', 'world' ], parameterName: 'list-simple-name' }),
-  new ssm.StringListParameter(stack, 'ListPath', { stringListValue: [ 'hello', 'world' ], parameterName: '/list/path/name' }),
+  new ssm.StringListParameter(stack, 'ListAutogen', { stringListValue: ['hello', 'world'] }),
+  new ssm.StringListParameter(stack, 'ListSimple', { stringListValue: ['hello', 'world'], parameterName: 'list-simple-name' }),
+  new ssm.StringListParameter(stack, 'ListPath', { stringListValue: ['hello', 'world'], parameterName: '/list/path/name' }),
   new ssm.StringParameter(stack, 'ParameterizedSimple', { stringValue: 'hello, world', parameterName: input.valueAsString, simpleName: true }),
   new ssm.StringParameter(stack, 'ParameterizedNonSimple', { stringValue: 'hello, world', parameterName: `/${input.valueAsString}/non/simple`, simpleName: false }),
 ];

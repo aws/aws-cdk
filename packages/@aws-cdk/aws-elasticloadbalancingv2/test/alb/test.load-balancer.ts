@@ -285,7 +285,7 @@ export = {
 
     // WHEN
     const listener = alb.addListener('Listener', { port: 80 });
-    test.throws(() => listener.addTargets('Targets', {port: 8080}));
+    test.throws(() => listener.addTargets('Targets', { port: 8080 }));
 
     test.done();
   },
@@ -307,7 +307,7 @@ export = {
 
     // WHEN
     const listener = alb.addListener('Listener', { port: 80 });
-    test.doesNotThrow(() => listener.addTargets('Targets', {port: 8080}));
+    test.doesNotThrow(() => listener.addTargets('Targets', { port: 8080 }));
 
     test.done();
   },
