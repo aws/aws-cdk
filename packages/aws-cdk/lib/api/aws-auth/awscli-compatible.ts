@@ -30,14 +30,10 @@ export class AwsCliCompatible {
    * 3. Respects $AWS_SHARED_CREDENTIALS_FILE.
    * 4. Respects $AWS_DEFAULT_PROFILE in addition to $AWS_PROFILE.
    */
-  public static async credentialChain(
-    profile: string | undefined,
-    ec2creds: boolean | undefined,
-    containerCreds: boolean | undefined,
-    httpOptions: AWS.HTTPOptions | undefined) {
+  public static async credentialChain(options: CredentialChainOptions = {}) {
     await forceSdkToReadConfigIfPresent();
 
-    profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
+    const profile = options.profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
     const sources = [
       () => new AWS.EnvironmentCredentials('AWS'),
@@ -45,16 +41,16 @@ export class AwsCliCompatible {
     ];
 
     if (await fs.pathExists(credentialsFileName())) {
-      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions }));
+      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions: options.httpOptions }));
     }
 
     if (await fs.pathExists(configFileName())) {
-      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions }));
+      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions: options.httpOptions }));
     }
 
-    if (containerCreds ?? hasEcsCredentials()) {
+    if (options.containerCreds ?? hasEcsCredentials()) {
       sources.push(() => new AWS.ECSCredentials());
-    } else if (ec2creds ?? await isEc2Instance()) {
+    } else if (options.ec2instance ?? await isEc2Instance()) {
       // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
       // run on EC2 boxes but the creds represent something different. Same behavior as
       // upstream code.
@@ -77,8 +73,8 @@ export class AwsCliCompatible {
    *
    * Lambda and CodeBuild set the $AWS_REGION variable.
    */
-  public static async region(profile: string | undefined): Promise<string> {
-    profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
+  public static async region(options: RegionOptions = {}): Promise<string> {
+    const profile = options.profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
     // Defaults inside constructor
     const toCheck = [
@@ -91,15 +87,15 @@ export class AwsCliCompatible {
       process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
 
     while (!region && toCheck.length > 0) {
-      const options = toCheck.shift()!;
-      if (await fs.pathExists(options.filename)) {
-        const configFile = new SharedIniFile(options);
-        const section = await configFile.getProfile(options.profile);
+      const opts = toCheck.shift()!;
+      if (await fs.pathExists(opts.filename)) {
+        const configFile = new SharedIniFile(opts);
+        const section = await configFile.getProfile(opts.profile);
         region = section?.region;
       }
     }
 
-    if (!region && isEc2Instance()) {
+    if (!region && (options.ec2instance ?? await isEc2Instance())) {
       debug('Looking up AWS region in the EC2 Instance Metadata Service (IMDS).');
       const imdsOptions = {
         httpOptions: { timeout: 1000, connectTimeout: 1000 }, maxRetries: 2,
@@ -277,4 +273,16 @@ function readIfPossible(filename: string): string | undefined {
     debug(e);
     return undefined;
   }
+}
+
+export interface CredentialChainOptions {
+  readonly profile?: string;
+  readonly ec2instance?: boolean;
+  readonly containerCreds?: boolean;
+  readonly httpOptions?: AWS.HTTPOptions;
+}
+
+export interface RegionOptions {
+  readonly profile?: string;
+  readonly ec2instance?: boolean;
 }
