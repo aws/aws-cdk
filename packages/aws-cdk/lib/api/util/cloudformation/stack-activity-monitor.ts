@@ -6,18 +6,17 @@ import * as colors from 'colors/safe';
 import { error, logLevel, LogLevel, setLogLevel } from '../../../logging';
 import { RewritableBlock } from '../display';
 
-interface StackActivity {
+export interface StackActivity {
   readonly event: aws.CloudFormation.StackEvent;
   readonly metadata?: ResourceMetadata;
-  flushed: boolean;
 }
 
-interface ResourceMetadata {
+export interface ResourceMetadata {
   entry: cxschema.MetadataEntry;
   constructPath: string;
 }
 
-export interface StackActivityMonitorProps {
+export interface WithDefaultPrinterProps {
   /**
    * Total number of resources to update
    *
@@ -38,13 +37,36 @@ export interface StackActivityMonitorProps {
 }
 
 export class StackActivityMonitor {
-  private active = false;
-  private activity: { [eventId: string]: StackActivity } = { };
 
   /**
-   * Number of ms to wait between pagination calls
+   * Create a Stack Activity Monitor using a default printer, based on context clues
    */
-  private readonly pageSleep = 500;
+  public static withDefaultPrinter(
+    cfn: aws.CloudFormation,
+    stackName: string,
+    stackArtifact: cxapi.CloudFormationStackArtifact, options: WithDefaultPrinterProps = {}) {
+    const stream = process.stderr;
+
+    const props: PrinterProps = {
+      resourceTypeColumnWidth: calcMaxResourceTypeLength(stackArtifact.template),
+      resourcesTotal: options.resourcesTotal,
+      stream,
+    };
+
+    const isWindows = process.platform === 'win32';
+    const verbose = options.logLevel ?? logLevel;
+    const fancyOutputAvailable = !isWindows && stream.isTTY;
+
+    const printer = fancyOutputAvailable && !verbose
+      ? new CurrentActivityPrinter(props)
+      : new HistoryActivityPrinter(props);
+
+    return new StackActivityMonitor(cfn, stackName, printer, stackArtifact);
+  }
+
+
+  private active = false;
+  private activity: { [eventId: string]: StackActivity } = { };
 
   /**
    * Determines which events not to display
@@ -59,37 +81,27 @@ export class StackActivityMonitor {
   /**
    * Set to the activity of reading the current events
    */
-  private readPromise?: Promise<AWS.CloudFormation.StackEvent[]>;
+  private readPromise?: Promise<ReadEventsResult>;
 
-  private readonly printer: ActivityPrinterBase;
+  /**
+   * Pagination token for the next page of stack events
+   *
+   * Retained between ticks in order to avoid being O(N^2) in the length of
+   * the stack event log
+   */
+  private nextToken?: string;
 
   constructor(
     private readonly cfn: aws.CloudFormation,
     private readonly stackName: string,
-    private readonly stack: cxapi.CloudFormationStackArtifact,
-    options: StackActivityMonitorProps = {}) {
-
-    const stream = process.stderr;
-
-    const props: PrinterProps = {
-      resourceTypeColumnWidth: calcMaxResourceTypeLength(this.stack.template),
-      resourcesTotal: options.resourcesTotal,
-      stream,
-    };
-
-    const isWindows = process.platform === 'win32';
-    const verbose = options.logLevel ?? logLevel;
-    const fancyOutputAvailable = !isWindows && stream.isTTY;
-
-    this.printer = fancyOutputAvailable && !verbose
-      ? new CurrentActivityPrinter(props)
-      : new HistoryActivityPrinter(props);
-  }
+    private readonly printer: IActivityPrinter,
+    private readonly stack?: cxapi.CloudFormationStackArtifact,
+  ) {}
 
   public start() {
     this.active = true;
     this.printer.start();
-    this.scheduleNextTick();
+    this.scheduleNextTick(true);
     return this;
   }
 
@@ -103,15 +115,17 @@ export class StackActivityMonitor {
     if (this.readPromise) {
       // We're currently reading events, wait for it to finish and print them before continuing.
       await this.readPromise;
-      this.flushEvents();
+      this.printer.print();
     }
   }
 
-  private scheduleNextTick() {
+  private scheduleNextTick(newPageAvailable: boolean) {
     if (!this.active) {
       return;
     }
-    this.tickTimer = setTimeout(() => this.tick().then(), this.printer.updateSleep);
+
+    const sleepMs = newPageAvailable ? 0 : this.printer.updateSleep;
+    this.tickTimer = setTimeout(() => void(this.tick()), sleepMs);
   }
 
   private async tick() {
@@ -119,40 +133,24 @@ export class StackActivityMonitor {
       return;
     }
 
+    let newPage = false;
     try {
-      this.readPromise = this.readEvents();
-      await this.readPromise;
+      this.readPromise = this.readNewEvents((a) => this.printer.addActivity(a));
+      newPage = (await this.readPromise).nextPage;
       this.readPromise = undefined;
 
       // We might have been stop()ped while the network call was in progress.
       if (!this.active) { return; }
 
-      this.flushEvents();
+      this.printer.print();
     } catch (e) {
       error('Error occurred while monitoring stack: %s', e);
     }
-    this.scheduleNextTick();
-  }
-
-  /**
-   * Flushes all unflushed events sorted by timestamp.
-   */
-  private flushEvents() {
-    Object.keys(this.activity)
-      .map(a => this.activity[a])
-      .filter(a => a.event.Timestamp.valueOf() > this.startTime)
-      .filter(a => !a.flushed)
-      .sort((lhs, rhs) => lhs.event.Timestamp.valueOf() - rhs.event.Timestamp.valueOf())
-      .forEach(a => {
-        a.flushed = true;
-        this.printer.addActivity(a);
-      });
-
-    this.printer.print();
+    this.scheduleNextTick(newPage);
   }
 
   private findMetadataFor(logicalId: string | undefined): ResourceMetadata | undefined {
-    const metadata = this.stack.manifest.metadata;
+    const metadata = this.stack?.manifest?.metadata;
     if (!logicalId || !metadata) { return undefined; }
     for (const path of Object.keys(metadata)) {
       const entry = metadata[path]
@@ -168,39 +166,53 @@ export class StackActivityMonitor {
     return undefined;
   }
 
-  private async readEvents(nextToken?: string): Promise<AWS.CloudFormation.StackEvent[]> {
-    const output = await this.cfn.describeStackEvents({ StackName: this.stackName, NextToken: nextToken }).promise()
-      .catch( e => {
-        if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
-          return undefined;
-        }
-        throw e;
-      });
+  /**
+   * Reads a single page stack events from the stack, invoking a callback on the new ones (in order)
+   *
+   * Returns whether there is a next page of events availablle.
+   */
+  private async readNewEvents(cb: (x: StackActivity) => void): Promise<ReadEventsResult> {
+    let response;
 
-    let events = output && output.StackEvents || [];
-    let allNew = true;
-
-    // merge events into the activity and dedup by event id
-    for (const e of events) {
-      if (e.EventId in this.activity) {
-        allNew = false;
-        break;
+    try {
+      response = await this.cfn.describeStackEvents({ StackName: this.stackName, NextToken: this.nextToken }).promise();
+    } catch (e) {
+      if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
+        return { nextPage: false };
       }
-
-      this.activity[e.EventId] = {
-        flushed: false,
-        event: e,
-        metadata: this.findMetadataFor(e.LogicalResourceId),
-      };
+      throw e;
     }
 
-    // only read next page if all the events we read are new events. otherwise, we can rest.
-    if (allNew && output && output.NextToken) {
-      await new Promise(cb => setTimeout(cb, this.pageSleep));
-      events = events.concat(await this.readEvents(output.NextToken));
+    for (const event of response?.StackEvents ?? []) {
+      // Already seen this one
+      if (event.EventId in this.activity) { continue; }
+
+      // Event from before we were interested in 'em
+      if (event.Timestamp.valueOf() < this.startTime) { continue; }
+
+      // Invoke callback
+      cb(this.activity[event.EventId] = {
+        event: event,
+        metadata: this.findMetadataFor(event.LogicalResourceId),
+      });
     }
 
-    return events;
+    // Replace the "next token" if we have one, so that we start paginating from the next
+    // page on the next call.
+    //
+    // Crucially -- this token will ONLY be returned if there is a next page to
+    // read already. If not, we're at the end of the list of events.
+    //
+    // If there's no next page to read, we don't reset our paging token though. There might
+    // be a new page to read in the future, and we don't want to have to page through
+    // pages 1-N on the next call just to get page (N+1). In that case simply retain the
+    // current token, requesting page N again until (N+1) appears.
+    if (response?.NextToken) {
+      this.nextToken = response.NextToken;
+    }
+
+    // Return whether there is a new page available
+    return { nextPage: response?.NextToken !== undefined };
   }
 
   private simplifyConstructPath(path: string) {
@@ -213,6 +225,10 @@ export class StackActivityMonitor {
     }
     return path;
   }
+}
+
+interface ReadEventsResult {
+  readonly nextPage: boolean;
 }
 
 function padRight(n: number, x: string): string {
@@ -255,7 +271,16 @@ interface PrinterProps {
   readonly stream: NodeJS.WriteStream;
 }
 
-abstract class ActivityPrinterBase {
+export interface IActivityPrinter {
+  readonly updateSleep: number;
+
+  addActivity(activity: StackActivity): void;
+  print(): void;
+  start(): void;
+  stop(): void;
+}
+
+abstract class ActivityPrinterBase implements IActivityPrinter {
   /**
    * Fetch new activity every 5 seconds
    */
