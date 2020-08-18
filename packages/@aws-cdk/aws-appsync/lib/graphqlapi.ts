@@ -400,10 +400,11 @@ export class GraphQLApi extends GraphqlApiBase {
    *
    * @default - no api key
    */
-  public readonly apiKey?: CfnApiKey;
+  public readonly apiKey?: string;
 
   private schemaMode: SchemaDefinition;
   private api: CfnGraphQLApi;
+  private _apiKey?: CfnApiKey;
 
   constructor(scope: Construct, id: string, props: GraphQLApiProps) {
     super(scope, id);
@@ -472,8 +473,9 @@ export class GraphQLApi extends GraphqlApiBase {
           find((mode: AuthorizationMode) => {
             return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
           })?.apiKeyConfig;
-      this.apiKey = this.createAPIKey(apiKeyConfig);
-      this.apiKey.addDependsOn(this.schema);
+      this._apiKey = this.createAPIKey(apiKeyConfig);
+      this._apiKey.addDependsOn(this.schema);
+      this.apiKey = this._apiKey.attrApiKey;
     }
   }
 
