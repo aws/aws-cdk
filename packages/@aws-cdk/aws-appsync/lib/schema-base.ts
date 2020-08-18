@@ -41,7 +41,7 @@ export interface IField {
    *
    * @default - not a resolvable field
    */
-  fieldOptions?: ResolvableFieldOptions;
+  readonly fieldOptions?: ResolvableFieldOptions;
 
   /**
    * the intermediate type linked to this attribute

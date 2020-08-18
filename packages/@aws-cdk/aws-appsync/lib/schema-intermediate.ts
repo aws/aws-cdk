@@ -21,7 +21,6 @@ export class Directive {
    * Add a custom directive
    *
    * @param statement - the directive statement to append
-   * Note: doesn't guarantee functionality
    */
   public static custom(statement: string): Directive {
     return new Directive(statement);
@@ -161,9 +160,7 @@ export class ObjectType extends InterfaceType {
 
     Object.keys(this.definition).forEach((fieldName) => {
       const fieldInfo = this.definition[fieldName];
-      if(fieldInfo.fieldOptions) {
-        this.resolvers?.push(this.generateResolver(fieldName, fieldInfo.fieldOptions));
-      }
+      this.generateResolver(fieldName, fieldInfo.fieldOptions);
     });
   }
 
@@ -174,10 +171,7 @@ export class ObjectType extends InterfaceType {
    * @param field - the field to add
    */
   public addField(fieldName: string, field: IField): void {
-    if(field.fieldOptions){
-      const resolver = this.generateResolver(fieldName, field.fieldOptions);
-      this.resolvers?.push(resolver);
-    }
+    this.generateResolver(fieldName, field.fieldOptions);
     this.definition[fieldName] = field;
   }
 
@@ -222,12 +216,14 @@ export class ObjectType extends InterfaceType {
   /**
    * Generate the resolvers linked to this Object Type
    */
-  protected generateResolver(fieldName: string, options: ResolvableFieldOptions): Resolver{
-    return options.dataSource.createResolver({
-      typeName: this.name,
-      fieldName: fieldName,
-      requestMappingTemplate: options.requestMappingTemplate,
-      responseMappingTemplate: options.responseMappingTemplate,
-    });
+  protected generateResolver(fieldName: string, options?: ResolvableFieldOptions): void {
+    if (options && options.dataSource){
+      this.resolvers?.push(options.dataSource.createResolver({
+        typeName: this.name,
+        fieldName: fieldName,
+        requestMappingTemplate: options.requestMappingTemplate,
+        responseMappingTemplate: options.responseMappingTemplate,
+      }));
+    }
   }
 }

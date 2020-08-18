@@ -286,13 +286,6 @@ export class GraphqlType implements IField {
   public readonly isRequiredList: boolean;
 
   /**
-   * The options to make this field resolvable
-   *
-   * @default - not a resolvable field
-   */
-  public fieldOptions?: ResolvableFieldOptions;
-
-  /**
    * the intermediate type linked to this attribute
    * (i.e. an interface or an object)
    *
@@ -351,21 +344,13 @@ export class GraphqlType implements IField {
 }
 
 /**
- * Properties for configuring a resolvable field
+ * Properties for configuring a field
  *
- * @options dataSource - the data source linked to this resolvable field
  * @options args - the variables and types that define the arguments
  *
  * i.e. { string: GraphqlType, string: GraphqlType }
- *
- * @options requestMappingTemplate - the mapping template for requests to this resolver
- * @options responseMappingTemplate - the mapping template for responses from this resolver
  */
-export interface ResolvableFieldOptions {
-  /**
-   * The data source creating linked to this resolvable field
-   */
-  readonly dataSource: BaseDataSource;
+export interface FieldOptions {
   /**
    * The arguments for this resolvable field.
    *
@@ -376,6 +361,64 @@ export interface ResolvableFieldOptions {
    * @default - no arguments
    */
   readonly args?: { [key: string]: GraphqlType };
+}
+
+/**
+ * Properties for configuring a field
+ *
+ * @options fieldOptions - the properties to create this field
+ */
+export interface FieldProps extends GraphqlTypeOptions {
+  /**
+   * the properties to configure a field
+   */
+  readonly fieldOptions: FieldOptions;
+}
+
+/**
+ * Fields build upon Graphql Types and provide typing
+ * and arguments.
+ */
+export class Field extends GraphqlType implements IField {
+  /**
+   * The options for this field
+   *
+   * @default - no arguments
+   */
+  public readonly fieldOptions?: ResolvableFieldOptions;
+
+  public constructor(type: Type, props: FieldProps) {
+    super(type, props);
+    this.fieldOptions = props.fieldOptions;
+  }
+
+  /**
+   * Generate the args string of this resolvable field
+   */
+  public argsToString(): string{
+    let args = '( ';
+    Object.keys(this.fieldOptions?.args ?? {}).forEach((key) => {
+      const type = this.fieldOptions?.args?.[key].toString();
+      args = `${args}${key}: ${type} `;
+    });
+    return `${args})`;
+  }
+}
+
+/**
+ * Properties for configuring a resolvable field
+ *
+ * @options dataSource - the data source linked to this resolvable field
+ * @options requestMappingTemplate - the mapping template for requests to this resolver
+ * @options responseMappingTemplate - the mapping template for responses from this resolver
+ */
+export interface ResolvableFieldOptions extends FieldOptions {
+  /**
+   * The data source creating linked to this resolvable field
+   *
+   * @default - no data source
+   */
+  readonly dataSource?: BaseDataSource;
   /**
    * The request mapping template for this resolver
    *
@@ -406,21 +449,16 @@ export interface ResolvableFieldProps extends GraphqlTypeOptions {
  * Resolvable Fields build upon Graphql Types and provide fields
  * that can resolve into operations on a data source.
  */
-export class ResolvableField extends GraphqlType {
+export class ResolvableField extends Field implements IField {
+  /**
+   * The options to make this field resolvable
+   *
+   * @default - not a resolvable field
+   */
+  public readonly fieldOptions?: ResolvableFieldOptions;
+
   public constructor(type: Type, props: ResolvableFieldProps) {
     super(type, props);
     this.fieldOptions = props.fieldOptions;
-  }
-
-  /**
-   * Generate the args string of this resolvable field
-   */
-  public argsToString(): string{
-    let args = '( ';
-    Object.keys(this.fieldOptions?.args ?? {}).forEach((key) => {
-      const type = this.fieldOptions?.args?.[key].toString();
-      args = `${args}${key}: ${type} `;
-    });
-    return `${args})`;
   }
 }
