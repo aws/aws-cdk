@@ -347,11 +347,10 @@ export = {
 
     // WHEN
     const imported = eks.Cluster.fromClusterAttributes(stack2, 'Imported', {
-      clusterArn: cluster.clusterArn,
       vpc: cluster.vpc,
       clusterEndpoint: cluster.clusterEndpoint,
       clusterName: cluster.clusterName,
-      securityGroups: cluster.connections.securityGroups,
+      securityGroupIds: cluster.connections.securityGroups.map(x => x.securityGroupId),
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
       clusterSecurityGroupId: cluster.clusterSecurityGroupId,
       clusterEncryptionConfigKeyArn: cluster.clusterEncryptionConfigKeyArn,
@@ -365,7 +364,23 @@ export = {
       Outputs: {
         ClusterARN: {
           Value: {
-            'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttCluster9EE0221CArn9E0B683E',
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':eks:us-east-1:',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':cluster/',
+                {
+                  'Fn::ImportValue': 'Stack:ExportsOutputRefCluster9EE0221C4853B4C3',
+                },
+              ],
+            ],
           },
         },
       },
@@ -1354,21 +1369,18 @@ export = {
       // GIVEN
       const { stack, app } = testFixture();
       const c1 = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION });
-      const c2 = new eks.Cluster(stack, 'Cluster2', { version: CLUSTER_VERSION });
 
       // WHEN
 
       // activate kubectl provider
       c1.addManifest('c1a', { foo: 123 });
       c1.addManifest('c1b', { foo: 123 });
-      c2.addManifest('c2', { foo: 123 });
 
       // THEN
       const template = app.synth().getStackArtifact(stack.artifactId).template;
 
       const creationRoleToKubectlRole = {
         Cluster1CreationRoleA231BE8D: 'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
-        Cluster2CreationRole9254EAB6: 'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
       };
 
       // verify that the kubectl role appears as the 2nd IAM trust policy statement

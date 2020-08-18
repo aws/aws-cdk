@@ -4,17 +4,17 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tag, Token, Duration } from '@aws-cdk/core';
+import { CfnOutput, CfnResource, Construct, IResource, Resource, Tag, Token, Duration, Stack } from '@aws-cdk/core';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
-import { clusterArnComponents, ClusterResource } from './cluster-resource';
+import { ClusterResource, clusterArnComponents } from './cluster-resource';
 import { CfnClusterProps } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesManifest } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
-import { KubectlProvider, KubectlProviderProps } from './kubectl-provider';
+import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
@@ -68,6 +68,55 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @attribute
    */
   readonly clusterEncryptionConfigKeyArn: string;
+
+  /**
+   * An IAM role that can perform kubectl operations against this cluster.
+   *
+   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
+   */
+  readonly kubectlRole?: iam.IRole;
+
+  /**
+   * Custom environment variables when running `kubectl` against this cluster.
+   * @default - no additional environment variables
+   */
+  readonly kubectlEnvironment?: { [key: string]: string };
+
+  /**
+   * A security group to use for `kubectl` execution.
+   *
+   * @default - If not specified, the k8s endpoint is expected to be accessible
+   * publicly.
+   */
+  readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * Subnets to host the `kubectl` compute resources.
+   *
+   * @default - If not specified, the k8s endpoint is expected to be accessible
+   * publicly.
+   */
+  readonly kubectlPrivateSubnets?: ec2.ISubnet[];
+
+  /**
+   * Defines a Kubernetes resource in this cluster.
+   *
+   * The manifest will be applied/deleted using kubectl as needed.
+   *
+   * @param id logical id of this manifest
+   * @param manifest a list of Kubernetes resource specifications
+   * @returns a `KubernetesResource` object.
+   */
+  addManifest(id: string, ...manifest: any[]): KubernetesManifest;
+
+  /**
+   * Defines a Helm chart in this cluster.
+   *
+   * @param id logical id of this chart.
+   * @param options options of this chart.
+   * @returns a `HelmChart` object
+   */
+  addChart(id: string, options: HelmChartOptions): HelmChart;
 }
 
 /**
@@ -76,8 +125,9 @@ export interface ICluster extends IResource, ec2.IConnectable {
 export interface ClusterAttributes {
   /**
    * The VPC in which this Cluster was created
+   * @default - if not specified `cluster.vpc` will throw an error
    */
-  readonly vpc: ec2.IVpc;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * The physical name of the Cluster
@@ -85,35 +135,65 @@ export interface ClusterAttributes {
   readonly clusterName: string;
 
   /**
-   * The unique ARN assigned to the service by AWS
-   * in the form of arn:aws:eks:
-   */
-  readonly clusterArn: string;
-
-  /**
    * The API Server endpoint URL
+   * @default - if not specified `cluster.clusterEndpoint` will throw an error.
    */
-  readonly clusterEndpoint: string;
+  readonly clusterEndpoint?: string;
 
   /**
    * The certificate-authority-data for your cluster.
+   * @default - if not specified `cluster.clusterCertificateAuthorityData` will
+   * throw an error
    */
-  readonly clusterCertificateAuthorityData: string;
+  readonly clusterCertificateAuthorityData?: string;
 
   /**
    * The cluster security group that was created by Amazon EKS for the cluster.
+   * @default - if not specified `cluster.clusterSecurityGroupId` will throw an
+   * error
    */
-  readonly clusterSecurityGroupId: string;
+  readonly clusterSecurityGroupId?: string;
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
+   * @default - if not specified `cluster.clusterEncryptionConfigKeyArn` will
+   * throw an error
    */
-  readonly clusterEncryptionConfigKeyArn: string;
+  readonly clusterEncryptionConfigKeyArn?: string;
 
   /**
-   * The security groups associated with this cluster.
+   * Additional security groups associated with this cluster.
+   * @default - if not specified, no additional security groups will be
+   * considered in `cluster.connections`.
    */
-  readonly securityGroups: ec2.ISecurityGroup[];
+  readonly securityGroupIds?: string[];
+
+  /**
+   * An IAM role with cluster administrator and "system:masters" permissions.
+   * @default - if not specified, it not be possible to issue `kubectl` commands
+   * against an imported cluster.
+   */
+  readonly kubectlRoleArn?: string;
+
+  /**
+   * Environment variables to use when running `kubectl` against this cluster.
+   * @default - no additional variables
+   */
+  readonly kubectlEnvironment?: { [name: string]: string };
+
+  /**
+   * A security group to use for `kubectl` execution. If not specified, the k8s
+   * endpoint is expected to be accessible publicly.
+   * @default - k8s endpoint is expected to be accessible publicly
+   */
+  readonly kubectlSecurityGroupId?: string;
+
+  /**
+   * Subnets to host the `kubectl` compute resources. If not specified, the k8s
+   * endpoint is expected to be accessible publicly.
+   * @default - k8s endpoint is expected to be accessible publicly
+   */
+  readonly kubectlPrivateSubnetIds?: string[];
 }
 
 /**
@@ -417,6 +497,45 @@ export class KubernetesVersion {
   private constructor(public readonly version: string) { }
 }
 
+abstract class ClusterBase extends Resource implements ICluster {
+  public abstract readonly connections: ec2.Connections;
+  public abstract readonly vpc: ec2.IVpc;
+  public abstract readonly clusterName: string;
+  public abstract readonly clusterArn: string;
+  public abstract readonly clusterEndpoint: string;
+  public abstract readonly clusterCertificateAuthorityData: string;
+  public abstract readonly clusterSecurityGroupId: string;
+  public abstract readonly clusterEncryptionConfigKeyArn: string;
+  public abstract readonly kubectlRole?: iam.IRole;
+  public abstract readonly kubectlEnvironment?: { [key: string]: string };
+  public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
+  public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
+
+  /**
+   * Defines a Kubernetes resource in this cluster.
+   *
+   * The manifest will be applied/deleted using kubectl as needed.
+   *
+   * @param id logical id of this manifest
+   * @param manifest a list of Kubernetes resource specifications
+   * @returns a `KubernetesResource` object.
+   */
+  public addManifest(id: string, ...manifest: any[]): KubernetesManifest {
+    return new KubernetesManifest(this, `manifest-${id}`, { cluster: this, manifest });
+  }
+
+  /**
+   * Defines a Helm chart in this cluster.
+   *
+   * @param id logical id of this chart.
+   * @param options options of this chart.
+   * @returns a `HelmChart` object
+   */
+  public addChart(id: string, options: HelmChartOptions): HelmChart {
+    return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
+  }
+}
+
 /**
  * Options for fetching a ServiceLoadBalancerAddress.
  */
@@ -444,7 +563,7 @@ export interface ServiceLoadBalancerAddressOptions {
  * This is a fully managed cluster of API Servers (control-plane)
  * The user is still required to create the worker nodes.
  */
-export class Cluster extends Resource implements ICluster {
+export class Cluster extends ClusterBase {
   /**
    * Import an existing cluster
    *
@@ -525,6 +644,35 @@ export class Cluster extends Resource implements ICluster {
   public readonly defaultNodegroup?: Nodegroup;
 
   /**
+   * An IAM role that can perform kubectl operations against this cluster.
+   *
+   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
+   */
+  public readonly kubectlRole?: iam.IRole;
+
+  /**
+   * Custom environment variables when running `kubectl` against this cluster.
+   * @default - no additional environment variables
+   */
+  public readonly kubectlEnvironment?: { [key: string]: string };
+
+  /**
+   * A security group to use for `kubectl` execution.
+   *
+   * @default - If not specified, the k8s endpoint is expected to be accessible
+   * publicly.
+   */
+  public readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * Subnets to host the `kubectl` compute resources.
+   *
+   * @default - If not specified, the k8s endpoint is expected to be accessible
+   * publicly.
+   */
+  public readonly kubectlPrivateSubnets?: ec2.ISubnet[];
+
+  /**
    * If the cluster has one (or more) FargateProfiles associated, this array
    * will hold a reference to each.
    */
@@ -550,11 +698,7 @@ export class Cluster extends Resource implements ICluster {
 
   private readonly endpointAccess: EndpointAccess;
 
-  private readonly kubctlProviderSecurityGroup: ec2.ISecurityGroup;
-
   private readonly vpcSubnets: ec2.SubnetSelection[];
-
-  private readonly kubectlProviderEnv?: { [key: string]: string };
 
   private readonly version: KubernetesVersion;
 
@@ -570,7 +714,9 @@ export class Cluster extends Resource implements ICluster {
    * is added as their dependency which implies that they can only be deployed
    * after the cluster is ready.
    */
-  private readonly _kubectlReadyBarrier?: CfnResource;
+  private readonly _kubectlReadyBarrier: CfnResource;
+
+  private readonly _kubectlResourceProvider: KubectlProvider;
 
   /**
    * Initiates an EKS Cluster with the supplied arguments
@@ -633,7 +779,7 @@ export class Cluster extends Resource implements ICluster {
     };
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
-    this.kubectlProviderEnv = props.kubectlEnvironment;
+    this.kubectlEnvironment = props.kubectlEnvironment;
 
     if (this.endpointAccess._config.privateAccess && this.vpc instanceof ec2.Vpc) {
       // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
@@ -642,13 +788,13 @@ export class Cluster extends Resource implements ICluster {
       }
     }
 
-    this.kubctlProviderSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
+    this.kubectlSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
       vpc: this.vpc,
       description: 'Comminication between KubectlProvider and EKS Control Plane',
     });
 
     // grant the kubectl provider access to the cluster control plane.
-    this.connections.allowFrom(this.kubctlProviderSecurityGroup, this.connections.defaultPort!);
+    this.connections.allowFrom(this.kubectlSecurityGroup, this.connections.defaultPort!);
 
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       ...clusterProps,
@@ -659,7 +805,7 @@ export class Cluster extends Resource implements ICluster {
 
     // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
     // this ensures that.
-    this._clusterResource.node.addDependency(this.kubctlProviderSecurityGroup, this.vpc);
+    this._clusterResource.node.addDependency(this.kubectlSecurityGroup, this.vpc);
 
     // see https://github.com/aws/aws-cdk/issues/9027
     this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
@@ -690,6 +836,20 @@ export class Cluster extends Resource implements ICluster {
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
+
+    // use the cluster creation role to issue kubectl commands against the cluster because when the
+    // cluster is first created, that's the only role that has "system:masters" permissions
+    this.kubectlRole = this._clusterCreationRole;
+
+    // specify private subnets for kubectl only if we don't have public k8s endpoint access
+    if (!this.endpointAccess._config.publicAccess) {
+      this.kubectlPrivateSubnets = this.selectPrivateSubnets().slice(0, 16);
+      if (this.kubectlPrivateSubnets.length === 0) {
+        throw new Error('Vpc must contain private subnets to configure private endpoint access');
+      }
+    }
+
+    this._kubectlResourceProvider = this.defineKubectlProvider();
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
@@ -959,30 +1119,6 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Defines a Kubernetes manifest in this cluster.
-   *
-   * The manifest will be applied/deleted using kubectl as needed.
-   *
-   * @param id logical id of this manifest
-   * @param manifest a list of Kubernetes resource specifications
-   * @returns a `KubernetesManifest` object.
-   */
-  public addManifest(id: string, ...manifest: any[]) {
-    return new KubernetesManifest(this, `manifest-${id}`, { cluster: this, manifest });
-  }
-
-  /**
-   * Defines a Helm chart in this cluster.
-   *
-   * @param id logical id of this chart.
-   * @param options options of this chart.
-   * @returns a `HelmChart` object
-   */
-  public addChart(id: string, options: HelmChartOptions) {
-    return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
-  }
-
-  /**
    * Adds a Fargate profile to this cluster.
    * @see https://docs.aws.amazon.com/eks/latest/userguide/fargate-profile.html
    *
@@ -1012,12 +1148,10 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Returns the role ARN for the cluster creation role for kubectl-enabled
    * clusters.
-   * @param assumedBy The IAM that will assume this role. If omitted, the
-   * creation role will be returned witout modification of its trust policy.
    *
    * @internal
    */
-  public get _kubectlCreationRole() {
+  public get _clusterCreationRole() {
     return this._clusterResource.creationRole;
   }
 
@@ -1033,9 +1167,7 @@ export class Cluster extends Resource implements ICluster {
 
     // add all profiles as a dependency of the "kubectl-ready" barrier because all kubectl-
     // resources can only be deployed after all fargate profiles are created.
-    if (this._kubectlReadyBarrier) {
-      this._kubectlReadyBarrier.node.addDependency(fargateProfile);
-    }
+    this._kubectlReadyBarrier.node.addDependency(fargateProfile);
 
     return this._fargateProfiles;
   }
@@ -1047,58 +1179,34 @@ export class Cluster extends Resource implements ICluster {
    *
    * Called from `HelmResource` and `KubernetesResource`
    *
-   * @property resourceScope the construct scope in which kubectl resources are defined.
+   * @param resourceScope the construct scope in which kubectl resources are defined.
    *
    * @internal
    */
   public _attachKubectlResourceScope(resourceScope: Construct): KubectlProvider {
+    resourceScope.node.addDependency(this._kubectlReadyBarrier);
+    return this._kubectlResourceProvider;
+  }
+
+  private defineKubectlProvider() {
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
 
-    // singleton
-    let provider = this.stack.node.tryFindChild(uid) as KubectlProvider;
-    if (!provider) {
-      // create the provider.
-
-      let providerProps: KubectlProviderProps = {
-        env: this.kubectlProviderEnv,
-      };
-
-      if (!this.endpointAccess._config.publicAccess) {
-
-        const privateSubents = this.selectPrivateSubnets().slice(0, 16);
-
-        if (privateSubents.length === 0) {
-          throw new Error('Vpc must contain private subnets to configure private endpoint access');
-        }
-
-        // endpoint access is private only, we need to attach the
-        // provider to the VPC so that it can access the cluster.
-        providerProps = {
-          ...providerProps,
-          vpc: this.vpc,
-          // lambda can only be accociated with max 16 subnets and they all need to be private.
-          vpcSubnets: { subnets: privateSubents },
-          securityGroups: [this.kubctlProviderSecurityGroup],
-        };
-      }
-
-      provider = new KubectlProvider(this.stack, uid, providerProps);
+    // since we can't have the provider connect to multiple networks, and we
+    // wanted to avoid resource tear down, we decided for now that we will only
+    // support a single EKS cluster per CFN stack.
+    if (this.stack.node.tryFindChild(uid)) {
+      throw new Error('Only a single EKS cluster can be defined within a CloudFormation stack');
     }
+
+    const provider = new KubectlProvider(this.stack, uid, { cluster: this });
 
     // allow the kubectl provider to assume the cluster creation role.
-    this._clusterResource.addTrustedRole(provider.role);
-
-    if (!this._kubectlReadyBarrier) {
-      throw new Error('unexpected: kubectl enabled clusters should have a kubectl-ready barrier resource');
-    }
-
-    resourceScope.node.addDependency(this._kubectlReadyBarrier);
+    this._clusterResource.addTrustedRole(provider.handlerRole);
 
     return provider;
   }
 
   private selectPrivateSubnets(): ec2.ISubnet[] {
-
     const privateSubnets: ec2.ISubnet[] = [];
 
     for (const placement of this.vpcSubnets) {
@@ -1367,32 +1475,65 @@ export interface AutoScalingGroupOptions {
 /**
  * Import a cluster to use in another stack
  */
-class ImportedCluster extends Resource implements ICluster {
-  public readonly vpc: ec2.IVpc;
-  public readonly clusterCertificateAuthorityData: string;
-  public readonly clusterSecurityGroupId: string;
-  public readonly clusterEncryptionConfigKeyArn: string;
+class ImportedCluster extends ClusterBase implements ICluster {
   public readonly clusterName: string;
   public readonly clusterArn: string;
-  public readonly clusterEndpoint: string;
   public readonly connections = new ec2.Connections();
+  public readonly kubectlRole?: iam.IRole;
+  public readonly kubectlEnvironment?: { [key: string]: string; } | undefined;
+  public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
+  public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
 
-  constructor(scope: Construct, id: string, props: ClusterAttributes) {
+  constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
 
-    this.vpc = ec2.Vpc.fromVpcAttributes(this, 'VPC', props.vpc);
     this.clusterName = props.clusterName;
-    this.clusterEndpoint = props.clusterEndpoint;
-    this.clusterArn = props.clusterArn;
-    this.clusterCertificateAuthorityData = props.clusterCertificateAuthorityData;
-    this.clusterSecurityGroupId = props.clusterSecurityGroupId;
-    this.clusterEncryptionConfigKeyArn = props.clusterEncryptionConfigKeyArn;
+    this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
+    this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
+    this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
+    this.kubectlEnvironment = props.kubectlEnvironment;
+    this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map(subnetid => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${subnetid}`, subnetid)) : undefined;
 
     let i = 1;
-    for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));
+    for (const sgid of props.securityGroupIds ?? []) {
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgid));
       i++;
     }
+  }
+
+  public get vpc() {
+    if (!this.props.vpc) {
+      throw new Error('"vpc" is not defined for this imported cluster');
+    }
+    return this.props.vpc;
+  }
+
+  public get clusterSecurityGroupId(): string {
+    if (!this.props.clusterSecurityGroupId) {
+      throw new Error('"clusterSecurityGroupId" is not defined for this imported cluster');
+    }
+    return this.props.clusterSecurityGroupId;
+  }
+
+  public get clusterEndpoint(): string {
+    if (!this.props.clusterEndpoint) {
+      throw new Error('"clusterEndpoint" is not defined for this imported cluster');
+    }
+    return this.props.clusterEndpoint;
+  }
+
+  public get clusterCertificateAuthorityData(): string {
+    if (!this.props.clusterCertificateAuthorityData) {
+      throw new Error('"clusterCertificateAuthorityData" is not defined for this imported cluster');
+    }
+    return this.props.clusterCertificateAuthorityData;
+  }
+
+  public get clusterEncryptionConfigKeyArn(): string {
+    if (!this.props.clusterEncryptionConfigKeyArn) {
+      throw new Error('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
+    }
+    return this.props.clusterEncryptionConfigKeyArn;
   }
 }
 
