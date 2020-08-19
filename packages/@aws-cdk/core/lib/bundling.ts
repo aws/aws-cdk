@@ -264,15 +264,6 @@ export interface DockerBuildOptions {
    * @default - no build args
    */
   readonly buildArgs?: { [key: string]: string };
-
-  /**
-   * The image name to include in the asset hash. This option can be used to
-   * stabilize the assetHashes emitted by bundlers that are built locally.
-   *
-   * @default - The image name used by the bundler will be the same as the image
-   * name.
-   */
-  readonly assetHashName?: string;
 }
 
 function flatten(x: string[][]) {
