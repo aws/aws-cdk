@@ -85,7 +85,7 @@ export class NodejsFunction extends lambda.Function {
 
       // Enable connection reuse for aws-sdk
       if (props.awsSdkConnectionReuse ?? true) {
-        this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1');
+        this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
       }
     } finally {
       // We can only restore after the code has been bound to the function
