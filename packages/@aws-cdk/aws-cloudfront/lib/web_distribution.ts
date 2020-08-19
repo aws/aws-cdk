@@ -247,7 +247,7 @@ export interface CustomOriginConfig {
   /**
    * The SSL versions to use when interacting with the origin.
    *
-   * @default OriginSslPolicy.TLSv1_2
+   * @default OriginSslPolicy.TLS_V1_2
    */
   readonly allowedOriginSSLVersions?: OriginSslPolicy[];
 
@@ -702,6 +702,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     [SSLMethod.SNI]: [
       SecurityPolicyProtocol.TLS_V1, SecurityPolicyProtocol.TLS_V1_1_2016,
       SecurityPolicyProtocol.TLS_V1_2016, SecurityPolicyProtocol.TLS_V1_2_2018,
+      SecurityPolicyProtocol.TLS_V1_2_2019,
     ],
     [SSLMethod.VIP]: [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
   };
@@ -814,7 +815,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
     let _viewerCertificate = props.viewerCertificate;
     if (props.aliasConfiguration) {
-      const {acmCertRef, securityPolicy, sslMethod, names: aliases} = props.aliasConfiguration;
+      const { acmCertRef, securityPolicy, sslMethod, names: aliases } = props.aliasConfiguration;
 
       _viewerCertificate = ViewerCertificate.fromAcmCertificate(
         certificatemanager.Certificate.fromCertificateArn(this, 'AliasConfigurationCert', acmCertRef),
@@ -823,10 +824,10 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     if (_viewerCertificate) {
-      const {props: viewerCertificate, aliases} = _viewerCertificate;
-      Object.assign(distributionConfig, {aliases, viewerCertificate});
+      const { props: viewerCertificate, aliases } = _viewerCertificate;
+      Object.assign(distributionConfig, { aliases, viewerCertificate });
 
-      const {minimumProtocolVersion, sslSupportMethod} = viewerCertificate;
+      const { minimumProtocolVersion, sslSupportMethod } = viewerCertificate;
 
       if (minimumProtocolVersion != null && sslSupportMethod != null) {
         const validProtocols = this.VALID_SSL_PROTOCOLS[sslSupportMethod as SSLMethod];
@@ -837,7 +838,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         }
       }
     } else {
-      distributionConfig = { ...distributionConfig,
+      distributionConfig = {
+        ...distributionConfig,
         viewerCertificate: { cloudFrontDefaultCertificate: true },
       };
     }
@@ -894,7 +896,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         lambdaFunctionAssociations: input.lambdaFunctionAssociations
           .map(fna => ({
             eventType: fna.eventType,
-            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.functionArn,
+            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.edgeArn,
           })),
       });
 
@@ -902,8 +904,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       for (const a of input.lambdaFunctionAssociations) {
         if (a.lambdaFunction.role && a.lambdaFunction.role instanceof iam.Role && a.lambdaFunction.role.assumeRolePolicy) {
           a.lambdaFunction.role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
-            actions: [ 'sts:AssumeRole' ],
-            principals: [ new iam.ServicePrincipal('edgelambda.amazonaws.com') ],
+            actions: ['sts:AssumeRole'],
+            principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],
           }));
         }
       }

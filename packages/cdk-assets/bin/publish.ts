@@ -1,6 +1,8 @@
 import * as os from 'os';
-import { AssetManifest, AssetPublishing, ClientOptions, DestinationPattern, EventType, IAws,
-  IPublishProgress, IPublishProgressListener } from '../lib';
+import {
+  AssetManifest, AssetPublishing, ClientOptions, DestinationPattern, EventType, IAws,
+  IPublishProgress, IPublishProgressListener,
+} from '../lib';
 import { Account } from '../lib/aws';
 import { log, LogLevel, VERSION } from './logging';
 
@@ -14,7 +16,7 @@ export async function publish(args: {
   log('verbose', `Loaded manifest from ${args.path}: ${manifest.entries.length} assets found`);
 
   if (args.assets && args.assets.length > 0) {
-    const selection =  args.assets.map(a => DestinationPattern.parse(a));
+    const selection = args.assets.map(a => DestinationPattern.parse(a));
     manifest = manifest.select(selection);
     log('verbose', `Applied selection: ${manifest.entries.length} assets selected.`);
   }
@@ -65,6 +67,8 @@ class DefaultAwsClient implements IAws {
   constructor(profile?: string) {
     // Force AWS SDK to look in ~/.aws/credentials and potentially use the configured profile.
     process.env.AWS_SDK_LOAD_CONFIG = '1';
+    process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
+    process.env.AWS_NODEJS_CONNECTION_REUSE_ENABLED = '1';
     if (profile) {
       process.env.AWS_PROFILE = profile;
     }

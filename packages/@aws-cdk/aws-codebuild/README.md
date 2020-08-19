@@ -213,18 +213,36 @@ The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` and `WindowsBuildImage` classes, respectively.
 
 You can specify one of the predefined Windows/Linux images by using one
-of the constants such as `WindowsBuildImage.WINDOWS_BASE_2_0` or
-`LinuxBuildImage.STANDARD_2_0`.
+of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE`,
+`WindowsBuildImage.WINDOWS_BASE_2_0` or `LinuxBuildImage.STANDARD_2_0`.
 
 Alternatively, you can specify a custom image using one of the static methods on
-`XxxBuildImage`:
+`LinuxBuildImage`:
 
-* Use `.fromDockerRegistry(image[, { secretsManagerCredentials }])` to reference an image in any public or private Docker registry.
-* Use `.fromEcrRepository(repo[, tag])` to reference an image available in an
+* `LinuxBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])` to reference an image in any public or private Docker registry.
+* `LinuxBuildImage.fromEcrRepository(repo[, tag])` to reference an image available in an
   ECR repository.
-* Use `.fromAsset(directory)` to use an image created from a
+* `LinuxBuildImage.fromAsset(parent, id, props)` to use an image created from a
   local asset.
-* Use `.fromCodeBuildImageId(id)` to reference a pre-defined, CodeBuild-provided Docker image.
+* `LinuxBuildImage.fromCodeBuildImageId(id)` to reference a pre-defined, CodeBuild-provided Docker image.
+
+or one of the corresponding methods on `WindowsBuildImage`:
+
+* `WindowsBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }, imageType])`
+* `WindowsBuildImage.fromEcrRepository(repo[, tag, imageType])`
+* `WindowsBuildImage.fromAsset(parent, id, props, [, imageType])`
+
+Note that the `WindowsBuildImage` version of the static methods accepts an optional parameter of type `WindowsImageType`, 
+which can be either `WindowsImageType.STANDARD`, the default, or `WindowsImageType.SERVER_2019`:
+
+```typescript
+new codebuild.Project(this, 'Project', {
+  environment: {
+    buildImage: codebuild.WindowsBuildImage.fromEcrRepository(ecrRepository, 'v1.0', codebuild.WindowsImageType.SERVER_2019),
+  },
+  ...
+})
+```
 
 The following example shows how to define an image from a Docker asset:
 
