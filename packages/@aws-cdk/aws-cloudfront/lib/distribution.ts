@@ -284,6 +284,7 @@ export class Distribution extends Resource implements IDistribution {
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
+        webAclId: props.webAclId,
       },
     });
 

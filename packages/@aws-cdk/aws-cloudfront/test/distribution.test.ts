@@ -100,6 +100,7 @@ test('exhaustive example of props renders correctly', () => {
         SslSupportMethod: 'sni-only',
         MinimumProtocolVersion: 'TLSv1.2_2019',
       },
+      WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
     },
   });
 });
