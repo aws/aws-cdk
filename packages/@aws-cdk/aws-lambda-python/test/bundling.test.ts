@@ -149,7 +149,7 @@ test('Bundling dependencies into a layer', () => {
   expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', expect.objectContaining({
     bundling: expect.objectContaining({
       image: { image: MOCK_BUILD_IMAGE_ID },
-      command: ['sh', '-c', `cp -r ${IMAGE_LAYER_DIR}/. /asset-output/`],
+      command: ['sh', '-c', `rsync -r ${IMAGE_LAYER_DIR}/. /asset-output/`],
     }),
     assetHashType: cdk.AssetHashType.BUNDLE,
     exclude: expect.arrayContaining(['*.pyc']),
@@ -158,7 +158,7 @@ test('Bundling dependencies into a layer', () => {
   expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', expect.objectContaining({
     bundling: expect.objectContaining({
       image: { image: MOCK_BUILD_IMAGE_ID },
-      command: ['sh', '-c', `cp -r ${IMAGE_FUNCTION_DIR}/. /asset-output/`],
+      command: ['sh', '-c', `rsync -r ${IMAGE_FUNCTION_DIR}/. /asset-output/`],
     }),
     assetHashType: cdk.AssetHashType.BUNDLE,
     exclude: expect.arrayContaining(['*.pyc']),

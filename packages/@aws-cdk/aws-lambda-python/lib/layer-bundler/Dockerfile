@@ -4,6 +4,9 @@ ARG FROM=amazon/aws-sam-cli-build-image-python3.7
 
 FROM ${FROM}
 
+# Ensure rsync is installed
+RUN yum -q list installed rsync &>/dev/null || yum install -y rsync
+
 RUN pip install pipenv
 
 WORKDIR /var/task.layer

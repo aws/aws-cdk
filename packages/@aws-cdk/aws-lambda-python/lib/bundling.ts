@@ -87,7 +87,7 @@ function bundleLayerDependentFunction(options: BundlingOptions): lambda.AssetCod
   return lambda.Code.fromAsset(entry, {
     bundling: {
       image: getLayerBundlerImage(options),
-      command: ['sh', '-c', `cp -r ${IMAGE_FUNCTION_DIR}/. /asset-output/`],
+      command: ['sh', '-c', `rsync -r ${IMAGE_FUNCTION_DIR}/. /asset-output/`],
     },
     assetHashType: cdk.AssetHashType.BUNDLE,
     exclude: DEPENDENCY_EXCLUDES,
@@ -100,7 +100,7 @@ export function bundleLayer(options: BundlingOptions): lambda.AssetCode {
   return lambda.Code.fromAsset(entry, {
     bundling: {
       image: getLayerBundlerImage(options),
-      command: ['sh', '-c', `cp -r ${IMAGE_LAYER_DIR}/. /asset-output/`],
+      command: ['sh', '-c', `rsync -r ${IMAGE_LAYER_DIR}/. /asset-output/`],
     },
     assetHashType: cdk.AssetHashType.BUNDLE,
     exclude: DEPENDENCY_EXCLUDES,
