@@ -14,14 +14,14 @@ test('continue to the next page if it exists', async () => {
     (request) => {
       expect(request.NextToken).toBeUndefined();
       return {
-        StackEvents: [ event(102) ],
+        StackEvents: [event(102)],
         NextToken: 'some-token',
       };
     },
     (request) => {
       expect(request.NextToken).toBe('some-token');
       return {
-        StackEvents: [ event(101) ],
+        StackEvents: [event(101)],
       };
     },
   ]);
@@ -35,13 +35,13 @@ test('do not page further if we already saw the last event', async () => {
     (request) => {
       expect(request.NextToken).toBeUndefined();
       return {
-        StackEvents: [ event(101) ],
+        StackEvents: [event(101)],
       };
     },
     (request) => {
       expect(request.NextToken).toBeUndefined();
       return {
-        StackEvents: [ event(102), event(101) ],
+        StackEvents: [event(102), event(101)],
         NextToken: 'some-token',
       };
     },
@@ -61,7 +61,7 @@ test('do not page further if the last event is too old', async () => {
     (request) => {
       expect(request.NextToken).toBeUndefined();
       return {
-        StackEvents: [ event(101), event(95) ],
+        StackEvents: [event(101), event(95)],
         NextToken: 'some-token',
       };
     },
@@ -82,7 +82,7 @@ test('do a final request after the monitor is stopped', async () => {
     (request) => {
       expect(request.NextToken).toBeUndefined();
       return {
-        StackEvents: [ event(101) ],
+        StackEvents: [event(101)],
       };
     },
   ],
@@ -91,7 +91,7 @@ test('do a final request after the monitor is stopped', async () => {
     (request) => {
       expect(request.NextToken).toBeUndefined();
       return {
-        StackEvents: [ event(102), event(101) ],
+        StackEvents: [event(102), event(101)],
       };
     },
   ]);
@@ -105,7 +105,7 @@ const T0 = 1597837230504;
 // Events 0-99 are before we started paying attention
 const T100 = T0 + 100 * 1000;
 
-function event(nr: number): AWS.CloudFormation.StackEvent  {
+function event(nr: number): AWS.CloudFormation.StackEvent {
   return {
     EventId: `${nr}`,
     StackId: 'StackId',
