@@ -896,7 +896,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         lambdaFunctionAssociations: input.lambdaFunctionAssociations
           .map(fna => ({
             eventType: fna.eventType,
-            lambdaFunctionArn: fna.lambdaFunction && cdk.Lazy.stringValue({ produce: () => fna.lambdaFunction.edgeArn }),
+            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.edgeArn,
           })),
       });
 

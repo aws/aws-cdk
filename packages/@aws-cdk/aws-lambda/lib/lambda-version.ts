@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Construct, Fn, RemovalPolicy } from '@aws-cdk/core';
+import { Construct, Fn, Lazy, RemovalPolicy } from '@aws-cdk/core';
 import { Alias, AliasOptions } from './alias';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
@@ -248,12 +248,18 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       throw new Error('$LATEST function version cannot be used for Lambda@Edge');
     }
 
-    // Validate that the underlying function can be used for Lambda@Edge
-    if (this.lambda instanceof FunctionBase) {
-      this.lambda._checkEdgeCompatibility();
-    }
+    // Check compatibility at synthesis. It could be that the version was associated
+    // with a CloudFront distribution first and made incompatible afterwards.
+    return Lazy.stringValue({
+      produce: () => {
+        // Validate that the underlying function can be used for Lambda@Edge
+        if (this.lambda instanceof FunctionBase) {
+          this.lambda._checkEdgeCompatibility();
+        }
 
-    return this.functionArn;
+        return this.functionArn;
+      },
+    });
   }
 
   /**

@@ -1,4 +1,3 @@
-import { Lazy } from '@aws-cdk/core';
 import { CfnDistribution } from '../cloudfront.generated';
 import { AddBehaviorOptions, ViewerProtocolPolicy } from '../distribution';
 
@@ -50,7 +49,7 @@ export class CacheBehavior {
       viewerProtocolPolicy: this.props.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL,
       lambdaFunctionAssociations: this.props.edgeLambdas
         ? this.props.edgeLambdas.map(edgeLambda => ({
-          lambdaFunctionArn: Lazy.stringValue({ produce: () => edgeLambda.functionVersion.edgeArn }),
+          lambdaFunctionArn: edgeLambda.functionVersion.edgeArn,
           eventType: edgeLambda.eventType.toString(),
         }))
         : undefined,

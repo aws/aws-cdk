@@ -170,22 +170,32 @@ export = {
     test.done();
   },
 
-  'edgeArn throws if underlying function is not edge compatible'(test: Test) {
+  'edgeArn throws at synthesis if underlying function is not edge compatible'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
-      environment: { // incompatible for Lambda@Edge
-        KEY1: 'value1',
-        KEY2: 'value2',
-      },
     });
     const version = fn.addVersion('1');
 
+    // WHEN
+    new lambda.Function(stack, 'OtherFn', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('foo'),
+      environment: {
+        EDGE_ARN: version.edgeArn, // Consume edgeArn
+      },
+    });
+    // make fn incompatible for Lambda@Edge after consuming edgeArn
+    fn.addEnvironment('KEY1', 'value1');
+    fn.addEnvironment('KEY2', 'value2');
+
     // THEN
-    test.throws(() => version.edgeArn, /KEY1,KEY2/);
+    test.throws(() => app.synth(), /KEY1,KEY2/);
 
     test.done();
   },

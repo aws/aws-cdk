@@ -523,8 +523,8 @@ describe('with Lambda@Edge functions', () => {
     });
   });
 
-  test('fails synthesis when attempting to add the $LATEST function version as an edge Lambda to the default behavior', () => {
-    new Distribution(stack, 'MyDist', {
+  test('fails when attempting to add the $LATEST function version as an edge Lambda to the default behavior', () => {
+    expect(() => new Distribution(stack, 'MyDist', {
       defaultBehavior: {
         origin,
         edgeLambdas: [
@@ -534,8 +534,7 @@ describe('with Lambda@Edge functions', () => {
           },
         ],
       },
-    });
-    expect(() => app.synth()).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
+    })).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
   });
 
   test('with removable env vars', () => {
