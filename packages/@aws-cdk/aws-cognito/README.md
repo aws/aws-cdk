@@ -283,7 +283,7 @@ can either be email and/or SMS. Read more at [Recovering User Accounts](https://
 ```ts
 new UserPool(this, 'UserPool', {
   ...,
-  accountRecoverySettings: AccountRecovery.EMAIL_ONLY,
+  accountRecovery: AccountRecovery.EMAIL_ONLY,
 })
 ```
 
@@ -296,7 +296,7 @@ Read more about [email settings here](https://docs.aws.amazon.com/cognito/latest
 ```ts
 new UserPool(this, 'myuserpool', {
   // ...
-  emailTransmission: {
+  emailSettings: {
     from: 'noreply@myawesomeapp.com',
     replyTo: 'support@myawesomeapp.com',
   },

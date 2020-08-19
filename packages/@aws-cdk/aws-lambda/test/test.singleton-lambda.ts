@@ -38,7 +38,7 @@ export = {
             },
             ManagedPolicyArns: [
               {
-                'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' ] ],
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']],
               },
             ],
           },
@@ -50,11 +50,11 @@ export = {
               ZipFile: 'def hello(): pass',
             },
             Handler: 'index.hello',
-            Role: { 'Fn::GetAtt': [ 'SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235', 'Arn' ] },
+            Role: { 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235', 'Arn'] },
             Runtime: 'python2.7',
             Timeout: 300,
           },
-          DependsOn: [ 'SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235' ],
+          DependsOn: ['SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235'],
         },
       },
     }));
@@ -133,12 +133,31 @@ export = {
       Action: 'lambda:InvokeFunction',
       Principal: 'events.amazonaws.com',
     }));
-    test.deepEqual(statement.action, [ 'lambda:InvokeFunction' ]);
-    test.deepEqual(statement.principal, { Service: [ 'events.amazonaws.com' ] });
+    test.deepEqual(statement.action, ['lambda:InvokeFunction']);
+    test.deepEqual(statement.principal, { Service: ['events.amazonaws.com'] });
     test.deepEqual(statement.effect, 'Allow');
     test.deepEqual(statement.resource, [{
-      'Fn::GetAtt': [ 'SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn' ],
+      'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'],
     }]);
+    test.done();
+  },
+
+  'check edge compatibility'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
+      code: new lambda.InlineCode('def hello(): pass'),
+      runtime: lambda.Runtime.PYTHON_2_7,
+      handler: 'index.hello',
+      environment: {
+        KEY: 'value',
+      },
+    });
+
+    // THEN
+    test.throws(() => singleton._checkEdgeCompatibility(), /The function Default\/SingletonLambda84c0de93353f42179b0b45b6c993251a contains environment variables \[KEY\] and is not compatible with Lambda@Edge/);
+
     test.done();
   },
 };

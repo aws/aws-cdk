@@ -1266,11 +1266,11 @@ export = {
       }),
     });
 
-    project.onBuildFailed('OnBuildFailed', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) }});
-    project.onBuildSucceeded('OnBuildSucceeded', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) }});
-    project.onPhaseChange('OnPhaseChange', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) }});
-    project.onStateChange('OnStateChange', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) }});
-    project.onBuildStarted('OnBuildStarted', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) }});
+    project.onBuildFailed('OnBuildFailed', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) } });
+    project.onBuildSucceeded('OnBuildSucceeded', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) } });
+    project.onPhaseChange('OnPhaseChange', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) } });
+    project.onStateChange('OnStateChange', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) } });
+    project.onBuildStarted('OnBuildStarted', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) } });
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
       'EventPattern': {
@@ -1508,6 +1508,28 @@ export = {
     test.done();
   },
 
+  'Windows2019 image': {
+    'WIN_SERVER_CORE_2016_BASE': {
+      'has type WINDOWS_SERVER_2019_CONTAINER and default ComputeType MEDIUM'(test: Test) {
+        const stack = new cdk.Stack();
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+          },
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'Type': 'WINDOWS_SERVER_2019_CONTAINER',
+            'ComputeType': 'BUILD_GENERAL1_MEDIUM',
+          },
+        }));
+
+        test.done();
+      },
+    },
+  },
+
   'ARM image': {
     'AMAZON_LINUX_2_ARM': {
       'has type ARM_CONTAINER and default ComputeType LARGE'(test: Test) {
@@ -1631,13 +1653,11 @@ export = {
       test.done();
     },
 
-    'cannot have file path conditions if the Group contains any action other than PUSH'(test: Test) {
-      const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_CREATED,
-        codebuild.EventAction.PUSH);
-
-      test.throws(() => {
-        filterGroup.andFilePathIsNot('.*\\.java');
-      }, /A file path condition cannot be added if a Group contains any event action other than PUSH/);
+    'can have FILE_PATH filters if the Group contains PUSH and PR_CREATED events'(test: Test) {
+      codebuild.FilterGroup.inEventOf(
+        codebuild.EventAction.PULL_REQUEST_CREATED,
+        codebuild.EventAction.PUSH)
+        .andFilePathIsNot('.*\\.java');
 
       test.done();
     },

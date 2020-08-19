@@ -117,7 +117,7 @@ nodeunitShim({
     const stack = new Stack();
 
     // WHEN
-    const sg = SecurityGroup.fromSecurityGroupId(stack, 'SG1', 'test-id', {mutable: false});
+    const sg = SecurityGroup.fromSecurityGroupId(stack, 'SG1', 'test-id', { mutable: false });
     sg.addEgressRule(Peer.anyIpv4(), Port.tcp(86), 'This rule was not added');
     sg.addIngressRule(Peer.anyIpv4(), Port.tcp(86), 'This rule was not added');
 
@@ -150,7 +150,7 @@ nodeunitShim({
 
   'peer between all types of peers and port range types'(test: Test) {
     // GIVEN
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' }});
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' } });
     const vpc = new Vpc(stack, 'VPC');
     const sg = new SecurityGroup(stack, 'SG', { vpc });
 

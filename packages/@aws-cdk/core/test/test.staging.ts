@@ -10,8 +10,8 @@ const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
 
 enum DockerStubCommand {
-  SUCCESS           = 'DOCKER_STUB_SUCCESS',
-  FAIL              = 'DOCKER_STUB_FAIL',
+  SUCCESS = 'DOCKER_STUB_SUCCESS',
+  FAIL = 'DOCKER_STUB_FAIL',
   SUCCESS_NO_OUTPUT = 'DOCKER_STUB_SUCCESS_NO_OUTPUT'
 }
 
@@ -116,7 +116,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
     });
 
@@ -388,7 +388,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS_NO_OUTPUT ],
+        command: [DockerStubCommand.SUCCESS_NO_OUTPUT],
       },
     }), /Bundling did not produce any output/);
 
@@ -410,7 +410,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
       assetHashType: AssetHashType.BUNDLE,
     });
@@ -455,7 +455,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
       assetHash: 'my-custom-hash',
       assetHashType: AssetHashType.BUNDLE,
@@ -507,7 +507,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('this-is-an-invalid-docker-image'),
-        command: [ DockerStubCommand.FAIL ],
+        command: [DockerStubCommand.FAIL],
       },
     }), /Failed to bundle asset stack\/Asset/);
     test.equal(

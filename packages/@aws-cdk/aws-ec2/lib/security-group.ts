@@ -318,7 +318,7 @@ export class SecurityGroup extends SecurityGroupBase {
         // do nothing
       }
 
-      public addIngressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean)  {
+      public addIngressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
         // do nothing
       }
     }
@@ -370,8 +370,8 @@ export class SecurityGroup extends SecurityGroupBase {
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,
       groupDescription,
-      securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules}, { omitEmptyArray: true} ),
-      securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }, { omitEmptyArray: true} ),
+      securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules }, { omitEmptyArray: true } ),
+      securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }, { omitEmptyArray: true } ),
       vpcId: props.vpc.vpcId,
     });
 

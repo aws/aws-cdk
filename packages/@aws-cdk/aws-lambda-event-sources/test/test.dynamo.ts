@@ -34,7 +34,7 @@ export = {
           {
             'Action': 'dynamodb:ListStreams',
             'Effect': 'Allow',
-            'Resource': { 'Fn::Join': [ '', [ { 'Fn::GetAtt': [ 'TD925BC7E', 'Arn' ] }, '/stream/*' ] ] },
+            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['TD925BC7E', 'Arn'] }, '/stream/*']] },
           },
           {
             'Action': [

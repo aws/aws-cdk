@@ -189,7 +189,7 @@ export class CloudAssembly {
 
   private renderArtifacts() {
     const result = new Array<CloudArtifact>();
-    for (const [ name, artifact ] of Object.entries(this.manifest.artifacts || { })) {
+    for (const [name, artifact] of Object.entries(this.manifest.artifacts || { })) {
       const cloudartifact = CloudArtifact.fromManifest(this, name, artifact);
       if (cloudartifact) {
         result.push(cloudartifact);
