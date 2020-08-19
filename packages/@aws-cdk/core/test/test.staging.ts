@@ -127,7 +127,7 @@ export = {
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     test.deepEqual(fs.readdirSync(assembly.directory), [
-      'asset.f131662a49bc2253039f1ea6cc158d2a7af80e32daf2c3413d227f29c78df10e',
+      'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
@@ -160,7 +160,7 @@ export = {
     const assembly = app.synth();
 
     test.deepEqual(fs.readdirSync(assembly.directory), [
-      'asset.f131662a49bc2253039f1ea6cc158d2a7af80e32daf2c3413d227f29c78df10e',
+      'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
@@ -203,7 +203,7 @@ export = {
     );
 
     test.deepEqual(fs.readdirSync(assembly.directory), [
-      'asset.f131662a49bc2253039f1ea6cc158d2a7af80e32daf2c3413d227f29c78df10e',
+      'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
@@ -251,8 +251,8 @@ export = {
     );
 
     test.deepEqual(fs.readdirSync(assembly.directory), [
-      'asset.f131662a49bc2253039f1ea6cc158d2a7af80e32daf2c3413d227f29c78df10e', // 'Asset'
-      'asset.f5e848bae2ed2238cbda7e13892a760441155b8f3722e6f49cdc90e8d3311632', // 'AssetWithDifferentBundlingOptions'
+      'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4', // 'Asset'
+      'asset.e80bb8f931b87e84975de193f5a7ecddd7558d3caf3d35d3a536d9ae6539234f', // 'AssetWithDifferentBundlingOptions'
       'cdk.out',
       'manifest.json',
       'stack.template.json',
@@ -367,7 +367,7 @@ export = {
 
     test.equals(appAssembly.directory, app2Assembly.directory);
     test.deepEqual(fs.readdirSync(appAssembly.directory), [
-      'asset.f131662a49bc2253039f1ea6cc158d2a7af80e32daf2c3413d227f29c78df10e',
+      'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
       'cdk.out',
       'manifest.json',
       'stack.template.json',

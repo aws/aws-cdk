@@ -259,36 +259,36 @@ export class AssetStaging extends Construct {
   }
 
   private calculateHash(hashType: AssetHashType, assetHash?: string, bundling?: BundlingOptions): string {
+    if (hashType === AssetHashType.CUSTOM && !assetHash) {
+      throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
+    }
+
+    // CUSTOM and bundled SOURCE hash types are a special case to preserve existing
+    // user asset hashes (where possible).
+    if (hashType == AssetHashType.CUSTOM || (hashType == AssetHashType.SOURCE && bundling)) {
+      const hash = crypto.createHash('sha256');
+
+      // if asset hash is provided by user, use it, otherwise fingerprint the source.
+      hash.update(assetHash ?? FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions));
+
+      if (bundling) {
+        hash.update(JSON.stringify(bundling));
+      }
+
+      return hash.digest('hex');
+    }
+
     switch (hashType) {
       case AssetHashType.SOURCE:
-        const sourceHash = FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
-        return bundling
-          ? this.createBundlingHash(bundling, sourceHash)
-          : sourceHash;
+        return FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
       case AssetHashType.BUNDLE:
         if (!this.bundleDir) {
           throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
         }
         return FileSystem.fingerprint(this.bundleDir, this.fingerprintOptions);
-      case AssetHashType.CUSTOM:
-        if (!assetHash) {
-          throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
-        }
-        // Hash the hash to make sure we can use it in a file/directory name.
-        // The resulting hash will also have the same length as for the other hash types.
-        return bundling
-          ? this.createBundlingHash(bundling, assetHash)
-          : crypto.createHash('sha256').update(assetHash).digest('hex');
       default:
         throw new Error('Unknown asset hash type.');
     }
-  }
-
-  private createBundlingHash(bundling: BundlingOptions, assetHash: string) {
-    return crypto.createHash('sha256')
-      .update(JSON.stringify(bundling))
-      .update(assetHash)
-      .digest('hex');
   }
 }
 
