@@ -70,7 +70,7 @@ export class Annotations {
 
     // throw if CDK_BLOCK_DEPRECATIONS is set
     if (process.env.CDK_BLOCK_DEPRECATIONS) {
-      throw new Error(`${this.scope.construct.path}: ${text}`);
+      throw new Error(`${this.scope.node.path}: ${text}`);
     }
 
     // de-dup based on api key
