@@ -98,7 +98,7 @@ export class AssetStaging extends Construct {
 
     if (props.bundling) {
       // Determine the source hash in advance of bundling if the asset hash type
-      // is source so that the bundler can opt to re-use its previous output.
+      // is SOURCE so that the bundler can opt to re-use its previous output.
       const sourceHash = hashType === AssetHashType.SOURCE
         ? this.calculateHash(hashType, props.assetHash, props.bundling)
         : undefined;
