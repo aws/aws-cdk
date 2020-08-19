@@ -20,6 +20,7 @@ beforeEach(() => {
   protectedTermination = false;
 
   cfnMocks = {
+    describeStackEvents: jest.fn().mockReturnValue({}),
     describeStacks: jest.fn()
       // First two calls, no stacks exist (first is for version checking, second is in deploy-stack.ts)
       .mockImplementationOnce(() => ({ Stacks: [] }))
