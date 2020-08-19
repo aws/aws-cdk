@@ -136,7 +136,7 @@ export class AssetStaging extends Construct {
     if (this.bundleDir) {
       const isAlreadyStaged = fs.existsSync(targetPath);
 
-      if (isAlreadyStaged && this.bundleDir !== path.resolve(targetPath)) {
+      if (isAlreadyStaged && path.resolve(this.bundleDir) !== path.resolve(targetPath)) {
         // When an identical asset is already staged and the bundler used an
         // intermediate bundling directory, we remove the extra directory.
         fs.removeSync(this.bundleDir);
