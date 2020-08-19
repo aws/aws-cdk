@@ -122,6 +122,11 @@ export class BundlingDockerImage {
       throw new Error('Failed to extract image ID from Docker build output');
     }
 
+    // Fingerprints the directory containing the Dockerfile we're building and
+    // differentiates the fingerprint based on build arguments. We do this so
+    // we can provide a stable image hash. Otherwise, the image ID will be
+    // different every time the Docker layer cache is cleared, due primarily to
+    // timestamps.
     const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
     return new BundlingDockerImage(match[1], hash);
   }
