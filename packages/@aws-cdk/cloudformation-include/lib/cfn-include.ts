@@ -70,6 +70,8 @@ export class CfnInclude extends core.CfnElement {
   private readonly parametersToReplace: { [parameterName: string]: any };
   private readonly mappingsScope: core.Construct;
   private readonly mappings: { [mappingName: string]: core.CfnMapping } = {};
+  private readonly rules: { [ruleName: string]: core.CfnRule } = {};
+  private readonly rulesScope: core.Construct;
   private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
   private readonly nestedStacks: { [logicalId: string]: IncludedNestedStack } = {};
   private readonly nestedStacksToInclude: { [name: string]: CfnIncludeProps };
@@ -109,6 +111,12 @@ export class CfnInclude extends core.CfnElement {
     this.conditionsScope = new core.Construct(this, '$Conditions');
     for (const conditionName of Object.keys(this.template.Conditions || {})) {
       this.getOrCreateCondition(conditionName);
+    }
+
+    // instantiate the rules
+    this.rulesScope = new core.Construct(this, '$Rules');
+    for (const ruleName of Object.keys(this.template.Rules || {})) {
+      this.createRule(ruleName);
     }
 
     this.nestedStacksToInclude = props.nestedStacks || {};
@@ -225,6 +233,24 @@ export class CfnInclude extends core.CfnElement {
   }
 
   /**
+   * Returns the CfnRule object from the 'Rules'
+   * section of the CloudFormation template with the given name.
+   * Any modifications performed on that object will be reflected in the resulting CDK template.
+   *
+   * If a Rule with the given name is not present in the template,
+   * an exception will be thrown.
+   *
+   * @param ruleName the name of the Rule in the CloudFormation template
+   */
+  public getRule(ruleName: string): core.CfnRule {
+    const ret = this.rules[ruleName];
+    if (!ret) {
+      throw new Error(`Rule with name '${ruleName}' was not found in the template`);
+    }
+    return ret;
+  }
+
+  /**
    * Returns the NestedStack with name logicalId.
    * For a nested stack to be returned by this method, it must be specified in the {@link CfnIncludeProps.nestedStacks}
    * property.
@@ -274,6 +300,7 @@ export class CfnInclude extends core.CfnElement {
         case 'Mappings':
         case 'Resources':
         case 'Parameters':
+        case 'Rules':
         case 'Outputs':
           // these are rendered as a side effect of instantiating the L1s
           break;
@@ -293,6 +320,7 @@ export class CfnInclude extends core.CfnElement {
         findRefTarget() { throw new Error('Using Ref expressions in Mapping definitions is not allowed'); },
         findResource() { throw new Error('Using GetAtt expressions in Mapping definitions is not allowed'); },
       },
+      parameters: {},
     });
     const cfnMapping = new core.CfnMapping(this.mappingsScope, mappingName, {
       mapping: cfnParser.parseValue(this.template.Mappings[mappingName]),
@@ -313,6 +341,7 @@ export class CfnInclude extends core.CfnElement {
         findCondition() { throw new Error('Referring to Conditions in Parameter definitions is not allowed'); },
         findMapping() { throw new Error('Referring to Mappings in Parameter definitions is not allowed'); },
       },
+      parameters: {},
     }).parseValue(this.template.Parameters[logicalId]);
     const cfnParameter = new core.CfnParameter(this, logicalId, {
       type: expression.Type,
@@ -330,6 +359,32 @@ export class CfnInclude extends core.CfnElement {
 
     cfnParameter.overrideLogicalId(logicalId);
     this.parameters[logicalId] = cfnParameter;
+  }
+
+  private createRule(ruleName: string): void {
+    const self = this;
+    const cfnParser = new cfn_parse.CfnParser({
+      finder: {
+        findRefTarget(refTarget: string): core.CfnElement | undefined {
+          // only parameters can be referenced in Rules
+          return self.parameters[refTarget];
+        },
+        findResource() { throw new Error('Using GetAtt expressions in Rule definitions is not allowed'); },
+        findCondition() { throw new Error('Referring to Conditions in Rule definitions is not allowed'); },
+        findMapping(mappingName: string): core.CfnMapping | undefined {
+          return self.mappings[mappingName];
+        },
+      },
+      parameters: this.parametersToReplace,
+      context: cfn_parse.CfnParsingContext.RULES,
+    });
+    const ruleProperties = cfnParser.parseValue(this.template.Rules[ruleName]);
+    const rule = new core.CfnRule(this.rulesScope, ruleName, {
+      ruleCondition: ruleProperties.RuleCondition,
+      assertions: ruleProperties.Assertions,
+    });
+    this.rules[ruleName] = rule;
+    rule.overrideLogicalId(ruleName);
   }
 
   private createOutput(logicalId: string, scope: core.Construct): void {

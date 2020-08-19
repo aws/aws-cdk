@@ -736,6 +736,35 @@ describe('CDK Include', () => {
     });
   });
 
+  test('can ingest a template that contains Rules, and allows retrieving those Rules', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'only-parameters-and-rule.json');
+    const rule = cfnTemplate.getRule('TestVpcRule');
+
+    expect(rule).toBeDefined();
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('only-parameters-and-rule.json'),
+    );
+  });
+
+  test('fails when trying to replace Parameters referenced in Fn::ValueOf expressions with user-provided values', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'only-parameters-and-rule.json', {
+        parameters: {
+          'Subnets': ['subnet-1234abcd'],
+        },
+      });
+    }).toThrow(/Cannot substitute parameter 'Subnets' used in Fn::ValueOf expression with attribute 'VpcId'/);
+  });
+
+  test("throws an exception when attempting to retrieve a Rule that doesn't exist in the template", () => {
+    const cfnTemplate = includeTestTemplate(stack, 'only-parameters-and-rule.json');
+
+    expect(() => {
+      cfnTemplate.getRule('DoesNotExist');
+    }).toThrow(/Rule with name 'DoesNotExist' was not found in the template/);
+  });
+
   test('replaces references to parameters with the user-specified values in Resources, Conditions, Metadata, and Options sections', () => {
     includeTestTemplate(stack, 'parameter-references.json', {
       parameters: {
