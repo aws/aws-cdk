@@ -81,8 +81,8 @@ export = nodeunit.testCase({
             Action: 'iam:PassRole',
             Effect: 'Allow',
             Resource: [
-              { 'Fn::GetAtt': [ 'PipelineTestStageActionARole9283FBE3', 'Arn' ] },
-              { 'Fn::GetAtt': [ 'PipelineTestStageActionBRoleCABC8FA5', 'Arn' ] },
+              { 'Fn::GetAtt': ['PipelineTestStageActionARole9283FBE3', 'Arn'] },
+              { 'Fn::GetAtt': ['PipelineTestStageActionBRoleCABC8FA5', 'Arn'] },
             ],
           },
           {
@@ -96,9 +96,9 @@ export = nodeunit.testCase({
             Effect: 'Allow',
             Resource: [
               // eslint-disable-next-line max-len
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*' ] ] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*']] },
               // eslint-disable-next-line max-len
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*']] },
             ],
           },
         ],
@@ -168,9 +168,9 @@ export = nodeunit.testCase({
             Effect: 'Allow',
             Resource: [
               // eslint-disable-next-line max-len
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*' ] ] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*']] },
               // eslint-disable-next-line max-len
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*']] },
             ],
           },
         ],
@@ -247,8 +247,11 @@ function _assertActionMatches(
     ? `, configuration including ${JSON.stringify(stack.resolve(configuration), null, 2)}`
     : '';
   const actionsStr = JSON.stringify(actions.map(a =>
-    ({ owner: a.actionProperties.owner, provider: a.actionProperties.provider,
-      category: a.actionProperties.category, configuration: stack.resolve(a.actionConfig.configuration),
+    ({
+      owner: a.actionProperties.owner,
+      provider: a.actionProperties.provider,
+      category: a.actionProperties.category,
+      configuration: stack.resolve(a.actionConfig.configuration),
     }),
   ), null, 2);
   test.ok(_hasAction(stack, actions, provider, category, configuration),

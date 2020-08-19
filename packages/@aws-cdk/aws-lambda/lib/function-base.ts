@@ -287,6 +287,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
           return { statementAdded: true, policyDependable: this._functionNode().findChild(identifier) } as iam.AddToResourcePolicyResult;
         },
         node: this.node,
+        stack: this.stack,
+        env: this.env,
       },
     });
   }
@@ -316,6 +318,15 @@ export abstract class FunctionBase extends Resource implements IFunction {
       function: this,
       ...options,
     });
+  }
+
+  /**
+   * Checks whether this function is compatible for Lambda@Edge.
+   *
+   * @internal
+   */
+  public _checkEdgeCompatibility(): void {
+    return;
   }
 
   /**
@@ -416,5 +427,9 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public addAlias(aliasName: string, options: AliasOptions = {}) {
     return addAlias(this, this, aliasName, options);
+  }
+
+  public get edgeArn(): never {
+    throw new Error('$LATEST function version cannot be used for Lambda@Edge');
   }
 }

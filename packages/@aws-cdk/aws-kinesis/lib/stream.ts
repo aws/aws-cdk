@@ -314,7 +314,7 @@ export class Stream extends StreamBase {
       return {
         streamEncryption: Fn.conditionIf(conditionName,
           Aws.NO_VALUE,
-          { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis'}),
+          { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis' }),
       };
     }
 
@@ -332,7 +332,7 @@ export class Stream extends StreamBase {
     }
 
     if (encryptionType === StreamEncryption.MANAGED) {
-      const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis'};
+      const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis' };
       return { streamEncryption: encryption };
     }
 

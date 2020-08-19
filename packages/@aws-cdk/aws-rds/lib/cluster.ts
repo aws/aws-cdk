@@ -1,6 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CfnDeletionPolicy, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
@@ -122,6 +124,31 @@ export interface DatabaseClusterProps {
    * @default - RemovalPolicy.SNAPSHOT (remove the cluster and instances, but retain a snapshot of the data)
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The list of log types that need to be enabled for exporting to
+   * CloudWatch Logs.
+   *
+   * @default - no log exports
+   */
+  readonly cloudwatchLogsExports?: string[];
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs. When updating
+   * this property, unsetting it doesn't remove the log retention policy. To
+   * remove the retention policy, set the value to `Infinity`.
+   *
+   * @default - logs never expire
+   */
+  readonly cloudwatchLogsRetention?: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - a new role is created.
+   */
+  readonly cloudwatchLogsRetentionRole?: IRole;
 
   /**
    * The interval, in seconds, between points when Amazon RDS collects enhanced
@@ -370,42 +397,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    let s3ImportRole = props.s3ImportRole;
-    if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
-      if (props.s3ImportRole) {
-        throw new Error('Only one of s3ImportRole or s3ImportBuckets must be specified, not both.');
-      }
-
-      s3ImportRole = new Role(this, 'S3ImportRole', {
-        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
-      });
-      for (const bucket of props.s3ImportBuckets) {
-        bucket.grantRead(s3ImportRole);
-      }
-    }
-
-    let s3ExportRole = props.s3ExportRole;
-    if (props.s3ExportBuckets && props.s3ExportBuckets.length > 0) {
-      if (props.s3ExportRole) {
-        throw new Error('Only one of s3ExportRole or s3ExportBuckets must be specified, not both.');
-      }
-
-      s3ExportRole = new Role(this, 'S3ExportRole', {
-        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
-      });
-      for (const bucket of props.s3ExportBuckets) {
-        bucket.grantReadWrite(s3ExportRole);
-      }
-    }
-
     const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
-    if (s3ImportRole || s3ExportRole) {
-      if (s3ImportRole) {
-        clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn });
-      }
-      if (s3ExportRole) {
-        clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn });
-      }
+    let { s3ImportRole, s3ExportRole } = this.setupS3ImportExport(props);
+    if (s3ImportRole) {
+      clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn });
+    }
+    if (s3ExportRole) {
+      clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn });
     }
 
     // bind the engine to the Cluster
@@ -434,12 +432,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
         : (props.masterUser.password
           ? props.masterUser.password.toString()
           : undefined),
-      backupRetentionPeriod: props.backup && props.backup.retention && props.backup.retention.toDays(),
-      preferredBackupWindow: props.backup && props.backup.preferredWindow,
+      backupRetentionPeriod: props.backup?.retention?.toDays(),
+      preferredBackupWindow: props.backup?.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
+      enableCloudwatchLogsExports: props.cloudwatchLogsExports,
       // Encryption
-      kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
+      kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
@@ -461,74 +460,18 @@ export class DatabaseCluster extends DatabaseClusterBase {
     this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
     this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
 
+    this.setLogRetention(props);
+
     if (secret) {
       this.secret = secret.attach(this);
     }
 
-    const instanceCount = props.instances != null ? props.instances : 2;
-    if (instanceCount < 1) {
-      throw new Error('At least one instance is required');
-    }
-
-    // Get the actual subnet objects so we can depend on internet connectivity.
-    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectivityEstablished;
-
-    let monitoringRole;
-    if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
-      monitoringRole = props.monitoringRole || new Role(this, 'MonitoringRole', {
-        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
-        managedPolicies: [
-          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
-        ],
-      });
-    }
-
-    const instanceType = props.instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
-    const instanceParameterGroupConfig = props.instanceProps.parameterGroup?.bindToInstance({});
-    for (let i = 0; i < instanceCount; i++) {
-      const instanceIndex = i + 1;
-
-      const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}` :
-        props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
-          undefined;
-
-      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
-
-      const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
-        // Link to cluster
-        engine: props.engine.engineType,
-        engineVersion: props.engine.engineVersion?.fullVersion,
-        dbClusterIdentifier: cluster.ref,
-        dbInstanceIdentifier: instanceIdentifier,
-        // Instance properties
-        dbInstanceClass: databaseInstanceType(instanceType),
-        publiclyAccessible,
-        // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
-        dbSubnetGroupName: subnetGroup.ref,
-        dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
-        monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
-        monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
-      });
-
-      // If removalPolicy isn't explicitly set,
-      // it's Snapshot for Cluster.
-      // Because of that, in this case,
-      // we can safely use the CFN default of Delete for DbInstances with dbClusterIdentifier set.
-      if (props.removalPolicy) {
-        instance.applyRemovalPolicy(props.removalPolicy);
-      }
-
-      // We must have a dependency on the NAT gateway provider here to create
-      // things in the right order.
-      instance.node.addDependency(internetConnected);
-
-      this.instanceIdentifiers.push(instance.ref);
-      this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
-    }
+    this.createInstances(props, cluster, subnetGroup, portAttribute);
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups, defaultPort });
   }
+
 
   /**
    * Adds the single user rotation of the master password to this cluster.
@@ -573,6 +516,119 @@ export class DatabaseCluster extends DatabaseClusterBase {
       vpcSubnets: this.vpcSubnets,
       target: this,
     });
+  }
+
+  private setupS3ImportExport(props: DatabaseClusterProps): { s3ImportRole?: IRole, s3ExportRole?: IRole } {
+    let s3ImportRole = props.s3ImportRole;
+    if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
+      if (props.s3ImportRole) {
+        throw new Error('Only one of s3ImportRole or s3ImportBuckets must be specified, not both.');
+      }
+
+      s3ImportRole = new Role(this, 'S3ImportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+      for (const bucket of props.s3ImportBuckets) {
+        bucket.grantRead(s3ImportRole);
+      }
+    }
+
+    let s3ExportRole = props.s3ExportRole;
+    if (props.s3ExportBuckets && props.s3ExportBuckets.length > 0) {
+      if (props.s3ExportRole) {
+        throw new Error('Only one of s3ExportRole or s3ExportBuckets must be specified, not both.');
+      }
+
+      s3ExportRole = new Role(this, 'S3ExportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+      for (const bucket of props.s3ExportBuckets) {
+        bucket.grantReadWrite(s3ExportRole);
+      }
+    }
+
+    return { s3ImportRole, s3ExportRole };
+  }
+
+  private createInstances(props: DatabaseClusterProps, cluster: CfnDBCluster, subnetGroup: CfnDBSubnetGroup, portAttribute: number) {
+    const instanceCount = props.instances != null ? props.instances : 2;
+    if (instanceCount < 1) {
+      throw new Error('At least one instance is required');
+    }
+
+    // Get the actual subnet objects so we can depend on internet connectivity.
+    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectivityEstablished;
+
+    let monitoringRole;
+    if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
+      monitoringRole = props.monitoringRole || new Role(this, 'MonitoringRole', {
+        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
+        managedPolicies: [
+          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
+        ],
+      });
+    }
+
+    const instanceType = props.instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
+    const instanceParameterGroupConfig = props.instanceProps.parameterGroup?.bindToInstance({});
+    for (let i = 0; i < instanceCount; i++) {
+      const instanceIndex = i + 1;
+      const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}` :
+        props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
+          undefined;
+
+      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
+
+      const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
+        // Link to cluster
+        engine: props.engine.engineType,
+        engineVersion: props.engine.engineVersion?.fullVersion,
+        dbClusterIdentifier: cluster.ref,
+        dbInstanceIdentifier: instanceIdentifier,
+        // Instance properties
+        dbInstanceClass: databaseInstanceType(instanceType),
+        publiclyAccessible,
+        // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
+        dbSubnetGroupName: subnetGroup.ref,
+        dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
+        monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
+        monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
+      });
+
+      // If removalPolicy isn't explicitly set,
+      // it's Snapshot for Cluster.
+      // Because of that, in this case,
+      // we can safely use the CFN default of Delete for DbInstances with dbClusterIdentifier set.
+      if (props.removalPolicy) {
+        instance.applyRemovalPolicy(props.removalPolicy);
+      }
+
+      // We must have a dependency on the NAT gateway provider here to create
+      // things in the right order.
+      instance.node.addDependency(internetConnected);
+
+      this.instanceIdentifiers.push(instance.ref);
+      this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
+    }
+  }
+
+  private setLogRetention(props: DatabaseClusterProps) {
+    if (props.cloudwatchLogsExports) {
+      const unsupportedLogTypes = props.cloudwatchLogsExports.filter(logType => !props.engine.supportedLogTypes.includes(logType));
+      if (unsupportedLogTypes.length > 0) {
+        throw new Error(`Unsupported logs for the current engine type: ${unsupportedLogTypes.join(',')}`);
+      }
+
+      if (props.cloudwatchLogsRetention) {
+        for (const log of props.cloudwatchLogsExports) {
+          new lambda.LogRetention(this, `LogRetention${log}`, {
+            logGroupName: `/aws/rds/cluster/${this.clusterIdentifier}/${log}`,
+            retention: props.cloudwatchLogsRetention,
+            role: props.cloudwatchLogsRetentionRole,
+          });
+        }
+      }
+    }
   }
 }
 

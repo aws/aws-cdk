@@ -101,7 +101,7 @@ export class S3SourceAction extends Action {
 
   /** The variables emitted by this action. */
   public get variables(): S3SourceVariables {
-    return  {
+    return {
       versionId: this.variableExpression('VersionId'),
       eTag: this.variableExpression('ETag'),
     };

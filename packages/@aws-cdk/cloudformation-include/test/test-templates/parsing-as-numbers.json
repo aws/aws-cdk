@@ -1,0 +1,18 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedMethods": ["GET"],
+              "AllowedOrigins": ["*"],
+              "MaxAge": "10"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

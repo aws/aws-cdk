@@ -31,7 +31,7 @@ export class EnvironmentUtils {
         'Expected format: aws://account/region');
     }
 
-    const [ , account, region ] = env;
+    const [, account, region] = env;
     if (!account || !region) {
       throw new Error(`Invalid environment specification: ${environment}`);
     }

@@ -56,7 +56,7 @@ test('Metric can specify statistic', () => {
   });
 
   // WHEN
-  const metric = canary.metricFailed({statistic: 'Sum'});
+  const metric = canary.metricFailed({ statistic: 'Sum' });
 
   // THEN
   expect(metric).toEqual({

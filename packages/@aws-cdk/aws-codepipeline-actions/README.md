@@ -167,6 +167,19 @@ pipeline.addStage({
 });
 ```
 
+The region of the action will be determined by the region the bucket itself is in.
+When using a newly created bucket,
+that region will be taken from the stack the bucket belongs to;
+for an imported bucket,
+you can specify the region explicitly:
+
+```ts
+const sourceBucket = s3.Bucket.fromBucketAttributes(this, 'SourceBucket', {
+  bucketName: 'my-bucket',
+  region: 'ap-southeast-1',
+});
+```
+
 By default, the Pipeline will poll the Bucket to detect changes.
 You can change that behavior to use CloudWatch Events by setting the `trigger`
 property to `S3Trigger.EVENTS` (it's `S3Trigger.POLL` by default).

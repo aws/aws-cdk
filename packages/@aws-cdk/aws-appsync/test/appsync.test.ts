@@ -43,7 +43,7 @@ test('appsync should configure pipeline when pipelineConfig has contents', () =>
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
     Kind: 'PIPELINE',
-    PipelineConfig: { Functions: [ 'test', 'test' ] },
+    PipelineConfig: { Functions: ['test', 'test'] },
   });
 });
 

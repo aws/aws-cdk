@@ -2,6 +2,7 @@ import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnResource, Construct } from '@aws-cdk/core';
 import { InitElement } from './cfn-init-elements';
+import { OperatingSystemType } from './machine-image';
 import { AttachInitOptions, InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
 
 /**
@@ -89,6 +90,10 @@ export class CloudFormationInit {
    * @internal
    */
   public _attach(attachedResource: CfnResource, attachOptions: AttachInitOptions) {
+    if (attachOptions.platform === OperatingSystemType.UNKNOWN) {
+      throw new Error('Cannot attach CloudFormationInit to an unknown OS type');
+    }
+
     // Note: This will not reflect mutations made after attaching.
     const bindResult = this.bind(attachedResource.stack, attachOptions);
     attachedResource.addMetadata('AWS::CloudFormation::Init', bindResult.configData);
@@ -114,7 +119,7 @@ export class CloudFormationInit {
       attachOptions.userData.addCommands(`# fingerprint: ${fingerprint}`);
     }
 
-    if (attachOptions.platform === InitPlatform.WINDOWS) {
+    if (attachOptions.platform === OperatingSystemType.WINDOWS) {
       const errCode = attachOptions.ignoreFailures ? '0' : '$LASTEXITCODE';
       attachOptions.userData.addCommands(...[
         `cfn-init.exe -v ${resourceLocator} -c ${configSets}`,
@@ -183,7 +188,7 @@ export class InitConfig {
   public _bind(scope: Construct, options: AttachInitOptions): InitElementConfig {
     const bindOptions = {
       instanceRole: options.instanceRole,
-      platform: options.platform,
+      platform: this.initPlatformFromOSType(options.platform),
       scope,
     };
 
@@ -196,7 +201,7 @@ export class InitConfig {
     // Must be last!
     const servicesConfig = this.bindForType(InitElementType.SERVICE, bindOptions);
 
-    const authentication = [ packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig ]
+    const authentication = [packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig]
       .map(c => c?.authentication)
       .reduce(deepMerge, undefined);
 
@@ -224,6 +229,20 @@ export class InitConfig {
       config: bindResults.map(r => r.config).reduce(deepMerge, undefined) ?? {},
       authentication: bindResults.map(r => r.authentication).reduce(deepMerge, undefined),
     };
+  }
+
+  private initPlatformFromOSType(osType: OperatingSystemType): InitPlatform {
+    switch (osType) {
+      case OperatingSystemType.LINUX: {
+        return InitPlatform.LINUX;
+      }
+      case OperatingSystemType.WINDOWS: {
+        return InitPlatform.WINDOWS;
+      }
+      default: {
+        throw new Error('Cannot attach CloudFormationInit to an unknown OS type');
+      }
+    }
   }
 }
 

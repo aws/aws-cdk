@@ -1,10 +1,10 @@
+import * as path from 'path';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
-import * as path from 'path';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -398,7 +398,7 @@ export class Cluster extends Resource implements ICluster {
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
-    const commonCommandOptions = [ `--region ${stack.region}` ];
+    const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.outputClusterName) {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
@@ -608,7 +608,7 @@ export class Cluster extends Resource implements ICluster {
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
-      layers: [ KubectlLayer.getOrCreate(this) ],
+      layers: [KubectlLayer.getOrCreate(this)],
       memorySize: 256,
       environment: {
         CLUSTER_NAME: this.clusterName,

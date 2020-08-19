@@ -124,7 +124,7 @@ export = {
       cluster,
       remoteAccess: {
         sshKeyName: 'foo',
-        sourceSecurityGroups: [ new ec2.SecurityGroup(stack, 'SG', { vpc }) ],
+        sourceSecurityGroups: [new ec2.SecurityGroup(stack, 'SG', { vpc })],
       },
     });
     // THEN

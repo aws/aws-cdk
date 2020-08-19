@@ -19,7 +19,8 @@ describe('Athena Workgroup Tags', () => {
         {
           key: 'key2',
           value: 'value2',
-        }],
+        },
+      ],
       workGroupConfiguration: {
         requesterPaysEnabled: true,
         resultConfiguration: {

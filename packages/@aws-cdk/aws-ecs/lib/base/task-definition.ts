@@ -306,8 +306,9 @@ export class TaskDefinition extends TaskDefinitionBase {
         ...(isFargateCompatible(props.compatibility) ? ['FARGATE'] : []),
       ],
       networkMode: this.renderNetworkMode(this.networkMode),
-      placementConstraints: Lazy.anyValue({ produce: () =>
-        !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
+      placementConstraints: Lazy.anyValue({
+        produce: () =>
+          !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
       }, { omitEmptyArray: true }),
       proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,
@@ -616,6 +617,19 @@ export interface Volume {
    * To use bind mounts, specify a host instead.
    */
   readonly dockerVolumeConfiguration?: DockerVolumeConfiguration;
+
+  /**
+   * This property is specified when you are using Amazon EFS.
+   *
+   * When specifying Amazon EFS volumes in tasks using the Fargate launch type,
+   * Fargate creates a supervisor container that is responsible for managing the Amazon EFS volume.
+   * The supervisor container uses a small amount of the task's memory.
+   * The supervisor container is visible when querying the task metadata version 4 endpoint,
+   * but is not visible in CloudWatch Container Insights.
+   *
+   * @default No Elastic FileSystem is setup
+   */
+  readonly efsVolumeConfiguration?: EfsVolumeConfiguration;
 }
 
 /**
@@ -704,6 +718,71 @@ export interface DockerVolumeConfiguration {
    * The scope for the Docker volume that determines its lifecycle.
    */
   readonly scope: Scope;
+}
+
+/**
+ * The authorization configuration details for the Amazon EFS file system.
+ */
+export interface AuthorizationConfig {
+  /**
+   * The access point ID to use.
+   * If an access point is specified, the root directory value will be
+   * relative to the directory set for the access point.
+   * If specified, transit encryption must be enabled in the EFSVolumeConfiguration.
+   *
+   * @default No id
+   */
+  readonly accessPointId?: string;
+  /**
+   * Whether or not to use the Amazon ECS task IAM role defined
+   * in a task definition when mounting the Amazon EFS file system.
+   * If enabled, transit encryption must be enabled in the EFSVolumeConfiguration.
+   *
+   * Valid values: ENABLED | DISABLED
+   *
+   * @default If this parameter is omitted, the default value of DISABLED is used.
+   */
+  readonly iam?: string;
+}
+
+/**
+ * The configuration for an Elastic FileSystem volume.
+ */
+export interface EfsVolumeConfiguration {
+  /**
+   * The Amazon EFS file system ID to use.
+   */
+  readonly fileSystemId: string;
+  /**
+   * The directory within the Amazon EFS file system to mount as the root directory inside the host.
+   * Specifying / will have the same effect as omitting this parameter.
+   *
+   * @default The root of the Amazon EFS volume
+   */
+  readonly rootDirectory?: string;
+  /**
+   * Whether or not to enable encryption for Amazon EFS data in transit between
+   * the Amazon ECS host and the Amazon EFS server.
+   * Transit encryption must be enabled if Amazon EFS IAM authorization is used.
+   *
+   * Valid values: ENABLED | DISABLED
+   *
+   * @default DISABLED
+   */
+  readonly transitEncryption?: string;
+  /**
+   * The port to use when sending encrypted data between
+   * the Amazon ECS host and the Amazon EFS server. EFS mount helper uses.
+   *
+   * @default Port selection strategy that the Amazon EFS mount helper uses.
+   */
+  readonly transitEncryptionPort?: number;
+  /**
+   * The authorization configuration details for the Amazon EFS file system.
+   *
+   * @default No configuration.
+   */
+  readonly authorizationConfig?: AuthorizationConfig;
 }
 
 /**

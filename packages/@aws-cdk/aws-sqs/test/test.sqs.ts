@@ -160,8 +160,10 @@ export = {
 
       // "import" returns an IQueue bound to `Fn::ImportValue`s.
       test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-east-1:123456789012:queue1');
-      test.deepEqual(stack.resolve(imports.queueUrl), { 'Fn::Join':
-        [ '', [ 'https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1' ] ] });
+      test.deepEqual(stack.resolve(imports.queueUrl), {
+        'Fn::Join':
+        ['', ['https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1']],
+      });
       test.deepEqual(stack.resolve(imports.queueName), 'queue1');
       test.done();
     },
@@ -255,7 +257,7 @@ export = {
 
       test.same(queue.encryptionMasterKey, key);
       expect(stack).to(haveResource('AWS::SQS::Queue', {
-        'KmsMasterKeyId': { 'Fn::GetAtt': [ 'CustomKey1E6D0D07', 'Arn' ] },
+        'KmsMasterKeyId': { 'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'] },
       }));
 
       test.done();
@@ -320,7 +322,7 @@ export = {
                 'sqs:GetQueueUrl',
               ],
               'Effect': 'Allow',
-              'Resource': { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] },
+              'Resource': { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
             },
             {
               'Action': [
@@ -330,7 +332,7 @@ export = {
                 'kms:GenerateDataKey*',
               ],
               'Effect': 'Allow',
-              'Resource': { 'Fn::GetAtt': [ 'QueueKey39FCBAE6', 'Arn' ] },
+              'Resource': { 'Fn::GetAtt': ['QueueKey39FCBAE6', 'Arn'] },
             },
           ],
           'Version': '2012-10-17',
@@ -393,7 +395,7 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(queue.metricNumberOfMessagesSent()), {
-      dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
+      dimensions: { QueueName: { 'Fn::GetAtt': ['Queue4A7E3555', 'QueueName'] } },
       namespace: 'AWS/SQS',
       metricName: 'NumberOfMessagesSent',
       period: Duration.minutes(5),
@@ -401,7 +403,7 @@ export = {
     });
 
     test.deepEqual(stack.resolve(queue.metricSentMessageSize()), {
-      dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
+      dimensions: { QueueName: { 'Fn::GetAtt': ['Queue4A7E3555', 'QueueName'] } },
       namespace: 'AWS/SQS',
       metricName: 'SentMessageSize',
       period: Duration.minutes(5),

@@ -17,7 +17,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+      TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
     }));
 
     test.done();
@@ -39,7 +39,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+      TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
     }));
 
     test.done();
@@ -57,7 +57,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+      TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
     }));
 
     test.done();

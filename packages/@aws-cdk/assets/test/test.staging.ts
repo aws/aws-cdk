@@ -1,8 +1,8 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { App, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import { Staging } from '../lib';
 
 export = {

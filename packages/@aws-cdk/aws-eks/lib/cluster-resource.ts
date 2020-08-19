@@ -70,8 +70,8 @@ export class ClusterResource extends Construct {
     // the CreateCluster API will allow the cluster to assume this role, so we
     // need to allow the lambda execution role to pass it.
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'iam:PassRole' ],
-      resources: [ props.roleArn ],
+      actions: ['iam:PassRole'],
+      resources: [props.roleArn],
     }));
 
     // if we know the cluster name, restrict the policy to only allow
@@ -83,8 +83,8 @@ export class ClusterResource extends Construct {
       produce: () => {
         const arn = stack.formatArn(clusterArnComponents(stack.resolve(props.name)));
         return stack.resolve(props.name)
-          ? [ arn, `${arn}/*` ] // see https://github.com/aws/aws-cdk/issues/6060
-          : [ '*' ];
+          ? [arn, `${arn}/*`] // see https://github.com/aws/aws-cdk/issues/6060
+          : ['*'];
       },
     });
 
@@ -99,7 +99,7 @@ export class ClusterResource extends Construct {
         'ec2:DescribeSubnets',
         'ec2:DescribeRouteTables',
       ],
-      resources: [ '*' ],
+      resources: ['*'],
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
@@ -118,18 +118,18 @@ export class ClusterResource extends Construct {
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'eks:DescribeFargateProfile', 'eks:DeleteFargateProfile' ],
-      resources: [ fargateProfileResourceArn ],
+      actions: ['eks:DescribeFargateProfile', 'eks:DeleteFargateProfile'],
+      resources: [fargateProfileResourceArn],
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'iam:GetRole', 'iam:listAttachedRolePolicies' ],
-      resources: [ '*' ],
+      actions: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
+      resources: ['*'],
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'iam:CreateServiceLinkedRole' ],
-      resources: [ '*' ],
+      actions: ['iam:CreateServiceLinkedRole'],
+      resources: ['*'],
     }));
 
     const resource = new CustomResource(this, 'Resource', {
@@ -187,8 +187,8 @@ export class ClusterResource extends Construct {
     }
 
     this.creationRole.assumeRolePolicy.addStatements(new iam.PolicyStatement({
-      actions: [ 'sts:AssumeRole' ],
-      principals: [ new iam.ArnPrincipal(trustedRole.roleArn) ],
+      actions: ['sts:AssumeRole'],
+      principals: [new iam.ArnPrincipal(trustedRole.roleArn)],
     }));
 
     this.trustedPrincipals.push(trustedRole.roleArn);

@@ -209,7 +209,7 @@ class ScalingStackTemplate {
     return this.template.Resources[id];
   }
 
-  private threshold(id: string): number | undefined  {
+  private threshold(id: string): number | undefined {
     return apply(this.resource(id), x => x.Properties.Threshold);
   }
 

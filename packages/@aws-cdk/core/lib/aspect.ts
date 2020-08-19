@@ -53,6 +53,6 @@ export class Aspects {
    */
   public get aspects(): IAspect[] {
     // TODO(2.0): return  [ ...this._aspects ];
-    return [ ...(this.scope.node._actualNode as any)._aspects ]; // clone
+    return [...(this.scope.node._actualNode as any)._aspects]; // clone
   }
 }

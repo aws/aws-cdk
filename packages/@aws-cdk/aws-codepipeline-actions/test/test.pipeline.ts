@@ -311,7 +311,7 @@ export = {
       description: 'desc',
       eventPattern: {
         detail: {
-          state: [ 'FAILED' ],
+          state: ['FAILED'],
         },
       },
     });

@@ -340,6 +340,7 @@ A `LogQueryWidget` shows the results of a query from Logs Insights:
 ```ts
 dashboard.addWidgets(new LogQueryWidget({
   logGroupNames: ['my-log-group'],
+  view: LogQueryVisualizationType.TABLE,
   // The lines will be automatically combined using '\n|'.
   queryLines: [
     'fields @message',

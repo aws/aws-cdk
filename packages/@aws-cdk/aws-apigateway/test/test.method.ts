@@ -297,7 +297,7 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
-        Credentials: { 'Fn::GetAtt': [ 'MyRoleF48FFE04', 'Arn' ] },
+        Credentials: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
       },
     }));
     test.done();
@@ -319,7 +319,7 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
-        Credentials: { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::*:user/*' ] ] },
+        Credentials: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::*:user/*']] },
       },
     }));
     test.done();
@@ -351,8 +351,7 @@ export = {
             'application/json': apigw.Model.EMPTY_MODEL,
             'text/plain': apigw.Model.ERROR_MODEL,
           },
-        },
-        ],
+        }],
       },
     });
 
@@ -375,8 +374,7 @@ export = {
           'application/json': 'Empty',
           'text/plain': 'Error',
         },
-      },
-      ],
+      }],
     }));
 
     test.done();
@@ -422,7 +420,7 @@ export = {
           },
         ],
         Type: 'AWS',
-        Uri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':foo-service:action/BarAction']]},
+        Uri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':foo-service:action/BarAction']] },
       },
     }));
     test.done();
@@ -516,8 +514,7 @@ export = {
             'text/plain': apigw.Model.ERROR_MODEL,
             'text/html': htmlModel,
           },
-        },
-        ],
+        }],
       },
     });
 
@@ -541,8 +538,7 @@ export = {
           'text/plain': 'Error',
           'text/html': { Ref: stack.getLogicalId(htmlModel.node.findChild('Resource') as cdk.CfnElement) },
         },
-      },
-      ],
+      }],
     }));
 
     test.done();
@@ -586,7 +582,7 @@ export = {
       cloudWatchRole: false,
       deploy: false,
       defaultMethodOptions: {
-        requestParameters: {'method.request.path.proxy': true},
+        requestParameters: { 'method.request.path.proxy': true },
       },
     });
 

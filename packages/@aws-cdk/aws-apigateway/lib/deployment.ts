@@ -1,10 +1,10 @@
 import * as crypto from 'crypto';
 import { Construct, Lazy, RemovalPolicy, Resource, CfnResource } from '@aws-cdk/core';
 import { CfnDeployment } from './apigateway.generated';
-import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
 import { Method } from './method';
+import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
 
-export interface DeploymentProps  {
+export interface DeploymentProps {
   /**
    * The Rest API to deploy.
    */
@@ -158,7 +158,7 @@ class LatestDeploymentResource extends CfnDeployment {
   }
 
   private calculateLogicalId() {
-    const hash = [ ...this.hashComponents ];
+    const hash = [...this.hashComponents];
 
     if (this.api instanceof RestApi || this.api instanceof SpecRestApi) { // Ignore IRestApi that are imported
 

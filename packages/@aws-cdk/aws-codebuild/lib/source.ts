@@ -407,9 +407,6 @@ export class FilterGroup {
   }
 
   private addFilePathFilter(pattern: string, include: boolean): FilterGroup {
-    if (this.actions.size !== 1 || !this.actions.has(EventAction.PUSH)) {
-      throw new Error('A file path condition cannot be added if a Group contains any event action other than PUSH');
-    }
     return this.addFilter(FILE_PATH_WEBHOOK_COND, pattern, include);
   }
 

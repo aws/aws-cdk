@@ -327,7 +327,7 @@ export class Canary extends cdk.Resource {
         new iam.PolicyStatement({
           resources: ['*'],
           actions: ['cloudwatch:PutMetricData'],
-          conditions: {StringEquals: {'cloudwatch:namespace': 'CloudWatchSynthetics'}},
+          conditions: { StringEquals: { 'cloudwatch:namespace': 'CloudWatchSynthetics' } },
         }),
         new iam.PolicyStatement({
           resources: ['arn:aws:logs:::*'],
@@ -379,7 +379,7 @@ export class Canary extends cdk.Resource {
     if (name.length <= 21){
       return name;
     } else {
-      return name.substring(0,15) + nameHash(name);
+      return name.substring(0, 15) + nameHash(name);
     }
   }
 }
@@ -391,7 +391,7 @@ export class Canary extends cdk.Resource {
  */
 function nameHash(name: string): string {
   const md5 = crypto.createHash('sha256').update(name).digest('hex');
-  return md5.slice(0,6);
+  return md5.slice(0, 6);
 }
 
 const nameRegex: RegExp = /^[0-9a-z_\-]+$/;

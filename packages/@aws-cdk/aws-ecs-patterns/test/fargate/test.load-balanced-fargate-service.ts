@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ecsPatterns from '../../lib';
@@ -370,13 +371,10 @@ export = {
       cluster,
       protocol: ApplicationProtocol.HTTPS,
       domainName: 'domain.com',
-      domainZone: {
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
         hostedZoneId: 'fakeId',
         zoneName: 'domain.com',
-        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-        stack,
-        node: stack.node,
-      },
+      }),
       taskImageOptions: {
         containerPort: 2015,
         image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
@@ -408,13 +406,10 @@ export = {
       cluster,
       protocol: ApplicationProtocol.HTTPS,
       domainName: 'test.domain.com',
-      domainZone: {
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
         hostedZoneId: 'fakeId',
         zoneName: 'domain.com.',
-        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-        stack,
-        node: stack.node,
-      },
+      }),
       taskImageOptions: {
         containerPort: 2015,
         image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
@@ -554,7 +549,7 @@ export = {
     // THEN
     expect(stack2).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'FARGATE',
-      LoadBalancers: [{ContainerName: 'myContainer', ContainerPort: 80}],
+      LoadBalancers: [{ ContainerName: 'myContainer', ContainerPort: 80 }],
     }));
     expect(stack2).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
     expect(stack2).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
@@ -613,7 +608,7 @@ export = {
       cpu: 1024,
       memoryLimitMiB: 1024,
     });
-    const container = taskDef.addContainer('Container',  {
+    const container = taskDef.addContainer('Container', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       memoryLimitMiB: 1024,
     });
@@ -631,7 +626,7 @@ export = {
     // THEN
     expect(stack1).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'FARGATE',
-      LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}],
+      LoadBalancers: [{ ContainerName: 'Container', ContainerPort: 80 }],
     }));
     expect(stack1).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
     expect(stack1).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {

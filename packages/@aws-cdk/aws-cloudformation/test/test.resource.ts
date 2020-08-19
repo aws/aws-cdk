@@ -45,7 +45,7 @@ export = testCase({
       const stack = new cdk.Stack(app, 'Test');
 
       // WHEN
-      new TestCustomResource(stack, 'Custom', {  removalPolicy: cdk.RemovalPolicy.RETAIN });
+      new TestCustomResource(stack, 'Custom', { removalPolicy: cdk.RemovalPolicy.RETAIN });
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
@@ -85,8 +85,11 @@ export = testCase({
               'Version': '2012-10-17',
             },
             'ManagedPolicyArns': [
-              { 'Fn::Join': [ '', [
-                'arn:', { 'Ref': 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' ] ]},
+              {
+                'Fn::Join': ['', [
+                  'arn:', { 'Ref': 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                ]],
+              },
             ],
           },
         },

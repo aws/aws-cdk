@@ -218,6 +218,21 @@ container.addPortMappings({
 })
 ```
 
+To add data volumes to a task definition, call `addVolume()`:
+
+```ts
+const volume = ecs.Volume("Volume", {
+  // Use an Elastic FileSystem
+  name: "mydatavolume",
+  efsVolumeConfiguration: ecs.EfsVolumeConfiguration({
+    fileSystemId: "EFS"
+    // ... other options here ...
+  })
+});
+
+const container = fargateTaskDefinition.addVolume("mydatavolume");
+```
+
 To use a TaskDefinition that can be used with either Amazon EC2 or
 AWS Fargate launch types, use the `TaskDefinition` construct.
 

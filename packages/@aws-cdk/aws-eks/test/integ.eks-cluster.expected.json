@@ -1551,17 +1551,6 @@
         ]
       },
       "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "WaitOnResourceSignals": false,
-          "PauseTime": "PT0S",
-          "SuspendProcesses": [
-            "HealthCheck",
-            "ReplaceUnhealthy",
-            "AZRebalance",
-            "AlarmNotification",
-            "ScheduledActions"
-          ]
-        },
         "AutoScalingScheduledAction": {
           "IgnoreUnmodifiedGroupSizeProperties": true
         }
@@ -1853,17 +1842,6 @@
         ]
       },
       "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "WaitOnResourceSignals": false,
-          "PauseTime": "PT0S",
-          "SuspendProcesses": [
-            "HealthCheck",
-            "ReplaceUnhealthy",
-            "AZRebalance",
-            "AlarmNotification",
-            "ScheduledActions"
-          ]
-        },
         "AutoScalingScheduledAction": {
           "IgnoreUnmodifiedGroupSizeProperties": true
         }
@@ -2142,17 +2120,6 @@
         ]
       },
       "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "WaitOnResourceSignals": false,
-          "PauseTime": "PT0S",
-          "SuspendProcesses": [
-            "HealthCheck",
-            "ReplaceUnhealthy",
-            "AZRebalance",
-            "AlarmNotification",
-            "ScheduledActions"
-          ]
-        },
         "AutoScalingScheduledAction": {
           "IgnoreUnmodifiedGroupSizeProperties": true
         }
@@ -2462,17 +2429,6 @@
         ]
       },
       "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "WaitOnResourceSignals": false,
-          "PauseTime": "PT0S",
-          "SuspendProcesses": [
-            "HealthCheck",
-            "ReplaceUnhealthy",
-            "AZRebalance",
-            "AlarmNotification",
-            "ScheduledActions"
-          ]
-        },
         "AutoScalingScheduledAction": {
           "IgnoreUnmodifiedGroupSizeProperties": true
         }

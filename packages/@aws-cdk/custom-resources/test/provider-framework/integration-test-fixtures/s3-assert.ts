@@ -75,7 +75,7 @@ class S3AssertProvider extends Construct {
       handler: 'index.is_complete',
       initialPolicy: [
         new iam.PolicyStatement({
-          resources: [ '*' ],
+          resources: ['*'],
           actions: [
             's3:GetObject*',
             's3:GetBucket*',

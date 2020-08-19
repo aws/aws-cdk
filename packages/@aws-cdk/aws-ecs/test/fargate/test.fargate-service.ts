@@ -464,7 +464,7 @@ export = {
           cluster,
           taskDefinition,
           securityGroup: securityGroup1,
-          securityGroups: [ securityGroup2 ],
+          securityGroups: [securityGroup2],
         });
       }, /Only one of SecurityGroup or SecurityGroups can be populated./);
 
@@ -497,7 +497,7 @@ export = {
       new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
-        securityGroups: [ securityGroup1, securityGroup2 ],
+        securityGroups: [securityGroup1, securityGroup2],
       });
 
       // THEN
@@ -619,7 +619,7 @@ export = {
         image: ecs.ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
-      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition});
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
 
       const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
       const listener = lb.addListener('listener', { port: 80 });

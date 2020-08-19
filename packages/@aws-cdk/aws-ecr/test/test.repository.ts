@@ -244,8 +244,8 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':repository/my-repo'],
-      ],
+        ':repository/my-repo',
+      ]],
     });
     test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
     test.done();
@@ -273,7 +273,8 @@ export = {
         ':',
         { Ref: 'AWS::AccountId' },
         ':repository/',
-        { 'Fn::GetAtt': ['Boom', 'Name'] }]],
+        { 'Fn::GetAtt': ['Boom', 'Name'] },
+      ]],
     });
     test.done();
   },

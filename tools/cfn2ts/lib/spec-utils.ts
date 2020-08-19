@@ -66,7 +66,7 @@ export class PropertyAttributeName extends SpecName {
   }
 
   public get fqn(): string {
-    return joinIf(super.fqn, '.',  this.propAttrName);
+    return joinIf(super.fqn, '.', this.propAttrName);
   }
 }
 

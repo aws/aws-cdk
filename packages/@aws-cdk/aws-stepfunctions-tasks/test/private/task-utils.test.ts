@@ -46,7 +46,7 @@ describe('Task utils', () => {
           '',
           [
             'arn:',
-            {Ref: 'AWS::Partition'},
+            { Ref: 'AWS::Partition' },
             ':states:::lambda:invoke',
           ],
         ],
@@ -63,7 +63,7 @@ describe('Task utils', () => {
           '',
           [
             'arn:',
-            {Ref: 'AWS::Partition'},
+            { Ref: 'AWS::Partition' },
             ':states:::lambda:invoke.sync',
           ],
         ],
@@ -80,7 +80,7 @@ describe('Task utils', () => {
           '',
           [
             'arn:',
-            {Ref: 'AWS::Partition'},
+            { Ref: 'AWS::Partition' },
             ':states:::lambda:invoke.waitForTaskToken',
           ],
         ],

@@ -34,19 +34,19 @@ export = {
           ],
         },
         ClusterName: { Ref: 'MyCluster8AD82BF8' },
-        RoleArn: { 'Fn::GetAtt': [ 'MyClusterCreationRoleB5FA4FF3', 'Arn' ] },
+        RoleArn: { 'Fn::GetAtt': ['MyClusterCreationRoleB5FA4FF3', 'Arn'] },
         ObjectType: 'deployment',
         ObjectName: 'mydeployment',
         ObjectNamespace: 'mynamespace',
         JsonPath: '.status',
         TimeoutSeconds: 5,
       },
-      DependsOn: [ 'MyClusterKubectlReadyBarrier7547948A' ],
+      DependsOn: ['MyClusterKubectlReadyBarrier7547948A'],
       UpdateReplacePolicy: 'Delete',
       DeletionPolicy: 'Delete',
     });
 
-    test.deepEqual(stack.resolve(attribute.value), { 'Fn::GetAtt': [ expectedCustomResourceId, 'Value' ] });
+    test.deepEqual(stack.resolve(attribute.value), { 'Fn::GetAtt': [expectedCustomResourceId, 'Value'] });
     test.done();
   },
 
@@ -74,19 +74,19 @@ export = {
           ],
         },
         ClusterName: { Ref: 'MyCluster8AD82BF8' },
-        RoleArn: { 'Fn::GetAtt': [ 'MyClusterCreationRoleB5FA4FF3', 'Arn' ] },
+        RoleArn: { 'Fn::GetAtt': ['MyClusterCreationRoleB5FA4FF3', 'Arn'] },
         ObjectType: 'deployment',
         ObjectName: 'mydeployment',
         ObjectNamespace: 'default',
         JsonPath: '.status',
         TimeoutSeconds: 300,
       },
-      DependsOn: [ 'MyClusterKubectlReadyBarrier7547948A' ],
+      DependsOn: ['MyClusterKubectlReadyBarrier7547948A'],
       UpdateReplacePolicy: 'Delete',
       DeletionPolicy: 'Delete',
     });
 
-    test.deepEqual(stack.resolve(attribute.value), { 'Fn::GetAtt': [ expectedCustomResourceId, 'Value' ] });
+    test.deepEqual(stack.resolve(attribute.value), { 'Fn::GetAtt': [expectedCustomResourceId, 'Value'] });
     test.done();
   },
 

@@ -21,8 +21,9 @@ describe('CodePipeline event target', () => {
         actionName: 'Hello',
         category: codepipeline.ActionCategory.SOURCE,
         provider: 'x',
-        artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1 },
-        outputs: [srcArtifact]})],
+        artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 1 },
+        outputs: [srcArtifact],
+      })],
     });
     pipeline.addStage({
       stageName: 'Build',
@@ -32,10 +33,11 @@ describe('CodePipeline event target', () => {
         provider: 'y',
         inputs: [srcArtifact],
         outputs: [buildArtifact],
-        artifactBounds: { minInputs: 1, maxInputs: 1 , minOutputs: 1, maxOutputs: 1 }})],
+        artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 1, maxOutputs: 1 },
+      })],
     });
     pipelineArn = {
-      'Fn::Join': [ '', [
+      'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':codepipeline:',
@@ -43,8 +45,8 @@ describe('CodePipeline event target', () => {
         ':',
         { Ref: 'AWS::AccountId' },
         ':',
-        { Ref: 'PipelineC660917D' }],
-      ],
+        { Ref: 'PipelineC660917D' },
+      ]],
     };
   });
 
@@ -68,7 +70,7 @@ describe('CodePipeline event target', () => {
             {
               Arn: pipelineArn,
               Id: 'Target0',
-              RoleArn: { 'Fn::GetAtt': [ 'PipelineEventsRole46BEEA7C', 'Arn' ] },
+              RoleArn: { 'Fn::GetAtt': ['PipelineEventsRole46BEEA7C', 'Arn'] },
             },
           ],
         }));

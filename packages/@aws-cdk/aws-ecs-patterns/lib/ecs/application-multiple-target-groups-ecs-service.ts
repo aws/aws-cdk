@@ -1,8 +1,10 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
 import { ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Construct } from '@aws-cdk/core';
-import { ApplicationMultipleTargetGroupsServiceBase,
-  ApplicationMultipleTargetGroupsServiceBaseProps } from '../base/application-multiple-target-groups-service-base';
+import {
+  ApplicationMultipleTargetGroupsServiceBase,
+  ApplicationMultipleTargetGroupsServiceBaseProps,
+} from '../base/application-multiple-target-groups-service-base';
 
 /**
  * The properties for the ApplicationMultipleTargetGroupsEc2Service service.
