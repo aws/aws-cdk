@@ -74,9 +74,11 @@ export = {
 
     const assertions = template?.Rules?.CheckBootstrapVersion?.Assertions ?? [];
     test.deepEqual(assertions.length, 1);
-    test.deepEqual(assertions[0].Assert, { 'Fn::Not': [
-      { 'Fn::Contains': [ [ '1', '2', '3' ], { Ref: 'BootstrapVersion' } ] },
-    ]});
+    test.deepEqual(assertions[0].Assert, {
+      'Fn::Not': [
+        { 'Fn::Contains': [['1', '2', '3'], { Ref: 'BootstrapVersion' }] },
+      ],
+    });
 
     test.done();
   },
