@@ -360,7 +360,7 @@ Resources:
     Properties:
       Type: String
       Name:
-        Fn::Sub: '/CdkBootstrap/${Qualifier}/Version'
+        Fn::Sub: '/aws-cdk-bootstrap/${Qualifier}/version'
       Value: 4
 Outputs:
   BucketName:
@@ -375,7 +375,7 @@ Outputs:
   # We can't do it today because if there are stacks that use it, the bootstrap
   # stack cannot be updated. Not used anymore by apps >= 1.60.0
   FileAssetKeyArn:
-    Description: The ARN of the KMS key used to encrypt the asset bucket
+    Description: The ARN of the KMS key used to encrypt the asset bucket (deprecated)
     Value:
       Fn::If:
         - CreateNewKey
