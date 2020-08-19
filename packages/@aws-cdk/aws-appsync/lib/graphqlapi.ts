@@ -471,7 +471,7 @@ export class GraphQLApi extends GraphqlApiBase {
       // create a variable for apiKeyConfig if one has been specified by the user
       // first check is for default authorization
       // second check is for additional authorization modes
-      const apiKeyConfig = props.authorizationConfig?.defaultAuthorization?.apiKeyConfig ||
+      const apiKeyConfig = props.authorizationConfig?.defaultAuthorization?.apiKeyConfig ??
         props.authorizationConfig?.additionalAuthorizationModes?.
           find((mode: AuthorizationMode) => {
             return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
