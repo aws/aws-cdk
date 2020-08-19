@@ -36,7 +36,7 @@ export = {
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack');
 
-    const templateHash = '2446c819ce1f76521e81e812557016ceb08b2b3cf8b8b0efcface67cfca63543';
+    const templateHash = '19e1e8612660f79362e091714ab7b3583961936d762c75be8b8083c3af40850a';
 
     test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateHash}`);
 
