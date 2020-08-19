@@ -180,14 +180,14 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
   log(`💻 ${command.join(' ')}`);
 
-  const env = options.env ?? (options.modEnv ? {...process.env, ...options.modEnv} : undefined);
+  const env = options.env ?? (options.modEnv ? { ...process.env, ...options.modEnv } : undefined);
 
   const child = child_process.spawn(command[0], command.slice(1), {
     ...options,
     env,
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
-    stdio: [ 'ignore', 'pipe', 'pipe' ],
+    stdio: ['ignore', 'pipe', 'pipe'],
   });
 
   return new Promise<string>((resolve, reject) => {

@@ -89,7 +89,7 @@ export class Annotations {
    * @param message The message itself
    */
   private addMessage(level: string, message: string) {
-    this.scope.construct.addMetadata(level, message);
+    this.scope.node.addMetadata(level, message);
   }
 
   /**

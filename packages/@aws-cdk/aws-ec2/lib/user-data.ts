@@ -172,13 +172,13 @@ class LinuxUserData extends UserData {
 
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
-    const resourceID = stack.getLogicalId(resource.construct.defaultChild as CfnElement);
+    const resourceID = stack.getLogicalId(resource.node.defaultChild as CfnElement);
     this.addOnExitCommands(`/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} -e $exitCode || echo 'Failed to send Cloudformation Signal'`);
   }
 
   private renderOnExitLines(): string[] {
     if ( this.onExitLines.length > 0 ) {
-      return [ 'function exitTrap(){', 'exitCode=$?', ...this.onExitLines, '}', 'trap exitTrap EXIT' ];
+      return ['function exitTrap(){', 'exitCode=$?', ...this.onExitLines, '}', 'trap exitTrap EXIT'];
     }
     return [];
   }
@@ -207,8 +207,7 @@ class WindowsUserData extends UserData {
     return `<powershell>${
       [...(this.renderOnExitLines()),
         ...this.lines,
-        ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] ),
-      ].join('\n')
+        ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] )].join('\n')
     }</powershell>`;
   }
 
@@ -230,7 +229,7 @@ class WindowsUserData extends UserData {
 
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
-    const resourceID = stack.getLogicalId(resource.construct.defaultChild as CfnElement);
+    const resourceID = stack.getLogicalId(resource.node.defaultChild as CfnElement);
 
     this.addOnExitCommands(`cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} --success ($success.ToString().ToLower())`);
   }

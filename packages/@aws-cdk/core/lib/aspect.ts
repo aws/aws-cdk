@@ -45,7 +45,7 @@ export class Aspects {
    */
   public add(aspect: IAspect) {
     // TODO(2.0): this._aspects.push(aspect);
-    this.scope.construct._actualNode.applyAspect(aspect);
+    this.scope.node._actualNode.applyAspect(aspect);
   }
 
   /**
@@ -53,6 +53,6 @@ export class Aspects {
    */
   public get aspects(): IAspect[] {
     // TODO(2.0): return  [ ...this._aspects ];
-    return [ ...(this.scope.construct._actualNode as any)._aspects ]; // clone
+    return [...(this.scope.node._actualNode as any)._aspects]; // clone
   }
 }

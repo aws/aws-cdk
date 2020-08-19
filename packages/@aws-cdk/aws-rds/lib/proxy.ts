@@ -69,9 +69,9 @@ export class ProxyTarget {
     if (this.dbCluster && this.dbInstance) {
       throw new Error('Proxy cannot target both database cluster and database instance.');
     } else if (this.dbCluster) {
-      engine = (this.dbCluster.construct.defaultChild as CfnDBCluster).engine;
+      engine = (this.dbCluster.node.defaultChild as CfnDBCluster).engine;
     } else if (this.dbInstance) {
-      engine = (this.dbInstance.construct.defaultChild as CfnDBInstance).engine;
+      engine = (this.dbInstance.node.defaultChild as CfnDBInstance).engine;
     }
 
     let engineFamily;
@@ -91,8 +91,8 @@ export class ProxyTarget {
 
     return {
       engineFamily,
-      dbClusters: this.dbCluster ? [ this.dbCluster ] : undefined,
-      dbInstances: this.dbInstance ? [ this.dbInstance ] : undefined,
+      dbClusters: this.dbCluster ? [this.dbCluster] : undefined,
+      dbInstances: this.dbInstance ? [this.dbInstance] : undefined,
     };
   }
 }
@@ -415,7 +415,7 @@ export class DatabaseProxy extends cdk.Resource
     let dbInstanceIdentifiers: string[] | undefined;
     if (bindResult.dbInstances) {
       // support for only single instance
-      dbInstanceIdentifiers = [ bindResult.dbInstances[0].instanceIdentifier ];
+      dbInstanceIdentifiers = [bindResult.dbInstances[0].instanceIdentifier];
     }
 
     let dbClusterIdentifiers: string[] | undefined;

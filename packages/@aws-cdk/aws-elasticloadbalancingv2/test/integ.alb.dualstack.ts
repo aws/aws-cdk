@@ -38,7 +38,7 @@ const ipv6Block = new ec2.CfnVPCCidrBlock(
 // Get the vpc's internet gateway so we can create default routes for the
 // public subnets.
 const internetGateway = valueOrDie<cdk.IConstruct, ec2.CfnInternetGateway>(
-  vpc.construct.children.find(c => c instanceof ec2.CfnInternetGateway),
+  vpc.node.children.find(c => c instanceof ec2.CfnInternetGateway),
   new Error('Couldnt find an internet gateway'),
 );
 
@@ -54,7 +54,7 @@ vpc.publicSubnets.forEach((subnet, idx) => {
   // Find a CfnSubnet (raw cloudformation resources) child to the public
   // subnet nodes.
   const cfnSubnet = valueOrDie<cdk.IConstruct, ec2.CfnSubnet>(
-    subnet.construct.children.find(c => c instanceof ec2.CfnSubnet),
+    subnet.node.children.find(c => c instanceof ec2.CfnSubnet),
     new Error('Couldnt find a CfnSubnet'),
   );
 
@@ -100,7 +100,7 @@ listener.addAction('action1', {
   conditions: [
     elbv2.ListenerCondition.hostHeaders(['example.com']),
   ],
-  action: elbv2.ListenerAction.fixedResponse(200, {messageBody: 'success'}),
+  action: elbv2.ListenerAction.fixedResponse(200, { messageBody: 'success' }),
 });
 
 group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {

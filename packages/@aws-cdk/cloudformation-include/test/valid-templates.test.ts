@@ -98,6 +98,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('correctly parse strings as integers as needed', () => {
+    includeTestTemplate(stack, 'parsing-as-numbers.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('parsing-as-numbers.json'),
+    );
+  });
+
   xtest('correctly changes the logical IDs, including references, if imported with preserveLogicalIds=false', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-encryption-key.json', {
       preserveLogicalIds: false,
@@ -297,7 +305,7 @@ describe('CDK Include', () => {
     const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-depends-on.json');
     const cfnBucket2 = cfnTemplate.getResource('Bucket2');
 
-    expect(cfnBucket2.construct.dependencies).toHaveLength(1);
+    expect(cfnBucket2.node.dependencies).toHaveLength(1);
     // we always render dependsOn as an array, even if it's a single string
     expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
       "Properties": {
@@ -313,7 +321,7 @@ describe('CDK Include', () => {
     const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-depends-on-array.json');
     const cfnBucket2 = cfnTemplate.getResource('Bucket2');
 
-    expect(cfnBucket2.construct.dependencies).toHaveLength(2);
+    expect(cfnBucket2.node.dependencies).toHaveLength(2);
     expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
       "Properties": {
         "BucketName": "bucket2",
@@ -362,8 +370,7 @@ describe('CDK Include', () => {
             "BucketName": {
               "Fn::If": ["TotallyFalse",
                 { "Ref": "Param" },
-                { "Ref": "AWS::NoValue" },
-              ],
+                { "Ref": "AWS::NoValue" }],
             },
           },
         },
@@ -434,7 +441,7 @@ describe('CDK Include', () => {
           ...originalTemplate.Parameters.BucketName,
           "Default": "MyDefault",
           "AllowedPattern": "[0-9]*$",
-          "AllowedValues": [ "123123", "456789" ],
+          "AllowedValues": ["123123", "456789"],
           "ConstraintDescription": "MyNewConstraint",
           "Description": "a string of numeric characters",
           "MaxLength": 6,
@@ -657,16 +664,215 @@ describe('CDK Include', () => {
       cfnTemplate.getOutput('FakeOutput');
     }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);
   });
+
+  test('can ingest a template that contains Mappings, and retrieve those Mappings', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'only-mapping-and-bucket.json');
+    const someMapping = cfnTemplate.getMapping('SomeMapping');
+
+    someMapping.setValue('region', 'key2', 'value2');
+
+    expect(stack).toMatchTemplate({
+      "Mappings": {
+        "SomeMapping": {
+          "region": {
+            "key1": "value1",
+            "key2": "value2",
+          },
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::FindInMap": [
+                "SomeMapping",
+                { "Ref": "AWS::Region" },
+                "key1",
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test("throws an exception when attempting to retrieve a Mapping that doesn't exist in the template", () => {
+    const cfnTemplate = includeTestTemplate(stack, 'only-mapping-and-bucket.json');
+
+    expect(() => {
+      cfnTemplate.getMapping('NonExistentMapping');
+    }).toThrow(/Mapping with name 'NonExistentMapping' was not found in the template/);
+  });
+
+  test('handles renaming Mapping references', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'only-mapping-and-bucket.json');
+    const someMapping = cfnTemplate.getMapping('SomeMapping');
+
+    someMapping.overrideLogicalId('DifferentMapping');
+
+    expect(stack).toMatchTemplate({
+      "Mappings": {
+        "DifferentMapping": {
+          "region": {
+            "key1": "value1",
+          },
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::FindInMap": [
+                "DifferentMapping",
+                { "Ref": "AWS::Region" },
+                "key1",
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('replaces references to parameters with the user-specified values in Resources, Conditions, Metadata, and Options sections', () => {
+    includeTestTemplate(stack, 'parameter-references.json', {
+      parameters: {
+        'MyParam': 'my-s3-bucket',
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Transform": {
+        "Name": "AWS::Include",
+        "Parameters": {
+          "Location": "my-s3-bucket",
+        },
+      },
+      "Metadata": {
+        "Field": {
+          "Fn::If": [
+            "AlwaysFalse",
+            "AWS::NoValue",
+            "my-s3-bucket",
+          ],
+        },
+      },
+      "Conditions": {
+        "AlwaysFalse": {
+          "Fn::Equals": ["my-s3-bucket", "Invalid?BucketName"],
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Metadata": {
+            "Field": "my-s3-bucket",
+          },
+          "Properties": {
+            "BucketName": "my-s3-bucket",
+          },
+        },
+      },
+      "Outputs": {
+        "MyOutput": {
+          "Value": "my-s3-bucket",
+        },
+      },
+    });
+  });
+
+  test('replaces parameters in Fn::Sub expressions', () => {
+    includeTestTemplate(stack, 'fn-sub-parameters.json', {
+      parameters: {
+        'MyParam': 'my-s3-bucket',
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::Sub": "my-s3-bucket",
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('does not modify Fn::Sub variables shadowing a replaced parameter', () => {
+    includeTestTemplate(stack, 'fn-sub-shadow-parameter.json', {
+      parameters: {
+        'MyParam': 'MyValue',
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::Sub": [
+                "${MyParam}",
+                {
+                  "MyParam": "MyValue",
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('throws an exception when parameters are passed a resource name', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'bucket-with-parameters.json', {
+        parameters: {
+          'Bucket': 'noChange',
+        },
+      });
+    }).toThrow(/Parameter with logical ID 'Bucket' was not found in the template/);
+  });
+
+  test('throws an exception when provided a parameter to replace that is not in the template with parameters', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'bucket-with-parameters.json', {
+        parameters: {
+          'FakeParameter': 'DoesNotExist',
+        },
+      });
+    }).toThrow(/Parameter with logical ID 'FakeParameter' was not found in the template/);
+  });
+
+  test('throws an exception when provided a parameter to replace in a template with no parameters', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'only-empty-bucket.json', {
+        parameters: {
+          'FakeParameter': 'DoesNotExist',
+        },
+      });
+    }).toThrow(/Parameter with logical ID 'FakeParameter' was not found in the template/);
+  });
 });
 
 interface IncludeTestTemplateProps {
   /** @default true */
   readonly preserveLogicalIds?: boolean;
+
+  /** @default {} */
+  readonly parameters?: { [parameterName: string]: any }
 }
 
-function includeTestTemplate(scope: core.Construct, testTemplate: string, _props: IncludeTestTemplateProps = {}): inc.CfnInclude {
+function includeTestTemplate(scope: core.Construct, testTemplate: string, props: IncludeTestTemplateProps = {}): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
+    parameters: props.parameters,
     // preserveLogicalIds: props.preserveLogicalIds,
   });
 }

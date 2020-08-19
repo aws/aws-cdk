@@ -421,7 +421,7 @@ abstract class BucketBase extends Resource implements IBucket {
           'PutObject',
         ],
         requestParameters: {
-          bucketName: [ this.bucketName ],
+          bucketName: [this.bucketName],
           key: options.paths,
         },
       },
@@ -598,7 +598,7 @@ abstract class BucketBase extends Resource implements IBucket {
       throw new Error("Cannot grant public access when 'blockPublicPolicy' is enabled");
     }
 
-    allowedActions = allowedActions.length > 0 ? allowedActions : [ 's3:GetObject' ];
+    allowedActions = allowedActions.length > 0 ? allowedActions : ['s3:GetObject'];
 
     return iam.Grant.addToPrincipalOrResource({
       actions: allowedActions,
@@ -631,7 +631,7 @@ abstract class BucketBase extends Resource implements IBucket {
     bucketActions: string[],
     keyActions: string[],
     resourceArn: string, ...otherResourceArns: string[]) {
-    const resources = [ resourceArn, ...otherResourceArns ];
+    const resources = [resourceArn, ...otherResourceArns];
 
     const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
     let ret: iam.Grant;
@@ -1425,7 +1425,7 @@ export class Bucket extends BucketBase {
 
     if (encryptionType === BucketEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-        description: `Created by ${this.construct.path}`,
+        description: `Created by ${this.node.path}`,
       });
 
       const bucketEncryption = {
@@ -1576,7 +1576,7 @@ export class Bucket extends BucketBase {
       throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
     }
 
-    const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
+    const routingRules = props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
       if (rule.condition && !rule.condition.httpErrorCodeReturnedEquals && !rule.condition.keyPrefixEquals) {
         throw new Error('The condition property cannot be an empty object');
       }
@@ -1623,7 +1623,7 @@ export class Bucket extends BucketBase {
     return this.inventories.map((inventory, index) => {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
-      const id = inventory.inventoryId ?? `${this.construct.id}Inventory${index}`;
+      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`;
 
       if (inventory.destination.bucket instanceof Bucket) {
         inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({

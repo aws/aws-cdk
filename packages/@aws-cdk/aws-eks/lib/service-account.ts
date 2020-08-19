@@ -1,5 +1,5 @@
-import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role  } from '@aws-cdk/aws-iam';
-import { CfnJson, Construct  } from '@aws-cdk/core';
+import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role } from '@aws-cdk/aws-iam';
+import { CfnJson, Construct } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
@@ -57,7 +57,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     super(scope, id);
 
     const { cluster } = props;
-    this.serviceAccountName = props.name ?? this.construct.uniqueId.toLowerCase();
+    this.serviceAccountName = props.name ?? this.node.uniqueId.toLowerCase();
     this.serviceAccountNamespace = props.namespace ?? 'default';
 
     /* Add conditions to the role to improve security. This prevents other pods in the same namespace to assume the role.
@@ -78,7 +78,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     this.grantPrincipal = this.role.grantPrincipal;
     this.policyFragment = this.role.policyFragment;
 
-    cluster.addResource(`${id}ServiceAccountResource`, {
+    cluster.addManifest(`${id}ServiceAccountResource`, {
       apiVersion: 'v1',
       kind: 'ServiceAccount',
       metadata: {

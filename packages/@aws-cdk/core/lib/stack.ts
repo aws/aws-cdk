@@ -163,16 +163,16 @@ export class Stack extends Construct implements ITaggable {
       return value;
     }
 
-    function _lookup(c: IConstruct): Stack  {
+    function _lookup(c: IConstruct): Stack {
       if (Stack.isStack(c)) {
         return c;
       }
 
-      if (!c.construct.scope) {
-        throw new Error(`No stack could be identified for the construct at path ${construct.construct.path}`);
+      if (!c.node.scope) {
+        throw new Error(`No stack could be identified for the construct at path ${construct.node.path}`);
       }
 
-      return _lookup(c.construct.scope);
+      return _lookup(c.node.scope);
     }
   }
 
@@ -359,13 +359,13 @@ export class Stack extends Construct implements ITaggable {
     // Also use the new behavior if we are using the new CI/CD-ready synthesizer; that way
     // people only have to flip one flag.
     // eslint-disable-next-line max-len
-    this.artifactId = this.construct.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT) || this.construct.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+    this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT) || this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
       ? this.generateStackArtifactId()
       : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
 
-    this.synthesizer = props.synthesizer ?? (this.construct.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+    this.synthesizer = props.synthesizer ?? (this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
       ? new DefaultStackSynthesizer()
       : new LegacyStackSynthesizer());
     this.synthesizer.bind(this);
@@ -593,7 +593,7 @@ export class Stack extends Construct implements ITaggable {
     // denominator is 2 AZs across all AWS regions.
     const agnostic = Token.isUnresolved(this.account) || Token.isUnresolved(this.region);
     if (agnostic) {
-      return this.construct.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
+      return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
         Fn.select(0, Fn.getAzs()),
         Fn.select(1, Fn.getAzs()),
       ];
@@ -685,12 +685,12 @@ export class Stack extends Construct implements ITaggable {
     const cycle = target.stackDependencyReasons(this);
     if (cycle !== undefined) {
       // eslint-disable-next-line max-len
-      throw new Error(`'${target.construct.path}' depends on '${this.construct.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
+      throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
 
-    let dep = this._stackDependencies[target.construct.uniqueId];
+    let dep = this._stackDependencies[target.node.uniqueId];
     if (!dep) {
-      dep = this._stackDependencies[target.construct.uniqueId] = {
+      dep = this._stackDependencies[target.node.uniqueId] = {
         stack: target,
         reasons: [],
       };
@@ -700,7 +700,7 @@ export class Stack extends Construct implements ITaggable {
 
     if (process.env.CDK_DEBUG_DEPS) {
       // eslint-disable-next-line no-console
-      console.error(`[CDK_DEBUG_DEPS] stack "${this.construct.path}" depends on "${target.construct.path}" because: ${reason}`);
+      console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" depends on "${target.node.path}" because: ${reason}`);
     }
   }
 
@@ -771,9 +771,9 @@ export class Stack extends Construct implements ITaggable {
    * @param cfnElement The element for which the logical ID is allocated.
    */
   protected allocateLogicalId(cfnElement: CfnElement): string {
-    const scopes = cfnElement.construct.scopes;
+    const scopes = cfnElement.node.scopes;
     const stackIndex = scopes.indexOf(cfnElement.stack);
-    const pathComponents = scopes.slice(stackIndex + 1).map(x => x.construct.id);
+    const pathComponents = scopes.slice(stackIndex + 1).map(x => x.node.id);
     return makeUniqueId(pathComponents);
   }
 
@@ -862,16 +862,17 @@ export class Stack extends Construct implements ITaggable {
     // between producer and consumer anyway, so we can just assume that they are).
     const containingAssembly = Stage.of(this);
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
-    const region  = env.region  ?? containingAssembly?.region ?? Aws.REGION;
+    const region = env.region ?? containingAssembly?.region ?? Aws.REGION;
 
     // this is the "aws://" env specification that will be written to the cloud assembly
     // manifest. it will use "unknown-account" and "unknown-region" to indicate
     // environment-agnosticness.
     const envAccount = !Token.isUnresolved(account) ? account : cxapi.UNKNOWN_ACCOUNT;
-    const envRegion  = !Token.isUnresolved(region)  ? region  : cxapi.UNKNOWN_REGION;
+    const envRegion = !Token.isUnresolved(region) ? region : cxapi.UNKNOWN_REGION;
 
     return {
-      account, region,
+      account,
+      region,
       environment: cxapi.EnvironmentUtils.format(envAccount, envRegion),
     };
   }
@@ -887,7 +888,7 @@ export class Stack extends Construct implements ITaggable {
     for (const dep of Object.values(this._stackDependencies)) {
       const ret = dep.stack.stackDependencyReasons(other);
       if (ret !== undefined) {
-        return [ ...dep.reasons, ...ret ];
+        return [...dep.reasons, ...ret];
       }
     }
     return undefined;
@@ -914,7 +915,7 @@ export class Stack extends Construct implements ITaggable {
    * Stage, and prefix the path components of the Stage before it.
    */
   private generateStackName() {
-    const assembly  = Stage.of(this);
+    const assembly = Stage.of(this);
     const prefix = (assembly && assembly.stageName) ? `${assembly.stageName}-` : '';
     return `${prefix}${this.generateStackId(assembly)}`;
   }
@@ -925,7 +926,7 @@ export class Stack extends Construct implements ITaggable {
    * Stack artifact ID is unique within the App's Cloud Assembly.
    */
   private generateStackArtifactId() {
-    return this.generateStackId(this.construct.root);
+    return this.generateStackId(this.node.root);
   }
 
   /**
@@ -933,7 +934,7 @@ export class Stack extends Construct implements ITaggable {
    */
   private generateStackId(container: IConstruct | undefined) {
     const rootPath = rootPathTo(this, container);
-    const ids = rootPath.map(c => c.construct.id);
+    const ids = rootPath.map(c => c.node.id);
 
     // In unit tests our Stack (which is the only component) may not have an
     // id, so in that case just pretend it's "Stack".
@@ -1050,7 +1051,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
     into.push(node);
   }
 
-  for (const child of node.construct.children) {
+  for (const child of node.node.children) {
     // Don't recurse into a substack
     if (Stack.isStack(child)) { continue; }
 
@@ -1066,7 +1067,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
  * If no ancestor is given or the ancestor is not found, return the entire root path.
  */
 export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConstruct[] {
-  const scopes = construct.construct.scopes;
+  const scopes = construct.node.scopes;
   for (let i = scopes.length - 2; i >= 0; i--) {
     if (scopes[i] === ancestor) {
       return scopes.slice(i + 1);

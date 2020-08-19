@@ -14,7 +14,7 @@ describe('IAM escape hatches', () => {
       userName: 'MyUserName',
     });
 
-    const cfn = user.construct.findChild('Resource') as iam.CfnUser;
+    const cfn = user.node.findChild('Resource') as iam.CfnUser;
     cfn.addPropertyOverride('UserName', 'OverriddenUserName');
 
     expect(stack).toMatchTemplate({
@@ -33,7 +33,7 @@ describe('IAM escape hatches', () => {
     // GIVEN
     const stack = new Stack();
     const user = new iam.User(stack, 'user', { userName: 'MyUserName' });
-    const cfn = user.construct.findChild('Resource') as iam.CfnUser;
+    const cfn = user.node.findChild('Resource') as iam.CfnUser;
 
     // WHEN
     cfn.addPropertyOverride('Hello.World', 'Boom');
@@ -58,7 +58,7 @@ describe('IAM escape hatches', () => {
     // GIVEN
     const stack = new Stack();
     const user = new iam.User(stack, 'user', { userName: 'MyUserName' });
-    const cfn = user.construct.findChild('Resource') as iam.CfnUser;
+    const cfn = user.node.findChild('Resource') as iam.CfnUser;
     cfn.cfnOptions.updatePolicy = { useOnlineResharding: true };
 
     // WHEN

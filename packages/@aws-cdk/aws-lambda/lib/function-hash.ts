@@ -5,7 +5,7 @@ import { Function as LambdaFunction } from './function';
 export function calculateFunctionHash(fn: LambdaFunction) {
   const stack = Stack.of(fn);
 
-  const functionResource = fn.construct.defaultChild as CfnResource;
+  const functionResource = fn.node.defaultChild as CfnResource;
 
   // render the cloudformation resource from this function
   const config = stack.resolve((functionResource as any)._toCloudFormation());

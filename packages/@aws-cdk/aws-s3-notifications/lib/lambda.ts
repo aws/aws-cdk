@@ -11,7 +11,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
   }
 
   public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
-    const permissionId = `AllowBucketNotificationsFrom${bucket.construct.uniqueId}`;
+    const permissionId = `AllowBucketNotificationsFrom${bucket.node.uniqueId}`;
 
     if (this.fn.permissionsNode.tryFindChild(permissionId) === undefined) {
       this.fn.addPermission(permissionId, {
@@ -28,7 +28,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
     return {
       type: s3.BucketNotificationDestinationType.LAMBDA,
       arn: this.fn.functionArn,
-      dependencies: permission ? [ permission ] : undefined,
+      dependencies: permission ? [permission] : undefined,
     };
   }
 }

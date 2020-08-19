@@ -17,7 +17,7 @@ export function defaultSubnetName(type: SubnetType) {
   switch (type) {
     case SubnetType.PUBLIC: return 'Public';
     case SubnetType.PRIVATE: return 'Private';
-    case SubnetType.ISOLATED: return  'Isolated';
+    case SubnetType.ISOLATED: return 'Isolated';
   }
 }
 
@@ -27,7 +27,7 @@ export function defaultSubnetName(type: SubnetType) {
  * All subnet names look like NAME <> "Subnet" <> INDEX
  */
 export function subnetGroupNameFromConstructId(subnet: ISubnet) {
-  return subnet.construct.id.replace(/Subnet\d+$/, '');
+  return subnet.node.id.replace(/Subnet\d+$/, '');
 }
 
 /**

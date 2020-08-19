@@ -1,8 +1,8 @@
+import * as path from 'path';
 import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnResource, Lazy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import * as apigateway from '../lib';
 
 export = {
@@ -178,7 +178,7 @@ export = {
     const dep = new CfnResource(stack, 'MyResource', { type: 'foo' });
 
     // WHEN
-    deployment.construct.addDependency(dep);
+    deployment.node.addDependency(dep);
 
     expect(stack).to(haveResource('AWS::ApiGateway::Deployment', {
       DependsOn: [

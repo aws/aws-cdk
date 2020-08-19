@@ -311,7 +311,7 @@ export = {
       description: 'desc',
       eventPattern: {
         detail: {
-          state: [ 'FAILED' ],
+          state: ['FAILED'],
         },
       },
     });
@@ -653,8 +653,8 @@ export = {
       test.notEqual(usEast1Support, undefined);
       test.equal(usEast1Support.stack.region, 'us-east-1');
       test.equal(usEast1Support.stack.account, pipelineAccount);
-      test.ok(usEast1Support.stack.construct.id.indexOf('us-east-1') !== -1,
-        `expected '${usEast1Support.stack.construct.id}' to contain 'us-east-1'`);
+      test.ok(usEast1Support.stack.node.id.indexOf('us-east-1') !== -1,
+        `expected '${usEast1Support.stack.node.id}' to contain 'us-east-1'`);
 
       test.done();
     },

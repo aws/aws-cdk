@@ -43,7 +43,7 @@ export = testCase({
 
     // WHEN
     layer.addPermission('GrantUsage-123456789012', { accountId: '123456789012' });
-    layer.addPermission('GrantUsage-o-123456',     { accountId: '*', organizationId: 'o-123456' });
+    layer.addPermission('GrantUsage-o-123456', { accountId: '*', organizationId: 'o-123456' });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersionPermission', {
@@ -77,7 +77,7 @@ export = testCase({
   'asset metadata is added to the cloudformation resource'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    stack.construct.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+    stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
     // WHEN
     new lambda.LayerVersion(stack, 'layer', {

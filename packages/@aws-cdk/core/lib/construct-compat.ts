@@ -28,11 +28,6 @@ export interface IConstruct extends constructs.IConstruct, IDependable {
    * The construct tree node for this construct.
    */
   readonly node: ConstructNode;
-
-  /**
-   * The construct tree node for this construct.
-   */
-  readonly construct: ConstructNode;
 }
 
 /**
@@ -65,9 +60,9 @@ export class Construct extends constructs.Construct implements IConstruct {
   }
 
   /**
-   * Construct API.
+   * The construct tree node associated with this construct.
    */
-  public readonly construct: ConstructNode;
+  public readonly node: ConstructNode;
 
   constructor(scope: Construct, id: string) {
     super(scope, id, {
@@ -82,16 +77,16 @@ export class Construct extends constructs.Construct implements IConstruct {
     }
 
     Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
-    this.construct = ConstructNode._unwrap(constructs.Node.of(this));
+    this.node = ConstructNode._unwrap(constructs.Node.of(this));
 
     const disableTrace =
-      this.construct.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ||
-      this.construct.tryGetContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA) ||
+      this.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ||
+      this.node.tryGetContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA) ||
       process.env.CDK_DISABLE_STACK_TRACE;
 
     if (disableTrace) {
-      this.construct.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
-      this.construct.setContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA, true);
+      this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
+      this.node.setContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA, true);
       process.env.CDK_DISABLE_STACK_TRACE = '1';
     }
   }
