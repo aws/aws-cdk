@@ -1,9 +1,9 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Construct, Fn, RemovalPolicy } from '@aws-cdk/core';
+import { Construct, Fn, Lazy, RemovalPolicy } from '@aws-cdk/core';
 import { Alias, AliasOptions } from './alias';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
-import { IFunction, QualifiedFunctionBase } from './function-base';
+import { FunctionBase, IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
 import { addAlias } from './util';
 
@@ -18,6 +18,11 @@ export interface IVersion extends IFunction {
    * The underlying AWS Lambda function.
    */
   readonly lambda: IFunction;
+
+  /**
+   * The ARN of the version for Lambda@Edge.
+   */
+  readonly edgeArn: string;
 
   /**
    * Defines an alias for this version.
@@ -128,6 +133,13 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public addAlias(name: string, opts: AliasOptions = { }): Alias {
         return addAlias(this, this, name, opts);
       }
+
+      public get edgeArn(): string {
+        if (version === '$LATEST') {
+          throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+        }
+        return this.functionArn;
+      }
     }
     return new Import(scope, id);
   }
@@ -146,6 +158,13 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
       public addAlias(name: string, opts: AliasOptions = { }): Alias {
         return addAlias(this, this, name, opts);
+      }
+
+      public get edgeArn(): string {
+        if (attrs.version === '$LATEST') {
+          throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+        }
+        return this.functionArn;
       }
     }
     return new Import(scope, id);
@@ -221,6 +240,26 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    */
   public addAlias(aliasName: string, options: AliasOptions = { }): Alias {
     return addAlias(this, this, aliasName, options);
+  }
+
+  public get edgeArn(): string {
+    // Validate first that this version can be used for Lambda@Edge
+    if (this.version === '$LATEST') {
+      throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+    }
+
+    // Check compatibility at synthesis. It could be that the version was associated
+    // with a CloudFront distribution first and made incompatible afterwards.
+    return Lazy.stringValue({
+      produce: () => {
+        // Validate that the underlying function can be used for Lambda@Edge
+        if (this.lambda instanceof FunctionBase) {
+          this.lambda._checkEdgeCompatibility();
+        }
+
+        return this.functionArn;
+      },
+    });
   }
 
   /**
