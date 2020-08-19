@@ -319,6 +319,15 @@ export abstract class FunctionBase extends Resource implements IFunction {
   }
 
   /**
+   * Checks whether this function is compatible for Lambda@Edge.
+   *
+   * @internal
+   */
+  public _checkEdgeCompatibility(): void {
+    return;
+  }
+
+  /**
    * Returns the construct tree node that corresponds to the lambda function.
    * For use internally for constructs, when the tree is set up in non-standard ways. Ex: SingletonFunction.
    * @internal
@@ -416,5 +425,9 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public addAlias(aliasName: string, options: AliasOptions = {}) {
     return addAlias(this, this, aliasName, options);
+  }
+
+  public get edgeArn(): never {
+    throw new Error('$LATEST function version cannot be used for Lambda@Edge');
   }
 }

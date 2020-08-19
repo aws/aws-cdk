@@ -107,4 +107,12 @@ export = {
 
     test.done();
   },
-};
+
+  'supported log types'(test: Test) {
+    const mysqlLogTypes = ['error', 'general', 'slowquery', 'audit'];
+    test.deepEqual(DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }).supportedLogTypes, mysqlLogTypes);
+    test.deepEqual(DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_08_1 }).supportedLogTypes, mysqlLogTypes);
+    test.deepEqual(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_9_6_9 }).supportedLogTypes, ['postgresql']);
+    test.done();
+  },
+}
