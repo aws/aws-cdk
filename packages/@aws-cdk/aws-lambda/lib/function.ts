@@ -515,7 +515,7 @@ export class Function extends FunctionBase {
   /**
    * Environment variables for this function
    */
-  private readonly environment: { [key: string]: string };
+  private environment: { [key: string]: EnvironmentConfig } = {};
 
   private readonly currentVersionOptions?: VersionOptions;
   private _currentVersion?: Version;
@@ -558,7 +558,7 @@ export class Function extends FunctionBase {
     const code = props.code.bind(this);
     verifyCodeConfig(code, props.runtime);
 
-    let profilingGroupEnvironmentVariables = {};
+    let profilingGroupEnvironmentVariables: { [key: string]: string } = {};
     if (props.profilingGroup && props.profiling !== false) {
       this.validateProfilingEnvironmentVariables(props);
       props.profilingGroup.grantPublish(this.role);
@@ -582,7 +582,10 @@ export class Function extends FunctionBase {
       };
     }
 
-    this.environment = { ...profilingGroupEnvironmentVariables, ...(props.environment || {}) };
+    const env = { ...profilingGroupEnvironmentVariables, ...props.environment };
+    for (const [key, value] of Object.entries(env)) {
+      this.addEnvironment(key, value);
+    }
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
 
@@ -675,9 +678,10 @@ export class Function extends FunctionBase {
    * If this is a ref to a Lambda function, this operation results in a no-op.
    * @param key The environment variable key.
    * @param value The environment variable's value.
+   * @param options Environment variable options.
    */
-  public addEnvironment(key: string, value: string): this {
-    this.environment[key] = value;
+  public addEnvironment(key: string, value: string, options?: EnvironmentOptions): this {
+    this.environment[key] = { value, ...options };
     return this;
   }
 
@@ -764,27 +768,43 @@ export class Function extends FunctionBase {
     return this._logGroup;
   }
 
+  /** @internal */
+  public _checkEdgeCompatibility(): void {
+    // Check env vars
+    const envEntries = Object.entries(this.environment);
+    for (const [key, config] of envEntries) {
+      if (config.removeInEdge) {
+        delete this.environment[key];
+        this.node.addInfo(`Removed ${key} environment variable for Lambda@Edge compatibility`);
+      }
+    }
+    const envKeys = Object.keys(this.environment);
+    if (envKeys.length !== 0) {
+      throw new Error(`The function ${this.node.path} contains environment variables [${envKeys}] and is not compatible with Lambda@Edge. \
+Environment variables can be marked for removal when used in Lambda@Edge by setting the \'removeInEdge\' property in the \'addEnvironment()\' API.`);
+    }
+
+    return;
+  }
+
   private renderEnvironment() {
     if (!this.environment || Object.keys(this.environment).length === 0) {
       return undefined;
     }
 
-    // for backwards compatibility we do not sort environment variables in case
-    // _currentVersion is not defined. otherwise, this would have invalidated
+    const variables: { [key: string]: string } = {};
+    // Sort environment so the hash of the function used to create
+    // `currentVersion` is not affected by key order (this is how lambda does
+    // it). For backwards compatibility we do not sort environment variables in case
+    // _currentVersion is not defined. Otherwise, this would have invalidated
     // the template, and for example, may cause unneeded updates for nested
     // stacks.
-    if (!this._currentVersion) {
-      return {
-        variables: this.environment,
-      };
-    }
+    const keys = this._currentVersion
+      ? Object.keys(this.environment).sort()
+      : Object.keys(this.environment);
 
-    // sort environment so the hash of the function used to create
-    // `currentVersion` is not affected by key order (this is how lambda does
-    // it).
-    const variables: { [key: string]: string } = {};
-    for (const key of Object.keys(this.environment).sort()) {
-      variables[key] = this.environment[key];
+    for (const key of keys) {
+      variables[key] = this.environment[key].value;
     }
 
     return { variables };
@@ -903,6 +923,27 @@ export class Function extends FunctionBase {
       throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
     }
   }
+}
+
+/**
+ * Environment variables options
+ */
+export interface EnvironmentOptions {
+  /**
+   * When used in Lambda@Edge via edgeArn() API, these environment
+   * variables will be removed. If not set, an error will be thrown.
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-requirements-lambda-function-configuration
+   *
+   * @default false - using the function in Lambda@Edge will throw
+   */
+  readonly removeInEdge?: boolean
+}
+
+/**
+ * Configuration for an environment variable
+ */
+interface EnvironmentConfig extends EnvironmentOptions {
+  readonly value: string;
 }
 
 /**
