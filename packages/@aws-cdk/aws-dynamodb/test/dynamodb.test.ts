@@ -2107,7 +2107,7 @@ describe('import', () => {
       'Roles': [{ 'Ref': 'NewRole99763075' }],
     });
 
-    expect(table.tableArn).toBe('arn:${Token[AWS::Partition.3]}:dynamodb:${Token[AWS::Region.4]}:${Token[AWS::AccountId.0]}:table/MyTable');
+    expect(table.tableArn).toBe('arn:${Token[AWS.Partition.3]}:dynamodb:${Token[AWS.Region.4]}:${Token[AWS.AccountId.0]}:table/MyTable');
     expect(stack.resolve(table.tableName)).toBe(tableName);
   });
 

@@ -10,7 +10,7 @@ class MyStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
 
-    const stack = new Stack(this, 'Stack');
+    const stack = new Stack(this, 'Stack', props);
 
     new s3_assets.Asset(stack, 'Asset', {
       path: path.join(__dirname, 'test-file-asset.txt'),
@@ -65,7 +65,9 @@ class CdkpipelinesDemoPipelineStack extends Stack {
 
     // This is where we add the application stages
     // ...
-    const stage = pipeline.addApplicationStage(new MyStage(this, 'PreProd'));
+    const stage = pipeline.addApplicationStage(new MyStage(this, 'PreProd', {
+      env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+    }));
     stage.addActions(
       new cdkp.ShellScriptAction({
         actionName: 'UseSource',
