@@ -2,6 +2,60 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.60.0](https://github.com/aws/aws-cdk/compare/v1.59.0...v1.60.0) (2020-08-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cloudfront:** Distribution: `.domains` must be specified if `certificate` is provided.
+* **appsync:** **appsync.addXxxDataSource** `name` and `description` props are now optional and in an `DataSourceOptions` interface. 
+- **appsync**:  the props `name` and `description` in `addXxxDataSource` have been moved into new props `options`  of type `DataSourceOptions`
+- **appsync**: `DataSourceOptions.name` defaults to id
+- **appsync**: `DataSourceOptions.description` defaults to undefined
+
+### Features
+
+* **amplify:** automatic branch deletion ([#9663](https://github.com/aws/aws-cdk/issues/9663)) ([4ee37a4](https://github.com/aws/aws-cdk/commit/4ee37a4b92218803c5d0123161f5502cc9e9a62c)), closes [#9650](https://github.com/aws/aws-cdk/issues/9650)
+* **appsync:** code-first schema allows for object type definition ([#9417](https://github.com/aws/aws-cdk/issues/9417)) ([6f1782f](https://github.com/aws/aws-cdk/commit/6f1782fa679b5bc1a3bb3ec9e4afb71f8c64a951)), closes [#9307](https://github.com/aws/aws-cdk/issues/9307)
+* **appsync:** import existing graphql api ([#9254](https://github.com/aws/aws-cdk/issues/9254)) ([5732b8e](https://github.com/aws/aws-cdk/commit/5732b8ee727d3c1a59e6dce100ec4179640970cb)), closes [#6959](https://github.com/aws/aws-cdk/issues/6959)
+* **aws-cloudwatch:** log query widget visualisation types ([#9694](https://github.com/aws/aws-cdk/issues/9694)) ([8debcf8](https://github.com/aws/aws-cdk/commit/8debcf8bcae7d6d35ca1c37edcb130d977ea95f8)), closes [#9675](https://github.com/aws/aws-cdk/issues/9675)
+* **cli:** MFA support ([#6510](https://github.com/aws/aws-cdk/issues/6510)) ([611c48d](https://github.com/aws/aws-cdk/commit/611c48d134311ca03e81e1c2e8658c68670faba4)), closes [#1248](https://github.com/aws/aws-cdk/issues/1248)
+* make imported resources account/region-aware ([#8280](https://github.com/aws/aws-cdk/issues/8280)) ([d6278b3](https://github.com/aws/aws-cdk/commit/d6278b37ce787c587e1079a3f2844566291d7c27)), closes [#2807](https://github.com/aws/aws-cdk/issues/2807) [#5740](https://github.com/aws/aws-cdk/issues/5740) [#7012](https://github.com/aws/aws-cdk/issues/7012)
+* **cfn-include:** add support for retrieving Mapping objects from the template ([#9777](https://github.com/aws/aws-cdk/issues/9777)) ([a038304](https://github.com/aws/aws-cdk/commit/a0383047d2d57941c41559a66fdbcba6e424269b)), closes [#9711](https://github.com/aws/aws-cdk/issues/9711)
+* **cfn-include:** add support for retrieving Rule objects from the template ([#9783](https://github.com/aws/aws-cdk/issues/9783)) ([e4720bf](https://github.com/aws/aws-cdk/commit/e4720bfffa3a2642ff7517a96e2fbc3f94ce9f2b)), closes [#9712](https://github.com/aws/aws-cdk/issues/9712)
+* **cloudfront:** Distribution - alternate domains ([#9699](https://github.com/aws/aws-cdk/issues/9699)) ([97e44a7](https://github.com/aws/aws-cdk/commit/97e44a7dab5ef220566d5db706b6946c5b51129c))
+* **codebuild:** support images with WINDOWS_SERVER_2019_CONTAINER environment type ([#9526](https://github.com/aws/aws-cdk/issues/9526)) ([d3813e7](https://github.com/aws/aws-cdk/commit/d3813e7c0aebd59cee47c64911041e0e325beef3)), closes [#9484](https://github.com/aws/aws-cdk/issues/9484)
+* **custom-resources:** optional latest SDK installation for AwsCustomResource ([#9515](https://github.com/aws/aws-cdk/issues/9515)) ([effdd3c](https://github.com/aws/aws-cdk/commit/effdd3ce8660e518939d185682149aefb7a04e03)), closes [#9289](https://github.com/aws/aws-cdk/issues/9289) [#9322](https://github.com/aws/aws-cdk/issues/9322)
+* **ec2:** CloudFormation init for files, packages, sources, users, & groups ([#9664](https://github.com/aws/aws-cdk/issues/9664)) ([d6c44e8](https://github.com/aws/aws-cdk/commit/d6c44e879d370326869804a746da3dc1465b33dd)), closes [#9065](https://github.com/aws/aws-cdk/issues/9065) [#8788](https://github.com/aws/aws-cdk/issues/8788) [#8788](https://github.com/aws/aws-cdk/issues/8788)
+* **ecs:** add EfsVolumeConfiguration to Volume ([#8467](https://github.com/aws/aws-cdk/issues/8467)) ([85ff9fd](https://github.com/aws/aws-cdk/commit/85ff9fd7cf93082e88e2aafc97916fa505484c6d))
+* **ecs:** add support for automatic HTTPS redirect ([#9341](https://github.com/aws/aws-cdk/issues/9341)) ([84a3ef6](https://github.com/aws/aws-cdk/commit/84a3ef65fcc475fb5d59522ffd0d46cf77c78e8a)), closes [#8488](https://github.com/aws/aws-cdk/issues/8488)
+* **pipelines:** add PolicyStatements to CodeBuild project role ([#9527](https://github.com/aws/aws-cdk/issues/9527)) ([c570d9c](https://github.com/aws/aws-cdk/commit/c570d9cbd0ec618c84f5ac5c2e3256f3d3671a20)), closes [aws/aws-cdk#9163](https://github.com/aws/aws-cdk/issues/9163)
+* **rds:** CloudWatch logs exports for DB clusters ([#9772](https://github.com/aws/aws-cdk/issues/9772)) ([118e5c6](https://github.com/aws/aws-cdk/commit/118e5c688789cf2a69edd2a419e2d4844aa65efb)), closes [#7810](https://github.com/aws/aws-cdk/issues/7810)
+* **rds:** Validate log types for clusters ([#9797](https://github.com/aws/aws-cdk/issues/9797)) ([85fdeb5](https://github.com/aws/aws-cdk/commit/85fdeb5f86a75054e6066a0a4e7a7059621c9b1d)), closes [#9772](https://github.com/aws/aws-cdk/issues/9772) [#9772](https://github.com/aws/aws-cdk/issues/9772) [#9772](https://github.com/aws/aws-cdk/issues/9772)
+
+
+### Bug Fixes
+
+* **apigateway:** access log format does not allow tokens ([#9769](https://github.com/aws/aws-cdk/issues/9769)) ([a7c5c75](https://github.com/aws/aws-cdk/commit/a7c5c75f70e7dab9481b142c4798a0abe6ef7dff)), closes [#9687](https://github.com/aws/aws-cdk/issues/9687)
+* **build:** Prereq check - support paths with spaces. ([9ca1d02](https://github.com/aws/aws-cdk/commit/9ca1d0228824014f2397a4392bc264ab69f7ad1b)), closes [#9749](https://github.com/aws/aws-cdk/issues/9749)
+* **cfn-include:** handle numbers expressed as strings in templates ([#9525](https://github.com/aws/aws-cdk/issues/9525)) ([e9a4102](https://github.com/aws/aws-cdk/commit/e9a4102d276ed19b3e369f4d3ea10abbadb38a93)), closes [#9524](https://github.com/aws/aws-cdk/issues/9524)
+* **cli:** "fancy" progress reporting not disabled on all CI systems ([#9516](https://github.com/aws/aws-cdk/issues/9516)) ([97ef371](https://github.com/aws/aws-cdk/commit/97ef37136359588d8dcb3f3dc05d2c271c90089a)), closes [#8696](https://github.com/aws/aws-cdk/issues/8696) [#8893](https://github.com/aws/aws-cdk/issues/8893)
+* **cli:** CLI does not use regional endpoints ([#9835](https://github.com/aws/aws-cdk/issues/9835)) ([34450b0](https://github.com/aws/aws-cdk/commit/34450b020d0ef7d2a00f1d56bb5e4a31fa8e12af)), closes [#9223](https://github.com/aws/aws-cdk/issues/9223)
+* **cli:** stack monitor reads complete stack history every 5 seconds ([#9795](https://github.com/aws/aws-cdk/issues/9795)) ([cace51a](https://github.com/aws/aws-cdk/commit/cace51a3c1c6ce948d6dcb2ee4b8753a312579e2)), closes [#9470](https://github.com/aws/aws-cdk/issues/9470)
+* **cli:** SynthUtils is not used ([#9836](https://github.com/aws/aws-cdk/issues/9836)) ([9f1007e](https://github.com/aws/aws-cdk/commit/9f1007eebef290da0be2645e84854bf2d5ece501))
+* **cloudformation-diff:** DependsOn singleton arrays aren't equal to string values ([#9814](https://github.com/aws/aws-cdk/issues/9814)) ([49cdb47](https://github.com/aws/aws-cdk/commit/49cdb47f0487b6dc96ca1a732df83e8a72e93e61))
+* **cloudfront:** all origin access identities have identical names ([#9829](https://github.com/aws/aws-cdk/issues/9829)) ([ca79188](https://github.com/aws/aws-cdk/commit/ca79188fcd962179c6c44e2a1ffa8bf5d8eef183)), closes [#9580](https://github.com/aws/aws-cdk/issues/9580)
+* **cloudfront:** Distribution ignores webAclId ([#9828](https://github.com/aws/aws-cdk/issues/9828)) ([366c781](https://github.com/aws/aws-cdk/commit/366c7819321dfd23d4ce638fb218fe38072e90aa)), closes [#9635](https://github.com/aws/aws-cdk/issues/9635) [#9824](https://github.com/aws/aws-cdk/issues/9824)
+* **cloudfront:** Update Suported Security Protocol enum and set TLS_V1_2_2019 as a default version ([#9738](https://github.com/aws/aws-cdk/issues/9738)) ([f6c25ad](https://github.com/aws/aws-cdk/commit/f6c25ad86eddd17a139ba9c5d54dea600fd25d8e)), closes [#9212](https://github.com/aws/aws-cdk/issues/9212)
+* **codebuild:** fails on using PR Events together with FILE_PATH filters in a FilterGroup ([#9725](https://github.com/aws/aws-cdk/issues/9725)) ([fdaf6bc](https://github.com/aws/aws-cdk/commit/fdaf6bcf3d1dd88486eeaa979bc677d99134cbd9)), closes [#8867](https://github.com/aws/aws-cdk/issues/8867)
+* **codepipeline:** Service Catalog action generated incorrect file path ([#9773](https://github.com/aws/aws-cdk/issues/9773)) ([286ff50](https://github.com/aws/aws-cdk/commit/286ff503f388aed77d283fdaed2dd1683e997f4c)), closes [#9767](https://github.com/aws/aws-cdk/issues/9767)
+* **eks:** AMI changes in managed SSM store param causes rolling update of ASG ([#9746](https://github.com/aws/aws-cdk/issues/9746)) ([44f7753](https://github.com/aws/aws-cdk/commit/44f7753cb33801f2c4c19ad5b72896331fbc1e71)), closes [40aws-cdk/aws-eks/lib/cluster.ts#L779-L785](https://github.com/40aws-cdk/aws-eks/lib/cluster.ts/issues/L779-L785) [40aws-cdk/aws-ec2/lib/machine-image.ts#L216-L226](https://github.com/40aws-cdk/aws-ec2/lib/machine-image.ts/issues/L216-L226)
+* **elbv2:** NLB Target Group does not inherit protocol ([#9331](https://github.com/aws/aws-cdk/issues/9331)) ([#9651](https://github.com/aws/aws-cdk/issues/9651)) ([171ab59](https://github.com/aws/aws-cdk/commit/171ab599e578266731daca26cd8ea631a81f48e1))
+* **lambda:** compute platform missing for autocreated profiling group ([#9716](https://github.com/aws/aws-cdk/issues/9716)) ([a8f4c9f](https://github.com/aws/aws-cdk/commit/a8f4c9fb09f93fd57e755fa328093f18081de21a))
+* **lambda-nodejs:** cannot bundle when entry file is named index.ts ([#9724](https://github.com/aws/aws-cdk/issues/9724)) ([bb90fbe](https://github.com/aws/aws-cdk/commit/bb90fbe36a7935a43397f94dfcd0008b0a0bb806)), closes [#9709](https://github.com/aws/aws-cdk/issues/9709)
+* **lambda-nodejs:** NodejsFunction construct incompatible with lambda@edge ([#9562](https://github.com/aws/aws-cdk/issues/9562)) ([dfe2c5c](https://github.com/aws/aws-cdk/commit/dfe2c5c665a5662972098415e713d73e742e93cd)), closes [#9328](https://github.com/aws/aws-cdk/issues/9328) [#9453](https://github.com/aws/aws-cdk/issues/9453)
+* **lambda-python:** install rsync if necessary ([#9763](https://github.com/aws/aws-cdk/issues/9763)) ([6edb6e6](https://github.com/aws/aws-cdk/commit/6edb6e689ec2bb936a4cd5f293d49f7706407bc9)), closes [#9704](https://github.com/aws/aws-cdk/issues/9704) [#9349](https://github.com/aws/aws-cdk/issues/9349) [#9582](https://github.com/aws/aws-cdk/issues/9582)
+
 ## [1.59.0](https://github.com/aws/aws-cdk/compare/v1.58.0...v1.59.0) (2020-08-14)
 
 
