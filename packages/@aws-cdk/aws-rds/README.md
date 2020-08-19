@@ -272,3 +272,33 @@ const proxy = dbInstance.addProxy('proxy', {
     vpc,
 });
 ```
+
+### Exporting Logs
+
+You can publish database logs to Amazon CloudWatch Logs. With CloudWatch Logs, you can perform real-time analysis of the log data,
+store the data in highly durable storage, and manage the data with the CloudWatch Logs Agent. This is available for both database
+instances and clusters; the types of logs available depend on the database type and engine being used.
+
+```ts
+// Exporting logs from a cluster
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.aurora({
+    version: rds.AuroraEngineVersion.VER_1_17_9, // different version class for each engine type
+  },
+  // ...
+  cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'], // Export all available MySQL-based logs
+  cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
+  cloudwatchLogsRetentionRole: myLogsPublishingRole, // Optional - a role will be created if not provided
+  // ...
+});
+
+// Exporting logs from an instance
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.postgres({
+    version: rds.PostgresEngineVersion.VER_12_3,
+  }),
+  // ...
+  cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
+  // ...
+});
+```
