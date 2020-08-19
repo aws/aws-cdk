@@ -430,7 +430,7 @@ export class Distribution extends Resource implements IDistribution {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
-      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2018,
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
     };
   }
 }
@@ -510,7 +510,8 @@ export enum SecurityPolicyProtocol {
   TLS_V1 = 'TLSv1',
   TLS_V1_2016 = 'TLSv1_2016',
   TLS_V1_1_2016 = 'TLSv1.1_2016',
-  TLS_V1_2_2018 = 'TLSv1.2_2018'
+  TLS_V1_2_2018 = 'TLSv1.2_2018',
+  TLS_V1_2_2019 = 'TLSv1.2_2019'
 }
 
 /**
