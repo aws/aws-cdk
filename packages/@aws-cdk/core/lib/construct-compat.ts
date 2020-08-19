@@ -92,18 +92,6 @@ export class Construct extends constructs.Construct implements IConstruct {
   }
 
   /**
-   * The construct tree node associated with this construct.
-   *
-   * @deprecated `Construct.node` is being deprecated in favor of
-   * `Construct.construct`. This API will be removed in the next major version
-   * of the AWS CDK, please migrate your code to use `construct` instead.
-   */
-  public get node(): ConstructNode {
-    Annotations.of(this).addDeprecation('@aws-cdk/core.Construct.node', 'Use "@aws-cdk/core.Construct.construct" instead');
-    return this.construct;
-  }
-
-  /**
    * Validate the current construct.
    *
    * This method can be implemented by derived constructs in order to perform
