@@ -488,7 +488,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     });
   }
 
-  private setupS3ImportExport(props: DatabaseClusterProps) {
+  private setupS3ImportExport(props: DatabaseClusterProps): { s3ImportRole?: IRole, s3ExportRole?: IRole } {
     let s3ImportRole = props.s3ImportRole;
     if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
       if (props.s3ImportRole) {

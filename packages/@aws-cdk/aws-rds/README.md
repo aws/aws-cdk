@@ -51,7 +51,7 @@ new rds.DatabaseCluster(this, 'Database', {
     version: rds.AuroraEngineVersion.VER_1_17_9, // different version class for each engine type
   }),
   ...
-})
+});
 ```
 
 If there isn't a constant for the exact version you want to use,
@@ -106,7 +106,7 @@ Example for max storage configuration:
 
 ```ts
 const instance = new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.ORACLE_SE1,       
+  engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
   masterUsername: 'syscdk',
@@ -121,7 +121,7 @@ a source database respectively:
 ```ts
 new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
   snapshotIdentifier: 'my-snapshot',
-  engine: rds.DatabaseInstanceEngine.POSTGRES,     
+  engine: rds.DatabaseInstanceEngine.POSTGRES,
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
   vpc,
@@ -164,6 +164,7 @@ const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
 For an instance database:
+
 ```ts
 const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
@@ -229,10 +230,10 @@ S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Int
 data into S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html).
 
 For Aurora PostgreSQL, read more about [loading data from
-S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html) and [saving 
+S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html) and [saving
 data into S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html).
 
-The following snippet sets up a database cluster with different S3 buckets where the data is imported and exported - 
+The following snippet sets up a database cluster with different S3 buckets where the data is imported and exported -
 
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
