@@ -1,6 +1,6 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, CfnOutput, Construct, NestedStack, NestedStackProps, Stack, StackProps } from '@aws-cdk/core';
-import * as path from 'path';
 import * as ecr_assets from '../lib';
 
 class TheNestedStack extends NestedStack {

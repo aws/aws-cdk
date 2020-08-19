@@ -60,11 +60,11 @@
       "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
       "Properties": {
         "CloudFrontOriginAccessIdentityConfig": {
-          "Comment": "Allows CloudFront to reach the bucket"
+          "Comment": "Access identity for cloudfrontorigingroupDistributionOrigin137659A54"
         }
       }
     },
-    "DistributionCFDistribution882A7313": {
+    "Distribution830FAC52": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
@@ -72,10 +72,22 @@
             "ForwardedValues": {
               "QueryString": false
             },
-            "TargetOriginId": "cloudfrontorigingroupDistributionOrigin137659A54",
+            "TargetOriginId": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
             "ViewerProtocolPolicy": "allow-all"
           },
+          "CacheBehaviors": [
+            {
+              "ForwardedValues": {
+                "QueryString": false
+              },
+              "PathPattern": "/api",
+              "TargetOriginId": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
+              "ViewerProtocolPolicy": "allow-all"
+            }
+          ],
           "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
           "OriginGroups": {
             "Items": [
               {

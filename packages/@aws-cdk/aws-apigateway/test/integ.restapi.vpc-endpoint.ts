@@ -20,8 +20,8 @@ class Test extends cdk.Stack {
 
     const api = new apigateway.RestApi(this, 'MyApi', {
       endpointConfiguration: {
-        types: [ apigateway.EndpointType.PRIVATE ],
-        vpcEndpoints: [ vpcEndpoint ],
+        types: [apigateway.EndpointType.PRIVATE],
+        vpcEndpoints: [vpcEndpoint],
       },
       policy: new iam.PolicyDocument({
         statements: [

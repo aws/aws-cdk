@@ -2,6 +2,7 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
@@ -104,7 +105,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
-    const clusterSettings = containerInsights ? [{name: 'containerInsights', value: 'enabled'}] : undefined;
+    const clusterSettings = containerInsights ? [{ name: 'containerInsights', value: 'enabled' }] : undefined;
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
@@ -259,6 +260,7 @@ export class Cluster extends Resource implements ICluster {
         autoScalingGroup,
         cluster: this,
         drainTime: options.taskDrainTime,
+        topicEncryptionKey: options.topicEncryptionKey,
       });
     }
   }
@@ -369,7 +371,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
    */
   constructor(props?: EcsOptimizedAmiProps) {
     this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
-    if (props && props.generation) {      // generation defined in the props object
+    if (props && props.generation) { // generation defined in the props object
       if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
         throw new Error('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
       } else if (props.windowsVersion) {
@@ -383,7 +385,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       } else {
         this.windowsVersion = props.windowsVersion;
       }
-    } else {                              // generation not defined in props object
+    } else { // generation not defined in props object
       // always default to Amazon Linux v2 regardless of HW
       this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX_2;
     }
@@ -666,6 +668,16 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @default false
    */
   readonly spotInstanceDraining?: boolean
+
+  /**
+   * If {@link AddAutoScalingGroupCapacityOptions.taskDrainTime} is non-zero, then the ECS cluster creates an
+   * SNS Topic to as part of a system to drain instances of tasks when the instance is being shut down.
+   * If this property is provided, then this key will be used to encrypt the contents of that SNS Topic.
+   * See [SNS Data Encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-data-encryption.html) for more information.
+   *
+   * @default The SNS Topic will not be encrypted.
+   */
+  readonly topicEncryptionKey?: kms.IKey;
 }
 
 /**

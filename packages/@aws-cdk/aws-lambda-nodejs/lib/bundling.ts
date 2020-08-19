@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { DockerBundler, Installer, LocalBundler, LockFile } from './bundlers';
 import { PackageJsonManager } from './package-json-manager';
 import { findUp } from './util';
 
@@ -24,11 +25,11 @@ export interface ParcelBaseOptions {
   readonly sourceMaps?: boolean;
 
   /**
-   * The cache directory
+   * The cache directory (relative to the project root)
    *
    * Parcel uses a filesystem cache for fast rebuilds.
    *
-   * @default - `.cache` in the root directory
+   * @default - `.parcel-cache` in the working directory
    */
   readonly cacheDir?: string;
 
@@ -66,7 +67,7 @@ export interface ParcelBaseOptions {
   readonly nodeModules?: string[];
 
   /**
-   * The version of Parcel to use.
+   * The version of Parcel to use when running in a Docker container.
    *
    * @default - 2.0.0-beta.1
    */
@@ -78,6 +79,16 @@ export interface ParcelBaseOptions {
    * @default - no build arguments are passed
    */
   readonly buildArgs?: { [key:string] : string };
+
+  /**
+   * Force bundling in a Docker container even if local bundling is
+   * possible.This  is useful if your function relies on node modules
+   * that should be installed (`nodeModules`) in a Lambda compatible
+   * environment.
+   *
+   * @default false
+   */
+  readonly forceDockerBundling?: boolean;
 }
 
 /**
@@ -108,15 +119,7 @@ export class Bundling {
     if (!projectRoot) {
       throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }
-
-    // Bundling image derived from runtime bundling image (AWS SAM docker image)
-    const image = cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel'), {
-      buildArgs: {
-        ...options.buildArgs ?? {},
-        IMAGE: options.runtime.bundlingDockerImage.image,
-        PARCEL_VERSION: options.parcelVersion ?? '2.0.0-beta.1',
-      },
-    });
+    const relativeEntryPath = path.relative(projectRoot, path.resolve(options.entry));
 
     const packageJsonManager = new PackageJsonManager(path.dirname(options.entry));
 
@@ -135,10 +138,21 @@ export class Bundling {
       }
     }
 
+    let installer = Installer.NPM;
+    let lockFile: LockFile | undefined;
+    if (dependencies) {
+      // Use npm unless we have a yarn.lock.
+      if (fs.existsSync(path.join(projectRoot, LockFile.YARN))) {
+        installer = Installer.YARN;
+        lockFile = LockFile.YARN;
+      } else if (fs.existsSync(path.join(projectRoot, LockFile.NPM))) {
+        lockFile = LockFile.NPM;
+      }
+    }
+
     // Configure target in package.json for Parcel
     packageJsonManager.update({
-      'cdk-lambda': `${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/index.js`,
-      'targets': {
+      targets: {
         'cdk-lambda': {
           context: 'node',
           includeNodeModules: includeNodeModules ?? true,
@@ -151,69 +165,42 @@ export class Bundling {
       },
     });
 
-    // Entry file path relative to container path
-    const containerEntryPath = path.join(cdk.AssetStaging.BUNDLING_INPUT_DIR, path.relative(projectRoot, path.resolve(options.entry)));
-    const parcelCommand = [
-      '$(node -p "require.resolve(\'parcel\')")', // Parcel is not globally installed, find its "bin"
-      'build', containerEntryPath.replace(/\\/g, '/'), // Always use POSIX paths in the container
-      '--target', 'cdk-lambda',
-      '--no-autoinstall',
-      '--no-scope-hoist',
-      ...options.cacheDir
-        ? ['--cache-dir', '/parcel-cache']
-        : [],
-    ].join(' ');
-
-    let installer = Installer.NPM;
-    let lockfile: string | undefined;
-    let depsCommand = '';
-
-    if (dependencies) {
-      // Create a dummy package.json for dependencies that we need to install
-      fs.writeFileSync(
-        path.join(projectRoot, '.package.json'),
-        JSON.stringify({ dependencies }),
-      );
-
-      // Use npm unless we have a yarn.lock.
-      if (fs.existsSync(path.join(projectRoot, LockFile.YARN))) {
-        installer = Installer.YARN;
-        lockfile = LockFile.YARN;
-      } else if (fs.existsSync(path.join(projectRoot, LockFile.NPM))) {
-        lockfile = LockFile.NPM;
-      }
-
-      // Move dummy package.json and lock file then install
-      depsCommand = chain([
-        `mv ${cdk.AssetStaging.BUNDLING_INPUT_DIR}/.package.json ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/package.json`,
-        lockfile ? `cp ${cdk.AssetStaging.BUNDLING_INPUT_DIR}/${lockfile} ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${lockfile}` : '',
-        `cd ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR} && ${installer} install`,
-      ]);
+    // Local
+    let localBundler: cdk.ILocalBundling | undefined;
+    if (!options.forceDockerBundling) {
+      localBundler = new LocalBundler({
+        projectRoot,
+        relativeEntryPath,
+        cacheDir: options.cacheDir,
+        environment: options.parcelEnvironment,
+        dependencies,
+        installer,
+        lockFile,
+      });
     }
+
+    // Docker
+    const dockerBundler = new DockerBundler({
+      runtime: options.runtime,
+      relativeEntryPath,
+      cacheDir: options.cacheDir,
+      environment: options.parcelEnvironment,
+      buildImage: !LocalBundler.runsLocally || options.forceDockerBundling,
+      buildArgs: options.buildArgs,
+      parcelVersion: options.parcelVersion,
+      dependencies,
+      installer,
+      lockFile,
+    });
 
     return lambda.Code.fromAsset(projectRoot, {
       assetHashType: cdk.AssetHashType.BUNDLE,
       bundling: {
-        image,
-        command: ['bash', '-c', chain([parcelCommand, depsCommand])],
-        environment: options.parcelEnvironment,
-        volumes: options.cacheDir
-          ? [{ containerPath: '/parcel-cache', hostPath: options.cacheDir }]
-          : [],
-        workingDirectory: path.dirname(containerEntryPath).replace(/\\/g, '/'), // Always use POSIX paths in the container
+        local: localBundler,
+        ...dockerBundler.bundlingOptions,
       },
     });
   }
-}
-
-enum Installer {
-  NPM = 'npm',
-  YARN = 'yarn',
-}
-
-enum LockFile {
-  NPM = 'package-lock.json',
-  YARN = 'yarn.lock'
 }
 
 function runtimeVersion(runtime: lambda.Runtime): string {
@@ -224,8 +211,4 @@ function runtimeVersion(runtime: lambda.Runtime): string {
   }
 
   return match[1];
-}
-
-function chain(commands: string[]): string {
-  return commands.filter(c => !!c).join(' && ');
 }

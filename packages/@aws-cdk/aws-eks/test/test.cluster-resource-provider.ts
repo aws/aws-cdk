@@ -88,6 +88,30 @@ export = {
       test.done();
     },
 
+    async 'isCreateComplete throws if cluster is FAILED'(test: Test) {
+      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create'));
+      mocks.simulateResponse.describeClusterResponseMockStatus = 'FAILED';
+      try {
+        await handler.isComplete();
+        test.ok(false, 'expected error to be thrown');
+      } catch (err) {
+        test.equal(err.message, 'Cluster is in a FAILED status');
+      }
+      test.done();
+    },
+
+    async 'isUpdateComplete throws if cluster is FAILED'(test: Test) {
+      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update'));
+      mocks.simulateResponse.describeClusterResponseMockStatus = 'FAILED';
+      try {
+        await handler.isComplete();
+        test.ok(false, 'expected error to be thrown');
+      } catch (err) {
+        test.equal(err.message, 'Cluster is in a FAILED status');
+      }
+      test.done();
+    },
+
     async 'isCreateComplete is complete when cluster is ACTIVE'(test: Test) {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create'));
       mocks.simulateResponse.describeClusterResponseMockStatus = 'ACTIVE';
@@ -507,7 +531,7 @@ export = {
             logging: {
               clusterLogging: [
                 {
-                  types: [ 'api' ],
+                  types: ['api'],
                   enabled: true,
                 },
               ],
@@ -522,7 +546,7 @@ export = {
             logging: {
               clusterLogging: [
                 {
-                  types: [ 'api' ],
+                  types: ['api'],
                   enabled: true,
                 },
               ],
@@ -563,7 +587,7 @@ export = {
             logging: {
               clusterLogging: [
                 {
-                  types: [ 'api', 'audit', 'authenticator', 'controllerManager', 'scheduler' ],
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
                   enabled: true,
                 },
               ],
@@ -571,7 +595,7 @@ export = {
             resourcesVpcConfig: {
               endpointPrivateAccess: true,
               endpointPublicAccess: true,
-              publicAccessCidrs: [ '0.0.0.0/0' ],
+              publicAccessCidrs: ['0.0.0.0/0'],
             },
           }, {
             logging: undefined,
@@ -585,7 +609,7 @@ export = {
             logging: {
               clusterLogging: [
                 {
-                  types: [ 'api', 'audit', 'authenticator', 'controllerManager', 'scheduler' ],
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
                   enabled: true,
                 },
               ],
@@ -593,7 +617,7 @@ export = {
             resourcesVpcConfig: {
               endpointPrivateAccess: true,
               endpointPublicAccess: true,
-              publicAccessCidrs: [ '0.0.0.0/0' ],
+              publicAccessCidrs: ['0.0.0.0/0'],
             },
           });
           test.equal(mocks.actualRequest.createClusterRequest, undefined);
