@@ -1,6 +1,7 @@
-import { beASupersetOfTemplate, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { arrayWith, beASupersetOfTemplate, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert';
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Stack } from '@aws-cdk/core';
+import { Lazy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as lambda from '../lib';
 
@@ -180,7 +181,8 @@ export = {
     // WHEN: Individual weight too high
     test.throws(() => {
       new lambda.Alias(stack, 'Alias1', {
-        aliasName: 'prod', version,
+        aliasName: 'prod',
+        version,
         additionalVersions: [{ version, weight: 5 }],
       });
     });
@@ -188,7 +190,8 @@ export = {
     // WHEN: Sum too high
     test.throws(() => {
       new lambda.Alias(stack, 'Alias2', {
-        aliasName: 'prod', version,
+        aliasName: 'prod',
+        version,
         additionalVersions: [{ version, weight: 0.5 }, { version, weight: 0.6 }],
       });
     });
@@ -426,6 +429,217 @@ export = {
       FunctionName: 'function-name',
       Qualifier: 'alias-name',
       MaximumRetryAttempts: 1,
+    }));
+
+    test.done();
+  },
+
+  'can enable AutoScaling on aliases'(test: Test): void {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version = fn.addVersion('1', undefined, 'testing');
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+    });
+
+    // WHEN
+    alias.addAutoScaling({ maxCapacity: 5 });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+      MinCapacity: 1,
+      MaxCapacity: 5,
+      ResourceId: objectLike({
+        'Fn::Join': arrayWith(arrayWith(
+          'function:',
+          objectLike({
+            'Fn::Select': arrayWith(
+              {
+                'Fn::Split': arrayWith(
+                  { Ref: 'Alias325C5727' }),
+              },
+            ),
+          }),
+          ':prod',
+        )),
+      }),
+    }));
+
+    test.done();
+  },
+
+  'can enable AutoScaling on aliases with Provisioned Concurrency set'(test: Test): void {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version = fn.addVersion('1', undefined, 'testing');
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+      provisionedConcurrentExecutions: 10,
+    });
+
+    // WHEN
+    alias.addAutoScaling({ maxCapacity: 5 });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+      MinCapacity: 1,
+      MaxCapacity: 5,
+      ResourceId: objectLike({
+        'Fn::Join': arrayWith(arrayWith(
+          'function:',
+          objectLike({
+            'Fn::Select': arrayWith(
+              {
+                'Fn::Split': arrayWith(
+                  { Ref: 'Alias325C5727' }),
+              },
+            ),
+          }),
+          ':prod',
+        )),
+      }),
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
+      ProvisionedConcurrencyConfig: {
+        ProvisionedConcurrentExecutions: 10,
+      },
+    }));
+    test.done();
+  },
+
+  'validation for utilizationTarget does not fail when using Tokens'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version = fn.addVersion('1', undefined, 'testing');
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+      provisionedConcurrentExecutions: 10,
+    });
+
+    // WHEN
+    const target = alias.addAutoScaling({ maxCapacity: 5 });
+
+    target.scaleOnUtilization({ utilizationTarget: Lazy.numberValue({ produce: () => 0.95 }) });
+
+    // THEN: no exception
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        PredefinedMetricSpecification: { PredefinedMetricType: 'LambdaProvisionedConcurrencyUtilization' },
+        TargetValue: 0.95,
+      },
+
+    }));
+
+    test.done();
+  },
+
+  'cannot enable AutoScaling twice on same property'(test: Test): void {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version = fn.addVersion('1', undefined, 'testing');
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+    });
+
+    // WHEN
+    alias.addAutoScaling({ maxCapacity: 5 });
+
+    // THEN
+    test.throws(() => alias.addAutoScaling({ maxCapacity: 8 }), /AutoScaling already enabled for this alias/);
+
+    test.done();
+  },
+
+  'error when specifying invalid utilization value when AutoScaling on utilization'(test: Test): void {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version = fn.addVersion('1', undefined, 'testing');
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+    });
+
+    // WHEN
+    const target = alias.addAutoScaling({ maxCapacity: 5 });
+
+    // THEN
+    test.throws(() => target.scaleOnUtilization({ utilizationTarget: 0.95 }), /Utilization Target should be between 0.1 and 0.9. Found 0.95/);
+    test.done();
+  },
+
+  'can autoscale on a schedule'(test: Test): void {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version = fn.addVersion('1', undefined, 'testing');
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+    });
+
+    // WHEN
+    const target = alias.addAutoScaling({ maxCapacity: 5 });
+    target.scaleOnSchedule('Scheduling', {
+      schedule: appscaling.Schedule.cron({}),
+      maxCapacity: 10,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+      ScheduledActions: [
+        {
+          ScalableTargetAction: { MaxCapacity: 10 },
+          Schedule: 'cron(* * * * ? *)',
+          ScheduledActionName: 'Scheduling',
+        },
+      ],
     }));
 
     test.done();

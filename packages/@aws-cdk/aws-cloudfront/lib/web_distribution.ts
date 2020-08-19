@@ -4,13 +4,9 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
-import { IDistribution, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy } from './distribution';
+import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
+import { GeoRestriction } from './geo-restriction';
 import { IOriginAccessIdentity } from './origin_access_identity';
-
-export enum HttpVersion {
-  HTTP1_1 = 'http1.1',
-  HTTP2 = 'http2'
-}
 
 /**
  * HTTP status code to failover to second origin
@@ -87,39 +83,6 @@ export interface AliasConfiguration {
    * @default - SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
    */
   readonly securityPolicy?: SecurityPolicyProtocol;
-}
-
-/**
- * The SSL method CloudFront will use for your distribution.
- *
- * Server Name Indication (SNI) - is an extension to the TLS computer networking protocol by which a client indicates
- *  which hostname it is attempting to connect to at the start of the handshaking process. This allows a server to present
- *  multiple certificates on the same IP address and TCP port number and hence allows multiple secure (HTTPS) websites
- * (or any other service over TLS) to be served by the same IP address without requiring all those sites to use the same certificate.
- *
- * CloudFront can use SNI to host multiple distributions on the same IP - which a large majority of clients will support.
- *
- * If your clients cannot support SNI however - CloudFront can use dedicated IPs for your distribution - but there is a prorated monthly charge for
- * using this feature. By default, we use SNI - but you can optionally enable dedicated IPs (VIP).
- *
- * See the CloudFront SSL for more details about pricing : https://aws.amazon.com/cloudfront/custom-ssl-domains/
- *
- */
-export enum SSLMethod {
-  SNI = 'sni-only',
-  VIP = 'vip'
-}
-
-/**
- * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
- * CloudFront serves your objects only to browsers or devices that support at least the SSL version that you specify.
- */
-export enum SecurityPolicyProtocol {
-  SSL_V3 = 'SSLv3',
-  TLS_V1 = 'TLSv1',
-  TLS_V1_2016 = 'TLSv1_2016',
-  TLS_V1_1_2016 = 'TLSv1.1_2016',
-  TLS_V1_2_2018 = 'TLSv1.2_2018'
 }
 
 /**
@@ -463,27 +426,6 @@ export interface LambdaFunctionAssociation {
   readonly lambdaFunction: lambda.IVersion;
 }
 
-export enum LambdaEdgeEventType {
-  /**
-   * The origin-request specifies the request to the
-   * origin location (e.g. S3)
-   */
-  ORIGIN_REQUEST = 'origin-request',
-  /**
-   * The origin-response specifies the response from the
-   * origin location (e.g. S3)
-   */
-  ORIGIN_RESPONSE = 'origin-response',
-  /**
-   * The viewer-request specifies the incoming request
-   */
-  VIEWER_REQUEST = 'viewer-request',
-  /**
-   * The viewer-response specifies the outgoing reponse
-   */
-  VIEWER_RESPONSE = 'viewer-response',
-}
-
 export interface ViewerCertificateOptions {
   /**
    * How CloudFront should serve HTTPS requests.
@@ -569,59 +511,6 @@ export class ViewerCertificate {
     public readonly aliases: string[] = []) { }
 }
 
-/**
- * Controls the countries in which your content is distributed.
- */
-export class GeoRestriction {
-
-  /**
-   * Whitelist specific countries which you want CloudFront to distribute your content.
-   *
-   * @param locations Two-letter, uppercase country code for a country
-   * that you want to whitelist. Include one element for each country.
-   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
-   */
-  public static whitelist(...locations: string[]) {
-    return new GeoRestriction('whitelist', GeoRestriction.validateLocations(locations));
-  }
-
-  /**
-   * Blacklist specific countries which you don't want CloudFront to distribute your content.
-   *
-   * @param locations Two-letter, uppercase country code for a country
-   * that you want to blacklist. Include one element for each country.
-   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
-   */
-  public static blacklist(...locations: string[]) {
-    return new GeoRestriction('blacklist', GeoRestriction.validateLocations(locations));
-  }
-
-  private static LOCATION_REGEX = /^[A-Z]{2}$/;
-
-  private static validateLocations(locations: string[]) {
-    if (locations.length === 0) {
-      throw new Error('Should provide at least 1 location');
-    }
-    locations.forEach(location => {
-      if (!GeoRestriction.LOCATION_REGEX.test(location)) {
-        // eslint-disable-next-line max-len
-        throw new Error(`Invalid location format for location: ${location}, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
-      }
-    });
-    return locations;
-  }
-
-  /**
-   * Creates an instance of GeoRestriction for internal use
-   *
-   * @param restrictionType Specifies the restriction type to impose (whitelist or blacklist)
-   * @param locations Two-letter, uppercase country code for a country
-   * that you want to whitelist/blacklist. Include one element for each country.
-   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
-   */
-  private constructor(readonly restrictionType: 'whitelist' | 'blacklist', readonly locations: string[]) {}
-}
-
 export interface CloudFrontWebDistributionProps {
 
   /**
@@ -700,7 +589,14 @@ export interface CloudFrontWebDistributionProps {
 
   /**
    * Unique identifier that specifies the AWS WAF web ACL to associate with this CloudFront distribution.
+   *
+   * To specify a web ACL created using the latest version of AWS WAF, use the ACL ARN, for example
+   * `arn:aws:wafv2:us-east-1:123456789012:global/webacl/ExampleWebACL/473e64fd-f30b-4765-81a0-62ad96dd167a`.
+   *
+   * To specify a web ACL created using AWS WAF Classic, use the ACL ID, for example `473e64fd-f30b-4765-81a0-62ad96dd167a`.
+   *
    * @see https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html
+   * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_CreateDistribution.html#API_CreateDistribution_RequestParameters.
    *
    * @default - No AWS Web Application Firewall web access control list (web ACL).
    */
@@ -918,7 +814,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
     let _viewerCertificate = props.viewerCertificate;
     if (props.aliasConfiguration) {
-      const {acmCertRef, securityPolicy, sslMethod, names: aliases} = props.aliasConfiguration;
+      const { acmCertRef, securityPolicy, sslMethod, names: aliases } = props.aliasConfiguration;
 
       _viewerCertificate = ViewerCertificate.fromAcmCertificate(
         certificatemanager.Certificate.fromCertificateArn(this, 'AliasConfigurationCert', acmCertRef),
@@ -927,10 +823,10 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     if (_viewerCertificate) {
-      const {props: viewerCertificate, aliases} = _viewerCertificate;
-      Object.assign(distributionConfig, {aliases, viewerCertificate});
+      const { props: viewerCertificate, aliases } = _viewerCertificate;
+      Object.assign(distributionConfig, { aliases, viewerCertificate });
 
-      const {minimumProtocolVersion, sslSupportMethod} = viewerCertificate;
+      const { minimumProtocolVersion, sslSupportMethod } = viewerCertificate;
 
       if (minimumProtocolVersion != null && sslSupportMethod != null) {
         const validProtocols = this.VALID_SSL_PROTOCOLS[sslSupportMethod as SSLMethod];
@@ -941,7 +837,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         }
       }
     } else {
-      distributionConfig = { ...distributionConfig,
+      distributionConfig = {
+        ...distributionConfig,
         viewerCertificate: { cloudFrontDefaultCertificate: true },
       };
     }
@@ -1006,8 +903,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       for (const a of input.lambdaFunctionAssociations) {
         if (a.lambdaFunction.role && a.lambdaFunction.role instanceof iam.Role && a.lambdaFunction.role.assumeRolePolicy) {
           a.lambdaFunction.role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
-            actions: [ 'sts:AssumeRole' ],
-            principals: [ new iam.ServicePrincipal('edgelambda.amazonaws.com') ],
+            actions: ['sts:AssumeRole'],
+            principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],
           }));
         }
       }

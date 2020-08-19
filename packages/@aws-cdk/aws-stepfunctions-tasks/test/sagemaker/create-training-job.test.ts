@@ -65,7 +65,7 @@ test('create basic training job', () => {
             S3DataSource: {
               S3DataType: 'S3Prefix',
               S3Uri: {
-                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region'}, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytrainpath']],
+                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytrainpath']],
               },
             },
           },
@@ -81,7 +81,7 @@ test('create basic training job', () => {
         InstanceType: 'ml.m4.xlarge',
         VolumeSizeInGB: 10,
       },
-      RoleArn: { 'Fn::GetAtt': [ 'TrainSagemakerSagemakerRole89E8C593', 'Arn' ] },
+      RoleArn: { 'Fn::GetAtt': ['TrainSagemakerSagemakerRole89E8C593', 'Arn'] },
       StoppingCondition: {
         MaxRuntimeInSeconds: 3600,
       },
@@ -211,7 +211,7 @@ test('create complex training job', () => {
     End: true,
     Parameters: {
       TrainingJobName: 'MyTrainJob',
-      RoleArn: { 'Fn::GetAtt': [ 'Role1ABCC5F0', 'Arn' ] },
+      RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
       AlgorithmSpecification: {
         TrainingInputMode: 'File',
         AlgorithmName: 'BlazingText',
@@ -232,7 +232,7 @@ test('create complex training job', () => {
             S3DataSource: {
               S3DataType: 'S3Prefix',
               S3Uri: {
-                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region'}, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytrainpath']],
+                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytrainpath']],
               },
             },
           },
@@ -246,7 +246,7 @@ test('create complex training job', () => {
             S3DataSource: {
               S3DataType: 'S3Prefix',
               S3Uri: {
-                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region'}, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytestpath']],
+                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytestpath']],
               },
             },
           },
@@ -256,13 +256,13 @@ test('create complex training job', () => {
         S3OutputPath: {
           'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']],
         },
-        KmsKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+        KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
       },
       ResourceConfig: {
         InstanceCount: 1,
         InstanceType: 'ml.p3.2xlarge',
         VolumeSizeInGB: 50,
-        VolumeKmsKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+        VolumeKmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
       },
       StoppingCondition: {
         MaxRuntimeInSeconds: 3600,
@@ -272,8 +272,8 @@ test('create complex training job', () => {
       ],
       VpcConfig: {
         SecurityGroupIds: [
-          { 'Fn::GetAtt': [ 'TrainSagemakerTrainJobSecurityGroup7C858EB9', 'GroupId' ] },
-          { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
+          { 'Fn::GetAtt': ['TrainSagemakerTrainJobSecurityGroup7C858EB9', 'GroupId'] },
+          { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
         ],
         Subnets: [
           { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
@@ -342,7 +342,7 @@ test('pass param to training job', () => {
     End: true,
     Parameters: {
       'TrainingJobName.$': '$.JobName',
-      'RoleArn': { 'Fn::GetAtt': [ 'Role1ABCC5F0', 'Arn' ] },
+      'RoleArn': { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
       'AlgorithmSpecification': {
         TrainingInputMode: 'File',
         AlgorithmName: 'BlazingText',

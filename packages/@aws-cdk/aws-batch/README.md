@@ -138,6 +138,36 @@ Below is an example:
 const computeEnv = batch.ComputeEnvironment.fromComputeEnvironmentArn(this, 'imported-compute-env', 'arn:aws:batch:us-east-1:555555555555:compute-environment/My-Compute-Env');
 ```
 
+### Change the baseline AMI of the compute resources
+
+Ocassionally, you will need to deviate from the default processing AMI.
+
+ECS Optimized Amazon Linux 2 example:
+
+```ts
+const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
+  computeResources: {
+    image: new ecs.EcsOptimizedAmi({
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    }),
+    vpc,
+  }
+});
+```
+
+Custom based AMI example:
+
+```ts
+const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
+  computeResources: {
+    image: ec2.MachineImage.genericLinux({
+      "[aws-region]": "[ami-ID]",
+    })
+    vpc,
+  }
+});
+```
+
 ## Job Queue
 
 Jobs are always submitted to a specific queue. This means that you have to create a queue before you can start submitting jobs. Each queue is mapped to at least one (and no more than three) compute environment. When the job is scheduled for execution, AWS Batch will select the compute environment based on ordinal priority and available capacity in each environment.

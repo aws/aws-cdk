@@ -34,7 +34,7 @@ export class UserPoolIdentityProviderAmazon extends UserPoolIdentityProviderBase
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderAmazonProps) {
     super(scope, id, props);
 
-    const scopes = props.scopes ?? [ 'profile' ];
+    const scopes = props.scopes ?? ['profile'];
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
       userPoolId: props.userPool.userPoolId,
