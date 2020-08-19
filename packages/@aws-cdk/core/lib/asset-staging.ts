@@ -263,14 +263,16 @@ export class AssetStaging extends Construct {
       throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
     }
 
-    // CUSTOM and bundled SOURCE hash types are a special case to preserve existing
-    // user asset hashes (where possible).
+    // When bundling a CUSTOM or SOURCE asset hash type, we want the hash to include
+    // the bundling configuration. We handle CUSTOM and bundled SOURCE hash types
+    // as a special case to preserve existing user asset hashes in all other cases.
     if (hashType == AssetHashType.CUSTOM || (hashType == AssetHashType.SOURCE && bundling)) {
       const hash = crypto.createHash('sha256');
 
       // if asset hash is provided by user, use it, otherwise fingerprint the source.
       hash.update(assetHash ?? FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions));
 
+      // If we're bundling an asset, include the bundling configuration in the hash
       if (bundling) {
         hash.update(JSON.stringify(bundling));
       }
