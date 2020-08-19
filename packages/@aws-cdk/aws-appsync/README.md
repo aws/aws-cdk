@@ -386,7 +386,6 @@ const type = new appsynce.ObjectType('Query', {
 });
 ```
 
-
 ### Intermediate Types
 
 Intermediate Types are defined by Graphql Types and Fields. They have a set of defined 
