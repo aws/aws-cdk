@@ -530,67 +530,27 @@ export class GraphQLApi extends GraphqlApiBase {
   }
 
   private validateAuthorizationProps(props: GraphQLApiProps) {
-    const defaultAuthorizationType =
-      props.authorizationConfig?.defaultAuthorization?.authorizationType ||
-      AuthorizationType.API_KEY;
+    const defaultMode = props.authorizationConfig?.defaultAuthorization ?? {
+      authorizationType: AuthorizationType.API_KEY,
+    };
+    const additionalModes = props.authorizationConfig?.additionalAuthorizationModes ?? [];
+    const allModes = [defaultMode, ...additionalModes];
 
-    let api_key_count = defaultAuthorizationType === AuthorizationType.API_KEY ? 1 : 0;
-    let iam_count = defaultAuthorizationType === AuthorizationType.IAM ? 1 : 0;
+    allModes.map((mode) => {
+      if(mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig){
+        throw new Error('Missing default OIDC Configuration');
+      }
+      if(mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig){
+        throw new Error('Missing default OIDC Configuration');
+      }
+    });
 
-    if (
-      defaultAuthorizationType === AuthorizationType.OIDC &&
-      !props.authorizationConfig?.defaultAuthorization?.openIdConnectConfig
-    ) {
-      throw new Error('Missing default OIDC Configuration');
+    if(allModes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1){
+      throw new Error('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
     }
 
-    if (
-      defaultAuthorizationType === AuthorizationType.USER_POOL &&
-      !props.authorizationConfig?.defaultAuthorization?.userPoolConfig
-    ) {
-      throw new Error('Missing default User Pool Configuration');
-    }
-
-    if (props.authorizationConfig?.additionalAuthorizationModes) {
-      props.authorizationConfig.additionalAuthorizationModes.forEach(
-        (authorizationMode) => {
-          if (authorizationMode.authorizationType === AuthorizationType.API_KEY) {
-            api_key_count++;
-          }
-          if(api_key_count > 1){
-            throw new Error(
-              "You can't duplicate API_KEY in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
-            );
-          }
-          if (authorizationMode.authorizationType === AuthorizationType.IAM) {
-            iam_count++;
-          }
-          if(iam_count > 1){
-            throw new Error(
-              "You can't duplicate IAM in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
-            );
-          }
-
-          if (
-            authorizationMode.authorizationType === AuthorizationType.OIDC &&
-            !authorizationMode.openIdConnectConfig
-          ) {
-            throw new Error(
-              'Missing OIDC Configuration inside an additional authorization mode',
-            );
-          }
-
-          if (
-            authorizationMode.authorizationType ===
-              AuthorizationType.USER_POOL &&
-            !authorizationMode.userPoolConfig
-          ) {
-            throw new Error(
-              'Missing User Pool Configuration inside an additional authorization mode',
-            );
-          }
-        },
-      );
+    if(allModes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1){
+      throw new Error('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
     }
   }
 

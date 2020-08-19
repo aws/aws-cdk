@@ -171,7 +171,7 @@ describe('AppSync Authorization Config', () => {
     };
 
     // THEN
-    expect(when).toThrowError('You can\'t duplicate API_KEY in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    expect(when).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 
   test('appsync fails when multiple API_KEY auth modes in additionalXxx', () => {
@@ -201,6 +201,6 @@ describe('AppSync Authorization Config', () => {
     };
 
     // THEN
-    expect(when).toThrowError('You can\'t duplicate API_KEY in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    expect(when).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 });
