@@ -53,12 +53,12 @@ export enum DependenciesLocation {
   NONE = 'none',
 
   /**
-   * Installs dependencies in the lambda function.
+   * Includes dependencies inside the lambda bundle.
    */
   INLINE = 'inline',
 
   /**
-   * Installs dependencies to a separate lambda layer.
+   * Bundles dependencies into a separate lambda layer.
    */
   LAYER = 'layer',
 }

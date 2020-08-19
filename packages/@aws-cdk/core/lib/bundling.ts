@@ -257,7 +257,7 @@ export interface DockerBuildOptions {
   /**
    * Name of the Dockerfile
    *
-   * @default - The Dockerfile immediately within the build context path
+   * @default 'Dockerfile' The Dockerfile immediately within the build context path
    */
   readonly file?: string;
 }
