@@ -62,7 +62,7 @@ export interface IClusterEngine extends IEngine {
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
   /** The log types that are available with this engine type */
-  readonly logTypes: string[];
+  readonly supportedLogTypes: string[];
 
   /**
    * Method called when the engine is used to create a new cluster.
@@ -84,7 +84,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
   public readonly parameterGroupFamily?: string;
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
-  public abstract readonly logTypes: string[];
+  public abstract readonly supportedLogTypes: string[];
 
   private readonly defaultPort?: number;
 
@@ -120,7 +120,7 @@ interface MysqlClusterEngineBaseProps {
 }
 
 abstract class MySqlClusterEngineBase extends ClusterEngineBase {
-  public readonly logTypes: string[] = ['error', 'general', 'slowquery', 'audit'];
+  public readonly supportedLogTypes: string[] = ['error', 'general', 'slowquery', 'audit'];
 
   constructor(props: MysqlClusterEngineBaseProps) {
     super({
@@ -414,7 +414,7 @@ export interface AuroraPostgresClusterEngineProps {
 }
 
 class AuroraPostgresClusterEngine extends ClusterEngineBase {
-  public readonly logTypes: string[] = ['postgresql'];
+  public readonly supportedLogTypes: string[] = ['postgresql'];
 
   constructor(version?: AuroraPostgresEngineVersion) {
     super({

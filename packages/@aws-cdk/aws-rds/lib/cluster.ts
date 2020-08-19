@@ -607,9 +607,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   private setLogRetention(props: DatabaseClusterProps) {
     if (props.cloudwatchLogsExports) {
-      const unsupportedLogNames = props.cloudwatchLogsExports.filter(logName => !props.engine.logTypes.includes(logName));
-      if (unsupportedLogNames.length > 0) {
-        throw new Error(`Unsupported logs for the current engine type: ${unsupportedLogNames.join(',')}`);
+      const unsupportedLogTypes = props.cloudwatchLogsExports.filter(logType => !props.engine.supportedLogTypes.includes(logType));
+      if (unsupportedLogTypes.length > 0) {
+        throw new Error(`Unsupported logs for the current engine type: ${unsupportedLogTypes.join(',')}`);
       }
 
       if (props.cloudwatchLogsRetention) {
