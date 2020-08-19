@@ -180,7 +180,7 @@ api.grantMutation(role, 'updateExample');
 api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```
 
-### Code-First Schema
+## Code-First Schema
 
 CDK offers the ability to generate your schema in a code-first approach. 
 A code-first approach offers a developer workflow with:
@@ -190,7 +190,7 @@ A code-first approach offers a developer workflow with:
 
 The code-first approach allows for **dynamic** schema generation. You can generate your schema based on variables and templates to reduce code duplication.
 
-#### Code-First Example
+### Code-First Example
 
 To showcase the code-first approach. Let's try to model the following schema segment.
 
@@ -309,7 +309,7 @@ create the base Object Type (i.e. Film) and from there we can generate its respe
 
 Check out a more in-depth example [here](https://github.com/BryanPan342/starwars-code-first).
 
-#### GraphQL Types
+### GraphQL Types
 
 One of the benefits of GraphQL is its strongly typed nature. We define the 
 types within an object, query, mutation, interface, etc. as **GraphQL Types**. 
@@ -325,9 +325,71 @@ More concretely, GraphQL Types are simply the types appended to variables.
 Referencing the object type `Demo` in the previous example, the GraphQL Types 
 is `String!` and is applied to both the names `id` and `version`.
 
-#### Intermediate Types
+### Field and Resolvable Fields
 
-Intermediate Types are abstractions above Scalar Types. They have a set of defined 
+While `GraphqlType` is a base implementation for GraphQL fields, we have abstractions
+on top of `GraphqlType` that provide finer grain support.
+
+#### Field
+
+`Field` extends `GraphqlType` and will allow you to define arguments. [**Interface Types**](#Interface-Types) are not resolvable and this class will allow you to define arguments,
+but not its resolvers.
+
+For example, if we want to create the following type:
+
+```gql
+type Node {
+  test(argument: string): String
+}
+```
+
+The CDK code required would be:
+
+```ts
+const field = new appsync.Field(appsync.GraphqlType.string(), {
+  args: {
+    argument: appsync.GraphqlType.string(),
+  },
+});
+const type = new appsynce.ObjectType('Node', {
+  definition: { test: field },
+});
+```
+
+#### Resolvable Fields
+
+`ResolvableField` extends `Field` and will allow you to define arguments and its resolvers.
+[**Object Types**](#Object-Types) can have fields that resolve and perform operations on
+your backend.
+
+For example, if we want to create the following type:
+
+```gql
+type Query {
+  get(argument: string): String
+}
+```
+
+The CDK code required would be:
+
+```ts
+const field = new appsync.Field(appsync.GraphqlType.string(), {
+  args: {
+    argument: appsync.GraphqlType.string(),
+  },
+  dataSource: api.addNoneDataSource('none'),
+  requestMappingTemplate: dummyRequest,
+  responseMappingTemplate: dummyResponse,
+});
+const type = new appsynce.ObjectType('Query', {
+  definition: { get: field },
+});
+```
+
+
+### Intermediate Types
+
+Intermediate Types are defined by Graphql Types and Fields. They have a set of defined 
 fields, where each field corresponds to another type in the system. Intermediate 
 Types will be the meat of your GraphQL Schema as they are the types defined by you.
 
@@ -335,7 +397,7 @@ Intermediate Types include:
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
 
-#### Interface Types
+### Interface Types
 
 **Interface Types** are abstract types that define the implementation of other
 intermediate types. They are useful for eliminating duplication and can be used
@@ -350,7 +412,7 @@ const node = new appsync.InterfaceType('Node', {
 });
 ```
 
-#### Object Types
+### Object Types
 
 **Object Types** are types that you declare. For example, in the [code-first example](#code-first-example)
 the `demo` variable is an **Object Type**. **Object Types** are defined by 
@@ -378,7 +440,7 @@ You can create Object Types in three ways:
 
     `scalar-types.ts` - a file for scalar type definitions
     ```ts
-    export const required_string = new appsync.GraphqlType.string({ isRequired: true });
+    export const required_string = appsync.GraphqlType.string({ isRequired: true });
     ```
 
     `object-types.ts` - a file for object type definitions
@@ -405,7 +467,7 @@ You can create Object Types in three ways:
         id: appsync.GraphqlType.string({ isRequired: true }),
       },
     });
-    const demo = new appsync.ObjectType.implementInterface('Demo', {
+    const demo = new appsync.ObjectType('Demo', {
       interfaceTypes: [ node ],
       defintion: {
         version: appsync.GraphqlType.string({ isRequired: true }),
@@ -428,4 +490,4 @@ You can create Object Types in three ways:
     });
     ```
     > This method provides easy use and is ideal for smaller projects.
-    
+

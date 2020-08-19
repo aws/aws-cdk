@@ -1,38 +1,6 @@
 import { Resolver } from './resolver';
-import { IField } from './schema-base';
+import { Directive, IField, IIntermediateType } from './schema-base';
 import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-field';
-
-/**
- * Directives for types
- *
- * i.e. @aws_iam or @aws_subscribe
- *
- * @experimental
- */
-export class Directive {
-  /**
-   * Add the @aws_iam directive
-   */
-  public static iam(): Directive{
-    return new Directive('@aws_iam');
-  }
-
-  /**
-   * Add a custom directive
-   *
-   * @param statement - the directive statement to append
-   */
-  public static custom(statement: string): Directive {
-    return new Directive(statement);
-  }
-
-  /**
-   * the directive statement
-   */
-  public readonly statement: string;
-
-  private constructor(statement: string) { this.statement = statement; }
-}
 
 /**
  * Properties for configuring an Intermediate Type
@@ -55,7 +23,7 @@ export interface IntermediateTypeProps {
  *
  * @experimental
  */
-export class InterfaceType {
+export class InterfaceType implements IIntermediateType {
   /**
    * the name of this type
    */
@@ -141,7 +109,7 @@ export interface ObjectTypeProps extends IntermediateTypeProps {
  *
  * @experimental
  */
-export class ObjectType extends InterfaceType {
+export class ObjectType extends InterfaceType implements IIntermediateType {
   /**
    * The Interface Types this Object Type implements
    *
@@ -157,7 +125,7 @@ export class ObjectType extends InterfaceType {
   /**
    * The resolvers linked to this data source
    */
-  public resolvers: Resolver[];
+  public resolvers?: Resolver[];
 
   public constructor(name: string, props: ObjectTypeProps) {
     const options = {
@@ -230,6 +198,7 @@ export class ObjectType extends InterfaceType {
    */
   protected generateResolver(fieldName: string, options?: ResolvableFieldOptions): void {
     if (options?.dataSource){
+      if(!this.resolvers){ this.resolvers = []; }
       this.resolvers.push(options.dataSource.createResolver({
         typeName: this.name,
         fieldName: fieldName,

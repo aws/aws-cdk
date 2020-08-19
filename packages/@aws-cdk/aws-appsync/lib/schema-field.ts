@@ -1,7 +1,6 @@
 import { BaseDataSource } from './data-source';
 import { MappingTemplate } from './mapping-template';
-import { Type, IField } from './schema-base';
-import { InterfaceType } from './schema-intermediate';
+import { Type, IField, IIntermediateType } from './schema-base';
 
 /**
  * Base options for GraphQL Types
@@ -54,7 +53,7 @@ export interface GraphqlTypeOptions extends BaseTypeOptions {
    * the intermediate type linked to this attribute
    * @default - no intermediate type
    */
-  readonly intermediateType?: InterfaceType;
+  readonly intermediateType?: IIntermediateType;
 }
 
 /**
@@ -291,7 +290,7 @@ export class GraphqlType implements IField {
    *
    * @default - no intermediate type
    */
-  public readonly intermediateType?: InterfaceType;
+  public readonly intermediateType?: IIntermediateType;
 
   protected constructor(type: Type, options?: GraphqlTypeOptions) {
     this.type = type;
