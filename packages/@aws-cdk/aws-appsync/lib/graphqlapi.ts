@@ -303,7 +303,7 @@ export class IamResource {
 
   private arns: string[];
 
-  private constructor(arns: string[]){
+  private constructor(arns: string[]) {
     this.arns = arns;
   }
 
@@ -360,7 +360,7 @@ export class GraphQLApi extends GraphqlApiBase {
     class Import extends GraphqlApiBase {
       public readonly apiId = attrs.graphqlApiId;
       public readonly arn = arn;
-      constructor (s: Construct, i: string){
+      constructor (s: Construct, i: string) {
         super(s, i);
       }
     }
