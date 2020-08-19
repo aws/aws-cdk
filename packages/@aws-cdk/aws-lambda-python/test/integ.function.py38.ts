@@ -15,6 +15,7 @@ class TestStack extends Stack {
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler'),
       runtime: Runtime.PYTHON_3_8,
+      dependenciesLocation: lambda.DependenciesLocation.INLINE,
     });
 
     new CfnOutput(this, 'FunctionArn', {

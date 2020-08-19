@@ -13,6 +13,7 @@ class TestStack extends Stack {
 
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler-pipenv'),
+      dependenciesLocation: lambda.DependenciesLocation.INLINE,
     });
 
     new CfnOutput(this, 'FunctionName', {

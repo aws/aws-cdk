@@ -51,12 +51,12 @@ according to the `runtime`.
 **Lambda Layer Support**
 
 If the handler uses a supported dependency management scheme, such as a `requirements.txt` or `Pipfile`,
-this construct can bundle the dependencies into a separate lambda layer. To activate this feature, set
-the `dependenciesLocation` construct prop to `lambda.DependenciesLocation.LAYER`.
+this construct will bundle the dependencies into a separate lambda layer by default. To bundle the dependencies
+inline with the lambda bundle, set the `dependenciesLocation` construct prop to `lambda.DependenciesLocation.INLINE`.
 
 ```ts
 new lambda.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function', // required
-  dependenciesLocation: lambda.DependenciesLocation.LAYER // installs dependencies to a lambda layer
+  dependenciesLocation: lambda.DependenciesLocation.INLINE // bundle dependencies inline with the lambda bundle
 });
 ```

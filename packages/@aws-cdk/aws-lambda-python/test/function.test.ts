@@ -12,6 +12,7 @@ jest.mock('../lib/bundling', () => {
       },
       bindToResource: () => { return; },
     }),
+    hasDependencies: jest.fn().mockReturnValue(false),
   };
 });
 

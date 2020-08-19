@@ -38,7 +38,7 @@ export interface PythonFunctionProps extends lambda.FunctionOptions {
   /**
    * The location to install dependencies.
    *
-   * @default DependenciesLocation.INLINE
+   * @default DependenciesLocation.LAYER
    */
   readonly dependenciesLocation?: DependenciesLocation;
 }
@@ -86,7 +86,7 @@ export class PythonFunction extends lambda.Function {
 
     const handler = props.handler ?? 'handler';
     const runtime = props.runtime ?? lambda.Runtime.PYTHON_3_7;
-    const dependenciesLocation = props.dependenciesLocation ?? DependenciesLocation.INLINE;
+    const dependenciesLocation = props.dependenciesLocation ?? DependenciesLocation.LAYER;
 
     super(scope, id, {
       ...props,
