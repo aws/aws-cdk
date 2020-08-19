@@ -105,7 +105,7 @@ export class AssetStaging extends Construct {
 
       this.bundleDir = this.bundle(props.bundling, outdir, sourceHash);
       this.assetHash = sourceHash ?? this.calculateHash(hashType, props.assetHash, props.bundling);
-      this.relativePath = this.getAssetRelativePath(this.assetHash);
+      this.relativePath = renderAssetFilename(this.assetHash);
       this.stagedPath = this.relativePath;
     } else {
       this.assetHash = this.calculateHash(hashType, props.assetHash);
@@ -114,7 +114,7 @@ export class AssetStaging extends Construct {
       if (stagingDisabled) {
         this.stagedPath = this.sourcePath;
       } else {
-        this.relativePath = this.getAssetRelativePath(this.assetHash, path.extname(this.sourcePath));
+        this.relativePath = renderAssetFilename(this.assetHash, path.extname(this.sourcePath));
         this.stagedPath = this.relativePath;
       }
     }
@@ -164,10 +164,6 @@ export class AssetStaging extends Construct {
     }
   }
 
-  private getAssetRelativePath(assetHash: string, extension = '') {
-    return `asset.${assetHash}${extension}`;
-  }
-
   /**
    * Bundles an asset and provides the emitted asset's directory in return.
    *
@@ -184,7 +180,7 @@ export class AssetStaging extends Construct {
     if (sourceHash) {
       // When an asset hash is known in advance of bundling, the bundler outputs
       // directly to the assembly output directory.
-      bundleDir = path.resolve(path.join(outdir, this.getAssetRelativePath(sourceHash)));
+      bundleDir = path.resolve(path.join(outdir, renderAssetFilename(sourceHash)));
 
       if (fs.existsSync(bundleDir)) {
         // Pre-existing bundle directory. The bundle has already been generated
@@ -313,4 +309,8 @@ export class AssetStaging extends Construct {
       .update(assetHash)
       .digest('hex');
   }
+}
+
+function renderAssetFilename(assetHash: string, extension = '') {
+  return `asset.${assetHash}${extension}`;
 }
