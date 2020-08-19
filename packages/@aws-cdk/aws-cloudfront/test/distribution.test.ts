@@ -523,18 +523,20 @@ describe('with Lambda@Edge functions', () => {
     });
   });
 
-  test('fails when attempting to add the $LATEST function version as an edge Lambda to the default behavior', () => {
-    expect(() => new Distribution(stack, 'MyDist', {
-      defaultBehavior: {
-        origin,
-        edgeLambdas: [
-          {
-            functionVersion: lambdaFunction.latestVersion,
-            eventType: LambdaEdgeEventType.ORIGIN_RESPONSE,
-          },
-        ],
-      },
-    })).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
+  test('fails creation when attempting to add the $LATEST function version as an edge Lambda to the default behavior', () => {
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: {
+          origin,
+          edgeLambdas: [
+            {
+              functionVersion: lambdaFunction.latestVersion,
+              eventType: LambdaEdgeEventType.ORIGIN_RESPONSE,
+            },
+          ],
+        },
+      });
+    }).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
   });
 
   test('with removable env vars', () => {
