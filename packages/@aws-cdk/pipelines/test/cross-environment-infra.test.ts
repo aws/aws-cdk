@@ -35,7 +35,11 @@ test('in a cross-account/cross-region setup, artifact bucket can be read by depl
         Action: arrayWith('s3:GetObject*', 's3:GetBucket*', 's3:List*'),
         Principal: {
           AWS: {
-            'Fn::Sub': stringLike('*-deploy-role-*'),
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              stringLike('*-deploy-role-*'),
+            ]],
           },
         },
       })),
@@ -56,7 +60,11 @@ test('in a cross-account/same-region setup, artifact bucket can be read by deplo
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
         Principal: {
           AWS: {
-            'Fn::Sub': stringLike('*-deploy-role-*'),
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              stringLike('*-deploy-role-*'),
+            ]],
           },
         },
       })),

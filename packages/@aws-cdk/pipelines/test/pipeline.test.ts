@@ -51,15 +51,48 @@ test('action has right settings for same-env deployment', () => {
       Actions: [
         objectLike({
           Name: 'Stack.Prepare',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::',
+              { Ref: 'AWS::AccountId' },
+              ':role/cdk-hnb659fds-deploy-role-',
+              { Ref: 'AWS::AccountId' },
+              '-',
+              { Ref: 'AWS::Region' },
+            ]],
+          },
           Configuration: objectLike({
             StackName: 'Same-Stack',
-            RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}' },
+            RoleArn: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::',
+                { Ref: 'AWS::AccountId' },
+                ':role/cdk-hnb659fds-cfn-exec-role-',
+                { Ref: 'AWS::AccountId' },
+                '-',
+                { Ref: 'AWS::Region' },
+              ]],
+            },
           }),
         }),
         objectLike({
           Name: 'Stack.Deploy',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::',
+              { Ref: 'AWS::AccountId' },
+              ':role/cdk-hnb659fds-deploy-role-',
+              { Ref: 'AWS::AccountId' },
+              '-',
+              { Ref: 'AWS::Region' },
+            ]],
+          },
           Configuration: objectLike({
             StackName: 'Same-Stack',
           }),
@@ -80,15 +113,36 @@ test('action has right settings for cross-account deployment', () => {
       Actions: [
         objectLike({
           Name: 'Stack.Prepare',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::you:role/cdk-hnb659fds-deploy-role-you-${AWS::Region}' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::you:role/cdk-hnb659fds-deploy-role-you-',
+              { Ref: 'AWS::Region' },
+            ]],
+          },
           Configuration: objectLike({
             StackName: 'CrossAccount-Stack',
-            RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::you:role/cdk-hnb659fds-cfn-exec-role-you-${AWS::Region}' },
+            RoleArn: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::you:role/cdk-hnb659fds-cfn-exec-role-you-',
+                { Ref: 'AWS::Region' },
+              ]],
+            },
           }),
         }),
         objectLike({
           Name: 'Stack.Deploy',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::you:role/cdk-hnb659fds-deploy-role-you-${AWS::Region}' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::you:role/cdk-hnb659fds-deploy-role-you-',
+              { Ref: 'AWS::Region' },
+            ]],
+          },
           Configuration: objectLike({
             StackName: 'CrossAccount-Stack',
           }),
@@ -109,16 +163,46 @@ test('action has right settings for cross-region deployment', () => {
       Actions: [
         objectLike({
           Name: 'Stack.Prepare',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-elsewhere' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::',
+              { Ref: 'AWS::AccountId' },
+              ':role/cdk-hnb659fds-deploy-role-',
+              { Ref: 'AWS::AccountId' },
+              '-elsewhere',
+            ]],
+          },
           Region: 'elsewhere',
           Configuration: objectLike({
             StackName: 'CrossRegion-Stack',
-            RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-elsewhere' },
+            RoleArn: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::',
+                { Ref: 'AWS::AccountId' },
+                ':role/cdk-hnb659fds-cfn-exec-role-',
+                { Ref: 'AWS::AccountId' },
+                '-elsewhere',
+              ]],
+            },
           }),
         }),
         objectLike({
           Name: 'Stack.Deploy',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-elsewhere' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::',
+              { Ref: 'AWS::AccountId' },
+              ':role/cdk-hnb659fds-deploy-role-',
+              { Ref: 'AWS::AccountId' },
+              '-elsewhere',
+            ]],
+          },
           Region: 'elsewhere',
           Configuration: objectLike({
             StackName: 'CrossRegion-Stack',
@@ -140,16 +224,34 @@ test('action has right settings for cross-account/cross-region deployment', () =
       Actions: [
         objectLike({
           Name: 'Stack.Prepare',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::you:role/cdk-hnb659fds-deploy-role-you-elsewhere' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::you:role/cdk-hnb659fds-deploy-role-you-elsewhere',
+            ]],
+          },
           Region: 'elsewhere',
           Configuration: objectLike({
             StackName: 'CrossBoth-Stack',
-            RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::you:role/cdk-hnb659fds-cfn-exec-role-you-elsewhere' },
+            RoleArn: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::you:role/cdk-hnb659fds-cfn-exec-role-you-elsewhere',
+              ]],
+            },
           }),
         }),
         objectLike({
           Name: 'Stack.Deploy',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::you:role/cdk-hnb659fds-deploy-role-you-elsewhere' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::you:role/cdk-hnb659fds-deploy-role-you-elsewhere',
+            ]],
+          },
           Region: 'elsewhere',
           Configuration: objectLike({
             StackName: 'CrossBoth-Stack',

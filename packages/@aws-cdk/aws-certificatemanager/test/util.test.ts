@@ -99,7 +99,7 @@ describe('getCertificateRegion', () => {
       domainName: 'www.example.com',
     });
 
-    expect(getCertificateRegion(certificate)).toEqual('${Token[AWS::Region.4]}');
+    expect(getCertificateRegion(certificate)).toEqual('${Token[AWS.Region.4]}');
   });
 
 });
