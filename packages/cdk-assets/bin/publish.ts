@@ -67,6 +67,8 @@ class DefaultAwsClient implements IAws {
   constructor(profile?: string) {
     // Force AWS SDK to look in ~/.aws/credentials and potentially use the configured profile.
     process.env.AWS_SDK_LOAD_CONFIG = '1';
+    process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
+    process.env.AWS_NODEJS_CONNECTION_REUSE_ENABLED = '1';
     if (profile) {
       process.env.AWS_PROFILE = profile;
     }
