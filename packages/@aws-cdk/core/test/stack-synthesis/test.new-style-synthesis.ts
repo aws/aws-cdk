@@ -35,7 +35,10 @@ export = {
 
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack');
-    test.equals(stackArtifact.stackTemplateAssetObjectUrl, 's3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4bdae6e3b1b15f08c889d6c9133f24731ee14827a9a9ab9b6b6a9b42b6d34910');
+
+    const templateHash = '2446c819ce1f76521e81e812557016ceb08b2b3cf8b8b0efcface67cfca63543';
+
+    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateHash}`);
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -49,11 +52,31 @@ export = {
       destinations: {
         'current_account-current_region': {
           bucketName: 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
-          objectKey: '4bdae6e3b1b15f08c889d6c9133f24731ee14827a9a9ab9b6b6a9b42b6d34910',
+          objectKey: templateHash,
           assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}',
         },
       },
     });
+
+    test.done();
+  },
+
+  'version check is added to template'(test: Test) {
+    // GIVEN
+    new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // THEN
+    const template = app.synth().getStackByName('Stack').template;
+    test.deepEqual(template?.Parameters?.BootstrapVersion?.Type, 'AWS::SSM::Parameter::Value<String>');
+    test.deepEqual(template?.Parameters?.BootstrapVersion?.Default, '/CdkBootstrap/hnb659fds/Version');
+
+    const assertions = template?.Rules?.CheckBootstrapVersion?.Assertions ?? [];
+    test.deepEqual(assertions.length, 1);
+    test.deepEqual(assertions[0].Assert, { 'Fn::Not': [
+      { 'Fn::Contains': [ [ '1', '2', '3' ], { Ref: 'BootstrapVersion' } ] },
+    ]});
 
     test.done();
   },
