@@ -94,7 +94,7 @@ export class AssetStaging extends Construct {
 
     // Determine the hash type based on the props as props.assetHashType is
     // optional from a caller perspective.
-    const hashType = this.determineHashType(props.assetHashType, props.assetHash);
+    const hashType = determineHashType(props.assetHashType, props.assetHash);
 
     if (props.bundling) {
       // Determine the source hash in advance of bundling if the asset hash type
@@ -258,25 +258,6 @@ export class AssetStaging extends Construct {
     return bundleDir;
   }
 
-  /**
-   * Determines the hash type from user-given prop values.
-   *
-   * @param assetHashType Asset hash type construct prop
-   * @param assetHash Asset hash given in the construct props
-   */
-  private determineHashType(assetHashType?: AssetHashType, assetHash?: string) {
-    if (assetHash) {
-      if (assetHashType && assetHashType !== AssetHashType.CUSTOM) {
-        throw new Error(`Cannot specify \`${assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
-      }
-      return AssetHashType.CUSTOM;
-    } else if (assetHashType) {
-      return assetHashType;
-    } else {
-      return AssetHashType.SOURCE;
-    }
-  }
-
   private calculateHash(hashType: AssetHashType, assetHash?: string, bundling?: BundlingOptions): string {
     switch (hashType) {
       case AssetHashType.SOURCE:
@@ -313,4 +294,23 @@ export class AssetStaging extends Construct {
 
 function renderAssetFilename(assetHash: string, extension = '') {
   return `asset.${assetHash}${extension}`;
+}
+
+/**
+ * Determines the hash type from user-given prop values.
+ *
+ * @param assetHashType Asset hash type construct prop
+ * @param assetHash Asset hash given in the construct props
+ */
+function determineHashType(assetHashType?: AssetHashType, assetHash?: string) {
+  if (assetHash) {
+    if (assetHashType && assetHashType !== AssetHashType.CUSTOM) {
+      throw new Error(`Cannot specify \`${assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
+    }
+    return AssetHashType.CUSTOM;
+  } else if (assetHashType) {
+    return assetHashType;
+  } else {
+    return AssetHashType.SOURCE;
+  }
 }
