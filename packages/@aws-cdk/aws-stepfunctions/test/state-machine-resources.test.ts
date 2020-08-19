@@ -104,16 +104,19 @@ describe('State Machine Resources', () => {
     const taskState = task.toStateJson();
 
     // THEN
-    expect(taskState).toStrictEqual({ End: true,
+    expect(taskState).toStrictEqual({
+      End: true,
       Retry: undefined,
       Catch: undefined,
       InputPath: '$',
       Parameters:
-             { 'input.$': '$',
+             {
+               'input.$': '$',
                'stringArgument': 'inital-task',
                'numberArgument': 123,
                'booleanArgument': true,
-               'arrayArgument': [ 'a', 'b', 'c' ] },
+               'arrayArgument': ['a', 'b', 'c'],
+             },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -147,13 +150,16 @@ describe('State Machine Resources', () => {
     const taskState = task.toStateJson();
 
     // THEN
-    expect(taskState).toStrictEqual({ End: true,
+    expect(taskState).toStrictEqual({
+      End: true,
       Retry: undefined,
       Catch: undefined,
       InputPath: '$',
       Parameters:
-             { a: 'aa',
-               b: 'bb' },
+             {
+               a: 'aa',
+               b: 'bb',
+             },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -281,7 +287,8 @@ describe('State Machine Resources', () => {
             Resource: '*',
           },
         ],
-      }},
+      },
+    },
     );
 
   }),
@@ -519,7 +526,8 @@ describe('State Machine Resources', () => {
             Resource: '*',
           },
         ],
-      }},
+      },
+    },
     );
   }),
 
@@ -598,15 +606,18 @@ describe('State Machine Resources', () => {
     const taskState = task.toStateJson();
 
     // THEN
-    expect(taskState).toStrictEqual({ End: true,
+    expect(taskState).toStrictEqual({
+      End: true,
       InputPath: '$',
       OutputPath: '$.state',
       Parameters:
-             { 'input.$': '$',
+             {
+               'input.$': '$',
                'stringArgument': 'inital-task',
                'numberArgument': 123,
                'booleanArgument': true,
-               'arrayArgument': [ 'a', 'b', 'c' ] },
+               'arrayArgument': ['a', 'b', 'c'],
+             },
       Type: 'Pass',
       Comment: undefined,
       Result: undefined,
@@ -627,9 +638,10 @@ describe('State Machine Resources', () => {
     const taskState = task.toStateJson();
 
     // THEN
-    expect(taskState).toEqual({ End: true,
+    expect(taskState).toEqual({
+      End: true,
       Parameters:
-      { 'input.$': '$.myField'},
+      { 'input.$': '$.myField' },
       Type: 'Pass',
     });
   }),

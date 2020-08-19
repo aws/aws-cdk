@@ -181,7 +181,8 @@ export = {
     // WHEN: Individual weight too high
     test.throws(() => {
       new lambda.Alias(stack, 'Alias1', {
-        aliasName: 'prod', version,
+        aliasName: 'prod',
+        version,
         additionalVersions: [{ version, weight: 5 }],
       });
     });
@@ -189,7 +190,8 @@ export = {
     // WHEN: Sum too high
     test.throws(() => {
       new lambda.Alias(stack, 'Alias2', {
-        aliasName: 'prod', version,
+        aliasName: 'prod',
+        version,
         additionalVersions: [{ version, weight: 0.5 }, { version, weight: 0.6 }],
       });
     });
@@ -449,7 +451,7 @@ export = {
     });
 
     // WHEN
-    alias.addAutoScaling({ maxCapacity: 5});
+    alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
@@ -460,8 +462,9 @@ export = {
           'function:',
           objectLike({
             'Fn::Select': arrayWith(
-              {'Fn::Split': arrayWith(
-                {Ref: 'Alias325C5727' }),
+              {
+                'Fn::Split': arrayWith(
+                  { Ref: 'Alias325C5727' }),
               },
             ),
           }),
@@ -491,7 +494,7 @@ export = {
     });
 
     // WHEN
-    alias.addAutoScaling({ maxCapacity: 5});
+    alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
@@ -502,8 +505,9 @@ export = {
           'function:',
           objectLike({
             'Fn::Select': arrayWith(
-              {'Fn::Split': arrayWith(
-                {Ref: 'Alias325C5727' }),
+              {
+                'Fn::Split': arrayWith(
+                  { Ref: 'Alias325C5727' }),
               },
             ),
           }),
@@ -540,7 +544,7 @@ export = {
     // WHEN
     const target = alias.addAutoScaling({ maxCapacity: 5 });
 
-    target.scaleOnUtilization({utilizationTarget: Lazy.numberValue({ produce: () => 0.95 })});
+    target.scaleOnUtilization({ utilizationTarget: Lazy.numberValue({ produce: () => 0.95 }) });
 
     // THEN: no exception
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
@@ -600,7 +604,7 @@ export = {
     const target = alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    test.throws(() => target.scaleOnUtilization({utilizationTarget: 0.95}), /Utilization Target should be between 0.1 and 0.9. Found 0.95/);
+    test.throws(() => target.scaleOnUtilization({ utilizationTarget: 0.95 }), /Utilization Target should be between 0.1 and 0.9. Found 0.95/);
     test.done();
   },
 
@@ -621,7 +625,7 @@ export = {
     });
 
     // WHEN
-    const target = alias.addAutoScaling({ maxCapacity: 5});
+    const target = alias.addAutoScaling({ maxCapacity: 5 });
     target.scaleOnSchedule('Scheduling', {
       schedule: appscaling.Schedule.cron({}),
       maxCapacity: 10,

@@ -20,18 +20,21 @@ beforeEach(() => {
   protectedTermination = false;
 
   cfnMocks = {
+    describeStackEvents: jest.fn().mockReturnValue({}),
     describeStacks: jest.fn()
       // First two calls, no stacks exist (first is for version checking, second is in deploy-stack.ts)
       .mockImplementationOnce(() => ({ Stacks: [] }))
       .mockImplementationOnce(() => ({ Stacks: [] }))
       // Second call, stack has been created
-      .mockImplementationOnce(() => ({ Stacks: [
-        {
-          StackStatus: 'CREATE_COMPLETE',
-          StackStatusReason: 'It is magic',
-          EnableTerminationProtection: false,
-        },
-      ] })),
+      .mockImplementationOnce(() => ({
+        Stacks: [
+          {
+            StackStatus: 'CREATE_COMPLETE',
+            StackStatusReason: 'It is magic',
+            EnableTerminationProtection: false,
+          },
+        ],
+      })),
     createChangeSet: jest.fn((info: CreateChangeSetInput) => {
       changeSetTemplate = fromYAML(info.TemplateBody as string);
       return {};
@@ -174,34 +177,40 @@ test('even if the bootstrap stack is in a rollback state, can still retry bootst
     .mockReset()
     // First two calls, the stack exists with a 'rollback complete' status
     // (first is for version checking, second is in deploy-stack.ts)
-    .mockImplementationOnce(() => ({ Stacks: [
-      {
-        StackStatus: 'UPDATE_ROLLBACK_COMPLETE',
-        StackStatusReason: 'It is magic',
-        Outputs: [
-          { OutputKey: 'BucketName', OutputValue: 'bucket' },
-          { OutputKey: 'BucketDomainName', OutputValue: 'aws.com' },
-        ],
-      },
-    ] }))
-    .mockImplementationOnce(() => ({ Stacks: [
-      {
-        StackStatus: 'UPDATE_ROLLBACK_COMPLETE',
-        StackStatusReason: 'It is magic',
-        Outputs: [
-          { OutputKey: 'BucketName', OutputValue: 'bucket' },
-          { OutputKey: 'BucketDomainName', OutputValue: 'aws.com' },
-        ],
-      },
-    ] }))
+    .mockImplementationOnce(() => ({
+      Stacks: [
+        {
+          StackStatus: 'UPDATE_ROLLBACK_COMPLETE',
+          StackStatusReason: 'It is magic',
+          Outputs: [
+            { OutputKey: 'BucketName', OutputValue: 'bucket' },
+            { OutputKey: 'BucketDomainName', OutputValue: 'aws.com' },
+          ],
+        },
+      ],
+    }))
+    .mockImplementationOnce(() => ({
+      Stacks: [
+        {
+          StackStatus: 'UPDATE_ROLLBACK_COMPLETE',
+          StackStatusReason: 'It is magic',
+          Outputs: [
+            { OutputKey: 'BucketName', OutputValue: 'bucket' },
+            { OutputKey: 'BucketDomainName', OutputValue: 'aws.com' },
+          ],
+        },
+      ],
+    }))
     // Third call, stack has been created
-    .mockImplementationOnce(() => ({ Stacks: [
-      {
-        StackStatus: 'CREATE_COMPLETE',
-        StackStatusReason: 'It is magic',
-        EnableTerminationProtection: false,
-      },
-    ]}));
+    .mockImplementationOnce(() => ({
+      Stacks: [
+        {
+          StackStatus: 'CREATE_COMPLETE',
+          StackStatusReason: 'It is magic',
+          EnableTerminationProtection: false,
+        },
+      ],
+    }));
 
   // WHEN
   const ret = await bootstrapEnvironment(env, sdk, { toolkitStackName: 'mockStack' });
@@ -220,34 +229,40 @@ test('even if the bootstrap stack failed to create, can still retry bootstrappin
     .mockReset()
     // First two calls, the stack exists with a 'rollback complete' status
     // (first is for version checking, second is in deploy-stack.ts)
-    .mockImplementationOnce(() => ({ Stacks: [
-      {
-        StackStatus: 'ROLLBACK_COMPLETE',
-        StackStatusReason: 'It is magic',
-        Outputs: [
-          { OutputKey: 'BucketName', OutputValue: 'bucket' },
-        ],
-      } as AWS.CloudFormation.Stack,
-    ] }))
-    .mockImplementationOnce(() => ({ Stacks: [
-      {
-        StackStatus: 'ROLLBACK_COMPLETE',
-        StackStatusReason: 'It is magic',
-        Outputs: [
-          { OutputKey: 'BucketName', OutputValue: 'bucket' },
-        ],
-      },
-    ] }))
+    .mockImplementationOnce(() => ({
+      Stacks: [
+        {
+          StackStatus: 'ROLLBACK_COMPLETE',
+          StackStatusReason: 'It is magic',
+          Outputs: [
+            { OutputKey: 'BucketName', OutputValue: 'bucket' },
+          ],
+        } as AWS.CloudFormation.Stack,
+      ],
+    }))
+    .mockImplementationOnce(() => ({
+      Stacks: [
+        {
+          StackStatus: 'ROLLBACK_COMPLETE',
+          StackStatusReason: 'It is magic',
+          Outputs: [
+            { OutputKey: 'BucketName', OutputValue: 'bucket' },
+          ],
+        },
+      ],
+    }))
     // Third call, we just did a delete and want to see it gone
     .mockImplementationOnce(() => ({ Stacks: [] }))
     // Fourth call, stack has been created
-    .mockImplementationOnce(() => ({ Stacks: [
-      {
-        StackStatus: 'CREATE_COMPLETE',
-        StackStatusReason: 'It is magic',
-        EnableTerminationProtection: false,
-      },
-    ]}));
+    .mockImplementationOnce(() => ({
+      Stacks: [
+        {
+          StackStatus: 'CREATE_COMPLETE',
+          StackStatusReason: 'It is magic',
+          EnableTerminationProtection: false,
+        },
+      ],
+    }));
 
   // WHEN
   const ret = await bootstrapEnvironment(env, sdk, { toolkitStackName: 'mockStack' });

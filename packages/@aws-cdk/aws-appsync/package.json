@@ -96,7 +96,9 @@
     "exclude": [
       "no-unused-type:@aws-cdk/aws-appsync.ApiKeyConfig",
       "no-unused-type:@aws-cdk/aws-appsync.UserPoolConfig",
-      "no-unused-type:@aws-cdk/aws-appsync.UserPoolDefaultAction"
+      "no-unused-type:@aws-cdk/aws-appsync.UserPoolDefaultAction",
+      "props-physical-name:@aws-cdk/aws-appsync.GraphQLApiProps",
+      "from-method:@aws-cdk/aws-appsync.GraphQLApi"
     ]
   },
   "stability": "experimental",

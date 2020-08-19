@@ -30,7 +30,7 @@ describe('automatic cross-stack references', () => {
         User00B015A1: {
           Type: 'AWS::IAM::User',
           Properties: {
-            Groups: [ { 'Fn::ImportValue': 'stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B' } ],
+            Groups: [{ 'Fn::ImportValue': 'stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B' }],
           },
         },
       },

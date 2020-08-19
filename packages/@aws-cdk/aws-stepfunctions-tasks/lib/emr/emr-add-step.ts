@@ -102,7 +102,7 @@ export interface EmrAddStepProps extends sfn.TaskStateBaseProps {
  * @experimental
  */
 export class EmrAddStep extends sfn.TaskStateBase {
-  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] =  [
+  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
   ];
