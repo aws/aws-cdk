@@ -613,13 +613,20 @@ export class DatabaseCluster extends DatabaseClusterBase {
   }
 
   private setLogRetention(props: DatabaseClusterProps) {
-    if (props.cloudwatchLogsExports && props.cloudwatchLogsRetention) {
-      for (const log of props.cloudwatchLogsExports) {
-        new lambda.LogRetention(this, `LogRetention${log}`, {
-          logGroupName: `/aws/rds/cluster/${this.clusterIdentifier}/${log}`,
-          retention: props.cloudwatchLogsRetention,
-          role: props.cloudwatchLogsRetentionRole,
-        });
+    if (props.cloudwatchLogsExports) {
+      const unsupportedLogTypes = props.cloudwatchLogsExports.filter(logType => !props.engine.supportedLogTypes.includes(logType));
+      if (unsupportedLogTypes.length > 0) {
+        throw new Error(`Unsupported logs for the current engine type: ${unsupportedLogTypes.join(',')}`);
+      }
+
+      if (props.cloudwatchLogsRetention) {
+        for (const log of props.cloudwatchLogsExports) {
+          new lambda.LogRetention(this, `LogRetention${log}`, {
+            logGroupName: `/aws/rds/cluster/${this.clusterIdentifier}/${log}`,
+            retention: props.cloudwatchLogsRetention,
+            role: props.cloudwatchLogsRetentionRole,
+          });
+        }
       }
     }
   }
