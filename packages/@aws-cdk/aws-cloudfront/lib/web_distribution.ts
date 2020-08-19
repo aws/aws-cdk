@@ -815,7 +815,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
     let _viewerCertificate = props.viewerCertificate;
     if (props.aliasConfiguration) {
-      const {acmCertRef, securityPolicy, sslMethod, names: aliases} = props.aliasConfiguration;
+      const { acmCertRef, securityPolicy, sslMethod, names: aliases } = props.aliasConfiguration;
 
       _viewerCertificate = ViewerCertificate.fromAcmCertificate(
         certificatemanager.Certificate.fromCertificateArn(this, 'AliasConfigurationCert', acmCertRef),
@@ -824,10 +824,10 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     if (_viewerCertificate) {
-      const {props: viewerCertificate, aliases} = _viewerCertificate;
-      Object.assign(distributionConfig, {aliases, viewerCertificate});
+      const { props: viewerCertificate, aliases } = _viewerCertificate;
+      Object.assign(distributionConfig, { aliases, viewerCertificate });
 
-      const {minimumProtocolVersion, sslSupportMethod} = viewerCertificate;
+      const { minimumProtocolVersion, sslSupportMethod } = viewerCertificate;
 
       if (minimumProtocolVersion != null && sslSupportMethod != null) {
         const validProtocols = this.VALID_SSL_PROTOCOLS[sslSupportMethod as SSLMethod];
@@ -838,7 +838,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         }
       }
     } else {
-      distributionConfig = { ...distributionConfig,
+      distributionConfig = {
+        ...distributionConfig,
         viewerCertificate: { cloudFrontDefaultCertificate: true },
       };
     }
@@ -903,8 +904,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       for (const a of input.lambdaFunctionAssociations) {
         if (a.lambdaFunction.role && a.lambdaFunction.role instanceof iam.Role && a.lambdaFunction.role.assumeRolePolicy) {
           a.lambdaFunction.role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
-            actions: [ 'sts:AssumeRole' ],
-            principals: [ new iam.ServicePrincipal('edgelambda.amazonaws.com') ],
+            actions: ['sts:AssumeRole'],
+            principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],
           }));
         }
       }

@@ -86,6 +86,40 @@ export = {
     test.done();
   },
 
+  'implicitly created target group inherits protocol'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 9700, protocol: elbv2.Protocol.TCP_UDP });
+
+    // WHEN
+    listener.addTargets('Targets', {
+      port: 9700,
+      targets: [new elbv2.InstanceTarget('i-12345')],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          TargetGroupArn: { Ref: 'LBListenerTargetsGroup76EF81E8' },
+          Type: 'forward',
+        },
+      ],
+    }));
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      VpcId: { Ref: 'Stack8A423254' },
+      Port: 9700,
+      Protocol: 'TCP_UDP',
+      Targets: [
+        { Id: 'i-12345' },
+      ],
+    }));
+
+    test.done();
+  },
+
   'Enable health check for targets'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -155,7 +189,7 @@ export = {
     lb.addListener('Listener', {
       port: 443,
       protocol: elbv2.Protocol.TLS,
-      certificates: [ elbv2.ListenerCertificate.fromCertificateManager(cert) ],
+      certificates: [elbv2.ListenerCertificate.fromCertificateManager(cert)],
       sslPolicy: elbv2.SslPolicy.TLS12,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
@@ -309,7 +343,7 @@ export = {
     test.throws(() => lb.addListener('Listener', {
       port: 443,
       protocol: elbv2.Protocol.TCP,
-      certificates: [ { certificateArn: cert.certificateArn } ],
+      certificates: [{ certificateArn: cert.certificateArn }],
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
     }), /Protocol must be TLS when certificates have been specified/);
 
