@@ -98,7 +98,7 @@ test('exhaustive example of props renders correctly', () => {
       ViewerCertificate: {
         AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
         SslSupportMethod: 'sni-only',
-        MinimumProtocolVersion: 'TLSv1.2_2018',
+        MinimumProtocolVersion: 'TLSv1.2_2019',
       },
     },
   });
@@ -299,7 +299,7 @@ describe('certificates', () => {
         ViewerCertificate: {
           AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
           SslSupportMethod: 'sni-only',
-          MinimumProtocolVersion: 'TLSv1.2_2018',
+          MinimumProtocolVersion: 'TLSv1.2_2019',
         },
       },
     });
@@ -537,6 +537,59 @@ describe('with Lambda@Edge functions', () => {
         },
       });
     }).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
+  });
+
+  test('with removable env vars', () => {
+    const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
+      runtime: lambda.Runtime.NODEJS,
+      code: lambda.Code.fromInline('whateverwithenv'),
+      handler: 'index.handler',
+    });
+    envLambdaFunction.addEnvironment('KEY', 'value', { removeInEdge: true });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: envLambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Environment: ABSENT,
+      Code: {
+        ZipFile: 'whateverwithenv',
+      },
+    });
+  });
+
+  test('with incompatible env vars', () => {
+    const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
+      runtime: lambda.Runtime.NODEJS,
+      code: lambda.Code.fromInline('whateverwithenv'),
+      handler: 'index.handler',
+      environment: {
+        KEY: 'value',
+      },
+    });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: envLambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(() => app.synth()).toThrow(/KEY/);
   });
 });
 

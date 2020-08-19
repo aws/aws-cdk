@@ -95,10 +95,16 @@ describe('CDK Include', () => {
     }).toThrow(/Resource used in GetAtt expression with logical ID: 'DoesNotExist' not found/);
   });
 
-  test("throws a validation exception when an output references a condition that doesn't exist", () => {
+  test("throws a validation exception when an Output references a Condition that doesn't exist", () => {
     expect(() => {
       includeTestTemplate(stack, 'output-referencing-nonexistant-condition.json');
     }).toThrow(/Output with name 'SomeOutput' refers to a Condition with name 'NonexistantCondition' which was not found in this template/);
+  });
+
+  test("throws a validation exception when a Resource property references a Mapping that doesn't exist", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'non-existent-mapping.json');
+    }).toThrow(/Mapping used in FindInMap expression with name 'NonExistentMapping' was not found in the template/);
   });
 
   test("throws a validation exception when Fn::Sub in string form uses a key that isn't in the template", () => {
