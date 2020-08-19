@@ -317,8 +317,8 @@ types within an object, query, mutation, interface, etc. as **GraphQL Types**.
 GraphQL Types are the building blocks of types, whether they are scalar, objects, 
 interfaces, etc. GraphQL Types can be:
 - [**Scalar Types**](https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html): Id, Int, String, AWSDate, etc. 
-- **Object Types**: types that you generate (i.e. `demo` from the example above)
-- **Interface Types**: abstract types that define the base implementation of other 
+- [**Object Types**](#Object-Types): types that you generate (i.e. `demo` from the example above)
+- [**Interface Types**](#Interface-Types): abstract types that define the base implementation of other 
 Intermediate Types
 
 More concretely, GraphQL Types are simply the types appended to variables. 
