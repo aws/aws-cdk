@@ -31,6 +31,7 @@ beforeEach(() => {
   sdk = new MockSdk();
 
   cfnMocks = {
+    describeStackEvents: jest.fn().mockReturnValue({}),
     describeStacks: jest.fn()
       // First call, no stacks exist
       .mockImplementationOnce(() => ({ Stacks: [] }))
