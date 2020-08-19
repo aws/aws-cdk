@@ -1,6 +1,7 @@
 import { CfnCondition } from './cfn-condition';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
+import { CfnMapping } from './cfn-mapping';
 import { Aws } from './cfn-pseudo';
 import { CfnResource } from './cfn-resource';
 import {
@@ -167,6 +168,13 @@ export interface ICfnFinder {
    * returns undefined.
    */
   findCondition(conditionName: string): CfnCondition | undefined;
+
+  /**
+   * Return the Mapping with the given name from the template.
+   * If there is no Mapping with that name in the template,
+   * returns undefined.
+   */
+  findMapping(mappingName: string): CfnMapping | undefined;
 
   /**
    * Returns the element referenced using a Ref expression with the given name.
@@ -452,7 +460,12 @@ export class CfnParser {
       }
       case 'Fn::FindInMap': {
         const value = this.parseValue(object[key]);
-        return Fn.findInMap(value[0], value[1], value[2]);
+        // the first argument to FindInMap is the mapping name
+        const mapping = this.options.finder.findMapping(value[0]);
+        if (!mapping) {
+          throw new Error(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
+        }
+        return Fn.findInMap(mapping.logicalId, value[1], value[2]);
       }
       case 'Fn::Select': {
         const value = this.parseValue(object[key]);

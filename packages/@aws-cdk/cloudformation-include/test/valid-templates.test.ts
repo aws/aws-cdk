@@ -665,7 +665,78 @@ describe('CDK Include', () => {
     }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);
   });
 
-  test('replaces references to parameters with the user-specified values in Resources, Conditions, Metadata, and Options', () => {
+  test('can ingest a template that contains Mappings, and retrieve those Mappings', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'only-mapping-and-bucket.json');
+    const someMapping = cfnTemplate.getMapping('SomeMapping');
+
+    someMapping.setValue('region', 'key2', 'value2');
+
+    expect(stack).toMatchTemplate({
+      "Mappings": {
+        "SomeMapping": {
+          "region": {
+            "key1": "value1",
+            "key2": "value2",
+          },
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::FindInMap": [
+                "SomeMapping",
+                { "Ref": "AWS::Region" },
+                "key1",
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test("throws an exception when attempting to retrieve a Mapping that doesn't exist in the template", () => {
+    const cfnTemplate = includeTestTemplate(stack, 'only-mapping-and-bucket.json');
+
+    expect(() => {
+      cfnTemplate.getMapping('NonExistentMapping');
+    }).toThrow(/Mapping with name 'NonExistentMapping' was not found in the template/);
+  });
+
+  test('handles renaming Mapping references', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'only-mapping-and-bucket.json');
+    const someMapping = cfnTemplate.getMapping('SomeMapping');
+
+    someMapping.overrideLogicalId('DifferentMapping');
+
+    expect(stack).toMatchTemplate({
+      "Mappings": {
+        "DifferentMapping": {
+          "region": {
+            "key1": "value1",
+          },
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::FindInMap": [
+                "DifferentMapping",
+                { "Ref": "AWS::Region" },
+                "key1",
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('replaces references to parameters with the user-specified values in Resources, Conditions, Metadata, and Options sections', () => {
     includeTestTemplate(stack, 'parameter-references.json', {
       parameters: {
         'MyParam': 'my-s3-bucket',
@@ -712,7 +783,7 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can replace parameters in Fn::Sub', () => {
+  test('replaces parameters in Fn::Sub expressions', () => {
     includeTestTemplate(stack, 'fn-sub-parameters.json', {
       parameters: {
         'MyParam': 'my-s3-bucket',
