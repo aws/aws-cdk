@@ -152,7 +152,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
     });
 
@@ -181,7 +181,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
     });
 
@@ -189,7 +189,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
     });
 
@@ -224,7 +224,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
     });
 
@@ -232,7 +232,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
         environment: {
           UNIQUE_ENV_VAR: 'SOMEVALUE',
         },
@@ -277,7 +277,7 @@ export = {
       assetHashType: AssetHashType.BUNDLE,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
     });
 
@@ -310,7 +310,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.FAIL ],
+        command: [DockerStubCommand.FAIL],
       },
     }), /Failed.*bundl.*asset.*-error/);
 
@@ -339,7 +339,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
     });
 
@@ -352,7 +352,7 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
+        command: [DockerStubCommand.SUCCESS],
       },
     });
 
