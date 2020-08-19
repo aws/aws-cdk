@@ -622,7 +622,7 @@ function colorFromStatusResult(status?: string) {
     return colors.reset;
   }
 
-  if (status.endsWith('_FAILED')) {
+  if (status.indexOf('FAILED') !== -1) {
     return colors.red;
   }
   if (status.indexOf('ROLLBACK') !== -1) {
@@ -640,7 +640,7 @@ function colorFromStatusActivity(status?: string) {
     return colors.reset;
   }
 
-  if (hasErrorMessage(status)) {
+  if (status.endsWith('_FAILED')) {
     return colors.red;
   }
 
