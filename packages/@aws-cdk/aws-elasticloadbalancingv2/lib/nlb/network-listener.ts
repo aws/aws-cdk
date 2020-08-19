@@ -107,6 +107,11 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   private readonly loadBalancer: INetworkLoadBalancer;
 
+  /**
+   * the protocol of the listener
+   */
+  private readonly protocol: Protocol;
+
   constructor(scope: Construct, id: string, props: NetworkListenerProps) {
     const certs = props.certificates || [];
     const proto = props.protocol || (certs.length > 0 ? Protocol.TLS : Protocol.TCP);
@@ -130,6 +135,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     });
 
     this.loadBalancer = props.loadBalancer;
+    this.protocol = proto;
 
     if (props.defaultAction && props.defaultTargetGroups) {
       throw new Error('Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'');
@@ -189,6 +195,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
       port: props.port,
+      protocol: this.protocol,
       proxyProtocolV2: props.proxyProtocolV2,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
