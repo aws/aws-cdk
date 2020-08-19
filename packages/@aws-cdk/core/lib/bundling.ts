@@ -135,12 +135,11 @@ export class BundlingDockerImage {
   private constructor(public readonly image: string, private readonly _imageHash?: string) {}
 
   /**
-   * Provides the name that the bundler should use to refer to this image when
-   * hashing the bundling configuration with a source or custom asset hash.
+   * Provides a stable representation of this image for JSON serialization.
    *
    * @return The overridden image name if set or image hash name in that order
    */
-  public get imageHash() {
+  public toJSON() {
     return this._imageHash ?? this.image;
   }
 

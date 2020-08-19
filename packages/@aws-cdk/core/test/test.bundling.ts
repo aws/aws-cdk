@@ -124,14 +124,14 @@ export = {
     test.done();
   },
 
-  'assetHashName is the bundler image name by default'(test: Test) {
+  'BundlerDockerImage json is the bundler image name by default'(test: Test) {
     const image = BundlingDockerImage.fromRegistry('alpine');
 
-    test.equals(image.imageHash, 'alpine');
+    test.equals(image.toJSON(), 'alpine');
     test.done();
   },
 
-  'assetHashName is the bundler image override if given'(test: Test) {
+  'BundlerDockerImage json is the bundler image if building an image'(test: Test) {
     const imageId = 'abcdef123456';
     sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
@@ -148,7 +148,7 @@ export = {
     const image = BundlingDockerImage.fromAsset('docker-path');
 
     test.equals(image.image, imageId);
-    test.equals(image.imageHash, imageHash);
+    test.equals(image.toJSON(), imageHash);
     test.ok(fingerprintStub.calledWith('docker-path', sinon.match({ extraHash: JSON.stringify({}) })));
     test.done();
   },

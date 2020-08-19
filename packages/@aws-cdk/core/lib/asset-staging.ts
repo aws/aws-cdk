@@ -308,13 +308,8 @@ export class AssetStaging extends Construct {
   }
 
   private createBundlingHash(bundling: BundlingOptions, assetHash: string) {
-    const bundlingHashComponent = {
-      ...bundling,
-      image: bundling.image.imageHash,
-    };
-
     return crypto.createHash('sha256')
-      .update(JSON.stringify(bundlingHashComponent))
+      .update(JSON.stringify(bundling))
       .update(assetHash)
       .digest('hex');
   }
