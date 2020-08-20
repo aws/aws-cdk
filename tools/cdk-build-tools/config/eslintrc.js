@@ -52,6 +52,9 @@ module.exports = {
     'object-curly-spacing': ['error', 'always'], // { key: 'value' }
     'object-curly-newline': ['error', { multiline: true, consistent: true }], // enforce consistent line breaks between braces
     'object-property-newline': ['error', { allowAllPropertiesOnSameLine: true }], // enforce "same line" or "multiple line" on object properties
+    'keyword-spacing': ['error'], // require a space before & after keywords
+    'brace-style': ['error', '1tbs', { allowSingleLine: true }], // enforce one true brace style
+    'space-before-blocks': 'error', // require space before blocks
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
