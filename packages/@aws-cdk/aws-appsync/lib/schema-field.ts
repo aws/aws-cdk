@@ -373,7 +373,7 @@ export class Field extends GraphqlType implements IField {
   /**
    * Generate the args string of this resolvable field
    */
-  public argsToString(): string{
+  public argsToString(): string {
     if (!this.fieldOptions || !this.fieldOptions.args) { return ''; }
     let args = '(';
     Object.keys(this.fieldOptions?.args ?? {}).forEach((key) => {

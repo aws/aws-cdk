@@ -130,7 +130,7 @@ export class Directive {
   /**
    * Add the @aws_iam directive
    */
-  public static iam(): Directive{
+  public static iam(): Directive {
     return new Directive('@aws_iam');
   }
 
