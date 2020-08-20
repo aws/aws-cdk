@@ -1510,17 +1510,18 @@ test('validate: unique partition keys', () => {
 });
 
 test('validate: column names and partition keys are all unique', () => {
-  expect(() => { createTable({
-    tableName: 'name',
-    columns: [{
-      name: 'col1',
-      type: glue.Schema.STRING,
-    }],
-    partitionKeys: [{
-      name: 'col1',
-      type: glue.Schema.STRING,
-    }],
-  });
+  expect(() => {
+    createTable({
+      tableName: 'name',
+      columns: [{
+        name: 'col1',
+        type: glue.Schema.STRING,
+      }],
+      partitionKeys: [{
+        name: 'col1',
+        type: glue.Schema.STRING,
+      }],
+    });
   }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
 
 });

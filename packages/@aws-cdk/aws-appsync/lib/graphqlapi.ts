@@ -303,7 +303,7 @@ export class IamResource {
 
   private arns: string[];
 
-  private constructor(arns: string[]){
+  private constructor(arns: string[]) {
     this.arns = arns;
   }
 
@@ -360,7 +360,7 @@ export class GraphQLApi extends GraphqlApiBase {
     class Import extends GraphqlApiBase {
       public readonly apiId = attrs.graphqlApiId;
       public readonly arn = arn;
-      constructor (s: Construct, i: string){
+      constructor (s: Construct, i: string) {
         super(s, i);
       }
     }
@@ -540,19 +540,19 @@ export class GraphQLApi extends GraphqlApiBase {
     const allModes = [defaultMode, ...additionalModes];
 
     allModes.map((mode) => {
-      if(mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig){
+      if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
         throw new Error('Missing default OIDC Configuration');
       }
-      if(mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig){
+      if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig) {
         throw new Error('Missing default OIDC Configuration');
       }
     });
 
-    if(allModes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1){
+    if (allModes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
       throw new Error('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
     }
 
-    if(allModes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1){
+    if (allModes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1) {
       throw new Error('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
     }
   }

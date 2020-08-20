@@ -302,7 +302,7 @@ export class GraphqlType {
   /**
    * Generate the string for this attribute
    */
-  public toString(): string{
+  public toString(): string {
     // If an Object Type, we use the name of the Object Type
     let type = this.intermediateType ? this.intermediateType?.name : this.type;
     // If configured as required, the GraphQL Type becomes required

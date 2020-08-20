@@ -46,5 +46,5 @@ export class Schedule {
     /**
      * The Schedule expression
      */
-    public readonly expressionString: string){}
+    public readonly expressionString: string) {}
 }
