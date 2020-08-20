@@ -267,14 +267,12 @@ const codebuildProject = new codebuild.Project(stack, 'Project', {
 const task = new tasks.CodeBuildStartBuild(stack, 'Task', {
   project: codebuildProject,
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-  gitCloneDepthOverride: sfn.JsonPath.numberAt('$.gitCloneDepth'),
-  environmentVariablesOverride: [
-    {
-      name: 'ZONE',
+  environmentVariablesOverride: {
+    ZONE: {
       type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
       value: sfn.JsonPath.stringAt('$.envVariables.zone'),
     },
-  ],
+  },
 });
 ```
 
