@@ -1,6 +1,7 @@
 import { CfnCondition } from './cfn-condition';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
+import { CfnMapping } from './cfn-mapping';
 import { Aws } from './cfn-pseudo';
 import { CfnResource } from './cfn-resource';
 import {
@@ -56,6 +57,12 @@ export class FromCloudFormation {
   public static getString(value: any): string {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
+      return value.toString();
+    }
+
+    // CloudFormation treats numbers and strings interchangeably;
+    // so, if we get a number here, convert it to a string
+    if (typeof value === 'number') {
       return value.toString();
     }
 
@@ -169,6 +176,13 @@ export interface ICfnFinder {
   findCondition(conditionName: string): CfnCondition | undefined;
 
   /**
+   * Return the Mapping with the given name from the template.
+   * If there is no Mapping with that name in the template,
+   * returns undefined.
+   */
+  findMapping(mappingName: string): CfnMapping | undefined;
+
+  /**
    * Returns the element referenced using a Ref expression with the given name.
    * If there is no element with this name in the template,
    * return undefined.
@@ -206,6 +220,9 @@ export interface FromCloudFormationOptions {
 export enum CfnParsingContext {
   /** We're currently parsing the 'Conditions' section. */
   CONDITIONS,
+
+  /** We're currently parsing the 'Rules' section. */
+  RULES,
 }
 
 /**
@@ -226,9 +243,8 @@ export interface ParseCfnOptions {
 
   /**
    * Values provided here will replace references to parameters in the parsed template.
-   * @default - no parameters will be replaced
    */
-  readonly parameters?: { [parameterName: string]: any }
+  readonly parameters: { [parameterName: string]: any };
 }
 
 /**
@@ -452,7 +468,12 @@ export class CfnParser {
       }
       case 'Fn::FindInMap': {
         const value = this.parseValue(object[key]);
-        return Fn.findInMap(value[0], value[1], value[2]);
+        // the first argument to FindInMap is the mapping name
+        const mapping = this.options.finder.findMapping(value[0]);
+        if (!mapping) {
+          throw new Error(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
+        }
+        return Fn.findInMap(mapping.logicalId, value[1], value[2]);
       }
       case 'Fn::Select': {
         const value = this.parseValue(object[key]);
@@ -527,7 +548,11 @@ export class CfnParser {
         return { Condition: condition.logicalId };
       }
       default:
-        throw new Error(`Unsupported CloudFormation function '${key}'`);
+        if (this.options.context === CfnParsingContext.RULES) {
+          return this.handleRulesIntrinsic(key, object);
+        } else {
+          throw new Error(`Unsupported CloudFormation function '${key}'`);
+        }
     }
   }
 
@@ -588,6 +613,38 @@ export class CfnParser {
       }
       const attribute = refTarget.substring(dotIndex + 1);
       return leftHalf + CfnReference.for(refResource, attribute, true).toString() + this.parseFnSubString(rightHalf, map);
+    }
+  }
+
+  private handleRulesIntrinsic(key: string, object: any): any {
+    // Rules have their own set of intrinsics:
+    // https://docs.aws.amazon.com/servicecatalog/latest/adminguide/intrinsic-function-reference-rules.html
+    switch (key) {
+      case 'Fn::ValueOf': {
+        // ValueOf is special,
+        // as it takes the name of a Parameter as its first argument
+        const value = this.parseValue(object[key]);
+        const parameterName = value[0];
+        if (parameterName in this.parameters) {
+          // since ValueOf returns the value of a specific attribute,
+          // fail here - this substitution is not allowed
+          throw new Error(`Cannot substitute parameter '${parameterName}' used in Fn::ValueOf expression with attribute '${value[1]}'`);
+        }
+        const param = this.options.finder.findRefTarget(parameterName);
+        if (!param) {
+          throw new Error(`Rule references parameter '${parameterName}' which was not found in the template`);
+        }
+        // create an explicit IResolvable,
+        // as Fn.valueOf() returns a string,
+        // which is incorrect
+        // (Fn::ValueOf can also return an array)
+        return Lazy.anyValue({ produce: () => ({ 'Fn::ValueOf': [param.logicalId, value[1]] }) });
+      }
+      default:
+        // I don't want to hard-code the list of supported Rules-specific intrinsics in this function;
+        // so, just return undefined here,
+        // and they will be treated as a regular JSON object
+        return undefined;
     }
   }
 
