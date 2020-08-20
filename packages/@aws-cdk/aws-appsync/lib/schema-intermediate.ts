@@ -46,7 +46,7 @@ export class InterfaceType implements IIntermediateType {
    * - isRequired
    * - isRequiredList
    */
-  public attribute(options?: BaseTypeOptions): GraphqlType{
+  public attribute(options?: BaseTypeOptions): GraphqlType {
     return GraphqlType.intermediate({
       isList: options?.isList,
       isRequired: options?.isRequired,
@@ -160,7 +160,7 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
    */
   public toString(): string {
     let title = this.name;
-    if(this.interfaceTypes && this.interfaceTypes.length){
+    if (this.interfaceTypes && this.interfaceTypes.length) {
       title = `${title} implements`;
       this.interfaceTypes.map((interfaceType) => {
         title = `${title} ${interfaceType.name},`;
@@ -184,9 +184,9 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
    * @param delimiter the separator betweeen directives
    * @default - ' '
    */
-  private generateDirectives(directives?: Directive[], delimiter?: string): string{
+  private generateDirectives(directives?: Directive[], delimiter?: string): string {
     let schemaAddition = '';
-    if (!directives){ return schemaAddition; }
+    if (!directives) { return schemaAddition; }
     directives.map((directive) => {
       schemaAddition = `${schemaAddition}${directive.statement}${delimiter ?? ' '}`;
     });
@@ -197,8 +197,8 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
    * Generate the resolvers linked to this Object Type
    */
   protected generateResolver(fieldName: string, options?: ResolvableFieldOptions): void {
-    if (options?.dataSource){
-      if(!this.resolvers){ this.resolvers = []; }
+    if (options?.dataSource) {
+      if (!this.resolvers) { this.resolvers = []; }
       this.resolvers.push(options.dataSource.createResolver({
         typeName: this.name,
         fieldName: fieldName,

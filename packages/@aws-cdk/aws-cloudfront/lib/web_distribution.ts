@@ -247,7 +247,7 @@ export interface CustomOriginConfig {
   /**
    * The SSL versions to use when interacting with the origin.
    *
-   * @default OriginSslPolicy.TLSv1_2
+   * @default OriginSslPolicy.TLS_V1_2
    */
   readonly allowedOriginSSLVersions?: OriginSslPolicy[];
 
@@ -702,6 +702,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     [SSLMethod.SNI]: [
       SecurityPolicyProtocol.TLS_V1, SecurityPolicyProtocol.TLS_V1_1_2016,
       SecurityPolicyProtocol.TLS_V1_2016, SecurityPolicyProtocol.TLS_V1_2_2018,
+      SecurityPolicyProtocol.TLS_V1_2_2019,
     ],
     [SSLMethod.VIP]: [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
   };
@@ -895,7 +896,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         lambdaFunctionAssociations: input.lambdaFunctionAssociations
           .map(fna => ({
             eventType: fna.eventType,
-            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.functionArn,
+            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.edgeArn,
           })),
       });
 

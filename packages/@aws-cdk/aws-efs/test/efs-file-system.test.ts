@@ -1,7 +1,7 @@
 import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { RemovalPolicy, Size, Stack, Tag } from '@aws-cdk/core';
+import { RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from '../lib';
 
 let stack = new Stack();
@@ -176,7 +176,7 @@ test('support tags', () => {
   const fileSystem = new FileSystem(stack, 'EfsFileSystem', {
     vpc,
   });
-  Tag.add(fileSystem, 'Name', 'LookAtMeAndMyFancyTags');
+  Tags.of(fileSystem).add('Name', 'LookAtMeAndMyFancyTags');
 
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {

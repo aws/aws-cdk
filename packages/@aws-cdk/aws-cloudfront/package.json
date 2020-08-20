@@ -64,7 +64,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "aws-sdk": "^2.735.0",
+    "aws-sdk": "^2.736.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -138,6 +138,7 @@
       "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_2016",
       "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_1_2016",
       "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_2_2018",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_2_2019",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificate.aliases",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificate.props",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificateOptions",
