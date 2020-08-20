@@ -49,9 +49,9 @@ use the static factory methods on `DatabaseClusterEngine`:
 new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.aurora({
     version: rds.AuroraEngineVersion.VER_1_17_9, // different version class for each engine type
-  },
+  }),
   ...
-})
+});
 ```
 
 If there isn't a constant for the exact version you want to use,
