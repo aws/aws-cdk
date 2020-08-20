@@ -85,6 +85,10 @@ demoDS.createResolver({
 
 ## Aurora Serverless
 
+AppSync provides a data source for executing SQL commands against Amazon Aurora
+Serverless clusters. You can use AppSync resolvers to execute SQL statements
+against the Data API with GraphQL queries, mutations, and subscriptions.
+
 ```ts
 // Create username and password secret for DB Cluster
 const secret = new rds.DatabaseSecret(stack, 'AuroraSecret', {
@@ -93,12 +97,8 @@ const secret = new rds.DatabaseSecret(stack, 'AuroraSecret', {
 
 // Create the DB cluster, provide all values needed to customise the database.
 const cluster = new rds.DatabaseCluster(stack, 'AuroraCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_2_07_1,
-  }),
-  masterUser: {
-    username: 'clusteradmin',
-  },
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_07_1 }),
+  masterUser: { username: 'clusteradmin' },
   clusterIdentifier: 'db-endpoint-test',
   defaultDatabaseName: 'demos',
 });
