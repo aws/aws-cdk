@@ -33,7 +33,9 @@ class EksClusterStack extends TestStack {
 
     this.assertFargateProfile();
 
-    this.assertCapacity();
+    this.assertX86Capacity();
+
+    this.assertArmCapacity();
 
     this.assertBottlerocket();
 
@@ -138,14 +140,25 @@ class EksClusterStack extends TestStack {
     });
 
   }
-  private assertCapacity() {
-    // add some capacity to the cluster. The IAM instance role will
+  private assertX86Capacity() {
+    // add some x86_64 capacity to the cluster. The IAM instance role will
     // automatically be mapped via aws-auth to allow nodes to join the cluster.
     this.cluster.addCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
       minCapacity: 3,
     });
   }
+
+  private assertArmCapacity() {
+    // add some arm64 capacity to the cluster. The IAM instance role will
+    // automatically be mapped via aws-auth to allow nodes to join the cluster.
+    this.cluster.addCapacity('Arm64Nodes', {
+      instanceType: new ec2.InstanceType('m6g.medium'),
+      minCapacity: 1,
+      cpuType: eks.CpuType.ARM_64,
+    });
+  }
+
   private assertFargateProfile() {
     // fargate profile for resources in the "default" namespace
     this.cluster.addFargateProfile('default', {

@@ -176,6 +176,18 @@ cluster.addNodegroup('nodegroup', {
 });
 ```
 
+### ARM64 Support
+
+You can create self-managed nodegroup with `ARM64` instances such as `c6g`, `m6g` and `r6g` instance families:
+
+```ts
+    cluster.addCapacity('ArmCapacity', {
+      instanceType: new ec2.InstanceType('m6g.medium'),
+      desiredCapacity: 2,
+      cpuType: eks.CpuType.ARM_64,
+    })
+```
+
 
 ### Fargate
 

@@ -870,6 +870,28 @@ export = {
       test.done();
     },
 
+    'EKS-Optimized AMI with ARM64 when addCapacity'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+      }).addCapacity('ARMCapacity', {
+        instanceType: new ec2.InstanceType('m6g.medium'),
+        cpuType: eks.CpuType.ARM_64,
+      });
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('/amazon-linux-2-arm64/'),
+      ), 'EKS AMI with GPU should be in ssm parameters');
+      test.done();
+    },    
+
     'when using custom resource a creation role & policy is defined'(test: Test) {
       // GIVEN
       const { stack } = testFixture();

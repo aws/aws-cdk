@@ -783,6 +783,7 @@ export class Cluster extends Resource implements ICluster {
         new BottleRocketImage() :
         new EksOptimizedImage({
           nodeType: nodeTypeForInstanceType(options.instanceType),
+          cpuType: options.cpuType ?? CpuType.X86_64,
           kubernetesVersion: this.version.version,
         }),
       updateType: options.updateType,
@@ -1237,6 +1238,13 @@ export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps
   readonly instanceType: ec2.InstanceType;
 
   /**
+   * CPU type of the instances to start
+   * 
+   * @default CpuType.x86_64
+   */
+  readonly cpuType?: CpuType;
+
+  /**
    * Will automatically update the aws-auth ConfigMap to map the IAM instance
    * role to RBAC.
    *
@@ -1408,6 +1416,13 @@ export interface EksOptimizedImageProps {
   readonly nodeType?: NodeType;
 
   /**
+   * What cpu type to retrieve the image for (arm64 or x86_64)
+   * 
+   * @default CpuType.X86_64
+   */
+  readonly cpuType?: CpuType;
+
+  /**
    * The Kubernetes version to use
    *
    * @default - The latest version
@@ -1420,8 +1435,8 @@ export interface EksOptimizedImageProps {
  */
 export class EksOptimizedImage implements ec2.IMachineImage {
   private readonly nodeType?: NodeType;
+  private readonly cpuType?: CpuType;
   private readonly kubernetesVersion?: string;
-
   private readonly amiParameterName: string;
 
   /**
@@ -1429,11 +1444,13 @@ export class EksOptimizedImage implements ec2.IMachineImage {
    */
   public constructor(props: EksOptimizedImageProps = {}) {
     this.nodeType = props.nodeType ?? NodeType.STANDARD;
+    this.cpuType = props.cpuType ?? CpuType.X86_64;
     this.kubernetesVersion = props.kubernetesVersion ?? LATEST_KUBERNETES_VERSION;
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
-      + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
+      + ( this.nodeType === NodeType.STANDARD ? this.cpuType === CpuType.X86_64 ? 
+        'amazon-linux-2/' : 'amazon-linux-2-arm64/'  :'' )
       + ( this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '' )
       + (this.nodeType === NodeType.INFERENTIA ? 'amazon-linux-2-gpu/' : '')
       + 'recommended/image_id';
@@ -1505,6 +1522,21 @@ export enum NodeType {
    * Inferentia instances
    */
   INFERENTIA = 'INFERENTIA',
+}
+
+/**
+ * CPU type
+ */
+export enum CpuType {
+  /**
+   * arm64 CPU type
+   */
+  ARM_64 = 'arm64',
+
+  /**
+   * x86_64 CPU type
+   */
+  X86_64 = 'x86_64',
 }
 
 /**
