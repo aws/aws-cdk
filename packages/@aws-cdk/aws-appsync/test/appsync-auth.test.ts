@@ -254,3 +254,350 @@ describe('AppSync IAM Authorization', () => {
     expect(when).toThrowError('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 });
+
+describe('AppSync User Pool Authorization', () => {
+  let userPool: cognito.UserPool;
+  beforeEach(() => {
+    userPool = new cognito.UserPool(stack, 'pool');
+  });
+  test('User Pool authorization configurable in default authorization has default configuration', () => {
+    // WHEN
+    new appsync.GraphQLApi(stack, 'api', {
+      name: 'api',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.USER_POOL,
+          userPoolConfig: { userPool },
+        },
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+      AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      UserPoolConfig: {
+        AwsRegion: { Ref: 'AWS::Region' },
+        UserPoolId: { Ref: 'pool056F3F7E' },
+      },
+    });
+  });
+
+  test('User Pool authorization configurable in default authorization', () => {
+    // WHEN
+    new appsync.GraphQLApi(stack, 'api', {
+      name: 'api',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.USER_POOL,
+          userPoolConfig: {
+            userPool,
+            appIdClientRegex: 'test',
+            defaultAction: appsync.UserPoolDefaultAction.DENY,
+          },
+        },
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+      AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      UserPoolConfig: {
+        AwsRegion: { Ref: 'AWS::Region' },
+        DefaultAction: 'DENY',
+        AppIdClientRegex: 'test',
+        UserPoolId: { Ref: 'pool056F3F7E' },
+      },
+    });
+  });
+
+  test('User Pool authorization configurable in additional authorization has default configuration', () => {
+    // WHEN
+    new appsync.GraphQLApi(stack, 'api', {
+      name: 'api',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+      authorizationConfig: {
+        additionalAuthorizationModes: [{
+          authorizationType: appsync.AuthorizationType.USER_POOL,
+          userPoolConfig: { userPool },
+        }],
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+      AdditionalAuthenticationProviders: [{
+        AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        UserPoolConfig: {
+          AwsRegion: { Ref: 'AWS::Region' },
+          UserPoolId: { Ref: 'pool056F3F7E' },
+        },
+      }],
+    });
+  });
+
+  test('User Pool property defaultAction does not configure when in additional auth', () => {
+    // WHEN
+    new appsync.GraphQLApi(stack, 'api', {
+      name: 'api',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+      authorizationConfig: {
+        additionalAuthorizationModes: [{
+          authorizationType: appsync.AuthorizationType.USER_POOL,
+          userPoolConfig: {
+            userPool,
+            appIdClientRegex: 'test',
+            defaultAction: appsync.UserPoolDefaultAction.DENY,
+          },
+        }],
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+      AdditionalAuthenticationProviders: [{
+        AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        UserPoolConfig: {
+          AwsRegion: { Ref: 'AWS::Region' },
+          AppIdClientRegex: 'test',
+          UserPoolId: { Ref: 'pool056F3F7E' },
+        },
+      }],
+    });
+  });
+
+  test('User Pool property defaultAction does not configure when in additional auth', () => {
+    // WHEN
+    new appsync.GraphQLApi(stack, 'api', {
+      name: 'api',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.USER_POOL,
+          userPoolConfig: { userPool },
+        },
+        additionalAuthorizationModes: [
+          {
+            authorizationType: appsync.AuthorizationType.USER_POOL,
+            userPoolConfig: { userPool },
+          },
+          {
+            authorizationType: appsync.AuthorizationType.USER_POOL,
+            userPoolConfig: {
+              userPool,
+              appIdClientRegex: 'test',
+              defaultAction: appsync.UserPoolDefaultAction.DENY,
+            },
+          },
+        ],
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+      AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      UserPoolConfig: {
+        AwsRegion: { Ref: 'AWS::Region' },
+        UserPoolId: { Ref: 'pool056F3F7E' },
+      },
+      AdditionalAuthenticationProviders: [
+        {
+          AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          UserPoolConfig: {
+            AwsRegion: { Ref: 'AWS::Region' },
+            UserPoolId: { Ref: 'pool056F3F7E' },
+          },
+        },
+        {
+          AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          UserPoolConfig: {
+            AwsRegion: { Ref: 'AWS::Region' },
+            AppIdClientRegex: 'test',
+            UserPoolId: { Ref: 'pool056F3F7E' },
+          },
+        },
+      ],
+    });
+  });
+});
+
+describe('AppSync OIDC Authorization', () => {
+  test('OIDC authorization configurable in default authorization has default configuration', () => {
+    // WHEN
+    new appsync.GraphQLApi(stack, 'api', {
+      name: 'api',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.OIDC,
+          openIdConnectConfig: { oidcProvider: 'test' },
+        },
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+      AuthenticationType: 'OPENID_CONNECT',
+      OpenIDConnectConfig: {
+        Issuer: 'test',
+      },
+    });
+  });
+
+  test('User Pool authorization configurable in default authorization', () => {
+    // WHEN
+    new appsync.GraphQLApi(stack, 'api', {
+      name: 'api',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.OIDC,
+          openIdConnectConfig: {
+            oidcProvider: 'test',
+            clientId: 'id',
+            tokenExpiryFromAuth: 1,
+            tokenExpiryFromIssue: 1,
+          },
+        },
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+      AuthenticationType: 'OPENID_CONNECT',
+      OpenIDConnectConfig: {
+        AuthTTL: 1,
+        ClientId: 'id',
+        IatTTL: 1,
+        Issuer: 'test',
+      },
+    });
+  });
+
+  test('OIDC authorization configurable in additional authorization has default configuration', () => {
+    // WHEN
+    new appsync.GraphQLApi(stack, 'api', {
+      name: 'api',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+      authorizationConfig: {
+        additionalAuthorizationModes: [{
+          authorizationType: appsync.AuthorizationType.OIDC,
+          openIdConnectConfig: { oidcProvider: 'test' },
+        }],
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+      AdditionalAuthenticationProviders: [{
+        AuthenticationType: 'OPENID_CONNECT',
+        OpenIDConnectConfig: {
+          Issuer: 'test',
+        },
+      }],
+    });
+  });
+
+  test('User Pool authorization configurable in additional authorization', () => {
+    // WHEN
+    new appsync.GraphQLApi(stack, 'api', {
+      name: 'api',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+      authorizationConfig: {
+        additionalAuthorizationModes: [{
+          authorizationType: appsync.AuthorizationType.OIDC,
+          openIdConnectConfig: {
+            oidcProvider: 'test',
+            clientId: 'id',
+            tokenExpiryFromAuth: 1,
+            tokenExpiryFromIssue: 1,
+          },
+        }],
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+      AdditionalAuthenticationProviders: [{
+        AuthenticationType: 'OPENID_CONNECT',
+        OpenIDConnectConfig: {
+          AuthTTL: 1,
+          ClientId: 'id',
+          IatTTL: 1,
+          Issuer: 'test',
+        },
+      }],
+    });
+  });
+
+  test('User Pool authorization configurable in with multiple authorization', () => {
+    // WHEN
+    new appsync.GraphQLApi(stack, 'api', {
+      name: 'api',
+      schemaDefinition: appsync.SchemaDefinition.FILE,
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.OIDC,
+          openIdConnectConfig: { oidcProvider: 'test' },
+        },
+        additionalAuthorizationModes: [
+          {
+            authorizationType: appsync.AuthorizationType.OIDC,
+            openIdConnectConfig: {
+              oidcProvider: 'test1',
+              clientId: 'id',
+              tokenExpiryFromAuth: 1,
+              tokenExpiryFromIssue: 1,
+            },
+          },
+          {
+            authorizationType: appsync.AuthorizationType.OIDC,
+            openIdConnectConfig: {
+              oidcProvider: 'test2',
+              clientId: 'id',
+              tokenExpiryFromAuth: 1,
+              tokenExpiryFromIssue: 1,
+            },
+          },
+        ],
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+      AuthenticationType: 'OPENID_CONNECT',
+      OpenIDConnectConfig: { Issuer: 'test' },
+      AdditionalAuthenticationProviders: [
+        {
+          AuthenticationType: 'OPENID_CONNECT',
+          OpenIDConnectConfig: {
+            AuthTTL: 1,
+            ClientId: 'id',
+            IatTTL: 1,
+            Issuer: 'test1',
+          },
+        },
+        {
+          AuthenticationType: 'OPENID_CONNECT',
+          OpenIDConnectConfig: {
+            AuthTTL: 1,
+            ClientId: 'id',
+            IatTTL: 1,
+            Issuer: 'test2',
+          },
+        },
+      ],
+    });
+  });
+});

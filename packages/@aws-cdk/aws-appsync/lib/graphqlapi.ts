@@ -560,7 +560,7 @@ export class GraphQLApi extends GraphqlApiBase {
     return modes.reduce<CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]>((acc, mode) => [
       ...acc, {
         authenticationType: mode.authorizationType,
-        userPoolConfig: this.formatUserPoolConfig(mode.userPoolConfig!),
+        userPoolConfig: this.formatUserPoolConfig(mode.userPoolConfig),
         openIdConnectConfig: this.formatOpenIdConnectConfig(mode.openIdConnectConfig),
       },
     ], []);
@@ -618,7 +618,7 @@ export class GraphQLApi extends GraphqlApiBase {
    * @experimental
    */
   public appendToSchema(addition: string, delimiter?: string): void {
-    if ( this.schemaMode != SchemaDefinition.CODE ) {
+    if ( this.schemaMode !== SchemaDefinition.CODE ) {
       throw new Error('API cannot append to schema because schema definition mode is not configured as CODE.');
     }
     const sep = delimiter ?? '';
@@ -634,7 +634,7 @@ export class GraphQLApi extends GraphqlApiBase {
    * @experimental
    */
   public addType(name: string, props: ObjectTypeProps): ObjectType {
-    if ( this.schemaMode != SchemaDefinition.CODE ) {
+    if ( this.schemaMode !== SchemaDefinition.CODE ) {
       throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
     };
     const type = new ObjectType(name, {
