@@ -4,6 +4,8 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
+import { CfnParameter } from '../cfn-parameter';
+import { CfnRule } from '../cfn-rule';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
@@ -17,7 +19,7 @@ export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 /**
  * The minimum bootstrap stack version required by this app.
  */
-const MIN_BOOTSTRAP_STACK_VERSION = 3;
+const MIN_BOOTSTRAP_STACK_VERSION = 4;
 
 /**
  * Configuration properties for DefaultStackSynthesizer
@@ -233,6 +235,8 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
     this._kmsKeyArnExportName = specialize(this.props.fileAssetKeyArnExportName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME);
     /* eslint-enable max-len */
+
+    addBootstrapVersionRule(stack, MIN_BOOTSTRAP_STACK_VERSION, qualifier);
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
@@ -270,7 +274,6 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       httpUrl,
       s3ObjectUrl,
       s3Url: httpUrl,
-      kmsKeyArn: Fn.importValue(cfnify(this._kmsKeyArnExportName)),
     };
   }
 
@@ -461,4 +464,39 @@ function stackLocationOrInstrinsics(stack: Stack) {
     region: resolvedOr(stack.region, '${AWS::Region}'),
     urlSuffix: resolvedOr(stack.urlSuffix, '${AWS::URLSuffix}'),
   };
+}
+
+/**
+ * Add a CfnRule to the Stack which checks the current version of the bootstrap stack this template is targeting
+ *
+ * The CLI normally checks this, but in a pipeline the CLI is not involved
+ * so we encode this rule into the template in a way that CloudFormation will check it.
+ */
+function addBootstrapVersionRule(stack: Stack, requiredVersion: number, qualifier: string) {
+  const param = new CfnParameter(stack, 'BootstrapVersion', {
+    type: 'AWS::SSM::Parameter::Value<String>',
+    description: 'Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store.',
+    default: `/aws-cdk-bootstrap/${qualifier}/version`,
+  });
+
+  // There is no >= check in CloudFormation, so we have to check the number
+  // is NOT in [1, 2, 3, ... <required> - 1]
+  const oldVersions = range(1, requiredVersion).map(n => `${n}`);
+
+  new CfnRule(stack, 'CheckBootstrapVersion', {
+    assertions: [
+      {
+        assert: Fn.conditionNot(Fn.conditionContains(oldVersions, param.valueAsString)),
+        assertDescription: `CDK bootstrap stack version ${requiredVersion} required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.`,
+      },
+    ],
+  });
+}
+
+function range(startIncl: number, endExcl: number) {
+  const ret = new Array<number>();
+  for (let i = startIncl; i < endExcl; i++) {
+    ret.push(i);
+  }
+  return ret;
 }

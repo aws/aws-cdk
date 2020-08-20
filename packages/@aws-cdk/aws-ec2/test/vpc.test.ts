@@ -1,5 +1,5 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
-import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
+import { CfnOutput, Lazy, Stack, Tags } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
@@ -1035,8 +1035,8 @@ nodeunitShim({
 
       const vpc = new Vpc(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.node.applyAspect(new Tag('BusinessUnit', 'Marketing', { includeResourceTypes: [CfnVPC.CFN_RESOURCE_TYPE_NAME] }));
-      vpc.node.applyAspect(new Tag('VpcType', 'Good'));
+      Tags.of(vpc).add('BusinessUnit', 'Marketing', { includeResourceTypes: [CfnVPC.CFN_RESOURCE_TYPE_NAME] });
+      Tags.of(vpc).add('VpcType', 'Good');
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
       const propTags = toCfnTags(tags);
@@ -1067,7 +1067,7 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'TheVPC');
       const tag = { Key: 'Late', Value: 'Adder' };
       expect(stack).notTo(haveResource('AWS::EC2::VPC', hasTags([tag])));
-      vpc.node.applyAspect(new Tag(tag.Key, tag.Value));
+      Tags.of(vpc).add(tag.Key, tag.Value);
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags([tag])));
       test.done();
     },
