@@ -291,6 +291,20 @@ export interface BucketAttributes {
    * @default false
    */
   readonly isWebsite?: boolean;
+
+  /**
+   * The account this existing bucket belongs to.
+   *
+   * @default - it's assumed the bucket belongs to the same account as the scope it's being imported into
+   */
+  readonly account?: string;
+
+  /**
+   * The region this existing bucket is in.
+   *
+   * @default - it's assumed the bucket is in the same region as the scope it's being imported into
+   */
+  readonly region?: string;
 }
 
 /**
@@ -633,40 +647,18 @@ abstract class BucketBase extends Resource implements IBucket {
     resourceArn: string, ...otherResourceArns: string[]) {
     const resources = [resourceArn, ...otherResourceArns];
 
-    const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
-    let ret: iam.Grant;
-    if (crossAccountAccess) {
-      // if the access is cross-account, we need to trust the accessing principal in the bucket's policy
-      ret = iam.Grant.addToPrincipalAndResource({
-        grantee,
-        actions: bucketActions,
-        resourceArns: resources,
-        resource: this,
-      });
-    } else {
-      // if not, we don't need to modify the resource policy if the grantee is an identity principal
-      ret = iam.Grant.addToPrincipalOrResource({
-        grantee,
-        actions: bucketActions,
-        resourceArns: resources,
-        resource: this,
-      });
-    }
+    const ret = iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: bucketActions,
+      resourceArns: resources,
+      resource: this,
+    });
 
     if (this.encryptionKey && keyActions && keyActions.length !== 0) {
       this.encryptionKey.grant(grantee, ...keyActions);
     }
 
     return ret;
-  }
-
-  private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!(Construct.isConstruct(grantee))) {
-      return false;
-    }
-    const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee);
-    return bucketStack.account !== identityStack.account;
   }
 }
 
@@ -1172,7 +1164,10 @@ export class Bucket extends BucketBase {
       }
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      account: attrs.account,
+      region: attrs.region,
+    });
   }
 
   public readonly bucketArn: string;

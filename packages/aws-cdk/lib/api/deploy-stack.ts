@@ -267,6 +267,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     // eslint-disable-next-line max-len
     const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, stackArtifact, {
       resourcesTotal: (changeSetDescription.Changes ?? []).length,
+      changeSetCreationTime: changeSetDescription.CreationTime,
     }).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
     try {
