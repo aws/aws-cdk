@@ -1,5 +1,12 @@
-import { countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import {
+  countResources,
+  expect,
+  haveResource,
+  haveResourceLike,
+  ResourcePart,
+} from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -127,13 +134,39 @@ export = {
           Statement: [
             {
               Action: [
-                'ecs:CreateCluster',
                 'ecs:DeregisterContainerInstance',
-                'ecs:DiscoverPollEndpoint',
-                'ecs:Poll',
                 'ecs:RegisterContainerInstance',
-                'ecs:StartTelemetrySession',
                 'ecs:Submit*',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'EcsCluster97242B84',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
+                'ecs:Poll',
+                'ecs:StartTelemetrySession',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              Action: [
+                'ecs:DiscoverPollEndpoint',
                 'ecr:GetAuthorizationToken',
                 'logs:CreateLogStream',
                 'logs:PutLogEvents',
@@ -272,13 +305,39 @@ export = {
           Statement: [
             {
               Action: [
-                'ecs:CreateCluster',
                 'ecs:DeregisterContainerInstance',
-                'ecs:DiscoverPollEndpoint',
-                'ecs:Poll',
                 'ecs:RegisterContainerInstance',
-                'ecs:StartTelemetrySession',
                 'ecs:Submit*',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'EcsCluster97242B84',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
+                'ecs:Poll',
+                'ecs:StartTelemetrySession',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              Action: [
+                'ecs:DiscoverPollEndpoint',
                 'ecr:GetAuthorizationToken',
                 'logs:CreateLogStream',
                 'logs:PutLogEvents',
@@ -392,6 +451,16 @@ export = {
               ],
               Effect: 'Allow',
               Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
             },
             {
               Action: [
@@ -434,6 +503,31 @@ export = {
             Ref: 'EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA',
           },
         ],
+      }));
+
+      test.done();
+    },
+
+    'lifecycle hook with encrypted SNS is added correctly'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+      });
+      const key = new kms.Key(stack, 'Key');
+
+      // WHEN
+      cluster.addCapacity('DefaultAutoScalingGroup', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+        topicEncryptionKey: key,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::SNS::Topic', {
+        KmsMasterKeyId: {
+          Ref: 'Key961B73FD',
+        },
       }));
 
       test.done();
@@ -572,13 +666,39 @@ export = {
           Statement: [
             {
               Action: [
-                'ecs:CreateCluster',
                 'ecs:DeregisterContainerInstance',
-                'ecs:DiscoverPollEndpoint',
-                'ecs:Poll',
                 'ecs:RegisterContainerInstance',
-                'ecs:StartTelemetrySession',
                 'ecs:Submit*',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'EcsCluster97242B84',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
+                'ecs:Poll',
+                'ecs:StartTelemetrySession',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              Action: [
+                'ecs:DiscoverPollEndpoint',
                 'ecr:GetAuthorizationToken',
                 'logs:CreateLogStream',
                 'logs:PutLogEvents',

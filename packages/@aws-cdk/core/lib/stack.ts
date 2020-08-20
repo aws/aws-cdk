@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Annotations } from './annotations';
+import { App } from './app';
 import { Arn, ArnComponents } from './arn';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
@@ -80,7 +82,7 @@ export interface StackProps {
    *   }
    * });
    *
-   * // both of these stavks will use the stage's account/region:
+   * // both of these stacks will use the stage's account/region:
    * // `.account` and `.region` will resolve to the concrete values as above
    * new MyStack(myStage, 'Stack1');
    * new YourStack(myStage, 'Stack1');
@@ -161,7 +163,7 @@ export class Stack extends Construct implements ITaggable {
       return value;
     }
 
-    function _lookup(c: IConstruct): Stack  {
+    function _lookup(c: IConstruct): Stack {
       if (Stack.isStack(c)) {
         return c;
       }
@@ -201,7 +203,7 @@ export class Stack extends Construct implements ITaggable {
    * value is an unresolved token (`Token.isUnresolved(stack.region)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **region-agnostic template**. In this case, your code should either
-   * fail (throw an error, emit a synth error using `node.addError`) or
+   * fail (throw an error, emit a synth error using `Annotations.of(construct).addError()`) or
    * implement some other region-agnostic behavior.
    */
   public readonly region: string;
@@ -223,7 +225,7 @@ export class Stack extends Construct implements ITaggable {
    * value is an unresolved token (`Token.isUnresolved(stack.account)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **account-agnostic template**. In this case, your code should either
-   * fail (throw an error, emit a synth error using `node.addError`) or
+   * fail (throw an error, emit a synth error using `Annotations.of(construct).addError()`) or
    * implement some other region-agnostic behavior.
    */
   public readonly account: string;
@@ -571,7 +573,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Returnst the list of AZs that are availability in the AWS environment
+   * Returns the list of AZs that are available in the AWS environment
    * (account/region) associated with this stack.
    *
    * If the stack is environment-agnostic (either account and/or region are
@@ -582,6 +584,8 @@ export class Stack extends Construct implements ITaggable {
    * If they are not available in the context, returns a set of dummy values and
    * reports them as missing, and let the CLI resolve them by calling EC2
    * `DescribeAvailabilityZones` on the target environment.
+   *
+   * To specify a different strategy for selecting availability zones override this method.
    */
   public get availabilityZones(): string[] {
     // if account/region are tokens, we can't obtain AZs through the context
@@ -701,6 +705,32 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Synthesizes the cloudformation template into a cloud assembly.
+   * @internal
+   */
+  public _synthesizeTemplate(session: ISynthesisSession): void {
+    // In principle, stack synthesis is delegated to the
+    // StackSynthesis object.
+    //
+    // However, some parts of synthesis currently use some private
+    // methods on Stack, and I don't really see the value in refactoring
+    // this right now, so some parts still happen here.
+    const builder = session.assembly;
+
+    // write the CloudFormation template as a JSON file
+    const outPath = path.join(builder.outdir, this.templateFile);
+    const text = JSON.stringify(this._toCloudFormation(), undefined, 2);
+    fs.writeFileSync(outPath, text);
+
+    for (const ctx of this._missingContext) {
+      builder.addMissing(ctx);
+    }
+
+    // Delegate adding artifacts to the Synthesizer
+    this.synthesizer.synthesizeStackArtifacts(session);
+  }
+
+  /**
    * Returns the naming scheme used to allocate logical IDs. By default, uses
    * the `HashedAddressingScheme` but this method can be overridden to customize
    * this behavior.
@@ -761,28 +791,6 @@ export class Stack extends Construct implements ITaggable {
     }
   }
 
-  protected synthesize(session: ISynthesisSession): void {
-    // In principle, stack synthesis is delegated to the
-    // StackSynthesis object.
-    //
-    // However, some parts of synthesis currently use some private
-    // methods on Stack, and I don't really see the value in refactoring
-    // this right now, so some parts still happen here.
-    const builder = session.assembly;
-
-    // write the CloudFormation template as a JSON file
-    const outPath = path.join(builder.outdir, this.templateFile);
-    const text = JSON.stringify(this._toCloudFormation(), undefined, 2);
-    fs.writeFileSync(outPath, text);
-
-    for (const ctx of this._missingContext) {
-      builder.addMissing(ctx);
-    }
-
-    // Delegate adding artifacts to the Synthesizer
-    this.synthesizer.synthesizeStackArtifacts(session);
-  }
-
   /**
    * Returns the CloudFormation template for this stack by traversing
    * the tree and invoking _toCloudFormation() on all Entity objects.
@@ -794,7 +802,7 @@ export class Stack extends Construct implements ITaggable {
 
     if (this.templateOptions.transform) {
       // eslint-disable-next-line max-len
-      this.node.addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
+      Annotations.of(this).addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
 
@@ -854,16 +862,17 @@ export class Stack extends Construct implements ITaggable {
     // between producer and consumer anyway, so we can just assume that they are).
     const containingAssembly = Stage.of(this);
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
-    const region  = env.region  ?? containingAssembly?.region ?? Aws.REGION;
+    const region = env.region ?? containingAssembly?.region ?? Aws.REGION;
 
     // this is the "aws://" env specification that will be written to the cloud assembly
     // manifest. it will use "unknown-account" and "unknown-region" to indicate
     // environment-agnosticness.
     const envAccount = !Token.isUnresolved(account) ? account : cxapi.UNKNOWN_ACCOUNT;
-    const envRegion  = !Token.isUnresolved(region)  ? region  : cxapi.UNKNOWN_REGION;
+    const envRegion = !Token.isUnresolved(region) ? region : cxapi.UNKNOWN_REGION;
 
     return {
-      account, region,
+      account,
+      region,
       environment: cxapi.EnvironmentUtils.format(envAccount, envRegion),
     };
   }
@@ -879,7 +888,7 @@ export class Stack extends Construct implements ITaggable {
     for (const dep of Object.values(this._stackDependencies)) {
       const ret = dep.stack.stackDependencyReasons(other);
       if (ret !== undefined) {
-        return [ ...dep.reasons, ...ret ];
+        return [...dep.reasons, ...ret];
       }
     }
     return undefined;
@@ -906,7 +915,7 @@ export class Stack extends Construct implements ITaggable {
    * Stage, and prefix the path components of the Stage before it.
    */
   private generateStackName() {
-    const assembly  = Stage.of(this);
+    const assembly = Stage.of(this);
     const prefix = (assembly && assembly.stageName) ? `${assembly.stageName}-` : '';
     return `${prefix}${this.generateStackId(assembly)}`;
   }
@@ -960,18 +969,22 @@ function mergeSection(section: string, val1: any, val2: any): any {
         throw new Error(`Conflicting CloudFormation template versions provided: '${val1}' and '${val2}`);
       }
       return val1 ?? val2;
-    case 'Resources':
-    case 'Conditions':
-    case 'Parameters':
-    case 'Outputs':
-    case 'Mappings':
-    case 'Metadata':
     case 'Transform':
-      return mergeObjectsWithoutDuplicates(section, val1, val2);
+      return mergeSets(val1, val2);
     default:
-      throw new Error(`CDK doesn't know how to merge two instances of the CFN template section '${section}' - ` +
-        'please remove one of them from your code');
+      return mergeObjectsWithoutDuplicates(section, val1, val2);
   }
+}
+
+function mergeSets(val1: any, val2: any): any {
+  const array1 = val1 == null ? [] : (Array.isArray(val1) ? val1 : [val1]);
+  const array2 = val2 == null ? [] : (Array.isArray(val2) ? val2 : [val2]);
+  for (const value of array2) {
+    if (!array1.includes(value)) {
+      array1.push(value);
+    }
+  }
+  return array1.length === 1 ? array1[0] : array1;
 }
 
 function mergeObjectsWithoutDuplicates(section: string, dest: any, src: any): any {
@@ -1084,7 +1097,6 @@ import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 import { FileSystem } from './fs';
-import { App } from './app';
 
 interface StackDependency {
   stack: Stack;

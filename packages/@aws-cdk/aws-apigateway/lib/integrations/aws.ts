@@ -78,16 +78,18 @@ export class AwsIntegration extends Integration {
     super({
       type,
       integrationHttpMethod: props.integrationHttpMethod || 'POST',
-      uri: cdk.Lazy.stringValue({ produce: () => {
-        if (!this.scope) { throw new Error('AwsIntegration must be used in API'); }
-        return cdk.Stack.of(this.scope).formatArn({
-          service: 'apigateway',
-          account: backend,
-          resource: apiType,
-          sep: '/',
-          resourceName: apiValue,
-        });
-      }}),
+      uri: cdk.Lazy.stringValue({
+        produce: () => {
+          if (!this.scope) { throw new Error('AwsIntegration must be used in API'); }
+          return cdk.Stack.of(this.scope).formatArn({
+            service: 'apigateway',
+            account: backend,
+            resource: apiType,
+            sep: '/',
+            resourceName: apiValue,
+          });
+        },
+      }),
       options: props.options,
     });
   }

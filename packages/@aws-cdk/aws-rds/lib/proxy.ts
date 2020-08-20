@@ -91,8 +91,8 @@ export class ProxyTarget {
 
     return {
       engineFamily,
-      dbClusters: this.dbCluster ? [ this.dbCluster ] : undefined,
-      dbInstances: this.dbInstance ? [ this.dbInstance ] : undefined,
+      dbClusters: this.dbCluster ? [this.dbCluster] : undefined,
+      dbInstances: this.dbInstance ? [this.dbInstance] : undefined,
     };
   }
 }
@@ -415,7 +415,7 @@ export class DatabaseProxy extends cdk.Resource
     let dbInstanceIdentifiers: string[] | undefined;
     if (bindResult.dbInstances) {
       // support for only single instance
-      dbInstanceIdentifiers = [ bindResult.dbInstances[0].instanceIdentifier ];
+      dbInstanceIdentifiers = [bindResult.dbInstances[0].instanceIdentifier];
     }
 
     let dbClusterIdentifiers: string[] | undefined;

@@ -1,3 +1,164 @@
+# CloudFormation Resource Specification v16.3.0
+
+## New Resource Types
+
+* AWS::ApiGatewayV2::ApiGatewayManagedOverrides
+* AWS::ApiGatewayV2::VpcLink
+* AWS::AppMesh::GatewayRoute
+* AWS::AppMesh::VirtualGateway
+
+## Attribute Changes
+
+* AWS::ECS::TaskDefinition TaskDefinitionArn (__added__)
+* AWS::EFS::FileSystem Arn (__added__)
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker AuthenticationStrategy (__added__)
+* AWS::AmazonMQ::Broker LdapMetadata (__added__)
+* AWS::AmazonMQ::Broker LdapServerMetadata (__added__)
+* AWS::ApiGateway::DomainName DomainName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ApiGateway::DomainName DomainName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ApiGateway::DomainName Tags.DuplicatesAllowed (__deleted__)
+* AWS::CodeBuild::Project BuildBatchConfig (__added__)
+* AWS::CodeBuild::ReportGroup Type.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodeGuruProfiler::ProfilingGroup AnomalyDetectionNotificationConfiguration (__added__)
+* AWS::CodeGuruProfiler::ProfilingGroup Tags (__added__)
+* AWS::CodeStarConnections::Connection HostArn (__added__)
+* AWS::CodeStarConnections::Connection ProviderType.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::FlowLog LogFormat (__added__)
+* AWS::EC2::FlowLog MaxAggregationInterval (__added__)
+* AWS::EC2::FlowLog Tags (__added__)
+* AWS::ECS::TaskDefinition TaskDefinitionStatus (__added__)
+* AWS::ECS::TaskDefinition Tags.DuplicatesAllowed (__deleted__)
+* AWS::EFS::FileSystem BackupPolicy (__added__)
+* AWS::ImageBuilder::InfrastructureConfiguration ResourceTags (__added__)
+* AWS::IoT::ProvisioningTemplate Tags.ItemType (__deleted__)
+* AWS::IoT::ProvisioningTemplate Tags.Type (__changed__)
+  * Old: List
+  * New: Tags
+* AWS::KinesisFirehose::DeliveryStream HttpEndpointDestinationConfiguration (__added__)
+* AWS::SecretsManager::RotationSchedule HostedRotationLambda (__added__)
+* AWS::StepFunctions::StateMachine TracingConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::AmazonMQ::Broker.InterBrokerCred (__added__)
+* AWS::AmazonMQ::Broker.LdapMetadata (__added__)
+* AWS::AmazonMQ::Broker.LdapServerMetadata (__added__)
+* AWS::AmazonMQ::Broker.ServerMetadata (__added__)
+* AWS::CodeBuild::Project.BatchRestrictions (__added__)
+* AWS::CodeBuild::Project.ProjectBuildBatchConfig (__added__)
+* AWS::CodeGuruProfiler::ProfilingGroup.Channel (__added__)
+* AWS::ECS::TaskDefinition.Options (__added__)
+* AWS::EFS::FileSystem.BackupPolicy (__added__)
+* AWS::IoT::ProvisioningTemplate.Tags (__added__)
+* AWS::KinesisFirehose::DeliveryStream.HttpEndpointCommonAttribute (__added__)
+* AWS::KinesisFirehose::DeliveryStream.HttpEndpointConfiguration (__added__)
+* AWS::KinesisFirehose::DeliveryStream.HttpEndpointDestinationConfiguration (__added__)
+* AWS::KinesisFirehose::DeliveryStream.HttpEndpointRequestConfiguration (__added__)
+* AWS::KinesisFirehose::DeliveryStream.RetryOptions (__added__)
+* AWS::SecretsManager::RotationSchedule.HostedRotationLambda (__added__)
+* AWS::StepFunctions::StateMachine.TracingConfiguration (__added__)
+* AWS::ApiGateway::DomainName.EndpointConfiguration Types.DuplicatesAllowed (__deleted__)
+* AWS::CloudFront::Distribution.CacheBehavior CachePolicyId (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior OriginRequestPolicyId (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior ForwardedValues.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudFront::Distribution.DefaultCacheBehavior CachePolicyId (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior OriginRequestPolicyId (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior ForwardedValues.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::TaskDefinition.ContainerDefinition Command.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.ContainerDefinition DependsOn.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.ContainerDefinition DnsSearchDomains.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.ContainerDefinition DnsServers.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.ContainerDefinition DockerLabels.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.ContainerDefinition DockerSecurityOptions.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.ContainerDefinition EntryPoint.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.ContainerDefinition ExtraHosts.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.ContainerDefinition ResourceRequirements.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.ContainerDefinition Secrets.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.ContainerDefinition SystemControls.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.ContainerDefinition Ulimits.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.ContainerDependency Condition.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::TaskDefinition.ContainerDependency ContainerName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::TaskDefinition.Device HostPath.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::TaskDefinition.DockerVolumeConfiguration DriverOpts.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.DockerVolumeConfiguration Labels.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.FirelensConfiguration Options.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.FirelensConfiguration Options.PrimitiveItemType (__deleted__)
+* AWS::ECS::TaskDefinition.FirelensConfiguration Options.Type (__changed__)
+  * Old: Map
+  * New: Options
+* AWS::ECS::TaskDefinition.FirelensConfiguration Type.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::TaskDefinition.HealthCheck Command.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.HealthCheck Command.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::TaskDefinition.HostEntry Hostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::TaskDefinition.HostEntry IpAddress.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::TaskDefinition.KernelCapabilities Add.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.KernelCapabilities Drop.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.LinuxParameters Devices.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.LinuxParameters Tmpfs.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.LogConfiguration Options.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.LogConfiguration Options.PrimitiveItemType (__deleted__)
+* AWS::ECS::TaskDefinition.LogConfiguration Options.Type (__changed__)
+  * Old: Map
+  * New: Options
+* AWS::ECS::TaskDefinition.LogConfiguration SecretOptions.DuplicatesAllowed (__deleted__)
+* AWS::ECS::TaskDefinition.SystemControl Namespace.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::TaskDefinition.SystemControl Value.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::TaskDefinition.Tmpfs MountOptions.DuplicatesAllowed (__deleted__)
+* AWS::FSx::FileSystem.LustreConfiguration AutoImportPolicy (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution Region.Required (__changed__)
+  * Old: false
+  * New: true
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+* AWS::Serverless::StateMachine
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Function FileSystemConfigs (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.FileSystemConfig (__added__)
+
 
 # Serverless Application Model (SAM) Resource Specification v2016-10-31
 

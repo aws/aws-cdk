@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
-import * as path from 'path';
 import * as lambda from '../lib';
 
 class TestStack extends Stack {
@@ -16,6 +16,7 @@ class TestStack extends Stack {
       // (delay is a zero dependency package and its version is fixed
       // in the package.json to ensure a stable hash for this integ test)
       nodeModules: ['delay'],
+      forceDockerBundling: true,
     });
   }
 }

@@ -52,7 +52,7 @@ nodeunitShim({
 
     test.equals(rendered, '<powershell>trap {\n' +
         '$success=($PSItem.Exception.Message -eq "Success")\n' +
-        'cfn-signal --stack Default --resource RESOURCE1989552F --region ${Token[AWS::Region.4]} --success ($success.ToString().ToLower())\n' +
+        'cfn-signal --stack Default --resource RESOURCE1989552F --region ${Token[AWS.Region.4]} --success ($success.ToString().ToLower())\n' +
         'break\n' +
         '}\n' +
         'command1\n' +
@@ -157,7 +157,7 @@ nodeunitShim({
     test.equals(rendered, '#!/bin/bash\n' +
         'function exitTrap(){\n' +
         'exitCode=$?\n' +
-        '/opt/aws/bin/cfn-signal --stack Default --resource RESOURCE1989552F --region ${Token[AWS::Region.4]} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n' +
+        '/opt/aws/bin/cfn-signal --stack Default --resource RESOURCE1989552F --region ${Token[AWS.Region.4]} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n' +
         '}\n' +
         'trap exitTrap EXIT\n' +
         'command1');

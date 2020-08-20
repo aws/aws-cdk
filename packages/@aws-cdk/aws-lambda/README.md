@@ -272,6 +272,35 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
 managing concurrency.
 
+### AutoScaling
+
+You can use Application AutoScaling to automatically configure the provisioned concurrency for your functions. AutoScaling can be set to track utilization or be based on a schedule. To configure AutoScaling on a function alias:
+
+```ts
+const alias = new lambda.Alias(stack, 'Alias', {
+  aliasName: 'prod',
+  version,
+});
+
+// Create AutoScaling target
+const as = alias.addAutoScaling({ maxCapacity: 50 })
+
+// Configure Target Tracking
+as.scaleOnUtilization({
+  utilizationTarget: 0.5,
+});
+
+// Configure Scheduled Scaling
+as.scaleOnSchedule('ScaleUpInTheMorning', {
+  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0'}),
+  minCapacity: 20,
+});
+```
+
+[Example of Lambda AutoScaling usage](test/integ.autoscaling.lit.ts)
+
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-scaling.html) on autoscaling lambda functions.
+
 ### Log Group
 
 Lambda functions automatically create a log group with the name `/aws/lambda/<function-name>` upon first execution with
@@ -302,7 +331,7 @@ from lambda function, the Amazon EFS access point will be required.
 The following sample allows the lambda function to mount the Amazon EFS access point to `/mnt/msg` in the runtime environment and access the filesystem with the POSIX identity defined in `posixUser`.
 
 ```ts
-// create a new Amaozn EFS filesystem
+// create a new Amazon EFS filesystem
 const fileSystem = new efs.FileSystem(stack, 'Efs', { vpc });
 
 // create a new access point from the filesystem
@@ -362,7 +391,7 @@ new lambda.Function(this, 'Function', {
       command: [
         'bash', '-c', `
         pip install -r requirements.txt -t /asset-output &&
-        rsync -r . /asset-output
+        cp -au . /asset-output
         `,
       ],
     },

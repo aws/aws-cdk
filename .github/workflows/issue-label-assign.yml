@@ -2,7 +2,7 @@ name: "Set Issue Label and Assignee"
 on:
  issues:
     types: [opened, edited]
-  
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -43,8 +43,9 @@ jobs:
            {"keywords":["[@aws-cdk/aws-certificatemanager]","[aws-certificatemanager]","[certificatemanager]","[certificate manager]","[certificate-manager]","[acm]"],"labels":["@aws-cdk/aws-certificatemanager"],"assignees":["njlynch"]},
            {"keywords":["[@aws-cdk/aws-chatbot]","[aws-chatbot]","[chatbot]"],"labels":["@aws-cdk/aws-chatbot"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["[@aws-cdk/aws-cloud9]","[aws-cloud9]","[cloud9]","[cloud 9]"],"labels":["@aws-cdk/aws-cloud9"],"assignees":["skinny85"]},
-           {"keywords":["[@aws-cdk/aws-cloudformation]","[aws-cloudformation]","[cloudformation]","[cloud formation]"],"labels":["@aws-cdk/aws-cloudformation"],"assignees":["eladb"]},
-           {"keywords":["[@aws-cdk/aws-cloudfront]","[aws-cloudfront]","[cloudfront]","[cloud front]"],"labels":["@aws-cdk/aws-cloudfront"],"assignees":["iliapolo"]},
+           {"keywords":["[@aws-cdk/aws-cloudformation]","[aws-cloudformation]","[cloudformation]","[cloud formation]"],"labels":["@aws-cdk/aws-cloudformation"],"assignees":["rix0rrr"]},
+           {"keywords":["[@aws-cdk/aws-cloudfront]","[aws-cloudfront]","[cloudfront]","[cloud front]"],"labels":["@aws-cdk/aws-cloudfront"],"assignees":["njlynch"]},
+           {"keywords":["[@aws-cdk/aws-cloudfront-origins]","[aws-cloudfront-origins]","[cloudfront-origins]","[cloudfront origins]"],"labels":["@aws-cdk/aws-cloudfront-origins"],"assignees":["njlynch"]},
            {"keywords":["[@aws-cdk/aws-cloudtrail]","[aws-cloudtrail]","[cloudtrail]","[cloud trail]"],"labels":["@aws-cdk/aws-cloudtrail"],"assignees":["rix0rrr"]},
            {"keywords":["[@aws-cdk/aws-cloudwatch]","[aws-cloudwatch]","[cloudwatch]","[cloud watch]"],"labels":["@aws-cdk/aws-cloudwatch"],"assignees":["rix0rrr"]},
            {"keywords":["[@aws-cdk/aws-cloudwatch-actions]","[aws-cloudwatch-actions]","[cloudwatch-actions]","[cloudwatch actions]"],"labels":["@aws-cdk/aws-cloudwatch-actions"],"assignees":["rix0rrr"]},
@@ -72,7 +73,7 @@ jobs:
            {"keywords":["[@aws-cdk/aws-ecr]","[aws-ecr]","[ecr]"],"labels":["@aws-cdk/aws-ecr"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["[@aws-cdk/aws-ecr-assets]","[aws-ecr-assets]","[ecr-assets]","[ecr assets]","[ecrassets]"],"labels":["@aws-cdk/aws-ecr-assets"],"assignees":["eladb"]},
            {"keywords":["[@aws-cdk/aws-efs]","[aws-efs]","[efs]"],"labels":["@aws-cdk/aws-efs"],"assignees":["rix0rrr"]},
-           {"keywords":["[@aws-cdk/aws-eks]","[aws-eks]","[eks]"],"labels":["@aws-cdk/aws-eks"],"assignees":["eladb"]},
+           {"keywords":["[@aws-cdk/aws-eks]","[aws-eks]","[eks]"],"labels":["@aws-cdk/aws-eks"],"assignees":["iliapolo"]},
            {"keywords":["[@aws-cdk/aws-elasticache]","[aws-elasticache]","[elasticache]","[elastic cache]","[elastic-cache]"],"labels":["@aws-cdk/aws-elasticache"],"assignees":["iliapolo"]},
            {"keywords":["[@aws-cdk/aws-elasticbeanstalk]","[aws-elasticbeanstalk]","[elasticbeanstalk]","[elastic beanstalk]","[elastic-beanstalk]"],"labels":["@aws-cdk/aws-elasticbeanstalk"],"assignees":["skinny85"]},
            {"keywords":["[@aws-cdk/aws-elasticloadbalancing]","[aws-elasticloadbalancing]","[elasticloadbalancing]","[elastic loadbalancing]","[elastic-loadbalancing]","[elb]"],"labels":["@aws-cdk/aws-elasticloadbalancing"],"assignees":["rix0rrr"]},
@@ -156,13 +157,13 @@ jobs:
            {"keywords":["[@aws-cdk/aws-wafregional]","[aws-wafregional]","[wafregional]","[waf regional]","[waf-regional]"],"labels":["@aws-cdk/aws-wafregional"],"assignees":["rix0rrr"]},
            {"keywords":["[@aws-cdk/aws-wafv2]","[aws-wafv2]","[wafv2]","[waf v2]","[waf-v2]"],"labels":["@aws-cdk/aws-wafv2"],"assignees":["rix0rrr"]},
            {"keywords":["[@aws-cdk/aws-workspaces]","[aws-workspaces]","[workspaces]"],"labels":["@aws-cdk/aws-workspaces"],"assignees":["NetaNir"]},
-           {"keywords":["[@aws-cdk/cfnspec]","[cfnspec]","[cfn spec]","[cfn-spec]"],"labels":["@aws-cdk/cfnspec"],"assignees":["eladb"]},
-           {"keywords":["[@aws-cdk/cloud-assembly-schema]","[cloud-assembly-schema]","[cloud assembly schema]"],"labels":["@aws-cdk/cloud-assembly-schema"],"assignees":["eladb"]},
+           {"keywords":["[@aws-cdk/cfnspec]","[cfnspec]","[cfn spec]","[cfn-spec]"],"labels":["@aws-cdk/cfnspec"],"assignees":["rix0rrr"]},
+           {"keywords":["[@aws-cdk/cloud-assembly-schema]","[cloud-assembly-schema]","[cloud assembly schema]"],"labels":["@aws-cdk/cloud-assembly-schema"],"assignees":["rix0rrr"]},
            {"keywords":["[@aws-cdk/cloudformation-diff]","[cloudformation-diff]","[cloudformation diff]","[cfn diff]"],"labels":["@aws-cdk/cloudformation-diff"],"assignees":["shivlaks"]},
            {"keywords":["[@aws-cdk/cloudformation-include]","[cloudformation-include]","[cloudformation include]","[cfn include]","[cfn-include]"],"labels":["@aws-cdk/cloudformation-include"],"assignees":["skinny85"]},
-           {"keywords":["[@aws-cdk/core]","[core]"],"labels":["@aws-cdk/core"],"assignees":["eladb"]},
-           {"keywords":["[@aws-cdk/custom-resources]","[custom-resources]","[custom resources]"],"labels":["@aws-cdk/custom-resources"],"assignees":["eladb"]},
-           {"keywords":["[@aws-cdk/cx-api]","[cx-api]","[cx api]"],"labels":["@aws-cdk/cx-api"],"assignees":["eladb"]},
+           {"keywords":["[@aws-cdk/core]","[core]"],"labels":["@aws-cdk/core"],"assignees":["rix0rrr"]},
+           {"keywords":["[@aws-cdk/custom-resources]","[custom-resources]","[custom resources]"],"labels":["@aws-cdk/custom-resources"],"assignees":["rix0rrr"]},
+           {"keywords":["[@aws-cdk/cx-api]","[cx-api]","[cx api]"],"labels":["@aws-cdk/cx-api"],"assignees":["rix0rrr"]},
            {"keywords":["[@aws-cdk/region-info]","[region-info]","[region info]"],"labels":["@aws-cdk/region-info"],"assignees":["RomainMuller"]},
            {"keywords":["[@aws-cdk/aws-macie]","[aws-macie]","[macie]"],"labels":["@aws-cdk/aws-macie"],"assignees":["rix0rrr"]},
            {"keywords":["[@aws-cdk/pipelines]","[pipelines]","[cdk pipelines]","[cdk-pipelines]"],"labels":["@aws-cdk/pipelines"],"assignees":["rix0rrr"]}

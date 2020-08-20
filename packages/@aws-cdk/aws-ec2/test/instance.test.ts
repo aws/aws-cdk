@@ -1,9 +1,13 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { arrayWith, expect as cdkExpect, haveResource, ResourcePart, stringLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { AmazonLinuxImage, BlockDeviceVolume, EbsDeviceVolumeType, Instance, InstanceClass, InstanceSize, InstanceType, Vpc } from '../lib';
+import {
+  AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
+  EbsDeviceVolumeType, InitCommand, Instance, InstanceClass, InstanceSize, InstanceType, Vpc,
+} from '../lib';
 
 nodeunitShim({
   'instance is created correctly'(test: Test) {
@@ -19,7 +23,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::Instance', {
+    cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
       InstanceType: 't3.large',
     }));
 
@@ -39,7 +43,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::Instance', {
+    cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
       InstanceType: 't3.large',
       SourceDestCheck: false,
     }));
@@ -61,7 +65,7 @@ nodeunitShim({
     param.grantRead(instance);
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    cdkExpect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -139,7 +143,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::EC2::Instance', {
+      cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
         BlockDeviceMappings: [
           {
             DeviceName: 'ebs',
@@ -285,11 +289,62 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::Instance', {
+    cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
       InstanceType: 't3.large',
       PrivateIpAddress: '10.0.0.2',
     }));
 
     test.done();
   },
+});
+
+test('add CloudFormation Init to instance', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new Vpc(stack, 'VPC');
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    init: CloudFormationInit.fromElements(
+      InitCommand.shellCommand('echo hello'),
+    ),
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::EC2::Instance', {
+    UserData: {
+      'Fn::Base64': {
+        'Fn::Join': ['', [
+          stringLike('#!/bin/bash\n# fingerprint: *\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region '),
+          { Ref: 'AWS::Region' },
+          ' --stack ',
+          { Ref: 'AWS::StackName' },
+          ' --resource InstanceC1063A87 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ',
+          { Ref: 'AWS::Region' },
+          ' --stack ',
+          { Ref: 'AWS::StackName' },
+          ' --resource InstanceC1063A87\n  cat /var/log/cfn-init.log >&2\n)',
+        ]],
+      },
+    },
+  });
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: arrayWith({
+        Action: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
+        Effect: 'Allow',
+        Resource: { Ref: 'AWS::StackId' },
+      }),
+      Version: '2012-10-17',
+    },
+  });
+  cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
+    CreationPolicy: {
+      ResourceSignal: {
+        Count: 1,
+        Timeout: 'PT5M',
+      },
+    },
+  }, ResourcePart.CompleteDefinition));
 });
