@@ -98,11 +98,19 @@ describe('CDK Include', () => {
     );
   });
 
-  test('correctly parse strings as integers as needed', () => {
-    includeTestTemplate(stack, 'parsing-as-numbers.json');
+  test('accepts strings for properties with type number', () => {
+    includeTestTemplate(stack, 'string-for-number.json');
 
     expect(stack).toMatchTemplate(
-      loadTestFileToJsObject('parsing-as-numbers.json'),
+      loadTestFileToJsObject('string-for-number.json'),
+    );
+  });
+
+  test('accepts numbers for properties with type string', () => {
+    includeTestTemplate(stack, 'number-for-string.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('number-for-string.json'),
     );
   });
 
