@@ -1,4 +1,3 @@
-import { arrayWith } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
