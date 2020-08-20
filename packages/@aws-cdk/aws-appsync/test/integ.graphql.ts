@@ -227,7 +227,7 @@ httpDS.createResolver({
 
 });
 
-const vpc = new Vpc(stack, 'Vpc', {maxAzs: 2});
+const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 
 const securityGroup = new SecurityGroup(stack, 'AuroraSecurityGroup', {
   vpc,
@@ -257,7 +257,7 @@ const cluster = new DatabaseCluster(stack, 'AuroraCluster', {
   defaultDatabaseName: 'Animals',
 });
 
-const rdsDS = api.addRdsDataSource('rds', 'The rds data source', cluster, secret);
+const rdsDS = api.addRdsDataSource('rds', cluster, secret, { description: 'The rds data source' });
 
 rdsDS.createResolver({
   typeName: 'Query',
