@@ -2,7 +2,7 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, Construct, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import { CfnOutput, Construct, Resource, Stack, Token, Tags } from '@aws-cdk/core';
 import { ICluster, ClusterAttributes, KubernetesVersion, NodeType, DefaultCapacityType, EksOptimizedImage, CapacityOptions, MachineImageType, AutoScalingGroupOptions, CommonClusterOptions } from './cluster';
 import { clusterArnComponents } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -327,7 +327,7 @@ export class LegacyCluster extends Resource implements ICluster {
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
-    Tag.add(autoScalingGroup, `kubernetes.io/cluster/${this.clusterName}`, 'owned', {
+    Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
       applyToLaunchedInstances: true,
     });
 
@@ -361,7 +361,7 @@ export class LegacyCluster extends Resource implements ICluster {
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, '1'));
+        Tags.of(subnet).add(tag, '1');
       }
     };
 

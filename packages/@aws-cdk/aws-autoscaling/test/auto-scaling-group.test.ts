@@ -512,8 +512,9 @@ nodeunitShim({
         pauseTime: cdk.Duration.seconds(345),
       },
     });
-    asg.node.applyAspect(new cdk.Tag('superfood', 'acai'));
-    asg.node.applyAspect(new cdk.Tag('notsuper', 'caramel', { applyToLaunchedInstances: false }));
+
+    cdk.Tags.of(asg).add('superfood', 'acai');
+    cdk.Tags.of(asg).add('notsuper', 'caramel', { applyToLaunchedInstances: false });
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {

@@ -2,6 +2,7 @@
 import { IAspect, Aspects } from './aspect';
 import { Construct, IConstruct } from './construct-compat';
 import { ITaggable, TagManager } from './tag-manager';
+import { Annotations } from './annotations';
 
 /**
  * Properties for a tag
@@ -91,6 +92,7 @@ export class Tag extends TagBase {
    * @deprecated use `Tags.of(scope).add()`
    */
   public static add(scope: Construct, key: string, value: string, props: TagProps = {}) {
+    Annotations.of(scope).addDeprecation('@aws-cdk/core.Tag.add(scope,k,v)', 'Use "Tags.of(scope).add(k,v)" instead');
     Tags.of(scope).add(key, value, props);
   }
 
@@ -100,6 +102,7 @@ export class Tag extends TagBase {
    * @deprecated use `Tags.of(scope).remove()`
    */
   public static remove(scope: Construct, key: string, props: TagProps = {}) {
+    Annotations.of(scope).addDeprecation('@aws-cdk/core.Tag.remove(scope,k,v)', 'Use "Tags.of(scope).remove(k,v)" instead');
     Tags.of(scope).remove(key, props);
   }
 
