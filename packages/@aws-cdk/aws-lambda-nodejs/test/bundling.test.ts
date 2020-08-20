@@ -241,6 +241,7 @@ test('Local bundling', () => {
     ],
     expect.objectContaining({
       env: expect.objectContaining({ KEY: 'value' }),
+      cwd: '/project/folder',
     }),
   );
 
