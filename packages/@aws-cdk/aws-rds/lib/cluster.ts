@@ -85,6 +85,13 @@ export interface DatabaseClusterProps {
   readonly defaultDatabaseName?: string;
 
   /**
+   * Indicates whether the DB cluster should have deletion protection enabled.
+   *
+   * @default true
+   */
+  readonly deletionProtection?: boolean;
+
+  /**
    * Whether to enable storage encryption.
    *
    * @default - true if storageEncryptionKey is provided, false otherwise
@@ -425,6 +432,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       port: props.port ?? clusterEngineBindConfig.port,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
+      deletionProtection: props.deletionProtection,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret
