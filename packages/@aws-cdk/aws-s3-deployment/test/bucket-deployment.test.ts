@@ -622,29 +622,3 @@ test('deploy without deleting missing files from destination', () => {
     Prune: false,
   });
 });
-
-test('Deployment role gets KMS permissions when using assets from new style synthesizer', () => {
-  const stack = new cdk.Stack(undefined, undefined, {
-    synthesizer: new cdk.DefaultStackSynthesizer(),
-  });
-  const bucket = new s3.Bucket(stack, 'Dest');
-
-  // WHEN
-  new s3deploy.BucketDeployment(stack, 'Deploy', {
-    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-    destinationBucket: bucket,
-  });
-
-  // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Version: '2012-10-17',
-      Statement: arrayWith({
-        Action: ['kms:Decrypt', 'kms:DescribeKey'],
-        Effect: 'Allow',
-        Resource: { 'Fn::ImportValue': 'CdkBootstrap-hnb659fds-FileAssetKeyArn' },
-      }),
-    },
-  });
-
-});
