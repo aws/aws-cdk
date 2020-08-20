@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, RemovalPolicy, Stack, Tag, Tags } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
 import { Attribute, AttributeType, ProjectionType, StreamViewType, Table, TableEncryption } from '../lib';
 
 // CDK parameters

@@ -1,4 +1,4 @@
-import { App, RemovalPolicy, Stack, Tag, Tags } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
 import { Attribute, AttributeType, BillingMode, ProjectionType, StreamViewType, Table } from '../lib';
 
 // CDK parameters
