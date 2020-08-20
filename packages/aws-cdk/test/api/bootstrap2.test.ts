@@ -27,7 +27,7 @@ describe('Bootstrapping v2', () => {
 
   let sdk: MockSdkProvider;
   beforeEach(() => {
-    sdk = new MockSdkProvider();
+    sdk = new MockSdkProvider({ realSdk: false });
     mockToolkitInfo = undefined;
   });
 
@@ -39,10 +39,10 @@ describe('Bootstrapping v2', () => {
     });
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: {
+      parameters: expect.objectContaining({
         FileAssetsBucketName: 'my-bucket-name',
         PublicAccessBlockConfiguration: 'true',
-      },
+      }),
     }));
   });
 
@@ -54,10 +54,10 @@ describe('Bootstrapping v2', () => {
     });
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: {
+      parameters: expect.objectContaining({
         FileAssetsBucketKmsKeyId: 'my-kms-key-id',
         PublicAccessBlockConfiguration: 'true',
-      },
+      }),
     }));
   });
 
@@ -69,9 +69,9 @@ describe('Bootstrapping v2', () => {
     });
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: {
+      parameters: expect.objectContaining({
         PublicAccessBlockConfiguration: 'false',
-      },
+      }),
     }));
   });
 
@@ -82,7 +82,23 @@ describe('Bootstrapping v2', () => {
       },
     }))
       .rejects
-      .toThrow('--cloudformation-execution-policies are required if --trust has been passed!');
+      .toThrow(/--cloudformation-execution-policies.*--trust/);
+  });
+
+  test('allow adding trusted account if there was already a policy on the stack', async () => {
+    // GIVEN
+    mockToolkitInfo = {
+      parameters: {
+        CloudFormationExecutionPolicies: 'arn:aws:something',
+      },
+    };
+
+    await bootstrapEnvironment2(env, sdk, {
+      parameters: {
+        trustedAccounts: ['123456789012'],
+      },
+    });
+    // Did not throw
   });
 
   test('Do not allow downgrading bootstrap stack version', async () => {

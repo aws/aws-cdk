@@ -35,46 +35,42 @@ export class ToolkitInfo {
       return undefined;
     }
 
-    const outputs = stack.outputs;
-
     return new ToolkitInfo({
+      stackName: stack.stackName,
       sdk,
       environment,
-      bucketName: requireOutput(BUCKET_NAME_OUTPUT),
-      bucketEndpoint: requireOutput(BUCKET_DOMAIN_NAME_OUTPUT),
-      version: parseInt(outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10),
+      outputs: stack.outputs,
+      parameters: stack.parameters,
     });
 
-    function requireOutput(output: string): string {
-      if (!(output in outputs)) {
-        throw new Error(`The CDK toolkit stack (${stack!.stackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
-      }
-      return outputs[output];
-    }
   }
 
   public readonly sdk: ISDK;
 
   constructor(private readonly props: {
+    readonly stackName: string,
     readonly sdk: ISDK,
-    bucketName: string,
-    bucketEndpoint: string,
-    environment: cxapi.Environment,
-    version: number,
+    readonly environment: cxapi.Environment,
+    readonly outputs: Record<string, string>,
+    readonly parameters?: Record<string, string>,
   }) {
     this.sdk = props.sdk;
   }
 
   public get bucketUrl() {
-    return `https://${this.props.bucketEndpoint}`;
+    return `https://${this.requireOutput(BUCKET_DOMAIN_NAME_OUTPUT)}`;
   }
 
   public get bucketName() {
-    return this.props.bucketName;
+    return this.requireOutput(BUCKET_NAME_OUTPUT);
   }
 
   public get version() {
-    return this.props.version;
+    return parseInt(this.props.outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
+  }
+
+  public get parameters(): Record<string, string> {
+    return this.props.parameters ?? {};
   }
 
   /**
@@ -115,6 +111,13 @@ export class ToolkitInfo {
 
   private async ecr() {
     return this.sdk.ecr();
+  }
+
+  private requireOutput(output: string): string {
+    if (!(output in this.props.outputs)) {
+      throw new Error(`The CDK toolkit stack (${this.props.stackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
+    }
+    return this.props.outputs[output];
   }
 }
 

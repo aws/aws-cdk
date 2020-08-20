@@ -65,7 +65,7 @@ Conditions:
   UsePublicAccessBlockConfiguration:
     Fn::Equals:
       - 'true'
-      - Ref: PublicAccessBlockConfiguration  
+      - Ref: PublicAccessBlockConfiguration
 Resources:
   FileAssetsBucketEncryptionKey:
     Type: AWS::KMS::Key
@@ -143,7 +143,7 @@ Resources:
             BlockPublicPolicy: true
             IgnorePublicAcls: true
             RestrictPublicBuckets: true
-          - Ref: AWS::NoValue       
+          - Ref: AWS::NoValue
     UpdateReplacePolicy: Retain
   StagingBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
@@ -347,7 +347,12 @@ Resources:
         Fn::If:
           - HasCloudFormationExecutionPolicies
           - Ref: CloudFormationExecutionPolicies
-          - Ref: AWS::NoValue
+          - Fn::If:
+            - HasTrustedAccounts
+            # The CLI will prevent this case from occurring
+            - Ref: AWS::NoValue
+            # The CLI will advertise this case
+            - - Fn::Sub: "arn:${AWS::Partition}:iam::aws:policy/AdministratorAccess"
       RoleName:
         Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
 Outputs:
