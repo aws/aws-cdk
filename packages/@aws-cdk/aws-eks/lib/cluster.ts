@@ -1239,7 +1239,7 @@ export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps
 
   /**
    * CPU type of the instances to start
-   * 
+   *
    * @default CpuType.x86_64
    */
   readonly cpuType?: CpuType;
@@ -1417,7 +1417,7 @@ export interface EksOptimizedImageProps {
 
   /**
    * What cpu type to retrieve the image for (arm64 or x86_64)
-   * 
+   *
    * @default CpuType.X86_64
    */
   readonly cpuType?: CpuType;
@@ -1449,8 +1449,8 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
-      + ( this.nodeType === NodeType.STANDARD ? this.cpuType === CpuType.X86_64 ? 
-        'amazon-linux-2/' : 'amazon-linux-2-arm64/'  :'' )
+      + ( this.nodeType === NodeType.STANDARD ? this.cpuType === CpuType.X86_64 ?
+        'amazon-linux-2/' : 'amazon-linux-2-arm64/' :'' )
       + ( this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '' )
       + (this.nodeType === NodeType.INFERENTIA ? 'amazon-linux-2-gpu/' : '')
       + 'recommended/image_id';

@@ -890,7 +890,7 @@ export = {
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('/amazon-linux-2-arm64/'),
       ), 'EKS AMI with GPU should be in ssm parameters');
       test.done();
-    },    
+    },
 
     'when using custom resource a creation role & policy is defined'(test: Test) {
       // GIVEN
