@@ -346,12 +346,13 @@ type Node {
 The CDK code required would be:
 
 ```ts
-const field = new appsync.Field(appsync.GraphqlType.string(), {
+const field = new appsync.Field({
+  returnType: appsync.GraphqlType.string(),
   args: {
     argument: appsync.GraphqlType.string(),
   },
 });
-const type = new appsynce.ObjectType('Node', {
+const type = new appsync.InterfaceType('Node', {
   definition: { test: field },
 });
 ```
@@ -362,29 +363,61 @@ const type = new appsynce.ObjectType('Node', {
 [**Object Types**](#Object-Types) can have fields that resolve and perform operations on
 your backend.
 
-For example, if we want to create the following type:
+You can also create resolvable fields for object types.
 
 ```gql
-type Query {
-  get(argument: string): String
+type Info {
+  node(id: String): String
 }
 ```
 
 The CDK code required would be:
 
 ```ts
-const field = new appsync.Field(appsync.GraphqlType.string(), {
-  args: {
-    argument: appsync.GraphqlType.string(),
+const info = new appsync.ObjectType('Info', {
+  definition: { 
+    node: new appsync.ResolvableField({
+      returnType: appsync.GraphqlType.string(),
+      args: {
+        id: appsync.GraphqlType.string(),
+      },
+      dataSource: api.addNoneDataSource('none'),
+      requestMappingTemplate: dummyRequest,
+      responseMappingTemplate: dummyResponse,
+    }),
   },
-  dataSource: api.addNoneDataSource('none'),
-  requestMappingTemplate: dummyRequest,
-  responseMappingTemplate: dummyResponse,
-});
-const type = new appsynce.ObjectType('Query', {
-  definition: { get: field },
 });
 ```
+
+To nest resolvers, we can also create top level query types that call upon
+other types. Building off the previous example, if we want the following graphql
+type definition:
+
+```gql
+type Query {
+  get(argument: string): Info
+}
+```
+
+The CDK code required would be:
+
+```ts
+const query = new appsync.ObjectType('Query', {
+  definition: { 
+    get: new appsync.ResolvableField({
+      returnType: appsync.GraphqlType.string(),
+      args: {
+        argument: appsync.GraphqlType.string(),
+      },
+      dataSource: api.addNoneDataSource('none'),
+      requestMappingTemplate: dummyRequest,
+      responseMappingTemplate: dummyResponse,
+    }),
+  },
+});
+```
+
+Learn more about fields and resolvers [here](https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-overview.html).
 
 ### Intermediate Types
 

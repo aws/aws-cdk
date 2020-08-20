@@ -332,7 +332,11 @@ export class GraphqlType implements IField {
  */
 export interface FieldOptions {
   /**
-   * The arguments for this resolvable field.
+   * The return type for this field
+   */
+  readonly returnType: GraphqlType;
+  /**
+   * The arguments for this field.
    *
    * i.e. type Example (first: String second: String) {}
    * - where 'first' and 'second' are key values for args
@@ -355,14 +359,14 @@ export class Field extends GraphqlType implements IField {
    */
   public readonly fieldOptions?: ResolvableFieldOptions;
 
-  public constructor(type: GraphqlType, options: FieldOptions) {
+  public constructor(options: FieldOptions) {
     const props = {
-      isList: type.isList,
-      isRequired: type.isRequired,
-      isRequiredList: type.isRequiredList,
-      intermediateType: type.intermediateType,
+      isList: options.returnType.isList,
+      isRequired: options.returnType.isRequired,
+      isRequiredList: options.returnType.isRequiredList,
+      intermediateType: options.returnType.intermediateType,
     };
-    super(type.type, props);
+    super(options.returnType.type, props);
     this.fieldOptions = options;
   }
 
@@ -421,9 +425,12 @@ export class ResolvableField extends Field implements IField {
    */
   public readonly fieldOptions?: ResolvableFieldOptions;
 
-  public constructor(type: GraphqlType, options: ResolvableFieldOptions) {
-    const props = { args: options.args };
-    super(type, props);
+  public constructor(options: ResolvableFieldOptions) {
+    const props = {
+      returnType: options.returnType,
+      args: options.args,
+    };
+    super(props);
     this.fieldOptions = options;
   }
 }

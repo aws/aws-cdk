@@ -272,7 +272,8 @@ describe('testing InterfaceType properties', () => {
 
   test('InterfaceType fields can have arguments', () => {
     // WHEN
-    baseTest.addField('test', new appsync.Field(t.string, {
+    baseTest.addField('test', new appsync.Field({
+      returnType: t.string,
       args: { success: t.int },
     }));
     api.appendToSchema(baseTest.toString());
@@ -286,7 +287,8 @@ describe('testing InterfaceType properties', () => {
 
   test('InterfaceType fields will not produce resolvers', () => {
     // WHEN
-    baseTest.addField('test', new appsync.ResolvableField(t.string, {
+    baseTest.addField('test', new appsync.ResolvableField({
+      returnType: t.string,
       args: { success: t.int },
       dataSource: api.addNoneDataSource('none'),
     }));
@@ -400,7 +402,8 @@ describe('testing Object Type properties', () => {
 
   test('Object Type can implement Resolvable Field in definition', () => {
     // WHEN
-    const field = new appsync.ResolvableField(t.string, {
+    const field = new appsync.ResolvableField({
+      returnType: t.string,
       dataSource: api.addNoneDataSource('none'),
       args: {
         arg: t.int,
@@ -423,7 +426,8 @@ describe('testing Object Type properties', () => {
 
   test('Object Type can implement Resolvable Field from GraphqlType', () => {
     // WHEN
-    const field = new appsync.ResolvableField(t.string, {
+    const field = new appsync.ResolvableField({
+      returnType: t.string,
       dataSource: api.addNoneDataSource('none'),
       args: {
         arg: t.int,
@@ -446,7 +450,8 @@ describe('testing Object Type properties', () => {
 
   test('Object Type can dynamically add Fields', () => {
     // WHEN
-    const field = new appsync.ResolvableField(t.string, {
+    const field = new appsync.ResolvableField({
+      returnType: t.string,
       dataSource: api.addNoneDataSource('none'),
       args: {
         arg: t.int,
@@ -483,7 +488,8 @@ describe('testing Object Type properties', () => {
         test: t.string,
       },
     });
-    const field = new appsync.ResolvableField(garbage.attribute(), {
+    const field = new appsync.ResolvableField({
+      returnType: garbage.attribute(),
       dataSource: api.addNoneDataSource('none'),
       args: {
         arg: garbage.attribute(),

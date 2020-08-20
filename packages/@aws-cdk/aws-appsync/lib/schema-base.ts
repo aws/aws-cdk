@@ -15,7 +15,7 @@ export interface IField {
    * property determining if this attribute is a list
    * i.e. if true, attribute would be `[Type]`
    *
-   * @default - false
+   * @default false
    */
   readonly isList: boolean;
 
@@ -24,7 +24,7 @@ export interface IField {
    * i.e. if true, attribute would be `Type!` and this attribute
    * must always have a value
    *
-   * @default - false
+   * @default false
    */
   readonly isRequired: boolean;
 
@@ -33,7 +33,7 @@ export interface IField {
    * i.e. if true, attribute would be `[ Type ]!` and this attribute's
    * list must always have a value
    *
-   * @default - false
+   * @default false
    */
   readonly isRequiredList: boolean;
 
