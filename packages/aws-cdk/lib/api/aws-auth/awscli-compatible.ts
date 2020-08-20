@@ -36,7 +36,6 @@ export class AwsCliCompatible {
     ec2creds: boolean | undefined,
     containerCreds: boolean | undefined,
     httpOptions: AWS.HTTPOptions | undefined) {
-    await forceSdkToReadConfigIfPresent();
 
     profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
@@ -46,10 +45,9 @@ export class AwsCliCompatible {
     ];
 
     if (await fs.pathExists(credentialsFileName())) {
-      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions, tokenCodeFn }));
-    }
-
-    if (await fs.pathExists(configFileName())) {
+      // Force reading the `config` file if it exists by setting the appropriate
+      // environment variable.
+      await forceSdkToReadConfigIfPresent();
       sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions, tokenCodeFn }));
     }
 
@@ -173,7 +171,7 @@ function configFileName() {
 /**
  * Force the JS SDK to honor the ~/.aws/config file (and various settings therein)
  *
- * For example, ther is just *NO* way to do AssumeRole credentials as long as AWS_SDK_LOAD_CONFIG is not set,
+ * For example, there is just *NO* way to do AssumeRole credentials as long as AWS_SDK_LOAD_CONFIG is not set,
  * or read credentials from that file.
  *
  * The SDK crashes if the variable is set but the file does not exist, so conditionally set it.
