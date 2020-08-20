@@ -153,6 +153,7 @@
       "docs-public-apis:@aws-cdk/aws-ecs.ScratchSpace.sourcePath",
       "props-default-doc:@aws-cdk/aws-ecs.Tmpfs.mountOptions",
       "props-default-doc:@aws-cdk/aws-ecs.Volume.dockerVolumeConfiguration",
+      "props-default-doc:@aws-cdk/aws-ecs.Volume.efsVolumeConfiguration",
       "props-default-doc:@aws-cdk/aws-ecs.Volume.host",
       "docs-public-apis:@aws-cdk/aws-ecs.Capability.ALL",
       "docs-public-apis:@aws-cdk/aws-ecs.Capability.AUDIT_CONTROL",

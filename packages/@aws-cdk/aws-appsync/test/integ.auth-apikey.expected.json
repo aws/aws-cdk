@@ -7,19 +7,6 @@
         "Name": "Integ_Test_APIKey"
       }
     },
-    "ApiDefaultAPIKeyApiKey74F5313B": {
-      "Type": "AWS::AppSync::ApiKey",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "Description": "Default API Key created by CDK",
-        "Expires": 1626566400
-      }
-    },
     "ApiSchema510EECD7": {
       "Type": "AWS::AppSync::GraphQLSchema",
       "Properties": {
@@ -31,6 +18,21 @@
         },
         "Definition": "type test {\n  id: Int!\n  version: String!\n}\n\ntype Query {\n  getTests: [ test! ]\n}\n\ntype Mutation {\n  addTest(version: String!): test!\n}"
       }
+    },
+    "ApiDefaultApiKeyF991C37B": {
+      "Type": "AWS::AppSync::ApiKey",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "Expires": 1626566400
+      },
+      "DependsOn": [
+        "ApiSchema510EECD7"
+      ]
     },
     "ApitestDataSourceServiceRoleACBC3F3D": {
       "Type": "AWS::IAM::Role",
