@@ -97,9 +97,11 @@ new cloudfront.Distribution(this, 'myDist', {
 When you create a distribution, CloudFront assigns a domain name for the distribution, for example: `d111111abcdef8.cloudfront.net`; this value can
 be retrieved from `distribution.distributionDomainName`. CloudFront distributions use a default certificate (`*.cloudfront.net`) to support HTTPS by
 default. If you want to use your own domain name, such as `www.example.com`, you must associate a certificate with your distribution that contains
-your domain name. The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate
+your domain name, and provide one (or more) domain names from the certificate for the distribution.
+
+The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate
 may either be created by ACM, or created elsewhere and imported into ACM. When a certificate is used, the distribution will support HTTPS connections
-from SNI only and a minimum protocol version of TLSv1.2_2018.
+from SNI only and a minimum protocol version of TLSv1.2_2019.
 
 ```ts
 const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
@@ -108,6 +110,7 @@ const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
 });
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.S3Origin(myBucket) },
+  domainNames: ['www.example.com'],
   certificate: myCertificate,
 });
 ```
@@ -218,6 +221,28 @@ myDistribution.addBehavior('images/*', myOrigin, {
       eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
     },
   ],
+});
+```
+
+### Logging
+
+You can configure CloudFront to create log files that contain detailed information about every user request that CloudFront receives.
+The logs can go to either an existing bucket, or a bucket will be created for you.
+
+```ts
+// Simplest form - creates a new bucket and logs to it.
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+  enableLogging: true,
+});
+
+// You can optionally log to a specific bucket, configure whether cookies are logged, and give the log files a prefix.
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+  enableLogging: true, // Optional, this is implied if loggingBucket is specified
+  loggingBucket: new s3.Bucket(this, 'LoggingBucket'),
+  loggingFilePrefix: 'distribution-access-logs/',
+  loggingIncludesCookies: true,
 });
 ```
 

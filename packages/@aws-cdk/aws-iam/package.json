@@ -89,6 +89,7 @@
     "exclude": [
       "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
+      "props-physical-name:@aws-cdk/aws-iam.OpenIdConnectProviderProps",
       "resource-interface-extends-resource:@aws-cdk/aws-iam.IManagedPolicy",
       "docs-public-apis:@aws-cdk/aws-iam.IUser"
     ]

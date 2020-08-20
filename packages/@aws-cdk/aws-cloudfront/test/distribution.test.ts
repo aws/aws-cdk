@@ -1,8 +1,11 @@
+import { ABSENT } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { CfnDistribution, Distribution, IOrigin, LambdaEdgeEventType, OriginBase, OriginProps, OriginProtocolPolicy, PriceClass } from '../lib';
+import { CfnDistribution, Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass } from '../lib';
+import { defaultOrigin } from './test-origin';
 
 let app: App;
 let stack: Stack;
@@ -26,6 +29,8 @@ test('minimal example renders correctly', () => {
         ViewerProtocolPolicy: 'allow-all',
       },
       Enabled: true,
+      HttpVersion: 'http2',
+      IPV6Enabled: true,
       Origins: [{
         DomainName: 'www.example.com',
         Id: 'StackMyDistOrigin1D6D5E535',
@@ -33,6 +38,69 @@ test('minimal example renders correctly', () => {
           OriginProtocolPolicy: 'https-only',
         },
       }],
+    },
+  });
+});
+
+test('exhaustive example of props renders correctly', () => {
+  const origin = defaultOrigin();
+  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: { origin },
+    certificate,
+    comment: 'a test',
+    defaultRootObject: 'index.html',
+    domainNames: ['example.com'],
+    enabled: false,
+    enableIpv6: false,
+    enableLogging: true,
+    geoRestriction: GeoRestriction.blacklist('US', 'GB'),
+    httpVersion: HttpVersion.HTTP1_1,
+    logFilePrefix: 'logs/',
+    logIncludesCookies: true,
+    priceClass: PriceClass.PRICE_CLASS_100,
+    webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+  });
+
+  expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      Aliases: ['example.com'],
+      DefaultCacheBehavior: {
+        ForwardedValues: { QueryString: false },
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        ViewerProtocolPolicy: 'allow-all',
+      },
+      Comment: 'a test',
+      DefaultRootObject: 'index.html',
+      Enabled: false,
+      HttpVersion: 'http1.1',
+      IPV6Enabled: false,
+      Logging: {
+        Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+        IncludeCookies: true,
+        Prefix: 'logs/',
+      },
+      Origins: [{
+        DomainName: 'www.example.com',
+        Id: 'StackMyDistOrigin1D6D5E535',
+        CustomOriginConfig: {
+          OriginProtocolPolicy: 'https-only',
+        },
+      }],
+      PriceClass: 'PriceClass_100',
+      Restrictions: {
+        GeoRestriction: {
+          Locations: ['US', 'GB'],
+          RestrictionType: 'blacklist',
+        },
+      },
+      ViewerCertificate: {
+        AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        SslSupportMethod: 'sni-only',
+        MinimumProtocolVersion: 'TLSv1.2_2019',
+      },
+      WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
     },
   });
 });
@@ -75,6 +143,8 @@ describe('multiple behaviors', () => {
           ViewerProtocolPolicy: 'allow-all',
         }],
         Enabled: true,
+        HttpVersion: 'http2',
+        IPV6Enabled: true,
         Origins: [{
           DomainName: 'www.example.com',
           Id: 'StackMyDistOrigin1D6D5E535',
@@ -110,6 +180,8 @@ describe('multiple behaviors', () => {
           ViewerProtocolPolicy: 'allow-all',
         }],
         Enabled: true,
+        HttpVersion: 'http2',
+        IPV6Enabled: true,
         Origins: [{
           DomainName: 'www.example.com',
           Id: 'StackMyDistOrigin1D6D5E535',
@@ -159,6 +231,8 @@ describe('multiple behaviors', () => {
           ViewerProtocolPolicy: 'allow-all',
         }],
         Enabled: true,
+        HttpVersion: 'http2',
+        IPV6Enabled: true,
         Origins: [{
           DomainName: 'www.example.com',
           Id: 'StackMyDistOrigin1D6D5E535',
@@ -192,20 +266,41 @@ describe('certificates', () => {
     }).toThrow(/Distribution certificates must be in the us-east-1 region and the certificate you provided is in eu-west-1./);
   });
 
-  test('adding a certificate renders the correct ViewerCertificate property', () => {
+  test('adding a certificate without a domain name throws', () => {
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+    expect(() => {
+      new Distribution(stack, 'Dist1', {
+        defaultBehavior: { origin: defaultOrigin() },
+        certificate,
+      });
+    }).toThrow(/Must specify at least one domain name/);
+
+    expect(() => {
+      new Distribution(stack, 'Dist2', {
+        defaultBehavior: { origin: defaultOrigin() },
+        domainNames: [],
+        certificate,
+      });
+    }).toThrow(/Must specify at least one domain name/);
+  });
+
+  test('adding a certificate and domain renders the correct ViewerCertificate and Aliases property', () => {
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
+      domainNames: ['example.com', 'www.example.com'],
       certificate,
     });
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
+        Aliases: ['example.com', 'www.example.com'],
         ViewerCertificate: {
           AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
           SslSupportMethod: 'sni-only',
-          MinimumProtocolVersion: 'TLSv1.2_2018',
+          MinimumProtocolVersion: 'TLSv1.2_2019',
         },
       },
     });
@@ -271,6 +366,84 @@ describe('custom error responses', () => {
     });
   });
 
+});
+
+describe('logging', () => {
+  test('does not include logging if disabled and no bucket provided', () => {
+    const origin = defaultOrigin();
+    new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Logging: ABSENT,
+      },
+    });
+  });
+
+  test('throws error if logging disabled but bucket provided', () => {
+    const origin = defaultOrigin();
+
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        enableLogging: false,
+        logBucket: new s3.Bucket(stack, 'Bucket'),
+      });
+    }).toThrow(/Explicitly disabled logging but provided a logging bucket./);
+  });
+
+  test('creates bucket if none is provided', () => {
+    const origin = defaultOrigin();
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      enableLogging: true,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Logging: {
+          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+        },
+      },
+    });
+  });
+
+  test('uses existing bucket if provided', () => {
+    const origin = defaultOrigin();
+    const loggingBucket = new s3.Bucket(stack, 'MyLoggingBucket');
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      logBucket: loggingBucket,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Logging: {
+          Bucket: { 'Fn::GetAtt': ['MyLoggingBucket4382CD04', 'RegionalDomainName'] },
+        },
+      },
+    });
+  });
+
+  test('can set prefix and cookies', () => {
+    const origin = defaultOrigin();
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      enableLogging: true,
+      logFilePrefix: 'logs/',
+      logIncludesCookies: true,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Logging: {
+          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+          IncludeCookies: true,
+          Prefix: 'logs/',
+        },
+      },
+    });
+  });
 });
 
 describe('with Lambda@Edge functions', () => {
@@ -366,6 +539,59 @@ describe('with Lambda@Edge functions', () => {
       });
     }).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
   });
+
+  test('with removable env vars', () => {
+    const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
+      runtime: lambda.Runtime.NODEJS,
+      code: lambda.Code.fromInline('whateverwithenv'),
+      handler: 'index.handler',
+    });
+    envLambdaFunction.addEnvironment('KEY', 'value', { removeInEdge: true });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: envLambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Environment: ABSENT,
+      Code: {
+        ZipFile: 'whateverwithenv',
+      },
+    });
+  });
+
+  test('with incompatible env vars', () => {
+    const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
+      runtime: lambda.Runtime.NODEJS,
+      code: lambda.Code.fromInline('whateverwithenv'),
+      handler: 'index.handler',
+      environment: {
+        KEY: 'value',
+      },
+    });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: envLambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(() => app.synth()).toThrow(/KEY/);
+  });
 });
 
 test('price class is included if provided', () => {
@@ -382,13 +608,20 @@ test('price class is included if provided', () => {
   });
 });
 
-function defaultOrigin(domainName?: string): IOrigin {
-  return new TestOrigin(domainName ?? 'www.example.com');
-}
+test('escape hatches are supported', () => {
+  const dist = new Distribution(stack, 'Dist', {
+    defaultBehavior: { origin: defaultOrigin },
+  });
+  const cfnDist = dist.node.defaultChild as CfnDistribution;
+  cfnDist.addPropertyOverride('DistributionConfig.DefaultCacheBehavior.ForwardedValues.Headers', ['*']);
 
-class TestOrigin extends OriginBase {
-  constructor(domainName: string, props: OriginProps = {}) { super(domainName, props); }
-  protected renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
-    return { originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY };
-  }
-}
+  expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        ForwardedValues: {
+          Headers: ['*'],
+        },
+      },
+    },
+  });
+});
