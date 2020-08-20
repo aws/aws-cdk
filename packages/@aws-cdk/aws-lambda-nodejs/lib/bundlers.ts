@@ -5,6 +5,8 @@ import { Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { exec } from './util';
 
+const PARCEL_VERSION = '2.0.0-beta.1';
+
 interface BundlerProps {
   relativeEntryPath: string;
   cacheDir?: string;
@@ -31,14 +33,18 @@ export class LocalBundler implements cdk.ILocalBundling {
     }
     try {
       const parcel = spawnSync(require.resolve('parcel'), ['--version']);
-      LocalBundler._runsLocally = /^2/.test(parcel.stdout.toString().trim()); // Cache result to avoid unnecessary spawns
+      const version = parcel.stdout.toString().trim();
+      LocalBundler._runsLocally = new RegExp(`^${PARCEL_VERSION}`).test(version); // Cache result to avoid unnecessary spawns
+      if (!LocalBundler._runsLocally) {
+        process.stderr.write(`Incorrect parcel version detected: ${version} <> ${PARCEL_VERSION}. Switching to Docker bundling.\n`);
+      }
       return LocalBundler._runsLocally;
     } catch {
       return false;
     }
   }
 
-  private static _runsLocally?: boolean;
+  public static _runsLocally?: boolean; // public for testing purposes
 
   constructor(private readonly props: LocalBundlerProps) {}
 
@@ -88,7 +94,7 @@ export class DockerBundler {
         buildArgs: {
           ...props.buildArgs ?? {},
           IMAGE: props.runtime.bundlingDockerImage.image,
-          PARCEL_VERSION: props.parcelVersion ?? '2.0.0-beta.1',
+          PARCEL_VERSION: props.parcelVersion ?? PARCEL_VERSION,
         },
       })
       : cdk.BundlingDockerImage.fromRegistry('dummy'); // Do not build if we don't need to
