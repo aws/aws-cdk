@@ -118,6 +118,14 @@ Resources:
                 Fn::Sub: "${FilePublishingRole.Arn}"
             Resource: "*"
     Condition: CreateNewKey
+  FileAssetsBucketEncryptionKeyAlias:
+    Condition: CreateNewKey
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName:
+        Fn::Sub: "alias/cdk-${Qualifier}-assets-key"
+      TargetKeyId:
+        Ref: FileAssetsBucketEncryptionKey
   StagingBucket:
     Type: AWS::S3::Bucket
     Properties:
