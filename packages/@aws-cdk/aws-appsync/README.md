@@ -29,15 +29,13 @@ type demo {
   version: String!
 }
 type Query {
-  getDemosDynamo: [ demo! ]
-  getDemosRds: [ demo! ]
+  getDemos: [ demo! ]
 }
 input DemoInput {
   version: String!
 }
 type Mutation {
-  addDemoDynamo(input: DemoInput!): demo
-  addDemoRds(input: DemoInput!): demo
+  addDemo(input: DemoInput!): demo
 }
 ```
 
@@ -46,7 +44,6 @@ CDK stack file `app-stack.ts`:
 ```ts
 import * as appsync from '@aws-cdk/aws-appsync';
 import * as db from '@aws-cdk/aws-dynamodb';
-import * as rds from '@aws-cdk/aws-rds';
 
 const api = new appsync.GraphQLApi(stack, 'Api', {
   name: 'demo',
@@ -69,22 +66,26 @@ const demoTable = new db.Table(stack, 'DemoTable', {
 
 const demoDS = api.addDynamoDbDataSource('demoDataSource', demoTable);
 
-// Resolver for the Query "getDemosDynamo" that scans the DyanmoDb table and returns the entire list.
+// Resolver for the Query "getDemos" that scans the DyanmoDb table and returns the entire list.
 demoDS.createResolver({
   typeName: 'Query',
-  fieldName: 'getDemosDynamo',
+  fieldName: 'getDemos',
   requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 
-// Resolver for the Mutation "addDemoDynamo" that puts the item into the DynamoDb table.
+// Resolver for the Mutation "addDemo" that puts the item into the DynamoDb table.
 demoDS.createResolver({
   typeName: 'Mutation',
-  fieldName: 'addDemoDynamo',
+  fieldName: 'addDemo',
   requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('demo')),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
+```
 
+## Aurora Serverless
+
+```ts
 // Create username and password secret for DB Cluster
 const secret = new rds.DatabaseSecret(stack, 'AuroraSecret', {
   username: 'clusteradmin',

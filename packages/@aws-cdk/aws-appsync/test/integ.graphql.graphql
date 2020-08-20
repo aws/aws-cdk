@@ -37,7 +37,6 @@ type Query @aws_api_key {
   getCustomerOrdersFilter(customer: String, order: String): Order
   getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order
   getPayment(id: String): Payment
-  getDatabaseVersion: String
 }
 
 input FirstOrderInput {

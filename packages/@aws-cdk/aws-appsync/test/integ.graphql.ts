@@ -1,8 +1,6 @@
 import { join } from 'path';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
-import { Vpc, SecurityGroup, SubnetType, InstanceType, InstanceClass, InstanceSize } from '@aws-cdk/aws-ec2';
-import { DatabaseSecret, DatabaseCluster, DatabaseClusterEngine, AuroraMysqlEngineVersion } from '@aws-cdk/aws-rds';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import {
   AuthorizationType,
@@ -223,55 +221,6 @@ httpDS.createResolver({
         $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
     #end
   `),
-
-
-});
-
-const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
-
-const securityGroup = new SecurityGroup(stack, 'AuroraSecurityGroup', {
-  vpc,
-  allowAllOutbound: true,
-});
-
-const secret = new DatabaseSecret(stack, 'AuroraSecret', {
-  username: 'clusteradmin',
-});
-
-const cluster = new DatabaseCluster(stack, 'AuroraCluster', {
-  engine: DatabaseClusterEngine.auroraMysql({
-    version: AuroraMysqlEngineVersion.VER_2_07_1,
-  }),
-  masterUser: {
-    username: 'clusteradmin',
-  },
-  clusterIdentifier: 'db-endpoint-test',
-  instanceProps: {
-    instanceType: InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.SMALL),
-    vpcSubnets: {
-      subnetType: SubnetType.PRIVATE,
-    },
-    vpc,
-    securityGroups: [securityGroup],
-  },
-  defaultDatabaseName: 'Animals',
-});
-
-const rdsDS = api.addRdsDataSource('rds', cluster, secret, { description: 'The rds data source' });
-
-rdsDS.createResolver({
-  typeName: 'Query',
-  fieldName: 'getDatabaseVersion',
-  requestMappingTemplate: MappingTemplate.fromString(`
-  {
-    "version": "2018-05-29",
-    "statements": [
-      $util.toJson("SHOW VARIABLES LIKE "%version%";")
-    ],
-    "variableMap": {}
-  }
-  `),
-  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
 app.synth();
