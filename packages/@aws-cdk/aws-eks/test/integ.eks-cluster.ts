@@ -1,11 +1,12 @@
 /// !cdk-integ pragma:ignore-assets
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput, Duration, Token } from '@aws-cdk/core';
+import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { Pinger } from './pinger/pinger';
 import { TestStack } from './util';
+
 
 class EksClusterStack extends TestStack {
 
@@ -28,7 +29,7 @@ class EksClusterStack extends TestStack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_16,
+      version: eks.KubernetesVersion.V1_17,
     });
 
     this.assertFargateProfile();
@@ -103,11 +104,27 @@ class EksClusterStack extends TestStack {
   }
   private assertNodeGroup() {
     // add a extra nodegroup
+    const userData = ec2.UserData.forLinux();
+    userData.addCommands(
+      'set -o xtrace',
+      `/etc/eks/bootstrap.sh ${this.cluster.clusterName}`,
+    )
+    const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+      launchTemplateData: {
+        imageId: new eks.EksOptimizedImage().getImage(this).imageId,
+        instanceType: new ec2.InstanceType('t3.small').toString(),
+        userData: Fn.base64(userData.render()),
+      },
+    });
     this.cluster.addNodegroup('extra-ng', {
-      instanceType: new ec2.InstanceType('t3.small'),
+      // instanceType: new ec2.InstanceType('t3.small'),
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
-      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+      nodeRole: this.cluster.defaultNodegroup?.role || this.cluster.defaultCapacity?.role,
+      launchTemplate: {
+        launchTemplateId: lt.ref,
+        version: lt.attrDefaultVersionNumber,
+      }
     });
   }
   private assertInferenceInstances() {

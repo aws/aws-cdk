@@ -22,13 +22,17 @@ export interface INodegroup extends IResource {
  */
 export enum NodegroupAmiType {
   /**
-   * Amazon Linux 2
+   * Amazon Linux 2(X86_64)
    */
   AL2_X86_64 = 'AL2_x86_64',
   /**
    * Amazon Linux 2 with GPU support
    */
   AL2_X86_64_GPU = 'AL2_x86_64_GPU',
+  /**
+   * Amazon Linux 2(ARM_64)
+   */
+  AL2_ARM_64 = 'AL2_ARM_64'
 }
 
 /**
@@ -49,6 +53,22 @@ export interface NodegroupRemoteAccess {
    * @default - port 22 on the worker nodes is opened to the internet (0.0.0.0/0)
    */
   readonly sourceSecurityGroups?: ISecurityGroup[];
+}
+
+/**
+ * Launch template property specification
+ */
+export interface LaunchTemplateSpecification {
+  /**
+   * The Launch template ID
+   */
+  readonly launchTemplateId: string;
+  /**
+   * The launch template version to be used (optional).
+   *
+   * @default - the default version of the launch template
+   */
+  readonly version?: string;
 }
 
 /**
@@ -155,6 +175,11 @@ export interface NodegroupOptions {
    * @default - None
    */
   readonly tags?: { [name: string]: string };
+  /**
+   * Launch template used for the nodegroup
+   * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+   */
+  readonly launchTemplate?: LaunchTemplateSpecification;
 }
 
 /**
@@ -261,6 +286,20 @@ export class Nodegroup extends Resource implements INodegroup {
       },
       tags: props.tags,
     });
+
+    if (props.launchTemplate) {
+      if (props.diskSize) {
+        throw new Error('diskSize must be specified within the launch template')
+      }
+      if (props.instanceType) {
+        throw new Error('Instance types must be specified within the launch template')
+      }
+      // TODO: update this when the L1 resource spec is updated.
+      resource.addPropertyOverride('LaunchTemplate', {
+        Id: props.launchTemplate.launchTemplateId,
+        Version: props.launchTemplate.version,
+      })
+    }
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
     // its state for consistency.
