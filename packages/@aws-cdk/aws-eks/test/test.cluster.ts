@@ -870,6 +870,27 @@ export = {
       test.done();
     },
 
+    'EKS-Optimized AMI with ARM64 with default capacity'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 1,
+        defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
+        version: CLUSTER_VERSION,
+      })
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('/amazon-linux-2-arm64/'),
+      ), 'EKS AMI with GPU should be in ssm parameters');
+      test.done();
+    },
+
+
     'EKS-Optimized AMI with ARM64 when addCapacity'(test: Test) {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
@@ -884,6 +905,28 @@ export = {
 
       // THEN
       const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('/amazon-linux-2-arm64/'),
+      ), 'EKS AMI with GPU should be in ssm parameters');
+      test.done();
+    },
+
+    'EKS-Optimized AMI with ARM64 when addNodeGroup'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+      }).addNodegroup('ARMCapacity', {
+        instanceType: new ec2.InstanceType('m6g.medium'),
+      });
+
+      // THEN
+      const assembly = app.synth();
+      console.log(assembly)
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('/amazon-linux-2-arm64/'),
