@@ -11,7 +11,7 @@ export = {
     new s3.Bucket(stack, 'MyBucket');
 
     // WHEN
-    stack.node.applyAspect(new BucketVersioningChecker());
+    cdk.Aspects.of(stack).add(new BucketVersioningChecker());
 
     // THEN
     const assembly = SynthUtils.synthesize(stack);
@@ -29,7 +29,7 @@ export = {
     });
 
     // WHEN
-    stack.node.applyAspect(new BucketVersioningChecker());
+    cdk.Aspects.of(stack).add(new BucketVersioningChecker());
 
     // THEN
     const assembly = SynthUtils.synthesize(stack);
