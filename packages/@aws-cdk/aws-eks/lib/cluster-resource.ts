@@ -64,8 +64,12 @@ export class ClusterResource extends Construct {
     // the role used to create the cluster. this becomes the administrator role
     // of the cluster.
     this.creationRole = new iam.Role(this, 'CreationRole', {
-      assumedBy: new iam.CompositePrincipal(new iam.AccountRootPrincipal(), ...provider.roles.map(x => new iam.ArnPrincipal(x.roleArn))),
+      assumedBy: new iam.AccountRootPrincipal(),
     });
+
+    // the provide assumes the creation role, so we grant it permissions to do so.
+    // note that this only works if the creation role is assumable by the account root principle.
+    provider.roles.forEach(role => this.creationRole.grant(role, 'sts:AssumeRole'));
 
     // the CreateCluster API will allow the cluster to assume this role, so we
     // need to allow the lambda execution role to pass it.
