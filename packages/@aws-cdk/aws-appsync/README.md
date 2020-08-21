@@ -280,7 +280,7 @@ You can create Object Types in three ways:
     ```ts
     const api = new appsync.GraphQLApi(stack, 'Api', {
       name: 'demo',
-      schema: appsync.Schema.fromCode,
+      schema: appsync.Schema.fromCode(),
     });
     const demo = new appsync.ObjectType('Demo', {
       defintion: {
