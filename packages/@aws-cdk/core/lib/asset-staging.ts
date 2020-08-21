@@ -7,6 +7,7 @@ import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
 import { Construct } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
+import { Stack } from './stack';
 import { Stage } from './stage';
 
 const STAGING_TMP = '.cdk.staging';
@@ -89,14 +90,21 @@ export class AssetStaging extends Construct {
     this.sourcePath = props.sourcePath;
     this.fingerprintOptions = props;
 
-    if (props.bundling) {
+    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? [];
+    const runBundling = bundlingStacks.includes(Stack.of(this).stackName) || bundlingStacks.includes('*');
+    if (props.bundling && runBundling) {
       this.bundleDir = this.bundle(props.bundling);
     }
 
-    this.assetHash = this.calculateHash(props);
+    this.assetHash = this.calculateHash({
+      ...props,
+      ...!runBundling
+        ? { assetHashType: AssetHashType.CUSTOM, assetHash: this.node.path }
+        : {},
+    });
 
     const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
-    if (stagingDisabled) {
+    if (stagingDisabled || !runBundling) {
       this.stagedPath = this.bundleDir ?? this.sourcePath;
     } else {
       this.relativePath = `asset.${this.assetHash}${path.extname(this.bundleDir ?? this.sourcePath)}`;

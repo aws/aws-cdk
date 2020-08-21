@@ -62,10 +62,13 @@ async function parseCommandLineArguments() {
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', yargs => yargs
-      .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
+      .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' })
+      .option('bundling', { type: 'array', default: [], alias: 'b', desc: 'Run bundling only for given stacks (defaults to no stacks)' }),
     )
     .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
-      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' }))
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' })
+      .option('bundling', { type: 'array', default: ['*'], alias: 'b', desc: 'Run bundling only for given stacks (defaults to STACKS if `exclusively` is used, all stacks otherwise)' }),
+    )
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined })
@@ -89,16 +92,21 @@ async function parseCommandLineArguments() {
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
-      .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
+      .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' })
+      .option('bundling', { type: 'array', default: ['*'], alias: 'b', desc: 'Run bundling only for given stacks (defaults to STACKS if `exclusively` is used, all stacks otherwise)' }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
-      .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
+      .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' })
+      .option('bundling', { type: 'array', default: [], alias: 'b', desc: 'Run bundling only for given stacks (defaults to no stacks)' }),
+    )
     .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
-      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false }))
+      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false })
+      .option('bundling', { type: 'array', default: ['*'], alias: 'b', desc: 'Run bundling only for given stacks (defaults to STACKS if `exclusively` is used, all stacks otherwise)' }),
+    )
     .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false })
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
@@ -123,6 +131,8 @@ if (!process.stdout.isTTY) {
   colors.disable();
 }
 
+const CUSTOM_BUNDLING_DEFAULT_COMMANDS = ['deploy', 'diff', 'synth', 'synthesize'];
+
 async function initCommandLine() {
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
@@ -131,7 +141,14 @@ async function initCommandLine() {
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
-  const configuration = new Configuration(argv);
+  // Custom `bundling` default. If we deploy or diff a list of stacks
+  // exclusively we skip bundling for all other stacks.
+  let bundling = argv.bundling;
+  if (CUSTOM_BUNDLING_DEFAULT_COMMANDS.includes(argv._[0]) && argv.exclusively) {
+    bundling = argv.STACKS as string[];
+  }
+
+  const configuration = new Configuration({ ...argv, bundling });
   await configuration.load();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
