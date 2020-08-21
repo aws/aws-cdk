@@ -1508,6 +1508,28 @@ export = {
     test.done();
   },
 
+  'Windows2019 image': {
+    'WIN_SERVER_CORE_2016_BASE': {
+      'has type WINDOWS_SERVER_2019_CONTAINER and default ComputeType MEDIUM'(test: Test) {
+        const stack = new cdk.Stack();
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+          },
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'Type': 'WINDOWS_SERVER_2019_CONTAINER',
+            'ComputeType': 'BUILD_GENERAL1_MEDIUM',
+          },
+        }));
+
+        test.done();
+      },
+    },
+  },
+
   'ARM image': {
     'AMAZON_LINUX_2_ARM': {
       'has type ARM_CONTAINER and default ComputeType LARGE'(test: Test) {

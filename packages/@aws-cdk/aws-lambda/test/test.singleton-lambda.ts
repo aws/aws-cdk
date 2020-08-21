@@ -141,4 +141,23 @@ export = {
     }]);
     test.done();
   },
+
+  'check edge compatibility'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
+      code: new lambda.InlineCode('def hello(): pass'),
+      runtime: lambda.Runtime.PYTHON_2_7,
+      handler: 'index.hello',
+      environment: {
+        KEY: 'value',
+      },
+    });
+
+    // THEN
+    test.throws(() => singleton._checkEdgeCompatibility(), /The function Default\/SingletonLambda84c0de93353f42179b0b45b6c993251a contains environment variables \[KEY\] and is not compatible with Lambda@Edge/);
+
+    test.done();
+  },
 };
