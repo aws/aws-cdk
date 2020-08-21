@@ -21,7 +21,7 @@ const stack = new cdk.Stack(app, 'code-first-schema');
 
 const api = new appsync.GraphQLApi(stack, 'code-first-api', {
   name: 'api',
-  schemaDefinition: appsync.SchemaDefinition.CODE,
+  schema: appsync.Schema.fromCode(),
 });
 
 const planet = ObjectType.planet;

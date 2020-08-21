@@ -21,7 +21,7 @@ describe('basic testing schema definition mode `code`', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
+      schema: appsync.Schema.fromCode(),
     });
 
     // THEN
@@ -34,7 +34,7 @@ describe('basic testing schema definition mode `code`', () => {
     // WHEN
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
+      schema: appsync.Schema.fromCode(),
     });
     api.appendToSchema(type);
     api.appendToSchema(query);
@@ -45,21 +45,6 @@ describe('basic testing schema definition mode `code`', () => {
       Definition: `${type}\n${query}\n${mutation}\n`,
     });
   });
-
-  test('definition mode `code` errors when schemaDefinitionFile is configured', () => {
-    // WHEN
-    const when = () => {
-      new appsync.GraphQLApi(stack, 'API', {
-        name: 'demo',
-        schemaDefinition: appsync.SchemaDefinition.CODE,
-        schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
-      });
-    };
-
-    // THEN
-    expect(when).toThrowError('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
-  });
-
 });
 
 describe('testing schema definition mode `file`', () => {
@@ -68,8 +53,7 @@ describe('testing schema definition mode `file`', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.FILE,
-      schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
+      schema: appsync.Schema.fromFile(join(__dirname, 'appsync.test.graphql')),
     });
 
     // THEN
@@ -78,25 +62,11 @@ describe('testing schema definition mode `file`', () => {
     });
   });
 
-  test('definition mode `file` errors when schemaDefinitionFile is not configured', () => {
-    // WHEN
-    const when = () => {
-      new appsync.GraphQLApi(stack, 'API', {
-        name: 'demo',
-        schemaDefinition: appsync.SchemaDefinition.FILE,
-      });
-    };
-
-    // THEN
-    expect(when).toThrowError('schemaDefinitionFile must be configured if using FILE definition mode.');
-  });
-
   test('definition mode `file` errors when addType is called', () => {
     // WHEN
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.FILE,
-      schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
+      schema: appsync.Schema.fromFile(join(__dirname, 'appsync.test.graphql')),
     });
 
     const when = () => {
@@ -113,8 +83,7 @@ describe('testing schema definition mode `file`', () => {
     // WHEN
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.FILE,
-      schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
+      schema: appsync.Schema.fromFile(join(__dirname, 'appsync.test.graphql')),
     });
 
     const when = () => {

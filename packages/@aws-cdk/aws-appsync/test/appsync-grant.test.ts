@@ -15,8 +15,7 @@ beforeEach(() => {
   });
   api = new appsync.GraphQLApi(stack, 'API', {
     name: 'demo',
-    schemaDefinition: appsync.SchemaDefinition.FILE,
-    schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
+    schema: appsync.Schema.fromFile(join(__dirname, 'appsync.test.graphql')),
     authorizationConfig: {
       defaultAuthorization: {
         authorizationType: appsync.AuthorizationType.IAM,
