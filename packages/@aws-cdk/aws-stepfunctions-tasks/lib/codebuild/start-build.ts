@@ -2,8 +2,6 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-
-
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -15,10 +13,9 @@ export interface CodeBuildStartBuildProps extends sfn.TaskStateBaseProps {
    */
   readonly project: codebuild.IProject;
   /**
-   * A set of environment variables that overrides, for this build only,
-   * the latest ones already defined in the build project.
+   * A set of environment variables to be used for this build only.
    *
-   * @default No override
+   * @default - the latest environment variables already defined in the build project.
    */
   readonly environmentVariablesOverride?: { [name: string]: codebuild.BuildEnvironmentVariable };
 }
@@ -96,17 +93,17 @@ export class CodeBuildStartBuild extends sfn.TaskStateBase {
       Parameters: sfn.FieldUtils.renderObject({
         ProjectName: this.props.project.projectName,
         EnvironmentVariablesOverride: this.props.environmentVariablesOverride
-          ? codebuild.Project
-            .serializeEnvVariables(this.props.environmentVariablesOverride)
-            .map((environmentVariable: codebuild.CfnProject.EnvironmentVariableProperty) => {
-              return {
-                Name: environmentVariable.name,
-                Type: environmentVariable.type,
-                Value: environmentVariable.value,
-              };
-            })
+          ? this.serializeEnvVariables(this.props.environmentVariablesOverride)
           : undefined,
       }),
     };
+  }
+
+  private serializeEnvVariables(environmentVariables: { [name: string]: codebuild.BuildEnvironmentVariable }) {
+    return Object.keys(environmentVariables).map(name => ({
+      Name: name,
+      Type: environmentVariables[name].type || codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+      Value: environmentVariables[name].value,
+    }));
   }
 }
