@@ -121,8 +121,8 @@ describe('AppSync API Key Authorization', () => {
   });
 
   test('appsync fails when empty default and API_KEY in additional', () => {
-    // WHEN
-    const when = () => {
+    // THEN
+    expect(() => {
       new appsync.GraphQLApi(stack, 'api', {
         name: 'api',
         schemaDefinition: appsync.SchemaDefinition.FILE,
@@ -133,15 +133,12 @@ describe('AppSync API Key Authorization', () => {
           }],
         },
       });
-    };
-
-    // THEN
-    expect(when).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 
   test('appsync fails when multiple API_KEY auth modes', () => {
-    // WHEN
-    const when = () => {
+    // THEN
+    expect(() => {
       new appsync.GraphQLApi(stack, 'api', {
         name: 'api',
         schemaDefinition: appsync.SchemaDefinition.FILE,
@@ -153,15 +150,12 @@ describe('AppSync API Key Authorization', () => {
           }],
         },
       });
-    };
-
-    // THEN
-    expect(when).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 
   test('appsync fails when multiple API_KEY auth modes in additionalXxx', () => {
-    // WHEN
-    const when = () => {
+    // THEN
+    expect(() => {
       new appsync.GraphQLApi(stack, 'api', {
         name: 'api',
         schemaDefinition: appsync.SchemaDefinition.FILE,
@@ -174,10 +168,7 @@ describe('AppSync API Key Authorization', () => {
           ],
         },
       });
-    };
-
-    // THEN
-    expect(when).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 });
 
@@ -217,8 +208,8 @@ describe('AppSync IAM Authorization', () => {
   });
 
   test('appsync fails when multiple iam auth modes', () => {
-    // WHEN
-    const when = () => {
+    // THEN
+    expect(() => {
       new appsync.GraphQLApi(stack, 'api', {
         name: 'api',
         schemaDefinition: appsync.SchemaDefinition.FILE,
@@ -228,15 +219,12 @@ describe('AppSync IAM Authorization', () => {
           additionalAuthorizationModes: [{ authorizationType: appsync.AuthorizationType.IAM }],
         },
       });
-    };
-
-    // THEN
-    expect(when).toThrowError('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrowError('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 
   test('appsync fails when multiple IAM auth modes in additionalXxx', () => {
-    // WHEN
-    const when = () => {
+    // THEN
+    expect(() => {
       new appsync.GraphQLApi(stack, 'api', {
         name: 'api',
         schemaDefinition: appsync.SchemaDefinition.FILE,
@@ -248,10 +236,7 @@ describe('AppSync IAM Authorization', () => {
           ],
         },
       });
-    };
-
-    // THEN
-    expect(when).toThrowError('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrowError('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 });
 
