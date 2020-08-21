@@ -62,8 +62,8 @@ test('can clear all values in all objects', () => {
 
 test('can parse string context from command line arguments', () => {
   // GIVEN
-  const settings1 = Settings.fromCommandLineArguments({ context: ['foo=bar'] });
-  const settings2 = Settings.fromCommandLineArguments({ context: ['foo='] });
+  const settings1 = Settings.fromCommandLineArguments({ context: ['foo=bar'], _: ['command'] });
+  const settings2 = Settings.fromCommandLineArguments({ context: ['foo='], _: ['command'] });
 
   // THEN
   expect(settings1.get(['context']).foo).toEqual( 'bar');
@@ -72,10 +72,22 @@ test('can parse string context from command line arguments', () => {
 
 test('can parse string context from command line arguments with equals sign in value', () => {
   // GIVEN
-  const settings1 = Settings.fromCommandLineArguments({ context: ['foo==bar='] });
-  const settings2 = Settings.fromCommandLineArguments({ context: ['foo=bar='] });
+  const settings1 = Settings.fromCommandLineArguments({ context: ['foo==bar='], _: ['command'] });
+  const settings2 = Settings.fromCommandLineArguments({ context: ['foo=bar='], _: ['command'] });
 
   // THEN
   expect(settings1.get(['context']).foo).toEqual( '=bar=');
   expect(settings2.get(['context']).foo).toEqual( 'bar=');
+});
+
+test('custom default for bundling', () => {
+  // GIVEN
+  const settings = Settings.fromCommandLineArguments({
+    _: ['deploy'],
+    exclusively: true,
+    STACKS: ['cool-stack'],
+  });
+
+  // THEN
+  expect(settings.get(['bundling'])).toEqual(['cool-stack']);
 });

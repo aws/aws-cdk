@@ -90,7 +90,7 @@ export class AssetStaging extends Construct {
     this.sourcePath = props.sourcePath;
     this.fingerprintOptions = props;
 
-    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? [];
+    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
     const runBundling = bundlingStacks.includes(Stack.of(this).stackName) || bundlingStacks.includes('*');
     if (props.bundling && runBundling) {
       this.bundleDir = this.bundle(props.bundling);

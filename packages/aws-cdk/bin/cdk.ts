@@ -131,8 +131,6 @@ if (!process.stdout.isTTY) {
   colors.disable();
 }
 
-const CUSTOM_BUNDLING_DEFAULT_COMMANDS = ['deploy', 'diff', 'synth', 'synthesize'];
-
 async function initCommandLine() {
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
@@ -141,14 +139,7 @@ async function initCommandLine() {
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
-  // Custom `bundling` default. If we deploy or diff a list of stacks
-  // exclusively we skip bundling for all other stacks.
-  let bundling = argv.bundling;
-  if (CUSTOM_BUNDLING_DEFAULT_COMMANDS.includes(argv._[0]) && argv.exclusively) {
-    bundling = argv.STACKS as string[];
-  }
-
-  const configuration = new Configuration({ ...argv, bundling });
+  const configuration = new Configuration(argv);
   await configuration.load();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
