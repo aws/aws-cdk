@@ -6,7 +6,6 @@ import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { Pinger } from './pinger/pinger';
 import { TestStack } from './util';
-import { NodegroupAmiType } from '../lib';
 
 class EksClusterStack extends TestStack {
 
@@ -34,9 +33,9 @@ class EksClusterStack extends TestStack {
 
     this.assertFargateProfile();
 
-    this.assertX86Capacity();
+    this.assertCapacityX86();
 
-    this.assertArmCapacity();
+    this.assertCapacityArm();
 
     this.assertBottlerocket();
 
@@ -44,7 +43,9 @@ class EksClusterStack extends TestStack {
 
     this.assertInferenceInstances();
 
-    this.assertNodeGroup();
+    this.assertNodeGroupX86();
+
+    this.assertNodeGroupArm();
 
     this.assertSimpleManifest();
 
@@ -104,10 +105,19 @@ class EksClusterStack extends TestStack {
     // apply a kubernetes manifest
     this.cluster.addManifest('HelloApp', ...hello.resources);
   }
-  private assertNodeGroup() {
+  private assertNodeGroupX86() {
     // add a extra nodegroup
     this.cluster.addNodegroup('extra-ng', {
       instanceType: new ec2.InstanceType('t3.small'),
+      minSize: 1,
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+    });
+  }
+  private assertNodeGroupArm() {
+    // add a extra nodegroup
+    this.cluster.addNodegroup('extra-ng-arm', {
+      instanceType: new ec2.InstanceType('m6g.medium'),
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
@@ -141,7 +151,7 @@ class EksClusterStack extends TestStack {
     });
 
   }
-  private assertX86Capacity() {
+  private assertCapacityX86() {
     // add some x86_64 capacity to the cluster. The IAM instance role will
     // automatically be mapped via aws-auth to allow nodes to join the cluster.
     this.cluster.addCapacity('Nodes', {
@@ -150,13 +160,12 @@ class EksClusterStack extends TestStack {
     });
   }
 
-  private assertArmCapacity() {
+  private assertCapacityArm() {
     // add some arm64 capacity to the cluster. The IAM instance role will
     // automatically be mapped via aws-auth to allow nodes to join the cluster.
-    this.cluster.addCapacity('Arm64Nodes', {
+    this.cluster.addCapacity('NodesArm', {
       instanceType: new ec2.InstanceType('m6g.medium'),
       minCapacity: 1,
-      cpuType: eks.CpuType.ARM_64,
     });
   }
 

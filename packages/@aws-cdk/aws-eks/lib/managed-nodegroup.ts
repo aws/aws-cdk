@@ -247,7 +247,7 @@ export class Nodegroup extends Resource implements INodegroup {
       nodegroupName: props.nodegroupName,
       nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
-      amiType: props.amiType ?? (props.instanceType ? amiTypeForInstanceType(props.instanceType).toString() :
+      amiType: props.amiType ?? (props.instanceType ? new InstanceInfo().amiTypeForInstanceType(props.instanceType).toString() :
         undefined),
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
@@ -289,13 +289,33 @@ export class Nodegroup extends Resource implements INodegroup {
   }
 }
 
-const ARM64_INSTANCETYPES = ['a1', 'c6g', 'm6g', 'r6g'];
-const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
+const GRAVITON_INSTANCETYPES = ['a1'];
+const GRAVITON2_INSTANCETYPES = ['c6g', 'm6g', 'r6g'];
+const GPU_INSTANCETYPES = ['p2', 'p3', 'g2', 'g3', 'g4'];
 const INFERENTIA_INSTANCETYPES = ['inf1'];
 
-function amiTypeForInstanceType(instanceType: InstanceType) {
-  return ARM64_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_ARM_64 :
-    GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_X86_64_GPU :
-      INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodegroupAmiType.AL2_X86_64_GPU :
-        NodegroupAmiType.AL2_X86_64
-} 
+/**
+ * InstanceInfo provider class
+ */
+export class InstanceInfo {
+  /**
+   * determine the AMI type from instance type
+   * @param instanceType the EC2 instance type
+   */
+  public amiTypeForInstanceType(instanceType: InstanceType) {
+    return GRAVITON2_INSTANCETYPES.includes(instanceType.toString().substring(0, 3)) ? NodegroupAmiType.AL2_ARM_64 :
+      GRAVITON_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_ARM_64 :
+        GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_X86_64_GPU :
+          INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodegroupAmiType.AL2_X86_64_GPU :
+            NodegroupAmiType.AL2_X86_64;
+  }
+  /**
+   * determine the cpu type from the instance type
+   * @param instanceType the EC2 instance type
+   */
+  public cpuTypeForInstanceType(instanceType: InstanceType) {
+    return GRAVITON2_INSTANCETYPES.includes(instanceType.toString().substring(0, 3)) ? CpuType.ARM_64 :
+      GRAVITON_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? CpuType.ARM_64 :
+        CpuType.X86_64;
+  }
+}

@@ -880,7 +880,6 @@ export = {
         version: CLUSTER_VERSION,
       }).addCapacity('ARMCapacity', {
         instanceType: new ec2.InstanceType('m6g.medium'),
-        cpuType: eks.CpuType.ARM_64,
       });
 
       // THEN

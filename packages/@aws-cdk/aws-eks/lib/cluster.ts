@@ -15,7 +15,7 @@ import { KubernetesManifest } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { KubectlProvider, KubectlProviderProps } from './kubectl-provider';
-import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { Nodegroup, NodegroupOptions, InstanceInfo } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
@@ -783,7 +783,7 @@ export class Cluster extends Resource implements ICluster {
         new BottleRocketImage() :
         new EksOptimizedImage({
           nodeType: nodeTypeForInstanceType(options.instanceType),
-          cpuType: options.cpuType ?? CpuType.X86_64,
+          cpuType: new InstanceInfo().cpuTypeForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
         }),
       updateType: options.updateType,
@@ -1236,13 +1236,6 @@ export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps
    * Instance type of the instances to start
    */
   readonly instanceType: ec2.InstanceType;
-
-  /**
-   * CPU type of the instances to start
-   *
-   * @default CpuType.x86_64
-   */
-  readonly cpuType?: CpuType;
 
   /**
    * Will automatically update the aws-auth ConfigMap to map the IAM instance

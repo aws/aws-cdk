@@ -623,11 +623,11 @@
         "ToPort": 443
       }
     },
-    "ClusterControlPlaneSecurityGroupfromawscdkeksclustertestClusterArm64NodesInstanceSecurityGroup75E19A70443E5F3733A": {
+    "ClusterControlPlaneSecurityGroupfromawscdkeksclustertestClusterNodesArmInstanceSecurityGroup52C45858443B84847DA": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
-        "Description": "from awscdkeksclustertestClusterArm64NodesInstanceSecurityGroup75E19A70:443",
+        "Description": "from awscdkeksclustertestClusterNodesArmInstanceSecurityGroup52C45858:443",
         "FromPort": 443,
         "GroupId": {
           "Fn::GetAtt": [
@@ -637,7 +637,7 @@
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
-            "ClusterArm64NodesInstanceSecurityGroupA8022D03",
+            "ClusterNodesArmInstanceSecurityGroup599F388B",
             "GroupId"
           ]
         },
@@ -1090,7 +1090,7 @@
               "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
               {
                 "Fn::GetAtt": [
-                  "ClusterArm64NodesInstanceRoleF0E4CE68",
+                  "ClusterNodesArmInstanceRoleB93D3298",
                   "Arn"
                 ]
               },
@@ -1119,6 +1119,13 @@
               {
                 "Fn::GetAtt": [
                   "ClusterNodegroupextrangNodeGroupRole23AE23D0",
+                  "Arn"
+                ]
+              },
+              "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "ClusterNodegroupextrangarmNodeGroupRoleADF5749F",
                   "Arn"
                 ]
               },
@@ -1230,6 +1237,7 @@
             "Ref": "VpcPrivateSubnet3SubnetF258B56E"
           }
         ],
+        "AmiType": "AL2_x86_64",
         "ForceUpdateEnabled": true,
         "InstanceTypes": [
           "m5.large"
@@ -1584,10 +1592,10 @@
         }
       }
     },
-    "ClusterArm64NodesInstanceSecurityGroupA8022D03": {
+    "ClusterNodesArmInstanceSecurityGroup599F388B": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-cdk-eks-cluster-test/Cluster/Arm64Nodes/InstanceSecurityGroup",
+        "GroupDescription": "aws-cdk-eks-cluster-test/Cluster/NodesArm/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -1612,7 +1620,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-eks-cluster-test/Cluster/Arm64Nodes"
+            "Value": "aws-cdk-eks-cluster-test/Cluster/NodesArm"
           }
         ],
         "VpcId": {
@@ -1620,26 +1628,26 @@
         }
       }
     },
-    "ClusterArm64NodesInstanceSecurityGroupfromawscdkeksclustertestClusterArm64NodesInstanceSecurityGroup75E19A70ALLTRAFFICBE2E7C54": {
+    "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclustertestClusterNodesArmInstanceSecurityGroup52C45858ALLTRAFFIC83BB7106": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "-1",
-        "Description": "from awscdkeksclustertestClusterArm64NodesInstanceSecurityGroup75E19A70:ALL TRAFFIC",
+        "Description": "from awscdkeksclustertestClusterNodesArmInstanceSecurityGroup52C45858:ALL TRAFFIC",
         "GroupId": {
           "Fn::GetAtt": [
-            "ClusterArm64NodesInstanceSecurityGroupA8022D03",
+            "ClusterNodesArmInstanceSecurityGroup599F388B",
             "GroupId"
           ]
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
-            "ClusterArm64NodesInstanceSecurityGroupA8022D03",
+            "ClusterNodesArmInstanceSecurityGroup599F388B",
             "GroupId"
           ]
         }
       }
     },
-    "ClusterArm64NodesInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F13013444341130E15": {
+    "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F13013444328ED4211": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
@@ -1647,7 +1655,7 @@
         "FromPort": 443,
         "GroupId": {
           "Fn::GetAtt": [
-            "ClusterArm64NodesInstanceSecurityGroupA8022D03",
+            "ClusterNodesArmInstanceSecurityGroup599F388B",
             "GroupId"
           ]
         },
@@ -1660,7 +1668,7 @@
         "ToPort": 443
       }
     },
-    "ClusterArm64NodesInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F130134102565535507E655A": {
+    "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F13013410256553586052D07": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
@@ -1668,7 +1676,7 @@
         "FromPort": 1025,
         "GroupId": {
           "Fn::GetAtt": [
-            "ClusterArm64NodesInstanceSecurityGroupA8022D03",
+            "ClusterNodesArmInstanceSecurityGroup599F388B",
             "GroupId"
           ]
         },
@@ -1681,7 +1689,7 @@
         "ToPort": 65535
       }
     },
-    "ClusterArm64NodesInstanceRoleF0E4CE68": {
+    "ClusterNodesArmInstanceRoleB93D3298": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -1761,22 +1769,22 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-eks-cluster-test/Cluster/Arm64Nodes"
+            "Value": "aws-cdk-eks-cluster-test/Cluster/NodesArm"
           }
         ]
       }
     },
-    "ClusterArm64NodesInstanceProfile8C168AF7": {
+    "ClusterNodesArmInstanceProfile158C5C9F": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Roles": [
           {
-            "Ref": "ClusterArm64NodesInstanceRoleF0E4CE68"
+            "Ref": "ClusterNodesArmInstanceRoleB93D3298"
           }
         ]
       }
     },
-    "ClusterArm64NodesLaunchConfigF16969E3": {
+    "ClusterNodesArmLaunchConfigAAF61344": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
@@ -1784,12 +1792,12 @@
         },
         "InstanceType": "m6g.medium",
         "IamInstanceProfile": {
-          "Ref": "ClusterArm64NodesInstanceProfile8C168AF7"
+          "Ref": "ClusterNodesArmInstanceProfile158C5C9F"
         },
         "SecurityGroups": [
           {
             "Fn::GetAtt": [
-              "ClusterArm64NodesInstanceSecurityGroupA8022D03",
+              "ClusterNodesArmInstanceSecurityGroup599F388B",
               "GroupId"
             ]
           }
@@ -1803,23 +1811,23 @@
                 {
                   "Ref": "Cluster9EE0221C"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterArm64NodesASGEB57C877 --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterNodesArmASG40A593D0 --region test-region"
               ]
             ]
           }
         }
       },
       "DependsOn": [
-        "ClusterArm64NodesInstanceRoleF0E4CE68"
+        "ClusterNodesArmInstanceRoleB93D3298"
       ]
     },
-    "ClusterArm64NodesASGEB57C877": {
+    "ClusterNodesArmASG40A593D0": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "MaxSize": "1",
         "MinSize": "1",
         "LaunchConfigurationName": {
-          "Ref": "ClusterArm64NodesLaunchConfigF16969E3"
+          "Ref": "ClusterNodesArmLaunchConfigAAF61344"
         },
         "Tags": [
           {
@@ -1840,7 +1848,7 @@
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "aws-cdk-eks-cluster-test/Cluster/Arm64Nodes"
+            "Value": "aws-cdk-eks-cluster-test/Cluster/NodesArm"
           }
         ],
         "VPCZoneIdentifier": [
@@ -2853,9 +2861,110 @@
             "Ref": "VpcPrivateSubnet3SubnetF258B56E"
           }
         ],
+        "AmiType": "AL2_x86_64",
         "ForceUpdateEnabled": true,
         "InstanceTypes": [
           "t3.small"
+        ],
+        "ScalingConfig": {
+          "DesiredSize": 1,
+          "MaxSize": 1,
+          "MinSize": 1
+        }
+      }
+    },
+    "ClusterNodegroupextrangarmNodeGroupRoleADF5749F": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKS_CNI_Policy"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "ClusterNodegroupextrangarm7773987A": {
+      "Type": "AWS::EKS::Nodegroup",
+      "Properties": {
+        "ClusterName": {
+          "Ref": "Cluster9EE0221C"
+        },
+        "NodeRole": {
+          "Fn::GetAtt": [
+            "ClusterNodegroupextrangarmNodeGroupRoleADF5749F",
+            "Arn"
+          ]
+        },
+        "Subnets": [
+          {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A"
+          },
+          {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+          },
+          {
+            "Ref": "VpcPrivateSubnet3SubnetF258B56E"
+          }
+        ],
+        "AmiType": "AL2_ARM_64",
+        "ForceUpdateEnabled": true,
+        "InstanceTypes": [
+          "m6g.medium"
         ],
         "ScalingConfig": {
           "DesiredSize": 1,
