@@ -857,8 +857,8 @@ export = {
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 1,
         version: CLUSTER_VERSION,
-        defaultCapacityInstance: new ec2.InstanceType('m6g.medium')
-      })
+        defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
+      });
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
@@ -875,10 +875,10 @@ export = {
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 0,
         version: CLUSTER_VERSION,
-        defaultCapacityInstance: new ec2.InstanceType('m6g.medium')
+        defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
       }).addNodegroup('ng', {
-        instanceType: new ec2.InstanceType('m6g.medium')
-      })
+        instanceType: new ec2.InstanceType('m6g.medium'),
+      });
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
