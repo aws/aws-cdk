@@ -11,7 +11,7 @@ export class Directive {
   /**
    * Add the @aws_iam directive
    */
-  public static iam(): Directive{
+  public static iam(): Directive {
     return new Directive('@aws_iam');
   }
 
@@ -77,7 +77,7 @@ export class InterfaceType {
    * - isRequired
    * - isRequiredList
    */
-  public attribute(options?: BaseGraphqlTypeOptions): GraphqlType{
+  public attribute(options?: BaseGraphqlTypeOptions): GraphqlType {
     return GraphqlType.intermediate({
       isList: options?.isList,
       isRequired: options?.isRequired,
@@ -169,7 +169,7 @@ export class ObjectType extends InterfaceType {
    */
   public toString(): string {
     let title = this.name;
-    if(this.interfaceTypes && this.interfaceTypes.length){
+    if (this.interfaceTypes && this.interfaceTypes.length) {
       title = `${title} implements`;
       this.interfaceTypes.map((interfaceType) => {
         title = `${title} ${interfaceType.name},`;
@@ -192,9 +192,9 @@ export class ObjectType extends InterfaceType {
    * @param delimiter the separator betweeen directives
    * @default - ' '
    */
-  private generateDirectives(directives?: Directive[], delimiter?: string): string{
+  private generateDirectives(directives?: Directive[], delimiter?: string): string {
     let schemaAddition = '';
-    if (!directives){ return schemaAddition; }
+    if (!directives) { return schemaAddition; }
     directives.map((directive) => {
       schemaAddition = `${schemaAddition}${directive.statement}${delimiter ?? ' '}`;
     });

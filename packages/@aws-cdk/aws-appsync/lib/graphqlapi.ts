@@ -302,7 +302,7 @@ export class IamResource {
 
   private arns: string[];
 
-  private constructor(arns: string[]){
+  private constructor(arns: string[]) {
     this.arns = arns;
   }
 
@@ -359,7 +359,7 @@ export class GraphQLApi extends GraphqlApiBase {
     class Import extends GraphqlApiBase {
       public readonly apiId = attrs.graphqlApiId;
       public readonly arn = arn;
-      constructor (s: Construct, i: string){
+      constructor (s: Construct, i: string) {
         super(s, i);
       }
     }
@@ -418,10 +418,10 @@ export class GraphQLApi extends GraphqlApiBase {
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
       authenticationType: defaultMode.authorizationType,
-      logConfig: this.formatLogConfig(props.logConfig),
-      openIdConnectConfig: this.formatOpenIdConnectConfig(defaultMode.openIdConnectConfig),
-      userPoolConfig: this.formatUserPoolConfig(defaultMode.userPoolConfig),
-      additionalAuthenticationProviders: this.formatAdditionalAuthorizationModes(additionalModes),
+      logConfig: this.setupLogConfig(props.logConfig),
+      openIdConnectConfig: this.setupOpenIdConnectConfig(defaultMode.openIdConnectConfig),
+      userPoolConfig: this.setupUserPoolConfig(defaultMode.userPoolConfig),
+      additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
     });
 
@@ -494,17 +494,17 @@ export class GraphQLApi extends GraphqlApiBase {
 
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
     modes.map((mode) => {
-      if(mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig){
+      if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
         throw new Error('Missing default OIDC Configuration');
       }
-      if(mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig){
+      if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig) {
         throw new Error('Missing default OIDC Configuration');
       }
     });
-    if(modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1){
+    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
       throw new Error('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
     }
-    if(modes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1){
+    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1) {
       throw new Error('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
     }
   }
@@ -519,8 +519,8 @@ export class GraphQLApi extends GraphqlApiBase {
     return true;
   }
 
-  private formatLogConfig(config?: LogConfig) {
-    if(!config) return undefined;
+  private setupLogConfig(config?: LogConfig) {
+    if (!config) return undefined;
     const role = new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [
@@ -535,7 +535,7 @@ export class GraphQLApi extends GraphqlApiBase {
     };
   }
 
-  private formatOpenIdConnectConfig(config?: OpenIdConnectConfig) {
+  private setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {
     if (!config) return undefined;
     return {
       authTtl: config.tokenExpiryFromAuth,
@@ -545,7 +545,7 @@ export class GraphQLApi extends GraphqlApiBase {
     };
   }
 
-  private formatUserPoolConfig(config?: UserPoolConfig) {
+  private setupUserPoolConfig(config?: UserPoolConfig) {
     if (!config) return undefined;
     return {
       userPoolId: config.userPool.userPoolId,
@@ -555,13 +555,13 @@ export class GraphQLApi extends GraphqlApiBase {
     };
   }
 
-  private formatAdditionalAuthorizationModes(modes?: AuthorizationMode[]) {
+  private setupAdditionalAuthorizationModes(modes?: AuthorizationMode[]) {
     if (!modes || modes.length === 0) return undefined;
     return modes.reduce<CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]>((acc, mode) => [
       ...acc, {
         authenticationType: mode.authorizationType,
-        userPoolConfig: this.formatUserPoolConfig(mode.userPoolConfig),
-        openIdConnectConfig: this.formatOpenIdConnectConfig(mode.openIdConnectConfig),
+        userPoolConfig: this.setupUserPoolConfig(mode.userPoolConfig),
+        openIdConnectConfig: this.setupOpenIdConnectConfig(mode.openIdConnectConfig),
       },
     ], []);
   }
