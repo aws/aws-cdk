@@ -6,6 +6,7 @@ import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { Pinger } from './pinger/pinger';
 import { TestStack } from './util';
+import { NodegroupAmiType } from '../lib';
 
 class EksClusterStack extends TestStack {
 
