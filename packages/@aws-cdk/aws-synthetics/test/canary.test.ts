@@ -29,7 +29,7 @@ test('Basic canary properties work', () => {
     SuccessRetentionPeriod: 10,
     FailureRetentionPeriod: 10,
     StartCanaryAfterCreation: false,
-    Schedule: objectLike({ DurationInSeconds: '1800'}),
+    Schedule: objectLike({ DurationInSeconds: '1800' }),
     RuntimeVersion: 'syn-1.0',
   });
 });
@@ -198,7 +198,7 @@ test('Schedule can be set with Rate', () => {
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Schedule: objectLike({ Expression: 'rate(3 minutes)'}),
+    Schedule: objectLike({ Expression: 'rate(3 minutes)' }),
   });
 });
 
@@ -217,7 +217,7 @@ test('Schedule can be set to 1 minute', () => {
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Schedule: objectLike({ Expression: 'rate(1 minute)'}),
+    Schedule: objectLike({ Expression: 'rate(1 minute)' }),
   });
 });
 
@@ -236,7 +236,7 @@ test('Schedule can be set with Expression', () => {
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Schedule: objectLike({ Expression: 'rate(1 hour)'}),
+    Schedule: objectLike({ Expression: 'rate(1 hour)' }),
   });
 });
 
@@ -255,7 +255,7 @@ test('Schedule can be set to run once', () => {
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Schedule: objectLike({ Expression: 'rate(0 minutes)'}),
+    Schedule: objectLike({ Expression: 'rate(0 minutes)' }),
   });
 });
 

@@ -43,7 +43,7 @@ export class Test {
    * @param code The code that the canary should run
    * @param handler The handler of the canary
    */
-  private constructor(public readonly code: Code, public readonly handler: string){
+  private constructor(public readonly code: Code, public readonly handler: string) {
   }
 }
 
@@ -80,7 +80,7 @@ export class Runtime {
   /**
    * @param name The name of the runtime version
    */
-  public constructor(public readonly name: string){
+  public constructor(public readonly name: string) {
   }
 }
 
@@ -327,7 +327,7 @@ export class Canary extends cdk.Resource {
         new iam.PolicyStatement({
           resources: ['*'],
           actions: ['cloudwatch:PutMetricData'],
-          conditions: {StringEquals: {'cloudwatch:namespace': 'CloudWatchSynthetics'}},
+          conditions: { StringEquals: { 'cloudwatch:namespace': 'CloudWatchSynthetics' } },
         }),
         new iam.PolicyStatement({
           resources: ['arn:aws:logs:::*'],
@@ -376,10 +376,10 @@ export class Canary extends cdk.Resource {
    */
   private generateUniqueName(): string {
     const name = this.node.uniqueId.toLowerCase().replace(' ', '-');
-    if (name.length <= 21){
+    if (name.length <= 21) {
       return name;
     } else {
-      return name.substring(0,15) + nameHash(name);
+      return name.substring(0, 15) + nameHash(name);
     }
   }
 }
@@ -391,7 +391,7 @@ export class Canary extends cdk.Resource {
  */
 function nameHash(name: string): string {
   const md5 = crypto.createHash('sha256').update(name).digest('hex');
-  return md5.slice(0,6);
+  return md5.slice(0, 6);
 }
 
 const nameRegex: RegExp = /^[0-9a-z_\-]+$/;

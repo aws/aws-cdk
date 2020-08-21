@@ -65,7 +65,7 @@ Conditions:
   UsePublicAccessBlockConfiguration:
     Fn::Equals:
       - 'true'
-      - Ref: PublicAccessBlockConfiguration  
+      - Ref: PublicAccessBlockConfiguration
 Resources:
   FileAssetsBucketEncryptionKey:
     Type: AWS::KMS::Key
@@ -99,11 +99,14 @@ Resources:
               - kms:GenerateDataKey*
             Effect: Allow
             Principal:
-              AWS:
-                Ref: AWS::AccountId
+              # Not actually everyone -- see below for Conditions
+              AWS: "*"
             Resource: "*"
             Condition:
               StringEquals:
+                # See https://docs.aws.amazon.com/kms/latest/developerguide/policy-conditions.html#conditions-kms-caller-account
+                kms:CallerAccount:
+                  Ref: AWS::AccountId
                 kms:ViaService:
                   - Fn::Sub: s3.${AWS::Region}.amazonaws.com
           - Action:
@@ -118,6 +121,14 @@ Resources:
                 Fn::Sub: "${FilePublishingRole.Arn}"
             Resource: "*"
     Condition: CreateNewKey
+  FileAssetsBucketEncryptionKeyAlias:
+    Condition: CreateNewKey
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName:
+        Fn::Sub: "alias/cdk-${Qualifier}-assets-key"
+      TargetKeyId:
+        Ref: FileAssetsBucketEncryptionKey
   StagingBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -143,7 +154,7 @@ Resources:
             BlockPublicPolicy: true
             IgnorePublicAcls: true
             RestrictPublicBuckets: true
-          - Ref: AWS::NoValue       
+          - Ref: AWS::NoValue
     UpdateReplacePolicy: Retain
   StagingBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
@@ -350,6 +361,15 @@ Resources:
           - Ref: AWS::NoValue
       RoleName:
         Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
+  # The SSM parameter is used in pipeline-deployed templates to verify the version
+  # of the bootstrap resources.
+  CdkBootstrapVersion:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name:
+        Fn::Sub: '/aws-cdk-bootstrap/${Qualifier}/version'
+      Value: 4
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack
@@ -359,8 +379,11 @@ Outputs:
     Description: The domain name of the S3 bucket owned by the CDK toolkit stack
     Value:
       Fn::Sub: "${StagingBucket.RegionalDomainName}"
+  # @deprecated - This Export can be removed at some future point in time.
+  # We can't do it today because if there are stacks that use it, the bootstrap
+  # stack cannot be updated. Not used anymore by apps >= 1.60.0
   FileAssetKeyArn:
-    Description: The ARN of the KMS key used to encrypt the asset bucket
+    Description: The ARN of the KMS key used to encrypt the asset bucket (deprecated)
     Value:
       Fn::If:
         - CreateNewKey
@@ -373,10 +396,9 @@ Outputs:
     Description: The name of the ECR repository which hosts docker image assets
     Value:
       Fn::Sub: "${ContainerAssetsRepository}"
+  # The Output is used by the CLI to verify the version of the bootstrap resources.
   BootstrapVersion:
     Description: The version of the bootstrap resources that are currently mastered
       in this stack
-    Value: '3'
-    Export:
-      Name:
-        Fn::Sub: CdkBootstrap-${Qualifier}-Version
+    Value:
+      Fn::GetAtt: [CdkBootstrapVersion, Value]

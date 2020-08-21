@@ -37,7 +37,7 @@ describe('UserPoolIdentityProvider', () => {
         userPool: pool,
         clientId: 'fb-client-id',
         clientSecret: 'fb-client-secret',
-        scopes: [ 'scope1', 'scope2' ],
+        scopes: ['scope1', 'scope2'],
         apiVersion: 'version1',
       });
 

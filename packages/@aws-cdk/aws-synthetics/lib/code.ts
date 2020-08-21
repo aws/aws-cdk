@@ -99,7 +99,7 @@ export class AssetCode extends Code {
     this.validateCanaryAsset(handler);
 
     // If the same AssetCode is used multiple times, retain only the first instantiation.
-    if (!this.asset){
+    if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
         path: this.assetPath,
         ...this.options,
@@ -132,7 +132,7 @@ export class AssetCode extends Code {
         throw new Error(`Asset must be a .zip file or a directory (${this.assetPath})`);
       }
       const filename = `${handler.split('.')[0]}.js`;
-      if (!fs.existsSync(path.join(this.assetPath,'nodejs', 'node_modules', filename))) {
+      if (!fs.existsSync(path.join(this.assetPath, 'nodejs', 'node_modules', filename))) {
         throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${filename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch)`);
       }
     }
