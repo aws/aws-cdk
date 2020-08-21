@@ -1,6 +1,7 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { CfnOutput, Construct, Resource, Stack, Token, Tags } from '@aws-cdk/core';
 import { ICluster, ClusterAttributes, KubernetesVersion, NodeType, DefaultCapacityType, EksOptimizedImage, CapacityOptions, MachineImageType, AutoScalingGroupOptions, CommonClusterOptions } from './cluster';
@@ -43,6 +44,15 @@ export interface LegacyClusterProps extends CommonClusterOptions {
    * @default NODEGROUP
    */
   readonly defaultCapacityType?: DefaultCapacityType;
+
+  /**
+   * KMS secret for envelope encryption for Kubernetes secrets.
+   *
+   * @default - By default, Kubernetes stores all secret object data within etcd and
+   *            all etcd volumes used by Amazon EKS are encrypted at the disk-level
+   *            using AWS-Managed encryption keys.
+   */
+  readonly secretsEncryptionKey?: kms.IKey;
 }
 
 /**
@@ -184,6 +194,14 @@ export class LegacyCluster extends Resource implements ICluster {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
       },
+      ...(props.secretsEncryptionKey ? {
+        encryptionConfig: [{
+          provider: {
+            keyArn: props.secretsEncryptionKey.keyArn,
+          },
+          resources: ['secrets'],
+        }],
+      } : {} ),
     };
 
     const resource = new CfnCluster(this, 'Resource', clusterProps);

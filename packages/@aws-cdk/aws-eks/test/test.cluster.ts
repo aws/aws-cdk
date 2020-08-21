@@ -3,6 +3,7 @@ import * as path from 'path';
 import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
@@ -1836,6 +1837,35 @@ export = {
 
     // make sure the attribute points to the expected custom resource and extracts the correct attribute
     test.deepEqual(rawTemplate.Outputs.LoadBalancerAddress.Value, { 'Fn::GetAtt': [expectedKubernetesGetId, 'Value'] });
+    test.done();
+  },
+  'create a cluster using custom resource with secrets encryption using KMS CMK'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      version: CLUSTER_VERSION,
+      secretsEncryptionKey: new kms.Key(stack, 'Key'),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        encryptionConfig: [{
+          provider: {
+            keyArn: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          },
+          resources: ['secrets'],
+        }],
+      },
+    }));
     test.done();
   },
 };
