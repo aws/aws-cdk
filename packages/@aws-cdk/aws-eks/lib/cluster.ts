@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
 import * as YAML from 'yaml';
@@ -379,6 +380,15 @@ export interface ClusterProps extends ClusterOptions {
    * @default NODEGROUP
    */
   readonly defaultCapacityType?: DefaultCapacityType;
+
+  /**
+   * KMS secret for envelope encryption for Kubernetes secrets.
+   *
+   * @default - By default, Kubernetes stores all secret object data within etcd and
+   *            all etcd volumes used by Amazon EKS are encrypted at the disk-level
+   *            using AWS-Managed encryption keys.
+   */
+  readonly secretsEncryptionKey?: kms.IKey;
 }
 
 /**
@@ -630,6 +640,14 @@ export class Cluster extends Resource implements ICluster {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
       },
+      ...(props.secretsEncryptionKey ? {
+        encryptionConfig: [{
+          provider: {
+            keyArn: props.secretsEncryptionKey.keyArn,
+          },
+          resources: ['secrets'],
+        }],
+      } : {} ),
     };
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
@@ -670,6 +688,20 @@ export class Cluster extends Resource implements ICluster {
         resourceName: this.vpc.vpcId,
       })],
     }));
+
+    // grant cluster creation role sufficient permission to access the specified key
+    // see https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html
+    if (props.secretsEncryptionKey) {
+      this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
+        actions: [
+          'kms:Encrypt',
+          'kms:Decrypt',
+          'kms:DescribeKey',
+          'kms:CreateGrant',
+        ],
+        resources: [props.secretsEncryptionKey.keyArn],
+      }));
+    }
 
     // we use an SSM parameter as a barrier because it's free and fast.
     this._kubectlReadyBarrier = new CfnResource(this, 'KubectlReadyBarrier', {
