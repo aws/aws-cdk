@@ -4,7 +4,7 @@ import { ManagedPolicy, Role, ServicePrincipal, Grant, IGrantable } from '@aws-c
 import { CfnResource, Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
-import { ObjectType, ObjectTypeProps } from './schema-types';
+import { ObjectType, ObjectTypeProps } from './schema-intermediate';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -303,7 +303,7 @@ export class IamResource {
 
   private arns: string[];
 
-  private constructor(arns: string[]){
+  private constructor(arns: string[]) {
     this.arns = arns;
   }
 
@@ -360,7 +360,7 @@ export class GraphQLApi extends GraphqlApiBase {
     class Import extends GraphqlApiBase {
       public readonly apiId = attrs.graphqlApiId;
       public readonly arn = arn;
-      constructor (s: Construct, i: string){
+      constructor (s: Construct, i: string) {
         super(s, i);
       }
     }
@@ -397,21 +397,21 @@ export class GraphQLApi extends GraphqlApiBase {
 
   /**
    * the configured API key, if present
+   *
+   * @default - no api key
    */
-  public get apiKey(): string | undefined {
-    return this._apiKey;
-  }
+  public readonly apiKey?: string;
 
   private schemaMode: SchemaDefinition;
   private api: CfnGraphQLApi;
-  private _apiKey?: string;
+  private _apiKey?: CfnApiKey;
 
   constructor(scope: Construct, id: string, props: GraphQLApiProps) {
     super(scope, id);
 
     this.validateAuthorizationProps(props);
     const defaultAuthorizationType =
-      props.authorizationConfig?.defaultAuthorization?.authorizationType ||
+      props.authorizationConfig?.defaultAuthorization?.authorizationType ??
       AuthorizationType.API_KEY;
 
     let apiLogsRole;
@@ -462,22 +462,24 @@ export class GraphQLApi extends GraphqlApiBase {
     this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
     this.schemaMode = props.schemaDefinition;
-
-    if (
-      defaultAuthorizationType === AuthorizationType.API_KEY ||
-      props.authorizationConfig?.additionalAuthorizationModes?.some(
-        (authMode) => authMode.authorizationType === AuthorizationType.API_KEY
-      )
-    ) {
-      const apiKeyConfig: ApiKeyConfig = props.authorizationConfig
-        ?.defaultAuthorization?.apiKeyConfig || {
-          name: 'DefaultAPIKey',
-          description: 'Default API Key created by CDK',
-        };
-      this._apiKey = this.createAPIKey(apiKeyConfig);
-    }
-
     this.schema = this.defineSchema(props.schemaDefinitionFile);
+
+    if (defaultAuthorizationType === AuthorizationType.API_KEY ||
+      props.authorizationConfig?.additionalAuthorizationModes?.some(
+        (authMode) => authMode.authorizationType === AuthorizationType.API_KEY)
+    ) {
+      // create a variable for apiKeyConfig if one has been specified by the user
+      // first check is for default authorization
+      // second check is for additional authorization modes
+      const apiKeyConfig = props.authorizationConfig?.defaultAuthorization?.apiKeyConfig ??
+        props.authorizationConfig?.additionalAuthorizationModes?.
+          find((mode: AuthorizationMode) => {
+            return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
+          })?.apiKeyConfig;
+      this._apiKey = this.createAPIKey(apiKeyConfig);
+      this._apiKey.addDependsOn(this.schema);
+      this.apiKey = this._apiKey.attrApiKey;
+    }
   }
 
   /**
@@ -531,65 +533,27 @@ export class GraphQLApi extends GraphqlApiBase {
   }
 
   private validateAuthorizationProps(props: GraphQLApiProps) {
-    const defaultAuthorizationType =
-      props.authorizationConfig?.defaultAuthorization?.authorizationType ||
-      AuthorizationType.API_KEY;
+    const defaultMode = props.authorizationConfig?.defaultAuthorization ?? {
+      authorizationType: AuthorizationType.API_KEY,
+    };
+    const additionalModes = props.authorizationConfig?.additionalAuthorizationModes ?? [];
+    const allModes = [defaultMode, ...additionalModes];
 
-    if (
-      defaultAuthorizationType === AuthorizationType.OIDC &&
-      !props.authorizationConfig?.defaultAuthorization?.openIdConnectConfig
-    ) {
-      throw new Error('Missing default OIDC Configuration');
+    allModes.map((mode) => {
+      if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
+        throw new Error('Missing default OIDC Configuration');
+      }
+      if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig) {
+        throw new Error('Missing default OIDC Configuration');
+      }
+    });
+
+    if (allModes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
+      throw new Error('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
     }
 
-    if (
-      defaultAuthorizationType === AuthorizationType.USER_POOL &&
-      !props.authorizationConfig?.defaultAuthorization?.userPoolConfig
-    ) {
-      throw new Error('Missing default User Pool Configuration');
-    }
-
-    if (props.authorizationConfig?.additionalAuthorizationModes) {
-      props.authorizationConfig.additionalAuthorizationModes.forEach(
-        (authorizationMode) => {
-          if (
-            authorizationMode.authorizationType === AuthorizationType.API_KEY &&
-            defaultAuthorizationType === AuthorizationType.API_KEY
-          ) {
-            throw new Error(
-              "You can't duplicate API_KEY in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
-            );
-          }
-
-          if (
-            authorizationMode.authorizationType === AuthorizationType.IAM &&
-            defaultAuthorizationType === AuthorizationType.IAM
-          ) {
-            throw new Error(
-              "You can't duplicate IAM in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
-            );
-          }
-
-          if (
-            authorizationMode.authorizationType === AuthorizationType.OIDC &&
-            !authorizationMode.openIdConnectConfig
-          ) {
-            throw new Error(
-              'Missing OIDC Configuration inside an additional authorization mode',
-            );
-          }
-
-          if (
-            authorizationMode.authorizationType ===
-              AuthorizationType.USER_POOL &&
-            !authorizationMode.userPoolConfig
-          ) {
-            throw new Error(
-              'Missing User Pool Configuration inside an additional authorization mode',
-            );
-          }
-        },
-      );
+    if (allModes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1) {
+      throw new Error('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
     }
   }
 
@@ -625,9 +589,9 @@ export class GraphQLApi extends GraphqlApiBase {
     };
   }
 
-  private createAPIKey(config: ApiKeyConfig) {
+  private createAPIKey(config?: ApiKeyConfig) {
     let expires: number | undefined;
-    if (config.expires) {
+    if (config?.expires) {
       expires = new Date(config.expires).valueOf();
       const days = (d: number) =>
         Date.now() + Duration.days(d).toMilliseconds();
@@ -636,12 +600,11 @@ export class GraphQLApi extends GraphqlApiBase {
       }
       expires = Math.round(expires / 1000);
     }
-    const key = new CfnApiKey(this, `${config.name || 'DefaultAPIKey'}ApiKey`, {
+    return new CfnApiKey(this, `${config?.name || 'Default'}ApiKey`, {
       expires,
-      description: config.description || 'Default API Key created by CDK',
+      description: config?.description,
       apiId: this.apiId,
     });
-    return key.attrApiKey;
   }
 
   private formatAdditionalAuthorizationModes(
