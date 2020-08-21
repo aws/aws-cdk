@@ -1201,7 +1201,7 @@ export class Cluster extends ClusterBase {
     const provider = new KubectlProvider(this.stack, uid, { cluster: this });
 
     // allow the kubectl provider to assume the cluster creation role.
-    this._clusterResource.addTrustedRole(provider.handlerRole);
+    // this._clusterResource.addTrustedRole(provider.handlerRole);
 
     return provider;
   }
