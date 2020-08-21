@@ -40,7 +40,7 @@
     "@aws-cdk/assert": "0.0.0",
     "aws-cdk": "0.0.0",
     "fs-extra": "^9.0.1",
-    "yargs": "^15.3.1"
+    "yargs": "^15.4.1"
   },
   "keywords": [
     "aws",

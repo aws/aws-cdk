@@ -184,7 +184,7 @@
     "jsii-reflect": "^1.9.0",
     "jsonschema": "^1.2.6",
     "yaml": "1.9.2",
-    "yargs": "^15.3.1"
+    "yargs": "^15.4.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
