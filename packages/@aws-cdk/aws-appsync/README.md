@@ -47,8 +47,7 @@ import * as db from '@aws-cdk/aws-dynamodb';
 
 const api = new appsync.GraphQLApi(stack, 'Api', {
   name: 'demo',
-  schemaDefinition: appsync.SchemaDefinition.FILE,
-  schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+  schema: appsync.Schema.fromFile(join(__dirname, 'schema.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: appsync.AuthorizationType.IAM
@@ -200,7 +199,7 @@ import * as db from '@aws-cdk/aws-dynamodb';
 
 const api = new appsync.GraphQLApi(stack, 'Api', {
   name: 'demo',
-  schemaDefinition: appsync.SchemaDefinition.CODE,
+  schema: appsync.Schema.fromCode(),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: appsync.AuthorizationType.IAM
@@ -281,7 +280,7 @@ You can create Object Types in three ways:
     ```ts
     const api = new appsync.GraphQLApi(stack, 'Api', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
+      schema: appsync.Schema.fromCode,
     });
     const demo = new appsync.ObjectType('Demo', {
       defintion: {
@@ -337,7 +336,7 @@ You can create Object Types in three ways:
     ```ts
     const api = new appsync.GraphQLApi(stack, 'Api', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
+      schema: appsync.Schema.fromCode(),
     });
     api.addType('Demo', {
       defintion: {
