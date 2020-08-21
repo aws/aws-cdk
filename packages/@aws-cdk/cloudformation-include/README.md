@@ -181,6 +181,25 @@ and any changes you make to it will be reflected in the resulting template:
 mapping.setValue('my-region', 'AMI', 'ami-04681a1dbd79675a5');
 ```
 
+## Rules
+
+If your template uses [Service Catalog template Rules](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const rule: core.CfnRule = cfnTemplate.getRule('MyRule');
+```
+
+The `CfnRule` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+rule.addAssertion(core.Fn.conditionContains(['m1.small'], myParameter.value),
+  'MyParameter has to be m1.small');
+```
+
 ## Outputs
 
 If your template uses [CloudFormation Outputs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html),
