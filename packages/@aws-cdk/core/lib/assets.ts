@@ -223,6 +223,8 @@ export interface FileAssetLocation {
    * can be used as an example for how to configure the key properly.
    *
    * @default - Asset bucket is not encrypted
+   * @deprecated Since bootstrap bucket v4, the key policy properly allows use of the
+   * key via the bucket and no additional parameters have to be granted anymore.
    */
   readonly kmsKeyArn?: string;
 }
