@@ -265,7 +265,7 @@ export = {
       constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
-        new eks.ServiceAccount(this, 'testAccount', {cluster: props.cluster, name: 'test-account', namespace: 'test'});
+        new eks.ServiceAccount(this, 'testAccount', { cluster: props.cluster, name: 'test-account', namespace: 'test' });
       }
     }
 

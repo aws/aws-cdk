@@ -79,20 +79,23 @@ export class ServiceAccount extends Construct implements IPrincipal {
     this.grantPrincipal = this.role.grantPrincipal;
     this.policyFragment = this.role.policyFragment;
 
-    new KubernetesManifest(this, `manifest-${id}ServiceAccountResource`, { cluster, manifest: [{
-      apiVersion: 'v1',
-      kind: 'ServiceAccount',
-      metadata: {
-        name: this.serviceAccountName,
-        namespace: this.serviceAccountNamespace,
-        labels: {
-          'app.kubernetes.io/name': this.serviceAccountName,
+    new KubernetesManifest(this, `manifest-${id}ServiceAccountResource`, {
+      cluster,
+      manifest: [{
+        apiVersion: 'v1',
+        kind: 'ServiceAccount',
+        metadata: {
+          name: this.serviceAccountName,
+          namespace: this.serviceAccountNamespace,
+          labels: {
+            'app.kubernetes.io/name': this.serviceAccountName,
+          },
+          annotations: {
+            'eks.amazonaws.com/role-arn': this.role.roleArn,
+          },
         },
-        annotations: {
-          'eks.amazonaws.com/role-arn': this.role.roleArn,
-        },
-      },
-    }]});
+      }],
+    });
 
   }
 

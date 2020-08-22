@@ -628,27 +628,6 @@
         }
       }
     },
-    "ClusterControlPlaneSecurityGroupfromawscdkeksclustertestClusterKubectlProviderSecurityGroup0285626644359187EDA": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "IpProtocol": "tcp",
-        "Description": "from awscdkeksclustertestClusterKubectlProviderSecurityGroup02856266:443",
-        "FromPort": 443,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
-        },
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterKubectlProviderSecurityGroup2D90691C",
-            "GroupId"
-          ]
-        },
-        "ToPort": 443
-      }
-    },
     "ClusterControlPlaneSecurityGroupfromawscdkeksclustertestClusterNodesInstanceSecurityGroupD0B64C54443795AF111": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
@@ -749,6 +728,27 @@
         }
       }
     },
+    "ClusterKubectlProviderSecurityGroupfromawscdkeksclustertestClusterKubectlProviderSecurityGroup02856266443394A43AD": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterKubectlProviderSecurityGroup02856266:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterKubectlProviderSecurityGroup2D90691C",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ClusterKubectlProviderSecurityGroup2D90691C",
+            "GroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
     "ClusterCreationRole360249B6": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -791,6 +791,7 @@
         }
       },
       "DependsOn": [
+        "ClusterKubectlProviderSecurityGroupfromawscdkeksclustertestClusterKubectlProviderSecurityGroup02856266443394A43AD",
         "ClusterKubectlProviderSecurityGroup2D90691C",
         "VpcIGWD7BA715C",
         "VpcPrivateSubnet1DefaultRouteBE02A9ED",
@@ -939,6 +940,7 @@
         ]
       },
       "DependsOn": [
+        "ClusterKubectlProviderSecurityGroupfromawscdkeksclustertestClusterKubectlProviderSecurityGroup02856266443394A43AD",
         "ClusterKubectlProviderSecurityGroup2D90691C",
         "VpcIGWD7BA715C",
         "VpcPrivateSubnet1DefaultRouteBE02A9ED",
@@ -1030,6 +1032,12 @@
                   "ClusterControlPlaneSecurityGroupD274242C",
                   "GroupId"
                 ]
+              },
+              {
+                "Fn::GetAtt": [
+                  "ClusterKubectlProviderSecurityGroup2D90691C",
+                  "GroupId"
+                ]
               }
             ],
             "endpointPublicAccess": true,
@@ -1045,6 +1053,7 @@
         "AttributesRevision": 2
       },
       "DependsOn": [
+        "ClusterKubectlProviderSecurityGroupfromawscdkeksclustertestClusterKubectlProviderSecurityGroup02856266443394A43AD",
         "ClusterKubectlProviderSecurityGroup2D90691C",
         "ClusterCreationRoleDefaultPolicyE8BDFC7B",
         "ClusterCreationRole360249B6",
@@ -2812,32 +2821,7 @@
         }
       }
     },
-    "ClusterOpenIdConnectProviderE7EB0530": {
-      "Type": "Custom::AWSCDKOpenIdConnectProvider",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0",
-            "Arn"
-          ]
-        },
-        "ClientIDList": [
-          "sts.amazonaws.com"
-        ],
-        "ThumbprintList": [
-          "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
-        ],
-        "Url": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "OpenIdConnectIssuerUrl"
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "ClustermanifestMyServiceAccountServiceAccountResource0EC03615": {
+    "ClusterMyServiceAccountmanifestMyServiceAccountServiceAccountResource67018F11": {
       "Type": "Custom::AWSCDK-EKS-KubernetesResource",
       "Properties": {
         "ServiceToken": {
@@ -2874,6 +2858,31 @@
       "DependsOn": [
         "ClusterKubectlReadyBarrier200052AF"
       ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ClusterOpenIdConnectProviderE7EB0530": {
+      "Type": "Custom::AWSCDKOpenIdConnectProvider",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0",
+            "Arn"
+          ]
+        },
+        "ClientIDList": [
+          "sts.amazonaws.com"
+        ],
+        "ThumbprintList": [
+          "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
+        ],
+        "Url": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "OpenIdConnectIssuerUrl"
+          ]
+        }
+      },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
