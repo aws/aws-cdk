@@ -622,9 +622,11 @@ export class Cluster extends Resource implements ICluster {
       description: 'EKS Control Plane Security Group',
     });
 
+    const controlPlanePort = ec2.Port.tcp(443); // Control Plane has an HTTPS API
+
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
-      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
+      defaultPort: controlPlanePort,
     });
 
     this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
@@ -632,12 +634,23 @@ export class Cluster extends Resource implements ICluster {
     // Get subnetIds for all selected subnets
     const subnetIds = [...new Set(Array().concat(...this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds)))];
 
+    this.kubctlProviderSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
+      vpc: this.vpc,
+      description: 'Comminication between KubectlProvider and EKS Control Plane',
+    });
+
+    new ec2.Connections({ securityGroups: [this.kubctlProviderSecurityGroup] }).allowFrom(this.kubctlProviderSecurityGroup,
+      this.connections.defaultPort!);
+
     const clusterProps: CfnClusterProps = {
       name: this.physicalName,
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
-        securityGroupIds: [securityGroup.securityGroupId],
+        securityGroupIds: [
+          securityGroup.securityGroupId,
+          this.kubctlProviderSecurityGroup.securityGroupId,
+        ],
         subnetIds,
       },
       ...(props.secretsEncryptionKey ? {
@@ -659,14 +672,6 @@ export class Cluster extends Resource implements ICluster {
         throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
       }
     }
-
-    this.kubctlProviderSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
-      vpc: this.vpc,
-      description: 'Comminication between KubectlProvider and EKS Control Plane',
-    });
-
-    // grant the kubectl provider access to the cluster control plane.
-    this.connections.allowFrom(this.kubctlProviderSecurityGroup, this.connections.defaultPort!);
 
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       ...clusterProps,
@@ -913,6 +918,14 @@ export class Cluster extends Resource implements ICluster {
     const mapRole = options.mapRole === undefined ? true : options.mapRole;
     if (mapRole) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
+
+      if (Stack.of(autoScalingGroup.role) === Stack.of(autoScalingGroup)
+          && Stack.of(autoScalingGroup.role) !== this.stack) {
+        // this would create a cicrular dependency because the ASG depends
+        // on the cluster, so we can't have the cluster depends on the ASG stack.
+        throw new Error(`AutoScalingGroup.role (${autoScalingGroup.role.node.uniqueId}) cannot be in the same stack as the AutoScalingGroup (${autoScalingGroup.node.uniqueId}) since it differs from the Cluster stack. Either create the role in a separate stack, or create the AutoScalingGroup in the cluster stack.`);
+      }
+
       this.awsAuth.addRoleMapping(autoScalingGroup.role, {
         username: 'system:node:{{EC2PrivateDNSName}}',
         groups: [
