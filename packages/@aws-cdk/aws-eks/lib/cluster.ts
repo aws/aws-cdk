@@ -923,7 +923,7 @@ export class Cluster extends Resource implements ICluster {
           && Stack.of(autoScalingGroup.role) !== this.stack) {
         // this would create a cicrular dependency because the ASG depends
         // on the cluster, so we can't have the cluster depends on the ASG stack.
-        throw new Error(`AutoScalingGroup.role (${autoScalingGroup.role.node.uniqueId}) cannot be in the same stack as the AutoScalingGroup (${autoScalingGroup.node.uniqueId}) since it differs from the Cluster stack. Either create the role in a separate stack, or create the AutoScalingGroup in the cluster stack.`);
+        throw new Error(`AutoScalingGroup.role (${autoScalingGroup.role.node.uniqueId}) cannot be in the same stack as the AutoScalingGroup (${autoScalingGroup.node.uniqueId}) since it differs from the Cluster stack. Create the role either in a separate stack or the cluster stack.`);
       }
 
       this.awsAuth.addRoleMapping(autoScalingGroup.role, {

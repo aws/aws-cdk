@@ -61,7 +61,7 @@ export = {
     test.done();
   },
 
-  'can declare a manifest with a token from a different stack than the cluster'(test: Test) {
+  'can declare a manifest with a token from a different stack than the cluster that depends on the cluster stack'(test: Test) {
 
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
@@ -105,6 +105,48 @@ export = {
     const { app } = testFixture();
     const clusterStack = new ClusterStack(app, 'ClusterStack');
     new ManifestStack(app, 'ManifestStack', { cluster: clusterStack.eksCluster });
+
+    // make sure we can synth (no circular dependencies between the stacks)
+    app.synth();
+
+    test.done();
+  },
+
+  'can declare a chart with a token from a different stack than the cluster that depends on the cluster stack'(test: Test) {
+
+    class ClusterStack extends cdk.Stack {
+      public eksCluster: eks.Cluster;
+
+      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+        this.eksCluster = new eks.Cluster(this, 'Cluster', {
+          version: eks.KubernetesVersion.V1_17,
+        });
+      }
+    }
+
+    class ChartStack extends cdk.Stack {
+      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+        super(scope, id, props);
+
+        // this role creates a dependency between this stack and the cluster stack
+        const role = new iam.Role(this, 'CrossRole', {
+          assumedBy: new iam.ServicePrincipal('sqs.amazonaws.com'),
+          roleName: props.cluster.clusterArn,
+        });
+
+        // make sure this chart doesn't create a dependency between the cluster stack
+        // and this stack
+        new eks.HelmChart(this, 'cross-stack', {
+          chart: role.roleArn,
+          cluster: props.cluster,
+        });
+      }
+    }
+
+    const { app } = testFixture();
+    const clusterStack = new ClusterStack(app, 'ClusterStack');
+    new ChartStack(app, 'ChartStack', { cluster: clusterStack.eksCluster });
 
     // make sure we can synth (no circular dependencies between the stacks)
     app.synth();
@@ -243,7 +285,7 @@ export = {
     const capacityStack = new CapacityStack(app, 'CapacityStack', { cluster: clusterStack.eksCluster });
 
     test.throws(() => clusterStack.eksCluster.addAutoScalingGroup(capacityStack.group, {}),
-      'AutoScalingGroup.role (CapacityStackautoScalingInstanceRoleF041EB53) cannot be in the same stack as the AutoScalingGroup (CapacityStackautoScaling9B3B7CA6) since it differs from the Cluster stack. Either create the role in a separate stack, or create the AutoScalingGroup in the cluster stack.');
+      'AutoScalingGroup.role (CapacityStackautoScalingInstanceRoleF041EB53) cannot be in the same stack as the AutoScalingGroup (CapacityStackautoScaling9B3B7CA6) since it differs from the Cluster stack. Create the role either in a separate stack or the cluster stack.');
 
     test.done();
   },

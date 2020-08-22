@@ -269,6 +269,8 @@ the capacity.
 The `KubernetesManifest` construct or `cluster.addManifest` method can be used
 to apply Kubernetes resource manifests to this cluster.
 
+> When using `cluster.addManifest`, the manifest is created inside the cluster stack. If the manifest contains attributes from a different stack that depends on the cluster stack, a circular dependency will be created and you will get a synth time error. To avoid this, directly use `new KubernetesManifest` to create the manifest in the other stack.
+
 The following examples will deploy the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes)
 service on the cluster:
 
@@ -477,7 +479,7 @@ Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled
 on [creating a cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
 can provide more details about the customer master key (CMK) that can be used for the encryption.
 
-You can use the `secretsEncryptionKey` to configure which key the cluster will use to encrypt Kubernetes secrets. By default, an AWS Managed key will be used. 
+You can use the `secretsEncryptionKey` to configure which key the cluster will use to encrypt Kubernetes secrets. By default, an AWS Managed key will be used.
 
 > This setting can only be specified when the cluster is created and cannot be updated.
 
@@ -513,6 +515,8 @@ unfortunately beyond the scope of this documentation.
 
 The `HelmChart` construct or `cluster.addChart` method can be used
 to add Kubernetes resources to this cluster using Helm.
+
+> When using `cluster.addChart`, the chart is created inside the cluster stack. If the chart contains attributes from a different stack that depends on the cluster stack, a circular dependency will be created and you will get a synth time error. To avoid this, directly use `new HelmChart` to create the chart in the other stack.
 
 The following example will install the [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)
 to you cluster using Helm.
