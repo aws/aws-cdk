@@ -639,8 +639,7 @@ export class Cluster extends Resource implements ICluster {
       description: 'Comminication between KubectlProvider and EKS Control Plane',
     });
 
-    new ec2.Connections({ securityGroups: [this.kubctlProviderSecurityGroup] }).allowFrom(this.kubctlProviderSecurityGroup,
-      this.connections.defaultPort!);
+    this.kubctlProviderSecurityGroup.addIngressRule(this.kubctlProviderSecurityGroup, controlPlanePort);
 
     const clusterProps: CfnClusterProps = {
       name: this.physicalName,
