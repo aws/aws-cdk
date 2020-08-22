@@ -3,8 +3,9 @@ import * as path from 'path';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tag, Token, Duration } from '@aws-cdk/core';
+import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { clusterArnComponents, ClusterResource } from './cluster-resource';
@@ -15,7 +16,7 @@ import { KubernetesManifest } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { KubectlProvider, KubectlProviderProps } from './kubectl-provider';
-import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
+import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
@@ -277,13 +278,13 @@ export class EndpointAccess {
    *
    * @param cidr The CIDR blocks.
    */
-  public static readonly PUBLIC = new EndpointAccess({privateAccess: false, publicAccess: true});
+  public static readonly PUBLIC = new EndpointAccess({ privateAccess: false, publicAccess: true });
 
   /**
    * The cluster endpoint is only accessible through your VPC.
    * Worker node traffic to the endpoint will stay within your VPC.
    */
-  public static readonly PRIVATE = new EndpointAccess({privateAccess: true, publicAccess: false});
+  public static readonly PRIVATE = new EndpointAccess({ privateAccess: true, publicAccess: false });
 
   /**
    * The cluster endpoint is accessible from outside of your VPC.
@@ -296,7 +297,7 @@ export class EndpointAccess {
    *
    * @param cidr The CIDR blocks.
    */
-  public static readonly PUBLIC_AND_PRIVATE = new EndpointAccess({privateAccess: true, publicAccess: true});
+  public static readonly PUBLIC_AND_PRIVATE = new EndpointAccess({ privateAccess: true, publicAccess: true });
 
   private constructor(
     /**
@@ -379,6 +380,15 @@ export interface ClusterProps extends ClusterOptions {
    * @default NODEGROUP
    */
   readonly defaultCapacityType?: DefaultCapacityType;
+
+  /**
+   * KMS secret for envelope encryption for Kubernetes secrets.
+   *
+   * @default - By default, Kubernetes stores all secret object data within etcd and
+   *            all etcd volumes used by Amazon EKS are encrypted at the disk-level
+   *            using AWS-Managed encryption keys.
+   */
+  readonly secretsEncryptionKey?: kms.IKey;
 }
 
 /**
@@ -630,6 +640,14 @@ export class Cluster extends Resource implements ICluster {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
       },
+      ...(props.secretsEncryptionKey ? {
+        encryptionConfig: [{
+          provider: {
+            keyArn: props.secretsEncryptionKey.keyArn,
+          },
+          resources: ['secrets'],
+        }],
+      } : {} ),
     };
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
@@ -664,12 +682,26 @@ export class Cluster extends Resource implements ICluster {
     // see https://github.com/aws/aws-cdk/issues/9027
     this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
       actions: ['ec2:DescribeVpcs'],
-      resources: [ stack.formatArn({
+      resources: [stack.formatArn({
         service: 'ec2',
         resource: 'vpc',
         resourceName: this.vpc.vpcId,
       })],
     }));
+
+    // grant cluster creation role sufficient permission to access the specified key
+    // see https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html
+    if (props.secretsEncryptionKey) {
+      this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
+        actions: [
+          'kms:Encrypt',
+          'kms:Decrypt',
+          'kms:DescribeKey',
+          'kms:CreateGrant',
+        ],
+        resources: [props.secretsEncryptionKey.keyArn],
+      }));
+    }
 
     // we use an SSM parameter as a barrier because it's free and fast.
     this._kubectlReadyBarrier = new CfnResource(this, 'KubectlReadyBarrier', {
@@ -693,7 +725,7 @@ export class Cluster extends Resource implements ICluster {
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
-    const commonCommandOptions = [ `--region ${stack.region}` ];
+    const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.outputClusterName) {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
@@ -763,9 +795,12 @@ export class Cluster extends Resource implements ICluster {
    * The nodes will automatically be configured with the right VPC and AMI
    * for the instance type and Kubernetes version.
    *
+   * Note that if you specify `updateType: RollingUpdate` or `updateType: ReplacingUpdate`, your nodes might be replaced at deploy
+   * time without notice in case the recommended AMI for your machine image type has been updated by AWS.
+   * The default behavior for `updateType` is `None`, which means only new instances will be launched using the new AMI.
+   *
    * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
-   * If kubectl is enabled, the
-   * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
+   * In addition, the [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
    * daemon will be installed on all spot instances to handle
    * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
@@ -782,7 +817,7 @@ export class Cluster extends Resource implements ICluster {
           nodeType: nodeTypeForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
         }),
-      updateType: options.updateType || autoscaling.UpdateType.ROLLING_UPDATE,
+      updateType: options.updateType,
       instanceType: options.instanceType,
     });
 
@@ -869,7 +904,7 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
-    Tag.add(autoScalingGroup, `kubernetes.io/cluster/${this.clusterName}`, 'owned', {
+    Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
       applyToLaunchedInstances: true,
     });
 
@@ -942,13 +977,13 @@ export class Cluster extends Resource implements ICluster {
     if (!this._openIdConnectProvider) {
       this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
         url: this.clusterOpenIdConnectIssuerUrl,
-        clientIds: [ 'sts.amazonaws.com' ],
+        clientIds: ['sts.amazonaws.com'],
         /**
          * For some reason EKS isn't validating the root certificate but a intermediat certificate
          * which is one level up in the tree. Because of the a constant thumbprint value has to be
          * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
          */
-        thumbprints: [ '9e99a48a9960b14926bb7f3b02e22da2b0ab7280' ],
+        thumbprints: ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'],
       });
     }
 
@@ -1074,7 +1109,7 @@ export class Cluster extends Resource implements ICluster {
           ...providerProps,
           vpc: this.vpc,
           // lambda can only be accociated with max 16 subnets and they all need to be private.
-          vpcSubnets: {subnets: privateSubents},
+          vpcSubnets: { subnets: privateSubents },
           securityGroups: [this.kubctlProviderSecurityGroup],
         };
       }
@@ -1177,7 +1212,7 @@ export class Cluster extends Resource implements ICluster {
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, '1'));
+        Tags.of(subnet).add(tag, '1');
       }
     };
 

@@ -316,6 +316,51 @@ describe('CDK Include', () => {
     });
   });
 
+  test('can ingest a template with the short form Conditions', () => {
+    includeTestTemplate(stack, 'short-form-conditions.yaml');
+
+    expect(stack).toMatchTemplate({
+      "Conditions": {
+        "AlwaysTrueCond": {
+          "Fn::Not": [
+            { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region1"] },
+          ],
+        },
+        "AnotherAlwaysTrueCond": {
+          "Fn::Not": [
+            { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region2"] },
+          ],
+        },
+        "ThirdAlwaysTrueCond": {
+          "Fn::Not": [
+            { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region3"] },
+          ],
+        },
+        "CombinedCond": {
+          "Fn::Or": [
+            { "Condition": "AlwaysTrueCond" },
+            { "Condition": "AnotherAlwaysTrueCond" },
+            { "Condition": "ThirdAlwaysTrueCond" },
+          ],
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::If": [
+                "CombinedCond",
+                "MyBucketName",
+                { "Ref": "AWS::NoValue" },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('can ingest a yaml with long-form functions and output it unchanged', () => {
     includeTestTemplate(stack, 'long-form-subnet.yaml');
 

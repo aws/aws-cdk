@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as util from 'util';
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
+import * as promptly from 'promptly';
 import { debug } from '../../logging';
 import { SharedIniFile } from './sdk_ini_file';
 
@@ -35,7 +36,6 @@ export class AwsCliCompatible {
     ec2creds: boolean | undefined,
     containerCreds: boolean | undefined,
     httpOptions: AWS.HTTPOptions | undefined) {
-    await forceSdkToReadConfigIfPresent();
 
     profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
@@ -45,11 +45,10 @@ export class AwsCliCompatible {
     ];
 
     if (await fs.pathExists(credentialsFileName())) {
-      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions }));
-    }
-
-    if (await fs.pathExists(configFileName())) {
-      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions }));
+      // Force reading the `config` file if it exists by setting the appropriate
+      // environment variable.
+      await forceSdkToReadConfigIfPresent();
+      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions, tokenCodeFn }));
     }
 
     if (containerCreds ?? hasEcsCredentials()) {
@@ -172,7 +171,7 @@ function configFileName() {
 /**
  * Force the JS SDK to honor the ~/.aws/config file (and various settings therein)
  *
- * For example, ther is just *NO* way to do AssumeRole credentials as long as AWS_SDK_LOAD_CONFIG is not set,
+ * For example, there is just *NO* way to do AssumeRole credentials as long as AWS_SDK_LOAD_CONFIG is not set,
  * or read credentials from that file.
  *
  * The SDK crashes if the variable is set but the file does not exist, so conditionally set it.
@@ -199,5 +198,25 @@ function readIfPossible(filename: string): string | undefined {
   } catch (e) {
     debug(e);
     return undefined;
+  }
+}
+
+/**
+ * Ask user for MFA token for given serial
+ *
+ * Result is send to callback function for SDK to authorize the request
+ */
+async function tokenCodeFn(serialArn: string, cb: (err?: Error, token?: string) => void): Promise<void> {
+  debug('Require MFA token for serial ARN', serialArn);
+  try {
+    const token: string = await promptly.prompt(`MFA token for ${serialArn}: `, {
+      trim: true,
+      default: '',
+    });
+    debug('Successfully got MFA token from user');
+    cb(undefined, token);
+  } catch (err) {
+    debug('Failed to get MFA token', err);
+    cb(err);
   }
 }

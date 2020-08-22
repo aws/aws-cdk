@@ -2,6 +2,7 @@ import { ABSENT, countResources, expect, haveResource, haveResourceLike, Resourc
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -33,7 +34,7 @@ export = {
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
-        VpcSecurityGroupIds: [ {'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId']}],
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
       },
       DeletionPolicy: ABSENT,
       UpdateReplacePolicy: 'Snapshot',
@@ -73,7 +74,7 @@ export = {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
-      VpcSecurityGroupIds: [ {'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId']}],
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
     }));
 
     test.done();
@@ -108,7 +109,7 @@ export = {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
-      VpcSecurityGroupIds: [ 'SecurityGroupId12345' ],
+      VpcSecurityGroupIds: ['SecurityGroupId12345'],
     }));
 
     test.done();
@@ -1082,6 +1083,101 @@ export = {
     test.done();
   },
 
+  'can set CloudWatch log exports'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.plainText('tooshort'),
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+      EnableCloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'],
+    }));
+
+    test.done();
+  },
+
+  'can set CloudWatch log retention'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.plainText('tooshort'),
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      cloudwatchLogsExports: ['error', 'general'],
+      cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::LogRetention', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      LogGroupName: { 'Fn::Join': ['', ['/aws/rds/cluster/', { Ref: 'DatabaseB269D8BB' }, '/error']] },
+      RetentionInDays: 90,
+    }));
+    expect(stack).to(haveResource('Custom::LogRetention', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      LogGroupName: { 'Fn::Join': ['', ['/aws/rds/cluster/', { Ref: 'DatabaseB269D8BB' }, '/general']] },
+      RetentionInDays: 90,
+    }));
+
+    test.done();
+  },
+
+  'throws if given unsupported CloudWatch log exports'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    test.throws(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        masterUser: {
+          username: 'admin',
+          password: cdk.SecretValue.plainText('tooshort'),
+        },
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        },
+        cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit', 'thislogdoesnotexist', 'neitherdoesthisone'],
+      });
+    }, /Unsupported logs for the current engine type: thislogdoesnotexist,neitherdoesthisone/);
+
+    test.done();
+  },
+
   'does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -1113,7 +1209,7 @@ export = {
 };
 
 function testStack() {
-  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' }});
+  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }

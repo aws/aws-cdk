@@ -1,14 +1,17 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-  IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import {
+  ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
+  IDependable, IResource, Lazy, Resource, Stack, Token, Tags,
+} from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
-  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation } from './ec2.generated';
+  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
+} from './ec2.generated';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
-import { allRouteTableIds, defaultSubnetName, flatten, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
+import { allRouteTableIds, defaultSubnetName, flatten, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
@@ -345,7 +348,7 @@ abstract class VpcBase extends Resource implements IVpc {
 
     return {
       subnetIds: subnets.map(s => s.subnetId),
-      availabilityZones: subnets.map(s => s.availabilityZone),
+      get availabilityZones(): string[] { return subnets.map(s => s.availabilityZone); },
       internetConnectivityEstablished: tap(new CompositeDependable(), d => subnets.forEach(s => d.add(s.internetConnectivityEstablished))),
       subnets,
       hasPublic: subnets.some(s => pubs.has(s)),
@@ -469,7 +472,7 @@ abstract class VpcBase extends Resource implements IVpc {
   }
 
   private selectSubnetObjectsByName(groupName: string) {
-    const allSubnets =  [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
+    const allSubnets = [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
     const subnets = allSubnets.filter(s => subnetGroupNameFromConstructId(s) === groupName);
 
     if (subnets.length === 0 && !this.incompleteSubnetDefinition) {
@@ -511,7 +514,7 @@ abstract class VpcBase extends Resource implements IVpc {
       if (placement.subnetGroupName !== undefined) {
         throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');
       }
-      placement = {...placement, subnetGroupName: placement.subnetName };
+      placement = { ...placement, subnetGroupName: placement.subnetName };
     }
 
     const exclusiveSelections: Array<keyof SubnetSelection> = ['subnets', 'subnetType', 'subnetGroupName'];
@@ -526,18 +529,21 @@ abstract class VpcBase extends Resource implements IVpc {
         return {
           subnetType: SubnetType.PRIVATE,
           onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones};
+          availabilityZones: placement.availabilityZones,
+        };
       }
       if (this.isolatedSubnets.length > 0) {
         return {
           subnetType: SubnetType.ISOLATED,
           onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones };
+          availabilityZones: placement.availabilityZones,
+        };
       }
       return {
         subnetType: SubnetType.PUBLIC,
         onePerAz: placement.onePerAz,
-        availabilityZones: placement.availabilityZones };
+        availabilityZones: placement.availabilityZones,
+      };
     }
 
     return placement;
@@ -1176,7 +1182,7 @@ export class Vpc extends VpcBase {
     this.vpcDefaultSecurityGroup = this.resource.attrDefaultSecurityGroup;
     this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
 
-    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
+    Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.availabilityZones = stack.availabilityZones;
 
@@ -1363,8 +1369,8 @@ export class Vpc extends VpcBase {
 
       // These values will be used to recover the config upon provider import
       const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
-      subnet.node.applyAspect(new Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
-      subnet.node.applyAspect(new Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
+      Tags.of(subnet).add(SUBNETNAME_TAG, subnetConfig.name, { includeResourceTypes });
+      Tags.of(subnet).add(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { includeResourceTypes });
     });
   }
 }
@@ -1482,7 +1488,7 @@ export class Subnet extends Resource implements ISubnet {
 
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
-    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
+    Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {

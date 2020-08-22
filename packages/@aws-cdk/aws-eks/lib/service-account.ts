@@ -1,5 +1,5 @@
-import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role  } from '@aws-cdk/aws-iam';
-import { CfnJson, Construct  } from '@aws-cdk/core';
+import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role } from '@aws-cdk/aws-iam';
+import { CfnJson, Construct } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
 
