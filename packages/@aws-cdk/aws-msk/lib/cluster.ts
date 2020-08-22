@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as core from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
 import {
   CfnCluster,
   KafkaVersion,
@@ -233,5 +234,96 @@ export class Cluster extends ClusterBase {
 
   private mskInstanceType(instanceType: ec2.InstanceType): string {
     return `kafka.${instanceType.toString()}`;
+  }
+
+  /**
+   * Get the ZooKeeper Connection string
+   *
+   * Uses a Custom Resource to make an API call to `describeCluster` using the Javascript SDK
+   *
+   * @returns - The connection string to use to connect to the Apache ZooKeeper cluster.
+   */
+  public get zookeeperConnectionString(): string {
+    const zookeeperConnect = new cr.AwsCustomResource(
+      this,
+      'ZookeeperConnect',
+      {
+        onUpdate: {
+          service: 'Kafka',
+          action: 'describeCluster',
+          parameters: {
+            ClusterArn: this.clusterArn,
+          },
+          physicalResourceId: cr.PhysicalResourceId.of(
+            'ZooKeeperConnectionString',
+          ),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+          resources: [this.clusterArn],
+        }),
+      },
+    );
+
+    return zookeeperConnect.getResponseField(
+      'ClusterInfo.ZookeeperConnectString',
+    );
+  }
+
+  /**
+   * Get the list of brokers that a client application can use to bootstrap
+   *
+   * Uses a Custom Resource to make an API call to `getBootstrapBrokers` using the Javascript SDK
+   *
+   * @returns - A string containing one or more hostname:port pairs.
+   */
+  public get bootstrapBrokers(): string {
+    const bootstrapBrokers = new cr.AwsCustomResource(
+      this,
+      'BootstrapBrokers',
+      {
+        onUpdate: {
+          service: 'Kafka',
+          action: 'getBootstrapBrokers',
+          parameters: {
+            ClusterArn: this.clusterArn,
+          },
+          physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+          resources: [this.clusterArn],
+        }),
+      },
+    );
+
+    return bootstrapBrokers.getResponseField('BootstrapBrokerString');
+  }
+
+  /**
+   * Get the list of brokers that a client application can use to bootstrap
+   *
+   * Uses a Custom Resource to make an API call to `getBootstrapBrokers` using the Javascript SDK
+   *
+   * @returns - A string containing one or more DNS names (or IP) and TLS port pairs.
+   */
+  public get bootstrapBrokersTls(): string {
+    const bootstrapBrokers = new cr.AwsCustomResource(
+      this,
+      'BootstrapBrokers',
+      {
+        onUpdate: {
+          service: 'Kafka',
+          action: 'getBootstrapBrokers',
+          parameters: {
+            ClusterArn: this.clusterArn,
+          },
+          physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+          resources: [this.clusterArn],
+        }),
+      },
+    );
+
+    return bootstrapBrokers.getResponseField('BootstrapBrokerStringTls');
   }
 }
