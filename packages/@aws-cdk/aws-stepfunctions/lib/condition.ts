@@ -310,7 +310,8 @@ export abstract class Condition {
   }
 
   /**
-   * Matches if a string matches "glob" style wild card, eg log-*.txt or *LATEST*.
+   * Matches if a field matches a string pattern that can contain a wild card (*) e.g: log-*.txt or *LATEST*.
+   * No other characters other than "*" have any special meaning - * can be escaped: \\*
    */
   public static stringMatches(variable: string, value: string): Condition {
     return new VariableComparison(variable, ComparisonOperator.StringMatches, value);

@@ -217,53 +217,54 @@ If your `Choice` doesn't have an `otherwise()` and none of the conditions match
 the JSON state, a `NoChoiceMatched` error will be thrown. Wrap the state machine
 in a `Parallel` state if you want to catch and recover from this.
 
-##### Available Conditions: 
+#### Available Conditions: 
 see [step function comparison operators](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-choice-state.html#amazon-states-language-choice-state-rules)
-* `Condition.isJsonPathPresent` - matches a json path is present
-* `Condition.isJsonPathNotPresent` - matches a json path is not present
-* `Condition.isJsonPathString` - matches a json path contains a string
-* `Condition.isJsonPathNotString` - matches a json path is not a string
-* `Condition.isJsonPathNumeric` - matches a json path is numeric
-* `Condition.isJsonPathNotNumeric` - matches a json path is not numeric
-* `Condition.isJsonPathBoolean` - matches a json path is boolean
-* `Condition.isJsonPathNotBoolean` - matches a json path is not boolean
-* `Condition.isJsonPathTimestamp` - matches a json path is a timestamp
-* `Condition.isJsonPathNotTimestamp` - matches a json path is not a timestamp
-* `Condition.isJsonPathNotNull` - matches a json path is not null
-* `Condition.isJsonPathNull` - matches a json path is null
-* `Condition.booleanEquals` - matches a boolean field has a given value
-* `Condition.booleanEqualsJsonPath` - matches a boolean field equals a value in a given mapping path
-* `Condition.stringEqualsJsonPath` - matches a string field equals a given mapping path
-* `Condition.stringEquals` - matches a field equals a string value
-* `Condition.stringLessThan` - Matches a string field sorts before a given value
-* `Condition.stringLessThanJsonPath` - Matches a string field sorts before a value at given mapping path
-* `Condition.stringLessThanEquals` - Matches if a string field sorts equal to or before a given value
-* `Condition.stringLessThanEqualsJsonPath` - Matches if a string field sorts equal to or before a given mapping
-* `Condition.stringGreaterThan` - Matches if a string field sorts after a given value
-* `Condition.stringGreaterThanJsonPath` - Matches if a string field sorts after a value at a given mapping path
-* `Condition.stringGreaterThanEqualsJsonPath` - Matches if a string field sorts after or equal to value at a given mapping path
-* `Condition.stringGreaterThanEquals` - Matches if a string field sorts after or equal to a given value
-* `Condition.numberEquals` - Matches if a numeric field has the given value
-* `Condition.numberEqualsJsonPath` - Matches if a numeric field has the value in a given mapping path
-* `Condition.numberLessThan` - Matches if a numeric field is less than the given value
-* `Condition.numberLessThanJsonPath` - Matches if a numeric field is less than the value at the given mapping path
-* `Condition.numberLessThanEquals` - Matches if a numeric field is less than or equal to the given value
-* `Condition.numberLessThanEqualsJsonPath` - Matches if a numeric field is less than or equal to the numeric value at given mapping path
-* `Condition.numberGreaterThan` - Matches if a numeric field is greater than the given value
-* `Condition.numberGreaterThanJsonPath` - Matches if a numeric field is greater than the value at a given mapping path
-* `Condition.numberGreaterThanEquals` - Matches if a numeric field is greater than or equal to the given value
-* `Condition.numberGreaterThanEqualsJsonPath` - Matches if a numeric field is greater than or equal to the value at a given mapping path
-* `Condition.timestampEquals` - Matches if a timestamp field is the same time as the given timestamp
-* `Condition.timestampEqualsJsonPath` - Matches if a timestamp field is the same time as the timestamp at a given mapping path
-* `Condition.timestampLessThan` - Matches if a timestamp field is before the given timestamp
-* `Condition.timestampLessThanJsonPath` - Matches if a timestamp field is before the timestamp at a given mapping path
-* `Condition.timestampLessThanEquals` - Matches if a timestamp field is before or equal to the given timestamp
-* `Condition.timestampLessThanEqualsJsonPath` - Matches if a timestamp field is before or equal to the timestamp at a given mapping path
-* `Condition.timestampGreaterThan` - Matches if a timestamp field is after the timestamp at a given mapping path
-* `Condition.timestampGreaterThanJsonPath` - Matches if a timestamp field is after the timestamp at a given mapping path
-* `Condition.timestampGreaterThanEquals` - Matches if a timestamp field is after or equal to the given timestamp
-* `Condition.timestampGreaterThanEqualsJsonPath` - Matches if a timestamp field is after or equal to the timestamp at a given mapping path
-* `Condition.stringMatches` 
+* `Condition.isPresent` - matches if a json path is present
+* `Condition.isNotPresent` - matches if a json path is not present
+* `Condition.isString` - matches if a json path contains a string
+* `Condition.isNotString` - matches if a json path is not a string
+* `Condition.isNumeric` - matches if a json path is numeric
+* `Condition.isNotNumeric` - matches if a json path is not numeric
+* `Condition.isBoolean` - matches if a json path is boolean
+* `Condition.isNotBoolean` - matches if a json path is not boolean
+* `Condition.isTimestamp` - matches if a json path is a timestamp
+* `Condition.isNotTimestamp` - matches if a json path is not a timestamp
+* `Condition.isNotNull` - matches if a json path is not null
+* `Condition.isNull` - matches if a json path is null
+* `Condition.booleanEquals` - matches if a boolean field has a given value
+* `Condition.booleanEqualsJsonPath` - matches if a boolean field equals a value in a given mapping path
+* `Condition.stringEqualsJsonPath` - matches if a string field equals a given mapping path
+* `Condition.stringEquals` - matches if a field equals a string value
+* `Condition.stringLessThan` - matches if a string field sorts before a given value
+* `Condition.stringLessThanJsonPath` - matches if a string field sorts before a value at given mapping path
+* `Condition.stringLessThanEquals` - matches if a string field sorts equal to or before a given value
+* `Condition.stringLessThanEqualsJsonPath` - matches if a string field sorts equal to or before a given mapping
+* `Condition.stringGreaterThan` - matches if a string field sorts after a given value
+* `Condition.stringGreaterThanJsonPath` - matches if a string field sorts after a value at a given mapping path
+* `Condition.stringGreaterThanEqualsJsonPath` - matches if a string field sorts after or equal to value at a given mapping path
+* `Condition.stringGreaterThanEquals` - matches if a string field sorts after or equal to a given value
+* `Condition.numberEquals` - matches if a numeric field has the given value
+* `Condition.numberEqualsJsonPath` - matches if a numeric field has the value in a given mapping path
+* `Condition.numberLessThan` - matches if a numeric field is less than the given value
+* `Condition.numberLessThanJsonPath` - matches if a numeric field is less than the value at the given mapping path
+* `Condition.numberLessThanEquals` - matches if a numeric field is less than or equal to the given value
+* `Condition.numberLessThanEqualsJsonPath` - matches if a numeric field is less than or equal to the numeric value at given mapping path
+* `Condition.numberGreaterThan` - matches if a numeric field is greater than the given value
+* `Condition.numberGreaterThanJsonPath` - matches if a numeric field is greater than the value at a given mapping path
+* `Condition.numberGreaterThanEquals` - matches if a numeric field is greater than or equal to the given value
+* `Condition.numberGreaterThanEqualsJsonPath` - matches if a numeric field is greater than or equal to the value at a given mapping path
+* `Condition.timestampEquals` - matches if a timestamp field is the same time as the given timestamp
+* `Condition.timestampEqualsJsonPath` - matches if a timestamp field is the same time as the timestamp at a given mapping path
+* `Condition.timestampLessThan` - matches if a timestamp field is before the given timestamp
+* `Condition.timestampLessThanJsonPath` - matches if a timestamp field is before the timestamp at a given mapping path
+* `Condition.timestampLessThanEquals` - matches if a timestamp field is before or equal to the given timestamp
+* `Condition.timestampLessThanEqualsJsonPath` - matches if a timestamp field is before or equal to the timestamp at a given mapping path
+* `Condition.timestampGreaterThan` - matches if a timestamp field is after the timestamp at a given mapping path
+* `Condition.timestampGreaterThanJsonPath` - matches if a timestamp field is after the timestamp at a given mapping path
+* `Condition.timestampGreaterThanEquals` - matches if a timestamp field is after or equal to the given timestamp
+* `Condition.timestampGreaterThanEqualsJsonPath` - matches if a timestamp field is after or equal to the timestamp at a given mapping path
+* `Condition.stringMatches` - matches if a field matches a string pattern that can contain a wild card (\*) e.g: log-\*.txt or \*LATEST\*. No other characters other than "\*" have any special meaning - \* can be escaped: \\\\*
+
 ### Parallel
 
 A `Parallel` state executes one or more subworkflows in parallel. It can also
