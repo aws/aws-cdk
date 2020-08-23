@@ -108,7 +108,7 @@ class EksClusterStack extends TestStack {
     userData.addCommands(
       'set -o xtrace',
       `/etc/eks/bootstrap.sh ${this.cluster.clusterName}`,
-    )
+    );
     const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
       launchTemplateData: {
         imageId: new eks.EksOptimizedImage().getImage(this).imageId,
@@ -117,14 +117,13 @@ class EksClusterStack extends TestStack {
       },
     });
     this.cluster.addNodegroup('extra-ng', {
-      // instanceType: new ec2.InstanceType('t3.small'),
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultNodegroup?.role || this.cluster.defaultCapacity?.role,
       launchTemplate: {
         launchTemplateId: lt.ref,
         version: lt.attrDefaultVersionNumber,
-      }
+      },
     });
   }
   private assertInferenceInstances() {

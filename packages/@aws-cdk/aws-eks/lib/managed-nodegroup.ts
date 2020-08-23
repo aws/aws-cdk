@@ -178,6 +178,7 @@ export interface NodegroupOptions {
   /**
    * Launch template used for the nodegroup
    * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+   * @default - no launch template
    */
   readonly launchTemplate?: LaunchTemplateSpecification;
 }
@@ -289,16 +290,16 @@ export class Nodegroup extends Resource implements INodegroup {
 
     if (props.launchTemplate) {
       if (props.diskSize) {
-        throw new Error('diskSize must be specified within the launch template')
+        throw new Error('diskSize must be specified within the launch template');
       }
       if (props.instanceType) {
-        throw new Error('Instance types must be specified within the launch template')
+        throw new Error('Instance types must be specified within the launch template');
       }
       // TODO: update this when the L1 resource spec is updated.
       resource.addPropertyOverride('LaunchTemplate', {
         Id: props.launchTemplate.launchTemplateId,
         Version: props.launchTemplate.version,
-      })
+      });
     }
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
