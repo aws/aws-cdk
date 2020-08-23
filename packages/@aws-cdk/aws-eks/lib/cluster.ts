@@ -917,14 +917,6 @@ export class Cluster extends Resource implements ICluster {
     const mapRole = options.mapRole === undefined ? true : options.mapRole;
     if (mapRole) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
-
-      if (Stack.of(autoScalingGroup.role) === Stack.of(autoScalingGroup)
-          && Stack.of(autoScalingGroup.role) !== this.stack) {
-        // this would create a cicrular dependency because the ASG depends
-        // on the cluster, so we can't have the cluster depends on the ASG stack.
-        throw new Error(`AutoScalingGroup.role (${autoScalingGroup.role.node.uniqueId}) cannot be in the same stack as the AutoScalingGroup (${autoScalingGroup.node.uniqueId}) since it differs from the Cluster stack. Create the role either in a separate stack or the cluster stack.`);
-      }
-
       this.awsAuth.addRoleMapping(autoScalingGroup.role, {
         username: 'system:node:{{EC2PrivateDNSName}}',
         groups: [

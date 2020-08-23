@@ -187,66 +187,6 @@ export = {
     test.done();
   },
 
-  'ASG can be declared in a different stack than the cluster in case the role is configured in a separate stack'(test: Test) {
-
-    class RoleStack extends cdk.Stack {
-      public role: iam.IRole;
-
-      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
-        super(scope, id, props);
-
-        this.role = new iam.Role(this, 'Role', {
-          assumedBy: new iam.ServicePrincipal('sqs'),
-        });
-      }
-    }
-
-    class ClusterStack extends cdk.Stack {
-      public eksCluster: eks.Cluster;
-
-      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
-        super(scope, id, props);
-        this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
-        });
-      }
-    }
-
-    class CapacityStack extends cdk.Stack {
-
-      public group: asg.AutoScalingGroup;
-
-      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster, role: iam.IRole }) {
-        super(scope, id, props);
-
-        // the role is create in this stack implicitly by the ASG
-        this.group = new asg.AutoScalingGroup(this, 'autoScaling', {
-          instanceType: new ec2.InstanceType('t3.medium'),
-          vpc: props.cluster.vpc,
-          machineImage: new eks.EksOptimizedImage({
-            kubernetesVersion: eks.KubernetesVersion.V1_16.version,
-            nodeType: eks.NodeType.STANDARD,
-          }),
-          role: props.role,
-        });
-
-      }
-    }
-
-    const { app } = testFixture();
-    const roleStack = new RoleStack(app, 'RoleStack');
-    const clusterStack = new ClusterStack(app, 'ClusterStack');
-    const capacityStack = new CapacityStack(app, 'CapacityStack', {
-      cluster: clusterStack.eksCluster,
-      role: roleStack.role,
-    });
-
-    clusterStack.eksCluster.addAutoScalingGroup(capacityStack.group, {});
-
-    app.synth();
-    test.done();
-  },
-
   'throws when declaring an ASG role in a different stack than the cluster'(test: Test) {
 
     class ClusterStack extends cdk.Stack {
@@ -284,8 +224,12 @@ export = {
     const clusterStack = new ClusterStack(app, 'ClusterStack');
     const capacityStack = new CapacityStack(app, 'CapacityStack', { cluster: clusterStack.eksCluster });
 
-    test.throws(() => clusterStack.eksCluster.addAutoScalingGroup(capacityStack.group, {}),
-      'AutoScalingGroup.role (CapacityStackautoScalingInstanceRoleF041EB53) cannot be in the same stack as the AutoScalingGroup (CapacityStackautoScaling9B3B7CA6) since it differs from the Cluster stack. Create the role either in a separate stack or the cluster stack.');
+    try {
+      clusterStack.eksCluster.addAutoScalingGroup(capacityStack.group, {});
+      test.ok(false, 'expected error');
+    } catch (err) {
+      test.equal(err.message, 'CapacityStackautoScalingInstanceRoleF041EB53 must be in the ClusterStack stack');
+    }
 
     test.done();
   },
