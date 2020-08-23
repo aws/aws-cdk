@@ -185,7 +185,7 @@ export class ClassificationString {
    */
   public static readonly ORC = new ClassificationString('orc');
 
-  constructor(public readonly tag: string) {}
+  constructor(public readonly value: string) {}
 }
 
 /**
