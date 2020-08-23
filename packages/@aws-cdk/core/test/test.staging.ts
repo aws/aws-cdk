@@ -371,8 +371,8 @@ export = {
 
     test.throws(() => readDockerStubInput());
     test.equal(asset.assetHash, '3d96e735e26b857743a7c44523c9160c285c2d3ccf273d80fa38a1e674c32cb3'); // hash of MyStack/Asset
-    test.deepEqual(asset.sourcePath, directory);
-    test.deepEqual(stack.resolve(asset.stagedPath), directory);
+    test.equal(asset.sourcePath, directory);
+    test.equal(stack.resolve(asset.stagedPath), directory);
 
     test.done();
   },

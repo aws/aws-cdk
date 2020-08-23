@@ -80,7 +80,7 @@ test('can parse string context from command line arguments with equals sign in v
   expect(settings2.get(['context']).foo).toEqual( 'bar=');
 });
 
-test('custom default for bundling', () => {
+test('custom default for bundling in case of deploy', () => {
   // GIVEN
   const settings = Settings.fromCommandLineArguments({
     _: ['deploy'],
@@ -90,4 +90,15 @@ test('custom default for bundling', () => {
 
   // THEN
   expect(settings.get(['bundling'])).toEqual(['cool-stack']);
+});
+
+test('bundling defaults to *', () => {
+  // GIVEN
+  // GIVEN
+  const settings = Settings.fromCommandLineArguments({
+    _: ['command'],
+  });
+
+  // THEN
+  expect(settings.get(['bundling'])).toEqual(['*']);
 });
