@@ -505,6 +505,19 @@ Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled
 on [creating a cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
 can provide more details about the customer master key (CMK) that can be used for the encryption.
 
+You can use the `secretsEncryptionKey` to configure which key the cluster will use to encrypt Kubernetes secrets. By default, an AWS Managed key will be used. 
+
+> This setting can only be specified when the cluster is created and cannot be updated.
+
+
+```ts
+const secretsKey = new kms.Key(this, 'SecretsKey');
+const cluster = new eks.Cluster(this, 'MyCluster', {
+  secretsEncryptionKey: secretsKey,
+  // ...
+});
+```
+
 The Amazon Resource Name (ARN) for that CMK can be retrieved.
 
 ```ts

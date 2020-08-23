@@ -28,6 +28,53 @@
         }
       }
     },
+    "SecretsKey317DCF94": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::12345678:root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
     "Vpc8378EB38": {
       "Type": "AWS::EC2::VPC",
       "Properties": {
@@ -857,6 +904,21 @@
               }
             },
             {
+              "Action": [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:CreateGrant"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "SecretsKey317DCF94",
+                  "Arn"
+                ]
+              }
+            },
+            {
               "Action": "iam:PassRole",
               "Effect": "Allow",
               "Resource": {
@@ -926,6 +988,21 @@
               "Arn"
             ]
           },
+          "encryptionConfig": [
+            {
+              "provider": {
+                "keyArn": {
+                  "Fn::GetAtt": [
+                    "SecretsKey317DCF94",
+                    "Arn"
+                  ]
+                }
+              },
+              "resources": [
+                "secrets"
+              ]
+            }
+          ],
           "resourcesVpcConfig": {
             "subnetIds": [
               {

@@ -2,6 +2,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
+import * as kms from '@aws-cdk/aws-kms';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { Pinger } from './pinger/pinger';
@@ -21,6 +22,8 @@ class EksClusterStack extends TestStack {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
+    const secretsEncryptionKey = new kms.Key(this, 'SecretsKey');
+
     // just need one nat gateway to simplify the test
     this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
@@ -30,6 +33,7 @@ class EksClusterStack extends TestStack {
       mastersRole,
       defaultCapacity: 2,
       version: eks.KubernetesVersion.V1_17,
+      secretsEncryptionKey,
     });
 
     this.assertFargateProfile();
@@ -233,12 +237,10 @@ class EksClusterStack extends TestStack {
   }
 }
 
-// this test uses the bottlerocket image, which is only supported in these
+// this test uses both the bottlerocket image and the inf1 instance, which are only supported in these
 // regions. see https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-eks#bottlerocket
+// and https://aws.amazon.com/about-aws/whats-new/2019/12/introducing-amazon-ec2-inf1-instances-high-performance-and-the-lowest-cost-machine-learning-inference-in-the-cloud/
 const supportedRegions = [
-  'ap-northeast-1',
-  'ap-south-1',
-  'eu-central-1',
   'us-east-1',
   'us-west-2',
 ];
