@@ -40,6 +40,13 @@ export class InputFormat {
    */
   public static readonly TEXT = new InputFormat('org.apache.hadoop.mapred.TextInputFormat');
 
+  /**
+   * InputFormat for XML files.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-xml
+   */
+  public static readonly XML = new InputFormat('com.ibm.spss.hive.serde2.xml.XmlInputFormat');
+
   constructor(public readonly className: string) {}
 }
 
@@ -134,7 +141,51 @@ export class SerializationLibrary {
    */
   public static readonly REGEXP = new SerializationLibrary('org.apache.hadoop.hive.serde2.RegexSerDe');
 
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-xml
+   */
+  public static readonly XML = new SerializationLibrary('com.ibm.spss.hive.serde2.xml.XmlSerDe');
+
   constructor(public readonly className: string) {}
+}
+
+/**
+ * Classification string given to tables with this data format.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/add-classifier.html#classifier-built-in
+ */
+export class ClassificationString {
+  /**
+   * @see https://hive.apache.org/javadocs/r1.2.2/api/org/apache/hadoop/hive/serde2/avro/AvroSerDe.html
+   */
+  public static readonly AVRO = new ClassificationString('avro');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-csv
+   */
+  public static readonly CSV = new ClassificationString('csv');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-json
+   */
+  public static readonly JSON = new ClassificationString('json');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-xml
+   */
+  public static readonly XML = new ClassificationString('xml');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-parquet
+   */
+  public static readonly PARQUET = new ClassificationString('parquet');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-orc
+   */
+  public static readonly ORC = new ClassificationString('orc');
+
+  constructor(public readonly tag: string) {}
 }
 
 /**
@@ -155,6 +206,13 @@ export interface DataFormatProps {
    * Serialization library for this data format.
    */
   readonly serializationLibrary: SerializationLibrary;
+
+  /**
+   * Classification string given to tables with this data format.
+   *
+   * @default - No classification is specified.
+   */
+  readonly classificationString?: ClassificationString;
 }
 
 /**
@@ -181,6 +239,7 @@ export class DataFormat {
     inputFormat: InputFormat.AVRO,
     outputFormat: OutputFormat.AVRO,
     serializationLibrary: SerializationLibrary.AVRO,
+    classificationString: ClassificationString.AVRO,
   });
 
   /**
@@ -203,6 +262,7 @@ export class DataFormat {
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
     serializationLibrary: SerializationLibrary.OPEN_CSV,
+    classificationString: ClassificationString.CSV,
   });
 
   /**
@@ -215,6 +275,7 @@ export class DataFormat {
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
     serializationLibrary: SerializationLibrary.OPENX_JSON,
+    classificationString: ClassificationString.JSON,
   });
 
   /**
@@ -237,6 +298,7 @@ export class DataFormat {
     inputFormat: InputFormat.ORC,
     outputFormat: OutputFormat.ORC,
     serializationLibrary: SerializationLibrary.ORC,
+    classificationString: ClassificationString.ORC,
   });
 
   /**
@@ -248,6 +310,7 @@ export class DataFormat {
     inputFormat: InputFormat.PARQUET,
     outputFormat: OutputFormat.PARQUET,
     serializationLibrary: SerializationLibrary.PARQUET,
+    classificationString: ClassificationString.PARQUET,
   });
 
   /**
@@ -256,6 +319,17 @@ export class DataFormat {
    * @see https://docs.aws.amazon.com/athena/latest/ug/lazy-simple-serde.html
    */
   public static readonly TSV = new DataFormat({
+    inputFormat: InputFormat.TEXT,
+    outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
+    serializationLibrary: SerializationLibrary.LAZY_SIMPLE,
+  });
+
+  /**
+   * DataFormat for XML
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-xml
+   */
+  public static readonly XML = new DataFormat({
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
     serializationLibrary: SerializationLibrary.LAZY_SIMPLE,
@@ -276,9 +350,15 @@ export class DataFormat {
    */
   public readonly serializationLibrary: SerializationLibrary;
 
+  /**
+   * Classification string given to tables with this data format.
+   */
+  public readonly classificationString?: ClassificationString;
+
   public constructor(props: DataFormatProps) {
     this.inputFormat = props.inputFormat;
     this.outputFormat = props.outputFormat;
     this.serializationLibrary = props.serializationLibrary;
+    this.classificationString = props.classificationString;
   }
 }
