@@ -47,17 +47,14 @@ describe('basic testing schema definition mode `code`', () => {
   });
 
   test('definition mode `code` errors when schemaDefinitionFile is configured', () => {
-    // WHEN
-    const when = () => {
+    // THEN
+    expect(() => {
       new appsync.GraphQLApi(stack, 'API', {
         name: 'demo',
         schemaDefinition: appsync.SchemaDefinition.CODE,
         schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
       });
-    };
-
-    // THEN
-    expect(when).toThrowError('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
+    }).toThrowError('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
   });
 
 });
@@ -79,16 +76,13 @@ describe('testing schema definition mode `file`', () => {
   });
 
   test('definition mode `file` errors when schemaDefinitionFile is not configured', () => {
-    // WHEN
-    const when = () => {
+    // THEN
+    expect(() => {
       new appsync.GraphQLApi(stack, 'API', {
         name: 'demo',
         schemaDefinition: appsync.SchemaDefinition.FILE,
       });
-    };
-
-    // THEN
-    expect(when).toThrowError('schemaDefinitionFile must be configured if using FILE definition mode.');
+    }).toThrowError('schemaDefinitionFile must be configured if using FILE definition mode.');
   });
 
   test('definition mode `file` errors when addType is called', () => {
@@ -99,14 +93,12 @@ describe('testing schema definition mode `file`', () => {
       schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
     });
 
-    const when = () => {
+    // THEN
+    expect(() => {
       api.addType('blah', {
         definition: { fail: t.id },
       });
-    };
-
-    // THEN
-    expect(when).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
+    }).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
   });
 
   test('definition mode `file` errors when appendToSchema is called', () => {
@@ -117,12 +109,10 @@ describe('testing schema definition mode `file`', () => {
       schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
     });
 
-    const when = () => {
-      api.appendToSchema('blah');
-    };
-
     // THEN
-    expect(when).toThrowError('API cannot append to schema because schema definition mode is not configured as CODE.');
+    expect(() => {
+      api.appendToSchema('blah');
+    }).toThrowError('API cannot append to schema because schema definition mode is not configured as CODE.');
   });
 
 });
