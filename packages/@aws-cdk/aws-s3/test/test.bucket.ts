@@ -697,6 +697,22 @@ export = {
 
       test.done();
     },
+
+    'import can explicitly set bucket region'(test: Test) {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'myBucket',
+        region: 'eu-west-1',
+      });
+
+      test.equals(bucket.bucketRegionalDomainName, `myBucket.s3.eu-west-1.${stack.urlSuffix}`);
+      test.equals(bucket.bucketWebsiteDomainName, `myBucket.s3-website-eu-west-1.${stack.urlSuffix}`);
+
+      test.done();
+    },
   },
 
   'grantRead'(test: Test) {
