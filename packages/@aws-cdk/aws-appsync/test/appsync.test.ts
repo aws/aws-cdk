@@ -3,24 +3,6 @@ import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
-test('should not throw an Error', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-
-  // WHEN
-  const when = () => {
-    new appsync.GraphQLApi(stack, 'api', {
-      authorizationConfig: {},
-      schemaDefinition: appsync.SchemaDefinition.FILE,
-      name: 'api',
-      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
-    });
-  };
-
-  // THEN
-  expect(when).not.toThrow();
-});
-
 test('appsync should configure pipeline when pipelineConfig has contents', () => {
   // GIVEN
   const stack = new cdk.Stack();

@@ -32,7 +32,6 @@ export class AwsCliCompatible {
    * 4. Respects $AWS_DEFAULT_PROFILE in addition to $AWS_PROFILE.
    */
   public static async credentialChain(options: CredentialChainOptions = {}) {
-    await forceSdkToReadConfigIfPresent();
 
     const profile = options.profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
@@ -42,15 +41,9 @@ export class AwsCliCompatible {
     ];
 
     if (await fs.pathExists(credentialsFileName())) {
-      sources.push(() => new AWS.SharedIniFileCredentials({
-        profile,
-        filename: credentialsFileName(),
-        httpOptions: options.httpOptions,
-        tokenCodeFn,
-      }));
-    }
-
-    if (await fs.pathExists(configFileName())) {
+      // Force reading the `config` file if it exists by setting the appropriate
+      // environment variable.
+      await forceSdkToReadConfigIfPresent();
       sources.push(() => new AWS.SharedIniFileCredentials({
         profile,
         filename: credentialsFileName(),
