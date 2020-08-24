@@ -62,7 +62,7 @@ export async function bootstrapEnvironment2(
   const cloudFormationExecutionPolicies = params.cloudFormationExecutionPolicies ?? current.parameters.CloudFormationExecutionPolicies?.split(',') ?? [];
 
   if (trustedAccounts.length > 0 && cloudFormationExecutionPolicies.length === 0) {
-    throw new Error(`You need to pass \'--cloudformation-execution-policies\' when trusting other accounts using \'--trust\' (${trustedAccounts}). Try a managed policy of the form \'arn:aws:iam::aws:policy/<PolicyName>\'.`);
+    throw new Error(`You need to pass '--cloudformation-execution-policies' when trusting other accounts using '--trust' (${trustedAccounts}). Try a managed policy of the form 'arn:aws:iam::aws:policy/<PolicyName>'.`);
   }
   if (trustedAccounts.length === 0 && cloudFormationExecutionPolicies.length === 0) {
     // For self-trust it's okay to default to AdministratorAccess, and it improves the usability of bootstrapping a lot.
@@ -79,7 +79,7 @@ export async function bootstrapEnvironment2(
     // Would leave AdministratorAccess policies with a trust relationship, without the user explicitly
     // approving the trust policy.
     const implicitPolicy = `arn:${await current.partition()}:iam::aws:policy/AdministratorAccess`;
-    warning(`Defaulting execution policy to '${implicitPolicy}'. Pass \'--cloudformation-execution-policies\' to customize.`);
+    warning(`Defaulting execution policy to '${implicitPolicy}'. Pass '--cloudformation-execution-policies' to customize.`);
   } else {
     // Remind people what the current settings are
     info(`Trusted accounts:   ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);

@@ -87,7 +87,7 @@ export class BootstrapStack {
     return deployStack({
       stack: assembly.getStackByName(this.toolkitStackName),
       resolvedEnvironment: this.resolvedEnvironment,
-      sdk: await this.sdkProvider.forEnvironment(this.resolvedEnvironment, Mode.ForWriting),
+      sdk: this.sdk,
       sdkProvider: this.sdkProvider,
       force: options.force,
       roleArn: options.roleArn,
