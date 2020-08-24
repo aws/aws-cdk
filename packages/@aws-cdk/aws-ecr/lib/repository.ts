@@ -512,9 +512,9 @@ export class Repository extends RepositoryBase {
   /**
    * Render the life cycle policy object
    */
-  private renderLifecyclePolicy(): CfnRepository.LifecyclePolicyProperty | undefined {
+  private renderLifecyclePolicy(): { LifecyclePolicyText?: string, RegistryId?: string } | undefined {
     const stack = Stack.of(this);
-    let lifecyclePolicyText: any;
+    let lifecyclePolicyText: string | undefined;
 
     if (this.lifecycleRules.length === 0 && !this.registryId) { return undefined; }
 
@@ -525,8 +525,8 @@ export class Repository extends RepositoryBase {
     }
 
     return {
-      lifecyclePolicyText,
-      registryId: this.registryId,
+      LifecyclePolicyText: lifecyclePolicyText,
+      RegistryId: this.registryId,
     };
   }
 
