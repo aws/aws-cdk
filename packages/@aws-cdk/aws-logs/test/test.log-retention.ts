@@ -33,10 +33,10 @@ export = {
         ],
         'Version': '2012-10-17',
       },
-      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicy13931C64',
+      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
       'Roles': [
         {
-          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole0B18ADA0',
+          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
         },
       ],
     }));

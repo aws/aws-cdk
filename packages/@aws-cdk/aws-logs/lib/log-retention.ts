@@ -67,7 +67,7 @@ export class LogRetention extends cdk.Construct {
     super(scope, id);
 
     // Custom resource provider
-    const provider = this.providerSingletonFunction(props);
+    const provider = this.ensureSingletonLogRetentionFunction(props);
 
     // Need to use a CfnResource here to prevent lerna dependency cycles
     // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
@@ -96,17 +96,44 @@ export class LogRetention extends cdk.Construct {
     });
   }
 
-  private providerSingletonFunction(props: LogRetentionProps) {
-    const stack = cdk.Stack.of(this);
-    const functionConstructName = 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a';
-    const existing = stack.node.tryFindChild(functionConstructName);
+  /**
+   * This a helper method to ensure that only one instance of LogRetentionFunction resources are in the stack
+   */
+  private ensureSingletonLogRetentionFunction(props: LogRetentionProps) {
+    const functionLogicalId = 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a';
+    const existing = cdk.Stack.of(this).node.tryFindChild(functionLogicalId);
     if (existing) {
       // Just assume this is true
-      return existing as cdk.CfnResource;
+      return existing as LogRetentionFunction;
     }
+    return new LogRetentionFunction(cdk.Stack.of(this), functionLogicalId, props);
+  }
+}
 
-    // Provider Role
-    const role = props.role || new iam.Role(stack, `${functionConstructName}ServiceRole`, {
+/**
+ * This is a private Lambda function to support the log retention custom resource.
+ */
+class LogRetentionFunction extends cdk.CfnResource {
+  constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
+    super(scope, id, {
+      type: 'AWS::Lambda::Function',
+      properties: {
+        Handler: 'index.handler',
+        Runtime: 'nodejs10.x',
+      },
+    });
+
+    // Code
+    const asset = new s3_assets.Asset(this, 'Code', {
+      path: path.join(__dirname, 'log-retention-provider'),
+    });
+    this.addPropertyOverride('Code', {
+      S3Bucket: asset.s3BucketName,
+      S3Key: asset.s3ObjectKey,
+    });
+
+    // Role
+    const role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
     });
@@ -114,38 +141,20 @@ export class LogRetention extends cdk.Construct {
     role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
       // We need '*' here because we will also put a retention policy on
-      // the log group of the provider function. Referencing it's name
+      // the log group of the provider function. Referencing its name
       // creates a CF circular dependency.
       resources: ['*'],
     }));
-
-    // Provider Singleton Function
-    const asset = new s3_assets.Asset(this, `${functionConstructName}Code`, {
-      path: path.join(__dirname, 'log-retention-provider'),
-    });
-    const provider = new cdk.CfnResource(stack, functionConstructName, {
-      type: 'AWS::Lambda::Function',
-      properties: {
-        Code: {
-          S3Bucket: asset.s3BucketName,
-          S3Key: asset.s3ObjectKey,
-        },
-        Handler: 'index.handler',
-        Role: role.roleArn,
-        Runtime: 'nodejs10.x',
-      },
-    });
+    this.addPropertyOverride('Role', role.roleArn);
 
     // Function dependencies
     role.node.children.forEach((child) => {
       if (cdk.CfnResource.isCfnResource(child)) {
-        provider.addDependsOn(child);
+        this.addDependsOn(child);
       }
       if (cdk.Construct.isConstruct(child) && child.node.defaultChild && cdk.CfnResource.isCfnResource(child.node.defaultChild)) {
-        provider.addDependsOn(child.node.defaultChild);
+        this.addDependsOn(child.node.defaultChild);
       }
     });
-
-    return provider;
   }
 }
