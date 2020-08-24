@@ -289,7 +289,8 @@ const filmConnections = schema.generateEdgeAndConnection(schema.Film);
 
 api.addType('Query', {
   definition: {
-    allFilms: new appsync.ResolvableField(filmConnections.connection.attribute(), dummyDataSource, {
+    allFilms: new appsync.ResolvableField(dummyDataSource, {
+      returnType: filmConnections.connection.attribute(),
       args: schema.args,
       requestMappingTemplate: dummyRequest,
       responseMappingTemplate: dummyResponse,
