@@ -476,7 +476,7 @@ function addBootstrapVersionRule(stack: Stack, requiredVersion: number, qualifie
   const param = new CfnParameter(stack, 'BootstrapVersion', {
     type: 'AWS::SSM::Parameter::Value<String>',
     description: 'Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store.',
-    default: `/aws-cdk-bootstrap/${qualifier}/version`,
+    default: `/cdk-bootstrap/${qualifier}/version`,
   });
 
   // There is no >= check in CloudFormation, so we have to check the number

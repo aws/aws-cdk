@@ -69,14 +69,12 @@ describe('testing schema definition mode `file`', () => {
       schema: appsync.Schema.fromFile(join(__dirname, 'appsync.test.graphql')),
     });
 
-    const when = () => {
+    // THEN
+    expect(() => {
       api.addType('blah', {
         definition: { fail: t.id },
       });
-    };
-
-    // THEN
-    expect(when).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
+    }).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
   });
 
   test('definition mode `file` errors when appendToSchema is called', () => {
@@ -86,12 +84,10 @@ describe('testing schema definition mode `file`', () => {
       schema: appsync.Schema.fromFile(join(__dirname, 'appsync.test.graphql')),
     });
 
-    const when = () => {
-      api.appendToSchema('blah');
-    };
-
     // THEN
-    expect(when).toThrowError('API cannot append to schema because schema definition mode is not configured as CODE.');
+    expect(() => {
+      api.appendToSchema('blah');
+    }).toThrowError('API cannot append to schema because schema definition mode is not configured as CODE.');
   });
 
 });

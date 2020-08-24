@@ -27,13 +27,10 @@ beforeEach(() => {
 describe('grant Permissions', () => {
 
   test('IamResource throws error when custom is called with no arguments', () => {
-    // WHEN
-    const when = () => {
-      api.grant(role, appsync.IamResource.custom(), 'appsync:GraphQL');
-    };
-
     //THEN
-    expect(when).toThrowError('At least 1 custom ARN must be provided.');
+    expect(() => {
+      api.grant(role, appsync.IamResource.custom(), 'appsync:GraphQL');
+    }).toThrowError('At least 1 custom ARN must be provided.');
   });
 
   test('grant provides custom permissions when called with `custom` argument', () => {

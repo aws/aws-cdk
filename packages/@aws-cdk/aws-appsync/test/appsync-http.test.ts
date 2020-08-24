@@ -58,14 +58,11 @@ describe('Http Data Source configuration', () => {
   });
 
   test('appsync errors when creating multiple http data sources with no configuration', () => {
-    // WHEN
-    const when = () => {
-      api.addHttpDataSource('ds', endpoint);
-      api.addHttpDataSource('ds', endpoint);
-    };
-
     // THEN
-    expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
+    expect(() => {
+      api.addHttpDataSource('ds', endpoint);
+      api.addHttpDataSource('ds', endpoint);
+    }).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
   });
 });
 
