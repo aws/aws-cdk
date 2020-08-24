@@ -633,13 +633,13 @@ export class Function extends FunctionBase {
 
     // Log retention
     if (props.logRetention) {
-      const logretention = new logs.LogRetention(this, 'LogRetention', {
+      const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
         role: props.logRetentionRole,
-        logRetentionRetryOptions: { ...props.logRetentionRetryOptions },
+        logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
       });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
     }
 
     props.code.bindToResource(resource);
@@ -759,11 +759,11 @@ export class Function extends FunctionBase {
    */
   public get logGroup(): logs.ILogGroup {
     if (!this._logGroup) {
-      const logretention = new logs.LogRetention(this, 'LogRetention', {
+      const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: logs.RetentionDays.INFINITE,
       });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logRetention.logGroupArn);
     }
     return this._logGroup;
   }
