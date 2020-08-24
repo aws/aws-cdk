@@ -1,0 +1,16 @@
+{
+  "PropertyTypes": {
+      "AWS::ECS::TaskDefinition.EFSVolumeConfiguration": {
+          "patch": {
+              "description": "Drop complex type and only leave the JSON primitive type",
+              "operations": [
+                  {
+                      "op": "remove",
+                      "path": "/Properties/AuthorizationConfig/Type"
+                  }
+              ]
+          }
+      }
+  }
+}
+
