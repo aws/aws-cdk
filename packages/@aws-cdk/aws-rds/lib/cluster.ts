@@ -87,7 +87,7 @@ export interface DatabaseClusterProps {
   /**
    * Indicates whether the DB cluster should have deletion protection enabled.
    *
-   * @default true
+   * @default false
    */
   readonly deletionProtection?: boolean;
 
