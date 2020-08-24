@@ -236,7 +236,7 @@ export class Duration {
     const ret = new Array<[number, TimeUnit]>();
     let millis = convert(this.amount, this.unit, TimeUnit.Milliseconds, { integral: false });
 
-    for (const unit of [TimeUnit.Days, TimeUnit.Hours, TimeUnit.Hours, TimeUnit.Minutes, TimeUnit.Seconds]) {
+    for (const unit of [TimeUnit.Days, TimeUnit.Hours, TimeUnit.Minutes, TimeUnit.Seconds]) {
       const count = convert(millis, TimeUnit.Milliseconds, unit, { integral: false });
       // Round down to a whole number UNLESS we're combining millis and seconds and we got to the seconds
       const wholeCount = unit === TimeUnit.Seconds && combineMillisWithSeconds ? count : Math.floor(count);
