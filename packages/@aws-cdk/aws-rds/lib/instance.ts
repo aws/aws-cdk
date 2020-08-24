@@ -492,6 +492,21 @@ export interface DatabaseInstanceNewProps {
    * @default - No autoscaling of RDS instance
    */
   readonly maxAllocatedStorage?: number;
+
+  /**
+   * The Active Directory directory ID to create the DB instance in.
+   *
+   * @default - Do not join domain
+   */
+  readonly domain?: string;
+
+  /**
+   * The IAM role to be used when making API calls to the Directory Service. The role needs the AWS-managed policy
+   * AmazonRDSDirectoryServiceAccess or equivalent.
+   *
+   * @default - The role will be created for you if {@link DatabaseInstanceNewProps#domain} is specified
+   */
+  readonly domainRole?: iam.IRole;
 }
 
 /**
@@ -513,6 +528,9 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   private readonly cloudwatchLogsExports?: string[];
   private readonly cloudwatchLogsRetention?: logs.RetentionDays;
   private readonly cloudwatchLogsRetentionRole?: iam.IRole;
+
+  private readonly domainId?: string;
+  private readonly domainRole?: iam.IRole;
 
   protected enableIamAuthentication?: boolean;
 
@@ -556,6 +574,16 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.cloudwatchLogsRetentionRole = props.cloudwatchLogsRetentionRole;
     this.enableIamAuthentication = props.iamAuthentication;
 
+    if (props.domain) {
+      this.domainId = props.domain;
+      this.domainRole = props.domainRole || new iam.Role(this, 'RDSDirectoryServiceRole', {
+        assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
+        ],
+      });
+    }
+
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
@@ -588,6 +616,8 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       storageType,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
+      domain: this.domainId,
+      domainIamRoleName: this.domainRole?.roleName,
     };
   }
 
@@ -697,6 +727,10 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
+
+    if (props.domain && !props.engine.engineType.match(/^(mysql|postgres|oracle|sqlserver)/)) {
+      throw new Error('Cannot specify `domain` unless engine is MySQL, Oracle, PostgreSQL, or SQL Server.');
+    }
 
     props.engine.bindToInstance(this, props);
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);

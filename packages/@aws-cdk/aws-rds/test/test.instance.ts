@@ -1,4 +1,4 @@
-import { ABSENT, countResources, expect, haveResource, ResourcePart, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, countResources, expect, haveResource, ResourcePart, haveResourceLike, anything } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '@aws-cdk/aws-iam';
@@ -757,4 +757,105 @@ export = {
     test.done();
   },
 
+  'domain - sets domain property'(test: Test) {
+    const domain = 'd-90670a8d36';
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+      vpc,
+      masterUsername: 'admin',
+      domain: domain,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      Domain: domain,
+    }));
+
+    test.done();
+  },
+
+  'domain - uses role if provided'(test: Test) {
+    const domain = 'd-90670a8d36';
+
+    // WHEN
+    const role = new Role(stack, 'DomainRole', { assumedBy: new ServicePrincipal('rds.amazonaws.com') });
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+      vpc,
+      masterUsername: 'admin',
+      domain: domain,
+      domainRole: role,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      Domain: domain,
+      DomainIAMRoleName: stack.resolve(role.roleName),
+    }));
+
+    test.done();
+  },
+
+  'domain - creates role if not provided'(test: Test) {
+    const domain = 'd-90670a8d36';
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+      vpc,
+      masterUsername: 'admin',
+      domain: domain,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      Domain: domain,
+      DomainIAMRoleName: anything(),
+    }));
+
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'rds.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess',
+            ],
+          ],
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'domain - throws if incompatible engine type'(test: Test) {
+    const domain = 'd-90670a8d36';
+    test.throws(() => new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_4_8 }),
+      vpc,
+      masterUsername: 'admin',
+      domain: domain,
+    }), 'Cannot specify `domain` unless engine is MySQL, Oracle, PostgreSQL, or SQL Server.');
+
+    test.done();
+  },
 };
