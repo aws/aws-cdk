@@ -637,7 +637,7 @@ export class Function extends FunctionBase {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
         role: props.logRetentionRole,
-        logRetentionRetryOptions: {...props.logRetentionRetryOptions},
+        logRetentionRetryOptions: { ...props.logRetentionRetryOptions },
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
     }

@@ -111,25 +111,15 @@ export class LogRetention extends cdk.Construct {
 }
 
 /**
- * This is a private Lambda function to support the log retention custom resource.
+ * This is a private provider Lambda function to support the log retention custom resource.
  */
-class LogRetentionFunction extends cdk.CfnResource {
+class LogRetentionFunction extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
-    super(scope, id, {
-      type: 'AWS::Lambda::Function',
-      properties: {
-        Handler: 'index.handler',
-        Runtime: 'nodejs10.x',
-      },
-    });
+    super(scope, id);
 
     // Code
     const asset = new s3_assets.Asset(this, 'Code', {
       path: path.join(__dirname, 'log-retention-provider'),
-    });
-    this.addPropertyOverride('Code', {
-      S3Bucket: asset.s3BucketName,
-      S3Key: asset.s3ObjectKey,
     });
 
     // Role
@@ -145,15 +135,27 @@ class LogRetentionFunction extends cdk.CfnResource {
       // creates a CF circular dependency.
       resources: ['*'],
     }));
-    this.addPropertyOverride('Role', role.roleArn);
+
+    const resource = new cdk.CfnResource(this, 'Resource', {
+      type: 'AWS::Lambda::Function',
+      properties: {
+        Handler: 'index.handler',
+        Runtime: 'nodejs10.x',
+        Code: {
+          S3Bucket: asset.s3BucketName,
+          S3Key: asset.s3ObjectKey,
+        },
+        Role: role.roleArn,
+      },
+    });
 
     // Function dependencies
     role.node.children.forEach((child) => {
       if (cdk.CfnResource.isCfnResource(child)) {
-        this.addDependsOn(child);
+        resource.addDependsOn(child);
       }
       if (cdk.Construct.isConstruct(child) && child.node.defaultChild && cdk.CfnResource.isCfnResource(child.node.defaultChild)) {
-        this.addDependsOn(child.node.defaultChild);
+        resource.addDependsOn(child.node.defaultChild);
       }
     });
   }

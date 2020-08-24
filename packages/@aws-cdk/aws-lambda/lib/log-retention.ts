@@ -25,7 +25,7 @@ export interface LogRetentionProps extends logs.LogRetentionProps {
  * @deprecated use `LogRetention` from '@aws-cdk/aws-logs' instead
  */
 export class LogRetention extends logs.LogRetention {
-  constructor(scope: cdk.Construct, id: string, props: LogRetentionProps | logs.LogRetentionProps) {
+  constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
     super(scope, id, { ...props });
   }
 }
