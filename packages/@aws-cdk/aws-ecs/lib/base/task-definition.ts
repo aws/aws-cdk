@@ -297,7 +297,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.anyValue({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
-      volumes: Lazy.anyValue({ produce: () => this.volumes }, { omitEmptyArray: true }),
+      volumes: Lazy.anyValue({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       executionRoleArn: Lazy.stringValue({ produce: () => this.executionRole && this.executionRole.roleArn }),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
@@ -499,6 +499,23 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     return this.containers.map(x => x.renderContainerDefinition());
+  }
+
+  private renderVolumes(): CfnTaskDefinition.VolumeProperty[] {
+    return this.volumes.map(renderVolume);
+
+    function renderVolume(spec: Volume): CfnTaskDefinition.VolumeProperty {
+      return {
+        ...spec,
+        efsVolumeConfiguration: spec.efsVolumeConfiguration && {
+          authorizationConfig: spec.efsVolumeConfiguration.authorizationConfig,
+          filesystemId: spec.efsVolumeConfiguration.fileSystemId,
+          rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
+          transitEncryption: spec.efsVolumeConfiguration.transitEncryption,
+          transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
+        },
+      };
+    }
   }
 }
 
@@ -713,7 +730,7 @@ export interface DockerVolumeConfiguration {
    *
    * @default No labels
    */
-  readonly labels?: string[];
+  readonly labels?: { [key: string]: string; };
   /**
    * The scope for the Docker volume that determines its lifecycle.
    */
