@@ -30,6 +30,11 @@ export abstract class Schema {
   protected schema?: CfnGraphQLSchema;
 
   /**
+   * The definition for this schema
+   */
+  public abstract definition: string;
+
+  /**
    * Called when the GraphQL Api is initialized to allow this object to bind
    * to the stack.
    *
@@ -83,7 +88,7 @@ export abstract class Schema {
  * GraphQL Schema that is mutable through code-first approach
  */
 export class SchemaCode extends Schema {
-  private definition: string;
+  public definition: string;
   constructor() {
     super();
     this.definition = '';
@@ -163,10 +168,14 @@ export class SchemaCode extends Schema {
  * GraphQL Schema that is declared through a schema-first approach
  */
 export class SchemaFile extends Schema {
+
+  public definition: string;
   private filePath: string;
+
   constructor(filePath: string) {
     super();
     this.filePath = filePath;
+    this.definition = readFileSync(this.filePath).toString('UTF-8');
   }
 
   public bind(api: GraphQLApi): CfnGraphQLSchema {
