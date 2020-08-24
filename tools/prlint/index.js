@@ -76,6 +76,23 @@ function hasLabel(issue, labelName) {
     })
 }
 
+/**
+ * Check that the 'BREAKING CHANGE:' note in the body is correct.
+ *
+ * Check this by looking for something that most likely was intended
+ * to be said note, but got misspelled as "BREAKING CHANGES:" or
+ * "BREAKING CHANGES(module):"
+ */
+function validateBreakingChangeFormat(body) {
+    const re = /^BREAKING.*$/m;
+    const m = re.exec(body);
+    if (m) {
+        if (!m[0].startsWith('BREAKING CHANGE: ')) {
+            throw new LinterError(`Breaking changes should be indicated by starting a line with \'BREAKING CHANGE: \', variations are not allowed. (found: '${m[0]}')`);
+        }
+    }
+}
+
 async function mandatoryChanges(number) {
 
     if (!number) {
@@ -107,6 +124,8 @@ async function mandatoryChanges(number) {
         featureContainsTest(issue, files);
         fixContainsTest(issue, files);
     }
+
+    validateBreakingChangeFormat(issue.body);
 
     console.log("✅  Success")
 
