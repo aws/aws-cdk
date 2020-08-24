@@ -82,7 +82,18 @@ demoDS.createResolver({
 });
 ```
 
-## Imports
+### Schema
+
+Every GraphQL Api needs a schema to define the Api. CDK offers `appsync.Schema`
+for static convenience methods for various types of schema declaration.
+
+- `appsync.Schema.fromFile(filePath)` - specify a file in the local
+   filesystem which will be read as the schema
+- `appsync.Schema.fromCode()` - configure schema declaration through a code-first
+   approach. See the [code-first schema](#Code-First-Schema) section for more
+   details.
+
+### Imports
 
 Any GraphQL Api that has been created outside the stack can be imported from 
 another stack into your CDK app. Utilizing the `fromXxx` function, you have 
@@ -100,7 +111,7 @@ If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
 the expected `arn` for the imported api, given the `apiId`. For creating data 
 sources and resolvers, an `apiId` is sufficient.
 
-## Permissions
+### Permissions
 
 When using `AWS_IAM` as the authorization type for GraphQL API, an IAM Role
 with correct permissions must be used for access to API.
@@ -152,7 +163,7 @@ const api = new appsync.GraphQLApi(stack, 'API', {
 api.grant(role, appsync.IamResource.custom('types/Mutation/fields/updateExample'), 'appsync:GraphQL')
 ```
 
-### IamResource
+#### IamResource
 
 In order to use the `grant` functions, you need to use the class `IamResource`.
 
@@ -162,7 +173,7 @@ In order to use the `grant` functions, you need to use the class `IamResource`.
 
 - `IamResource.all()` permits ALL resources.
 
-### Generic Permissions
+#### Generic Permissions
 
 Alternatively, you can use more generic `grant` functions to accomplish the same usage.
 
