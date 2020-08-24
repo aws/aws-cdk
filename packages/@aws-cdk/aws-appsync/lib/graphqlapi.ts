@@ -5,6 +5,7 @@ import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated'
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { Schema } from './schema';
 import { InterfaceType, IntermediateTypeProps, ObjectType, ObjectTypeProps } from './schema-intermediate';
+import { IIntermediateType } from './schema-base';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -575,6 +576,17 @@ export class GraphQLApi extends GraphqlApiBase {
    */
   public appendToSchema(addition: string, delimiter?: string): void {
     this.schema.appendToSchema(addition, delimiter);
+  }
+
+  /**
+   * Add type to the schema
+   *
+   * @param type the intermediate type to add to the schema
+   *
+   * @experimental
+   */
+  public addType(type: IIntermediateType): Schema {
+    return this.schema.addType(type);
   }
 
   /**
