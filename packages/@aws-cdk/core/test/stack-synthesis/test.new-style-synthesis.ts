@@ -70,7 +70,7 @@ export = {
     // THEN
     const template = app.synth().getStackByName('Stack').template;
     test.deepEqual(template?.Parameters?.BootstrapVersion?.Type, 'AWS::SSM::Parameter::Value<String>');
-    test.deepEqual(template?.Parameters?.BootstrapVersion?.Default, '/aws-cdk-bootstrap/hnb659fds/version');
+    test.deepEqual(template?.Parameters?.BootstrapVersion?.Default, '/cdk-bootstrap/hnb659fds/version');
 
     const assertions = template?.Rules?.CheckBootstrapVersion?.Assertions ?? [];
     test.deepEqual(assertions.length, 1);
