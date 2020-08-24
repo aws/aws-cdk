@@ -75,7 +75,7 @@ export class LogRetention extends cdk.Construct {
     const resource = new cdk.CfnResource(this, 'Resource', {
       type: 'Custom::LogRetention',
       properties: {
-        ServiceToken: provider.getAtt('Arn'),
+        ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
         SdkRetry: retryOptions ? {
           maxRetries: retryOptions.maxRetries,
@@ -97,7 +97,8 @@ export class LogRetention extends cdk.Construct {
   }
 
   /**
-   * This a helper method to ensure that only one instance of LogRetentionFunction resources are in the stack
+   * Helper method to ensure that only one instance of LogRetentionFunction resources are in the stack mimicking the
+   * behaviour of @aws-cdk/aws-lambda's SingletonFunction to prevent circular dependencies
    */
   private ensureSingletonLogRetentionFunction(props: LogRetentionProps) {
     const functionLogicalId = 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a';
@@ -111,9 +112,11 @@ export class LogRetention extends cdk.Construct {
 }
 
 /**
- * This is a private provider Lambda function to support the log retention custom resource.
+ * Private provider Lambda function to support the log retention custom resource.
  */
 class LogRetentionFunction extends cdk.Construct {
+  public readonly functionArn: cdk.Reference;
+
   constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
 
@@ -136,6 +139,7 @@ class LogRetentionFunction extends cdk.Construct {
       resources: ['*'],
     }));
 
+    // Lambda function
     const resource = new cdk.CfnResource(this, 'Resource', {
       type: 'AWS::Lambda::Function',
       properties: {
@@ -148,6 +152,7 @@ class LogRetentionFunction extends cdk.Construct {
         Role: role.roleArn,
       },
     });
+    this.functionArn = resource.getAtt('Arn');
 
     // Function dependencies
     role.node.children.forEach((child) => {

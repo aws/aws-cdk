@@ -44,7 +44,7 @@ export = {
     expect(stack).to(haveResource('Custom::LogRetention', {
       'ServiceToken': {
         'Fn::GetAtt': [
-          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a',
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
           'Arn',
         ],
       },
