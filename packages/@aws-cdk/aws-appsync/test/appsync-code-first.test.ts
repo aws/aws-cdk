@@ -14,10 +14,10 @@ beforeEach(() => {
   });
 });
 
-describe('testing addType for schema definition mode `code`', () => {
+describe('testing addObjectType for schema definition mode `code`', () => {
   test('check scalar type id with all options', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.id,
         lid: t.list_id,
@@ -40,7 +40,7 @@ describe('testing addType for schema definition mode `code`', () => {
 describe('testing all GraphQL Types', () => {
   test('scalar type id', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.id,
       },
@@ -55,7 +55,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type string', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.string,
       },
@@ -70,7 +70,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type int', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.int,
       },
@@ -85,7 +85,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type float', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.float,
       },
@@ -100,7 +100,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type boolean', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.boolean,
       },
@@ -115,7 +115,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type AWSDate', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.awsDate,
       },
@@ -130,7 +130,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type AWSTime', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.awsTime,
       },
@@ -145,7 +145,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type AWSDateTime', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.awsDateTime,
       },
@@ -160,7 +160,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type AWSTimestamp', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.awsTimestamp,
       },
@@ -175,7 +175,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type AWSEmail', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.awsEmail,
       },
@@ -190,7 +190,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type AWSJSON', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.awsJson,
       },
@@ -206,7 +206,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type AWSUrl', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.awsUrl,
       },
@@ -221,7 +221,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type AWSPhone', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.awsPhone,
       },
@@ -236,7 +236,7 @@ describe('testing all GraphQL Types', () => {
 
   test('scalar type AWSIPAddress', () => {
     // WHEN
-    api.addType('Test', {
+    api.addObjectType('Test', {
       definition: {
         id: t.awsIpAddress,
       },

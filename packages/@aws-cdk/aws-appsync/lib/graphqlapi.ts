@@ -4,7 +4,7 @@ import { CfnResource, Construct, Duration, IResolvable, Stack } from '@aws-cdk/c
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { Schema } from './schema';
-import { ObjectType, ObjectTypeProps } from './schema-intermediate';
+import { InterfaceType, IntermediateTypeProps, ObjectType, ObjectTypeProps } from './schema-intermediate';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -585,7 +585,19 @@ export class GraphQLApi extends GraphqlApiBase {
    *
    * @experimental
    */
-  public addType(name: string, props: ObjectTypeProps): ObjectType {
-    return this.schema.addType(name, props);
+  public addObjectType(name: string, props: ObjectTypeProps): ObjectType {
+    return this.schema.addObjectType(name, props);
+  }
+
+  /**
+   * Add an interface type to the schema
+   *
+   * @param name the name of the object type
+   * @param props the definition
+   *
+   * @experimental
+   */
+  public addInterfaceType(name: string, props: IntermediateTypeProps): InterfaceType {
+    return this.schema.addInterfaceType(name, props);
   }
 }

@@ -159,7 +159,12 @@ export class ObjectType extends InterfaceType {
   public readonly directives?: Directive[];
 
   public constructor(name: string, props: ObjectTypeProps) {
-    super(name, props);
+    const options = {
+      definition: props.interfaceTypes?.reduce((def, interfaceType) => {
+        return Object.assign({}, def, interfaceType.definition);
+      }, props.definition) ?? props.definition,
+    };
+    super(name, options);
     this.interfaceTypes = props.interfaceTypes;
     this.directives = props.directives;
   }

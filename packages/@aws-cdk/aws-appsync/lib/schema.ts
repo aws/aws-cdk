@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { Lazy } from '@aws-cdk/core';
 import { CfnGraphQLSchema } from './appsync.generated';
 import { GraphQLApi } from './graphqlapi';
-import { ObjectTypeProps, ObjectType } from './schema-intermediate';
+import { InterfaceType, IntermediateTypeProps, ObjectTypeProps, ObjectType } from './schema-intermediate';
 
 /**
  * The Schema for a GraphQL Api
@@ -56,7 +56,17 @@ export abstract class Schema {
    *
    * @experimental
    */
-  public abstract addType(name: string, props: ObjectTypeProps): ObjectType;
+  public abstract addObjectType(name: string, props: ObjectTypeProps): ObjectType;
+
+  /**
+   * Add an interface type to the schema
+   *
+   * @param name the name of the interface type
+   * @param props the definition
+   *
+   * @experimental
+   */
+  public abstract addInterfaceType(name: string, props: IntermediateTypeProps): InterfaceType;
 }
 
 /**
@@ -102,12 +112,27 @@ export class SchemaCode extends Schema {
    *
    * @experimental
    */
-  public addType(name: string, props: ObjectTypeProps): ObjectType {
+  public addObjectType(name: string, props: ObjectTypeProps): ObjectType {
     const type = new ObjectType(name, {
-      definition: props.definition,
-      directives: props.directives,
+      ...props,
     });
-    this.appendToSchema(type.toString());
+    this.appendToSchema(Lazy.stringValue({ produce: () => type.toString() }));
+    return type;
+  }
+
+  /**
+   * Add an interface type to the schema
+   *
+   * @param name the name of the interface type
+   * @param props the definition
+   *
+   * @experimental
+   */
+  public addInterfaceType(name: string, props: IntermediateTypeProps): InterfaceType {
+    const type = new InterfaceType(name, {
+      ...props,
+    });
+    this.appendToSchema(Lazy.stringValue({ produce: () => type.toString() }));
     return type;
   }
 }
@@ -136,7 +161,10 @@ export class SchemaFile extends Schema {
     throw new Error('API cannot append to schema because schema definition mode is not configured as CODE.');
   }
 
-  public addType(_name: string, _props: ObjectTypeProps): ObjectType {
-    throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
+  public addObjectType(_name: string, _props: ObjectTypeProps): ObjectType {
+    throw new Error('API cannot add object type because schema definition mode is not configured as CODE.');
+  }
+  public addInterfaceType(_name: string, _props: IntermediateTypeProps): InterfaceType {
+    throw new Error('API cannot add interface type because schema definition mode is not configured as CODE.');
   }
 }

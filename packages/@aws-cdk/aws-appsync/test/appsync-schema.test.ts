@@ -62,7 +62,7 @@ describe('testing schema definition mode `file`', () => {
     });
   });
 
-  test('definition mode `file` errors when addType is called', () => {
+  test('definition mode `file` errors when addObjectType is called', () => {
     // WHEN
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
@@ -71,10 +71,25 @@ describe('testing schema definition mode `file`', () => {
 
     // THEN
     expect(() => {
-      api.addType('blah', {
+      api.addObjectType('blah', {
         definition: { fail: t.id },
       });
-    }).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
+    }).toThrowError('API cannot add object type because schema definition mode is not configured as CODE.');
+  });
+
+  test('definition mode `file` errors when addInterfaceType is called', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromFile(join(__dirname, 'appsync.test.graphql')),
+    });
+
+    // THEN
+    expect(() => {
+      api.addInterfaceType('blah', {
+        definition: { fail: t.id },
+      });
+    }).toThrowError('API cannot add interface type because schema definition mode is not configured as CODE.');
   });
 
   test('definition mode `file` errors when appendToSchema is called', () => {

@@ -19,15 +19,26 @@ import * as ScalarType from './scalar-type-defintions';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'code-first-schema');
 
+const schema = appsync.Schema.fromCode();
+
+const node = schema.addInterfaceType('Node', {
+  definition: {
+    created: ScalarType.string,
+    edited: ScalarType.string,
+    id: ScalarType.required_id,
+  },
+});
+
 const api = new appsync.GraphQLApi(stack, 'code-first-api', {
   name: 'api',
-  schema: appsync.Schema.fromCode(),
+  schema: schema,
 });
 
 const planet = ObjectType.planet;
-api.appendToSchema(planet.toString());
+schema.appendToSchema(planet.toString());
 
-api.addType('Species', {
+api.addObjectType('Species', {
+  interfaceTypes: [node],
   definition: {
     name: ScalarType.string,
     classification: ScalarType.string,
@@ -39,9 +50,6 @@ api.addType('Species', {
     skinColors: ScalarType.list_string,
     language: ScalarType.string,
     homeworld: planet.attribute(),
-    created: ScalarType.string,
-    edited: ScalarType.string,
-    id: ScalarType.required_id,
   },
 });
 
