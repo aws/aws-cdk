@@ -202,6 +202,7 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
       this.resolvers.push(options.dataSource.createResolver({
         typeName: this.name,
         fieldName: fieldName,
+        pipelineConfig: options.pipelineConfig,
         requestMappingTemplate: options.requestMappingTemplate,
         responseMappingTemplate: options.responseMappingTemplate,
       }));

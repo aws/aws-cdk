@@ -400,6 +400,13 @@ export interface ResolvableFieldOptions extends FieldOptions {
    */
   readonly dataSource?: BaseDataSource;
   /**
+   * configuration of the pipeline resolver
+   *
+   * @default - no pipeline resolver configuration
+   * An empty array or undefined prop will set resolver to be of type unit
+   */
+  readonly pipelineConfig?: string[];
+  /**
    * The request mapping template for this resolver
    *
    * @default - No mapping template
