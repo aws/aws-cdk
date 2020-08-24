@@ -14,7 +14,7 @@ import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
-import { LogRetention, LogRetentionRetryOptions } from './log-retention';
+import { LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
 
 /**
@@ -256,7 +256,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - Default AWS SDK retry options.
    */
-  readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
+  readonly logRetentionRetryOptions?: LogRetentionRetryOptions | logs.LogRetentionRetryOptions;
 
   /**
    * Options for the `lambda.Version` resource automatically created by the
@@ -633,7 +633,7 @@ export class Function extends FunctionBase {
 
     // Log retention
     if (props.logRetention) {
-      const logretention = new LogRetention(this, 'LogRetention', {
+      const logretention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
         role: props.logRetentionRole,
@@ -759,7 +759,7 @@ export class Function extends FunctionBase {
    */
   public get logGroup(): logs.ILogGroup {
     if (!this._logGroup) {
-      const logretention = new LogRetention(this, 'LogRetention', {
+      const logretention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: logs.RetentionDays.INFINITE,
       });

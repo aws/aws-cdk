@@ -629,7 +629,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       if (props.cloudwatchLogsRetention) {
         for (const log of props.cloudwatchLogsExports) {
-          new lambda.LogRetention(this, `LogRetention${log}`, {
+          new logs.LogRetention(this, `LogRetention${log}`, {
             logGroupName: `/aws/rds/cluster/${this.clusterIdentifier}/${log}`,
             retention: props.cloudwatchLogsRetention,
             role: props.cloudwatchLogsRetentionRole,
