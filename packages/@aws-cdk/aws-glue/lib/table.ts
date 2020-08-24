@@ -272,6 +272,10 @@ export class Table extends Resource implements ITable {
           outputFormat: props.dataFormat.outputFormat.className,
           serdeInfo: {
             serializationLibrary: props.dataFormat.serializationLibrary.className,
+            parameters: props.dataFormat.csvSeparator === undefined && props.dataFormat.rowTag === undefined ? undefined : {
+              separatorChar: props.dataFormat.csvSeparator?.character,
+              rowTag: props.dataFormat.rowTag,
+            },
           },
         },
 

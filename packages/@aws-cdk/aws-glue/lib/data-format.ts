@@ -189,6 +189,42 @@ export class ClassificationString {
 }
 
 /**
+ * Character that should be used as separator with the CSV data format.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/add-classifier.html#classifier-built-in
+ */
+export class CsvSeparator {
+  /**
+   * The comma separator.
+   */
+  public static readonly COMMA = new CsvSeparator(',');
+
+  /**
+   * The pipe separator.
+   */
+  public static readonly PIPE = new CsvSeparator('|');
+
+  /**
+   * The tab separator.
+   */
+  public static readonly TAB = new CsvSeparator('\t');
+
+  /**
+   * The semicolon separator.
+   */
+  public static readonly SEMICOLON = new CsvSeparator(';');
+
+  /**
+   * The Ctrl-A separator.
+   *
+   * Ctrl-A is the Unicode control character for Start Of Heading.
+   */
+  public static readonly CTRL_A = new CsvSeparator('\u0001');
+
+  constructor(public readonly character: string) {}
+}
+
+/**
  * Properties of a DataFormat instance.
  */
 export interface DataFormatProps {
@@ -213,6 +249,20 @@ export interface DataFormatProps {
    * @default - No classification is specified.
    */
   readonly classificationString?: ClassificationString;
+
+  /**
+   * Character that should be used as a separator with the CSV data format.
+   *
+   * @default - No separator is specified.
+   */
+  readonly csvSeparator?: CsvSeparator;
+
+  /**
+   * Character that should be used as a separator with the CSV data format.
+   *
+   * @default - No separator is specified.
+   */
+  readonly rowTag?: string;
 }
 
 /**
@@ -263,6 +313,7 @@ export class DataFormat {
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
     serializationLibrary: SerializationLibrary.OPEN_CSV,
     classificationString: ClassificationString.CSV,
+    csvSeparator: CsvSeparator.COMMA,
   });
 
   /**
@@ -336,6 +387,42 @@ export class DataFormat {
   });
 
   /**
+   * DataFormat for CSV Files with a specific separator chosen.
+   *
+   * @see https://docs.aws.amazon.com/athena/latest/ug/csv.html
+   *
+   * @param separator a chosen separator
+   * @returns a new instance of DataFormat
+   */
+  public static csvWithSeparator(separator: CsvSeparator): DataFormat {
+    return new DataFormat({
+      inputFormat: InputFormat.TEXT,
+      outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
+      serializationLibrary: SerializationLibrary.OPEN_CSV,
+      classificationString: ClassificationString.CSV,
+      csvSeparator: separator,
+    });
+  }
+
+  /**
+   * DataFormat for XML Files with a specific row tag chosen.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/webapi/API_XMLClassifier.html
+   *
+   * @param rowTag a chosen rowTag
+   * @returns a new instance of DataFormat
+   */
+  public static xmlWithRowTag(rowTag: string): DataFormat {
+    return new DataFormat({
+      inputFormat: InputFormat.TEXT,
+      outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
+      serializationLibrary: SerializationLibrary.LAZY_SIMPLE,
+      classificationString: ClassificationString.XML,
+      rowTag: rowTag,
+    });
+  }
+
+  /**
    * `InputFormat` for this data format.
    */
   public readonly inputFormat: InputFormat;
@@ -355,10 +442,22 @@ export class DataFormat {
    */
   public readonly classificationString?: ClassificationString;
 
+  /**
+   * Character that should be used as a separator with the CSV data format.
+   */
+  public readonly csvSeparator?: CsvSeparator;
+
+  /**
+   * XML tag that should be used to identify rows with the XML data format.
+   */
+  public readonly rowTag?: string;
+
   public constructor(props: DataFormatProps) {
     this.inputFormat = props.inputFormat;
     this.outputFormat = props.outputFormat;
     this.serializationLibrary = props.serializationLibrary;
     this.classificationString = props.classificationString;
+    this.csvSeparator = props.csvSeparator;
+    this.rowTag = props.rowTag;
   }
 }
