@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-elasticloadbalancingv2-targets",
         "module": "aws_cdk.aws_elasticloadbalancingv2_targets"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

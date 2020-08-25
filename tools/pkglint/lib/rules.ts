@@ -468,6 +468,26 @@ export class CDKKeywords extends ValidationRule {
 }
 
 /**
+ * Requires projectReferences to be set in the jsii configuration.
+ */
+export class JSIIProjectReferences extends ValidationRule {
+  public readonly name = 'jsii/project-references';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) {
+      return;
+    }
+
+    expectJSON(
+      this.name,
+      pkg,
+      'jsii.projectReferences',
+      pkg.json.name !== 'monocdk-experiment',
+    );
+  }
+}
+
+/**
  * JSII Java package is required and must look sane
  */
 export class JSIIJavaPackageIsRequired extends ValidationRule {

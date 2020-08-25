@@ -25,7 +25,8 @@
         "distName": "aws-cdk.region-info",
         "module": "aws_cdk.region_info"
       }
-    }
+    },
+    "projectReferences": true
   },
   "cdk-build": {
     "pre": [

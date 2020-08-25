@@ -105,7 +105,8 @@
         "distName": "aws-cdk.pipelines",
         "module": "aws_cdk.pipelines"
       }
-    }
+    },
+    "projectReferences": true
   },
   "awscdkio": {
     "announce": false

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-iot",
         "module": "aws_cdk.aws_iot"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

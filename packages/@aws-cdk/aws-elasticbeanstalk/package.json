@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-elasticbeanstalk",
         "module": "aws_cdk.aws_elasticbeanstalk"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

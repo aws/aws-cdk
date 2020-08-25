@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-elasticsearch",
         "module": "aws_cdk.aws_elasticsearch"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

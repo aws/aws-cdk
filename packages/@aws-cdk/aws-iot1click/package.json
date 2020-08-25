@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-iot1click",
         "module": "aws_cdk.aws_iot1click"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

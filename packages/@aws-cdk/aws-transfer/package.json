@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-transfer",
         "module": "aws_cdk.aws_transfer"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

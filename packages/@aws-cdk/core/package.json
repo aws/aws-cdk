@@ -25,7 +25,8 @@
         "distName": "aws-cdk.core",
         "module": "aws_cdk.core"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

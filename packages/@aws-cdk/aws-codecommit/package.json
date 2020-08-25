@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-codecommit",
         "module": "aws_cdk.aws_codecommit"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

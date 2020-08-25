@@ -25,7 +25,8 @@
         "distName": "aws-cdk.cloud-assembly-schema",
         "module": "aws_cdk.cloud_assembly_schema"
       }
-    }
+    },
+    "projectReferences": true
   },
   "scripts": {
     "build": "cdk-build",
