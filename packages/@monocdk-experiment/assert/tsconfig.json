@@ -23,7 +23,6 @@
     "include": ["**/*.ts" ],
     "exclude": ["node_modules"],
     "references": [
-        { "path": "../../@aws-cdk/cloudformation-diff" },
-        { "path": "../../monocdk-experiment" }
+        { "path": "../../@aws-cdk/cloudformation-diff" }
     ]
 }
