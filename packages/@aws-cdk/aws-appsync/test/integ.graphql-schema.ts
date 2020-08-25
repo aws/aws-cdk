@@ -19,7 +19,7 @@ import * as ScalarType from './scalar-type-defintions';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'code-first-schema');
 
-const schema = appsync.Schema.fromCode();
+const schema = new appsync.Schema();
 
 const node = schema.addInterfaceType('Node', {
   definition: {
@@ -35,7 +35,7 @@ const api = new appsync.GraphQLApi(stack, 'code-first-api', {
 });
 
 const planet = ObjectType.planet;
-schema.appendToSchema(planet.toString());
+schema.addToSchema(planet.toString());
 
 api.addObjectType('Species', {
   interfaceTypes: [node],
@@ -53,7 +53,7 @@ api.addObjectType('Species', {
   },
 });
 
-api.appendToSchema('type Query {\n  getPlanets: [Planet]\n}', '\n');
+api.addToSchema('type Query {\n  getPlanets: [Planet]\n}', '\n');
 
 const table = new db.Table(stack, 'table', {
   partitionKey: {

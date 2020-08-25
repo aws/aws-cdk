@@ -10,7 +10,6 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphQLApi(stack, 'api', {
     name: 'api',
-    schema: appsync.Schema.fromCode(),
   });
 });
 

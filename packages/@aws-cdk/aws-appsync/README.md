@@ -309,8 +309,8 @@ api.addType('Query', {
   });
 })
 
-this.objectTypes.map((t) => api.appendToSchema(t));
-Object.keys(filmConnections).forEach((key) => api.appendToSchema(filmConnections[key]));
+this.objectTypes.map((t) => api.addToSchema(t));
+Object.keys(filmConnections).forEach((key) => api.addToSchema(filmConnections[key]));
 ```
 
 Notice how we can utilize the `generateEdgeAndConnection` function to generate
@@ -476,7 +476,7 @@ You can create Object Types in three ways:
       },
     });
 
-    api.appendToSchema(object.toString());
+    api.addToSchema(object.toString());
     ```
     > This method allows for reusability and modularity, ideal for larger projects. 
     For example, imagine moving all Object Type definition outside the stack.
@@ -500,7 +500,7 @@ You can create Object Types in three ways:
     `cdk-stack.ts` - a file containing our cdk stack
     ```ts
     import { demo } from './object-types';
-    api.appendToSchema(demo.toString());
+    api.addToSchema(demo.toString());
     ```
 
 2. Object Types can be created ***externally*** from an Interface Type.

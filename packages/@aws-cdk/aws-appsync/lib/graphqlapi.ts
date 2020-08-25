@@ -4,8 +4,8 @@ import { CfnResource, Construct, Duration, IResolvable, Stack } from '@aws-cdk/c
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { Schema } from './schema';
-import { InterfaceType, IntermediateTypeProps, ObjectType, ObjectTypeProps } from './schema-intermediate';
 import { IIntermediateType } from './schema-base';
+import { InterfaceType, IntermediateTypeProps, ObjectType, ObjectTypeProps } from './schema-intermediate';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -228,12 +228,13 @@ export interface GraphQLApiProps {
   /**
    * GraphQL schema definition. Specify how you want to define your schema.
    *
-   * Schema.fromCode allows schema definition through CDK
    * Schema.fromFile(filePath: string) allows schema definition through schema.graphql file
+   *
+   * @default - schema will be generated code-first (i.e. addType, addObjectType, etc.)
    *
    * @experimental
    */
-  readonly schema: Schema;
+  readonly schema?: Schema;
   /**
    * A flag indicating whether or not X-Ray tracing is enabled for the GraphQL API.
    *
@@ -409,7 +410,7 @@ export class GraphQLApi extends GraphqlApiBase {
     this.arn = this.api.attrArn;
     this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
-    this.schema = props.schema;
+    this.schema = props.schema ?? new Schema();
     this._schema = this.schema.bind(this);
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
@@ -574,8 +575,8 @@ export class GraphQLApi extends GraphqlApiBase {
    *
    * @experimental
    */
-  public appendToSchema(addition: string, delimiter?: string): void {
-    this.schema.appendToSchema(addition, delimiter);
+  public addToSchema(addition: string, delimiter?: string): void {
+    this.schema.addToSchema(addition, delimiter);
   }
 
   /**

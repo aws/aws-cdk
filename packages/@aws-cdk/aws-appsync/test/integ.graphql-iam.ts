@@ -38,7 +38,7 @@ const userPool = new UserPool(stack, 'Pool', {
 
 const api = new GraphQLApi(stack, 'Api', {
   name: 'Integ_Test_IAM',
-  schema: Schema.fromFile(join(__dirname, 'integ.graphql-iam.graphql')),
+  schema: Schema.fromAsset(join(__dirname, 'integ.graphql-iam.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: AuthorizationType.USER_POOL,

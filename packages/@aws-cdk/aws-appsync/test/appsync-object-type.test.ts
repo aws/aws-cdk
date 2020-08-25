@@ -10,7 +10,6 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphQLApi(stack, 'api', {
     name: 'api',
-    schema: appsync.Schema.fromCode(),
   });
 });
 
@@ -30,8 +29,8 @@ describe('testing Object Type properties', () => {
       directives: [appsync.Directive.custom('@test')],
     });
 
-    api.appendToSchema(baseTest.toString());
-    api.appendToSchema(objectTest.toString());
+    api.addToSchema(baseTest.toString());
+    api.addToSchema(objectTest.toString());
     const gql_interface = 'interface baseTest {\n  id: ID\n}\n';
     const gql_object = 'type objectTest implements baseTest @test {\n  id2: ID\n  id: ID\n}\n';
     const out = `${gql_interface}${gql_object}`;
@@ -57,9 +56,9 @@ describe('testing Object Type properties', () => {
       },
     });
 
-    api.appendToSchema(baseTest.toString());
-    api.appendToSchema(anotherTest.toString());
-    api.appendToSchema(objectTest.toString());
+    api.addToSchema(baseTest.toString());
+    api.addToSchema(anotherTest.toString());
+    api.addToSchema(objectTest.toString());
 
     const gql_interface = 'interface baseTest {\n  id: ID\n}\ninterface anotherTest {\n  id2: ID\n}\n';
     const gql_object = 'type objectTest implements anotherTest, baseTest {\n  id3: ID\n  id2: ID\n  id: ID\n}\n';
@@ -84,7 +83,7 @@ describe('testing Object Type properties', () => {
         test: graphqlType,
       },
     });
-    api.appendToSchema(test.toString());
+    api.addToSchema(test.toString());
     const out = 'type Test {\n  test: baseTest\n}\n';
 
     // THEN
@@ -108,7 +107,7 @@ describe('testing Object Type properties', () => {
         resolve: field,
       },
     });
-    api.appendToSchema(test.toString());
+    api.addToSchema(test.toString());
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n}\n';
 
     // THEN
@@ -132,7 +131,7 @@ describe('testing Object Type properties', () => {
         resolve: field,
       },
     });
-    api.appendToSchema(test.toString());
+    api.addToSchema(test.toString());
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n}\n';
 
     // THEN
@@ -155,7 +154,7 @@ describe('testing Object Type properties', () => {
         }),
       },
     });
-    api.appendToSchema(test.toString());
+    api.addToSchema(test.toString());
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
@@ -182,7 +181,7 @@ describe('testing Object Type properties', () => {
     // test.addField('resolve', field);
     test.addField('dynamic', t.string);
 
-    api.appendToSchema(test.toString());
+    api.addToSchema(test.toString());
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n  dynamic: String\n}\n';
 
     // THEN
@@ -215,7 +214,7 @@ describe('testing Object Type properties', () => {
     // test.addField('resolve', field);
     test.addField('dynamic', garbage.attribute());
 
-    api.appendToSchema(test.toString());
+    api.addToSchema(test.toString());
     const out = 'type Test {\n  test: String\n  resolve(arg: Garbage): Garbage\n  dynamic: Garbage\n}\n';
 
     // THEN

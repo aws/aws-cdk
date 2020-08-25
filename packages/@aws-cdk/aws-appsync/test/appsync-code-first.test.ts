@@ -15,7 +15,6 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     // GIVEN
     api = new appsync.GraphQLApi(stack, 'api', {
       name: 'api',
-      schema: appsync.Schema.fromCode(),
     });
   });
 
@@ -148,7 +147,7 @@ describe('code-first implementation through Schema functions`', () => {
   let schema: appsync.Schema;
   beforeEach(() => {
     // GIVEN
-    schema = appsync.Schema.fromCode();
+    schema = new appsync.Schema();
   });
 
   test('testing addType w/ Interface Type for schema definition mode `code`', () => {

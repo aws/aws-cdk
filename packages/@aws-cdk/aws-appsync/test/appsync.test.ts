@@ -10,7 +10,7 @@ beforeEach(() => {
   api = new appsync.GraphQLApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
-    schema: appsync.Schema.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
 });
 
@@ -64,7 +64,7 @@ test('when xray is enabled should not throw an Error', () => {
   new appsync.GraphQLApi(stack, 'api-x-ray', {
     authorizationConfig: {},
     name: 'api',
-    schema: appsync.Schema.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     xrayEnabled: true,
   });
 

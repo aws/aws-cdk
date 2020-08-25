@@ -2,37 +2,62 @@ import { readFileSync } from 'fs';
 import { Lazy } from '@aws-cdk/core';
 import { CfnGraphQLSchema } from './appsync.generated';
 import { GraphQLApi } from './graphqlapi';
+import { SchemaMode } from './private';
 import { IIntermediateType } from './schema-base';
 import { InterfaceType, IntermediateTypeProps, ObjectTypeProps, ObjectType } from './schema-intermediate';
 
 /**
- * The Schema for a GraphQL Api
+ * The options for configuring a schema
+ *
+ * If no options are specified, then the schema will
+ * be generated code-first.
  */
-export abstract class Schema {
+export interface SchemaOptions {
   /**
-   * Generate a Schema code-first
+   * The file path for the schema. When this option is
+   * configured, then the schema will be generated from an
+   * existing file from disk.
    *
-   * @returns `SchemaCode` with mutable schema defintion
+   * @default - schema not configured through disk asset
    */
-  public static fromCode(): SchemaCode {
-    return new SchemaCode();
-  }
+  readonly filePath?: string,
+};
+
+/**
+ * The Schema for a GraphQL Api
+ *
+ * If no options are configured, schema will be generated
+ * code-first.
+ */
+export class Schema {
   /**
    * Generate a Schema from file
    *
-   * @returns `SchemaFile` with immutable schema defintion
+   * @returns `SchemaAsset` with immutable schema defintion
    * @param filePath the file path of the schema file
    */
-  public static fromFile(filePath: string): SchemaFile {
-    return new SchemaFile(filePath);
+  public static fromAsset(filePath: string): Schema {
+    return new Schema({ filePath });
   }
-
-  protected schema?: CfnGraphQLSchema;
 
   /**
    * The definition for this schema
    */
-  public abstract definition: string;
+  public definition: string;
+
+  protected schema?: CfnGraphQLSchema;
+
+  private mode: SchemaMode;
+
+  public constructor(options?: SchemaOptions) {
+    if (options?.filePath) {
+      this.mode = SchemaMode.FILE;
+      this.definition = readFileSync(options.filePath).toString('UTF-8');
+    } else {
+      this.mode = SchemaMode.CODE;
+      this.definition = '';
+    }
+  }
 
   /**
    * Called when the GraphQL Api is initialized to allow this object to bind
@@ -40,60 +65,6 @@ export abstract class Schema {
    *
    * @param api The binding GraphQL Api
    */
-  public abstract bind(api: GraphQLApi): CfnGraphQLSchema;
-
-  /**
-   * Escape hatch to append to Schema as desired. Will always result
-   * in a newline.
-   *
-   * @param addition the addition to add to schema
-   * @param delimiter the delimiter between schema and addition
-   * @default - ''
-   *
-   * @experimental
-   */
-  public abstract appendToSchema(addition: string, delimiter?: string): void;
-
-  /**
-   * Add type to the schema
-   *
-   * @param type the intermediate type to add to the schema
-   *
-   * @experimental
-   */
-  public abstract addType(type: IIntermediateType): Schema;
-
-  /**
-   * Add an object type to the schema, if SchemaCode
-   *
-   * @param name the name of the object type
-   * @param props the definition
-   *
-   * @experimental
-   */
-  public abstract addObjectType(name: string, props: ObjectTypeProps): ObjectType;
-
-  /**
-   * Add an interface type to the schema
-   *
-   * @param name the name of the interface type
-   * @param props the definition
-   *
-   * @experimental
-   */
-  public abstract addInterfaceType(name: string, props: IntermediateTypeProps): InterfaceType;
-}
-
-/**
- * GraphQL Schema that is mutable through code-first approach
- */
-export class SchemaCode extends Schema {
-  public definition: string;
-  constructor() {
-    super();
-    this.definition = '';
-  }
-
   public bind(api: GraphQLApi): CfnGraphQLSchema {
     if (!this.schema) {
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
@@ -104,8 +75,9 @@ export class SchemaCode extends Schema {
     return this.schema;
   }
 
+
   /**
-   * Escape hatch to append to Schema as desired. Will always result
+   * Escape hatch to add to Schema as desired. Will always result
    * in a newline.
    *
    * @param addition the addition to add to schema
@@ -114,7 +86,10 @@ export class SchemaCode extends Schema {
    *
    * @experimental
    */
-  public appendToSchema(addition: string, delimiter?: string): void {
+  public addToSchema(addition: string, delimiter?: string): void {
+    if (this.mode !== SchemaMode.CODE) {
+      throw new Error('API cannot append to schema because schema definition mode is not configured as CODE.');
+    }
     const sep = delimiter ?? '';
     this.definition = `${this.definition}${sep}${addition}\n`;
   }
@@ -127,7 +102,10 @@ export class SchemaCode extends Schema {
    * @experimental
    */
   public addType(type: IIntermediateType): Schema {
-    this.appendToSchema(Lazy.stringValue({ produce: () => type.toString() }));
+    if (this.mode !== SchemaMode.CODE) {
+      throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
+    }
+    this.addToSchema(Lazy.stringValue({ produce: () => type.toString() }));
     return this;
   }
 
@@ -140,6 +118,9 @@ export class SchemaCode extends Schema {
    * @experimental
    */
   public addObjectType(name: string, props: ObjectTypeProps): ObjectType {
+    if (this.mode !== SchemaMode.CODE) {
+      throw new Error('API cannot add object type because schema definition mode is not configured as CODE.');
+    }
     const type = new ObjectType(name, {
       ...props,
     });
@@ -156,48 +137,13 @@ export class SchemaCode extends Schema {
    * @experimental
    */
   public addInterfaceType(name: string, props: IntermediateTypeProps): InterfaceType {
+    if (this.mode != SchemaMode.CODE) {
+      throw new Error('API cannot add interface type because schema definition mode is not configured as CODE.');
+    }
     const type = new InterfaceType(name, {
       ...props,
     });
     this.addType(type);;
     return type;
-  }
-}
-
-/**
- * GraphQL Schema that is declared through a schema-first approach
- */
-export class SchemaFile extends Schema {
-
-  public definition: string;
-  private filePath: string;
-
-  constructor(filePath: string) {
-    super();
-    this.filePath = filePath;
-    this.definition = readFileSync(this.filePath).toString('UTF-8');
-  }
-
-  public bind(api: GraphQLApi): CfnGraphQLSchema {
-    if (!this.schema) {
-      this.schema = new CfnGraphQLSchema(api, 'Schema', {
-        apiId: api.apiId,
-        definition: readFileSync(this.filePath).toString('UTF-8'),
-      });
-    }
-    return this.schema;
-  }
-
-  public appendToSchema(_addition: string, _delimiter?: string): void {
-    throw new Error('API cannot append to schema because schema definition mode is not configured as CODE.');
-  }
-  public addType(_type: IIntermediateType): Schema {
-    throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
-  }
-  public addObjectType(_name: string, _props: ObjectTypeProps): ObjectType {
-    throw new Error('API cannot add object type because schema definition mode is not configured as CODE.');
-  }
-  public addInterfaceType(_name: string, _props: IntermediateTypeProps): InterfaceType {
-    throw new Error('API cannot add interface type because schema definition mode is not configured as CODE.');
   }
 }

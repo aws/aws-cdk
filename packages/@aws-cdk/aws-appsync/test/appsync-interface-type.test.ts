@@ -10,7 +10,6 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphQLApi(stack, 'api', {
     name: 'api',
-    schema: appsync.Schema.fromCode(),
   });
 });
 
@@ -25,7 +24,7 @@ describe('testing InterfaceType properties', () => {
   });
   test('basic InterfaceType produces correct schema', () => {
     // WHEN
-    api.appendToSchema(baseTest.toString());
+    api.addToSchema(baseTest.toString());
     const out = 'interface baseTest {\n  id: ID\n}\n';
 
     // THEN
@@ -40,7 +39,7 @@ describe('testing InterfaceType properties', () => {
       returnType: t.string,
       args: { success: t.int },
     }));
-    api.appendToSchema(baseTest.toString());
+    api.addToSchema(baseTest.toString());
     const out = 'interface baseTest {\n  id: ID\n  test(success: Int): String\n}\n';
 
     // THEN
@@ -56,7 +55,7 @@ describe('testing InterfaceType properties', () => {
       args: { success: t.int },
       dataSource: api.addNoneDataSource('none'),
     }));
-    api.appendToSchema(baseTest.toString());
+    api.addToSchema(baseTest.toString());
     const out = 'interface baseTest {\n  id: ID\n  test(success: Int): String\n}\n';
 
     // THEN
@@ -75,7 +74,7 @@ describe('testing InterfaceType properties', () => {
         test: graphqlType,
       },
     });
-    api.appendToSchema(test.toString());
+    api.addToSchema(test.toString());
     const out = 'type Test {\n  test: baseTest\n}\n';
 
     // THEN
