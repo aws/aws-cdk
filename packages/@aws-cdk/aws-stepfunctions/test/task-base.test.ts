@@ -265,18 +265,11 @@ describe('Task base', () => {
 });
 
 function verifyMetric(metric: Metric, metricName: string, statistic: string) {
-  expect(metric).toEqual({
-    period: {
-      amount: 5,
-      unit: {
-        label: 'minutes',
-        inMillis: 60000,
-      },
-    },
+  expect(metric).toEqual(expect.objectContaining({
     namespace: 'AWS/States',
     metricName,
     statistic,
-  });
+  }));
 }
 
 function render(sm: sfn.IChainable) {
