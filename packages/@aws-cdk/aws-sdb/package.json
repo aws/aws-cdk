@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-sdb",
         "module": "aws_cdk.aws_sdb"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-route53",
         "module": "aws_cdk.aws_route53"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

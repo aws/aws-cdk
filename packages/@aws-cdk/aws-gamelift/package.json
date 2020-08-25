@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-gamelift",
         "module": "aws_cdk.aws_gamelift"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-apigateway",
         "module": "aws_cdk.aws_apigateway"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

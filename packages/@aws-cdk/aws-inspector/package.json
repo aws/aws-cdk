@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-inspector",
         "module": "aws_cdk.aws_inspector"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

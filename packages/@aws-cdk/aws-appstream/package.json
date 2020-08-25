@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-appstream",
         "module": "aws_cdk.aws_appstream"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

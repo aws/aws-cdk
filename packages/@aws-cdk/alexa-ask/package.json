@@ -25,7 +25,8 @@
         "distName": "aws-cdk.alexa-ask",
         "module": "aws_cdk.alexa_ask"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
