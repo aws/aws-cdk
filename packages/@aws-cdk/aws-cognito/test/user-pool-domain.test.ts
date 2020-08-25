@@ -103,7 +103,7 @@ describe('User Pool Client', () => {
     })).not.toThrow();
   });
 
-  test('custom resource is added when cloudFrontDistribution method is called', () => {
+  test('custom resource is added when cloudFrontDomainName property is used', () => {
     // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
@@ -137,6 +137,21 @@ describe('User Pool Client', () => {
     });
   });
 
+  test('cloudFrontDomainName property can be called multiple times', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const domain = pool.addDomain('Domain', {
+      cognitoDomain: {
+        domainPrefix: 'cognito-domain-prefix',
+      },
+    });
+
+    const cfDomainNameFirst = domain.cloudFrontDomainName;
+    const cfDomainNameSecond = domain.cloudFrontDomainName;
+
+    expect(cfDomainNameSecond).toEqual(cfDomainNameFirst);
+  });
+
   describe('signInUrl', () => {
     test('returns the expected URL', () => {
       // GIVEN
@@ -149,7 +164,7 @@ describe('User Pool Client', () => {
       });
       const client = pool.addClient('Client', {
         oAuth: {
-          callbackUrls: [ 'https://example.com' ],
+          callbackUrls: ['https://example.com'],
         },
       });
 
@@ -185,7 +200,7 @@ describe('User Pool Client', () => {
       });
       const client = pool.addClient('Client', {
         oAuth: {
-          callbackUrls: [ 'https://example.com' ],
+          callbackUrls: ['https://example.com'],
         },
       });
 

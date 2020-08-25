@@ -22,3 +22,8 @@ lambda-packages/dns_validated_certificate_handler/node_modules
 
 tsconfig.json
 .eslintrc.js
+
+# exclude cdk artifacts
+**/cdk.out
+junit.xml
+jest.config.js

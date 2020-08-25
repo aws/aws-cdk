@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yargs from 'yargs';
 
-// tslint:disable:no-shadowed-variable
+/* eslint-disable no-shadow */
 const argv = yargs
   .usage('$0')
   .option('verbose', { alias: 'v', type: 'boolean', desc: 'Turn on verbose logging' })
@@ -107,13 +107,13 @@ function enumeratePackages(root: string, pred: PackagePredicate): JSIIPackage[] 
  * a build tool and not shipped, I'm fine with it for now.
  */
 function findPackageFrom(packageName: string, relativeTo: string) {
-  // tslint:disable-next-line:variable-name
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const Module = module.constructor as any;
 
   const searchDirs: string[] = Module._nodeModulePaths(relativeTo).concat(Module.globalPaths);
   const ret = Module._findPath(packageName, searchDirs, false);
   if (ret === false) {
-    // tslint:disable-next-line:no-console
+    /* eslint-disable-next-line no-console */
     console.warn(`Could not find package ${packageName} in scope of ${relativeTo}`);
     return undefined;
   }
@@ -143,14 +143,14 @@ function findPackageRoot(rootFile: string) {
  * Returns undefined if any part of the path was unset or
  * not an object.
  */
-function deepGet(x: any, path: string[]): any {
-  path = path.slice();
+function deepGet(x: any, keyPath: string[]): any {
+  keyPath = keyPath.slice();
 
-  while (path.length > 0 && typeof x === 'object' && x !== null) {
-    const key = path.shift()!;
+  while (keyPath.length > 0 && typeof x === 'object' && x !== null) {
+    const key = keyPath.shift()!;
     x = x[key];
   }
-  return path.length === 0 ? x : undefined;
+  return keyPath.length === 0 ? x : undefined;
 }
 
 function debug(s: string) {

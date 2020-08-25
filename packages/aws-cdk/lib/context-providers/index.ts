@@ -11,7 +11,7 @@ import { ContextProviderPlugin } from './provider';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
 
-type ProviderConstructor =  (new (sdk: SdkProvider) => ContextProviderPlugin);
+type ProviderConstructor = (new (sdk: SdkProvider) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ProviderConstructor};
 
 /**
@@ -26,7 +26,7 @@ export async function provideContextValues(
     const key = missingContext.key;
     const constructor = availableContextProviders[missingContext.provider];
     if (!constructor) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
     }
 

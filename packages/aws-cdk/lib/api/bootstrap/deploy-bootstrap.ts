@@ -1,8 +1,8 @@
+import * as os from 'os';
+import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import * as os from 'os';
-import * as path from 'path';
 import { Mode, SdkProvider } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
@@ -39,6 +39,7 @@ export async function deployBootstrapStack(
     environment: cxapi.EnvironmentUtils.format(environment.account, environment.region),
     properties: {
       templateFile,
+      terminationProtection: options.parameters?.terminationProtection ?? false,
     },
   });
 
@@ -58,5 +59,16 @@ export async function deployBootstrapStack(
 }
 
 function bootstrapVersionFromTemplate(template: any): number {
-  return parseInt(template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT]?.Value ?? '0', 10);
+  const versionSources = [
+    template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT]?.Value,
+    template.Resources?.[BOOTSTRAP_VERSION_OUTPUT]?.Properties?.Value,
+  ];
+
+  for (const vs of versionSources) {
+    if (typeof vs === 'number') { return vs; }
+    if (typeof vs === 'string' && !isNaN(parseInt(vs, 10))) {
+      return parseInt(vs, 10);
+    }
+  }
+  return 0;
 }

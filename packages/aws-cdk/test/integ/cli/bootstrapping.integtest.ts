@@ -37,8 +37,8 @@ integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', 
 
   const legacyBootstrapBucketName = `aws-cdk-bootstrap-integ-test-legacy-bckt-${randomString()}`;
   const newBootstrapBucketName = `aws-cdk-bootstrap-integ-test-v2-bckt-${randomString()}`;
-  rememberToDeleteBucket(legacyBootstrapBucketName);  // This one will leak
-  rememberToDeleteBucket(newBootstrapBucketName);     // This one shouldn't leak if the test succeeds, but let's be safe in case it doesn't
+  rememberToDeleteBucket(legacyBootstrapBucketName); // This one will leak
+  rememberToDeleteBucket(newBootstrapBucketName); // This one shouldn't leak if the test succeeds, but let's be safe in case it doesn't
 
   // Legacy bootstrap
   await cdk(['bootstrap',
@@ -76,8 +76,7 @@ integTest('deploy new style synthesis to new style bootstrap', async () => {
   await cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
     '--qualifier', QUALIFIER,
-    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess',
-  ], {
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess'], {
     modEnv: {
       CDK_NEW_BOOTSTRAP: '1',
     },
@@ -99,8 +98,7 @@ integTest('deploy new style synthesis to new style bootstrap (with docker image)
   await cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
     '--qualifier', QUALIFIER,
-    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess',
-  ], {
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess'], {
     modEnv: {
       CDK_NEW_BOOTSTRAP: '1',
     },
@@ -122,8 +120,7 @@ integTest('deploy old style synthesis to new style bootstrap', async () => {
   await cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
     '--qualifier', QUALIFIER,
-    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess',
-  ], {
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess'], {
     modEnv: {
       CDK_NEW_BOOTSTRAP: '1',
     },
@@ -150,6 +147,17 @@ integTest('deploying new style synthesis to old style bootstrap fails', async ()
       '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
     ],
   })).rejects.toThrow('exited with error');
+});
+
+integTest('can create a legacy bootstrap stack with --public-access-block-configuration=false', async () => {
+  const bootstrapStackName = fullStackName('bootstrap-stack-1');
+
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--public-access-block-configuration', 'false', '--tags', 'Foo=Bar']);
+
+  const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  expect(response.Stacks?.[0].Tags).toEqual([
+    { Key: 'Foo', Value: 'Bar' },
+  ]);
 });
 
 integTest('can create multiple legacy bootstrap stacks', async () => {

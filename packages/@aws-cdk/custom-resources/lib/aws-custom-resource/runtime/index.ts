@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 import { execSync } from 'child_process';
 import { AwsSdkCall } from '../aws-custom-resource';
 
@@ -53,6 +53,10 @@ function filterKeys(object: object, pred: (key: string) => boolean) {
 
 let latestSdkInstalled = false;
 
+export function forceSdkInstallation() {
+  latestSdkInstalled = false;
+}
+
 /**
  * Installs latest AWS SDK v2
  */
@@ -67,7 +71,7 @@ function installLatestSdk(): void {
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
     let AWS: any;
-    if (!latestSdkInstalled) {
+    if (!latestSdkInstalled && event.ResourceProperties.InstallLatestAwsSdk === 'true') {
       try {
         installLatestSdk();
         AWS = require('/tmp/node_modules/aws-sdk');
@@ -75,11 +79,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         console.log(`Failed to install latest AWS SDK v2: ${e}`);
         AWS = require('aws-sdk'); // Fallback to pre-installed version
       }
-    } else {
+    } else if (latestSdkInstalled) {
       AWS = require('/tmp/node_modules/aws-sdk');
-    }
-
-    if (process.env.USE_NORMAL_SDK) { // For tests only
+    } else {
       AWS = require('aws-sdk');
     }
 

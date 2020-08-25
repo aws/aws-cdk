@@ -1,7 +1,7 @@
+import * as path from 'path';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import * as tasks from '../../lib';
 
 const app = new cdk.App();
@@ -27,7 +27,7 @@ const taskTokenHandler = new sfn.Task(stack, 'Invoke Handler with task token', {
   task: new tasks.RunLambdaTask(callbackHandler, {
     integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     payload: sfn.TaskInput.fromObject({
-      token: sfn.Context.taskToken,
+      token: sfn.JsonPath.taskToken,
     }),
   }),
   inputPath: '$.guid',

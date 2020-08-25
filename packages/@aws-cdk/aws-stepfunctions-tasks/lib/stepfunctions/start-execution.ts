@@ -55,13 +55,16 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     validatePatternSupported(this.integrationPattern, StepFunctionsStartExecution.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN && !sfn.FieldUtils.containsTaskToken(props.input)) {
-      throw new Error('Task Token is required in `input` for callback. Use Context.taskToken to set the token.');
+      throw new Error('Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.');
     }
 
     this.taskPolicies = this.createScopedAccessPolicy();
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     // suffix of ':2' indicates that the output of the nested state machine should be JSON
     // suffix is only applicable when waiting for a nested state machine to complete (RUN_JOB)
     // https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html

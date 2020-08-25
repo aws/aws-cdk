@@ -27,6 +27,7 @@ def helm_handler(event, context):
     wait         = props.get('Wait', False)
     timeout      = props.get('Timeout', None)
     namespace    = props.get('Namespace', None)
+    create_namespace = props.get('CreateNamespace', None)
     repository   = props.get('Repository', None)
     values_text  = props.get('Values', None)
 
@@ -46,14 +47,14 @@ def helm_handler(event, context):
             f.write(json.dumps(values, indent=2))
 
     if request_type == 'Create' or request_type == 'Update':
-        helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout)
+        helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace)
     elif request_type == "Delete":
         try:
             helm('uninstall', release, namespace=namespace, timeout=timeout)
         except Exception as e:
             logger.info("delete error: %s" % e)
 
-def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None):
+def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None):
     import subprocess
 
     cmnd = ['helm', verb, release]
@@ -61,6 +62,8 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
         cmnd.append(chart)
     if verb == 'upgrade':
         cmnd.append('--install')
+    if create_namespace:
+        cmnd.append('--create-namespace')
     if not repo is None:
         cmnd.extend(['--repo', repo])
     if not file is None:
@@ -72,10 +75,11 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
     if wait:
         cmnd.append('--wait')
     if not timeout is None:
-        cmnd.extend(['--timeout', timeout])  
+        cmnd.extend(['--timeout', timeout])
     cmnd.extend(['--kubeconfig', kubeconfig])
 
-    retry = 3
+    maxAttempts = 3
+    retry = maxAttempts
     while retry > 0:
         try:
             output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=outdir)
@@ -84,7 +88,8 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
         except subprocess.CalledProcessError as exc:
             output = exc.output
             if b'Broken pipe' in output:
-                logger.info("Broken pipe, retries left: %s" % retry)
                 retry = retry - 1
+                logger.info("Broken pipe, retries left: %s" % retry)
             else:
                 raise Exception(output)
+    raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')

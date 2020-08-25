@@ -24,13 +24,12 @@
     "compat": "cdk-compat"
   },
   "awslint": {
-    "exclude": ["*:*"]
+    "exclude": [
+      "*:*"
+    ]
   },
   "cdk-build": {
     "eslint": {
-      "disable": true
-    },
-    "tslint": {
       "disable": true
     },
     "pre": [
@@ -71,7 +70,8 @@
         "distName": "monocdk.experiment",
         "module": "monocdk_experiment"
       }
-    }
+    },
+    "projectReferences": false
   },
   "author": {
     "name": "Amazon Web Services",
@@ -89,7 +89,7 @@
   ],
   "dependencies": {
     "case": "1.6.3",
-    "constructs": "^3.0.2",
+    "constructs": "^3.0.4",
     "fs-extra": "^9.0.1",
     "jsonschema": "^1.2.5",
     "minimatch": "^3.0.4",
@@ -126,6 +126,7 @@
     "@aws-cdk/aws-cloud9": "0.0.0",
     "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-cloudfront": "0.0.0",
+    "@aws-cdk/aws-cloudfront-origins": "0.0.0",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-cloudwatch-actions": "0.0.0",
@@ -191,6 +192,7 @@
     "@aws-cdk/aws-lambda-destinations": "0.0.0",
     "@aws-cdk/aws-lambda-event-sources": "0.0.0",
     "@aws-cdk/aws-lambda-nodejs": "0.0.0",
+    "@aws-cdk/aws-lambda-python": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-logs-destinations": "0.0.0",
     "@aws-cdk/aws-macie": "0.0.0",
@@ -245,9 +247,10 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "@types/fs-extra": "^8.1.1",
-    "@types/node": "^10.17.26",
+    "@types/node": "^10.17.28",
     "cdk-build-tools": "0.0.0",
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
@@ -255,7 +258,7 @@
     "typescript": "~3.8.3"
   },
   "peerDependencies": {
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {

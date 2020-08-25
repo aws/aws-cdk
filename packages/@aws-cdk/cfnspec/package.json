@@ -6,6 +6,7 @@
     "update": "cdk-build && /bin/bash build-tools/update.sh",
     "build": "cdk-build && node build-tools/build",
     "watch": "cdk-watch",
+    "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "package": "cdk-package",
@@ -22,7 +23,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "devDependencies": {
-    "@types/fs-extra": "^8.1.0",
+    "@types/fs-extra": "^8.1.1",
     "@types/md5": "^2.2.0",
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
@@ -34,7 +35,7 @@
     "sort-json": "^2.0.0"
   },
   "dependencies": {
-    "md5": "^2.2.1"
+    "md5": "^2.3.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

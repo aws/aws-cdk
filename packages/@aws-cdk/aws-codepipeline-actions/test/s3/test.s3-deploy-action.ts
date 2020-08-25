@@ -1,11 +1,11 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Duration, SecretValue, Stack } from '@aws-cdk/core';
+import { App, Duration, SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'S3 Deploy Action': {
@@ -108,6 +108,7 @@ export = {
         cacheControl: [
           cpactions.CacheControl.setPublic(),
           cpactions.CacheControl.maxAge(Duration.hours(12)),
+          cpactions.CacheControl.sMaxAge(Duration.hours(12)),
         ],
       });
 
@@ -118,7 +119,7 @@ export = {
             'Actions': [
               {
                 'Configuration': {
-                  'CacheControl': 'public, max-age: 43200',
+                  'CacheControl': 'public, max-age=43200, s-maxage=43200',
                 },
               },
             ],
@@ -152,6 +153,38 @@ export = {
 
       test.done();
     },
+
+    'correctly makes the action cross-region for a Bucket imported with a different region'(test: Test) {
+      const app = new App();
+      const stack = new Stack(app, 'PipelineStack', {
+        env: { account: '123456789012', region: 'us-west-2' },
+      });
+      const deployBucket = s3.Bucket.fromBucketAttributes(stack, 'DeployBucket', {
+        bucketName: 'my-deploy-bucket',
+        region: 'ap-southeast-1',
+      });
+
+      minimalPipeline(stack, {
+        bucket: deployBucket,
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          {},
+          {
+            Name: 'Deploy',
+            Actions: [
+              {
+                Name: 'CopyFiles',
+                Region: 'ap-southeast-1',
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 };
 
@@ -177,7 +210,7 @@ function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): co
     stages: [
       {
         stageName: 'Source',
-        actions: [ sourceAction ],
+        actions: [sourceAction],
       },
     ],
   });

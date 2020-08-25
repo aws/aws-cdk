@@ -161,12 +161,12 @@ test('create complex transform job', () => {
       },
       TransformOutput: {
         S3OutputPath: 's3://outputbucket/prefix',
-        KmsKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+        KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
       },
       TransformResources: {
         InstanceCount: 1,
         InstanceType: 'ml.p3.2xlarge',
-        VolumeKmsKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+        VolumeKmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
       },
       Tags: [
         { Key: 'Project', Value: 'MyProject' },
@@ -184,8 +184,8 @@ test('create complex transform job', () => {
 test('pass param to transform job', () => {
   // WHEN
   const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
-    transformJobName: sfn.Data.stringAt('$.TransformJobName'),
-    modelName: sfn.Data.stringAt('$.ModelName'),
+    transformJobName: sfn.JsonPath.stringAt('$.TransformJobName'),
+    modelName: sfn.JsonPath.stringAt('$.ModelName'),
     role,
     transformInput: {
       transformDataSource: {

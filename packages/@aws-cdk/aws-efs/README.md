@@ -45,12 +45,10 @@ and group override any identity information provided by the NFS client. The file
 access point's root directory. Applications using the access point can only access data in its own directory and
 below. To learn more, see [Mounting a File System Using EFS Access Points](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html).
 
-Use `AccessPoint` to create an access point:
+Use `addAccessPoint` to create an access point from a fileSystem:
 
 ```ts
-new AccessPoint(stack, 'AccessPoint', {
-  fileSystem
-});
+fileSystem.addAccessPoint('AccessPoint');
 ```
 
 By default, when you create an access point, the root(`/`) directory is exposed to the client connecting to
@@ -70,7 +68,7 @@ fileSystem.connections.allowDefaultPortFrom(instance);
 
 In order to automatically mount this file system during instance launch, 
 following code can be used as reference:
-```
+```ts
 const vpc = new ec2.Vpc(this, 'VPC');
 
 const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {

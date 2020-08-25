@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
 import { CfnComputeEnvironment } from './batch.generated';
 
 /**
@@ -11,7 +11,7 @@ export enum ComputeResourceType {
   /**
    * Resources will be EC2 On-Demand resources.
    */
-  ON_DEMAND  = 'EC2',
+  ON_DEMAND = 'EC2',
 
   /**
    * Resources will be EC2 SpotFleet resources.
@@ -351,7 +351,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         instanceRole: props.computeResources.instanceRole
           ? props.computeResources.instanceRole
           : new iam.CfnInstanceProfile(this, 'Instance-Profile', {
-            roles: [ new iam.Role(this, 'Ecs-Instance-Role', {
+            roles: [new iam.Role(this, 'Ecs-Instance-Role', {
               assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
               managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'),
@@ -493,7 +493,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         return props.computeResources.spotFleetRole;
       } else if (props.computeResources.type === ComputeResourceType.SPOT) {
         return iam.Role.fromRoleArn(this, 'Resource-SpotFleet-Role',
-          `arn${Aws.PARTITION}iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`);
+          `arn:${this.stack.partition}:iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`);
       }
     }
 

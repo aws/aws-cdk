@@ -4,17 +4,19 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { KubernetesPatch, PatchType } from '../lib/k8s-patch';
 
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
+
 export = {
   'applies a patch to k8s'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
     new KubernetesPatch(stack, 'MyPatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
-      restorePatch: { restore: { patch: 123 }},
+      restorePatch: { restore: { patch: 123 } },
       resourceName: 'myResourceName',
     });
 
@@ -45,13 +47,13 @@ export = {
   'defaults to "strategic" patch type if no patchType is specified'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
     new KubernetesPatch(stack, 'MyPatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
-      restorePatch: { restore: { patch: 123 }},
+      restorePatch: { restore: { patch: 123 } },
       resourceName: 'myResourceName',
     });
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
@@ -62,27 +64,27 @@ export = {
   'uses specified to patch type if specified'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
     new KubernetesPatch(stack, 'jsonPatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
-      restorePatch: { restore: { patch: 123 }},
+      restorePatch: { restore: { patch: 123 } },
       resourceName: 'jsonPatchResource',
       patchType: PatchType.JSON,
     });
     new KubernetesPatch(stack, 'mergePatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
-      restorePatch: { restore: { patch: 123 }},
+      restorePatch: { restore: { patch: 123 } },
       resourceName: 'mergePatchResource',
       patchType: PatchType.MERGE,
     });
     new KubernetesPatch(stack, 'strategicPatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
-      restorePatch: { restore: { patch: 123 }},
+      restorePatch: { restore: { patch: 123 } },
       resourceName: 'strategicPatchResource',
       patchType: PatchType.STRATEGIC,
     });

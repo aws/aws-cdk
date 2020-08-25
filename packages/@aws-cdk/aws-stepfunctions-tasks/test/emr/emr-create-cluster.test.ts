@@ -291,7 +291,7 @@ test('Create Cluster with Bootstrap Actions', () => {
       name: 'Bootstrap',
       scriptBootstrapAction: {
         path: 's3://null',
-        args: [ 'Arg' ],
+        args: ['Arg'],
       },
     }],
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -332,7 +332,7 @@ test('Create Cluster with Bootstrap Actions', () => {
         Name: 'Bootstrap',
         ScriptBootstrapAction: {
           Path: 's3://null',
-          Args: [ 'Arg' ],
+          Args: ['Arg'],
         },
       }],
     },
@@ -519,7 +519,8 @@ test('Create Cluster without Roles', () => {
       Version: '2012-10-17',
       Statement: [
         {
-          Principal: { Service:
+          Principal: {
+            Service:
             {
               'Fn::Join': [
                 '',
@@ -813,7 +814,7 @@ test('Create Cluster with InstanceGroup', () => {
                 evaluationPeriods: 1,
                 metricName: 'Name',
                 namespace: 'Namespace',
-                period: cdk.Duration.seconds(sfn.Data.numberAt('$.CloudWatchPeriod')),
+                period: cdk.Duration.seconds(sfn.JsonPath.numberAt('$.CloudWatchPeriod')),
                 statistic: EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
                 threshold: 1,
                 unit: EmrCreateCluster.CloudWatchAlarmUnit.NONE,

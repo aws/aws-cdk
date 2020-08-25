@@ -8,6 +8,8 @@ export const REPOSITORY_NAME_OUTPUT = 'RepositoryName';
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 /** @experimental */
 export const BOOTSTRAP_VERSION_OUTPUT = 'BootstrapVersion';
+/** @experimental */
+export const BOOTSTRAP_VERSION_RESOURCE = 'CdkBootstrapVersion';
 
 /**
  * Options for the bootstrapEnvironment operation(s)
@@ -77,4 +79,11 @@ export interface BootstrappingParameters {
    * @default true
    */
   readonly publicAccessBlockConfiguration?: boolean;
+
+  /**
+   * Whether the stacks created by the bootstrap process should be protected from termination.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-protect-stacks.html
+   * @default true
+   */
+  readonly terminationProtection?: boolean;
 }

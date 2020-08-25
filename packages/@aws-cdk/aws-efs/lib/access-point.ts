@@ -65,14 +65,9 @@ export interface PosixUser {
 }
 
 /**
- * Properties for the AccessPoint
+ * Options to create an AccessPoint
  */
-export interface AccessPointProps {
-  /**
-   * The efs filesystem
-   */
-  readonly fileSystem: IFileSystem;
-
+export interface AccessPointOptions {
   /**
    * Specifies the POSIX IDs and permissions to apply when creating the access point's root directory. If the
    * root directory specified by `path` does not exist, EFS creates the root directory and applies the
@@ -101,6 +96,16 @@ export interface AccessPointProps {
    * @default - user identity not enforced
    */
   readonly posixUser?: PosixUser;
+}
+
+/**
+ * Properties for the AccessPoint
+ */
+export interface AccessPointProps extends AccessPointOptions {
+  /**
+   * The efs filesystem
+   */
+  readonly fileSystem: IFileSystem;
 }
 
 /**
@@ -134,10 +139,15 @@ export class AccessPoint extends Resource implements IAccessPoint {
    */
   public readonly accessPointId: string;
 
+  /**
+   * The filesystem of the access point
+   */
+  public readonly fileSystem: IFileSystem;
+
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id);
 
-    const resource = new CfnAccessPoint(scope, 'Resource', {
+    const resource = new CfnAccessPoint(this, 'Resource', {
       fileSystemId: props.fileSystem.fileSystemId,
       rootDirectory: {
         creationInfo: props.createAcl ? {
@@ -160,5 +170,6 @@ export class AccessPoint extends Resource implements IAccessPoint {
       resource: 'access-point',
       resourceName: this.accessPointId,
     });
+    this.fileSystem = props.fileSystem;
   }
 }
