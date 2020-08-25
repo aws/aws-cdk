@@ -28,6 +28,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [Evaluate Expression](#evaluate-expression)
 - [Batch](#batch)
   - [SubmitJob](#submitjob)
+- [CodeBuild](#codebuild)
+  - [StartBuild](#startbuild)
 - [DynamoDB](#dynamodb)
   - [GetItem](#getitem)
   - [PutItem](#putitem)
@@ -59,8 +61,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 ## Task
 
 A Task state represents a single unit of work performed by a state machine. In the
-CDK, the exact work to be In the CDK, the exact work to be done is determined by
-a class that implements `IStepFunctionsTask`.
+CDK, the exact work to be done is determined by a class that implements `IStepFunctionsTask`.
 
 AWS Step Functions [integrates](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) with some AWS services so that you can call API
 actions, and coordinate executions directly from the Amazon States Language in
@@ -233,6 +234,45 @@ const task = new tasks.BatchSubmitJob(this, 'Submit Job', {
   jobDefinition: batchJobDefinition,
   jobName: 'MyJob',
   jobQueue: batchQueue,
+});
+```
+
+## CodeBuild
+
+Step Functions supports [CodeBuild](https://docs.aws.amazon.com/step-functions/latest/dg/connect-codebuild.html) through the service integration pattern.
+
+### StartBuild
+
+[StartBuild](https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuild.html) starts a CodeBuild Project by Project Name.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+
+const codebuildProject = new codebuild.Project(stack, 'Project', {
+  projectName: 'MyTestProject',
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      build: {
+        commands: [
+          'echo "Hello, CodeBuild!"',
+        ],
+      },
+    },
+  }),
+});
+
+const task = new tasks.CodeBuildStartBuild(stack, 'Task', {
+  project: codebuildProject,
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  environmentVariablesOverride: {
+    ZONE: {
+      type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+      value: sfn.JsonPath.stringAt('$.envVariables.zone'),
+    },
+  },
 });
 ```
 

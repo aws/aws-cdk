@@ -91,7 +91,8 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-efs.AccessPointProps"
+      "props-physical-name:@aws-cdk/aws-efs.AccessPointProps",
+      "resource-attribute:@aws-cdk/aws-efs.FileSystem.fileSystemArn"
     ]
   },
   "stability": "experimental",

@@ -119,6 +119,12 @@ abstract class KeyBase extends Resource implements IKey {
     return { statementAdded: true, policyDependable: this.policy };
   }
 
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.validateForResourcePolicy() || []);
+    return errors;
+  }
+
   /**
    * Grant the indicated permissions on this key to the given principal
    *

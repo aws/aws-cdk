@@ -35,6 +35,16 @@ export const ENABLE_DIFF_NO_FAIL = ENABLE_DIFF_NO_FAIL_CONTEXT;
 export const NEW_STYLE_STACK_SYNTHESIS_CONTEXT = '@aws-cdk/core:newStyleStackSynthesis';
 
 /**
+ * Name exports based on the construct paths relative to the stack, rather than the global construct path
+ *
+ * Combined with the stack name this relative construct path is good enough to
+ * ensure uniqueness, and makes the export names robust against refactoring
+ * the location of the stack in the construct tree (specifically, moving the Stack
+ * into a Stage).
+ */
+export const STACK_RELATIVE_EXPORTS_CONTEXT = '@aws-cdk/core:stackRelativeExports';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -50,6 +60,7 @@ export const NEW_STYLE_STACK_SYNTHESIS_CONTEXT = '@aws-cdk/core:newStyleStackSyn
 export const FUTURE_FLAGS = {
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: 'true',
+  [STACK_RELATIVE_EXPORTS_CONTEXT]: 'true',
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS]: 'true',

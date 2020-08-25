@@ -95,7 +95,8 @@ nodeunitShim({
         'Fn::Split': [
           '/',
           { Ref: 'ALBListener3B99FF85' },
-        ]};
+        ],
+      };
 
       expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
@@ -103,16 +104,16 @@ nodeunitShim({
           TargetValue: 10,
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
-            ResourceLabel: { 'Fn::Join': [ '', [
-              { 'Fn::Select': [ 1, arnParts ] },
-              '/',
-              { 'Fn::Select': [ 2, arnParts ] },
-              '/',
-              { 'Fn::Select': [ 3, arnParts ] },
-              '/',
-              { 'Fn::GetAtt': [ 'ALBListenerTargetsGroup01D7716A', 'TargetGroupFullName' ] },
-            ],
-            ],
+            ResourceLabel: {
+              'Fn::Join': ['', [
+                { 'Fn::Select': [1, arnParts] },
+                '/',
+                { 'Fn::Select': [2, arnParts] },
+                '/',
+                { 'Fn::Select': [3, arnParts] },
+                '/',
+                { 'Fn::GetAtt': ['ALBListenerTargetsGroup01D7716A', 'TargetGroupFullName'] },
+              ]],
             },
           },
         },
@@ -196,7 +197,7 @@ nodeunitShim({
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       Threshold: 3,
-      AlarmActions: [ { Ref: 'FixtureASGMetricUpperPolicyC464CAFB' } ],
+      AlarmActions: [{ Ref: 'FixtureASGMetricUpperPolicyC464CAFB' }],
       AlarmDescription: 'Upper threshold scaling alarm',
     }));
 
@@ -215,7 +216,7 @@ nodeunitShim({
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'LessThanOrEqualToThreshold',
       Threshold: 2,
-      AlarmActions: [ { Ref: 'FixtureASGMetricLowerPolicy4A1CDE42' } ],
+      AlarmActions: [{ Ref: 'FixtureASGMetricLowerPolicy4A1CDE42' }],
       AlarmDescription: 'Lower threshold scaling alarm',
     }));
 

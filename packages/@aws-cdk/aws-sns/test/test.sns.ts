@@ -165,8 +165,14 @@ export = {
 
     const topic = new sns.Topic(stack, 'MyTopic');
 
-    topic.addToResourcePolicy(new iam.PolicyStatement({ actions: ['service:statement0'] }));
-    topic.addToResourcePolicy(new iam.PolicyStatement({ actions: ['service:statement1'] }));
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['service:statement0'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['service:statement1'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
 
     expect(stack).toMatch({
       'Resources': {
@@ -181,11 +187,13 @@ export = {
                 {
                   'Action': 'service:statement0',
                   'Effect': 'Allow',
+                  'Principal': { 'AWS': 'arn' },
                   'Sid': '0',
                 },
                 {
                   'Action': 'service:statement1',
                   'Effect': 'Allow',
+                  'Principal': { 'AWS': 'arn' },
                   'Sid': '1',
                 },
               ],
@@ -224,7 +232,7 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(topic.metricNumberOfMessagesPublished()), {
-      dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
+      dimensions: { TopicName: { 'Fn::GetAtt': ['TopicBFC7AF6E', 'TopicName'] } },
       namespace: 'AWS/SNS',
       metricName: 'NumberOfMessagesPublished',
       period: cdk.Duration.minutes(5),
@@ -232,7 +240,7 @@ export = {
     });
 
     test.deepEqual(stack.resolve(topic.metricPublishSize()), {
-      dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
+      dimensions: { TopicName: { 'Fn::GetAtt': ['TopicBFC7AF6E', 'TopicName'] } },
       namespace: 'AWS/SNS',
       metricName: 'PublishSize',
       period: cdk.Duration.minutes(5),
@@ -281,6 +289,40 @@ export = {
     // THEN
     expect(stack).notTo(haveResource('AWS::SNS::Subscription'));
     expect(stack2).to(haveResource('AWS::SNS::Subscription'));
+    test.done();
+  },
+
+  'fails if topic policy has no actions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    test.done();
+  },
+
+  'fails if topic policy has no IAM principals'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['sns:*'],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
     test.done();
   },
 };

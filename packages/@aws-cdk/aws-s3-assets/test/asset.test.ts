@@ -1,4 +1,4 @@
-import { arrayWith, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -102,7 +102,7 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
 
   const asset = new Asset(stack, 'MyAsset', {
     path: path.join(__dirname, 'sample-asset-directory'),
-    readers: [ user ],
+    readers: [user],
   });
 
   asset.grantRead(group);
@@ -115,36 +115,11 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
-            { 'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':s3:::', {Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B'} ] ] },
-            { 'Fn::Join': ['', [ 'arn:', {Ref: 'AWS::Partition'}, ':s3:::', {Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B'}, '/*' ] ] },
+            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B' }]] },
+            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B' }, '/*']] },
           ],
         },
       ],
-    },
-  });
-});
-
-test('"grantRead" also gives KMS permissions when using the new bootstrap stack', () => {
-  const stack = new cdk.Stack(undefined, undefined, {
-    synthesizer: new cdk.DefaultStackSynthesizer(),
-  });
-  const group = new iam.Group(stack, 'MyGroup');
-
-  const asset = new Asset(stack, 'MyAsset', {
-    path: path.join(__dirname, 'sample-asset-directory'),
-    readers: [ group ],
-  });
-
-  asset.grantRead(group);
-
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Version: '2012-10-17',
-      Statement: arrayWith({
-        Action: ['kms:Decrypt', 'kms:DescribeKey'],
-        Effect: 'Allow',
-        Resource: { 'Fn::ImportValue': 'CdkBootstrap-hnb659fds-FileAssetKeyArn' },
-      }),
     },
   });
 });

@@ -67,12 +67,26 @@ export = {
 
     // THEN
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
           [
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'NodegroupNodeGroupRole038A128B',
@@ -110,7 +124,7 @@ export = {
       cluster,
       remoteAccess: {
         sshKeyName: 'foo',
-        sourceSecurityGroups: [ new ec2.SecurityGroup(stack, 'SG', { vpc }) ],
+        sourceSecurityGroups: [new ec2.SecurityGroup(stack, 'SG', { vpc })],
       },
     });
     // THEN
@@ -155,9 +169,8 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', {
+    const cluster = new eks.LegacyCluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: false,
       defaultCapacity: 2,
       version: CLUSTER_VERSION,
     });
@@ -225,7 +238,6 @@ export = {
     const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
     const cluster = new eks.Cluster(stack1, 'Cluster', {
       vpc,
-      kubectlEnabled: false,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });

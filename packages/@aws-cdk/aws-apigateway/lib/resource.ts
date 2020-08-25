@@ -283,7 +283,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     const integrationResponseParams: { [p: string]: string } = { };
     const methodReponseParams: { [p: string]: boolean } = { };
 
-    for (const [ name, value ] of Object.entries(headers)) {
+    for (const [name, value] of Object.entries(headers)) {
       const key = `method.response.header.${name}`;
       integrationResponseParams[key] = value;
       methodReponseParams[key] = true;

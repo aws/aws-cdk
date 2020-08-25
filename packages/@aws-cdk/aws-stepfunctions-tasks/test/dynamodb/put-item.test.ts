@@ -27,6 +27,7 @@ test('PutItem task', () => {
     expressionAttributeNames: { OTHER_KEY: '#OK' },
     expressionAttributeValues: {
       ':val': tasks.DynamoAttributeValue.numberFromString(sfn.JsonPath.stringAt('$.Item.TotalCount.N')),
+      ':bool': tasks.DynamoAttributeValue.booleanFromJsonPath(sfn.JsonPath.stringAt('$.Item.flag')),
     },
     returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
     returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,
@@ -56,7 +57,10 @@ test('PutItem task', () => {
       },
       ConditionExpression: 'ForumName <> :f and Subject <> :s',
       ExpressionAttributeNames: { OTHER_KEY: '#OK' },
-      ExpressionAttributeValues: { ':val': { 'N.$': '$.Item.TotalCount.N' } },
+      ExpressionAttributeValues: {
+        ':val': { 'N.$': '$.Item.TotalCount.N' },
+        ':bool': { 'BOOL.$': '$.Item.flag' },
+      },
       ReturnConsumedCapacity: 'TOTAL',
       ReturnItemCollectionMetrics: 'SIZE',
       ReturnValues: 'ALL_NEW',

@@ -1,7 +1,7 @@
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Bundling, ParcelBaseOptions } from './bundling';
 import { PackageJsonManager } from './package-json-manager';
 import { nodeMajorVersion, parseStackTrace } from './util';
@@ -35,6 +35,19 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions, ParcelBaseO
    * `NODEJS_10_X` otherwise.
    */
   readonly runtime?: lambda.Runtime;
+
+  /**
+   * Whether to automatically reuse TCP connections when working with the AWS
+   * SDK for JavaScript.
+   *
+   * This sets the `AWS_NODEJS_CONNECTION_REUSE_ENABLED` environment variable
+   * to `1`.
+   *
+   * @see https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
+   *
+   * @default true
+   */
+  readonly awsSdkConnectionReuse?: boolean;
 }
 
 /**
@@ -69,6 +82,11 @@ export class NodejsFunction extends lambda.Function {
         }),
         handler: `index.${handler}`,
       });
+
+      // Enable connection reuse for aws-sdk
+      if (props.awsSdkConnectionReuse ?? true) {
+        this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
+      }
     } finally {
       // We can only restore after the code has been bound to the function
       packageJsonManager.restore();

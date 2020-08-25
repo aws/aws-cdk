@@ -243,7 +243,7 @@ export class Table extends Resource implements ITable {
     this.partitionKeys = props.partitionKeys;
 
     this.compressed = props.compressed === undefined ? false : props.compressed;
-    const {bucket, encryption, encryptionKey} = createBucket(this, props);
+    const { bucket, encryption, encryptionKey } = createBucket(this, props);
     this.bucket = bucket;
     this.encryption = encryption;
     this.encryptionKey = encryptionKey;

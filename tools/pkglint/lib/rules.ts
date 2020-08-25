@@ -420,7 +420,7 @@ export class FeatureStabilityRule extends ValidationRule {
       notices.push('');
     }
 
-    const noticeOrder = [ 'Experimental', 'Developer Preview', 'Stable' ];
+    const noticeOrder = ['Experimental', 'Developer Preview', 'Stable'];
     const stabilities = pkg.json.features.map((f: { [k: string]: string }) => f.stability);
     const filteredNotices = noticeOrder.filter(v => stabilities.includes(v));
     filteredNotices.map((notice) => {

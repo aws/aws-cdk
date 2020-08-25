@@ -1,11 +1,11 @@
+import * as path from 'path';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Arn, Construct, Fn, Stack } from '@aws-cdk/core';
+import { Aws, Construct, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as path from 'path';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
 
 /**
@@ -144,11 +144,13 @@ export class DeployCdkStackAction implements codepipeline.IAction {
       throw new Error(`Stack '${artifact.stackName}' does not have deployment role information; use the 'DefaultStackSynthesizer' synthesizer, or set the '@aws-cdk/core:newStyleStackSynthesis' context key.`);
     }
 
-    const actionRole = roleFromPlaceholderArn(scope, artifact.assumeRoleArn);
-    const cloudFormationExecutionRole = roleFromPlaceholderArn(scope, artifact.cloudFormationExecutionRoleArn);
-
     const artRegion = artifact.environment.region;
     const region = artRegion === Stack.of(scope).region || artRegion === cxapi.UNKNOWN_REGION ? undefined : artRegion;
+    const artAccount = artifact.environment.account;
+    const account = artAccount === Stack.of(scope).account || artAccount === cxapi.UNKNOWN_ACCOUNT ? undefined : artAccount;
+
+    const actionRole = roleFromPlaceholderArn(scope, region, account, artifact.assumeRoleArn);
+    const cloudFormationExecutionRole = roleFromPlaceholderArn(scope, region, account, artifact.cloudFormationExecutionRoleArn);
 
     // We need the path of the template relative to the root Cloud Assembly
     // It should be easier to get this, but for now it is what it is.
@@ -259,15 +261,17 @@ export class DeployCdkStackAction implements codepipeline.IAction {
   }
 }
 
-function roleFromPlaceholderArn(scope: Construct, arn: string): iam.IRole;
-function roleFromPlaceholderArn(scope: Construct, arn: string | undefined): iam.IRole | undefined;
-function roleFromPlaceholderArn(scope: Construct, arn: string | undefined): iam.IRole | undefined {
+function roleFromPlaceholderArn(scope: Construct, region: string | undefined,
+  account: string | undefined, arn: string): iam.IRole;
+function roleFromPlaceholderArn(scope: Construct, region: string | undefined,
+  account: string | undefined, arn: string | undefined): iam.IRole | undefined;
+function roleFromPlaceholderArn(scope: Construct, region: string | undefined,
+  account: string | undefined, arn: string | undefined): iam.IRole | undefined {
+
   if (!arn) { return undefined; }
 
   // Use placeholdered arn as construct ID.
   const id = arn;
-
-  scope = hackyRoleScope(scope, arn);
 
   // https://github.com/aws/aws-cdk/issues/7255
   let existingRole = scope.node.tryFindChild(`ImmutableRole${id}`) as iam.IRole;
@@ -276,44 +280,12 @@ function roleFromPlaceholderArn(scope: Construct, arn: string | undefined): iam.
   existingRole = scope.node.tryFindChild(id) as iam.IRole;
   if (existingRole) { return existingRole; }
 
-  return iam.Role.fromRoleArn(scope, id, cfnExpressionFromManifestString(arn), { mutable: false });
-}
-
-/**
- * MASSIVE HACK
- *
- * We have a bug in the CDK where it's only going to consider Roles that are physically in a
- * different Stack object from the Pipeline "cross-account", and will add the appropriate
- * Bucket/Key policies.
- * https://github.com/aws/aws-cdk/pull/8280 will resolve this, but for now we fake it by hacking
- * up a Stack object to root the role in!
- *
- * Fortunatey, we can just 'new up' an unrooted Stack (unit tests do this all the time) and toss it
- * away. It will never be synthesized, but all the logic happens to work out!
- */
-function hackyRoleScope(scope: Construct, arn: string): Construct {
-  const parts = Arn.parse(cxapi.EnvironmentPlaceholders.replace(arn, {
-    accountId: '', // Empty string on purpose, see below
-    partition: '',
-    region: '',
-  }));
-  return new Stack(undefined, undefined, {
-    env: {
-      // Empty string means ARN had a placeholder which means same account as pipeline stack
-      account: parts.account || Stack.of(scope).account,
-      // 'region' from an IAM ARN is always an empty string, so no point.
-    },
+  const arnToImport = cxapi.EnvironmentPlaceholders.replace(arn, {
+    region: region ?? Aws.REGION,
+    accountId: account ?? Aws.ACCOUNT_ID,
+    partition: Aws.PARTITION,
   });
-}
-
-/**
- * Return a CloudFormation expression from a manifest string with placeholders
- */
-function cfnExpressionFromManifestString(s: string) {
-  // This implementation relies on the fact that the manifest placeholders are
-  // '${AWS::Partition}' etc., and so are the same values as those that are
-  // trivially substituable using a `Fn.sub`.
-  return Fn.sub(s);
+  return iam.Role.fromRoleArn(scope, id, arnToImport, { mutable: false });
 }
 
 /**

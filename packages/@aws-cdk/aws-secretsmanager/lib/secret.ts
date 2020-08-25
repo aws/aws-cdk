@@ -208,6 +208,12 @@ abstract class SecretBase extends Resource implements ISecret {
     return { statementAdded: false };
   }
 
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
+  }
+
   public denyAccountRootDelete() {
     this.addToResourcePolicy(new iam.PolicyStatement({
       actions: ['secretsmanager:DeleteSecret'],

@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
 import { Attribute, AttributeType, ProjectionType, StreamViewType, Table, TableEncryption } from '../lib';
 
 // CDK parameters
@@ -58,7 +58,7 @@ const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
-tableWithGlobalAndLocalSecondaryIndex.node.applyAspect(new Tag('Environment', 'Production'));
+Tags.of(tableWithGlobalAndLocalSecondaryIndex).add('Environment', 'Production');
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,
   partitionKey: GSI_PARTITION_KEY,

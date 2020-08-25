@@ -18,7 +18,7 @@ const bucket = new s3.Bucket(stack, 'PipelineBucket', {
 });
 const key = 'key';
 const trail = new cloudtrail.Trail(stack, 'CloudTrail');
-trail.addS3EventSelector([ { bucket, objectPrefix: key }], { readWriteType: cloudtrail.ReadWriteType.WRITE_ONLY, includeManagementEvents: false });
+trail.addS3EventSelector([{ bucket, objectPrefix: key }], { readWriteType: cloudtrail.ReadWriteType.WRITE_ONLY, includeManagementEvents: false });
 sourceStage.addAction(new cpactions.S3SourceAction({
   actionName: 'Source',
   output: new codepipeline.Artifact('SourceArtifact'),
@@ -38,7 +38,7 @@ const lambdaFun = new lambda.Function(stack, 'LambdaFun', {
 });
 const lambdaStage = pipeline.addStage({ stageName: 'Lambda' });
 lambdaStage.addAction(new cpactions.LambdaInvokeAction({
-  actionName: 'Lambda' ,
+  actionName: 'Lambda',
   lambda: lambdaFun,
 }));
 

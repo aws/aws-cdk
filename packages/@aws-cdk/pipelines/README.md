@@ -27,12 +27,24 @@ same, the *CDK Pipelines* library takes care of the details.
 will work, see the section **CDK Environment Bootstrapping** below).
 
 ```ts
-import { Construct, Stage } from '@aws-cdk/core';
+/** The stacks for our app are defined in my-stacks.ts.  The internals of these
+  * stacks aren't important, except that DatabaseStack exposes an attribute
+  * "table" for a database table it defines, and ComputeStack accepts a reference
+  * to this table in its properties.
+  */
+import { DatabaseStack, ComputeStack } from '../lib/my-stacks';
+
+import { Construct, Stage, Stack, StackProps, StageProps } from '@aws-cdk/core';
+import { CdkPipeline } from '@aws-cdk/pipelines';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 
 /**
  * Your application
  *
- * May consist of one or more Stacks
+ * May consist of one or more Stacks (here, two)
+ *
+ * By declaring our DatabaseStack and our ComputeStack inside a Stage,
+ * we make sure they are deployed together, or not at all.
  */
 class MyApplication extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
@@ -114,7 +126,6 @@ class MyPipelineStack extends Stack {
         actionName: 'GitHub',
         output: sourceArtifact,
         oauthToken: SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
-        trigger: codepipeline_actions.GitHubTrigger.POLL,
         // Replace these with your actual GitHub project name
         owner: 'OWNER',
         repo: 'REPO',
@@ -292,7 +303,7 @@ In its simplest form, adding validation actions looks like this:
 const stage = pipeline.addApplicationStage(new MyApplication(/* ... */));
 
 stage.addActions(new ShellScriptAction({
-  name: 'MyValidation',
+  actionName: 'MyValidation',
   commands: ['curl -Ssf https://my.webservice.com/'],
   // ... more configuration ...
 }));
@@ -364,7 +375,7 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
 });
 
 const validationAction = new ShellScriptAction({
-  name: 'TestUsingSourceArtifact',
+  actionName: 'TestUsingSourceArtifact',
   additionalArtifacts: [sourceArtifact],
 
   // 'test.sh' comes from the source repository
@@ -403,11 +414,46 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
 });
 
 const validationAction = new ShellScriptAction({
-  name: 'TestUsingBuildArtifact',
+  actionName: 'TestUsingBuildArtifact',
   additionalArtifacts: [integTestsArtifact],
   // 'test.js' was produced from 'test/test.ts' during the synth step
   commands: ['node ./test.js'],
 });
+```
+
+#### Add Additional permissions to the CodeBuild Project Role for building and synthing
+
+You can customize the role permissions used by the CodeBuild project so it has access to
+the needed resources. eg: Adding CodeArtifact repo permissions so we pull npm packages
+from the CA repo instead of NPM.
+
+```ts
+class MyPipelineStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    ...
+    const pipeline = new CdkPipeline(this, 'Pipeline', {
+      ...
+      synthAction: SimpleSynthAction.standardNpmSynth({
+        sourceArtifact,
+        cloudAssemblyArtifact,
+
+        // Use this to customize and a permissions required for the build
+        // and synth
+        rolePolicyStatements: [
+          new PolicyStatement({
+            actions: ['codeartifact:*', 'sts:GetServiceBearerToken'],
+            resources: ['arn:codeartifact:repo:arn'],
+          }),
+        ],
+
+        // Then you can login to codeartifact repository
+        // and npm will now pull packages from your repository
+        // Note the codeartifact login command requires more params to work.
+        buildCommand: 'aws codeartifact login --tool npm && npm run build',
+      }),
+    });
+  }
+}
 ```
 
 ## CDK Environment Bootstrapping

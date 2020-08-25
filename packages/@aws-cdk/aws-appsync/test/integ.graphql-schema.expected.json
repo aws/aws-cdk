@@ -1,0 +1,167 @@
+{
+  "Resources": {
+    "codefirstapi1A3CC7D2": {
+      "Type": "AWS::AppSync::GraphQLApi",
+      "Properties": {
+        "AuthenticationType": "API_KEY",
+        "Name": "api"
+      }
+    },
+    "codefirstapiSchema148B6CDE": {
+      "Type": "AWS::AppSync::GraphQLSchema",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "codefirstapi1A3CC7D2",
+            "ApiId"
+          ]
+        },
+        "Definition": "type Planet {\n  name: String\n  diameter: Int\n  rotationPeriod: Int\n  orbitalPeriod: Int\n  gravity: String\n  population: [String]\n  climates: [String]\n  terrains: [String]\n  surfaceWater: Float\n  created: String\n  edited: String\n  id: ID!\n}\ntype Species {\n  name: String\n  classification: String\n  designation: String\n  averageHeight: Float\n  averageLifespan: Int\n  eyeColors: [String]\n  hairColors: [String]\n  skinColors: [String]\n  language: String\n  homeworld: Planet\n  created: String\n  edited: String\n  id: ID!\n}\n\ntype Query {\n  getPlanets: [Planet]\n}\n"
+      }
+    },
+    "codefirstapiDefaultApiKey89863A80": {
+      "Type": "AWS::AppSync::ApiKey",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "codefirstapi1A3CC7D2",
+            "ApiId"
+          ]
+        }
+      },
+      "DependsOn": [
+        "codefirstapiSchema148B6CDE"
+      ]
+    },
+    "codefirstapiplanetsServiceRole2F4AA8E7": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "codefirstapiplanetsServiceRoleDefaultPolicy76FE4F2C": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "table8235A42E",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "codefirstapiplanetsServiceRoleDefaultPolicy76FE4F2C",
+        "Roles": [
+          {
+            "Ref": "codefirstapiplanetsServiceRole2F4AA8E7"
+          }
+        ]
+      }
+    },
+    "codefirstapiplanets0F6BB479": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "codefirstapi1A3CC7D2",
+            "ApiId"
+          ]
+        },
+        "Name": "planets",
+        "Type": "AMAZON_DYNAMODB",
+        "DynamoDBConfig": {
+          "AwsRegion": {
+            "Ref": "AWS::Region"
+          },
+          "TableName": {
+            "Ref": "table8235A42E"
+          }
+        },
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "codefirstapiplanetsServiceRole2F4AA8E7",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "codefirstapiplanetsQuerygetPlanetsResolver633EA597": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "codefirstapi1A3CC7D2",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getPlanets",
+        "TypeName": "Query",
+        "DataSourceName": "planets",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "codefirstapiplanets0F6BB479",
+        "codefirstapiSchema148B6CDE"
+      ]
+    },
+    "table8235A42E": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    }
+  }
+}

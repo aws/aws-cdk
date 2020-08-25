@@ -97,4 +97,33 @@ export = nodeunit.testCase({
 
     test.done();
   },
+
+  'subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included'(test: nodeunit.Test) {
+    // GIVEN
+    class HiddenCfnResource extends core.CfnResource {
+      protected shouldSynthesize() {
+        return false;
+      }
+    }
+
+    const app = new core.App();
+    const stack = new core.Stack(app, 'TestStack');
+    const subtree = new core.Construct(stack, 'subtree');
+
+    // WHEN
+    new HiddenCfnResource(subtree, 'R1', { type: 'Foo::R1' });
+    const r2 = new core.CfnResource(stack, 'R2', { type: 'Foo::R2' });
+
+    // also try to take a dependency on the parent of `r1` and expect the dependency not to materialize
+    r2.node.addDependency(subtree);
+
+    // THEN - only R2 is synthesized
+    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
+      Resources: { R2: { Type: 'Foo::R2' } },
+
+      // No DependsOn!
+    });
+
+    test.done();
+  },
 });

@@ -150,7 +150,7 @@ export class VirtualRouter extends VirtualRouterBase {
 
     this.mesh = props.mesh;
 
-    this.addListener(props.listener || { portMapping: { port: 8080, protocol: Protocol.HTTP }});
+    this.addListener(props.listener || { portMapping: { port: 8080, protocol: Protocol.HTTP } });
 
     const router = new CfnVirtualRouter(this, 'Resource', {
       virtualRouterName: this.physicalName,

@@ -13,6 +13,8 @@ integdir=$(cd $(dirname $0) && pwd)
 temp_dir=$(mktemp -d)
 
 function cleanup {
+    # keep junit file to allow report creation
+    cp ${integ_under_test}/coverage/junit.xml .
     rm -rf ${temp_dir}
     rm -rf ${integ_under_test}
 }
@@ -78,6 +80,8 @@ echo "Copying integration tests of version ${VERSION_UNDER_TEST} to ${integ_unde
 cp -r ${temp_dir}/package/test/integ/cli ${integ_under_test}
 
 patch_dir="${integdir}/cli-regression-patches/${VERSION_UNDER_TEST}"
+# delete possibly stale junit.xml file
+rm -f ${integ_under_test}/junit.xml
 if [[ -d "$patch_dir" ]]; then
     echo "Hotpatching the tests with files from $patch_dir" >&2
     cp -r "$patch_dir"/* ${integ_under_test}

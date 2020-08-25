@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { CfnParameter, Duration, Stack } from '@aws-cdk/core';
+import { CfnParameter, Duration, Stack, App } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as sqs from '../lib';
 
@@ -160,8 +160,10 @@ export = {
 
       // "import" returns an IQueue bound to `Fn::ImportValue`s.
       test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-east-1:123456789012:queue1');
-      test.deepEqual(stack.resolve(imports.queueUrl), { 'Fn::Join':
-        [ '', [ 'https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1' ] ] });
+      test.deepEqual(stack.resolve(imports.queueUrl), {
+        'Fn::Join':
+        ['', ['https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1']],
+      });
       test.deepEqual(stack.resolve(imports.queueName), 'queue1');
       test.done();
     },
@@ -255,7 +257,7 @@ export = {
 
       test.same(queue.encryptionMasterKey, key);
       expect(stack).to(haveResource('AWS::SQS::Queue', {
-        'KmsMasterKeyId': { 'Fn::GetAtt': [ 'CustomKey1E6D0D07', 'Arn' ] },
+        'KmsMasterKeyId': { 'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'] },
       }));
 
       test.done();
@@ -320,7 +322,7 @@ export = {
                 'sqs:GetQueueUrl',
               ],
               'Effect': 'Allow',
-              'Resource': { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] },
+              'Resource': { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
             },
             {
               'Action': [
@@ -330,7 +332,7 @@ export = {
                 'kms:GenerateDataKey*',
               ],
               'Effect': 'Allow',
-              'Resource': { 'Fn::GetAtt': [ 'QueueKey39FCBAE6', 'Arn' ] },
+              'Resource': { 'Fn::GetAtt': ['QueueKey39FCBAE6', 'Arn'] },
             },
           ],
           'Version': '2012-10-17',
@@ -393,7 +395,7 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(queue.metricNumberOfMessagesSent()), {
-      dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
+      dimensions: { QueueName: { 'Fn::GetAtt': ['Queue4A7E3555', 'QueueName'] } },
       namespace: 'AWS/SQS',
       metricName: 'NumberOfMessagesSent',
       period: Duration.minutes(5),
@@ -401,13 +403,47 @@ export = {
     });
 
     test.deepEqual(stack.resolve(queue.metricSentMessageSize()), {
-      dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
+      dimensions: { QueueName: { 'Fn::GetAtt': ['Queue4A7E3555', 'QueueName'] } },
       namespace: 'AWS/SQS',
       metricName: 'SentMessageSize',
       period: Duration.minutes(5),
       statistic: 'Average',
     });
 
+    test.done();
+  },
+
+  'fails if queue policy has no actions'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const queue = new sqs.Queue(stack, 'Queue');
+
+    // WHEN
+    queue.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    test.done();
+  },
+
+  'fails if queue policy has no IAM principals'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const queue = new sqs.Queue(stack, 'Queue');
+
+    // WHEN
+    queue.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['sqs:*'],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
     test.done();
   },
 };

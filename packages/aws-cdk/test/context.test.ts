@@ -51,7 +51,7 @@ test('deleted context disappears from new file', async () => {
 
   // THEN
   expect(await fs.readJSON('cdk.context.json')).toEqual({});
-  expect(await fs.readJSON('cdk.json')).toEqual({ context: { foo: 'bar' }});
+  expect(await fs.readJSON('cdk.json')).toEqual({ context: { foo: 'bar' } });
 });
 
 test('clear deletes from new file', async () => {

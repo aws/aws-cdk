@@ -113,7 +113,7 @@ export class CdkToolkit {
 
     const requireApproval = options.requireApproval !== undefined ? options.requireApproval : RequireApproval.Broadening;
 
-    const parameterMap: { [name: string]: { [name: string]: string | undefined } } = {'*': {}};
+    const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
     for (const key in options.parameters) {
       if (options.parameters.hasOwnProperty(key)) {
         const [stack, parameter] = key.split(':', 2);
@@ -139,7 +139,7 @@ export class CdkToolkit {
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
-        if (!await this.props.cloudFormation.stackExists({ stack }))  {
+        if (!await this.props.cloudFormation.stackExists({ stack })) {
           warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.displayName));
         } else {
           warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.displayName));
@@ -190,6 +190,7 @@ export class CdkToolkit {
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
+          ci: options.ci,
         });
 
         const message = result.noOp
@@ -583,6 +584,13 @@ export interface DeployOptions {
    * @default - Outputs are not written to any file
    */
   outputsFile?: string;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 export interface DestroyOptions {

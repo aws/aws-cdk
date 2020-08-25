@@ -54,12 +54,12 @@ export class FileSystem {
     return new FileSystem({
       localMountPath: mountPath,
       arn: ap.accessPointArn,
-      dependency: [ ap.fileSystem.mountTargetsAvailable ],
+      dependency: [ap.fileSystem.mountTargetsAvailable],
       connections: ap.fileSystem.connections,
       policies: [
         new iam.PolicyStatement({
-          actions: [ 'elasticfilesystem:ClientMount' ],
-          resources: [ '*' ],
+          actions: ['elasticfilesystem:ClientMount'],
+          resources: ['*'],
           conditions: {
             StringEquals: {
               'elasticfilesystem:AccessPointArn': ap.accessPointArn,
@@ -68,11 +68,11 @@ export class FileSystem {
         }),
         new iam.PolicyStatement({
           actions: ['elasticfilesystem:ClientWrite'],
-          resources: [ Stack.of(ap).formatArn({
+          resources: [Stack.of(ap).formatArn({
             service: 'elasticfilesystem',
             resource: 'file-system',
             resourceName: ap.fileSystem.fileSystemId,
-          }) ],
+          })],
         }),
       ],
     });

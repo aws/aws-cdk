@@ -73,7 +73,7 @@ nodeunitShim({
     });
 
     // WHEN
-    cdk.Tag.add(volume, 'TagKey', 'TagValue');
+    cdk.Tags.of(volume).add('TagKey', 'TagValue');
 
     // THEN
     cdkExpect(stack).to(haveResource('AWS::EC2::Volume', {
@@ -739,7 +739,7 @@ nodeunitShim({
           ],
           Condition: {
             'ForAnyValue:StringEquals': {
-              'ec2:ResourceTag/VolumeGrantAttach-BD7A9717': 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+              'ec2:ResourceTag/VolumeGrantAttach-B2376B2BDA': 'b2376b2bda65cb40f83c290dd844c4aa',
             },
           },
         }],
@@ -748,8 +748,8 @@ nodeunitShim({
     cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
       Tags: [
         {
-          Key: 'VolumeGrantAttach-BD7A9717',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Key: 'VolumeGrantAttach-B2376B2BDA',
+          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
     }, ResourcePart.Properties));
@@ -757,8 +757,8 @@ nodeunitShim({
       Tags: [
         {},
         {
-          Key: 'VolumeGrantAttach-BD7A9717',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Key: 'VolumeGrantAttach-B2376B2BDA',
+          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
     }, ResourcePart.Properties));
@@ -816,7 +816,7 @@ nodeunitShim({
           ],
           Condition: {
             'ForAnyValue:StringEquals': {
-              'ec2:ResourceTag/VolumeGrantAttach-TestSuffix': 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+              'ec2:ResourceTag/VolumeGrantAttach-TestSuffix': 'b2376b2bda65cb40f83c290dd844c4aa',
             },
           },
         }],
@@ -826,7 +826,7 @@ nodeunitShim({
       Tags: [
         {
           Key: 'VolumeGrantAttach-TestSuffix',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
     }, ResourcePart.Properties));
@@ -835,11 +835,10 @@ nodeunitShim({
         {},
         {
           Key: 'VolumeGrantAttach-TestSuffix',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
     }, ResourcePart.Properties));
-
     test.done();
   },
 
@@ -1051,7 +1050,7 @@ nodeunitShim({
           ],
           Condition: {
             'ForAnyValue:StringEquals': {
-              'ec2:ResourceTag/VolumeGrantDetach-BD7A9717': 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+              'ec2:ResourceTag/VolumeGrantDetach-B2376B2BDA': 'b2376b2bda65cb40f83c290dd844c4aa',
             },
           },
         }],
@@ -1060,8 +1059,8 @@ nodeunitShim({
     cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
       Tags: [
         {
-          Key: 'VolumeGrantDetach-BD7A9717',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Key: 'VolumeGrantDetach-B2376B2BDA',
+          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
     }, ResourcePart.Properties));
@@ -1069,8 +1068,8 @@ nodeunitShim({
       Tags: [
         {},
         {
-          Key: 'VolumeGrantDetach-BD7A9717',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Key: 'VolumeGrantDetach-B2376B2BDA',
+          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
     }, ResourcePart.Properties));
@@ -1128,7 +1127,7 @@ nodeunitShim({
           ],
           Condition: {
             'ForAnyValue:StringEquals': {
-              'ec2:ResourceTag/VolumeGrantDetach-TestSuffix': 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+              'ec2:ResourceTag/VolumeGrantDetach-TestSuffix': 'b2376b2bda65cb40f83c290dd844c4aa',
             },
           },
         }],
@@ -1138,7 +1137,7 @@ nodeunitShim({
       Tags: [
         {
           Key: 'VolumeGrantDetach-TestSuffix',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
     }, ResourcePart.Properties));
@@ -1147,11 +1146,10 @@ nodeunitShim({
         {},
         {
           Key: 'VolumeGrantDetach-TestSuffix',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
     }, ResourcePart.Properties));
-
     test.done();
   },
 

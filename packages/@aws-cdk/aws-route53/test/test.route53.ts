@@ -86,7 +86,7 @@ export = {
     expect(stack2).to(haveResource('AWS::Route53::RecordSet', {
       HostedZoneId: 'hosted-zone-id',
       Name: 'lookHere.cdk.local.',
-      ResourceRecords: [ '"SeeThere"' ],
+      ResourceRecords: ['"SeeThere"'],
       Type: 'TXT',
     }));
 
@@ -128,7 +128,7 @@ export = {
     // WHEN
     const zone = new HostedZone(stack, 'MyHostedZone', {
       zoneName: 'zonename',
-      vpcs: [ vpc1, vpc2 ],
+      vpcs: [vpc1, vpc2],
     });
     zone.addVpc(vpc3);
 

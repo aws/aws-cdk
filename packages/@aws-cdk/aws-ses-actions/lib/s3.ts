@@ -73,7 +73,7 @@ export class S3 implements ses.IReceiptRuleAction {
     if (this.props.kmsKey && !/alias\/aws\/ses$/.test(this.props.kmsKey.keyArn)) {
       const kmsStatement = new iam.PolicyStatement({
         actions: ['km:Encrypt', 'kms:GenerateDataKey'],
-        principals: [ new iam.ServicePrincipal('ses.amazonaws.com')],
+        principals: [new iam.ServicePrincipal('ses.amazonaws.com')],
         resources: ['*'],
         conditions: {
           Null: {

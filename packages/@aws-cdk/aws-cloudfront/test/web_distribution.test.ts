@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -426,8 +426,7 @@ nodeunitShim({
     const stack = new cdk.Stack();
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
-    const lambdaFunction = new lambda.SingletonFunction(stack, 'Lambda', {
-      uuid: 'xxxx-xxxx-xxxx-xxxx',
+    const lambdaFunction = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.inline('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
@@ -444,7 +443,7 @@ nodeunitShim({
               isDefaultBehavior: true,
               lambdaFunctionAssociations: [{
                 eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
-                lambdaFunction: lambdaFunction.latestVersion,
+                lambdaFunction: lambdaFunction.addVersion('1'),
               }],
             },
           ],
@@ -459,19 +458,89 @@ nodeunitShim({
             {
               'EventType': 'origin-request',
               'LambdaFunctionARN': {
-                'Fn::Join': [
-                  '',
-                  [
-                    { 'Fn::GetAtt': [ 'SingletonLambdaxxxxxxxxxxxxxxxx69D4268A', 'Arn' ] },
-                    ':$LATEST',
-                  ],
-                ],
+                'Ref': 'LambdaVersion1BB7548E1',
               },
             },
           ],
         },
       },
     }));
+
+    test.done();
+  },
+
+  'associate a lambda with removable env vars'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    const lambdaFunction = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.inline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+    lambdaFunction.addEnvironment('KEY', 'value', { removeInEdge: true });
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket,
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+              lambdaFunctionAssociations: [{
+                eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+                lambdaFunction: lambdaFunction.addVersion('1'),
+              }],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Environment: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'throws when associating a lambda with incompatible env vars'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    const lambdaFunction = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.inline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      environment: {
+        KEY: 'value',
+      },
+    });
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket,
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+              lambdaFunctionAssociations: [{
+                eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+                lambdaFunction: lambdaFunction.addVersion('1'),
+              }],
+            },
+          ],
+        },
+      ],
+    });
+
+    test.throws(() => app.synth(), /KEY/);
 
     test.done();
   },
@@ -500,17 +569,17 @@ nodeunitShim({
     const s3BucketSource = new s3.Bucket(stack, 'Bucket');
 
     const originConfigs = [{
-      s3OriginSource: {s3BucketSource},
+      s3OriginSource: { s3BucketSource },
       behaviors: [{ isDefaultBehavior: true }],
     }];
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
       originConfigs,
-      aliasConfiguration: {acmCertRef: 'acm_ref', names: ['www.example.com']},
+      aliasConfiguration: { acmCertRef: 'acm_ref', names: ['www.example.com'] },
     });
     new CloudFrontWebDistribution(stack, 'AnotherAmazingWebsiteProbably', {
       originConfigs,
-      aliasConfiguration: {acmCertRef: 'another_acm_ref', names: ['ftp.example.com']},
+      aliasConfiguration: { acmCertRef: 'another_acm_ref', names: ['ftp.example.com'] },
     });
 
     expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
@@ -745,7 +814,7 @@ nodeunitShim({
               s3OriginSource: { s3BucketSource: sourceBucket },
               behaviors: [{ isDefaultBehavior: true }],
             }],
-            aliasConfiguration: {acmCertRef: 'test', names: ['ftp.example.com']},
+            aliasConfiguration: { acmCertRef: 'test', names: ['ftp.example.com'] },
             viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate('example.com', 'www.example.com'),
           });
         }, /You cannot set both aliasConfiguration and viewerCertificate properties/);
@@ -821,7 +890,8 @@ nodeunitShim({
           s3OriginSource: { s3BucketSource: sourceBucket },
           behaviors: [
             {
-              isDefaultBehavior: true, lambdaFunctionAssociations: [
+              isDefaultBehavior: true,
+              lambdaFunctionAssociations: [
                 {
                   eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
                   lambdaFunction: lambdaVersion,
@@ -871,7 +941,8 @@ nodeunitShim({
           s3OriginSource: { s3BucketSource: sourceBucket },
           behaviors: [
             {
-              isDefaultBehavior: true, lambdaFunctionAssociations: [
+              isDefaultBehavior: true,
+              lambdaFunctionAssociations: [
                 {
                   eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
                   lambdaFunction: lambdaVersion,
@@ -895,8 +966,8 @@ nodeunitShim({
 
         new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
           originConfigs: [{
-            s3OriginSource: {s3BucketSource: sourceBucket},
-            behaviors: [{isDefaultBehavior: true}],
+            s3OriginSource: { s3BucketSource: sourceBucket },
+            behaviors: [{ isDefaultBehavior: true }],
           }],
           geoRestriction: GeoRestriction.whitelist('US', 'UK'),
         });
@@ -944,7 +1015,7 @@ nodeunitShim({
                     'ViewerProtocolPolicy': 'redirect-to-https',
                     'ForwardedValues': {
                       'QueryString': false,
-                      'Cookies': {'Forward': 'none'},
+                      'Cookies': { 'Forward': 'none' },
                     },
                     'Compress': true,
                   },
@@ -971,8 +1042,8 @@ nodeunitShim({
 
         new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
           originConfigs: [{
-            s3OriginSource: {s3BucketSource: sourceBucket},
-            behaviors: [{isDefaultBehavior: true}],
+            s3OriginSource: { s3BucketSource: sourceBucket },
+            behaviors: [{ isDefaultBehavior: true }],
           }],
           geoRestriction: GeoRestriction.blacklist('US'),
         });
@@ -1020,7 +1091,7 @@ nodeunitShim({
                     'ViewerProtocolPolicy': 'redirect-to-https',
                     'ForwardedValues': {
                       'QueryString': false,
-                      'Cookies': {'Forward': 'none'},
+                      'Cookies': { 'Forward': 'none' },
                     },
                     'Compress': true,
                   },

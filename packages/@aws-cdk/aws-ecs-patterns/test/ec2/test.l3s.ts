@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { arrayWith, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -436,7 +436,7 @@ export = {
       Type: 'A',
       AliasTarget: {
         HostedZoneId: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'CanonicalHostedZoneID'] },
-        DNSName: { 'Fn::Join': ['', [ 'dualstack.', { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] } ] ] },
+        DNSName: { 'Fn::Join': ['', ['dualstack.', { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] }]] },
       },
     }));
 
@@ -500,7 +500,7 @@ export = {
       Type: 'A',
       AliasTarget: {
         HostedZoneId: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'CanonicalHostedZoneID'] },
-        DNSName: { 'Fn::Join': [ '', [ 'dualstack.', { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] } ] ] },
+        DNSName: { 'Fn::Join': ['', ['dualstack.', { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] }]] },
       },
     }));
 
@@ -904,8 +904,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
-    const cluster = new ecs.Cluster(stack, 'Cluster', {vpc, clusterName: 'MyCluster' });
-    cluster.addCapacity('Capacity', {instanceType: new ec2.InstanceType('t2.micro')});
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
+    cluster.addCapacity('Capacity', { instanceType: new ec2.InstanceType('t2.micro') });
     const nlb = new NetworkLoadBalancer(stack, 'NLB', { vpc });
     const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
     const container = taskDef.addContainer('Container', {
@@ -936,9 +936,9 @@ export = {
     const stack = new cdk.Stack();
     const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
     const vpc = new ec2.Vpc(stack, 'Vpc');
-    const cluster = new ecs.Cluster(stack, 'Cluster', {vpc, clusterName: 'MyCluster' });
-    cluster.addCapacity('Capacity', {instanceType: new ec2.InstanceType('t2.micro')});
-    const nlb  = NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
+    cluster.addCapacity('Capacity', { instanceType: new ec2.InstanceType('t2.micro') });
+    const nlb = NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
       loadBalancerArn: nlbArn,
       vpc,
     });
@@ -962,7 +962,7 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'EC2',
-      LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}],
+      LoadBalancers: [{ ContainerName: 'Container', ContainerPort: 80 }],
     }));
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
@@ -976,8 +976,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
-    const cluster = new ecs.Cluster(stack, 'Cluster', {vpc, clusterName: 'MyCluster' });
-    cluster.addCapacity('Capacity', {instanceType: new ec2.InstanceType('t2.micro')});
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
+    cluster.addCapacity('Capacity', { instanceType: new ec2.InstanceType('t2.micro') });
     const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
     const alb = new ApplicationLoadBalancer(stack, 'NLB', {
       vpc,
@@ -1012,8 +1012,8 @@ export = {
     const stack = new cdk.Stack();
     const albArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
     const vpc = new ec2.Vpc(stack, 'Vpc');
-    const cluster = new ecs.Cluster(stack, 'Cluster', {vpc, clusterName: 'MyCluster' });
-    cluster.addCapacity('Capacity', {instanceType: new ec2.InstanceType('t2.micro')});
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
+    cluster.addCapacity('Capacity', { instanceType: new ec2.InstanceType('t2.micro') });
     const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
     const alb = ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
       loadBalancerArn: albArn,
@@ -1038,12 +1038,66 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'EC2',
-      LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}],
+      LoadBalancers: [{ ContainerName: 'Container', ContainerPort: 80 }],
     }));
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
       LoadBalancerArn: alb.loadBalancerArn,
       Port: 80,
+    }));
+
+    test.done();
+  },
+
+  'test ECS loadbalanced construct default/open security group'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryReservationMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    // THEN - Stack contains no ingress security group rules
+    expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [{
+        CidrIp: '0.0.0.0/0',
+        FromPort: 80,
+        IpProtocol: 'tcp',
+        ToPort: 80,
+      }],
+    }));
+
+    test.done();
+  },
+
+  'test ECS loadbalanced construct closed security group'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryReservationMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      openListener: false,
+    });
+
+    // THEN - Stack contains no ingress security group rules
+    expect(stack).notTo(haveResourceLike('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: arrayWith(objectLike({})),
     }));
 
     test.done();

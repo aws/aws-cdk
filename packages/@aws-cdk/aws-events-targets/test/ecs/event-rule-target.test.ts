@@ -2,6 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
 
@@ -335,10 +336,10 @@ test('uses multiple security groups', () => {
             AwsVpcConfiguration: {
               AssignPublicIp: 'DISABLED',
               SecurityGroups: [
-                { 'Fn::GetAtt': ['SecurityGroupAED40ADC5', 'GroupId']},
-                {'Fn::GetAtt': ['SecurityGroupB04591F90', 'GroupId']},
+                { 'Fn::GetAtt': ['SecurityGroupAED40ADC5', 'GroupId'] },
+                { 'Fn::GetAtt': ['SecurityGroupB04591F90', 'GroupId'] },
               ],
-              Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A'}],
+              Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }],
             },
           },
           TaskCount: 1,
@@ -349,6 +350,55 @@ test('uses multiple security groups', () => {
         Id: 'Target0',
         Input: '{"containerOverrides":[{"name":"TheContainer","command":["echo","yay"]}]}',
         RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+      },
+    ],
+  });
+});
+
+test('uses existing IAM role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const role = new iam.Role(stack, 'CustomIamRole', {
+    assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+  });
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    role,
+  }));
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          LaunchType: 'FARGATE',
+          TaskCount: 1,
+          TaskDefinitionArn: {
+            Ref: 'TaskDef54694570',
+          },
+        },
+        RoleArn: { 'Fn::GetAtt': ['CustomIamRoleE653F2D1', 'Arn'] },
+        Id: 'Target0',
       },
     ],
   });

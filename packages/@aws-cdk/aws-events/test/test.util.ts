@@ -5,32 +5,32 @@ export = {
   mergeEventPattern: {
     'happy case'(test: Test) {
       test.deepEqual(mergeEventPattern({
-        bar: [ 1, 2 ],
-        hey: [ 'happy' ],
+        bar: [1, 2],
+        hey: ['happy'],
         hello: {
-          world: [ 'hi', 'dude' ],
-          case: [ 1 ],
+          world: ['hi', 'dude'],
+          case: [1],
         },
       }, {
-        hey: [ 'day', 'today' ],
+        hey: ['day', 'today'],
         hello: {
-          world: [ 'you' ],
+          world: ['you'],
         },
       }), {
-        bar: [ 1, 2 ],
-        hey: [ 'happy', 'day', 'today' ],
+        bar: [1, 2],
+        hey: ['happy', 'day', 'today'],
         hello: {
-          world: [ 'hi', 'dude', 'you' ],
-          case: [ 1 ],
+          world: ['hi', 'dude', 'you'],
+          case: [1],
         },
       });
       test.done();
     },
 
     'merge into an empty destination'(test: Test) {
-      test.deepEqual(mergeEventPattern(undefined, { foo: [ '123' ] }), { foo: [ 123 ] });
-      test.deepEqual(mergeEventPattern(undefined, { foo: { bar: [ '123' ] } }), { foo: { bar: [ 123 ] } });
-      test.deepEqual(mergeEventPattern({ }, { foo: { bar: [ '123' ] } }), { foo: { bar: [ 123 ] } });
+      test.deepEqual(mergeEventPattern(undefined, { foo: ['123'] }), { foo: [123] });
+      test.deepEqual(mergeEventPattern(undefined, { foo: { bar: ['123'] } }), { foo: { bar: [123] } });
+      test.deepEqual(mergeEventPattern({ }, { foo: { bar: ['123'] } }), { foo: { bar: [123] } });
       test.done();
     },
 
@@ -44,12 +44,12 @@ export = {
     'fails if mismatch between dest and src'(test: Test) {
       test.throws(() => mergeEventPattern({
         obj: {
-          array: [ 1 ],
+          array: [1],
         },
       }, {
         obj: {
           array: {
-            value: [ 'hello' ],
+            value: ['hello'],
           },
         },
       }), /Invalid event pattern field array. Type mismatch between existing pattern \[1\] and added pattern \{"value":\["hello"\]\}/);

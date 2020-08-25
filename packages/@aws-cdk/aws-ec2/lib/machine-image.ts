@@ -126,7 +126,7 @@ export interface WindowsImageProps {
  *
  * https://aws.amazon.com/blogs/mt/query-for-the-latest-windows-ami-using-systems-manager-parameter-store/
  */
-export class WindowsImage implements IMachineImage  {
+export class WindowsImage implements IMachineImage {
   constructor(private readonly version: WindowsVersion, private readonly props: WindowsImageProps = {}) {
   }
 
@@ -149,6 +149,21 @@ export class WindowsImage implements IMachineImage  {
   private imageParameterName(): string {
     return '/aws/service/ami-windows-latest/' + this.version;
   }
+}
+
+/**
+ * CPU type
+ */
+export enum AmazonLinuxCpuType {
+  /**
+   * arm64 CPU type
+   */
+  ARM_64 = 'arm64',
+
+  /**
+   * x86_64 CPU type
+   */
+  X86_64 = 'x86_64',
 }
 
 /**
@@ -189,6 +204,13 @@ export interface AmazonLinuxImageProps {
    * @default - Empty UserData for Linux machines
    */
   readonly userData?: UserData;
+
+  /**
+   * CPU Type
+   *
+   * @default X86_64
+   */
+  readonly cpuType?: AmazonLinuxCpuType;
 }
 
 /**
@@ -206,12 +228,14 @@ export class AmazonLinuxImage implements IMachineImage {
   private readonly edition: AmazonLinuxEdition;
   private readonly virtualization: AmazonLinuxVirt;
   private readonly storage: AmazonLinuxStorage;
+  private readonly cpu: AmazonLinuxCpuType;
 
   constructor(private readonly props: AmazonLinuxImageProps = {}) {
     this.generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
     this.edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
     this.virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
     this.storage = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
+    this.cpu = (props && props.cpuType) || AmazonLinuxCpuType.X86_64;
   }
 
   /**
@@ -223,7 +247,7 @@ export class AmazonLinuxImage implements IMachineImage {
       'ami',
       this.edition !== AmazonLinuxEdition.STANDARD ? this.edition : undefined,
       this.virtualization,
-      'x86_64', // No 32-bits images vended through this
+      this.cpu,
       this.storage,
     ].filter(x => x !== undefined); // Get rid of undefineds
 
@@ -330,7 +354,7 @@ export interface GenericWindowsImageProps {
  * Linux images IDs are not published to SSM parameter store yet, so you'll have to
  * manually specify an AMI map.
  */
-export class GenericLinuxImage implements IMachineImage  {
+export class GenericLinuxImage implements IMachineImage {
   constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericLinuxImageProps = {}) {
   }
 
@@ -358,7 +382,7 @@ export class GenericLinuxImage implements IMachineImage  {
  *
  * Allows you to create a generic Windows EC2 , manually specify an AMI map.
  */
-export class GenericWindowsImage implements IMachineImage  {
+export class GenericWindowsImage implements IMachineImage {
   constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericWindowsImageProps = {}) {
   }
 
@@ -387,6 +411,11 @@ export class GenericWindowsImage implements IMachineImage  {
 export enum OperatingSystemType {
   LINUX,
   WINDOWS,
+  /**
+   * Used when the type of the operating system is not known
+   * (for example, for imported Auto-Scaling Groups).
+   */
+  UNKNOWN,
 }
 
 /**

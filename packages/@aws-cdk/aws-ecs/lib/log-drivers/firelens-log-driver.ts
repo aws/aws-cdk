@@ -42,7 +42,7 @@ export class FireLensLogDriver extends LogDriver {
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: 'awsfirelens',
-      ...(this.options && {options: removeEmpty(this.options)}),
+      ...(this.options && { options: removeEmpty(this.options) }),
     };
   }
 }

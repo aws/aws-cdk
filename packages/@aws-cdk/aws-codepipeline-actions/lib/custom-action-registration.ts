@@ -129,11 +129,13 @@ export class CustomActionRegistration extends cdk.Construct {
         entityUrlTemplate: props.entityUrl,
         executionUrlTemplate: props.executionUrl,
       },
-      configurationProperties: props.actionProperties === undefined ? undefined : props.actionProperties.map((ap) => { return {
-        key: ap.key || false,
-        secret: ap.secret || false,
-        ...ap,
-      }; }),
+      configurationProperties: props.actionProperties === undefined ? undefined : props.actionProperties.map((ap) => {
+        return {
+          key: ap.key || false,
+          secret: ap.secret || false,
+          ...ap,
+        };
+      }),
     });
   }
 }

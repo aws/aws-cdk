@@ -138,6 +138,9 @@ function validateAttributes(
       const resolvedType = specification.PropertyTypes && specification.PropertyTypes[fqn];
       test.ok(resolvedType, `${typeName}.Attributes.${name} ItemType (${fqn}) resolves`);
       test.ok(!('PrimitiveItemType' in attribute), `${typeName}.Attributes.${name} has no PrimitiveItemType`);
+    } else if (schema.isPrimitiveMapAttribute(attribute)) {
+      test.ok(schema.isPrimitiveType(attribute.PrimitiveItemType), `${typeName}.Attributes.${name} has a valid PrimitiveItemType`);
+      test.ok(!('ItemType' in attribute), `${typeName}.Attributes.${name} has no ItemType`);
     } else {
       test.ok(false, `${typeName}.Attributes.${name} has a valid type`);
     }

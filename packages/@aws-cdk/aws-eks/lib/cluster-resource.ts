@@ -2,7 +2,26 @@ import * as iam from '@aws-cdk/aws-iam';
 import { ArnComponents, Construct, CustomResource, Lazy, Stack, Token } from '@aws-cdk/core';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
-import { CfnClusterProps } from './eks.generated';
+import { CfnClusterProps, CfnCluster } from './eks.generated';
+
+export interface ClusterResourceProps extends CfnClusterProps {
+
+  /**
+   * Enable private endpoint access to the cluster.
+   */
+  readonly endpointPrivateAccess: boolean;
+
+  /**
+   * Enable public endpoint access to the cluster.
+   */
+  readonly endpointPublicAccess: boolean;
+
+  /**
+   * Limit public address with CIDR blocks.
+   */
+  readonly publicAccessCidrs?: string[];
+
+}
 
 /**
  * A low-level CFN resource Amazon EKS cluster implemented through a custom
@@ -32,7 +51,7 @@ export class ClusterResource extends Construct {
 
   private readonly trustedPrincipals: string[] = [];
 
-  constructor(scope: Construct, id: string, props: CfnClusterProps) {
+  constructor(scope: Construct, id: string, props: ClusterResourceProps) {
     super(scope, id);
 
     const stack = Stack.of(this);
@@ -51,8 +70,8 @@ export class ClusterResource extends Construct {
     // the CreateCluster API will allow the cluster to assume this role, so we
     // need to allow the lambda execution role to pass it.
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'iam:PassRole' ],
-      resources: [ props.roleArn ],
+      actions: ['iam:PassRole'],
+      resources: [props.roleArn],
     }));
 
     // if we know the cluster name, restrict the policy to only allow
@@ -64,8 +83,8 @@ export class ClusterResource extends Construct {
       produce: () => {
         const arn = stack.formatArn(clusterArnComponents(stack.resolve(props.name)));
         return stack.resolve(props.name)
-          ? [ arn, `${arn}/*` ] // see https://github.com/aws/aws-cdk/issues/6060
-          : [ '*' ];
+          ? [arn, `${arn}/*`] // see https://github.com/aws/aws-cdk/issues/6060
+          : ['*'];
       },
     });
 
@@ -80,7 +99,7 @@ export class ClusterResource extends Construct {
         'ec2:DescribeSubnets',
         'ec2:DescribeRouteTables',
       ],
-      resources: [ '*' ],
+      resources: ['*'],
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
@@ -99,25 +118,39 @@ export class ClusterResource extends Construct {
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'eks:DescribeFargateProfile', 'eks:DeleteFargateProfile' ],
-      resources: [ fargateProfileResourceArn ],
+      actions: ['eks:DescribeFargateProfile', 'eks:DeleteFargateProfile'],
+      resources: [fargateProfileResourceArn],
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'iam:GetRole', 'iam:listAttachedRolePolicies' ],
-      resources: [ '*' ],
+      actions: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
+      resources: ['*'],
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'iam:CreateServiceLinkedRole' ],
-      resources: [ '*' ],
+      actions: ['iam:CreateServiceLinkedRole'],
+      resources: ['*'],
     }));
 
     const resource = new CustomResource(this, 'Resource', {
       resourceType: CLUSTER_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
-        Config: props,
+        // the structure of config needs to be that of 'aws.EKS.CreateClusterRequest' since its passed as is
+        // to the eks.createCluster sdk invocation.
+        Config: {
+          name: props.name,
+          version: props.version,
+          roleArn: props.roleArn,
+          encryptionConfig: props.encryptionConfig,
+          resourcesVpcConfig: {
+            subnetIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).subnetIds,
+            securityGroupIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).securityGroupIds,
+            endpointPublicAccess: props.endpointPublicAccess,
+            endpointPrivateAccess: props.endpointPrivateAccess,
+            publicAccessCidrs: props.publicAccessCidrs,
+          },
+        },
         AssumeRoleArn: this.creationRole.roleArn,
 
         // IMPORTANT: increment this number when you add new attributes to the
@@ -154,8 +187,8 @@ export class ClusterResource extends Construct {
     }
 
     this.creationRole.assumeRolePolicy.addStatements(new iam.PolicyStatement({
-      actions: [ 'sts:AssumeRole' ],
-      principals: [ new iam.ArnPrincipal(trustedRole.roleArn) ],
+      actions: ['sts:AssumeRole'],
+      principals: [new iam.ArnPrincipal(trustedRole.roleArn)],
     }));
 
     this.trustedPrincipals.push(trustedRole.roleArn);

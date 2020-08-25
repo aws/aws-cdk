@@ -32,11 +32,11 @@ export = {
       expect(this.stack).to(haveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
-            {'Fn::GetAtt': [ 'LambdaSecurityGroupE74659A1', 'GroupId' ]},
+            { 'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId'] },
           ],
           SubnetIds: [
-            {Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'},
-            {Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'},
+            { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+            { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
           ],
         },
       }));
@@ -57,11 +57,11 @@ export = {
       expect(this.stack).to(haveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
-            {'Fn::GetAtt': [ 'CustomSecurityGroupX6C7F3A78', 'GroupId' ]},
+            { 'Fn::GetAtt': ['CustomSecurityGroupX6C7F3A78', 'GroupId'] },
           ],
           SubnetIds: [
-            {Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'},
-            {Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'},
+            { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+            { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
           ],
         },
       }));
@@ -85,12 +85,12 @@ export = {
       expect(this.stack).to(haveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
-            {'Fn::GetAtt': [ 'CustomSecurityGroupA267F62DE', 'GroupId' ]},
-            {'Fn::GetAtt': [ 'CustomSecurityGroupB1118D0D5', 'GroupId' ]},
+            { 'Fn::GetAtt': ['CustomSecurityGroupA267F62DE', 'GroupId'] },
+            { 'Fn::GetAtt': ['CustomSecurityGroupB1118D0D5', 'GroupId'] },
           ],
           SubnetIds: [
-            {Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'},
-            {Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'},
+            { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+            { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
           ],
         },
       }));
@@ -127,10 +127,10 @@ export = {
 
       // THEN: Lambda can connect to SomeSecurityGroup
       expect(this.stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
-        GroupId: {'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId']},
+        GroupId: { 'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId'] },
         IpProtocol: 'tcp',
         Description: 'Lambda can call connectable',
-        DestinationSecurityGroupId: {'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ]},
+        DestinationSecurityGroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
         FromPort: 0,
         ToPort: 65535,
       }));
@@ -141,7 +141,7 @@ export = {
         Description: 'Lambda can call connectable',
         FromPort: 0,
         GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
-        SourceSecurityGroupId: {'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId' ]},
+        SourceSecurityGroupId: { 'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId'] },
         ToPort: 65535,
       }));
 
@@ -212,22 +212,133 @@ export = {
     test.done();
   },
 
-  'picking public subnets is not allowed'(test: Test) {
+  'can pick public subnet for Lambda'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
+    new lambda.Function(stack, 'PublicLambda', {
+      allowPublicSubnet: true,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      VpcConfig: {
+        SecurityGroupIds: [
+          { 'Fn::GetAtt': ['PublicLambdaSecurityGroup61D896FD', 'GroupId'] },
+        ],
+        SubnetIds: [
+          { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+          { Ref: 'VPCPublicSubnet2Subnet74179F39' },
+        ],
+      },
+    }));
+    test.done();
+  },
+
+  'can pick private subnet for Lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new lambda.Function(stack, 'PrivateLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+    });
+
+    // THEN
+
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      VpcConfig: {
+        SecurityGroupIds: [
+          { 'Fn::GetAtt': ['PrivateLambdaSecurityGroupF53C8342', 'GroupId'] },
+        ],
+        SubnetIds: [
+          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+        ],
+      },
+    }));
+    test.done();
+  },
+
+  'can pick isolated subnet for Lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', {
+      subnetConfiguration: [
+        {
+          name: 'Isolated',
+          subnetType: ec2.SubnetType.ISOLATED,
+        },
+      ],
+    });
+
+    // WHEN
+    new lambda.Function(stack, 'IsolatedLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+    });
+
+    // THEN
+
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      VpcConfig: {
+        SecurityGroupIds: [
+          { 'Fn::GetAtt': ['IsolatedLambdaSecurityGroupCE25B6A9', 'GroupId'] },
+        ],
+        SubnetIds: [
+          { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
+          { Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA' },
+        ],
+      },
+    }));
+    test.done();
+  },
+
+  'picking public subnet type is not allowed if not overriding allowPublicSubnet'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', {
+      subnetConfiguration: [
+        {
+          name: 'Public',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          name: 'Private',
+          subnetType: ec2.SubnetType.PRIVATE,
+        },
+        {
+          name: 'Isolated',
+          subnetType: ec2.SubnetType.ISOLATED,
+        },
+      ],
+    });
+
+    // WHEN
     test.throws(() => {
-      new lambda.Function(stack, 'Lambda', {
+      new lambda.Function(stack, 'PublicLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_10_X,
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
-    });
-
+    }, /Lambda Functions in a public subnet/);
     test.done();
   },
 };

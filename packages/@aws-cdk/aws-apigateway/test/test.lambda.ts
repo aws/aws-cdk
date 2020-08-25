@@ -273,7 +273,7 @@ export = {
 
     // the deployment token should be defined since the function name
     // should be a literal string.
-    test.equal(bindResult?.deploymentToken, JSON.stringify({functionName: 'myfunc'}));
+    test.equal(bindResult?.deploymentToken, JSON.stringify({ functionName: 'myfunc' }));
 
     test.done();
   },

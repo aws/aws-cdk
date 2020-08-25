@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import { HttpApi, HttpRoute, HttpRouteKey, LambdaProxyIntegration, PayloadFormatVersion } from '../../../lib';
 
 describe('LambdaProxyIntegration', () => {
@@ -38,6 +38,21 @@ describe('LambdaProxyIntegration', () => {
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
       PayloadFormatVersion: '1.0',
     });
+  });
+
+  test('no dependency cycles', () => {
+    const app = new App();
+    const lambdaStack = new Stack(app, 'lambdaStack');
+    const fooFn = fooFunction(lambdaStack, 'Fn');
+
+    const apigwStack = new Stack(app, 'apigwStack');
+    new HttpApi(apigwStack, 'httpApi', {
+      defaultIntegration: new LambdaProxyIntegration({
+        handler: fooFn,
+      }),
+    });
+
+    expect(() => app.synth()).not.toThrow();
   });
 });
 

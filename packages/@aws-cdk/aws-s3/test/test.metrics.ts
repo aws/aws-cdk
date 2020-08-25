@@ -55,7 +55,7 @@ export = {
     new Bucket(stack, 'Bucket', {
       metrics: [{
         id: 'test',
-        tagFilters: {tagname1: 'tagvalue1', tagname2: 'tagvalue2'},
+        tagFilters: { tagname1: 'tagvalue1', tagname2: 'tagvalue2' },
       }],
     });
 
@@ -82,7 +82,7 @@ export = {
       metrics: [
         {
           id: 'test',
-          tagFilters: {tagname1: 'tagvalue1', tagname2: 'tagvalue2'},
+          tagFilters: { tagname1: 'tagvalue1', tagname2: 'tagvalue2' },
 
         },
         {

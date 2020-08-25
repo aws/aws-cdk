@@ -146,6 +146,24 @@ cluster.addCapacity('AsgSpot', {
 });
 ```
 
+### SNS Topic Encryption
+
+When the `ecs.AddCapacityOptions` that you provide has a non-zero `taskDrainTime` (the default) then an SNS topic and Lambda are created to ensure that the
+cluster's instances have been properly drained of tasks before terminating. The SNS Topic is sent the instance-terminating lifecycle event from the AutoScalingGroup,
+and the Lambda acts on that event. If you wish to engage [server-side encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-data-encryption.html) for this SNS Topic
+then you may do so by providing a KMS key for the `topicEncryptionKey` propery of `ecs.AddCapacityOptions`.
+
+```ts
+// Given
+const key = kms.Key(...);
+// Then, use that key to encrypt the lifecycle-event SNS Topic.
+cluster.addCapacity('ASGEncryptedSNS', {
+  instanceType: new ec2.InstanceType("t2.xlarge"),
+  desiredCapacity: 3,
+  topicEncryptionKey: key,
+});
+```
+
 ## Task definitions
 
 A task Definition describes what a single copy of a **task** should look like.
@@ -198,6 +216,21 @@ You can specify container properties when you add them to the task definition, o
 container.addPortMappings({
   containerPort: 3000
 })
+```
+
+To add data volumes to a task definition, call `addVolume()`:
+
+```ts
+const volume = ecs.Volume("Volume", {
+  // Use an Elastic FileSystem
+  name: "mydatavolume",
+  efsVolumeConfiguration: ecs.EfsVolumeConfiguration({
+    fileSystemId: "EFS"
+    // ... other options here ...
+  })
+});
+
+const container = fargateTaskDefinition.addVolume("mydatavolume");
 ```
 
 To use a TaskDefinition that can be used with either Amazon EC2 or

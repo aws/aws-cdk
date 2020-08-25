@@ -5,16 +5,14 @@ import { cloudFormation, deleteBucket, deleteImageRepository, deleteStacks, empt
 
 export const INTEG_TEST_DIR = path.join(os.tmpdir(), 'cdk-integ-test2');
 
-export const STACK_NAME_PREFIX = process.env.STACK_NAME_PREFIX || (() => {
-  // Make the stack names unique based on the codebuild project name
-  // (if it exists). This prevents multiple codebuild projects stomping
-  // on each other's stacks and failing them.
-  //
-  // The get codebuild project name from the ID: PROJECT_NAME:1238a83
-  if (process.env.CODEBUILD_BUILD_ID) { return process.env.CODEBUILD_BUILD_ID.split(':')[0]; }
-  if (process.env.IS_CANARY === 'true') { return 'cdk-toolkit-canary'; }
-  return 'cdk-toolkit-integration';
-})();
+// create a unique stack name prefix for this test test run. this is passed
+// through an environment variable to app.js so that all stacks use this prefix.
+const timestamp = new Date().toISOString().replace(/[^0-9]/g, '');
+export const STACK_NAME_PREFIX = `cdktest-${timestamp}`;
+
+process.stdout.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
+process.stdout.write(` All stacks created by this test run will have the prefix: ${STACK_NAME_PREFIX}\n`);
+process.stdout.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
 
 export interface ShellOptions extends child_process.SpawnOptions {
   /**
@@ -182,14 +180,14 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
   log(`💻 ${command.join(' ')}`);
 
-  const env = options.env ?? (options.modEnv ? {...process.env, ...options.modEnv} : undefined);
+  const env = options.env ?? (options.modEnv ? { ...process.env, ...options.modEnv } : undefined);
 
   const child = child_process.spawn(command[0], command.slice(1), {
     ...options,
     env,
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
-    stdio: [ 'ignore', 'pipe', 'pipe' ],
+    stdio: ['ignore', 'pipe', 'pipe'],
   });
 
   return new Promise<string>((resolve, reject) => {

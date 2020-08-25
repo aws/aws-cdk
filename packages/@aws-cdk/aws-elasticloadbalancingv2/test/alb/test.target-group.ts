@@ -59,7 +59,7 @@ export = {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
-    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', {vpc});
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
     const listener = new elbv2.ApplicationListener(stack, 'Listener', {
       port: 80,
       loadBalancer: alb,

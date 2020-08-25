@@ -1,8 +1,8 @@
+import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
@@ -291,6 +291,20 @@ export interface BucketAttributes {
    * @default false
    */
   readonly isWebsite?: boolean;
+
+  /**
+   * The account this existing bucket belongs to.
+   *
+   * @default - it's assumed the bucket belongs to the same account as the scope it's being imported into
+   */
+  readonly account?: string;
+
+  /**
+   * The region this existing bucket is in.
+   *
+   * @default - it's assumed the bucket is in the same region as the scope it's being imported into
+   */
+  readonly region?: string;
 }
 
 /**
@@ -421,7 +435,7 @@ abstract class BucketBase extends Resource implements IBucket {
           'PutObject',
         ],
         requestParameters: {
-          bucketName: [ this.bucketName ],
+          bucketName: [this.bucketName],
           key: options.paths,
         },
       },
@@ -446,6 +460,12 @@ abstract class BucketBase extends Resource implements IBucket {
     }
 
     return { statementAdded: false };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
   }
 
   /**
@@ -592,7 +612,7 @@ abstract class BucketBase extends Resource implements IBucket {
       throw new Error("Cannot grant public access when 'blockPublicPolicy' is enabled");
     }
 
-    allowedActions = allowedActions.length > 0 ? allowedActions : [ 's3:GetObject' ];
+    allowedActions = allowedActions.length > 0 ? allowedActions : ['s3:GetObject'];
 
     return iam.Grant.addToPrincipalOrResource({
       actions: allowedActions,
@@ -625,42 +645,20 @@ abstract class BucketBase extends Resource implements IBucket {
     bucketActions: string[],
     keyActions: string[],
     resourceArn: string, ...otherResourceArns: string[]) {
-    const resources = [ resourceArn, ...otherResourceArns ];
+    const resources = [resourceArn, ...otherResourceArns];
 
-    const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
-    let ret: iam.Grant;
-    if (crossAccountAccess) {
-      // if the access is cross-account, we need to trust the accessing principal in the bucket's policy
-      ret = iam.Grant.addToPrincipalAndResource({
-        grantee,
-        actions: bucketActions,
-        resourceArns: resources,
-        resource: this,
-      });
-    } else {
-      // if not, we don't need to modify the resource policy if the grantee is an identity principal
-      ret = iam.Grant.addToPrincipalOrResource({
-        grantee,
-        actions: bucketActions,
-        resourceArns: resources,
-        resource: this,
-      });
-    }
+    const ret = iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: bucketActions,
+      resourceArns: resources,
+      resource: this,
+    });
 
     if (this.encryptionKey && keyActions && keyActions.length !== 0) {
       this.encryptionKey.grant(grantee, ...keyActions);
     }
 
     return ret;
-  }
-
-  private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!(Construct.isConstruct(grantee))) {
-      return false;
-    }
-    const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee);
-    return bucketStack.account !== identityStack.account;
   }
 }
 
@@ -828,6 +826,130 @@ export interface RedirectTarget {
   readonly protocol?: RedirectProtocol;
 }
 
+/**
+ * All supported inventory list formats.
+ */
+export enum InventoryFormat {
+  /**
+   * Generate the inventory list as CSV.
+   */
+  CSV = 'CSV',
+  /**
+   * Generate the inventory list as Parquet.
+   */
+  PARQUET = 'Parquet',
+  /**
+   * Generate the inventory list as Parquet.
+   */
+  ORC = 'ORC',
+}
+
+/**
+ * All supported inventory frequencies.
+ */
+export enum InventoryFrequency {
+  /**
+   * A report is generated every day.
+   */
+  DAILY = 'Daily',
+  /**
+   * A report is generated every Sunday (UTC timezone) after the initial report.
+   */
+  WEEKLY = 'Weekly'
+}
+
+/**
+ * Inventory version support.
+ */
+export enum InventoryObjectVersion {
+  /**
+   * Includes all versions of each object in the report.
+   */
+  ALL = 'All',
+  /**
+   * Includes only the current version of each object in the report.
+   */
+  CURRENT = 'Current',
+}
+
+/**
+ * The destination of the inventory.
+ */
+export interface InventoryDestination {
+  /**
+   * Bucket where all inventories will be saved in.
+   */
+  readonly bucket: IBucket;
+  /**
+   * The prefix to be used when saving the inventory.
+   *
+   * @default - No prefix.
+   */
+  readonly prefix?: string;
+  /**
+   * The account ID that owns the destination S3 bucket.
+   * If no account ID is provided, the owner is not validated before exporting data.
+   * It's recommended to set an account ID to prevent problems if the destination bucket ownership changes.
+   *
+   * @default - No account ID.
+   */
+  readonly bucketOwner?: string;
+}
+
+/**
+ * Specifies the inventory configuration of an S3 Bucket.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
+ */
+export interface Inventory {
+  /**
+   * The destination of the inventory.
+   */
+  readonly destination: InventoryDestination;
+  /**
+   * The inventory will only include objects that meet the prefix filter criteria.
+   *
+   * @default - No objects prefix
+   */
+  readonly objectsPrefix?: string;
+  /**
+   * The format of the inventory.
+   *
+   * @default InventoryFormat.CSV
+   */
+  readonly format?: InventoryFormat;
+  /**
+   * Whether the inventory is enabled or disabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+  /**
+   * The inventory configuration ID.
+   *
+   * @default - generated ID.
+   */
+  readonly inventoryId?: string;
+  /**
+   * Frequency at which the inventory should be generated.
+   *
+   * @default InventoryFrequency.WEEKLY
+   */
+  readonly frequency?: InventoryFrequency;
+  /**
+   * If the inventory should contain all the object versions or only the current one.
+   *
+   * @default InventoryObjectVersion.ALL
+   */
+  readonly includeObjectVersions?: InventoryObjectVersion;
+  /**
+   * A list of optional fields to be included in the inventory result.
+   *
+   * @default - No optional fields.
+   */
+  readonly optionalFields?: string[];
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -966,6 +1088,15 @@ export interface BucketProps {
    * @default - No log file prefix
    */
   readonly serverAccessLogsPrefix?: string;
+
+  /**
+   * The inventory configuration of the bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
+   *
+   * @default - No inventory configuration
+   */
+  readonly inventories?: Inventory[];
 }
 
 /**
@@ -994,7 +1125,7 @@ export class Bucket extends BucketBase {
    */
   public static fromBucketAttributes(scope: Construct, id: string, attrs: BucketAttributes): IBucket {
     const stack = Stack.of(scope);
-    const region = stack.region;
+    const region = attrs.region ?? stack.region;
     const urlSuffix = stack.urlSuffix;
 
     const bucketName = parseBucketName(scope, attrs);
@@ -1033,7 +1164,10 @@ export class Bucket extends BucketBase {
       }
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      account: attrs.account,
+      region: attrs.region,
+    });
   }
 
   public readonly bucketArn: string;
@@ -1055,6 +1189,7 @@ export class Bucket extends BucketBase {
   private readonly notifications: BucketNotifications;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
+  private readonly inventories: Inventory[] = [];
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -1079,6 +1214,7 @@ export class Bucket extends BucketBase {
       corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
       accessControl: Lazy.stringValue({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
+      inventoryConfigurations: Lazy.anyValue({ produce: () => this.parseInventoryConfiguration() }),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -1105,6 +1241,10 @@ export class Bucket extends BucketBase {
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery();
+    }
+
+    for (const inventory of props.inventories ?? []) {
+      this.addInventory(inventory);
     }
 
     // Add all bucket metric configurations rules
@@ -1202,6 +1342,15 @@ export class Bucket extends BucketBase {
    */
   public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
+  }
+
+  /**
+   * Add an inventory configuration.
+   *
+   * @param inventory configuration to add
+   */
+  public addInventory(inventory: Inventory): void {
+    this.inventories.push(inventory);
   }
 
   private validateBucketName(physicalName: string): void {
@@ -1422,7 +1571,7 @@ export class Bucket extends BucketBase {
       throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
     }
 
-    const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
+    const routingRules = props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
       if (rule.condition && !rule.condition.httpErrorCodeReturnedEquals && !rule.condition.keyPrefixEquals) {
         throw new Error('The condition property cannot be an empty object');
       }
@@ -1459,6 +1608,50 @@ export class Bucket extends BucketBase {
     }
 
     this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
+  }
+
+  private parseInventoryConfiguration(): CfnBucket.InventoryConfigurationProperty[] | undefined {
+    if (!this.inventories || this.inventories.length === 0) {
+      return undefined;
+    }
+
+    return this.inventories.map((inventory, index) => {
+      const format = inventory.format ?? InventoryFormat.CSV;
+      const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
+      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`;
+
+      if (inventory.destination.bucket instanceof Bucket) {
+        inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['s3:PutObject'],
+          resources: [
+            inventory.destination.bucket.bucketArn,
+            inventory.destination.bucket.arnForObjects(`${inventory.destination.prefix ?? ''}*`),
+          ],
+          principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+          conditions: {
+            ArnLike: {
+              'aws:SourceArn': this.bucketArn,
+            },
+          },
+        }));
+      }
+
+      return {
+        id,
+        destination: {
+          bucketArn: inventory.destination.bucket.bucketArn,
+          bucketAccountId: inventory.destination.bucketOwner,
+          prefix: inventory.destination.prefix,
+          format,
+        },
+        enabled: inventory.enabled ?? true,
+        includedObjectVersions: inventory.includeObjectVersions ?? InventoryObjectVersion.ALL,
+        scheduleFrequency: frequency,
+        optionalFields: inventory.optionalFields,
+        prefix: inventory.objectsPrefix,
+      };
+    });
   }
 }
 

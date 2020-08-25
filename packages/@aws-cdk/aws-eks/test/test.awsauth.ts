@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import { Test } from 'nodeunit';
-import { Cluster, KubernetesResource, KubernetesVersion } from '../lib';
+import { Cluster, KubernetesManifest, KubernetesVersion } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
 import { testFixtureNoVpc } from './util';
 
@@ -19,7 +19,7 @@ export = {
     new AwsAuth(stack, 'AwsAuth', { cluster });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: JSON.stringify([{
         apiVersion: 'v1',
         kind: 'ConfigMap',
@@ -46,13 +46,27 @@ export = {
     cluster.awsAuth.addAccount('5566776655');
 
     // THEN
-    expect(stack).to(countResources(KubernetesResource.RESOURCE_TYPE, 1));
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(countResources(KubernetesManifest.RESOURCE_TYPE, 1));
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
           [
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
@@ -122,7 +136,7 @@ export = {
     cluster.awsAuth.addUserMapping(user, { groups: ['group2'] });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -130,11 +144,25 @@ export = {
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
                 'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
                 'Arn',
               ],
             },
-            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"group1\\"]}]\",\"mapUsers\":\"[{\\"userarn\\":\\"arn:',
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"group1\\"]}]","mapUsers":"[{\\"userarn\\":\\"arn:',
             {
               Ref: 'AWS::Partition',
             },
@@ -169,12 +197,26 @@ export = {
     cluster.awsAuth.addMastersRole(role);
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
           [
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',

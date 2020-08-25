@@ -88,6 +88,30 @@ export = {
       test.done();
     },
 
+    async 'isCreateComplete throws if cluster is FAILED'(test: Test) {
+      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create'));
+      mocks.simulateResponse.describeClusterResponseMockStatus = 'FAILED';
+      try {
+        await handler.isComplete();
+        test.ok(false, 'expected error to be thrown');
+      } catch (err) {
+        test.equal(err.message, 'Cluster is in a FAILED status');
+      }
+      test.done();
+    },
+
+    async 'isUpdateComplete throws if cluster is FAILED'(test: Test) {
+      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update'));
+      mocks.simulateResponse.describeClusterResponseMockStatus = 'FAILED';
+      try {
+        await handler.isComplete();
+        test.ok(false, 'expected error to be thrown');
+      } catch (err) {
+        test.equal(err.message, 'Cluster is in a FAILED status');
+      }
+      test.done();
+    },
+
     async 'isCreateComplete is complete when cluster is ACTIVE'(test: Test) {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create'));
       mocks.simulateResponse.describeClusterResponseMockStatus = 'ACTIVE';
@@ -105,6 +129,27 @@ export = {
           OpenIdConnectIssuer: '',
         },
       });
+      test.done();
+    },
+
+    async 'encryption config'(test: Test) {
+      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create', {
+        ...mocks.MOCK_PROPS,
+        encryptionConfig: [{ provider: { keyArn: 'aws:kms:key' }, resources: ['secrets'] }],
+      }));
+
+      await handler.onEvent();
+
+      test.deepEqual(mocks.actualRequest.createClusterRequest, {
+        roleArn: 'arn:of:role',
+        resourcesVpcConfig: {
+          subnetIds: ['subnet1', 'subnet2'],
+          securityGroupIds: ['sg1', 'sg2', 'sg3'],
+        },
+        encryptionConfig: [{ provider: { keyArn: 'aws:kms:key' }, resources: ['secrets'] }],
+        name: 'MyResourceId-fakerequestid',
+      });
+
       test.done();
     },
 
@@ -357,6 +402,28 @@ export = {
       },
     },
 
+    async 'encryption config cannot be updated'(test: Test) {
+      // GIVEN
+      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+        encryptionConfig: [{ resources: ['secrets'], provider: { keyArn: 'key:arn:1' } }],
+      }, {
+        encryptionConfig: [{ resources: ['secrets'], provider: { keyArn: 'key:arn:2' } }],
+      }));
+
+      // WHEN
+      let error;
+      try {
+        await handler.onEvent();
+      } catch (e) {
+        error = e;
+      }
+
+      // THEN
+      test.ok(error);
+      test.equal(error.message, 'Cannot update cluster encryption configuration');
+      test.done();
+    },
+
     'isUpdateComplete with EKS update ID': {
 
       async 'with "Failed" status'(test: Test) {
@@ -507,7 +574,7 @@ export = {
             logging: {
               clusterLogging: [
                 {
-                  types: [ 'api' ],
+                  types: ['api'],
                   enabled: true,
                 },
               ],
@@ -522,7 +589,7 @@ export = {
             logging: {
               clusterLogging: [
                 {
-                  types: [ 'api' ],
+                  types: ['api'],
                   enabled: true,
                 },
               ],
@@ -563,7 +630,7 @@ export = {
             logging: {
               clusterLogging: [
                 {
-                  types: [ 'api', 'audit', 'authenticator', 'controllerManager', 'scheduler' ],
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
                   enabled: true,
                 },
               ],
@@ -571,7 +638,7 @@ export = {
             resourcesVpcConfig: {
               endpointPrivateAccess: true,
               endpointPublicAccess: true,
-              publicAccessCidrs: [ '0.0.0.0/0' ],
+              publicAccessCidrs: ['0.0.0.0/0'],
             },
           }, {
             logging: undefined,
@@ -585,7 +652,7 @@ export = {
             logging: {
               clusterLogging: [
                 {
-                  types: [ 'api', 'audit', 'authenticator', 'controllerManager', 'scheduler' ],
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
                   enabled: true,
                 },
               ],
@@ -593,7 +660,7 @@ export = {
             resourcesVpcConfig: {
               endpointPrivateAccess: true,
               endpointPublicAccess: true,
-              publicAccessCidrs: [ '0.0.0.0/0' ],
+              publicAccessCidrs: ['0.0.0.0/0'],
             },
           });
           test.equal(mocks.actualRequest.createClusterRequest, undefined);

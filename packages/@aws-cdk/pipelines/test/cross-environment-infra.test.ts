@@ -29,13 +29,17 @@ test('in a cross-account/cross-region setup, artifact bucket can be read by depl
   const supportStack = app.node.findAll().filter(Stack.isStack).find(s => s.stackName === 'PipelineStack-support-us-elsewhere');
   expect(supportStack).not.toBeUndefined();
 
-  expect(supportStack).toHaveResourceLike('AWS::S3::BucketPolicy',  {
+  expect(supportStack).toHaveResourceLike('AWS::S3::BucketPolicy', {
     PolicyDocument: {
       Statement: arrayWith(objectLike({
         Action: arrayWith('s3:GetObject*', 's3:GetBucket*', 's3:List*'),
         Principal: {
           AWS: {
-            'Fn::Sub': stringLike('*-deploy-role-*'),
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              stringLike('*-deploy-role-*'),
+            ]],
           },
         },
       })),
@@ -50,13 +54,17 @@ test('in a cross-account/same-region setup, artifact bucket can be read by deplo
   }));
 
   // THEN
-  expect(pipelineStack).toHaveResourceLike('AWS::S3::BucketPolicy',  {
+  expect(pipelineStack).toHaveResourceLike('AWS::S3::BucketPolicy', {
     PolicyDocument: {
       Statement: arrayWith(objectLike({
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
         Principal: {
           AWS: {
-            'Fn::Sub': stringLike('*-deploy-role-*'),
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              stringLike('*-deploy-role-*'),
+            ]],
           },
         },
       })),

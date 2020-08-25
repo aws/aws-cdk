@@ -48,7 +48,7 @@ describe('state machine', () => {
         ],
       },
       RoleArn: {
-        'Fn::GetAtt': [ roleId, 'Arn' ],
+        'Fn::GetAtt': [roleId, 'Arn'],
       },
     });
     expect(stack).toHaveResourceLike('AWS::IAM::Role', {

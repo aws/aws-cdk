@@ -227,7 +227,7 @@ export class AttributeValuesStep {
   /**
    * Assign the value to the current attribute.
    */
-  public is(val: string): AttributeValues  {
+  public is(val: string): AttributeValues {
     this.assignments.push(new Assign(this.attr, val));
     return new AttributeValues(this.container, this.assignments);
   }

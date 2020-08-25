@@ -148,8 +148,8 @@ export = {
   },
 
   'non-alphanumeric characters are removed from the human part of the logical ID'(test: Test) {
-    const val1 = logicalForElementInPath([ 'Foo-bar', 'B00m', 'Hello_World', '&&Horray Horray.' ]);
-    const val2 = logicalForElementInPath([ 'Foobar', 'B00m', 'HelloWorld', 'HorrayHorray' ]);
+    const val1 = logicalForElementInPath(['Foo-bar', 'B00m', 'Hello_World', '&&Horray Horray.']);
+    const val2 = logicalForElementInPath(['Foobar', 'B00m', 'HelloWorld', 'HorrayHorray']);
 
     // same human part, different hash
     test.deepEqual(val1, 'FoobarB00mHelloWorldHorrayHorray640E99FB');
@@ -158,7 +158,7 @@ export = {
   },
 
   'non-alphanumeric characters are removed even if the ID has only one component'(test: Test) {
-    const val1 = logicalForElementInPath([ 'Foo-bar' ]);
+    const val1 = logicalForElementInPath(['Foo-bar']);
 
     // same human part, different hash
     test.deepEqual(val1, 'Foobar');
@@ -218,7 +218,7 @@ export = {
         Construct2: {
           Type: 'R2',
           Properties: { ReferenceToR1: { Ref: 'NewName' } },
-          DependsOn: [ 'NewName' ],
+          DependsOn: ['NewName'],
         },
       },
     });

@@ -73,7 +73,7 @@ export = {
       filterPattern: FilterPattern.exists('$.latency'),
     });
 
-    const metric = mf.metric({statistic: 'maximum'});
+    const metric = mf.metric({ statistic: 'maximum' });
 
     // THEN
     test.deepEqual(metric, new Metric({

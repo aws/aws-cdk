@@ -3,18 +3,20 @@ import * as path from 'path';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { clusterArnComponents, ClusterResource } from './cluster-resource';
-import { CfnCluster, CfnClusterProps } from './eks.generated';
+import { CfnClusterProps } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
+import { KubernetesManifest } from './k8s-manifest';
+import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
-import { KubernetesResource } from './k8s-resource';
-import { KubectlProvider } from './kubectl-provider';
-import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
+import { KubectlProvider, KubectlProviderProps } from './kubectl-provider';
+import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
@@ -118,9 +120,9 @@ export interface ClusterAttributes {
 /**
  * Options for configuring an EKS cluster.
  */
-export interface ClusterOptions {
+export interface CommonClusterOptions {
   /**
-   * The VPC in which to create the Cluster
+   * The VPC in which to create the Cluster.
    *
    * @default - a VPC with default configuration will be created and can be accessed through `cluster.vpc`.
    */
@@ -170,16 +172,35 @@ export interface ClusterOptions {
   readonly version: KubernetesVersion;
 
   /**
+   * Determines whether a CloudFormation output with the name of the cluster
+   * will be synthesized.
+   *
+   * @default false
+   */
+  readonly outputClusterName?: boolean;
+
+  /**
+   * Determines whether a CloudFormation output with the `aws eks
+   * update-kubeconfig` command will be synthesized. This command will include
+   * the cluster name and, if applicable, the ARN of the masters IAM role.
+   *
+   * @default true
+   */
+  readonly outputConfigCommand?: boolean;
+}
+
+/**
+ * Options for EKS clusters.
+ */
+export interface ClusterOptions extends CommonClusterOptions {
+  /**
    * An IAM role that will be added to the `system:masters` Kubernetes RBAC
    * group.
    *
    * @see https://kubernetes.io/docs/reference/access-authn-authz/rbac/#default-roles-and-role-bindings
    *
-   * @default - By default, it will only possible to update this Kubernetes
-   *            system by adding resources to this cluster via `addResource` or
-   *            by defining `KubernetesResource` resources in your AWS CDK app.
-   *            Use this if you wish to grant cluster administration privileges
-   *            to another role.
+   * @default - a role that assumable by anyone with permissions in the same
+   * account will automatically be defined
    */
   readonly mastersRole?: iam.IRole;
 
@@ -193,14 +214,6 @@ export interface ClusterOptions {
   readonly coreDnsComputeType?: CoreDnsComputeType;
 
   /**
-   * Determines whether a CloudFormation output with the name of the cluster
-   * will be synthesized.
-   *
-   * @default false
-   */
-  readonly outputClusterName?: boolean;
-
-  /**
    * Determines whether a CloudFormation output with the ARN of the "masters"
    * IAM role will be synthesized (if `mastersRole` is specified).
    *
@@ -209,39 +222,135 @@ export interface ClusterOptions {
   readonly outputMastersRoleArn?: boolean;
 
   /**
-   * Determines whether a CloudFormation output with the `aws eks
-   * update-kubeconfig` command will be synthesized. This command will include
-   * the cluster name and, if applicable, the ARN of the masters IAM role.
+   * Configure access to the Kubernetes API server endpoint..
    *
-   * @default true
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
+   *
+   * @default EndpointAccess.PUBLIC_AND_PRIVATE
    */
-  readonly outputConfigCommand?: boolean;
+  readonly endpointAccess?: EndpointAccess;
+
+  /**
+   * Environment variables for the kubectl execution. Only relevant for kubectl enabled clusters.
+   *
+   * @default - No environment variables.
+   */
+  readonly kubectlEnvironment?: { [key: string]: string };
 }
 
 /**
- * Configuration props for EKS clusters.
+ * Group access configuration together.
  */
-export interface ClusterProps extends ClusterOptions {
+interface EndpointAccessConfig {
 
   /**
-   * Allows defining `kubectrl`-related resources on this cluster.
+   * Indicates if private access is enabled.
+   */
+  readonly privateAccess: boolean;
+
+  /**
+   * Indicates if public access is enabled.
+   */
+  readonly publicAccess: boolean;
+  /**
+   * Public access is allowed only from these CIDR blocks.
+   * An empty array means access is open to any address.
    *
-   * If this is disabled, it will not be possible to use the following
-   * capabilities:
-   * - `addResource`
-   * - `addRoleMapping`
-   * - `addUserMapping`
-   * - `addMastersRole` and `props.mastersRole`
+   * @default - No restrictions.
+   */
+  readonly publicCidrs?: string[];
+
+}
+
+/**
+ * Endpoint access characteristics.
+ */
+export class EndpointAccess {
+
+  /**
+   * The cluster endpoint is accessible from outside of your VPC.
+   * Worker node traffic will leave your VPC to connect to the endpoint.
    *
-   * If this is disabled, the cluster can only be managed by issuing `kubectl`
-   * commands from a session that uses the IAM role/user that created the
-   * account.
+   * By default, the endpoint is exposed to all adresses. You can optionally limit the CIDR blocks that can access the public endpoint using the `PUBLIC.onlyFrom` method.
+   * If you limit access to specific CIDR blocks, you must ensure that the CIDR blocks that you
+   * specify include the addresses that worker nodes and Fargate pods (if you use them)
+   * access the public endpoint from.
    *
-   * _NOTE_: changing this value will destoy the cluster. This is because a
-   * managable cluster must be created using an AWS CloudFormation custom
-   * resource which executes with an IAM role owned by the CDK app.
+   * @param cidr The CIDR blocks.
+   */
+  public static readonly PUBLIC = new EndpointAccess({ privateAccess: false, publicAccess: true });
+
+  /**
+   * The cluster endpoint is only accessible through your VPC.
+   * Worker node traffic to the endpoint will stay within your VPC.
+   */
+  public static readonly PRIVATE = new EndpointAccess({ privateAccess: true, publicAccess: false });
+
+  /**
+   * The cluster endpoint is accessible from outside of your VPC.
+   * Worker node traffic to the endpoint will stay within your VPC.
    *
-   * @default true The cluster can be managed by the AWS CDK application.
+   * By default, the endpoint is exposed to all adresses. You can optionally limit the CIDR blocks that can access the public endpoint using the `PUBLIC_AND_PRIVATE.onlyFrom` method.
+   * If you limit access to specific CIDR blocks, you must ensure that the CIDR blocks that you
+   * specify include the addresses that worker nodes and Fargate pods (if you use them)
+   * access the public endpoint from.
+   *
+   * @param cidr The CIDR blocks.
+   */
+  public static readonly PUBLIC_AND_PRIVATE = new EndpointAccess({ privateAccess: true, publicAccess: true });
+
+  private constructor(
+    /**
+     * Configuration properties.
+     *
+     * @internal
+     */
+    public readonly _config: EndpointAccessConfig) {
+    if (!_config.publicAccess && _config.publicCidrs && _config.publicCidrs.length > 0) {
+      throw new Error('CIDR blocks can only be configured when public access is enabled');
+    }
+  }
+
+
+  /**
+   * Restrict public access to specific CIDR blocks.
+   * If public access is disabled, this method will result in an error.
+   *
+   * @param cidr CIDR blocks.
+   */
+  public onlyFrom(...cidr: string[]) {
+    return new EndpointAccess({
+      ...this._config,
+      // override CIDR
+      publicCidrs: cidr,
+    });
+  }
+}
+
+/**
+ * Common configuration props for EKS clusters.
+ */
+export interface ClusterProps extends ClusterOptions {
+  /**
+   * NOT SUPPORTED: We no longer allow disabling kubectl-support. Setting this
+   * option to `false` will throw an error.
+   *
+   * To temporary allow you to retain existing clusters created with
+   * `kubectlEnabled: false`, you can use `eks.LegacyCluster` class, which is a
+   * drop-in replacement for `eks.Cluster` with `kubectlEnabled: false`.
+   *
+   * Bear in mind that this is a temporary workaround. We have plans to remove
+   * `eks.LegacyCluster`. If you have a use case for using `eks.LegacyCluster`,
+   * please add a comment here https://github.com/aws/aws-cdk/issues/9332 and
+   * let us know so we can make sure to continue to support your use case with
+   * `eks.Cluster`. This issue also includes additional context into why this
+   * class is being removed.
+   *
+   * @deprecated `eks.LegacyCluster` is __temporarily__ provided as a drop-in
+   * replacement until you are able to migrate to `eks.Cluster`.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/9332
+   * @default true
    */
   readonly kubectlEnabled?: boolean;
 
@@ -271,6 +380,15 @@ export interface ClusterProps extends ClusterOptions {
    * @default NODEGROUP
    */
   readonly defaultCapacityType?: DefaultCapacityType;
+
+  /**
+   * KMS secret for envelope encryption for Kubernetes secrets.
+   *
+   * @default - By default, Kubernetes stores all secret object data within etcd and
+   *            all etcd volumes used by Amazon EKS are encrypted at the disk-level
+   *            using AWS-Managed encryption keys.
+   */
+  readonly secretsEncryptionKey?: kms.IKey;
 }
 
 /**
@@ -307,6 +425,27 @@ export class KubernetesVersion {
    * @param version cluster version number
    */
   private constructor(public readonly version: string) { }
+}
+
+/**
+ * Options for fetching a ServiceLoadBalancerAddress.
+ */
+export interface ServiceLoadBalancerAddressOptions {
+
+  /**
+   * Timeout for waiting on the load balancer address.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly timeout?: Duration;
+
+  /**
+   * The namespace the service belongs to.
+   *
+   * @default 'default'
+   */
+  readonly namespace?: string;
+
 }
 
 /**
@@ -382,11 +521,6 @@ export class Cluster extends Resource implements ICluster {
   public readonly role: iam.IRole;
 
   /**
-   * Indicates if `kubectl` related operations can be performed on this cluster.
-   */
-  public readonly kubectlEnabled: boolean;
-
-  /**
    * The auto scaling group that hosts the default capacity for this cluster.
    * This will be `undefined` if the `defaultCapacityType` is not `EC2` or
    * `defaultCapacityType` is `EC2` but default capacity is set to 0.
@@ -411,7 +545,7 @@ export class Cluster extends Resource implements ICluster {
    * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
    */
-  private readonly _clusterResource?: ClusterResource;
+  private readonly _clusterResource: ClusterResource;
 
   /**
    * Manages the aws-auth config map.
@@ -422,7 +556,15 @@ export class Cluster extends Resource implements ICluster {
 
   private _spotInterruptHandler?: HelmChart;
 
-  private _neuronDevicePlugin?: KubernetesResource;
+  private _neuronDevicePlugin?: KubernetesManifest;
+
+  private readonly endpointAccess: EndpointAccess;
+
+  private readonly kubctlProviderSecurityGroup: ec2.ISecurityGroup;
+
+  private readonly vpcSubnets: ec2.SubnetSelection[];
+
+  private readonly kubectlProviderEnv?: { [key: string]: string };
 
   private readonly version: KubernetesVersion;
 
@@ -452,6 +594,14 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
+    if (props.kubectlEnabled === false) {
+      throw new Error(
+        'The "eks.Cluster" class no longer allows disabling kubectl support. ' +
+        'As a temporary workaround, you can use the drop-in replacement class `eks.LegacyCluster`, ' +
+        'but bear in mind that this class will soon be removed and will no longer receive additional ' +
+        'features or bugfixes. See https://github.com/aws/aws-cdk/issues/9332 for more details');
+    }
+
     const stack = Stack.of(this);
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
@@ -477,9 +627,10 @@ export class Cluster extends Resource implements ICluster {
       defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
+    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
+
     // Get subnetIds for all selected subnets
-    const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
-    const subnetIds = [...new Set(Array().concat(...placements.map(s => this.vpc.selectSubnets(s).subnetIds)))];
+    const subnetIds = [...new Set(Array().concat(...this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds)))];
 
     const clusterProps: CfnClusterProps = {
       name: this.physicalName,
@@ -489,38 +640,80 @@ export class Cluster extends Resource implements ICluster {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
       },
+      ...(props.secretsEncryptionKey ? {
+        encryptionConfig: [{
+          provider: {
+            keyArn: props.secretsEncryptionKey.keyArn,
+          },
+          resources: ['secrets'],
+        }],
+      } : {} ),
     };
 
-    let resource;
-    this.kubectlEnabled = props.kubectlEnabled === undefined ? true : props.kubectlEnabled;
-    if (this.kubectlEnabled) {
-      resource = new ClusterResource(this, 'Resource', clusterProps);
-      this._clusterResource = resource;
+    this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
+    this.kubectlProviderEnv = props.kubectlEnvironment;
 
-      // see https://github.com/aws/aws-cdk/issues/9027
-      this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
-        actions: ['ec2:DescribeVpcs'],
-        resources: [ stack.formatArn({
-          service: 'ec2',
-          resource: 'vpc',
-          resourceName: this.vpc.vpcId,
-        })],
-      }));
-
-      // we use an SSM parameter as a barrier because it's free and fast.
-      this._kubectlReadyBarrier = new CfnResource(this, 'KubectlReadyBarrier', {
-        type: 'AWS::SSM::Parameter',
-        properties: {
-          Type: 'String',
-          Value: 'aws:cdk:eks:kubectl-ready',
-        },
-      });
-
-      // add the cluster resource itself as a dependency of the barrier
-      this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
-    } else {
-      resource = new CfnCluster(this, 'Resource', clusterProps);
+    if (this.endpointAccess._config.privateAccess && this.vpc instanceof ec2.Vpc) {
+      // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
+      if (!this.vpc.dnsHostnamesEnabled || !this.vpc.dnsSupportEnabled) {
+        throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
+      }
     }
+
+    this.kubctlProviderSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
+      vpc: this.vpc,
+      description: 'Comminication between KubectlProvider and EKS Control Plane',
+    });
+
+    // grant the kubectl provider access to the cluster control plane.
+    this.connections.allowFrom(this.kubctlProviderSecurityGroup, this.connections.defaultPort!);
+
+    const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
+      ...clusterProps,
+      endpointPrivateAccess: this.endpointAccess._config.privateAccess,
+      endpointPublicAccess: this.endpointAccess._config.publicAccess,
+      publicAccessCidrs: this.endpointAccess._config.publicCidrs,
+    });
+
+    // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
+    // this ensures that.
+    this._clusterResource.node.addDependency(this.kubctlProviderSecurityGroup, this.vpc);
+
+    // see https://github.com/aws/aws-cdk/issues/9027
+    this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['ec2:DescribeVpcs'],
+      resources: [stack.formatArn({
+        service: 'ec2',
+        resource: 'vpc',
+        resourceName: this.vpc.vpcId,
+      })],
+    }));
+
+    // grant cluster creation role sufficient permission to access the specified key
+    // see https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html
+    if (props.secretsEncryptionKey) {
+      this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
+        actions: [
+          'kms:Encrypt',
+          'kms:Decrypt',
+          'kms:DescribeKey',
+          'kms:CreateGrant',
+        ],
+        resources: [props.secretsEncryptionKey.keyArn],
+      }));
+    }
+
+    // we use an SSM parameter as a barrier because it's free and fast.
+    this._kubectlReadyBarrier = new CfnResource(this, 'KubectlReadyBarrier', {
+      type: 'AWS::SSM::Parameter',
+      properties: {
+        Type: 'String',
+        Value: 'aws:cdk:eks:kubectl-ready',
+      },
+    });
+
+    // add the cluster resource itself as a dependency of the barrier
+    this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
 
     this.clusterName = this.getResourceNameAttribute(resource.ref);
     this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
@@ -532,26 +725,27 @@ export class Cluster extends Resource implements ICluster {
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
-    const commonCommandOptions = [ `--region ${stack.region}` ];
+    const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.outputClusterName) {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
     }
 
+    // if an explicit role is not configured, define a masters role that can
+    // be assumed by anyone in the account (with sts:AssumeRole permissions of
+    // course)
+    const mastersRole = props.mastersRole ?? new iam.Role(this, 'MastersRole', {
+      assumedBy: new iam.AccountRootPrincipal(),
+    });
+
     // map the IAM role to the `system:masters` group.
-    if (props.mastersRole) {
-      if (!this.kubectlEnabled) {
-        throw new Error('Cannot specify a "masters" role if kubectl is disabled');
-      }
+    this.awsAuth.addMastersRole(mastersRole);
 
-      this.awsAuth.addMastersRole(props.mastersRole);
-
-      if (props.outputMastersRoleArn) {
-        new CfnOutput(this, 'MastersRoleArn', { value: props.mastersRole.roleArn });
-      }
-
-      commonCommandOptions.push(`--role-arn ${props.mastersRole.roleArn}`);
+    if (props.outputMastersRoleArn) {
+      new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
     }
+
+    commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
 
     // allocate default capacity if non-zero (or default).
     const minCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
@@ -571,9 +765,28 @@ export class Cluster extends Resource implements ICluster {
       new CfnOutput(this, 'GetTokenCommand', { value: `${getTokenCommandPrefix} ${postfix}` });
     }
 
-    if (this.kubectlEnabled) {
-      this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
-    }
+    this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
+  }
+
+  /**
+   * Fetch the load balancer address of a service of type 'LoadBalancer'.
+   *
+   * @param serviceName The name of the service.
+   * @param options Additional operation options.
+   */
+  public getServiceLoadBalancerAddress(serviceName: string, options: ServiceLoadBalancerAddressOptions = {}): string {
+
+    const loadBalancerAddress = new KubernetesObjectValue(this, `${serviceName}LoadBalancerAddress`, {
+      cluster: this,
+      objectType: 'service',
+      objectName: serviceName,
+      objectNamespace: options.namespace,
+      jsonPath: '.status.loadBalancer.ingress[0].hostname',
+      timeout: options.timeout,
+    });
+
+    return loadBalancerAddress.value;
+
   }
 
   /**
@@ -582,9 +795,12 @@ export class Cluster extends Resource implements ICluster {
    * The nodes will automatically be configured with the right VPC and AMI
    * for the instance type and Kubernetes version.
    *
+   * Note that if you specify `updateType: RollingUpdate` or `updateType: ReplacingUpdate`, your nodes might be replaced at deploy
+   * time without notice in case the recommended AMI for your machine image type has been updated by AWS.
+   * The default behavior for `updateType` is `None`, which means only new instances will be launched using the new AMI.
+   *
    * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
-   * If kubectl is enabled, the
-   * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
+   * In addition, the [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
    * daemon will be installed on all spot instances to handle
    * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
@@ -601,7 +817,7 @@ export class Cluster extends Resource implements ICluster {
           nodeType: nodeTypeForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
         }),
-      updateType: options.updateType || autoscaling.UpdateType.ROLLING_UPDATE,
+      updateType: options.updateType,
       instanceType: options.instanceType,
     });
 
@@ -688,18 +904,14 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
-    Tag.add(autoScalingGroup, `kubernetes.io/cluster/${this.clusterName}`, 'owned', {
+    Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
       applyToLaunchedInstances: true,
     });
-
-    if (options.mapRole === true && !this.kubectlEnabled) {
-      throw new Error('Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster');
-    }
 
     // do not attempt to map the role if `kubectl` is not enabled for this
     // cluster or if `mapRole` is set to false. By default this should happen.
     const mapRole = options.mapRole === undefined ? true : options.mapRole;
-    if (mapRole && this.kubectlEnabled) {
+    if (mapRole) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
       this.awsAuth.addRoleMapping(autoScalingGroup.role, {
         username: 'system:node:{{EC2PrivateDNSName}}',
@@ -717,7 +929,7 @@ export class Cluster extends Resource implements ICluster {
     }
 
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
-    if (autoScalingGroup.spotPrice && this.kubectlEnabled) {
+    if (autoScalingGroup.spotPrice) {
       this.addSpotInterruptHandler();
     }
   }
@@ -726,10 +938,6 @@ export class Cluster extends Resource implements ICluster {
    * Lazily creates the AwsAuth resource, which manages AWS authentication mapping.
    */
   public get awsAuth() {
-    if (!this.kubectlEnabled) {
-      throw new Error('Cannot define aws-auth mappings if kubectl is disabled');
-    }
-
     if (!this._awsAuth) {
       this._awsAuth = new AwsAuth(this, 'AwsAuth', { cluster: this });
     }
@@ -745,10 +953,6 @@ export class Cluster extends Resource implements ICluster {
    * @attribute
    */
   public get clusterOpenIdConnectIssuerUrl(): string {
-    if (!this._clusterResource) {
-      throw new Error('unable to obtain OpenID Connect issuer URL. Cluster must be kubectl-enabled');
-    }
-
     return this._clusterResource.attrOpenIdConnectIssuerUrl;
   }
 
@@ -760,10 +964,6 @@ export class Cluster extends Resource implements ICluster {
    * @attribute
    */
   public get clusterOpenIdConnectIssuer(): string {
-    if (!this._clusterResource) {
-      throw new Error('unable to obtain OpenID Connect issuer. Cluster must be kubectl-enabled');
-    }
-
     return this._clusterResource.attrOpenIdConnectIssuer;
   }
 
@@ -774,20 +974,16 @@ export class Cluster extends Resource implements ICluster {
    * A provider will only be defined if this property is accessed (lazy initialization).
    */
   public get openIdConnectProvider() {
-    if (!this.kubectlEnabled) {
-      throw new Error('Cannot specify a OpenID Connect Provider if kubectl is disabled');
-    }
-
     if (!this._openIdConnectProvider) {
       this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
         url: this.clusterOpenIdConnectIssuerUrl,
-        clientIds: [ 'sts.amazonaws.com' ],
+        clientIds: ['sts.amazonaws.com'],
         /**
          * For some reason EKS isn't validating the root certificate but a intermediat certificate
          * which is one level up in the tree. Because of the a constant thumbprint value has to be
          * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
          */
-        thumbprints: [ '9e99a48a9960b14926bb7f3b02e22da2b0ab7280' ],
+        thumbprints: ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'],
       });
     }
 
@@ -795,17 +991,16 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Defines a Kubernetes resource in this cluster.
+   * Defines a Kubernetes manifest in this cluster.
    *
    * The manifest will be applied/deleted using kubectl as needed.
    *
    * @param id logical id of this manifest
    * @param manifest a list of Kubernetes resource specifications
-   * @returns a `KubernetesResource` object.
-   * @throws If `kubectlEnabled` is `false`
+   * @returns a `KubernetesManifest` object.
    */
-  public addResource(id: string, ...manifest: any[]) {
-    return new KubernetesResource(this, `manifest-${id}`, { cluster: this, manifest });
+  public addManifest(id: string, ...manifest: any[]) {
+    return new KubernetesManifest(this, `manifest-${id}`, { cluster: this, manifest });
   }
 
   /**
@@ -814,7 +1009,6 @@ export class Cluster extends Resource implements ICluster {
    * @param id logical id of this chart.
    * @param options options of this chart.
    * @returns a `HelmChart` object
-   * @throws If `kubectlEnabled` is `false`
    */
   public addChart(id: string, options: HelmChartOptions) {
     return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
@@ -856,10 +1050,6 @@ export class Cluster extends Resource implements ICluster {
    * @internal
    */
   public get _kubectlCreationRole() {
-    if (!this._clusterResource) {
-      throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
-    }
-
     return this._clusterResource.creationRole;
   }
 
@@ -896,15 +1086,35 @@ export class Cluster extends Resource implements ICluster {
   public _attachKubectlResourceScope(resourceScope: Construct): KubectlProvider {
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
 
-    if (!this._clusterResource) {
-      throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
-    }
-
     // singleton
     let provider = this.stack.node.tryFindChild(uid) as KubectlProvider;
     if (!provider) {
       // create the provider.
-      provider = new KubectlProvider(this.stack, uid);
+
+      let providerProps: KubectlProviderProps = {
+        env: this.kubectlProviderEnv,
+      };
+
+      if (!this.endpointAccess._config.publicAccess) {
+
+        const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+
+        if (privateSubents.length === 0) {
+          throw new Error('Vpc must contain private subnets to configure private endpoint access');
+        }
+
+        // endpoint access is private only, we need to attach the
+        // provider to the VPC so that it can access the cluster.
+        providerProps = {
+          ...providerProps,
+          vpc: this.vpc,
+          // lambda can only be accociated with max 16 subnets and they all need to be private.
+          vpcSubnets: { subnets: privateSubents },
+          securityGroups: [this.kubctlProviderSecurityGroup],
+        };
+      }
+
+      provider = new KubectlProvider(this.stack, uid, providerProps);
     }
 
     // allow the kubectl provider to assume the cluster creation role.
@@ -917,6 +1127,36 @@ export class Cluster extends Resource implements ICluster {
     resourceScope.node.addDependency(this._kubectlReadyBarrier);
 
     return provider;
+  }
+
+  private selectPrivateSubnets(): ec2.ISubnet[] {
+
+    const privateSubnets: ec2.ISubnet[] = [];
+
+    for (const placement of this.vpcSubnets) {
+
+      for (const subnet of this.vpc.selectSubnets(placement).subnets) {
+
+        if (this.vpc.privateSubnets.includes(subnet)) {
+          // definitely private, take it.
+          privateSubnets.push(subnet);
+          continue;
+        }
+
+        if (this.vpc.publicSubnets.includes(subnet)) {
+          // definitely public, skip it.
+          continue;
+        }
+
+        // neither public and nor private - what is it then? this means its a subnet instance that was explicitly passed
+        // in the subnet selection. since ISubnet doesn't contain information on type, we have to assume its private and let it
+        // fail at deploy time :\ (its better than filtering it out and preventing a possibly successful deployment)
+        privateSubnets.push(subnet);
+      }
+
+    }
+
+    return privateSubnets;
   }
 
   /**
@@ -947,7 +1187,7 @@ export class Cluster extends Resource implements ICluster {
     if (!this._neuronDevicePlugin) {
       const fileContents = fs.readFileSync(path.join(__dirname, 'addons/neuron-device-plugin.yaml'), 'utf8');
       const sanitized = YAML.parse(fileContents);
-      this._neuronDevicePlugin = this.addResource('NeuronDevicePlugin', sanitized);
+      this._neuronDevicePlugin = this.addManifest('NeuronDevicePlugin', sanitized);
     }
 
     return this._neuronDevicePlugin;
@@ -972,7 +1212,7 @@ export class Cluster extends Resource implements ICluster {
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, '1'));
+        Tags.of(subnet).add(tag, '1');
       }
     };
 
@@ -987,10 +1227,6 @@ export class Cluster extends Resource implements ICluster {
    * omitted/removed, since the cluster is created with the "ec2" compute type by default.
    */
   private defineCoreDnsComputeType(type: CoreDnsComputeType) {
-    if (!this.kubectlEnabled) {
-      throw new Error('kubectl must be enabled in order to define the compute type for CoreDNS');
-    }
-
     // ec2 is the "built in" compute type of the cluster so if this is the
     // requested type we can simply omit the resource. since the resource's
     // `restorePatch` is configured to restore the value to "ec2" this means
