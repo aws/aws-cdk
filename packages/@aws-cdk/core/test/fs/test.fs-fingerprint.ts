@@ -159,8 +159,8 @@ export = {
     'encodes exclude patterns'(test: Test) {
       // GIVEN
       const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
-      const options1 = {path: dir, exclude: ['**', '!file.py'], sourcePath: dir};
-      const options2 = {path: dir, exclude: ['**', '!otherfile.py'], sourcePath: dir};
+      const options1 = { path: dir, exclude: ['**', '!file.py'], sourcePath: dir };
+      const options2 = { path: dir, exclude: ['**', '!otherfile.py'], sourcePath: dir };
 
       // WHEN
       const f1 = FileSystem.fingerprint(dir, options1);
@@ -173,7 +173,7 @@ export = {
     'considers negated exclude patterns for fingerprint'(test: Test) {
       // GIVEN
       const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
-      const options = {path: dir, exclude: ['**', '!file.txt'], sourcePath: dir};
+      const options = { path: dir, exclude: ['**', '!file.txt'], sourcePath: dir };
 
       // WHEN
       const f1 = FileSystem.fingerprint(dir, options);

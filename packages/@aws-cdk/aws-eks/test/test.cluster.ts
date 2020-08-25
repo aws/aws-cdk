@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { countResources, expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
@@ -15,22 +16,28 @@ import { testFixture, testFixtureNoVpc } from './util';
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
+
   'a default cluster spans all subnets'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0, version: CLUSTER_VERSION });
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Cluster', {
-      ResourcesVpcConfig: {
-        SubnetIds: [
-          { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
-          { Ref: 'VPCPublicSubnet2Subnet74179F39' },
-          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-        ],
+    expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
+        version: '1.16',
+        resourcesVpcConfig: {
+          securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
+          subnetIds: [
+            { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+            { Ref: 'VPCPublicSubnet2Subnet74179F39' },
+            { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+            { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+          ],
+        },
       },
     }));
 
@@ -44,7 +51,7 @@ export = {
 
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
-    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0, version: CLUSTER_VERSION });
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
     const layer = KubectlLayer.getOrCreate(stack, {});
 
     // THEN
@@ -65,7 +72,7 @@ export = {
 
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
-    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0, version: CLUSTER_VERSION });
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
     new KubectlLayer(stack, 'NewLayer');
     const layer = KubectlLayer.getOrCreate(stack);
 
@@ -160,7 +167,7 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0, version: CLUSTER_VERSION });
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
@@ -180,7 +187,7 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0, version: CLUSTER_VERSION });
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
@@ -196,11 +203,29 @@ export = {
     test.done();
   },
 
+  'adding capacity creates an ASG without a rolling update policy'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+
+    // WHEN
+    cluster.addCapacity('Default', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+    });
+
+    test.deepEqual(expect(stack).value.Resources.ClusterASG0E4BA723.UpdatePolicy, { AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: true } });
+    test.done();
+  },
+
   'adding capacity creates an ASG with tags'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
-      vpc, kubectlEnabled: false,
+      vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -214,7 +239,7 @@ export = {
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
-          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' }]] },
+          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'Cluster9EE0221C' }]] },
           PropagateAtLaunch: true,
           Value: 'owned',
         },
@@ -266,7 +291,6 @@ export = {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: false,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -281,7 +305,7 @@ export = {
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
-          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' }]] },
+          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'Cluster9EE0221C' }]] },
           PropagateAtLaunch: true,
           Value: 'owned',
         },
@@ -300,7 +324,6 @@ export = {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: false,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -319,7 +342,6 @@ export = {
     const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
     const cluster = new eks.Cluster(stack1, 'Cluster', {
       vpc,
-      kubectlEnabled: false,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -344,7 +366,7 @@ export = {
       Outputs: {
         ClusterARN: {
           Value: {
-            'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F',
+            'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttCluster9EE0221CArn9E0B683E',
           },
         },
       },
@@ -352,26 +374,7 @@ export = {
     test.done();
   },
 
-  'disabled features when kubectl is disabled'(test: Test) {
-    // GIVEN
-    const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      kubectlEnabled: false,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
-    });
-
-    test.throws(() => cluster.awsAuth, /Cannot define aws-auth mappings if kubectl is disabled/);
-    test.throws(() => cluster.addResource('foo', {}), /Unable to perform this operation since kubectl is not enabled for this cluster/);
-    test.throws(() => cluster.addCapacity('boo', { instanceType: new ec2.InstanceType('r5d.24xlarge'), mapRole: true }),
-      /Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster/);
-    test.throws(() => new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' }), /Unable to perform this operation since kubectl is not enabled for this cluster/);
-    test.throws(() => cluster.openIdConnectProvider, /Cannot specify a OpenID Connect Provider if kubectl is disabled/);
-    test.done();
-  },
-
-  'mastersRole can be used to map an IAM role to "system:masters" (required kubectl)'(test: Test) {
+  'mastersRole can be used to map an IAM role to "system:masters"'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
     const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
@@ -385,7 +388,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -413,7 +416,7 @@ export = {
     test.done();
   },
 
-  'addResource can be used to apply k8s manifests on this cluster'(test: Test) {
+  'addManifest can be used to apply k8s manifests on this cluster'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -423,15 +426,15 @@ export = {
     });
 
     // WHEN
-    cluster.addResource('manifest1', { foo: 123 });
-    cluster.addResource('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
+    cluster.addManifest('manifest1', { foo: 123 });
+    cluster.addManifest('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: '[{"foo":123}]',
     }));
 
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: '[{"bar":123},{"boor":[1,2,3]}]',
     }));
 
@@ -445,7 +448,7 @@ export = {
 
     // WHEN resource is under stack2
     const stack2 = new cdk.Stack(app, 'stack2', { env: { account: stack.account, region: stack.region } });
-    new eks.KubernetesResource(stack2, 'myresource', {
+    new eks.KubernetesManifest(stack2, 'myresource', {
       cluster,
       manifest: [{ foo: 'bar' }],
     });
@@ -475,7 +478,7 @@ export = {
     test.done();
   },
 
-  'when kubectl is enabled (default) adding capacity will automatically map its IAM role'(test: Test) {
+  'adding capacity will automatically map its IAM role'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -490,12 +493,26 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
           [
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'ClusterdefaultInstanceRoleF20A29CD',
@@ -527,27 +544,30 @@ export = {
     });
 
     // THEN
-    expect(stack).to(not(haveResource(eks.KubernetesResource.RESOURCE_TYPE)));
-    test.done();
-  },
-
-  'addCapacity will *not* map the IAM role if kubectl is disabled'(test: Test) {
-    // GIVEN
-    const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      kubectlEnabled: false,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
-    });
-
-    // WHEN
-    cluster.addCapacity('default', {
-      instanceType: new ec2.InstanceType('t2.nano'),
-    });
-
-    // THEN
-    expect(stack).to(not(haveResource(eks.KubernetesResource.RESOURCE_TYPE)));
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      Manifest: {
+        'Fn::Join': [
+          '',
+          [
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+          ],
+        ],
+      },
+    }));
     test.done();
   },
 
@@ -563,8 +583,8 @@ export = {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1']] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1']] } },
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['ClusterMastersRole9AA35625', 'Arn'] }]] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['ClusterMastersRole9AA35625', 'Arn'] }]] } },
       });
       test.done();
     },
@@ -726,7 +746,7 @@ export = {
           test.done();
         },
 
-        'if kubectl is enabled, the interrupt handler is added'(test: Test) {
+        'interrupt handler is added'(test: Test) {
           // GIVEN
           const { stack } = testFixtureNoVpc();
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
@@ -766,26 +786,6 @@ export = {
 
           // THEN
           expect(stack).to(countResources(eks.HelmChart.RESOURCE_TYPE, 1));
-          test.done();
-        },
-
-        'if kubectl is disabled, interrupt handler is not added'(test: Test) {
-          // GIVEN
-          const { stack } = testFixtureNoVpc();
-          const cluster = new eks.Cluster(stack, 'Cluster', {
-            defaultCapacity: 0,
-            kubectlEnabled: false,
-            version: CLUSTER_VERSION,
-          });
-
-          // WHEN
-          cluster.addCapacity('MyCapcity', {
-            instanceType: new ec2.InstanceType('m3.xlargs'),
-            spotPrice: '0.01',
-          });
-
-          // THEN
-          expect(stack).notTo(haveResource(eks.KubernetesResource.RESOURCE_TYPE));
           test.done();
         },
 
@@ -895,6 +895,8 @@ export = {
               { Ref: 'MyClusterDefaultVpcPrivateSubnet1SubnetE1D0DCDB' },
               { Ref: 'MyClusterDefaultVpcPrivateSubnet2Subnet11FEA8D0' },
             ],
+            endpointPrivateAccess: true,
+            endpointPublicAccess: true,
           },
         },
       }));
@@ -1295,7 +1297,7 @@ export = {
       const sanitized = YAML.parse(fileContents);
 
       // THEN
-      expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+      expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([sanitized]),
       }));
       test.done();
@@ -1308,7 +1310,7 @@ export = {
 
       // WHEN
       cluster.addFargateProfile('profile1', { selectors: [{ namespace: 'profile1' }] });
-      cluster.addResource('resource1', { foo: 123 });
+      cluster.addManifest('resource1', { foo: 123 });
       cluster.addFargateProfile('profile2', { selectors: [{ namespace: 'profile2' }] });
       new eks.HelmChart(stack, 'chart', { cluster, chart: 'mychart' });
       cluster.addFargateProfile('profile3', { selectors: [{ namespace: 'profile3' }] });
@@ -1358,9 +1360,9 @@ export = {
       // WHEN
 
       // activate kubectl provider
-      c1.addResource('c1a', { foo: 123 });
-      c1.addResource('c1b', { foo: 123 });
-      c2.addResource('c2', { foo: 123 });
+      c1.addManifest('c1a', { foo: 123 });
+      c1.addManifest('c1b', { foo: 123 });
+      c2.addManifest('c2', { foo: 123 });
 
       // THEN
       const template = app.synth().getStackArtifact(stack.artifactId).template;
@@ -1378,5 +1380,492 @@ export = {
       }
       test.done();
     },
+
+  },
+
+  'kubectl provider passes environment to lambda'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
+      kubectlEnvironment: {
+        Foo: 'Bar',
+      },
+    });
+
+    cluster.addManifest('resource', {
+      kind: 'ConfigMap',
+      apiVersion: 'v1',
+      data: {
+        hello: 'world',
+      },
+      metadata: {
+        name: 'config-map',
+      },
+    });
+
+    // the kubectl provider is inside a nested stack.
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    expect(nested).to(haveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          Foo: 'Bar',
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'endpoint access': {
+
+    'private endpoint access fails if selected subnets are empty'(test: Test) {
+
+      const { stack } = testFixture();
+
+      test.throws(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          vpc: new ec2.Vpc(stack, 'Vpc'),
+          version: CLUSTER_VERSION,
+          endpointAccess: eks.EndpointAccess.PRIVATE,
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+        });
+      }, /Vpc must contain private subnets to configure private endpoint access/);
+
+      test.done();
+    },
+
+    'private endpoint access selects only private subnets from looked up vpc'(test: Test) {
+
+      const vpcId = 'vpc-12345';
+      // can't use the regular fixture because it also adds a VPC to the stack, which prevents
+      // us from setting context.
+      const stack = new cdk.Stack(new cdk.App(), 'Stack', {
+        env: {
+          account: '11112222',
+          region: 'us-east-1',
+        },
+      });
+      stack.node.setContext(`vpc-provider:account=${stack.account}:filter.vpc-id=${vpcId}:region=${stack.region}:returnAsymmetricSubnets=true`, {
+        vpcId: vpcId,
+        vpcCidrBlock: '10.0.0.0/16',
+        subnetGroups: [
+          {
+            name: 'Private',
+            type: 'Private',
+            subnets: [
+              {
+                subnetId: 'subnet-private-in-us-east-1a',
+                cidr: '10.0.1.0/24',
+                availabilityZone: 'us-east-1a',
+                routeTableId: 'rtb-06068e4c4049921ef',
+              },
+            ],
+          },
+          {
+            name: 'Public',
+            type: 'Public',
+            subnets: [
+              {
+                subnetId: 'subnet-public-in-us-east-1c',
+                cidr: '10.0.0.0/24',
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rtb-0ff08e62195198dbb',
+              },
+            ],
+          },
+        ],
+      });
+      const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+        vpcId: vpcId,
+      });
+
+      new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
+        'subnet-private-in-us-east-1a',
+      ]);
+
+      test.done();
+    },
+
+    'private endpoint access considers specific subnet selection'(test: Test) {
+      const { stack } = testFixture();
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess:
+        eks.EndpointAccess.PRIVATE,
+        vpcSubnets: [{
+          subnets: [ec2.PrivateSubnet.fromSubnetAttributes(stack, 'Private1', {
+            subnetId: 'subnet1',
+            availabilityZone: 'us-east-1a',
+          })],
+        }],
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
+        'subnet1',
+      ]);
+
+      test.done();
+
+    },
+
+    'can configure private endpoint access'(test: Test) {
+      // GIVEN
+      const { stack } = testFixture();
+      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE });
+
+      expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          roleArn: { 'Fn::GetAtt': ['Cluster1RoleE88C32AD', 'Arn'] },
+          version: '1.16',
+          resourcesVpcConfig: {
+            securityGroupIds: [{ 'Fn::GetAtt': ['Cluster1ControlPlaneSecurityGroupF9C67C32', 'GroupId'] }],
+            subnetIds: [
+              { Ref: 'Cluster1DefaultVpcPublicSubnet1SubnetBEABA6ED' },
+              { Ref: 'Cluster1DefaultVpcPublicSubnet2Subnet947A5158' },
+              { Ref: 'Cluster1DefaultVpcPrivateSubnet1Subnet4E30ECA1' },
+              { Ref: 'Cluster1DefaultVpcPrivateSubnet2Subnet707FCD37' },
+            ],
+            endpointPrivateAccess: true,
+            endpointPublicAccess: false,
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'can configure cidr blocks in public endpoint access'(test: Test) {
+      // GIVEN
+      const { stack } = testFixture();
+      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PUBLIC.onlyFrom('1.2.3.4/5') });
+
+      expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          roleArn: { 'Fn::GetAtt': ['Cluster1RoleE88C32AD', 'Arn'] },
+          version: '1.16',
+          resourcesVpcConfig: {
+            securityGroupIds: [{ 'Fn::GetAtt': ['Cluster1ControlPlaneSecurityGroupF9C67C32', 'GroupId'] }],
+            subnetIds: [
+              { Ref: 'Cluster1DefaultVpcPublicSubnet1SubnetBEABA6ED' },
+              { Ref: 'Cluster1DefaultVpcPublicSubnet2Subnet947A5158' },
+              { Ref: 'Cluster1DefaultVpcPrivateSubnet1Subnet4E30ECA1' },
+              { Ref: 'Cluster1DefaultVpcPrivateSubnet2Subnet707FCD37' },
+            ],
+            endpointPrivateAccess: false,
+            endpointPublicAccess: true,
+            publicAccessCidrs: ['1.2.3.4/5'],
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'kubectl provider chooses only private subnets'(test: Test) {
+
+      const { stack } = testFixture();
+
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 1,
+        subnetConfiguration: [
+          {
+            subnetType: ec2.SubnetType.PRIVATE,
+            name: 'Private1',
+          },
+          {
+            subnetType: ec2.SubnetType.PUBLIC,
+            name: 'Public1',
+          },
+        ],
+      });
+
+      const cluster = new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        vpc,
+      });
+
+      cluster.addManifest('resource', {
+        kind: 'ConfigMap',
+        apiVersion: 'v1',
+        data: {
+          hello: 'world',
+        },
+        metadata: {
+          name: 'config-map',
+        },
+      });
+
+      // the kubectl provider is inside a nested stack.
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      expect(nested).to(haveResource('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            {
+              Ref: 'referencetoStackCluster1KubectlProviderSecurityGroupDF05D03AGroupId',
+            },
+          ],
+          SubnetIds: [
+            {
+              Ref: 'referencetoStackVpcPrivate1Subnet1Subnet6764A0F6Ref',
+            },
+            {
+              Ref: 'referencetoStackVpcPrivate1Subnet2SubnetDFD49645Ref',
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'kubectl provider limits number of subnets to 16'(test: Test) {
+
+      const { stack } = testFixture();
+
+      const subnetConfiguration: ec2.SubnetConfiguration[] = [];
+
+      for (let i = 0; i < 20; i++) {
+        subnetConfiguration.push( {
+          subnetType: ec2.SubnetType.PRIVATE,
+          name: `Private${i}`,
+        },
+        );
+      }
+
+      subnetConfiguration.push( {
+        subnetType: ec2.SubnetType.PUBLIC,
+        name: 'Public1',
+      });
+
+      const vpc2 = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 1,
+        subnetConfiguration,
+      });
+
+      const cluster = new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        vpc: vpc2,
+      });
+
+      cluster.addManifest('resource', {
+        kind: 'ConfigMap',
+        apiVersion: 'v1',
+        data: {
+          hello: 'world',
+        },
+        metadata: {
+          name: 'config-map',
+        },
+      });
+
+      // the kubectl provider is inside a nested stack.
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      test.equal(16, expect(nested).value.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length);
+
+      test.done();
+    },
+
+    'kubectl provider considers vpc subnet selection'(test: Test) {
+
+      const { stack } = testFixture();
+
+      const subnetConfiguration: ec2.SubnetConfiguration[] = [];
+
+      for (let i = 0; i < 20; i++) {
+        subnetConfiguration.push( {
+          subnetType: ec2.SubnetType.PRIVATE,
+          name: `Private${i}`,
+        },
+        );
+      }
+
+      subnetConfiguration.push( {
+        subnetType: ec2.SubnetType.PUBLIC,
+        name: 'Public1',
+      });
+
+      const vpc2 = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 1,
+        subnetConfiguration,
+      });
+
+      const cluster = new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        vpc: vpc2,
+        vpcSubnets: [{ subnetGroupName: 'Private1' }, { subnetGroupName: 'Private2' }],
+      });
+
+      cluster.addManifest('resource', {
+        kind: 'ConfigMap',
+        apiVersion: 'v1',
+        data: {
+          hello: 'world',
+        },
+        metadata: {
+          name: 'config-map',
+        },
+      });
+
+      // the kubectl provider is inside a nested stack.
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      expect(nested).to(haveResource('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            {
+              Ref: 'referencetoStackCluster1KubectlProviderSecurityGroupDF05D03AGroupId',
+            },
+          ],
+          SubnetIds: [
+            {
+              Ref: 'referencetoStackVpcPrivate1Subnet1Subnet6764A0F6Ref',
+            },
+            {
+              Ref: 'referencetoStackVpcPrivate1Subnet2SubnetDFD49645Ref',
+            },
+            {
+              Ref: 'referencetoStackVpcPrivate2Subnet1Subnet586AD392Ref',
+            },
+            {
+              Ref: 'referencetoStackVpcPrivate2Subnet2SubnetE42148C0Ref',
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'throw when private access is configured without dns support enabled for the VPC'(test: Test) {
+
+      const { stack } = testFixture();
+
+      test.throws(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          vpc: new ec2.Vpc(stack, 'Vpc', {
+            enableDnsSupport: false,
+          }),
+          version: CLUSTER_VERSION,
+        });
+      }, /Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
+      test.done();
+    },
+
+    'throw when private access is configured without dns hostnames enabled for the VPC'(test: Test) {
+
+      const { stack } = testFixture();
+
+      test.throws(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          vpc: new ec2.Vpc(stack, 'Vpc', {
+            enableDnsHostnames: false,
+          }),
+          version: CLUSTER_VERSION,
+        });
+      }, /Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
+      test.done();
+    },
+
+    'throw when cidrs are configured without public access endpoint'(test: Test) {
+
+      test.throws(() => {
+        eks.EndpointAccess.PRIVATE.onlyFrom('1.2.3.4/5');
+      }, /CIDR blocks can only be configured when public access is enabled/);
+      test.done();
+    },
+
+  },
+
+  'getServiceLoadBalancerAddress'(test: Test) {
+
+    const { stack } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION });
+
+    const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('myservice');
+
+    new cdk.CfnOutput(stack, 'LoadBalancerAddress', {
+      value: loadBalancerAddress,
+    });
+
+    const expectedKubernetesGetId = 'Cluster1myserviceLoadBalancerAddress198CCB03';
+
+    const rawTemplate = expect(stack).value;
+
+    // make sure the custom resource is created correctly
+    test.deepEqual(rawTemplate.Resources[expectedKubernetesGetId].Properties, {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
+          'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+        ],
+      },
+      ClusterName: {
+        Ref: 'Cluster1B02DD5A2',
+      },
+      RoleArn: {
+        'Fn::GetAtt': [
+          'Cluster1CreationRoleA231BE8D',
+          'Arn',
+        ],
+      },
+      ObjectType: 'service',
+      ObjectName: 'myservice',
+      ObjectNamespace: 'default',
+      JsonPath: '.status.loadBalancer.ingress[0].hostname',
+      TimeoutSeconds: 300,
+    });
+
+    // make sure the attribute points to the expected custom resource and extracts the correct attribute
+    test.deepEqual(rawTemplate.Outputs.LoadBalancerAddress.Value, { 'Fn::GetAtt': [expectedKubernetesGetId, 'Value'] });
+    test.done();
+  },
+  'create a cluster using custom resource with secrets encryption using KMS CMK'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      version: CLUSTER_VERSION,
+      secretsEncryptionKey: new kms.Key(stack, 'Key'),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        encryptionConfig: [{
+          provider: {
+            keyArn: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          },
+          resources: ['secrets'],
+        }],
+      },
+    }));
+    test.done();
   },
 };

@@ -1,7 +1,6 @@
 import '@aws-cdk/assert/jest';
-import * as s3 from '@aws-cdk/aws-s3';
-import { App, Stack } from '@aws-cdk/core';
-import { Distribution, Origin } from '../lib';
+import { App, Stack, Duration } from '@aws-cdk/core';
+import { TestOrigin } from './test-origin';
 
 let app: App;
 let stack: Stack;
@@ -13,61 +12,35 @@ beforeEach(() => {
   });
 });
 
-describe('fromBucket', () => {
-
-  test('as bucket, renders all properties, including S3Origin config', () => {
-    const bucket = new s3.Bucket(stack, 'Bucket');
-
-    const origin = Origin.fromBucket(bucket);
-    origin._bind(stack, { originIndex: 0 });
-
-    expect(origin._renderOrigin()).toEqual({
-      id: 'StackOrigin029E19582',
-      domainName: bucket.bucketRegionalDomainName,
-      s3OriginConfig: {
-        originAccessIdentity: 'origin-access-identity/cloudfront/${Token[TOKEN.69]}',
-      },
+test.each([
+  Duration.seconds(0),
+  Duration.seconds(0.5),
+  Duration.seconds(10.5),
+  Duration.seconds(11),
+  Duration.minutes(5),
+])('validates connectionTimeout is an int between 1 and 10 seconds', (connectionTimeout) => {
+  expect(() => {
+    new TestOrigin('www.example.com', {
+      connectionTimeout,
     });
-  });
-
-  test('as bucket, creates an OriginAccessIdentity and grants read permissions on the bucket', () => {
-    const bucket = new s3.Bucket(stack, 'Bucket');
-
-    const origin = Origin.fromBucket(bucket);
-    new Distribution(stack, 'Dist', { defaultBehavior: { origin } });
-
-    expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
-      CloudFrontOriginAccessIdentityConfig: {
-        Comment: 'Allows CloudFront to reach the bucket',
-      },
-    });
-    expect(stack).toHaveResourceLike('AWS::S3::BucketPolicy', {
-      PolicyDocument: {
-        Statement: [{
-          Principal: {
-            CanonicalUser: { 'Fn::GetAtt': [ 'DistS3Origin1C4519663', 'S3CanonicalUserId' ] },
-          },
-        }],
-      },
-    });
-  });
-
-  test('as website buvcket, renders all properties, including custom origin config', () => {
-    const bucket = new s3.Bucket(stack, 'Bucket', {
-      websiteIndexDocument: 'index.html',
-    });
-
-    const origin = Origin.fromBucket(bucket);
-    origin._bind(stack, { originIndex: 0 });
-
-    expect(origin._renderOrigin()).toEqual({
-      id: 'StackOrigin029E19582',
-      domainName: bucket.bucketWebsiteDomainName,
-      customOriginConfig: {
-        originProtocolPolicy: 'http-only',
-      },
-    });
-  });
-
+  }).toThrow(`connectionTimeout: Must be an int between 1 and 10 seconds (inclusive); received ${connectionTimeout.toSeconds()}.`);
 });
 
+test.each([-0.5, 0.5, 1.5, 4])
+('validates connectionAttempts is an int between 1 and 3', (connectionAttempts) => {
+  expect(() => {
+    new TestOrigin('www.example.com', {
+      connectionAttempts,
+    });
+  }).toThrow(`connectionAttempts: Must be an int between 1 and 3 (inclusive); received ${connectionAttempts}.`);
+});
+
+test.each(['api', '/api', '/api/', 'api/'])
+('enforces that originPath starts but does not end, with a /', (originPath) => {
+  const origin = new TestOrigin('www.example.com', {
+    originPath,
+  });
+  const originBindConfig = origin.bind(stack, { originId: '0' });
+
+  expect(originBindConfig.originProperty?.originPath).toEqual('/api');
+});

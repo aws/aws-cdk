@@ -30,7 +30,7 @@ the actual handler.
 
 ```ts
 import { CustomResource } from '@aws-cdk/core';
-import * as longs from '@aws-cdk/aws-logs';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cr from '@aws-cdk/custom-resources';
 
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
@@ -326,6 +326,11 @@ parameters can be found in the [API documentation](https://docs.aws.amazon.com/A
 Path to data must be specified using a dot notation, e.g. to get the string value
 of the `Title` attribute for the first item returned by `dynamodb.query` it should
 be `Items.0.Title.S`.
+
+To make sure that the newest API calls are available the latest AWS SDK v2 is installed
+in the Lambda function implementing the custom resource. The installation takes around 60
+seconds. If you prefer to optimize for speed, you can disable the installation by setting
+the `installLatestAwsSdk` prop to `false`.
 
 ### Execution Policy
 

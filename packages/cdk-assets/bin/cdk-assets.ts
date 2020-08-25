@@ -38,7 +38,7 @@ async function main() {
     }))
     .demandCommand()
     .help()
-    .strict()  // Error on wrong command
+    .strict() // Error on wrong command
     .version(VERSION)
     .showHelpOnFail(false)
     .argv;

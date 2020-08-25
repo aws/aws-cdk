@@ -316,12 +316,79 @@ describe('CDK Include', () => {
     });
   });
 
+  test('can ingest a template with the short form Conditions', () => {
+    includeTestTemplate(stack, 'short-form-conditions.yaml');
+
+    expect(stack).toMatchTemplate({
+      "Conditions": {
+        "AlwaysTrueCond": {
+          "Fn::Not": [
+            { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region1"] },
+          ],
+        },
+        "AnotherAlwaysTrueCond": {
+          "Fn::Not": [
+            { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region2"] },
+          ],
+        },
+        "ThirdAlwaysTrueCond": {
+          "Fn::Not": [
+            { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region3"] },
+          ],
+        },
+        "CombinedCond": {
+          "Fn::Or": [
+            { "Condition": "AlwaysTrueCond" },
+            { "Condition": "AnotherAlwaysTrueCond" },
+            { "Condition": "ThirdAlwaysTrueCond" },
+          ],
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::If": [
+                "CombinedCond",
+                "MyBucketName",
+                { "Ref": "AWS::NoValue" },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('can ingest a yaml with long-form functions and output it unchanged', () => {
     includeTestTemplate(stack, 'long-form-subnet.yaml');
 
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('long-form-subnet.yaml'),
     );
+  });
+
+  test('can ingest a YAML tempalte with Fn::Sub in string form and output it unchanged', () => {
+    includeTestTemplate(stack, 'short-form-fnsub-string.yaml');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('short-form-fnsub-string.yaml'),
+    );
+  });
+
+  test('can ingest a YAML tmeplate with Fn::Sub in map form and output it unchanged', () => {
+    includeTestTemplate(stack, 'short-form-sub-map.yaml');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('short-form-sub-map.yaml'),
+    );
+  });
+
+  test('the parser throws an error on a YAML tmeplate with short form import value that uses short form sub', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'invalid/short-form-import-sub.yaml');
+    }).toThrow(/A node can have at most one tag/);
   });
 });
 

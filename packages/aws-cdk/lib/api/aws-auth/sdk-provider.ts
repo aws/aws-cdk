@@ -12,6 +12,12 @@ import { Mode } from '../aws-auth/credentials';
 import { AwsCliCompatible } from './awscli-compatible';
 import { ISDK, SDK } from './sdk';
 
+
+// Some configuration that can only be achieved by setting
+// environment variables.
+process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
+process.env.AWS_NODEJS_CONNECTION_REUSE_ENABLED = '1';
+
 /**
  * Options for the default SDK provider
  */
@@ -82,7 +88,7 @@ const CACHED_DEFAULT_CREDENTIALS = Symbol('cached_default_credentials');
  */
 export class SdkProvider {
   /**
-   * Create a new SdkProvider which gets its defaults in a way that haves like the AWS CLI does
+   * Create a new SdkProvider which gets its defaults in a way that behaves like the AWS CLI does
    *
    * The AWS SDK for JS behaves slightly differently from the AWS CLI in a number of ways; see the
    * class `AwsCliCompatible` for the details.
@@ -164,7 +170,7 @@ export class SdkProvider {
       throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment');
     }
 
-    return  {
+    return {
       region,
       account,
       name: cxapi.EnvironmentUtils.format(account, region),
@@ -302,6 +308,7 @@ function parseHttpOptions(options: SdkHttpOptions) {
     debug('Using CA bundle path: %s', caBundlePath);
     config.httpOptions.agent = new https.Agent({
       ca: readIfPossible(caBundlePath),
+      keepAlive: true,
     });
   }
 
