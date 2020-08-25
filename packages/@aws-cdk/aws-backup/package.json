@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-backup",
         "module": "aws_cdk.aws_backup"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

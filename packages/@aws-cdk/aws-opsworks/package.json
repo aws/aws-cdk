@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-opsworks",
         "module": "aws_cdk.aws_opsworks"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-servicediscovery",
         "module": "aws_cdk.aws_servicediscovery"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

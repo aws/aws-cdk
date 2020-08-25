@@ -25,7 +25,8 @@
         "distName": "aws-cdk.cx-api",
         "module": "aws_cdk.cx_api"
       }
-    }
+    },
+    "projectReferences": true
   },
   "scripts": {
     "build": "cdk-build",

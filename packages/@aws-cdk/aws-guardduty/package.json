@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-guardduty",
         "module": "aws_cdk.aws_guardduty"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-accessanalyzer",
         "module": "aws_cdk.aws_accessanalyzer"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

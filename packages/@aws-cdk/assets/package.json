@@ -25,7 +25,8 @@
         "distName": "aws-cdk.assets",
         "module": "aws_cdk.assets"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

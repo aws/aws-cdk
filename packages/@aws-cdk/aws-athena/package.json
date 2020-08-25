@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-athena",
         "module": "aws_cdk.aws_athena"
       }
-    }
+    },
+    "projectReferences": true
   },
   "cdk-build": {
     "cloudformation": "AWS::Athena",

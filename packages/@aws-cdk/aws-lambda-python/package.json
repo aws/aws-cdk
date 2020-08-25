@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-lambda-python",
         "module": "aws_cdk.aws_lambda_python"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

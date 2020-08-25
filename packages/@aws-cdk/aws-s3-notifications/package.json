@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-s3-notifications",
         "module": "aws_cdk.aws_s3_notifications"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

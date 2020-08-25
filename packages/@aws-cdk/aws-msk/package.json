@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-msk",
         "module": "aws_cdk.aws_msk"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

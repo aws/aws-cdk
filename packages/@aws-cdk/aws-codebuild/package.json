@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-codebuild",
         "module": "aws_cdk.aws_codebuild"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

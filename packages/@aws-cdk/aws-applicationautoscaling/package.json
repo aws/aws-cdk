@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-applicationautoscaling",
         "module": "aws_cdk.aws_applicationautoscaling"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

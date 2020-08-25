@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-managedblockchain",
         "module": "aws_cdk.aws_managedblockchain"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

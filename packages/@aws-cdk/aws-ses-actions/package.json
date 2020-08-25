@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-ses-actions",
         "module": "aws_cdk.aws_ses_actions"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

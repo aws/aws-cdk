@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-codeguruprofiler",
         "module": "aws_cdk.aws_codeguruprofiler"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

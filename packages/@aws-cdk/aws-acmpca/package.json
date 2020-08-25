@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-acmpca",
         "module": "aws_cdk.aws_acmpca"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

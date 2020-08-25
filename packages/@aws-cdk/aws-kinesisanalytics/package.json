@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-kinesisanalytics",
         "module": "aws_cdk.aws_kinesisanalytics"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

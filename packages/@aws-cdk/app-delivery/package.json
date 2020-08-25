@@ -25,7 +25,8 @@
         "module": "aws_cdk.app_delivery"
       }
     },
-    "outdir": "dist"
+    "outdir": "dist",
+    "projectReferences": true
   },
   "scripts": {
     "build": "cdk-build",

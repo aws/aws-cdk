@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-resourcegroups",
         "module": "aws_cdk.aws_resourcegroups"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-batch",
         "module": "aws_cdk.aws_batch"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-mediastore",
         "module": "aws_cdk.aws_mediastore"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

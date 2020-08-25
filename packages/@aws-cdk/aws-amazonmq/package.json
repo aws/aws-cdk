@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-amazonmq",
         "module": "aws_cdk.aws_amazonmq"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-codestarnotifications",
         "module": "aws_cdk.aws_codestarnotifications"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

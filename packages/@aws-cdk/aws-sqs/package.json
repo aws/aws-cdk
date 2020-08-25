@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-sqs",
         "module": "aws_cdk.aws_sqs"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

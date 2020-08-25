@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-iotevents",
         "module": "aws_cdk.aws_iotevents"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

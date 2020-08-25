@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-eks-legacy",
         "module": "aws_cdk.aws_eks_legacy"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

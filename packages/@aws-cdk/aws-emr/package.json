@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-emr",
         "module": "aws_cdk.aws_emr"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

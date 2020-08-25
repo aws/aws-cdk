@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-appmesh",
         "module": "aws_cdk.aws_appmesh"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

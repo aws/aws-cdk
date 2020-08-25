@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-appconfig",
         "module": "aws_cdk.aws_appconfig"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

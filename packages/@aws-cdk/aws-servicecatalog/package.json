@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-servicecatalog",
         "module": "aws_cdk.aws_servicecatalog"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

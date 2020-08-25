@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-codestar",
         "module": "aws_cdk.aws_codestar"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

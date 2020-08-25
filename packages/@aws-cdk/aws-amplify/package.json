@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-amplify",
         "module": "aws_cdk.aws_amplify"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

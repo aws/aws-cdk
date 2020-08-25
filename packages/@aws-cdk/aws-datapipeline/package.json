@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-datapipeline",
         "module": "aws_cdk.aws_datapipeline"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

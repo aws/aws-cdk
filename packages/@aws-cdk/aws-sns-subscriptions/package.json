@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-sns-subscriptions",
         "module": "aws_cdk.aws_sns_subscriptions"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

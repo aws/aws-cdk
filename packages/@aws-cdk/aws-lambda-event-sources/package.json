@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-lambda-event-sources",
         "module": "aws_cdk.aws_lambda_event_sources"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

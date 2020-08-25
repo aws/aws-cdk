@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-cloud9",
         "module": "aws_cdk.aws_cloud9"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

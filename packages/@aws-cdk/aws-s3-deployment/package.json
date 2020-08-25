@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-s3-deployment",
         "module": "aws_cdk.aws_s3_deployment"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-globalaccelerator",
         "module": "aws_cdk.aws_globalaccelerator"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
