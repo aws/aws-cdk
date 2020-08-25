@@ -1170,7 +1170,7 @@ export = {
   'grantInvoke with an imported role (from a different account)'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, undefined, {
-      env: { account: '333344445555' },
+      env: { account: '3333' },
     });
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
