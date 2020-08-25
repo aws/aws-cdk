@@ -1,0 +1,43 @@
+import { Test } from 'nodeunit';
+declare const _default: {
+    'When Application Load Balancer': {
+        'test ECS ALB construct with default settings'(test: Test): void;
+        'test ECS ALB construct with all settings'(test: Test): void;
+        'set vpc instead of cluster'(test: Test): void;
+        'able to pass pre-defined task definition'(test: Test): void;
+        'able to output correct load balancer DNS and URLs for each protocol type'(test: Test): void;
+        'errors if no essential container in pre-defined task definition'(test: Test): void;
+        'set default load balancer, listener, target group correctly'(test: Test): void;
+        'setting vpc and cluster throws error'(test: Test): void;
+        'creates AWS Cloud Map service for Private DNS namespace'(test: Test): void;
+        'errors when setting both taskDefinition and taskImageOptions'(test: Test): void;
+        'errors when setting neither taskDefinition nor taskImageOptions'(test: Test): void;
+        'errors when setting domainName but not domainZone'(test: Test): void;
+        'errors when loadBalancers is empty'(test: Test): void;
+        'errors when targetGroups is empty'(test: Test): void;
+        'errors when no listener specified'(test: Test): void;
+        'errors when setting both HTTP protocol and certificate'(test: Test): void;
+        'errors when setting HTTPS protocol but not domain name'(test: Test): void;
+        'errors when listener is not defined but used in creating target groups'(test: Test): void;
+        'errors if desiredTaskCount is 0'(test: Test): void;
+    };
+    'When Network Load Balancer': {
+        'test ECS NLB construct with default settings'(test: Test): void;
+        'test ECS NLB construct with all settings'(test: Test): void;
+        'set vpc instead of cluster'(test: Test): void;
+        'able to pass pre-defined task definition'(test: Test): void;
+        'errors if no essential container in pre-defined task definition'(test: Test): void;
+        'set default load balancer, listener, target group correctly'(test: Test): void;
+        'setting vpc and cluster throws error'(test: Test): void;
+        'creates AWS Cloud Map service for Private DNS namespace'(test: Test): void;
+        'errors when setting both taskDefinition and taskImageOptions'(test: Test): void;
+        'errors when setting neither taskDefinition nor taskImageOptions'(test: Test): void;
+        'errors when setting domainName but not domainZone'(test: Test): void;
+        'errors when loadBalancers is empty'(test: Test): void;
+        'errors when targetGroups is empty'(test: Test): void;
+        'errors when no listener specified'(test: Test): void;
+        'errors when listener is not defined but used in creating target groups'(test: Test): void;
+        'errors if desiredTaskCount is 0'(test: Test): void;
+    };
+};
+export = _default;

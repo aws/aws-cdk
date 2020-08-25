@@ -1,0 +1,1 @@
+/home/ubuntu/environment/aws-cdk/tools/cdk-build-tools/config/nyc.config.js

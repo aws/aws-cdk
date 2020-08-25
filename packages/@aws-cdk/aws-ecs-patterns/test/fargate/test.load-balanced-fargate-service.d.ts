@@ -1,0 +1,26 @@
+import { Test } from 'nodeunit';
+declare const _default: {
+    'setting loadBalancerType to Network creates an NLB Public'(test: Test): void;
+    'setting loadBalancerType to Network and publicLoadBalancer to false creates an NLB Private'(test: Test): void;
+    'setting vpc and cluster throws error'(test: Test): void;
+    'setting executionRole updated taskDefinition with given execution role'(test: Test): void;
+    'setting taskRole updated taskDefinition with given task role'(test: Test): void;
+    'setting containerName updates container name with given name'(test: Test): void;
+    'not setting containerName updates container name with default'(test: Test): void;
+    'setting servicename updates service name with given name'(test: Test): void;
+    'not setting servicename updates service name with default'(test: Test): void;
+    'setting healthCheckGracePeriod works'(test: Test): void;
+    'setting platform version'(test: Test): void;
+    'test load balanced service with family defined'(test: Test): void;
+    'setting NLB special listener port to create the listener'(test: Test): void;
+    'setting ALB special listener port to create the listener'(test: Test): void;
+    'setting ALB HTTPS protocol to create the listener on 443'(test: Test): void;
+    'setting ALB HTTPS correctly sets the recordset name'(test: Test): void;
+    'setting ALB HTTP protocol to create the listener on 80'(test: Test): void;
+    'setting ALB without any protocol or listenerPort to create the listener on 80'(test: Test): void;
+    'passing in existing network load balancer to NLB Fargate Service'(test: Test): void;
+    'passing in imported network load balancer and resources to NLB Fargate service'(test: Test): void;
+    'passing in previously created application load balancer to ALB Fargate Service'(test: Test): void;
+    'passing in imported application load balancer and resources to ALB Fargate Service'(test: Test): void;
+};
+export = _default;

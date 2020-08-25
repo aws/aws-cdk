@@ -1,36 +1,36 @@
 {
-  "name": "@aws-cdk/aws-ecs-patterns",
+  "name": "@aws-containers/aws-ecs-builder",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS ECS",
+  "description": "The CDK Construct Library that supplies a builder pattern for ECS services",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.ecs.patterns",
+        "package": "software.amazon.awscdk.@aws.containers/aws.ecs.builder",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "ecs-patterns"
+          "artifactId": "cdk-@aws-containers/aws-ecs-builder"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ECS.Patterns",
-        "packageId": "Amazon.CDK.AWS.ECS.Patterns",
+        "namespace": "Amazon.CDK.Aws.ContainersAws.Ecs.Builder",
+        "packageId": "Amazon.CDK.AWS.Containers.Builder",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-ecs-patterns",
-        "module": "aws_cdk.aws_ecs_patterns"
+        "distName": "aws-cdk.aws-containers.aws-ecs-builder",
+        "module": "aws_cdk.aws_containers.aws_ecs_builder"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-ecs-patterns"
+    "directory": "packages/@aws-containers/aws-ecs-builder"
   },
   "scripts": {
     "build": "cdk-build",
@@ -49,8 +49,7 @@
     "aws",
     "cdk",
     "constructs",
-    "ecs",
-    "ecs-patterns"
+    "ecs"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -112,17 +111,9 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "stable",
-  "awslint": {
-    "exclude": [
-      "docs-public-apis:@aws-cdk/aws-ecs-patterns.NetworkLoadBalancedFargateService.assignPublicIp",
-      "docs-public-apis:@aws-cdk/aws-ecs-patterns.ApplicationLoadBalancedTaskImageOptions",
-      "docs-public-apis:@aws-cdk/aws-ecs-patterns.NetworkLoadBalancedTaskImageOptions",
-      "docs-public-apis:@aws-cdk/aws-ecs-patterns.ScheduledTaskImageProps"
-    ]
-  },
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "experimental",
+  "stability": "experimental"
 }
