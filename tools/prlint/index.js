@@ -88,7 +88,7 @@ function validateBreakingChangeFormat(body) {
     const m = re.exec(body);
     if (m) {
         if (!m[0].startsWith('BREAKING CHANGE: ')) {
-            throw new LinterError(`Breaking changes should be indicated by starting a line with \'BREAKING CHANGE: \', variations are not allowed. (found: '${m[0]}')`);
+            throw new LinterError(`Breaking changes should be indicated by starting a line with 'BREAKING CHANGE: ', variations are not allowed. (found: '${m[0]}')`);
         }
     }
 }
