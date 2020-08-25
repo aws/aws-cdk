@@ -385,7 +385,7 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
       ],
       Version: '2012-10-17',
     },
-    Description: 'Created by Table/Bucket',
+    Description: 'Created by Default/Table/Bucket',
   }));
 
   cdkExpect(stack).to(haveResource('AWS::S3::Bucket', {
@@ -1510,17 +1510,18 @@ test('validate: unique partition keys', () => {
 });
 
 test('validate: column names and partition keys are all unique', () => {
-  expect(() => { createTable({
-    tableName: 'name',
-    columns: [{
-      name: 'col1',
-      type: glue.Schema.STRING,
-    }],
-    partitionKeys: [{
-      name: 'col1',
-      type: glue.Schema.STRING,
-    }],
-  });
+  expect(() => {
+    createTable({
+      tableName: 'name',
+      columns: [{
+        name: 'col1',
+        type: glue.Schema.STRING,
+      }],
+      partitionKeys: [{
+        name: 'col1',
+        type: glue.Schema.STRING,
+      }],
+    });
   }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
 
 });

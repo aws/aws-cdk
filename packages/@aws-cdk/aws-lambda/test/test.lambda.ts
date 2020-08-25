@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -237,7 +237,7 @@ export = {
       const role = new iam.Role(stack, 'SomeRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
-      role.addToPolicy(new iam.PolicyStatement({ actions: ['confirm:itsthesame'] }));
+      role.addToPolicy(new iam.PolicyStatement({ actions: ['confirm:itsthesame'], resources: ['*'] }));
 
       // WHEN
       const fn = new lambda.Function(stack, 'Function', {
@@ -246,20 +246,20 @@ export = {
         handler: 'index.test',
         role,
         initialPolicy: [
-          new iam.PolicyStatement({ actions: ['inline:inline'] }),
+          new iam.PolicyStatement({ actions: ['inline:inline'], resources: ['*'] }),
         ],
       });
 
-      fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'] }));
+      fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'], resources: ['*'] }));
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Version': '2012-10-17',
           'Statement': [
-            { 'Action': 'confirm:itsthesame', 'Effect': 'Allow' },
-            { 'Action': 'inline:inline', 'Effect': 'Allow' },
-            { 'Action': 'explicit:explicit', 'Effect': 'Allow' },
+            { 'Action': 'confirm:itsthesame', 'Effect': 'Allow', 'Resource': '*' },
+            { 'Action': 'inline:inline', 'Effect': 'Allow', 'Resource': '*' },
+            { 'Action': 'explicit:explicit', 'Effect': 'Allow', 'Resource': '*' },
           ],
         },
       }));
@@ -1522,6 +1522,46 @@ export = {
       },
       MaximumRetryAttempts: 0,
     }));
+
+    test.done();
+  },
+
+  'check edge compatibility with env vars that can be removed'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_12_X,
+    });
+    fn.addEnvironment('KEY', 'value', { removeInEdge: true });
+
+    // WHEN
+    fn._checkEdgeCompatibility();
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Environment: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'check edge compatibility with env vars that cannot be removed'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_12_X,
+      environment: {
+        KEY: 'value',
+      },
+    });
+    fn.addEnvironment('OTHER_KEY', 'other_value', { removeInEdge: true });
+
+    // THEN
+    test.throws(() => fn._checkEdgeCompatibility(), /The function Default\/fn contains environment variables \[KEY\] and is not compatible with Lambda@Edge/);
 
     test.done();
   },

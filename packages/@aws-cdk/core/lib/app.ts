@@ -119,7 +119,7 @@ export class App extends Stage {
 
   private loadContext(defaults: { [key: string]: string } = { }) {
     // prime with defaults passed through constructor
-    for (const [ k, v ] of Object.entries(defaults)) {
+    for (const [k, v] of Object.entries(defaults)) {
       this.node.setContext(k, v);
     }
 
@@ -129,7 +129,7 @@ export class App extends Stage {
       ? JSON.parse(contextJson)
       : { };
 
-    for (const [ k, v ] of Object.entries(contextFromEnvironment)) {
+    for (const [k, v] of Object.entries(contextFromEnvironment)) {
       this.node.setContext(k, v);
     }
   }

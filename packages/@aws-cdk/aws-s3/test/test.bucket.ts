@@ -1,9 +1,9 @@
-import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { EOL } from 'os';
+import { expect, haveResource, haveResourceLike, SynthUtils, arrayWith, objectLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { EOL } from 'os';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
@@ -31,7 +31,7 @@ export = {
   'CFN properties are type-validated during resolution'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      bucketName: cdk.Token.asString(5),  // Oh no
+      bucketName: cdk.Token.asString(5), // Oh no
     });
 
     test.throws(() => {
@@ -459,7 +459,11 @@ export = {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
-      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: [ 'bar:baz' ]}));
+      bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['foo'],
+        actions: ['bar:baz'],
+        principals: [new iam.AnyPrincipal()],
+      }));
 
       expect(stack).toMatch({
         'Resources': {
@@ -479,6 +483,7 @@ export = {
                   {
                     'Action': 'bar:baz',
                     'Effect': 'Allow',
+                    'Principal': '*',
                     'Resource': 'foo',
                   },
                 ],
@@ -497,11 +502,16 @@ export = {
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
-      const x = new iam.PolicyStatement({ resources: [bucket.bucketArn], actions: ['s3:ListBucket'] });
+      const x = new iam.PolicyStatement({
+        resources: [bucket.bucketArn],
+        actions: ['s3:ListBucket'],
+        principals: [new iam.AnyPrincipal()],
+      });
 
       test.deepEqual(stack.resolve(x.toStatementJson()), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
+        Principal: '*',
         Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
       });
 
@@ -513,11 +523,16 @@ export = {
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
-      const p = new iam.PolicyStatement({ resources: [bucket.arnForObjects('hello/world')], actions: ['s3:GetObject'] });
+      const p = new iam.PolicyStatement({
+        resources: [bucket.arnForObjects('hello/world')],
+        actions: ['s3:GetObject'],
+        principals: [new iam.AnyPrincipal()],
+      });
 
       test.deepEqual(stack.resolve(p.toStatementJson()), {
         Action: 's3:GetObject',
         Effect: 'Allow',
+        Principal: '*',
         Resource: {
           'Fn::Join': [
             '',
@@ -539,11 +554,16 @@ export = {
       const team = new iam.Group(stack, 'MyTeam');
 
       const resource = bucket.arnForObjects(`home/${team.groupName}/${user.userName}/*`);
-      const p = new iam.PolicyStatement({ resources: [resource], actions: ['s3:GetObject'] });
+      const p = new iam.PolicyStatement({
+        resources: [resource],
+        actions: ['s3:GetObject'],
+        principals: [new iam.AnyPrincipal()],
+      });
 
       test.deepEqual(stack.resolve(p.toStatementJson()), {
         Action: 's3:GetObject',
         Effect: 'Allow',
+        Principal: '*',
         Resource: {
           'Fn::Join': [
             '',
@@ -592,14 +612,23 @@ export = {
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn });
 
       // this is a no-op since the bucket is external
-      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: ['bar:baz']}));
+      bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['foo'],
+        actions: ['bar:baz'],
+        principals: [new iam.AnyPrincipal()],
+      }));
 
-      const p = new iam.PolicyStatement({ resources: [bucket.bucketArn], actions: ['s3:ListBucket'] });
+      const p = new iam.PolicyStatement({
+        resources: [bucket.bucketArn],
+        actions: ['s3:ListBucket'],
+        principals: [new iam.AnyPrincipal()],
+      });
 
       // it is possible to obtain a permission statement for a ref
       test.deepEqual(p.toStatementJson(), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
+        Principal: '*',
         Resource: 'arn:aws:s3:::my-bucket',
       });
 
@@ -610,20 +639,32 @@ export = {
       test.done();
     },
 
+    'import does not create any resources'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
+      bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['*'],
+        principals: [new iam.AnyPrincipal()],
+      }));
+
+      // at this point we technically didn't create any resources in the consuming stack.
+      expect(stack).toMatch({});
+      test.done();
+    },
+
     'import can also be used to import arbitrary ARNs'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
       bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['*'], actions: ['*'] }));
-
-      // at this point we technically didn't create any resources in the consuming stack.
-      expect(stack).toMatch({});
 
       // but now we can reference the bucket
       // you can even use the bucket name, which will be extracted from the arn provided.
       const user = new iam.User(stack, 'MyUser');
       user.addToPolicy(new iam.PolicyStatement({
         resources: [bucket.arnForObjects(`my/folder/${bucket.bucketName}`)],
-        actions: ['s3:*'] }));
+        actions: ['s3:*'],
+      }));
 
       expect(stack).toMatch({
         'Resources': {
@@ -653,6 +694,22 @@ export = {
           },
         },
       });
+
+      test.done();
+    },
+
+    'import can explicitly set bucket region'(test: Test) {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'myBucket',
+        region: 'eu-west-1',
+      });
+
+      test.equals(bucket.bucketRegionalDomainName, `myBucket.s3.eu-west-1.${stack.urlSuffix}`);
+      test.equals(bucket.bucketWebsiteDomainName, `myBucket.s3-website-eu-west-1.${stack.urlSuffix}`);
 
       test.done();
     },
@@ -867,7 +924,7 @@ export = {
           'MyBucketKeyC17130CF': {
             'Type': 'AWS::KMS::Key',
             'Properties': {
-              'Description': 'Created by MyBucket',
+              'Description': 'Created by Default/MyBucket',
               'KeyPolicy': {
                 'Statement': [
                   {
@@ -1182,12 +1239,12 @@ export = {
 
     'in different accounts'(test: Test) {
       // given
-      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' }});
+      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' } });
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
         bucketName: 'my-bucket-physical-name',
       });
 
-      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});
+      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' } });
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
         roleName: 'MyRolePhysicalName',
@@ -1272,7 +1329,7 @@ export = {
 
     'in different accounts, with a KMS Key'(test: Test) {
       // given
-      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' }});
+      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' } });
       const key = new kms.Key(stackA, 'MyKey');
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
         bucketName: 'my-bucket-physical-name',
@@ -1280,7 +1337,7 @@ export = {
         encryption: s3.BucketEncryption.KMS,
       });
 
-      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});
+      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' } });
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
         roleName: 'MyRolePhysicalName',
@@ -1667,7 +1724,7 @@ export = {
         'Fn::Select': [
           2,
           {
-            'Fn::Split': [ '/', { 'Fn::GetAtt': [ 'Website32962D0B', 'WebsiteURL' ] } ],
+            'Fn::Split': ['/', { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] }],
           },
         ],
       });
@@ -1971,4 +2028,56 @@ export = {
 
     test.done();
   },
+
+  'Defaults for an inventory bucket'(test: Test) {
+    // Given
+    const stack = new cdk.Stack();
+
+    const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
+    new s3.Bucket(stack, 'MyBucket', {
+      inventories: [
+        {
+          destination: {
+            bucket: inventoryBucket,
+          },
+        },
+      ],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::S3::Bucket', {
+      InventoryConfigurations: [
+        {
+          Enabled: true,
+          IncludedObjectVersions: 'All',
+          ScheduleFrequency: 'Weekly',
+          Destination: {
+            Format: 'CSV',
+            BucketArn: { 'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'] },
+          },
+          Id: 'MyBucketInventory0',
+        },
+      ],
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::S3::BucketPolicy', {
+      Bucket: { Ref: 'InventoryBucketA869B8CB' },
+      PolicyDocument: {
+        Statement: arrayWith(objectLike({
+          Action: 's3:PutObject',
+          Principal: { Service: 's3.amazonaws.com' },
+          Resource: [
+            {
+              'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'],
+            },
+            {
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'] }, '/*']],
+            },
+          ],
+        })),
+      },
+    }));
+
+    test.done();
+  },
+
 };

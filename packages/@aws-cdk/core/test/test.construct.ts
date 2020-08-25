@@ -1,6 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Test } from 'nodeunit';
 import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
+import { Annotations } from '../lib/annotations';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -254,13 +255,13 @@ export = {
 
     con.node.addMetadata('key', 'value');
     con.node.addMetadata('number', 103);
-    con.node.addMetadata('array', [ 123, 456 ]);
+    con.node.addMetadata('array', [123, 456]);
     restoreStackTraceColection(previousValue);
 
     test.deepEqual(con.node.metadata[0].type, 'key');
     test.deepEqual(con.node.metadata[0].data, 'value');
     test.deepEqual(con.node.metadata[1].data, 103);
-    test.deepEqual(con.node.metadata[2].data, [ 123, 456 ]);
+    test.deepEqual(con.node.metadata[2].data, [123, 456]);
     test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace[1].indexOf('FIND_ME') !== -1, 'First stack line should include this function\s name');
     test.done();
   },
@@ -288,7 +289,7 @@ export = {
     const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
-    con.node.addWarning('This construct is deprecated, use the other one instead');
+    Annotations.of(con).addWarning('This construct is deprecated, use the other one instead');
     restoreStackTraceColection(previousValue);
 
     test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
@@ -301,7 +302,7 @@ export = {
     const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
-    con.node.addError('Stop!');
+    Annotations.of(con).addError('Stop!');
     restoreStackTraceColection(previousValue);
 
     test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.ERROR);
@@ -314,7 +315,7 @@ export = {
     const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
-    con.node.addInfo('Hey there, how do you do?');
+    Annotations.of(con).addInfo('Hey there, how do you do?');
     restoreStackTraceColection(previousValue);
 
     test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.INFO);
@@ -338,13 +339,13 @@ export = {
 
     class MyConstruct extends Construct {
       protected validate() {
-        return [ 'my-error1', 'my-error2' ];
+        return ['my-error1', 'my-error2'];
       }
     }
 
     class YourConstruct extends Construct {
       protected validate() {
-        return [ 'your-error1' ];
+        return ['your-error1'];
       }
     }
 
@@ -356,7 +357,7 @@ export = {
       }
 
       protected validate() {
-        return [ 'their-error' ];
+        return ['their-error'];
       }
     }
 
@@ -369,7 +370,7 @@ export = {
       }
 
       protected validate() {
-        return  [ 'stack-error' ];
+        return ['stack-error'];
       }
     }
 
@@ -436,14 +437,14 @@ export = {
 
     // THEN
     test.deepEqual(c1.node.findAll().map(x => x.node.id), c1.node.findAll(ConstructOrder.PREORDER).map(x => x.node.id)); // default is PreOrder
-    test.deepEqual(c1.node.findAll(ConstructOrder.PREORDER).map(x => x.node.id), [ '1', '2', '4', '5', '3' ]);
-    test.deepEqual(c1.node.findAll(ConstructOrder.POSTORDER).map(x => x.node.id), [ '4', '5', '2', '3', '1' ]);
+    test.deepEqual(c1.node.findAll(ConstructOrder.PREORDER).map(x => x.node.id), ['1', '2', '4', '5', '3']);
+    test.deepEqual(c1.node.findAll(ConstructOrder.POSTORDER).map(x => x.node.id), ['4', '5', '2', '3', '1']);
     test.done();
   },
 
   'ancestors returns a list of parents up to root'(test: Test) {
     const { child1_1_1 } = createTree();
-    test.deepEqual(child1_1_1.node.scopes.map(x => x.node.id), [ '', 'HighChild', 'Child1', 'Child11', 'Child111' ]);
+    test.deepEqual(child1_1_1.node.scopes.map(x => x.node.id), ['', 'HighChild', 'Child1', 'Child11', 'Child111']);
     test.done();
   },
 
