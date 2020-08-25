@@ -194,6 +194,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
    */
   protected _connections?: ec2.Connections;
 
+  private _latestVersion?: LatestVersion;
+
   /**
    * Adds a permission to the Lambda resource policy.
    * @param id The id ƒor the permission construct
@@ -245,7 +247,10 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
   public get latestVersion(): IVersion {
     // Dynamic to avoid infinite recursion when creating the LatestVersion instance...
-    return new LatestVersion(this);
+    if (!this._latestVersion) {
+      this._latestVersion = new LatestVersion(this);
+    }
+    return this._latestVersion;
   }
 
   /**
