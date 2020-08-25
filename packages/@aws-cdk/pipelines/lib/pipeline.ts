@@ -33,6 +33,14 @@ export interface CdkPipelineProps {
   readonly pipelineName?: string;
 
   /**
+   * CodePipeline pipeline instance to add the stages to
+   *
+   * [disable-awslint:ref-via-interface]
+   * @default - A new pipeline instance is created
+   */
+  readonly pipeline?: codepipeline.Pipeline;
+
+  /**
    * CDK CLI version to use in pipeline
    *
    * Some Actions in the pipeline will download and run a version of the CDK
@@ -72,28 +80,29 @@ export class CdkPipeline extends Construct {
     this._cloudAssemblyArtifact = props.cloudAssemblyArtifact;
     const pipelineStack = Stack.of(this);
 
-    this._pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
+    this._pipeline = props.pipeline ?? new codepipeline.Pipeline(this, 'Pipeline', {
       ...props,
       restartExecutionOnUpdate: true,
-      stages: [
-        {
-          stageName: 'Source',
-          actions: [props.sourceAction],
-        },
-        {
-          stageName: 'Build',
-          actions: [props.synthAction],
-        },
-        {
-          stageName: 'UpdatePipeline',
-          actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
-            cloudAssemblyInput: this._cloudAssemblyArtifact,
-            pipelineStackName: pipelineStack.stackName,
-            cdkCliVersion: props.cdkCliVersion,
-            projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
-          })],
-        },
-      ],
+    });
+
+    this._pipeline.addStage({
+      stageName: 'Source',
+      actions: [props.sourceAction],
+    });
+
+    this._pipeline.addStage({
+      stageName: 'Build',
+      actions: [props.synthAction],
+    });
+
+    this._pipeline.addStage({
+      stageName: 'UpdatePipeline',
+      actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
+        cloudAssemblyInput: this._cloudAssemblyArtifact,
+        pipelineStackName: pipelineStack.stackName,
+        cdkCliVersion: props.cdkCliVersion,
+        projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
+      })],
     });
 
     this._assets = new AssetPublishing(this, 'Assets', {

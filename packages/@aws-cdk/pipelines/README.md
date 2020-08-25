@@ -288,6 +288,26 @@ testingStage.addApplication(new MyApplication2(this, 'MyApp2', {
 }));
 ```
 
+### Even More Control
+
+If you need to customize the underlying CodePipeline pipeline in any way that is not directly
+supported by `CdkPipeline`, you can instantiate the CodePipeline pipeline manually and pass it
+to the `CdkPipeline` as a property:
+
+```ts
+// Create CDK Pipeline using a custom S3 bucket as an artifact store
+const customBucket = new s3.Bucket(this, 'CustomArtifactBucket');
+const customPipeline = new codepipeline.Pipeline(this, 'CustomPipeline', {
+  artifactBucket: customBucket,
+  restartExecutionOnUpdate: true
+});
+
+const cdkPipeline = new CdkPipeline(this, 'CdkPipeline', {
+  pipeline: customPipeline,
+  ...
+});
+```
+
 ## Adding validations to the pipeline
 
 You can add any type of CodePipeline Action to the pipeline in order to validate

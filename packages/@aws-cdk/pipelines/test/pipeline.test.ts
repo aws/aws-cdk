@@ -1,5 +1,6 @@
 import { anything, arrayWith, deepObjectLike, encodedJson, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
 import * as cdkp from '../lib';
 import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, TestGitHubNpmPipeline } from './testutil';
@@ -370,6 +371,23 @@ test('can control fix/CLI version used in pipeline selfupdate', () => {
         },
       })),
     },
+  });
+});
+
+test('can provide a codepipeline pipeline instance in props', () => {
+  // WHEN
+  const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
+  const cpPipeline = new codepipeline.Pipeline(stack2, 'Pipeline', {
+    pipelineName: 'VeryUnlikelyNameForAPipeline',
+    restartExecutionOnUpdate: true,
+  });
+  new TestGitHubNpmPipeline(stack2, 'Cdk2', {
+    pipeline: cpPipeline,
+  });
+
+  // THEN
+  expect(stack2).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Name: 'VeryUnlikelyNameForAPipeline',
   });
 });
 
