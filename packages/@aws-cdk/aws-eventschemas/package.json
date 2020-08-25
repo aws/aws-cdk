@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-eventschemas",
         "module": "aws_cdk.aws_eventschemas"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

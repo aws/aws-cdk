@@ -25,7 +25,8 @@
         "distName": "aws-cdk.cloudformation-include",
         "module": "aws_cdk.cloudformation_include"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

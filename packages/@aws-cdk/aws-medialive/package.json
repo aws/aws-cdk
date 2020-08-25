@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-medialive",
         "module": "aws_cdk.aws_medialive"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-dms",
         "module": "aws_cdk.aws_dms"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

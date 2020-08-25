@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-pinpointemail",
         "module": "aws_cdk.aws_pinpointemail"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
