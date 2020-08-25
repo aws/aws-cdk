@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-cloudfront-origins",
         "module": "aws_cdk.aws_cloudfront_origins"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

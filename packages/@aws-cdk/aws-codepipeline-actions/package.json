@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-codepipeline-actions",
         "module": "aws_cdk.aws_codepipeline_actions"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

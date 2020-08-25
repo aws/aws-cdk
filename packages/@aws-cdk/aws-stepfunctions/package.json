@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-stepfunctions",
         "module": "aws_cdk.aws_stepfunctions"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

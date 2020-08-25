@@ -25,7 +25,8 @@
         "distName": "aws-cdk.custom-resources",
         "module": "aws_cdk.custom_resources"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

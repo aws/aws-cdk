@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-secretsmanager",
         "module": "aws_cdk.aws_secretsmanager"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-cognito",
         "module": "aws_cdk.aws_cognito"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -70,7 +70,8 @@
         "distName": "monocdk.experiment",
         "module": "monocdk_experiment"
       }
-    }
+    },
+    "projectReferences": false
   },
   "author": {
     "name": "Amazon Web Services",

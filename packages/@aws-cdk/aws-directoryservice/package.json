@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-directoryservice",
         "module": "aws_cdk.aws_directoryservice"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

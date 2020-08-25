@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-ecs",
         "module": "aws_cdk.aws_ecs"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
