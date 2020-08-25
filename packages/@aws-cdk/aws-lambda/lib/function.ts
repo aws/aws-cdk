@@ -256,7 +256,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - Default AWS SDK retry options.
    */
-  readonly logRetentionRetryOptions?: LogRetentionRetryOptions | logs.LogRetentionRetryOptions;
+  readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
 
   /**
    * Options for the `lambda.Version` resource automatically created by the

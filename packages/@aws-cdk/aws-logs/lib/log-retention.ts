@@ -104,7 +104,6 @@ export class LogRetention extends cdk.Construct {
     const functionLogicalId = 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a';
     const existing = cdk.Stack.of(this).node.tryFindChild(functionLogicalId);
     if (existing) {
-      // Just assume this is true
       return existing as LogRetentionFunction;
     }
     return new LogRetentionFunction(cdk.Stack.of(this), functionLogicalId, props);

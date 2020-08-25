@@ -2,8 +2,7 @@ import { ABSENT, countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { RetentionDays } from '../lib';
-import { LogRetention } from '../lib/log-retention';
+import { LogRetention, RetentionDays } from '../lib';
 
 /* eslint-disable quote-props */
 
