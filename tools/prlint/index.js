@@ -134,7 +134,7 @@ async function validatePr(number) {
 // we don't use the 'export' prefix because github actions
 // node runtime doesn't seem to support ES6.
 // TODO need to verify this.
-module.exports.mandatoryChanges = mandatoryChanges
+module.exports.validatePr = validatePr
 
 require('make-runnable/custom')({
     printOutputFrame: false
