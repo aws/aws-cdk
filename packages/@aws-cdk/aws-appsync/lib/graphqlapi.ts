@@ -382,9 +382,9 @@ export class GraphQLApi extends GraphqlApiBase {
    */
   public readonly apiKey?: string;
 
-  private _schema: CfnGraphQLSchema;
+  private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
-  private _apiKey?: CfnApiKey;
+  private apiKeyResource?: CfnApiKey;
 
   constructor(scope: Construct, id: string, props: GraphQLApiProps) {
     super(scope, id);
@@ -411,15 +411,15 @@ export class GraphQLApi extends GraphqlApiBase {
     this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
     this.schema = props.schema ?? new Schema();
-    this._schema = this.schema.bind(this);
+    this.schemaResource = this.schema.bind(this);
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
       const config = modes.find((mode: AuthorizationMode) => {
         return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
       })?.apiKeyConfig;
-      this._apiKey = this.createAPIKey(config);
-      this._apiKey.addDependsOn(this._schema);
-      this.apiKey = this._apiKey.attrApiKey;
+      this.apiKeyResource = this.createAPIKey(config);
+      this.apiKeyResource.addDependsOn(this.schemaResource);
+      this.apiKey = this.apiKeyResource.attrApiKey;
     }
   }
 
@@ -496,7 +496,7 @@ export class GraphQLApi extends GraphqlApiBase {
    * @param construct the dependee
    */
   public addSchemaDependency(construct: CfnResource): boolean {
-    construct.addDependsOn(this._schema);
+    construct.addDependsOn(this.schemaResource);
     return true;
   }
 

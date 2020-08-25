@@ -47,7 +47,7 @@ import * as db from '@aws-cdk/aws-dynamodb';
 
 const api = new appsync.GraphQLApi(stack, 'Api', {
   name: 'demo',
-  schema: appsync.Schema.fromFile(join(__dirname, 'schema.graphql')),
+  schema: appsync.Schema.fromAsset(join(__dirname, 'schema.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: appsync.AuthorizationType.IAM
@@ -94,7 +94,7 @@ When declaring your GraphQL Api, CDK defaults to a code-first approach if the
 `schema` property is not configured. 
 
 ```ts
-const api = appsync.GraphQLApi(stack, 'api', { name: 'myApi' });
+const api = new appsync.GraphQLApi(stack, 'api', { name: 'myApi' });
 ```
 
 CDK will declare a `Schema` class that will give your Api access functions to
@@ -108,7 +108,7 @@ const schema = new appsync.Schema();
 schema.addObjectType('demo', {
   definition: { id: appsync.GraphqlType.id() },
 });
-const api = appsync.GraphQLApi(stack, 'api', {
+const api = new appsync.GraphQLApi(stack, 'api', {
   name: 'myApi',
   schema
 });
