@@ -82,4 +82,48 @@ describe('testing InterfaceType properties', () => {
       Definition: `${out}`,
     });
   });
+
+  test('Interface Type can generate Fields with Directives', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', {
+      definition: {
+        test: t.string,
+      },
+    });
+    test.addField('resolve', new appsync.Field({
+      returnType: t.string,
+      directives: [appsync.Directive.iam()],
+    }));
+
+    api.addType(test);
+    const out = 'interface Test {\n  test: String\n  resolve: String\n  @aws_iam\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('Interface Type can generate ResolvableFields with Directives, but not the resolver', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', {
+      definition: {
+        test: t.string,
+      },
+    });
+    test.addField('resolve', new appsync.ResolvableField({
+      returnType: t.string,
+      directives: [appsync.Directive.iam()],
+      dataSource: api.addNoneDataSource('none'),
+    }));
+
+    api.addType(test);
+    const out = 'interface Test {\n  test: String\n  resolve: String\n  @aws_iam\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+    expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
+  });
 });

@@ -7,6 +7,7 @@ import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-f
  *
  * @param definition - the variables and types that define this type
  * i.e. { string: GraphqlType, string: GraphqlType }
+ * @param directives - the directives for this object type
  *
  * @experimental
  */
@@ -15,6 +16,12 @@ export interface IntermediateTypeProps {
    * the attributes of this type
    */
   readonly definition: { [key: string]: IField };
+  /**
+   * the directives for this object type
+   *
+   * @default - no directives
+   */
+  readonly directives?: Directive[];
 }
 
 /**
@@ -32,10 +39,17 @@ export class InterfaceType implements IIntermediateType {
    * the attributes of this type
    */
   public readonly definition: { [key: string]: IField };
+  /**
+   * the directives for this object type
+   *
+   * @default - no directives
+   */
+  public readonly directives?: Directive[];
 
   public constructor(name: string, props: IntermediateTypeProps) {
     this.name = name;
     this.definition = props.definition;
+    this.directives = props.directives;
   }
 
   /**
@@ -59,13 +73,19 @@ export class InterfaceType implements IIntermediateType {
    * Generate the string of this object type
    */
   public toString(): string {
-    let schemaAddition = `interface ${this.name} {\n`;
-    Object.keys(this.definition).forEach( (key) => {
-      const attribute = this.definition[key];
-      const args = attribute.argsToString();
-      schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
-    });
-    return `${schemaAddition}}`;
+    return Object.keys(this.definition).reduce((acc, key) => {
+      return `${acc}${this.fieldToString(key, this.definition[key])}`;
+    }, `interface ${this.name} ${this.generateDirectives()}{\n`) + '}';
+  }
+
+  /**
+   * Generate the field from its attributes
+   *
+   * @param key the key for this field
+   * @param field the attributes of this field
+   */
+  protected fieldToString(key: string, field: IField): string {
+    return `  ${key}${field.argsToString()}: ${field.toString()}${field.directivesToString()}\n`;
   }
 
   /**
@@ -76,6 +96,18 @@ export class InterfaceType implements IIntermediateType {
    */
   public addField(fieldName: string, field: IField): void {
     this.definition[fieldName] = field;
+  }
+
+  /**
+   * Utility function to generate directives
+   *
+   * @param delimiter the separator betweeen directives
+   * @default - ' '
+   */
+  protected generateDirectives(delimiter?: string): string {
+    if (!this.directives) { return ''; }
+    return this.directives.reduce((acc, directive) =>
+      `${acc}${directive.statement}${delimiter ?? ' '}`, '');
   }
 }
 
@@ -96,12 +128,6 @@ export interface ObjectTypeProps extends IntermediateTypeProps {
    * @default - no interface types
    */
   readonly interfaceTypes?: InterfaceType[];
-  /**
-   * the directives for this object type
-   *
-   * @default - no directives
-   */
-  readonly directives?: Directive[];
 }
 
 /**
@@ -117,12 +143,6 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
    */
   public readonly interfaceTypes?: InterfaceType[];
   /**
-   * the directives for this object type
-   *
-   * @default - no directives
-   */
-  public readonly directives?: Directive[];
-  /**
    * The resolvers linked to this data source
    */
   public resolvers?: Resolver[];
@@ -132,10 +152,10 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
       definition: props.interfaceTypes?.reduce((def, interfaceType) => {
         return Object.assign({}, def, interfaceType.definition);
       }, props.definition) ?? props.definition,
+      directives: props.directives,
     };
     super(name, options);
     this.interfaceTypes = props.interfaceTypes;
-    this.directives = props.directives;
     this.resolvers = [];
 
     Object.keys(this.definition).forEach((fieldName) => {
@@ -161,36 +181,12 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
   public toString(): string {
     let title = this.name;
     if (this.interfaceTypes && this.interfaceTypes.length) {
-      title = `${title} implements`;
-      this.interfaceTypes.map((interfaceType) => {
-        title = `${title} ${interfaceType.name},`;
-      });
-      title = title.slice(0, -1);
+      title = this.interfaceTypes.reduce((acc, interfaceType) =>
+        `${acc} ${interfaceType.name},`, `${title} implements`).slice(0, -1);
     }
-    const directives = this.generateDirectives(this.directives);
-    let schemaAddition = `type ${title} ${directives}{\n`;
-    Object.keys(this.definition).forEach( (key) => {
-      const attribute = this.definition[key];
-      const args = attribute.argsToString();
-      schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
-    });
-    return `${schemaAddition}}`;
-  }
-
-  /**
-   * Utility function to generate directives
-   *
-   * @param directives the directives of a given type
-   * @param delimiter the separator betweeen directives
-   * @default - ' '
-   */
-  private generateDirectives(directives?: Directive[], delimiter?: string): string {
-    let schemaAddition = '';
-    if (!directives) { return schemaAddition; }
-    directives.map((directive) => {
-      schemaAddition = `${schemaAddition}${directive.statement}${delimiter ?? ' '}`;
-    });
-    return schemaAddition;
+    return Object.keys(this.definition).reduce((acc, key) => {
+      return `${acc}${this.fieldToString(key, this.definition[key])}`;
+    }, `type ${title} ${this.generateDirectives()}{\n`) + '}';
   }
 
   /**

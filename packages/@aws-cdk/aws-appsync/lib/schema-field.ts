@@ -1,6 +1,6 @@
 import { BaseDataSource } from './data-source';
 import { MappingTemplate } from './mapping-template';
-import { Type, IField, IIntermediateType } from './schema-base';
+import { Type, IField, IIntermediateType, Directive } from './schema-base';
 
 /**
  * Base options for GraphQL Types
@@ -321,6 +321,13 @@ export class GraphqlType implements IField {
   public argsToString(): string {
     return '';
   }
+
+  /**
+   * Generate the directives for this field
+   */
+  public directivesToString(): string {
+    return '';
+  }
 }
 
 /**
@@ -345,6 +352,12 @@ export interface FieldOptions {
    * @default - no arguments
    */
   readonly args?: { [key: string]: GraphqlType };
+  /**
+   * the directives for this field
+   *
+   * @default - no directives
+   */
+  readonly directives?: Directive[];
 }
 
 /**
@@ -375,13 +388,17 @@ export class Field extends GraphqlType implements IField {
    */
   public argsToString(): string {
     if (!this.fieldOptions || !this.fieldOptions.args) { return ''; }
-    let args = '(';
-    Object.keys(this.fieldOptions?.args ?? {}).forEach((key) => {
-      const type = this.fieldOptions?.args?.[key].toString();
-      args = `${args}${key}: ${type} `;
-    });
-    args = args.slice(0, -1);
-    return `${args})`;
+    return Object.keys(this.fieldOptions.args).reduce((acc, key) =>
+      `${acc}${key}: ${this.fieldOptions?.args?.[key].toString()} `, '(').slice(0, -1) + ')';
+  }
+
+  /**
+   * Generate the directives for this field
+   */
+  public directivesToString(): string {
+    if (!this.fieldOptions || !this.fieldOptions.directives) { return ''; }
+    return this.fieldOptions.directives.reduce((acc, directive) =>
+      `${acc}${directive.statement} `, '\n  ').slice(0, -1);
   }
 }
 

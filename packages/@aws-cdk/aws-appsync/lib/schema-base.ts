@@ -61,6 +61,11 @@ export interface IField {
    * Generate the arguments for this field
    */
   argsToString(): string;
+
+  /**
+   * Generate the directives for this field
+   */
+  directivesToString(): string
 }
 
 /**
@@ -132,6 +137,38 @@ export class Directive {
    */
   public static iam(): Directive {
     return new Directive('@aws_iam');
+  }
+
+  /**
+   * Add the @aws_oidc directive
+   */
+  public static oidc(): Directive {
+    return new Directive('@aws_oidc');
+  }
+
+  /**
+   * Add the @aws_api_key directive
+   */
+  public static apiKey(): Directive {
+    return new Directive('@aws_api_key');
+  }
+
+  /**
+   * Add the @aws_auth or @aws_cognito_user_pools directive
+   *
+   * @param groups the groups to allow access to
+   * @param additional is cognito an additional authorization?
+   * @default false
+   */
+  public static cognito(groups: string[], additional?: boolean): Directive {
+    if (groups.length === 0) {
+      throw new Error('Groups parameter must not be empty.');
+    }
+    const prefix = additional ? '@aws_cognito_user_pools' : '@aws_auth';
+    const stringify = (array: string[]): string => {
+      return array.reduce((acc, element) => `${acc}"${element}", `, '[').slice(0, -2) + ']';
+    };
+    return new Directive(`${prefix}(cognito_groups: ${stringify(groups)})`);
   }
 
   /**
