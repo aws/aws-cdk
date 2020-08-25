@@ -60,7 +60,7 @@ test('Parcel bundling', () => {
   });
 
   // Correctly updates package.json
-  const call = writeFileSyncMock.mock.calls[0];
+  const call: any = writeFileSyncMock.mock.calls[0];
   expect(call[0]).toMatch('package.json');
   expect(JSON.parse(call[1])).toEqual(expect.objectContaining({
     targets: {
@@ -144,7 +144,7 @@ test('Parcel bundling with externals and dependencies', () => {
   });
 
   // Correctly updates package.json
-  const call = writeFileSyncMock.mock.calls[0];
+  const call: any = writeFileSyncMock.mock.calls[0];
   expect(call[0]).toMatch('package.json');
   expect(JSON.parse(call[1])).toEqual(expect.objectContaining({
     targets: expect.objectContaining({
