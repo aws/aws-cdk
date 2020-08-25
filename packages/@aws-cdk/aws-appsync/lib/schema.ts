@@ -52,7 +52,7 @@ export class Schema {
   public constructor(options?: SchemaOptions) {
     if (options?.filePath) {
       this.mode = SchemaMode.FILE;
-      this.definition = readFileSync(options.filePath).toString('UTF-8');
+      this.definition = readFileSync(options.filePath).toString('utf-8');
     } else {
       this.mode = SchemaMode.CODE;
       this.definition = '';
