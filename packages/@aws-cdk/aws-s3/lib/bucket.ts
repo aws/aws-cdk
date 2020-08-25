@@ -1125,7 +1125,7 @@ export class Bucket extends BucketBase {
    */
   public static fromBucketAttributes(scope: Construct, id: string, attrs: BucketAttributes): IBucket {
     const stack = Stack.of(scope);
-    const region = stack.region;
+    const region = attrs.region ?? stack.region;
     const urlSuffix = stack.urlSuffix;
 
     const bucketName = parseBucketName(scope, attrs);
