@@ -12,7 +12,7 @@ import { TestStack } from './util';
 class EksClusterStack extends TestStack {
 
   private cluster: eks.Cluster;
-  private vpc: ec2.Vpc;
+  private vpc: ec2.IVpc;
 
   constructor(scope: App, id: string) {
     super(scope, id);
@@ -47,6 +47,8 @@ class EksClusterStack extends TestStack {
     this.assertInferenceInstances();
 
     this.assertNodeGroup();
+
+    this.assertNodeGroupCustomAmi();
 
     this.assertSimpleManifest();
 
@@ -108,6 +110,15 @@ class EksClusterStack extends TestStack {
   }
   private assertNodeGroup() {
     // add a extra nodegroup
+    this.cluster.addNodegroup('extra-ng', {
+      instanceType: new ec2.InstanceType('t3.small'),
+      minSize: 1,
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+    });
+  }
+  private assertNodeGroupCustomAmi() {
+    // add a extra nodegroup
     const userData = ec2.UserData.forLinux();
     userData.addCommands(
       'set -o xtrace',
@@ -120,7 +131,7 @@ class EksClusterStack extends TestStack {
         userData: Fn.base64(userData.render()),
       },
     });
-    this.cluster.addNodegroup('extra-ng', {
+    this.cluster.addNodegroup('extra-ng2', {
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultNodegroup?.role || this.cluster.defaultCapacity?.role,
