@@ -8,6 +8,7 @@ const apiKey = [appsync.Directive.apiKey()];
 const oidc = [appsync.Directive.oidc()];
 const cognito_default = [appsync.Directive.cognito(['test', 'test2'])];
 const cognito_additional = [appsync.Directive.cognito(['test', 'test2'], true)];
+const custom = [appsync.Directive.custom('custom')];
 
 const generateField = (directives: appsync.Directive[]): appsync.Field => {
   return new appsync.Field({
@@ -88,7 +89,11 @@ describe('Basic Testing of Directives for Code-First', () => {
     testObjectType(api, cognito_additional, '@aws_cognito_user_pools(cognito_groups: ["test", "test2"])');
   });
 
-  test('Cognito as default directive configures in Interface Type', () => {
-    testInterfaceType(api, cognito_additional, '@aws_cognito_user_pools(cognito_groups: ["test", "test2"])');
+  test('Custom directive configures in Object Type', () => {
+    testObjectType(api, custom, 'custom');
+  });
+
+  test('Custom directive configures in Interface Type', () => {
+    testInterfaceType(api, custom, 'custom');
   });
 });
