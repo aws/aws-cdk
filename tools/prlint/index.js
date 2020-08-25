@@ -93,7 +93,7 @@ function validateBreakingChangeFormat(body) {
     }
 }
 
-async function mandatoryChanges(number) {
+async function validatePr(number) {
 
     if (!number) {
         throw new Error('Must provide a PR number')
@@ -135,7 +135,6 @@ async function mandatoryChanges(number) {
 // node runtime doesn't seem to support ES6.
 // TODO need to verify this.
 module.exports.mandatoryChanges = mandatoryChanges
-module.exports.LinterError = LinterError
 
 require('make-runnable/custom')({
     printOutputFrame: false
