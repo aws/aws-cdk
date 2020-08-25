@@ -1,7 +1,7 @@
 ---
 name: "\U0001F41B Bug Report"
 about: Report a bug
-title: "[module]: "
+title: "[module] "
 labels: bug, needs-triage
 ---
 
@@ -18,16 +18,17 @@ description of the bug:
 minimal amount of code that causes the bug (if possible) or a reference:
 -->
 
-
-
-
-### Error Log
+### What did you expect to happen?
 
 <!--
-what is the error message you are seeing?
+What were you trying to achieve by performing the steps above?
 -->
 
+### What actually happened?
 
+<!--
+What is the unexpected behavior you were seeing? If you got an error, paste it here.
+-->
 
 
 ### Environment

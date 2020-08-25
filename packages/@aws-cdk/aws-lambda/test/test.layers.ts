@@ -1,9 +1,9 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import * as path from 'path';
+import { canonicalizeTemplate, expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test, testCase } from 'nodeunit';
-import * as path from 'path';
 import * as lambda from '../lib';
 
 export = testCase({
@@ -43,7 +43,7 @@ export = testCase({
 
     // WHEN
     layer.addPermission('GrantUsage-123456789012', { accountId: '123456789012' });
-    layer.addPermission('GrantUsage-o-123456',     { accountId: '*', organizationId: 'o-123456' });
+    layer.addPermission('GrantUsage-o-123456', { accountId: '*', organizationId: 'o-123456' });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersionPermission', {
@@ -85,9 +85,9 @@ export = testCase({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::LayerVersion', {
+    expect(canonicalizeTemplate(SynthUtils.toCloudFormation(stack))).to(haveResource('AWS::Lambda::LayerVersion', {
       Metadata: {
-        'aws:asset:path': 'asset.45f085ecc03a1a22cf003fba3fab28e660c92bcfcd4d0c01b62c7cd191070a2d',
+        'aws:asset:path': 'asset.Asset1Hash',
         'aws:asset:property': 'Content',
       },
     }, ResourcePart.CompleteDefinition));

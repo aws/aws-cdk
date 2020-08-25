@@ -21,5 +21,9 @@
         "incremental": true
     },
     "include": ["**/*.ts" ],
-    "exclude": ["node_modules"]
+    "exclude": ["node_modules"],
+    "references": [
+        { "path": "../../@aws-cdk/cloudformation-diff" },
+        { "path": "../../monocdk-experiment" }
+    ]
 }

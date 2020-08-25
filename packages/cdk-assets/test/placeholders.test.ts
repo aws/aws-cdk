@@ -1,4 +1,4 @@
-import { AssetManifestSchema } from '@aws-cdk/cdk-assets-schema';
+import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
 import { AssetManifest, AssetPublishing } from '../lib';
 import { mockAws, mockedApiResult } from './mock-aws';
@@ -7,7 +7,7 @@ let aws: ReturnType<typeof mockAws>;
 beforeEach(() => {
   mockfs({
     '/simple/cdk.out/assets.json': JSON.stringify({
-      version: AssetManifestSchema.currentVersion(),
+      version: Manifest.version(),
       files: {
         fileAsset: {
           type: 'file',
@@ -76,7 +76,7 @@ test('check that placeholders are replaced', async () => {
   }));
 
   expect(aws.mockEcr.describeImages).toHaveBeenCalledWith(expect.objectContaining({
-    imageIds: [{imageTag: 'abcdef'}],
+    imageIds: [{ imageTag: 'abcdef' }],
     repositoryName: 'repo-current_account-explicit_region',
   }));
 });

@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-events",
   "version": "0.0.0",
-  "description": "AWS CloudWatch Events Construct Library",
+  "description": "Amazon EventBridge Construct Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -55,7 +55,8 @@
     "cdk",
     "constructs",
     "cloudwatch",
-    "events"
+    "events",
+    "eventbridge"
   ],
   "author": {
     "name": "Amazon Web Services",

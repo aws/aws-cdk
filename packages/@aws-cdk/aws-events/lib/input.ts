@@ -1,5 +1,7 @@
-import { captureStackTrace, DefaultTokenResolver, IResolvable,
-  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization } from '@aws-cdk/core';
+import {
+  captureStackTrace, DefaultTokenResolver, IResolvable,
+  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
+} from '@aws-cdk/core';
 import { IRule } from './rule-ref';
 
 /**
@@ -116,7 +118,7 @@ class LiteralEventInput extends RuleTargetInput {
  *
  * One weird exception: if we're in object context, we MUST skip the quotes
  * around the placeholder. I assume this is so once a trivial string replace is
- * done later on by CWE, numbers are still numbers.
+ * done later on by EventBridge, numbers are still numbers.
  *
  * So in string context:
  *

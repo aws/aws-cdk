@@ -1,4 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert';
+import { arrayWith, objectLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -104,16 +104,19 @@ describe('State Machine Resources', () => {
     const taskState = task.toStateJson();
 
     // THEN
-    expect(taskState).toStrictEqual({ End: true,
+    expect(taskState).toStrictEqual({
+      End: true,
       Retry: undefined,
       Catch: undefined,
       InputPath: '$',
       Parameters:
-             { 'input.$': '$',
+             {
+               'input.$': '$',
                'stringArgument': 'inital-task',
                'numberArgument': 123,
                'booleanArgument': true,
-               'arrayArgument': [ 'a', 'b', 'c' ] },
+               'arrayArgument': ['a', 'b', 'c'],
+             },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -147,13 +150,16 @@ describe('State Machine Resources', () => {
     const taskState = task.toStateJson();
 
     // THEN
-    expect(taskState).toStrictEqual({ End: true,
+    expect(taskState).toStrictEqual({
+      End: true,
       Retry: undefined,
       Catch: undefined,
       InputPath: '$',
       Parameters:
-             { a: 'aa',
-               b: 'bb' },
+             {
+               a: 'aa',
+               b: 'bb',
+             },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -183,25 +189,244 @@ describe('State Machine Resources', () => {
     stateMachine.grantStartExecution(role);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: arrayWith(objectLike({
+          Action: 'states:StartExecution',
+          Effect: 'Allow',
+          Resource: {
+            Ref: 'StateMachine2E01A3A5',
+          },
+        })),
+      },
+    });
+
+  }),
+
+  test('Created state machine can grant read access to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      task: {
+        bind: () => ({ resourceArn: 'resource' }),
+      },
+    });
+    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: task,
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grantRead(role);
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'states:StartExecution',
+            Action: [
+              'states:ListExecutions',
+              'states:ListStateMachines',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'StateMachine2E01A3A5',
+            },
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:DescribeStateMachineForExecution',
+              'states:GetExecutionHistory',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:',
+                  {
+                    'Fn::Select': [
+                      6,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  ':*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              'states:ListActivities',
+              'states:DescribeStateMachine',
+              'states:DescribeActivity',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+      },
+    },
+    );
+
+  }),
+
+  test('Created state machine can grant task response actions to the state machine', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      task: {
+        bind: () => ({ resourceArn: 'resource' }),
+      },
+    });
+    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: task,
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grantTaskResponse(role);
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'states:SendTaskSuccess',
+              'states:SendTaskFailure',
+              'states:SendTaskHeartbeat',
+            ],
             Effect: 'Allow',
             Resource: {
               Ref: 'StateMachine2E01A3A5',
             },
           },
         ],
-        Version: '2012-10-17',
       },
-      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
-      Roles: [
-        {
-          Ref: 'Role1ABCC5F0',
-        },
-      ],
+    });
+  }),
+
+  test('Created state machine can grant actions to the executions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      task: {
+        bind: () => ({ resourceArn: 'resource' }),
+      },
+    });
+    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: task,
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grantExecution(role, 'states:GetExecutionHistory');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:GetExecutionHistory',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:',
+                  {
+                    'Fn::Select': [
+                      6,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  ':*',
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+  }),
+
+  test('Created state machine can grant actions to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      task: {
+        bind: () => ({ resourceArn: 'resource' }),
+      },
+    });
+    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: task,
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grant(role, 'states:ListExecution');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:ListExecution',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'StateMachine2E01A3A5',
+            },
+          },
+        ],
+      },
     });
 
   }),
@@ -239,6 +464,129 @@ describe('State Machine Resources', () => {
     });
   }),
 
+  test('Imported state machine can grant read access to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stateMachineArn = 'arn:aws:states:::my-state-machine';
+    const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grantRead(role);
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'states:ListExecutions',
+              'states:ListStateMachines',
+            ],
+            Effect: 'Allow',
+            Resource: stateMachineArn,
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:DescribeStateMachineForExecution',
+              'states:GetExecutionHistory',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              'states:ListActivities',
+              'states:DescribeStateMachine',
+              'states:DescribeActivity',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+      },
+    },
+    );
+  }),
+
+  test('Imported state machine can task response permissions to the state machine', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stateMachineArn = 'arn:aws:states:::my-state-machine';
+    const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grantTaskResponse(role);
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'states:SendTaskSuccess',
+              'states:SendTaskFailure',
+              'states:SendTaskHeartbeat',
+            ],
+            Effect: 'Allow',
+            Resource: stateMachineArn,
+          },
+        ],
+      },
+    });
+  }),
+
+  test('Imported state machine can grant access to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stateMachineArn = 'arn:aws:states:::my-state-machine';
+    const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grant(role, 'states:ListExecution');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:ListExecution',
+            Effect: 'Allow',
+            Resource: stateMachine.stateMachineArn,
+          },
+        ],
+      },
+    });
+  }),
+
   test('Pass should render InputPath / Parameters / OutputPath correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -258,15 +606,18 @@ describe('State Machine Resources', () => {
     const taskState = task.toStateJson();
 
     // THEN
-    expect(taskState).toStrictEqual({ End: true,
+    expect(taskState).toStrictEqual({
+      End: true,
       InputPath: '$',
       OutputPath: '$.state',
       Parameters:
-             { 'input.$': '$',
+             {
+               'input.$': '$',
                'stringArgument': 'inital-task',
                'numberArgument': 123,
                'booleanArgument': true,
-               'arrayArgument': [ 'a', 'b', 'c' ] },
+               'arrayArgument': ['a', 'b', 'c'],
+             },
       Type: 'Pass',
       Comment: undefined,
       Result: undefined,
@@ -279,7 +630,7 @@ describe('State Machine Resources', () => {
     const stack = new cdk.Stack();
     const task = new stepfunctions.Pass(stack, 'Pass', {
       parameters: {
-        input: stepfunctions.Data.stringAt('$.myField'),
+        input: stepfunctions.JsonPath.stringAt('$.myField'),
       },
     });
 
@@ -287,9 +638,10 @@ describe('State Machine Resources', () => {
     const taskState = task.toStateJson();
 
     // THEN
-    expect(taskState).toEqual({ End: true,
+    expect(taskState).toEqual({
+      End: true,
       Parameters:
-      { 'input.$': '$.myField'},
+      { 'input.$': '$.myField' },
       Type: 'Pass',
     });
   }),

@@ -84,6 +84,31 @@ Will extract the value of `jsonField` wherever it occurs in JSON-structed
 log records in the LogGroup, and emit them to CloudWatch Metrics under
 the name `Namespace/MetricName`.
 
+#### Exposing Metric on a Metric Filter
+
+You can expose a metric on a metric filter by calling the `MetricFilter.metric()` API. 
+This has a default of `statistic = 'avg'` if the statistic is not set in the `props`.
+
+```ts
+const mf = new MetricFilter(this, 'MetricFilter', {
+  logGroup,
+  metricNamespace: 'MyApp',
+  metricName: 'Latency',
+  filterPattern: FilterPattern.exists('$.latency'),
+  metricValue: '$.latency',
+});
+
+//expose a metric from the metric filter
+const metric = mf.metric();
+
+//you can use the metric to create a new alarm
+new Alarm(this, 'alarm from metric filter', {
+  metric,
+  threshold: 100,
+  evaluationPeriods: 2,
+});
+```
+
 ### Patterns
 
 Patterns describe which log events match a subscription or metric filter. There

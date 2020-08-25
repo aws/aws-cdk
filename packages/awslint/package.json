@@ -1,0 +1,53 @@
+{
+  "name": "awslint",
+  "version": "0.0.0",
+  "description": "Enforces the AWS Construct Library guidelines",
+  "scripts": {
+    "build": "tsc -b && npm run lint && chmod +x bin/awslint",
+    "lint": "eslint . --ext=.ts && pkglint",
+    "test": "echo ok",
+    "watch": "tsc -b -w",
+    "package": "mkdir -p dist/js && mv $( npm pack ) dist/js/",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "pkglint": "pkglint -f"
+  },
+  "bin": {
+    "awslint": "bin/awslint"
+  },
+  "dependencies": {
+    "@jsii/spec": "^1.9.0",
+    "camelcase": "^6.0.0",
+    "colors": "^1.4.0",
+    "fs-extra": "^9.0.1",
+    "jsii-reflect": "^1.9.0",
+    "yargs": "^15.3.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.1.0",
+    "@types/yargs": "^15.0.5",
+    "pkglint": "0.0.0",
+    "typescript": "~3.9.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/awslint"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "maturity": "developer-preview",
+  "stability": "experimental",
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  }
+}

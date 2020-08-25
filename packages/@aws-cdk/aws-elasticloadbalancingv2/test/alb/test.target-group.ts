@@ -59,7 +59,7 @@ export = {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
-    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', {vpc});
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
     const listener = new elbv2.ApplicationListener(stack, 'Listener', {
       port: 80,
       loadBalancer: alb,
@@ -84,16 +84,16 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      HealthCheckEnabled : true,
-      HealthCheckIntervalSeconds : 255,
-      HealthCheckPath : '/arbitrary',
-      HealthCheckTimeoutSeconds : 192,
-      HealthyThresholdCount : 29,
-      Matcher : {
-        HttpCode : '255',
+      HealthCheckEnabled: true,
+      HealthCheckIntervalSeconds: 255,
+      HealthCheckPath: '/arbitrary',
+      HealthCheckTimeoutSeconds: 192,
+      HealthyThresholdCount: 29,
+      Matcher: {
+        HttpCode: '255',
       },
       Port: 80,
-      UnhealthyThresholdCount : 27,
+      UnhealthyThresholdCount: 27,
     }));
 
     test.done();

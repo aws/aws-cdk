@@ -6,7 +6,7 @@ import { IResolvable, IResolveContext } from './resolvable';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 /**
  * CloudFormation intrinsic functions.
@@ -170,6 +170,17 @@ export class Fn {
    */
   public static findInMap(mapName: string, topLevelKey: string, secondLevelKey: string): string {
     return new FnFindInMap(mapName, topLevelKey, secondLevelKey).toString();
+  }
+
+  /**
+   * Creates a token representing the ``Fn::Transform`` expression
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-transform.html
+   * @param macroName The name of the macro to perform the processing
+   * @param parameters The parameters to be passed to the macro
+   * @returns a token representing the transform expression
+   */
+  public static transform(macroName: string, parameters: { [name: string]: any }): IResolvable {
+    return new FnTransform(macroName, parameters);
   }
 
   /**
@@ -352,7 +363,21 @@ class FnFindInMap extends FnBase {
    * @param secondLevelKey The second-level key name, which is set to one of the keys from the list assigned to TopLevelKey.
    */
   constructor(mapName: string, topLevelKey: any, secondLevelKey: any) {
-    super('Fn::FindInMap', [ mapName, topLevelKey, secondLevelKey ]);
+    super('Fn::FindInMap', [mapName, topLevelKey, secondLevelKey]);
+  }
+}
+
+/**
+ * The intrinsic function ``Fn::Transform`` specifies a macro to perform custom processing on part of a stack template.
+ */
+class FnTransform extends FnBase {
+  /**
+   * creates an ``Fn::Transform`` function.
+   * @param macroName The name of the macro to be invoked
+   * @param parameters the parameters to pass to it
+   */
+  constructor(macroName: string, parameters: { [name: string]: any }) {
+    super('Fn::Transform', { Name: macroName, Parameters: parameters });
   }
 }
 
@@ -366,7 +391,7 @@ class FnGetAtt extends FnBase {
    * @param attributeName The name of the resource-specific attribute whose value you want. See the resource's reference page for details about the attributes available for that resource type.
    */
   constructor(logicalNameOfResource: string, attributeName: string) {
-    super('Fn::GetAtt', [ logicalNameOfResource, attributeName ]);
+    super('Fn::GetAtt', [logicalNameOfResource, attributeName]);
   }
 }
 
@@ -415,7 +440,7 @@ class FnSelect extends FnBase {
    * @param array The list of objects to select from. This list must not be null, nor can it have null entries.
    */
   constructor(index: number, array: any) {
-    super('Fn::Select', [ index, array ]);
+    super('Fn::Select', [index, array]);
   }
 }
 
@@ -432,7 +457,7 @@ class FnSplit extends FnBase {
    * @param source The string value that you want to split.
    */
   constructor(delimiter: string, source: any) {
-    super('Fn::Split', [ delimiter, source ]);
+    super('Fn::Split', [delimiter, source]);
   }
 }
 
@@ -519,7 +544,7 @@ class FnEquals extends FnConditionBase {
    * @param rhs A value of any type that you want to compare.
    */
   constructor(lhs: any, rhs: any) {
-    super('Fn::Equals', [ lhs, rhs ]);
+    super('Fn::Equals', [lhs, rhs]);
   }
 }
 
@@ -538,7 +563,7 @@ class FnIf extends FnConditionBase {
    * @param valueIfFalse A value to be returned if the specified condition evaluates to false.
    */
   constructor(condition: string, valueIfTrue: any, valueIfFalse: any) {
-    super('Fn::If', [ condition, valueIfTrue, valueIfFalse ]);
+    super('Fn::If', [condition, valueIfTrue, valueIfFalse]);
   }
 }
 
@@ -552,7 +577,7 @@ class FnNot extends FnConditionBase {
    * @param condition A condition such as ``Fn::Equals`` that evaluates to true or false.
    */
   constructor(condition: ICfnConditionExpression) {
-    super('Fn::Not', [ condition ]);
+    super('Fn::Not', [condition]);
   }
 }
 
@@ -581,7 +606,7 @@ class FnContains extends FnConditionBase {
    * @param value A string, such as "A", that you want to compare against a list of strings.
    */
   constructor(listOfStrings: any, value: string) {
-    super('Fn::Contains', [ listOfStrings, value ]);
+    super('Fn::Contains', [listOfStrings, value]);
   }
 }
 
@@ -595,7 +620,7 @@ class FnEachMemberEquals extends FnConditionBase {
    * @param value A string, such as "A", that you want to compare against a list of strings.
    */
   constructor(listOfStrings: any, value: string) {
-    super('Fn::EachMemberEquals', [ listOfStrings, value ]);
+    super('Fn::EachMemberEquals', [listOfStrings, value]);
   }
 }
 
@@ -639,7 +664,7 @@ class FnValueOf extends FnBase {
    * @param attribute The name of an attribute from which you want to retrieve a value.
    */
   constructor(parameterOrLogicalId: string, attribute: string) {
-    super('Fn::ValueOf', [ parameterOrLogicalId, attribute ]);
+    super('Fn::ValueOf', [parameterOrLogicalId, attribute]);
   }
 }
 
@@ -653,7 +678,7 @@ class FnValueOfAll extends FnBase {
    * @param attribute The name of an attribute from which you want to retrieve a value. For more information about attributes, see Supported Attributes.
    */
   constructor(parameterType: string, attribute: string) {
-    super('Fn::ValueOfAll', [ parameterType, attribute ]);
+    super('Fn::ValueOfAll', [parameterType, attribute]);
   }
 }
 
@@ -687,13 +712,13 @@ class FnJoin implements IResolvable {
   public resolve(context: IResolveContext): any {
     if (Token.isUnresolved(this.listOfValues)) {
       // This is a list token, don't try to do smart things with it.
-      return { 'Fn::Join': [ this.delimiter, this.listOfValues ] };
+      return { 'Fn::Join': [this.delimiter, this.listOfValues] };
     }
     const resolved = this.resolveValues(context);
     if (resolved.length === 1) {
       return resolved[0];
     }
-    return { 'Fn::Join': [ this.delimiter, resolved ] };
+    return { 'Fn::Join': [this.delimiter, resolved] };
   }
 
   public toString() {
@@ -711,6 +736,6 @@ class FnJoin implements IResolvable {
    */
   private resolveValues(context: IResolveContext) {
     const resolvedValues = this.listOfValues.map(x => Reference.isReference(x) ? x : context.resolve(x));
-    return  minimalCloudFormationJoin(this.delimiter, resolvedValues);
+    return minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }

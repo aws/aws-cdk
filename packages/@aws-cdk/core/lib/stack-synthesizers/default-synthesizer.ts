@@ -1,10 +1,11 @@
-import * as asset_schema from '@aws-cdk/cdk-assets-schema';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
+import { CfnParameter } from '../cfn-parameter';
+import { CfnRule } from '../cfn-rule';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
@@ -13,10 +14,12 @@ import { IStackSynthesizer } from './types';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
+/* eslint-disable max-len */
+
 /**
  * The minimum bootstrap stack version required by this app.
  */
-const MIN_BOOTSTRAP_STACK_VERSION = 3;
+const MIN_BOOTSTRAP_STACK_VERSION = 4;
 
 /**
  * Configuration properties for DefaultStackSynthesizer
@@ -197,8 +200,8 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
 
-  private readonly files: NonNullable<asset_schema.ManifestFile['files']> = {};
-  private readonly dockerImages: NonNullable<asset_schema.ManifestFile['dockerImages']> = {};
+  private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
+  private readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
 
   constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
   }
@@ -223,7 +226,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       });
     };
 
-    // tslint:disable:max-line-length
+    /* eslint-disable max-len */
     this.bucketName = specialize(this.props.fileAssetsBucketName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME);
     this.repositoryName = specialize(this.props.imageAssetsRepositoryName ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME);
     this._deployRoleArn = specialize(this.props.deployRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
@@ -231,7 +234,9 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
     this._kmsKeyArnExportName = specialize(this.props.fileAssetKeyArnExportName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME);
-    // tslint:enable:max-line-length
+    /* eslint-enable max-len */
+
+    addBootstrapVersionRule(stack, MIN_BOOTSTRAP_STACK_VERSION, qualifier);
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
@@ -269,7 +274,6 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       httpUrl,
       s3ObjectUrl,
       s3Url: httpUrl,
-      kmsKeyArn: Fn.importValue(cfnify(this._kmsKeyArnExportName)),
     };
   }
 
@@ -390,8 +394,8 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     const manifestFile = `${artifactId}.json`;
     const outPath = path.join(session.assembly.outdir, manifestFile);
 
-    const manifest: asset_schema.ManifestFile = {
-      version: asset_schema.AssetManifestSchema.currentVersion(),
+    const manifest: cxschema.AssetManifest = {
+      version: cxschema.Manifest.version(),
       files: this.files,
       dockerImages: this.dockerImages,
     };
@@ -460,4 +464,39 @@ function stackLocationOrInstrinsics(stack: Stack) {
     region: resolvedOr(stack.region, '${AWS::Region}'),
     urlSuffix: resolvedOr(stack.urlSuffix, '${AWS::URLSuffix}'),
   };
+}
+
+/**
+ * Add a CfnRule to the Stack which checks the current version of the bootstrap stack this template is targeting
+ *
+ * The CLI normally checks this, but in a pipeline the CLI is not involved
+ * so we encode this rule into the template in a way that CloudFormation will check it.
+ */
+function addBootstrapVersionRule(stack: Stack, requiredVersion: number, qualifier: string) {
+  const param = new CfnParameter(stack, 'BootstrapVersion', {
+    type: 'AWS::SSM::Parameter::Value<String>',
+    description: 'Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store.',
+    default: `/cdk-bootstrap/${qualifier}/version`,
+  });
+
+  // There is no >= check in CloudFormation, so we have to check the number
+  // is NOT in [1, 2, 3, ... <required> - 1]
+  const oldVersions = range(1, requiredVersion).map(n => `${n}`);
+
+  new CfnRule(stack, 'CheckBootstrapVersion', {
+    assertions: [
+      {
+        assert: Fn.conditionNot(Fn.conditionContains(oldVersions, param.valueAsString)),
+        assertDescription: `CDK bootstrap stack version ${requiredVersion} required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.`,
+      },
+    ],
+  });
+}
+
+function range(startIncl: number, endExcl: number) {
+  const ret = new Array<number>();
+  for (let i = startIncl; i < endExcl; i++) {
+    ret.push(i);
+  }
+  return ret;
 }

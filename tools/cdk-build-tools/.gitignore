@@ -5,3 +5,4 @@ dist
 
 *.snk
 !.eslintrc.js
+junit.xml

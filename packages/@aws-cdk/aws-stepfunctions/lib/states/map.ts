@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Chain } from '../chain';
+import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { StateType } from './private/state-type';
@@ -19,7 +20,7 @@ export interface MapProps {
   /**
    * JSONPath expression to select part of the state to be the input to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * input to be the empty object {}.
    *
    * @default $
@@ -29,7 +30,7 @@ export interface MapProps {
   /**
    * JSONPath expression to select part of the state to be the output to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * output to be the empty object {}.
    *
    * @default $
@@ -39,7 +40,7 @@ export interface MapProps {
   /**
    * JSONPath expression to indicate where to inject the state's output
    *
-   * May also be the special value DISCARD, which will cause the state's
+   * May also be the special value JsonPath.DISCARD, which will cause the state's
    * input to become its output.
    *
    * @default $
@@ -156,6 +157,7 @@ export class Map extends State implements INextable {
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderNextEnd(),
       ...this.renderInputOutput(),
+      ...this.renderParameters(),
       ...this.renderRetryCatch(),
       ...this.renderIterator(),
       ...this.renderItemsPath(),
@@ -184,5 +186,14 @@ export class Map extends State implements INextable {
     return {
       ItemsPath: renderJsonPath(this.itemsPath),
     };
+  }
+
+  /**
+   * Render Parameters in ASL JSON format
+   */
+  private renderParameters(): any {
+    return FieldUtils.renderObject({
+      Parameters: this.parameters,
+    });
   }
 }

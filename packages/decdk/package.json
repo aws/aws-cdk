@@ -28,6 +28,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
+    "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/app-delivery": "0.0.0",
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-accessanalyzer": "0.0.0",
@@ -56,6 +57,7 @@
     "@aws-cdk/aws-cloud9": "0.0.0",
     "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-cloudfront": "0.0.0",
+    "@aws-cdk/aws-cloudfront-origins": "0.0.0",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-cloudwatch-actions": "0.0.0",
@@ -121,6 +123,7 @@
     "@aws-cdk/aws-lambda-destinations": "0.0.0",
     "@aws-cdk/aws-lambda-event-sources": "0.0.0",
     "@aws-cdk/aws-lambda-nodejs": "0.0.0",
+    "@aws-cdk/aws-lambda-python": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-logs-destinations": "0.0.0",
     "@aws-cdk/aws-macie": "0.0.0",
@@ -170,7 +173,6 @@
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
-    "@aws-cdk/cdk-assets-schema": "0.0.0",
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
@@ -179,18 +181,18 @@
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.2",
     "fs-extra": "^9.0.1",
-    "jsii-reflect": "^1.6.0",
+    "jsii-reflect": "^1.9.0",
     "jsonschema": "^1.2.6",
     "yaml": "1.9.2",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
-    "@types/jest": "^26.0.0",
+    "@types/jest": "^26.0.4",
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.5",
     "jest": "^25.5.4",
-    "jsii": "^1.6.0"
+    "jsii": "^1.9.0"
   },
   "keywords": [
     "aws",
