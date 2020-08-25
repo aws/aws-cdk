@@ -58,6 +58,35 @@ describe('Http Data Source configuration', () => {
     });
   });
 
+  test('appsync configures name, authorizationConfig correctly', () => {
+    // WHEN
+    api.addHttpDataSource('ds', endpoint, {
+      name: 'custom',
+      description: 'custom description',
+      authorizationConfig: {
+        authorizationType: 'AWS_IAM',
+        awsIamConfig: {
+          signingRegion: 'us-east-1',
+          signingServiceName: 'states'
+        }
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+      Type: 'HTTP',
+      Name: 'custom',
+      Description: 'custom description',
+      AuthorizationConfig: {
+        authorizationType: 'AWS_IAM',
+        awsIamConfig: {
+          signingRegion: 'us-east-1',
+          signingServiceName: 'states'
+        }
+      }
+    });
+  })
+
   test('appsync errors when creating multiple http data sources with no configuration', () => {
     // THEN
     expect(() => {
