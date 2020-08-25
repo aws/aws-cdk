@@ -594,7 +594,7 @@ export class GraphQLApi extends GraphqlApiBase {
     if ( this.schemaMode === SchemaDefinition.FILE && !file) {
       throw new Error('schemaDefinitionFile must be configured if using FILE definition mode.');
     } else if ( this.schemaMode === SchemaDefinition.FILE && file ) {
-      definition = readFileSync(file).toString('UTF-8');
+      definition = readFileSync(file).toString('utf-8');
     } else if ( this.schemaMode === SchemaDefinition.CODE && !file ) {
       definition = '';
     } else if ( this.schemaMode === SchemaDefinition.CODE && file) {

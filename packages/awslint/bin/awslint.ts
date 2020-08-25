@@ -15,7 +15,7 @@ async function main() {
     .env('AWSLINT')
     .usage('awslint [options] [command]')
     .showHelpOnFail(true)
-    .command('', 'lint the current module (default)')
+    .command('$0', 'lint the current module (default)')
     .command('list', 'list all available rules')
     .option('include', { alias: 'i', type: 'array', desc: 'evaluate only this rule(s)', default: ['*'] })
     .option('exclude', { alias: 'x', type: 'array', desc: 'do not evaludate these rules (takes priority over --include)', default: [] })
