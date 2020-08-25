@@ -67,7 +67,7 @@ export class ClusterResource extends Construct {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
-    // the provide assumes the creation role, so we grant it permissions to do so.
+    // the provider assumes the creation role, so we grant it permissions to do so.
     // note that this only works if the creation role is assumable by the account root principle.
     provider.roles.forEach(role => this.creationRole.grant(role, 'sts:AssumeRole'));
 

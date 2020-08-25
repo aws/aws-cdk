@@ -474,7 +474,7 @@ access](#endpoint-access), you must also specify:
 
 - `kubectlSecurityGroupId` - the ID of an EC2 security group that is allowed
   connections to the cluster's control security group.
-- `kubectlPrivateSubnetId` - a list of private VPC subnets IDs that will be used
+- `kubectlPrivateSubnetIds` - a list of private VPC subnets IDs that will be used
   to access the Kubernetes endpoint.
 
 ### AWS IAM Mapping
@@ -526,7 +526,7 @@ Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled
 on [creating a cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
 can provide more details about the customer master key (CMK) that can be used for the encryption.
 
-You can use the `secretsEncryptionKey` to configure which key the cluster will use to encrypt Kubernetes secrets. By default, an AWS Managed key will be used. 
+You can use the `secretsEncryptionKey` to configure which key the cluster will use to encrypt Kubernetes secrets. By default, an AWS Managed key will be used.
 
 > This setting can only be specified when the cluster is created and cannot be updated.
 
