@@ -209,14 +209,17 @@ export abstract class FunctionBase extends Resource implements IFunction {
     const action = permission.action || 'lambda:InvokeFunction';
     const scope = permission.scope || this;
 
-    new CfnPermission(scope, id, {
-      action,
-      principal,
-      functionName: this.functionArn,
-      eventSourceToken: permission.eventSourceToken,
-      sourceAccount: permission.sourceAccount,
-      sourceArn: permission.sourceArn,
-    });
+    // Skip duplicate permissions nodes. A more robust check would verify if the existing node matches the new one exactly.
+    if (!scope.node.tryFindChild(id)) {
+      new CfnPermission(scope, id, {
+        action,
+        principal,
+        functionName: this.functionArn,
+        eventSourceToken: permission.eventSourceToken,
+        sourceAccount: permission.sourceAccount,
+        sourceArn: permission.sourceArn,
+      });
+    }
   }
 
   /**
