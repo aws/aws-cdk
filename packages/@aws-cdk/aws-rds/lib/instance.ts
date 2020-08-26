@@ -2,7 +2,6 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CfnDeletionPolicy, Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
@@ -594,7 +593,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   protected setLogRetention() {
     if (this.cloudwatchLogsExports && this.cloudwatchLogsRetention) {
       for (const log of this.cloudwatchLogsExports) {
-        new lambda.LogRetention(this, `LogRetention${log}`, {
+        new logs.LogRetention(this, `LogRetention${log}`, {
           logGroupName: `/aws/rds/instance/${this.instanceIdentifier}/${log}`,
           retention: this.cloudwatchLogsRetention,
           role: this.cloudwatchLogsRetentionRole,
