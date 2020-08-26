@@ -322,9 +322,18 @@ export class TxtRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.TXT,
-      target: RecordTarget.fromValues(...props.values.map(v => JSON.stringify(v))),
+      target: RecordTarget.fromValues(...props.values.map(v => formatTxt(v))),
     });
   }
+}
+
+function formatTxt(string: string): string {
+  const result = [];
+  let idx = 0;
+  while (idx < string.length) {
+    result.push(string.slice(idx, idx += 255));
+  }
+  return result.map(r => JSON.stringify(r)).join('');
 }
 
 /**
