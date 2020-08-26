@@ -1,4 +1,5 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
+import { FileSystem } from './fs';
 
 /**
  * Bundling options
@@ -121,11 +122,26 @@ export class BundlingDockerImage {
       throw new Error('Failed to extract image ID from Docker build output');
     }
 
-    return new BundlingDockerImage(match[1]);
+    // Fingerprints the directory containing the Dockerfile we're building and
+    // differentiates the fingerprint based on build arguments. We do this so
+    // we can provide a stable image hash. Otherwise, the image ID will be
+    // different every time the Docker layer cache is cleared, due primarily to
+    // timestamps.
+    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
+    return new BundlingDockerImage(match[1], hash);
   }
 
   /** @param image The Docker image */
-  private constructor(public readonly image: string) {}
+  private constructor(public readonly image: string, private readonly _imageHash?: string) {}
+
+  /**
+   * Provides a stable representation of this image for JSON serialization.
+   *
+   * @return The overridden image name if set or image hash name in that order
+   */
+  public toJSON() {
+    return this._imageHash ?? this.image;
+  }
 
   /**
    * Runs a Docker image
