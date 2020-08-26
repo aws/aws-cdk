@@ -18,8 +18,10 @@ APIs that use GraphQL.
 
 ### Example
 
+#### DynamoDB Data source example
+
 Example of a GraphQL API with `AWS_IAM` authorization resolving into a DynamoDb
-backend data source. 
+backend data source.
 
 GraphQL schema file `schema.graphql`:
 
@@ -80,6 +82,87 @@ demoDS.createResolver({
   fieldName: 'addDemo',
   requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('demo')),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+```
+
+#### Http data source example. Integrating SterFunctions workflow.
+GraphQL schema file `schema.graphql`:
+
+```gql
+type job {
+  id: String!
+  version: String!
+}
+
+input DemoInput {
+  version: String!
+}
+
+type Mutation {
+  callStepFunction(input: DemoInput!): job
+}
+```
+
+GraphQL request mapping template `request.vtl`:
+
+```
+{
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "/",
+  "params": {
+    "headers": {
+      "content-type": "application/x-amz-json-1.0",
+      "x-amz-target":"AWSStepFunctions.StartExecution"
+    },
+    "body": {
+      "stateMachineArn": "<your step functions arn>",
+      "input": "{ \"id\": \"$context.arguments.id\" }"
+    }
+  }
+}
+```
+
+GraphQL request mapping template `response.vtl`:
+
+```
+{
+  "id": "${context.result.id}"
+}
+```
+
+CDK stack file `app-stack.ts`:
+
+```ts
+import * as appsync from '@aws-cdk/aws-appsync';
+
+const api = new appsync.GraphQLApi(scope, 'id', {
+  name: 'api',
+  schemaDefinition: SchemaDefinition.FILE,
+  schemaDefinitionFile: 'schema.graphql'
+});
+
+const httpDs = api.addHttpDataSource(
+  'ds', 
+  'https://states.amazonaws.com', 
+  {
+    name: 'httpDsWithStepF',
+    description: 'from appsync to StepFunctions Workflow',
+    authorizationConfig: {
+      authorizationType: 'AWS_IAM',
+      awsIamConfig: {
+        signingRegion: 'us-east-1',
+        signingServiceName: 'states'
+      }
+    }
+  }
+);
+
+httpDs.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'callStepFunction',
+  requestMappingTemplate: MappingTemplate.fromFile('request.vtl'),
+  responseMappingTemplate: MappingTemplate.fromFile('response.vtl')
 });
 ```
 
