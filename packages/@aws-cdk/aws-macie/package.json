@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-macie",
         "module": "aws_cdk.aws_macie"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

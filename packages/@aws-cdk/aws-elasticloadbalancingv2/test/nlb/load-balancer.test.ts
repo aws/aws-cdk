@@ -1,12 +1,12 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { ResourcePart } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as elbv2 from '../../lib';
 
-export = {
-  'Trivial construction: internet facing'(test: Test) {
+describe('tests', () => {
+  test('Trivial construction: internet facing', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -18,19 +18,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
       Subnets: [
         { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
         { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
       ],
       Type: 'network',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Trivial construction: internal'(test: Test) {
+  test('Trivial construction: internal', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -39,19 +37,17 @@ export = {
     new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
       Subnets: [
         { Ref: 'StackPrivateSubnet1Subnet47AC2BC7' },
         { Ref: 'StackPrivateSubnet2SubnetA2F8EDD8' },
       ],
       Type: 'network',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Attributes'(test: Test) {
+  test('Attributes', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -63,19 +59,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       LoadBalancerAttributes: [
         {
           Key: 'load_balancing.cross_zone.enabled',
           Value: 'true',
         },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Access logging'(test: Test) {
+  test('Access logging', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -88,7 +82,7 @@ export = {
     // THEN
 
     // verify that the LB attributes reference the bucket
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       LoadBalancerAttributes: [
         {
           Key: 'access_logs.s3.enabled',
@@ -99,10 +93,10 @@ export = {
           Value: { Ref: 'AccessLoggingBucketA6D88F29' },
         },
       ],
-    }));
+    });
 
     // verify the bucket policy allows the ALB to put objects in the bucket
-    expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
+    expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -135,17 +129,15 @@ export = {
           },
         ],
       },
-    }));
+    });
 
     // verify the ALB depends on the bucket *and* the bucket policy
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29'],
-    }, ResourcePart.CompleteDefinition));
+    }, ResourcePart.CompleteDefinition);
+  });
 
-    test.done();
-  },
-
-  'access logging with prefix'(test: Test) {
+  test('access logging with prefix', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -157,7 +149,7 @@ export = {
 
     // THEN
     // verify that the LB attributes reference the bucket
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       LoadBalancerAttributes: [
         {
           Key: 'access_logs.s3.enabled',
@@ -172,10 +164,10 @@ export = {
           Value: 'prefix-of-access-logs',
         },
       ],
-    }));
+    });
 
     // verify the bucket policy allows the ALB to put objects in the bucket
-    expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
+    expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -208,12 +200,10 @@ export = {
           },
         ],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'loadBalancerName'(test: Test) {
+  test('loadBalancerName', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -225,13 +215,12 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Name: 'myLoadBalancer',
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'imported network load balancer with no vpc specified throws error when calling addTargets'(test: Test) {
+  test('imported network load balancer with no vpc specified throws error when calling addTargets', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
@@ -240,12 +229,10 @@ export = {
     });
     // WHEN
     const listener = nlb.addListener('Listener', { port: 80 });
-    test.throws(() => listener.addTargets('targetgroup', { port: 8080 }));
+    expect(() => listener.addTargets('targetgroup', { port: 8080 })).toThrow();
+  });
 
-    test.done();
-  },
-
-  'imported network load balancer with vpc does not throw error when calling addTargets'(test: Test) {
+  test('imported network load balancer with vpc does not throw error when calling addTargets', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -256,12 +243,10 @@ export = {
     });
     // WHEN
     const listener = nlb.addListener('Listener', { port: 80 });
-    test.doesNotThrow(() => listener.addTargets('targetgroup', { port: 8080 }));
+    expect(() => listener.addTargets('targetgroup', { port: 8080 })).not.toThrow();
+  });
 
-    test.done();
-  },
-
-  'Trivial construction: internal with Isolated subnets only'(test: Test) {
+  test('Trivial construction: internal with Isolated subnets only', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
@@ -279,18 +264,16 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
       Subnets: [
         { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
         { Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA' },
       ],
       Type: 'network',
-    }));
-
-    test.done();
-  },
-  'Internal with Public, Private, and Isolated subnets'(test: Test) {
+    });
+  });
+  test('Internal with Public, Private, and Isolated subnets', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
@@ -316,18 +299,16 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
       Subnets: [
         { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
         { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
       ],
       Type: 'network',
-    }));
-
-    test.done();
-  },
-  'Internet-facing with Public, Private, and Isolated subnets'(test: Test) {
+    });
+  });
+  test('Internet-facing with Public, Private, and Isolated subnets', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
@@ -353,18 +334,16 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
       Subnets: [
         { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
         { Ref: 'VPCPublicSubnet2Subnet74179F39' },
       ],
       Type: 'network',
-    }));
-
-    test.done();
-  },
-  'Internal load balancer supplying public subnets'(test: Test) {
+    });
+  });
+  test('Internal load balancer supplying public subnets', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -377,18 +356,16 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
       Subnets: [
         { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
         { Ref: 'VPCPublicSubnet2Subnet74179F39' },
       ],
       Type: 'network',
-    }));
-
-    test.done();
-  },
-  'Internal load balancer supplying isolated subnets'(test: Test) {
+    });
+  });
+  test('Internal load balancer supplying isolated subnets', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
@@ -415,15 +392,13 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
       Subnets: [
         { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
         { Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA' },
       ],
       Type: 'network',
-    }));
-
-    test.done();
-  },
-};
+    });
+  });
+});
