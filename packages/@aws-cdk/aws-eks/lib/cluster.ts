@@ -1095,24 +1095,35 @@ export class Cluster extends Resource implements ICluster {
         env: this.kubectlProviderEnv,
       };
 
-      if (!this.endpointAccess._config.publicAccess) {
 
-        const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+      const privateSubents = this.selectPrivateSubnets().slice(0, 16);
 
-        if (privateSubents.length === 0) {
+      if (privateSubents.length === 0) {
+
+        // there are some scenarios where configuring a VPC without any private subnets
+        // would cause kubectl provider to not work.
+
+        if (!this.endpointAccess._config.publicAccess) {
+          // no public access
           throw new Error('Vpc must contain private subnets to configure private endpoint access');
         }
 
-        // endpoint access is private only, we need to attach the
-        // provider to the VPC so that it can access the cluster.
-        providerProps = {
-          ...providerProps,
-          vpc: this.vpc,
-          // lambda can only be accociated with max 16 subnets and they all need to be private.
-          vpcSubnets: { subnets: privateSubents },
-          securityGroups: [this.kubctlProviderSecurityGroup],
-        };
+        if (this.endpointAccess._config.publicCidrs?.length !== 0) {
+          // public access is restricted
+          throw new Error('Vpc must contain private subnets to configure restricted public access');
+        }
+
       }
+
+      // endpoint access is private only, we need to attach the
+      // provider to the VPC so that it can access the cluster.
+      providerProps = {
+        ...providerProps,
+        vpc: this.vpc,
+        // lambda can only be accociated with max 16 subnets and they all need to be private.
+        vpcSubnets: { subnets: privateSubents },
+        securityGroups: [this.kubctlProviderSecurityGroup],
+      };
 
       provider = new KubectlProvider(this.stack, uid, providerProps);
     }
