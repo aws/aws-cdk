@@ -31,7 +31,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       #- status-success=Semantic Pull Request
-      - status-success=mandatory-changes
+      - status-success=validate-pr
   - name: automatic merge (2+ approvers)
     actions:
       comment:
@@ -56,7 +56,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       #- status-success=Semantic Pull Request
-      - status-success=mandatory-changes
+      - status-success=validate-pr
   - name: automatic merge (no-squash)
     actions:
       comment:
@@ -82,7 +82,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       #- status-success=Semantic Pull Request
-      - status-success=mandatory-changes
+      - status-success=validate-pr
   - name: remove stale reviews
     actions:
       dismiss_reviews:
@@ -126,4 +126,4 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       #- status-success=Semantic Pull Request
-      - status-success=mandatory-changes
+      - status-success=validate-pr
