@@ -5,6 +5,7 @@ import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated'
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { Schema } from './schema';
 import { IIntermediateType } from './schema-base';
+import { ResolvableField } from './schema-field';
 import { InterfaceType, IntermediateTypeProps, ObjectType, ObjectTypeProps } from './schema-intermediate';
 
 /**
@@ -612,5 +613,29 @@ export class GraphQLApi extends GraphqlApiBase {
    */
   public addInterfaceType(name: string, props: IntermediateTypeProps): InterfaceType {
     return this.schema.addInterfaceType(name, props);
+  }
+
+  /**
+   * Set the Schema's queries to a given Object Type
+   *
+   * @param type the object type to set as Schema's Query
+   */
+  public bindQueryType(type: ObjectType): ObjectType {
+    return this.schema.bindQueryType(type);
+  }
+
+  /**
+   * Add a query field to the schema's Query. If one isn't set by
+   * the user, CDK will create an Object Type called 'Query'. For example,
+   *
+   * type Query {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the query
+   * @param field the resolvable field to for this query
+   */
+  public addQuery(fieldName: string, field: ResolvableField): ObjectType {
+    return this.schema.addQuery(fieldName, field);
   }
 }

@@ -5,9 +5,26 @@ import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
 
 // Schema Definitions
-const type = 'type test {\n  version: String!\n}\n\n';
-const query = 'type Query {\n  getTests: [ test! ]!\n}\n\n';
-const mutation = 'type Mutation {\n  addTest(version: String!): test\n}\n';
+const type = new appsync.ObjectType('test', {
+  definition: {
+    version: t.required_string,
+  },
+});
+const query = new appsync.ObjectType('Query', {
+  definition: {
+    getTests: new appsync.ResolvableField({
+      returnType: type.attribute({ isRequiredList: true, isList: true }),
+    }),
+  },
+});
+const mutation = new appsync.ObjectType('Mutation', {
+  definition: {
+    addTest: new appsync.ResolvableField({
+      returnType: type.attribute(),
+      args: { version: t.required_string },
+    }),
+  },
+});
 
 let stack: cdk.Stack;
 beforeEach(() => {
@@ -34,13 +51,28 @@ describe('basic testing schema definition mode `code`', () => {
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
     });
-    api.addToSchema(type);
-    api.addToSchema(query);
-    api.addToSchema(mutation);
+    api.addType(type);
+    api.addType(query);
+    api.addType(mutation);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${type}\n${query}\n${mutation}\n`,
+      Definition: `${type.toString()}\n${query.toString()}\n${mutation.toString()}\n`,
+    });
+  });
+
+  test('definition mode `code` generates correct schema with addToSchema', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+    });
+    api.addQuery('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  query: Query\n}\ntype Query {\n  test: String\n}\n',
     });
   });
 });
@@ -56,7 +88,7 @@ describe('testing schema definition mode `file`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${type}${query}${mutation}`,
+      Definition: `${type.toString()}\n${query.toString()}\n${mutation.toString()}\n`,
     });
   });
 

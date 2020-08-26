@@ -4,6 +4,7 @@ import { CfnGraphQLSchema } from './appsync.generated';
 import { GraphQLApi } from './graphqlapi';
 import { SchemaMode } from './private';
 import { IIntermediateType } from './schema-base';
+import { ResolvableField } from './schema-field';
 import { InterfaceType, IntermediateTypeProps, ObjectTypeProps, ObjectType } from './schema-intermediate';
 
 /**
@@ -45,6 +46,12 @@ export class Schema {
    */
   public definition: string;
 
+  protected query?: ObjectType;
+
+  protected mutation?: ObjectType;
+
+  protected subscription?: ObjectType;
+
   protected schema?: CfnGraphQLSchema;
 
   private mode: SchemaMode;
@@ -69,12 +76,11 @@ export class Schema {
     if (!this.schema) {
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
-        definition: Lazy.stringValue({ produce: () => this.definition }),
+        definition: Lazy.stringValue({ produce: () => `${this.declareSchema()}${this.definition}` }),
       });
     }
     return this.schema;
   }
-
 
   /**
    * Escape hatch to add to Schema as desired. Will always result
@@ -92,6 +98,39 @@ export class Schema {
     }
     const sep = delimiter ?? '';
     this.definition = `${this.definition}${sep}${addition}\n`;
+  }
+
+  /**
+   * Set the Schema's queries to a given Object Type
+   *
+   * @param type the object type to set as Schema's Query
+   */
+  public bindQueryType(type: ObjectType): ObjectType {
+    if (this.mode !== SchemaMode.CODE) {
+      throw new Error('API cannot set schema\'s query because schema definition mode is not configured as CODE.');
+    }
+    this.query = this.query ?? type;
+    return this.query;
+  }
+
+  /**
+   * Add a query field to the schema's Query. If one isn't set by
+   * the user, CDK will create an Object Type called 'Query'. For example,
+   *
+   * type Query {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the query
+   * @param field the resolvable field to for this query
+   */
+  public addQuery(fieldName: string, field: ResolvableField): ObjectType {
+    if (this.mode !== SchemaMode.CODE) {
+      throw new Error('API cannot add to schema\'s query because schema definition mode is not configured as CODE.');
+    }
+    this.query = this.query ?? this.addObjectType('Query', { definition: {} });
+    this.query.addField(fieldName, field);
+    return this.query;
   }
 
   /**
@@ -145,5 +184,29 @@ export class Schema {
     });
     this.addType(type);;
     return type;
+  }
+
+  /**
+   * Set the root types of this schema if they are defined.
+   *
+   * For example:
+   * schema {
+   *   query: Query
+   *   mutation: Mutation
+   *   subscription: Subscription
+   * }
+   */
+  private declareSchema(): string {
+    if (!this.query && !this.mutation && !this.subscription) return '';
+    const generate = (name: string, type?: ObjectType): string => {
+      return type ? `  ${name}: ${type.name}\n` : '';
+    };
+    const list = [
+      { name: 'query', type: this.query },
+      { name: 'mutation', type: this.mutation },
+      { name: 'subscription', type: this.subscription },
+    ];
+    return list.reduce((acc, element) =>
+      `${acc}${generate(element.name, element.type)}`, 'schema {\n') + '}\n';
   }
 }
