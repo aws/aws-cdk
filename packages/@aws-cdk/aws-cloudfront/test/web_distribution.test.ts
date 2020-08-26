@@ -443,7 +443,7 @@ nodeunitShim({
               isDefaultBehavior: true,
               lambdaFunctionAssociations: [{
                 eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
-                lambdaFunction: lambdaFunction.addVersion('1'),
+                lambdaFunction: lambdaFunction.currentVersion,
               }],
             },
           ],
@@ -458,7 +458,7 @@ nodeunitShim({
             {
               'EventType': 'origin-request',
               'LambdaFunctionARN': {
-                'Ref': 'LambdaVersion1BB7548E1',
+                'Ref': 'LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e',
               },
             },
           ],
@@ -492,7 +492,7 @@ nodeunitShim({
               isDefaultBehavior: true,
               lambdaFunctionAssociations: [{
                 eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
-                lambdaFunction: lambdaFunction.addVersion('1'),
+                lambdaFunction: lambdaFunction.currentVersion,
               }],
             },
           ],
@@ -532,7 +532,7 @@ nodeunitShim({
               isDefaultBehavior: true,
               lambdaFunctionAssociations: [{
                 eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
-                lambdaFunction: lambdaFunction.addVersion('1'),
+                lambdaFunction: lambdaFunction.currentVersion,
               }],
             },
           ],

@@ -3,7 +3,7 @@ import { Construct, Fn, Lazy, RemovalPolicy } from '@aws-cdk/core';
 import { Alias, AliasOptions } from './alias';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
-import { FunctionBase, IFunction, QualifiedFunctionBase } from './function-base';
+import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
 import { addAlias } from './util';
 
@@ -253,7 +253,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     return Lazy.stringValue({
       produce: () => {
         // Validate that the underlying function can be used for Lambda@Edge
-        if (this.lambda instanceof FunctionBase) {
+        if (this.lambda instanceof Function) {
           this.lambda._checkEdgeCompatibility();
         }
 
