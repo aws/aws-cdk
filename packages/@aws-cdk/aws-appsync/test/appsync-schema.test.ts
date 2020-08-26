@@ -61,12 +61,29 @@ describe('basic testing schema definition mode `code`', () => {
     });
   });
 
-  test('definition mode `code` generates correct schema with addToSchema', () => {
+  test('definition mode `code` allows for api to addQuery', () => {
     // WHEN
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
     });
     api.addQuery('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  query: Query\n}\ntype Query {\n  test: String\n}\n',
+    });
+  });
+
+  test('definition mode `code` allows for schema to addQuery', () => {
+    // WHEN
+    const schema = new appsync.Schema();
+    new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema,
+    });
+    schema.addQuery('test', new appsync.ResolvableField({
       returnType: t.string,
     }));
 
