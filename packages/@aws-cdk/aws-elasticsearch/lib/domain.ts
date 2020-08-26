@@ -5,6 +5,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 
 import { CfnDomain } from './elasticsearch.generated';
@@ -276,8 +277,8 @@ export interface CognitoOptions {
 
   /**
    * A role that allows Amazon ES to configure your user pool and identity pool. It must have the `AmazonESCognitoAccess` policy attached to it.
-
-@see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html#es-cognito-auth-prereq
+   *
+   * @see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html#es-cognito-auth-prereq
    */
   readonly role: iam.IRole;
 
@@ -311,6 +312,46 @@ export interface VpcOptions {
    * Amazon VPC User Guide.
    */
   readonly subnets: ec2.ISubnet[];
+}
+
+/**
+ * The minimum TLS version required for traffic to the domain.
+ */
+export enum TLSSecurityPolicy {
+  /** Cipher suite TLS 1.0 */
+  TLS_1_0 = 'Policy-Min-TLS-1-0-2019-07',
+  /** Cipher suite TLS 1.2 */
+  TLS_1_2 = 'Policy-Min-TLS-1-2-2019-07'
+}
+
+/**
+ * Specifies options for fine-grained access control.
+ */
+export interface AdvancedSecurityOptions {
+  /**
+   * ARN for the master user. Only specify this or masterUserName, but not both.
+   *
+   * @default - fine-grained access control is disabled
+   */
+  readonly masterUserArn?: string;
+
+  /**
+   * Username for the master user. Only specify this or masterUserArn, but not both.
+   *
+   * @default - fine-grained access control is disabled
+   */
+  readonly masterUserName?: string;
+
+  /**
+   * Password for the master user.
+   *
+   * You can use `SecretValue.plainText` to specify a password in plain text or
+   * use `secretsmanager.Secret.fromSecretAttributes` to reference a secret in
+   * Secrets Manager.
+   *
+   * @default - A Secrets Manager generated password
+   */
+  readonly masterUserPasswordSecret?: cdk.SecretValue;
 }
 
 /**
@@ -419,8 +460,31 @@ export interface DomainProps {
    * @default - VPC not used
    */
   readonly vpcOptions?: VpcOptions;
-}
 
+  /**
+   * True to require that all traffic to the domain arrive over HTTPS.
+   *
+   * @default - false
+   */
+  readonly enforceHttps?: boolean;
+
+  /**
+   * The minimum TLS version required for traffic to the domain.
+   *
+   * @default - TLSSecurityPolicy.TLS_1_0
+   */
+  readonly tlsSecurityPolicy?: TLSSecurityPolicy;
+
+  /**
+   * Specifies options for fine-grained access control.
+   * Requires Elasticsearch version 6.7 or later. Enabling fine-grained access control
+   * also requires encryption of data at rest and node-to-node encryption, along with
+   * enforced HTTPS.
+   *
+   * @default - fine-grained access control is disabled
+   */
+  readonly fineGrainedAccessControl?: AdvancedSecurityOptions;
+}
 
 /**
  * An interface that represents an Elasticsearch domain - either created with the CDK, or an existing one.
@@ -1026,11 +1090,6 @@ export interface DomainAttributes {
   readonly domainArn: string;
 
   /**
-   * The domain name of the Elasticsearch domain.
-   */
-  readonly domainName: string;
-
-  /**
    * The domain endpoint of the Elasticsearch domain.
    */
   readonly domainEndpoint: string;
@@ -1063,7 +1122,6 @@ export class Domain extends DomainBase implements IDomain {
 
     return Domain.fromDomainAttributes(scope, id, {
       domainArn,
-      domainName,
       domainEndpoint,
     });
   }
@@ -1076,10 +1134,13 @@ export class Domain extends DomainBase implements IDomain {
    * @param attrs A `DomainAttributes` object.
    */
   public static fromDomainAttributes(scope: cdk.Construct, id: string, attrs: DomainAttributes): IDomain {
+    const { domainArn, domainEndpoint } = attrs;
+    const domainName = extractNameFromEndpoint(domainEndpoint);
+
     return new class extends DomainBase {
-      public readonly domainArn = attrs.domainArn;
-      public readonly domainName = attrs.domainName;
-      public readonly domainEndpoint = attrs.domainEndpoint;
+      public readonly domainArn = domainArn;
+      public readonly domainName = domainName;
+      public readonly domainEndpoint = domainEndpoint;
 
       constructor() { super(scope, id); }
     };
@@ -1167,10 +1228,35 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error(`Unknown Elasticsearch version: ${elasticsearchVersion}`);
     }
 
-    const encryptionAtRestEnabled = props.encryptionAtRest?.enabled ?? (props.encryptionAtRest?.kmsKey != null);
+    const masterUserArn = props.fineGrainedAccessControl?.masterUserArn;
+    const masterUserName = props.fineGrainedAccessControl?.masterUserName;
+
+    const advancedSecurityEnabled = (masterUserArn ?? masterUserName) != null;
+    const internalUserDatabaseEnabled = masterUserName != null;
+    const masterUserPasswordString =    
+      props.fineGrainedAccessControl?.masterUserPasswordSecret?.toString()
+    function createMasterUserPasswordSecret(): string {
+       new secretsmanager.Secret(this, id, {
+          generateSecretString: {
+            secretStringTemplate: JSON.stringify({
+              username: masterUserName,
+            }),
+            generateStringKey: 'password',
+          },
+        })
+          .secretValueFromJson('password')
+          .toString()
+    const masterUserPassword =
+      masterUserPasswordString ??
+      internalUserDatabaseEnabled ? createMasterUserPasswordSecret() : undefined;
+
+    const encryptionAtRestEnabled =
+      props.encryptionAtRest?.enabled ?? props.encryptionAtRest?.kmsKey != null;
+    const nodeToNodeEncryptionEnabled = props.nodeToNodeEncryption ?? false;
     const volumeSize = props.ebs?.volumeSize ?? 10;
     const volumeType = props.ebs?.volumeType ?? ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
     const ebsEnabled = props.ebs?.enabled ?? true;
+    const enforceHttps = props.enforceHttps;
 
     function isInstanceType(t: string): Boolean {
       return dedicatedMasterType.startsWith(t) || instanceType.startsWith(t);
@@ -1212,6 +1298,12 @@ export class Domain extends DomainBase implements IDomain {
       }
     }
 
+    if (elasticsearchVersionNum < 6.7) {
+      if (advancedSecurityEnabled) {
+        throw new Error('Fine-grained access logging requires Elasticsearch version 6.7 or later.');
+      }
+    }
+
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-supported-instance-types.html
     if (isInstanceType('i3') && ebsEnabled) {
@@ -1230,6 +1322,20 @@ export class Domain extends DomainBase implements IDomain {
     // https://aws.amazon.com/elasticsearch-service/pricing/
     if (!ebsEnabled && !isEveryInstanceType('r3', 'i3')) {
       throw new Error('EBS volumes are required for all instance types except R3 and I3.');
+    }
+
+    // Fine-grained access control requires node-to-node encryption, encryption at rest,
+    // and enforced HTTPS.
+    if (advancedSecurityEnabled) {
+      if (!nodeToNodeEncryptionEnabled) {
+        throw new Error('Node-to-node encryption is required when fine-grained access control is enabled.');
+      }
+      if (!encryptionAtRestEnabled) {
+        throw new Error('Encryption-at-rest is required when fine-grained access control is enabled.');
+      }
+      if (!enforceHttps) {
+        throw new Error('Enforce HTTPS is required when fine-grained access control is enabled.');
+      }
     }
 
     let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
@@ -1293,15 +1399,18 @@ export class Domain extends DomainBase implements IDomain {
       elasticsearchVersion,
       elasticsearchClusterConfig: {
         dedicatedMasterEnabled,
-        dedicatedMasterCount: dedicatedMasterEnabled ? dedicatedMasterCount : undefined,
-        dedicatedMasterType: dedicatedMasterEnabled ? dedicatedMasterType : undefined,
+        dedicatedMasterCount: dedicatedMasterEnabled
+          ? dedicatedMasterCount
+          : undefined,
+        dedicatedMasterType: dedicatedMasterEnabled
+          ? dedicatedMasterType
+          : undefined,
         instanceCount,
         instanceType,
         zoneAwarenessEnabled,
-        zoneAwarenessConfig:
-          zoneAwarenessEnabled
-            ? { availabilityZoneCount }
-            : undefined,
+        zoneAwarenessConfig: zoneAwarenessEnabled
+          ? { availabilityZoneCount }
+          : undefined,
       },
       ebsOptions: {
         ebsEnabled,
@@ -1311,9 +1420,11 @@ export class Domain extends DomainBase implements IDomain {
       },
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
-        kmsKeyId: encryptionAtRestEnabled ? props.encryptionAtRest?.kmsKey?.keyId : undefined,
+        kmsKeyId: encryptionAtRestEnabled
+          ? props.encryptionAtRest?.kmsKey?.keyId
+          : undefined,
       },
-      nodeToNodeEncryptionOptions: { enabled: props.nodeToNodeEncryption ?? false },
+      nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
       logPublishingOptions: {
         ES_APPLICATION_LOGS: {
           enabled: this.appLogGroup != null,
@@ -1337,6 +1448,21 @@ export class Domain extends DomainBase implements IDomain {
       vpcOptions: cfnVpcOptions,
       snapshotOptions: props.automatedSnapshotStartHour
         ? { automatedSnapshotStartHour: props.automatedSnapshotStartHour }
+        : undefined,
+      domainEndpointOptions: {
+        enforceHttps,
+        tlsSecurityPolicy: props.tlsSecurityPolicy ?? TLSSecurityPolicy.TLS_1_0,
+      },
+      advancedSecurityOptions: advancedSecurityEnabled
+        ? {
+          enabled: true,
+          internalUserDatabaseEnabled,
+          masterUserOptions: {
+            masterUserArn: masterUserArn,
+            masterUserName: masterUserName,
+            masterUserPassword: masterUserPassword,
+          },
+        }
         : undefined,
     });
 
