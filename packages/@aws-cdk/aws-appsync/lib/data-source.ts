@@ -220,7 +220,7 @@ export interface HttpDataSourceAuthorizationConfig {
 /**
  * The IAM configuration required by the HTTP endpoint
  */
-export interface HttpDataSourceIamConfig {
+export interface AwsIamConfig {
   /**
    * The signing region for AWS IAM authorization
    */
