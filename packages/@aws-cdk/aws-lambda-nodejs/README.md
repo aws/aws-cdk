@@ -118,7 +118,7 @@ $ npm install --save-dev parcel@next
 OR
 
 ```bash
-$ yarn add --dev @parcel@next
+$ yarn add --dev parcel@next
 ```
 
 To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This
