@@ -1,12 +1,11 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
-export = {
-  'Empty target Group without type still requires a VPC'(test: Test) {
+describe('tests', () => {
+  test('Empty target Group without type still requires a VPC', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
@@ -15,14 +14,12 @@ export = {
     new elbv2.ApplicationTargetGroup(stack, 'LB', {});
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       app.synth();
-    }, /'vpc' is required for a non-Lambda TargetGroup/);
+    }).toThrow(/'vpc' is required for a non-Lambda TargetGroup/);
+  });
 
-    test.done();
-  },
-
-  'Can add self-registering target to imported TargetGroup'(test: Test) {
+  test('Can add self-registering target to imported TargetGroup', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
@@ -33,12 +30,9 @@ export = {
       targetGroupArn: 'arn',
     });
     tg.addTarget(new FakeSelfRegisteringTarget(stack, 'Target', vpc));
+  });
 
-    // THEN
-    test.done();
-  },
-
-  'Cannot add direct target to imported TargetGroup'(test: Test) {
+  test('Cannot add direct target to imported TargetGroup', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
@@ -47,14 +41,12 @@ export = {
     });
 
     // WHEN
-    test.throws(() => {
+    expect(() => {
       tg.addTarget(new elbv2.InstanceTarget('i-1234'));
-    }, /Cannot add a non-self registering target to an imported TargetGroup/);
+    }).toThrow(/Cannot add a non-self registering target to an imported TargetGroup/);
+  });
 
-    test.done();
-  },
-
-  'HealthCheck fields set if provided'(test: Test) {
+  test('HealthCheck fields set if provided', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
@@ -83,7 +75,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       HealthCheckEnabled: true,
       HealthCheckIntervalSeconds: 255,
       HealthCheckPath: '/arbitrary',
@@ -94,8 +86,6 @@ export = {
       },
       Port: 80,
       UnhealthyThresholdCount: 27,
-    }));
-
-    test.done();
-  },
-};
+    });
+  });
+});

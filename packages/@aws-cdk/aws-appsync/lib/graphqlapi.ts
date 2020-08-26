@@ -260,7 +260,6 @@ export interface GraphQLApiProps {
    * @default - false
    */
   readonly xrayEnabled?: boolean;
-
 }
 
 /**
@@ -409,51 +408,20 @@ export class GraphQLApi extends GraphqlApiBase {
   constructor(scope: Construct, id: string, props: GraphQLApiProps) {
     super(scope, id);
 
-    this.validateAuthorizationProps(props);
-    const defaultAuthorizationType =
-      props.authorizationConfig?.defaultAuthorization?.authorizationType ??
-      AuthorizationType.API_KEY;
+    const defaultMode = props.authorizationConfig?.defaultAuthorization ??
+      { authorizationType: AuthorizationType.API_KEY };
+    const additionalModes = props.authorizationConfig?.additionalAuthorizationModes ?? [];
+    const modes = [defaultMode, ...additionalModes];
 
-    let apiLogsRole;
-    if (props.logConfig) {
-      apiLogsRole = new Role(this, 'ApiLogsRole', {
-        assumedBy: new ServicePrincipal('appsync'),
-      });
-      apiLogsRole.addManagedPolicy(
-        ManagedPolicy.fromAwsManagedPolicyName(
-          'service-role/AWSAppSyncPushToCloudWatchLogs',
-        ),
-      );
-    }
+    this.validateAuthorizationProps(modes);
 
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
-      authenticationType: defaultAuthorizationType,
-      ...(props.logConfig && {
-        logConfig: {
-          cloudWatchLogsRoleArn: apiLogsRole ? apiLogsRole.roleArn : undefined,
-          excludeVerboseContent: props.logConfig.excludeVerboseContent,
-          fieldLogLevel: props.logConfig.fieldLogLevel
-            ? props.logConfig.fieldLogLevel.toString()
-            : undefined,
-        },
-      }),
-      openIdConnectConfig:
-        props.authorizationConfig?.defaultAuthorization?.authorizationType ===
-        AuthorizationType.OIDC
-          ? this.formatOpenIdConnectConfig(
-            props.authorizationConfig.defaultAuthorization
-              .openIdConnectConfig!,
-          )
-          : undefined,
-      userPoolConfig:
-        props.authorizationConfig?.defaultAuthorization?.authorizationType ===
-        AuthorizationType.USER_POOL
-          ? this.formatUserPoolConfig(
-            props.authorizationConfig.defaultAuthorization.userPoolConfig!,
-          )
-          : undefined,
-      additionalAuthenticationProviders: this.formatAdditionalAuthenticationProviders(props),
+      authenticationType: defaultMode.authorizationType,
+      logConfig: this.setupLogConfig(props.logConfig),
+      openIdConnectConfig: this.setupOpenIdConnectConfig(defaultMode.openIdConnectConfig),
+      userPoolConfig: this.setupUserPoolConfig(defaultMode.userPoolConfig),
+      additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
     });
 
@@ -464,19 +432,11 @@ export class GraphQLApi extends GraphqlApiBase {
     this.schemaMode = props.schemaDefinition;
     this.schema = this.defineSchema(props.schemaDefinitionFile);
 
-    if (defaultAuthorizationType === AuthorizationType.API_KEY ||
-      props.authorizationConfig?.additionalAuthorizationModes?.some(
-        (authMode) => authMode.authorizationType === AuthorizationType.API_KEY)
-    ) {
-      // create a variable for apiKeyConfig if one has been specified by the user
-      // first check is for default authorization
-      // second check is for additional authorization modes
-      const apiKeyConfig = props.authorizationConfig?.defaultAuthorization?.apiKeyConfig ??
-        props.authorizationConfig?.additionalAuthorizationModes?.
-          find((mode: AuthorizationMode) => {
-            return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
-          })?.apiKeyConfig;
-      this._apiKey = this.createAPIKey(apiKeyConfig);
+    if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
+      const config = modes.find((mode: AuthorizationMode) => {
+        return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
+      })?.apiKeyConfig;
+      this._apiKey = this.createAPIKey(config);
       this._apiKey.addDependsOn(this.schema);
       this.apiKey = this._apiKey.attrApiKey;
     }
@@ -532,14 +492,8 @@ export class GraphQLApi extends GraphqlApiBase {
     return this.grant(grantee, IamResource.ofType('Subscription', ...fields), 'appsync:GraphQL');
   }
 
-  private validateAuthorizationProps(props: GraphQLApiProps) {
-    const defaultMode = props.authorizationConfig?.defaultAuthorization ?? {
-      authorizationType: AuthorizationType.API_KEY,
-    };
-    const additionalModes = props.authorizationConfig?.additionalAuthorizationModes ?? [];
-    const allModes = [defaultMode, ...additionalModes];
-
-    allModes.map((mode) => {
+  private validateAuthorizationProps(modes: AuthorizationMode[]) {
+    modes.map((mode) => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
         throw new Error('Missing default OIDC Configuration');
       }
@@ -547,12 +501,10 @@ export class GraphQLApi extends GraphqlApiBase {
         throw new Error('Missing default OIDC Configuration');
       }
     });
-
-    if (allModes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
+    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
       throw new Error('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
     }
-
-    if (allModes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1) {
+    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1) {
       throw new Error('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
     }
   }
@@ -567,9 +519,24 @@ export class GraphQLApi extends GraphqlApiBase {
     return true;
   }
 
-  private formatOpenIdConnectConfig(
-    config: OpenIdConnectConfig,
-  ): CfnGraphQLApi.OpenIDConnectConfigProperty {
+  private setupLogConfig(config?: LogConfig) {
+    if (!config) return undefined;
+    const role = new Role(this, 'ApiLogsRole', {
+      assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName(
+          'service-role/AWSAppSyncPushToCloudWatchLogs'),
+      ],
+    });
+    return {
+      cloudWatchLogsRoleArn: role.roleArn,
+      excludeVerboseContent: config.excludeVerboseContent,
+      fieldLogLevel: config.fieldLogLevel,
+    };
+  }
+
+  private setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {
+    if (!config) return undefined;
     return {
       authTtl: config.tokenExpiryFromAuth,
       clientId: config.clientId,
@@ -578,15 +545,25 @@ export class GraphQLApi extends GraphqlApiBase {
     };
   }
 
-  private formatUserPoolConfig(
-    config: UserPoolConfig,
-  ): CfnGraphQLApi.UserPoolConfigProperty {
+  private setupUserPoolConfig(config?: UserPoolConfig) {
+    if (!config) return undefined;
     return {
       userPoolId: config.userPool.userPoolId,
       awsRegion: config.userPool.stack.region,
       appIdClientRegex: config.appIdClientRegex,
-      defaultAction: config.defaultAction || 'ALLOW',
+      defaultAction: config.defaultAction,
     };
+  }
+
+  private setupAdditionalAuthorizationModes(modes?: AuthorizationMode[]) {
+    if (!modes || modes.length === 0) return undefined;
+    return modes.reduce<CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]>((acc, mode) => [
+      ...acc, {
+        authenticationType: mode.authorizationType,
+        userPoolConfig: this.setupUserPoolConfig(mode.userPoolConfig),
+        openIdConnectConfig: this.setupOpenIdConnectConfig(mode.openIdConnectConfig),
+      },
+    ], []);
   }
 
   private createAPIKey(config?: ApiKeyConfig) {
@@ -607,35 +584,6 @@ export class GraphQLApi extends GraphqlApiBase {
     });
   }
 
-  private formatAdditionalAuthorizationModes(
-    authModes: AuthorizationMode[],
-  ): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] {
-    return authModes.reduce<
-    CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]
-    >(
-      (acc, authMode) => [
-        ...acc,
-        {
-          authenticationType: authMode.authorizationType,
-          userPoolConfig:
-            authMode.authorizationType === AuthorizationType.USER_POOL
-              ? this.formatUserPoolConfig(authMode.userPoolConfig!)
-              : undefined,
-          openIdConnectConfig:
-            authMode.authorizationType === AuthorizationType.OIDC
-              ? this.formatOpenIdConnectConfig(authMode.openIdConnectConfig!)
-              : undefined,
-        },
-      ],
-      [],
-    );
-  }
-
-  private formatAdditionalAuthenticationProviders(props: GraphQLApiProps): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] | undefined {
-    const authModes = props.authorizationConfig?.additionalAuthorizationModes;
-    return authModes ? this.formatAdditionalAuthorizationModes(authModes) : undefined;
-  }
-
   /**
    * Define schema based on props configuration
    * @param file the file name/s3 location of Schema
@@ -646,7 +594,7 @@ export class GraphQLApi extends GraphqlApiBase {
     if ( this.schemaMode === SchemaDefinition.FILE && !file) {
       throw new Error('schemaDefinitionFile must be configured if using FILE definition mode.');
     } else if ( this.schemaMode === SchemaDefinition.FILE && file ) {
-      definition = readFileSync(file).toString('UTF-8');
+      definition = readFileSync(file).toString('utf-8');
     } else if ( this.schemaMode === SchemaDefinition.CODE && !file ) {
       definition = '';
     } else if ( this.schemaMode === SchemaDefinition.CODE && file) {
@@ -670,7 +618,7 @@ export class GraphQLApi extends GraphqlApiBase {
    * @experimental
    */
   public appendToSchema(addition: string, delimiter?: string): void {
-    if ( this.schemaMode != SchemaDefinition.CODE ) {
+    if ( this.schemaMode !== SchemaDefinition.CODE ) {
       throw new Error('API cannot append to schema because schema definition mode is not configured as CODE.');
     }
     const sep = delimiter ?? '';
@@ -686,7 +634,7 @@ export class GraphQLApi extends GraphqlApiBase {
    * @experimental
    */
   public addType(name: string, props: ObjectTypeProps): ObjectType {
-    if ( this.schemaMode != SchemaDefinition.CODE ) {
+    if ( this.schemaMode !== SchemaDefinition.CODE ) {
       throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
     };
     const type = new ObjectType(name, {
