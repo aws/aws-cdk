@@ -4,7 +4,6 @@ import { CfnGraphQLSchema } from './appsync.generated';
 import { GraphQLApi } from './graphqlapi';
 import { SchemaMode } from './private';
 import { IIntermediateType } from './schema-base';
-import { InterfaceType, IntermediateTypeProps, ObjectTypeProps, ObjectType } from './schema-intermediate';
 
 /**
  * The options for configuring a schema
@@ -75,7 +74,6 @@ export class Schema {
     return this.schema;
   }
 
-
   /**
    * Escape hatch to add to Schema as desired. Will always result
    * in a newline.
@@ -101,49 +99,11 @@ export class Schema {
    *
    * @experimental
    */
-  public addType(type: IIntermediateType): Schema {
+  public addType(type: IIntermediateType): IIntermediateType {
     if (this.mode !== SchemaMode.CODE) {
       throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
     }
     this.addToSchema(Lazy.stringValue({ produce: () => type.toString() }));
-    return this;
-  }
-
-  /**
-   * Add an object type to the schema
-   *
-   * @param name the name of the object type
-   * @param props the definition
-   *
-   * @experimental
-   */
-  public addObjectType(name: string, props: ObjectTypeProps): ObjectType {
-    if (this.mode !== SchemaMode.CODE) {
-      throw new Error('API cannot add object type because schema definition mode is not configured as CODE.');
-    }
-    const type = new ObjectType(name, {
-      ...props,
-    });
-    this.addType(type);
-    return type;
-  }
-
-  /**
-   * Add an interface type to the schema
-   *
-   * @param name the name of the interface type
-   * @param props the definition
-   *
-   * @experimental
-   */
-  public addInterfaceType(name: string, props: IntermediateTypeProps): InterfaceType {
-    if (this.mode != SchemaMode.CODE) {
-      throw new Error('API cannot add interface type because schema definition mode is not configured as CODE.');
-    }
-    const type = new InterfaceType(name, {
-      ...props,
-    });
-    this.addType(type);;
     return type;
   }
 }
