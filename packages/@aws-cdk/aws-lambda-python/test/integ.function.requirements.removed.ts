@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Construct, Stack, StackProps } from '@aws-cdk/core';
+import { ConstructOrder } from 'constructs';
 import * as lambda from '../lib';
 
 /*
@@ -25,7 +26,6 @@ class TestStack extends Stack {
 
     const fnBefore = new lambda.PythonFunction(this, 'before', {
       entry: workDir,
-      dependenciesLocation: lambda.DependenciesLocation.INLINE,
       runtime: Runtime.PYTHON_2_7,
     });
 
@@ -39,7 +39,6 @@ class TestStack extends Stack {
 
     const fnAfter = new lambda.PythonFunction(this, 'after', {
       entry: workDir,
-      dependenciesLocation: lambda.DependenciesLocation.INLINE,
       runtime: Runtime.PYTHON_2_7,
     });
 
@@ -48,8 +47,13 @@ class TestStack extends Stack {
     });
 
     // Ensure that the fnBefore and fnAfter assets are different
-    const fnBeforeAssetHash = (fnBefore.node.findChild('Code') as any).assetHash;
-    const fnAfterAssetHash = (fnAfter.node.findChild('Code') as any).assetHash;
+    const fnBeforeAssetHash = (fnBefore.node.findAll(ConstructOrder.POSTORDER)
+      .find(c => c.node.path.endsWith('Dependencies/Code')) as any)
+      .assetHash;
+    const fnAfterAssetHash = (fnAfter.node.findAll(ConstructOrder.POSTORDER)
+      .find(c => c.node.path.endsWith('Dependencies/Code')) as any)
+      .assetHash;
+
     if (!fnBeforeAssetHash || !fnAfterAssetHash) {
       throw new Error('The asset hashes are not both defined');
     }
