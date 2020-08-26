@@ -118,10 +118,10 @@ describe('testing schema definition mode `file`', () => {
 
     // THEN
     expect(() => {
-      api.addObjectType('blah', {
+      api.addType(new appsync.ObjectType('blah', {
         definition: { fail: t.id },
-      });
-    }).toThrowError('API cannot add object type because schema definition mode is not configured as CODE.');
+      }));
+    }).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
   });
 
   test('definition mode `file` errors when addInterfaceType is called', () => {
@@ -133,10 +133,10 @@ describe('testing schema definition mode `file`', () => {
 
     // THEN
     expect(() => {
-      api.addInterfaceType('blah', {
+      api.addType(new appsync.InterfaceType('blah', {
         definition: { fail: t.id },
-      });
-    }).toThrowError('API cannot add interface type because schema definition mode is not configured as CODE.');
+      }));
+    }).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
   });
 
   test('definition mode `file` errors when addToSchema is called', () => {

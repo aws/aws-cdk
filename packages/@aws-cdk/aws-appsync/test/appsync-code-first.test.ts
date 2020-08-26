@@ -62,7 +62,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
   test('testing addObjectType for schema definition mode `code`', () => {
     // WHEN
-    api.addObjectType('Test', {
+    api.addType(new appsync.ObjectType('Test', {
       definition: {
         id: t.id,
         lid: t.list_id,
@@ -71,7 +71,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
         rlrid: t.required_list_required_id,
         dupid: t.dup_id,
       },
-    });
+    }));
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
@@ -82,7 +82,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
   test('addField dynamically adds field to schema', () => {
     // WHEN
-    const test = api.addObjectType('Test', {
+    const test = api.addType(new appsync.ObjectType('Test', {
       definition: {
         id: t.id,
         lid: t.list_id,
@@ -90,7 +90,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
         rlid: t.required_list_id,
         rlrid: t.required_list_required_id,
       },
-    });
+    }));
 
     test.addField('dupid', t.dup_id);
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
@@ -103,7 +103,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
   test('testing addInterfaceType for schema definition mode `code`', () => {
     // WHEN
-    api.addInterfaceType('Test', {
+    api.addType(new appsync.InterfaceType('Test', {
       definition: {
         id: t.id,
         lid: t.list_id,
@@ -112,7 +112,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
         rlrid: t.required_list_required_id,
         dupid: t.dup_id,
       },
-    });
+    }));
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
@@ -123,7 +123,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
   test('addField dynamically adds field to schema', () => {
     // WHEN
-    const test = api.addInterfaceType('Test', {
+    const test = api.addType(new appsync.InterfaceType('Test', {
       definition: {
         id: t.id,
         lid: t.list_id,
@@ -131,7 +131,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
         rlid: t.required_list_id,
         rlrid: t.required_list_required_id,
       },
-    });
+    }));
 
     test.addField('dupid', t.dup_id);
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
@@ -204,7 +204,7 @@ describe('code-first implementation through Schema functions`', () => {
 
   test('testing addObjectType for schema definition mode `code`', () => {
     // WHEN
-    schema.addObjectType('Test', {
+    schema.addType(new appsync.ObjectType('Test', {
       definition: {
         id: t.id,
         lid: t.list_id,
@@ -213,7 +213,7 @@ describe('code-first implementation through Schema functions`', () => {
         rlrid: t.required_list_required_id,
         dupid: t.dup_id,
       },
-    });
+    }));
 
     new appsync.GraphQLApi(stack, 'api', {
       name: 'api',
@@ -230,7 +230,7 @@ describe('code-first implementation through Schema functions`', () => {
 
   test('addField dynamically adds field to schema', () => {
     // WHEN
-    const test = schema.addObjectType('Test', {
+    const test = schema.addType(new appsync.ObjectType('Test', {
       definition: {
         id: t.id,
         lid: t.list_id,
@@ -238,7 +238,7 @@ describe('code-first implementation through Schema functions`', () => {
         rlid: t.required_list_id,
         rlrid: t.required_list_required_id,
       },
-    });
+    }));
 
     test.addField('dupid', t.dup_id);
     new appsync.GraphQLApi(stack, 'api', {
@@ -255,7 +255,7 @@ describe('code-first implementation through Schema functions`', () => {
 
   test('testing addInterfaceType for schema definition mode `code`', () => {
     // WHEN
-    schema.addInterfaceType('Test', {
+    schema.addType(new appsync.InterfaceType('Test', {
       definition: {
         id: t.id,
         lid: t.list_id,
@@ -264,7 +264,7 @@ describe('code-first implementation through Schema functions`', () => {
         rlrid: t.required_list_required_id,
         dupid: t.dup_id,
       },
-    });
+    }));
     new appsync.GraphQLApi(stack, 'api', {
       name: 'api',
       schema,
@@ -279,7 +279,7 @@ describe('code-first implementation through Schema functions`', () => {
 
   test('addField dynamically adds field to schema', () => {
     // WHEN
-    const test = schema.addInterfaceType('Test', {
+    const test = schema.addType(new appsync.InterfaceType('Test', {
       definition: {
         id: t.id,
         lid: t.list_id,
@@ -287,7 +287,7 @@ describe('code-first implementation through Schema functions`', () => {
         rlid: t.required_list_id,
         rlrid: t.required_list_required_id,
       },
-    });
+    }));
 
     test.addField('dupid', t.dup_id);
     new appsync.GraphQLApi(stack, 'api', {

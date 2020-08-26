@@ -21,13 +21,13 @@ const stack = new cdk.Stack(app, 'code-first-schema');
 
 const schema = new appsync.Schema();
 
-const node = schema.addInterfaceType('Node', {
+const node = schema.addType(new appsync.InterfaceType('Node', {
   definition: {
     created: ScalarType.string,
     edited: ScalarType.string,
     id: ScalarType.required_id,
   },
-});
+}));
 
 const api = new appsync.GraphQLApi(stack, 'code-first-api', {
   name: 'api',

@@ -6,7 +6,7 @@ import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { Schema } from './schema';
 import { IIntermediateType } from './schema-base';
 import { ResolvableField } from './schema-field';
-import { InterfaceType, IntermediateTypeProps, ObjectType, ObjectTypeProps } from './schema-intermediate';
+import { ObjectType } from './schema-intermediate';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -587,32 +587,8 @@ export class GraphQLApi extends GraphqlApiBase {
    *
    * @experimental
    */
-  public addType(type: IIntermediateType): Schema {
+  public addType(type: IIntermediateType): IIntermediateType {
     return this.schema.addType(type);
-  }
-
-  /**
-   * Add an object type to the schema
-   *
-   * @param name the name of the object type
-   * @param props the definition
-   *
-   * @experimental
-   */
-  public addObjectType(name: string, props: ObjectTypeProps): ObjectType {
-    return this.schema.addObjectType(name, props);
-  }
-
-  /**
-   * Add an interface type to the schema
-   *
-   * @param name the name of the object type
-   * @param props the definition
-   *
-   * @experimental
-   */
-  public addInterfaceType(name: string, props: IntermediateTypeProps): InterfaceType {
-    return this.schema.addInterfaceType(name, props);
   }
 
   /**
