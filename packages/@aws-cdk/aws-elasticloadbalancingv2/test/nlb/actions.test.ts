@@ -1,7 +1,6 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as elbv2 from '../../lib';
 
 let stack: cdk.Stack;
@@ -9,18 +8,16 @@ let group1: elbv2.NetworkTargetGroup;
 let group2: elbv2.NetworkTargetGroup;
 let lb: elbv2.NetworkLoadBalancer;
 
-export = {
-  'setUp'(cb: () => void) {
-    stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Stack');
-    group1 = new elbv2.NetworkTargetGroup(stack, 'TargetGroup1', { vpc, port: 80 });
-    group2 = new elbv2.NetworkTargetGroup(stack, 'TargetGroup2', { vpc, port: 80 });
-    lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+beforeEach(() => {
+  stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Stack');
+  group1 = new elbv2.NetworkTargetGroup(stack, 'TargetGroup1', { vpc, port: 80 });
+  group2 = new elbv2.NetworkTargetGroup(stack, 'TargetGroup2', { vpc, port: 80 });
+  lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+});
 
-    cb();
-  },
-
-  'Forward to multiple targetgroups with an Action and stickiness'(test: Test) {
+describe('tests', () => {
+  test('Forward to multiple targetgroups with an Action and stickiness', () => {
     // WHEN
     lb.addListener('Listener', {
       port: 80,
@@ -30,7 +27,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
           ForwardConfig: {
@@ -50,12 +47,10 @@ export = {
           Type: 'forward',
         },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Weighted forward to multiple targetgroups with an Action'(test: Test) {
+  test('Weighted forward to multiple targetgroups with an Action', () => {
     // WHEN
     lb.addListener('Listener', {
       port: 80,
@@ -68,7 +63,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
           ForwardConfig: {
@@ -90,7 +85,6 @@ export = {
           Type: 'forward',
         },
       ],
-    }));
-    test.done();
-  },
-};
+    });
+  });
+});
