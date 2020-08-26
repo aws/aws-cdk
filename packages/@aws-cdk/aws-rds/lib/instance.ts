@@ -2,7 +2,6 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CfnDeletionPolicy, Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
@@ -54,6 +53,11 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
   addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy;
 
   /**
+   * Grant the given identity connection access to the database.
+   */
+  grantConnect(grantee: iam.IGrantable): iam.Grant;
+
+  /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
@@ -103,6 +107,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
       public readonly dbInstanceEndpointPort = attrs.port.toString();
       public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
+      protected enableIamAuthentication = true;
     }
 
     return new Import(scope, id);
@@ -112,6 +117,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public abstract readonly dbInstanceEndpointAddress: string;
   public abstract readonly dbInstanceEndpointPort: string;
   public abstract readonly instanceEndpoint: Endpoint;
+  protected abstract enableIamAuthentication?: boolean;
 
   /**
    * Access to network connections.
@@ -125,6 +131,19 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     return new DatabaseProxy(this, id, {
       proxyTarget: ProxyTarget.fromInstance(this),
       ...options,
+    });
+  }
+
+  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+    if (this.enableIamAuthentication === false) {
+      throw new Error('Cannot grant connect when IAM authentication is disabled');
+    }
+
+    this.enableIamAuthentication = true;
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['rds-db:connect'],
+      resourceArns: [this.instanceArn],
     });
   }
 
@@ -494,6 +513,8 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   private readonly cloudwatchLogsRetention?: logs.RetentionDays;
   private readonly cloudwatchLogsRetentionRole?: iam.IRole;
 
+  protected enableIamAuthentication?: boolean;
+
   constructor(scope: Construct, id: string, props: DatabaseInstanceNewProps) {
     super(scope, id);
 
@@ -532,6 +553,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.cloudwatchLogsExports = props.cloudwatchLogsExports;
     this.cloudwatchLogsRetention = props.cloudwatchLogsRetention;
     this.cloudwatchLogsRetentionRole = props.cloudwatchLogsRetentionRole;
+    this.enableIamAuthentication = props.iamAuthentication;
 
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
@@ -544,7 +566,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection,
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
-      enableIamDatabaseAuthentication: props.iamAuthentication,
+      enableIamDatabaseAuthentication: Lazy.anyValue({ produce: () => this.enableIamAuthentication }),
       enablePerformanceInsights: props.enablePerformanceInsights,
       iops,
       monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
@@ -571,7 +593,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   protected setLogRetention() {
     if (this.cloudwatchLogsExports && this.cloudwatchLogsRetention) {
       for (const log of this.cloudwatchLogsExports) {
-        new lambda.LogRetention(this, `LogRetention${log}`, {
+        new logs.LogRetention(this, `LogRetention${log}`, {
           logGroupName: `/aws/rds/instance/${this.instanceIdentifier}/${log}`,
           retention: this.cloudwatchLogsRetention,
           role: this.cloudwatchLogsRetentionRole,

@@ -1,7 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
@@ -83,6 +82,13 @@ export interface DatabaseClusterProps {
    * @default - Database is not created in cluster.
    */
   readonly defaultDatabaseName?: string;
+
+  /**
+   * Indicates whether the DB cluster should have deletion protection enabled.
+   *
+   * @default false
+   */
+  readonly deletionProtection?: boolean;
 
   /**
    * Whether to enable storage encryption.
@@ -425,6 +431,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       port: props.port ?? clusterEngineBindConfig.port,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
+      deletionProtection: props.deletionProtection,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret
@@ -621,7 +628,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       if (props.cloudwatchLogsRetention) {
         for (const log of props.cloudwatchLogsExports) {
-          new lambda.LogRetention(this, `LogRetention${log}`, {
+          new logs.LogRetention(this, `LogRetention${log}`, {
             logGroupName: `/aws/rds/cluster/${this.clusterIdentifier}/${log}`,
             retention: props.cloudwatchLogsRetention,
             role: props.cloudwatchLogsRetentionRole,
