@@ -198,13 +198,13 @@ export class Schema {
    */
   private declareSchema(): string {
     if (!this.query && !this.mutation && !this.subscription) return '';
-    const generate = <T extends object, U extends keyof T>(key: U) => (obj: T): string => {
-      const type: ObjectType | undefined = obj[key];
+    type root = 'mutation' | 'query' | 'subscription';
+    const list: root[] = ['query', 'mutation', 'subscription'];
+    const generate = (key: root): string => {
+      const type: ObjectType | undefined = this[key];
       return type ? `  ${key}: ${type.name}\n` : '';
     };
-    const keys: keyof Schema = Object.keys(Schema);
-    const list = Object.keys(this).filter((key: string) => ['query', 'mutation', 'subscription'].indexOf(key) > -1);
     return list.reduce((acc, element) =>
-      `${acc}${generate(element)(this)}`, 'schema {\n') + '}\n';
+      `${acc}${generate(element)}`, 'schema {\n') + '}\n';
   }
 }
