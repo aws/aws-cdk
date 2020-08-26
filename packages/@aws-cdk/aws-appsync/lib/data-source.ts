@@ -240,7 +240,7 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
    * The http endpoint
    */
   readonly endpoint: string;
-  readonly authorizationConfig?: HttpDataSourceAuthorizationConfig; 
+  readonly authorizationConfig?: AwsIamConfig; 
 }
 
 /**
