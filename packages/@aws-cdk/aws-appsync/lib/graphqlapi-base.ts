@@ -1,7 +1,7 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { CfnResource, IResource, Resource } from '@aws-cdk/core';
-import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource, HttpDataSourceAuthorizationConfig } from './data-source';
+import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource, AwsIamConfig } from './data-source';
 
 /**
  * Optional configuration for data sources
@@ -29,7 +29,7 @@ export interface HttpDataSourceOptions extends DataSourceOptions {
   /**
    * The authorization config in case the HTTP endpoint requires authorization
    */
-  readonly authorizationConfig?: HttpDataSourceAuthorizationConfig; 
+  readonly authorizationConfig?: AwsIamConfig;
 }
 
 /**

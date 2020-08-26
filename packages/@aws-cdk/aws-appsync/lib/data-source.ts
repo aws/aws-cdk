@@ -206,30 +206,30 @@ export class DynamoDbDataSource extends BackedDataSource {
 /**
  * The authorization config in case the HTTP endpoint requires authorization
  */
-export interface HttpDataSourceAuthorizationConfig {
+export interface AwsIamConfig {
   /**
    * The authorization type required by the HTTP endpoint
    */
   readonly authorizationType: 'AWS_IAM';
   /**
-   * The IAM configuration required by the HTTP endpoint
+   * The IAM signing configuration required by the HTTP endpoint
    */
-  readonly awsIamConfig: HttpDataSourceIamConfig;
+  readonly awsIamConfig: AwsIamConfigSigning; 
 }
 
 /**
- * The IAM configuration required by the HTTP endpoint
+ * The IAM signing config in case the HTTP endpoint requires authorization
  */
-export interface AwsIamConfig {
-  /**
-   * The signing region for AWS IAM authorization
-   */
-  readonly signingRegion: string;
-
-  /**
-   * The signing service name for AWS IAM authorization
-   */
-  readonly signingServiceName: string;
+export interface AwsIamConfigSigning {
+    /**
+     * The signing region for AWS IAM authorization
+     */
+    readonly signingRegion: string;
+  
+    /**
+     * The signing service name for AWS IAM authorization
+     */
+    readonly signingServiceName: string;  
 }
 
 /**
