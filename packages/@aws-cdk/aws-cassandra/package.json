@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-cassandra",
         "module": "aws_cdk.aws_cassandra"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

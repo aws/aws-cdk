@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-ecr-assets",
         "module": "aws_cdk.aws_ecr_assets"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -79,7 +80,7 @@
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "minimatch": "^3.0.4",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -90,7 +91,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "nyc": {
     "statements": 70
