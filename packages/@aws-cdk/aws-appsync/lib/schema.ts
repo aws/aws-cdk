@@ -46,13 +46,13 @@ export class Schema {
    */
   public definition: string;
 
-  protected query?: ObjectType;
+  private query?: ObjectType;
 
-  protected mutation?: ObjectType;
+  private mutation?: ObjectType;
 
-  protected subscription?: ObjectType;
+  private subscription?: ObjectType;
 
-  protected schema?: CfnGraphQLSchema;
+  private schema?: CfnGraphQLSchema;
 
   private mode: SchemaMode;
 
@@ -198,15 +198,13 @@ export class Schema {
    */
   private declareSchema(): string {
     if (!this.query && !this.mutation && !this.subscription) return '';
-    const generate = (name: string, type?: ObjectType): string => {
-      return type ? `  ${name}: ${type.name}\n` : '';
+    const generate = <T extends object, U extends keyof T>(key: U) => (obj: T): string => {
+      const type: ObjectType | undefined = obj[key];
+      return type ? `  ${key}: ${type.name}\n` : '';
     };
-    const list = [
-      { name: 'query', type: this.query },
-      { name: 'mutation', type: this.mutation },
-      { name: 'subscription', type: this.subscription },
-    ];
+    const keys: keyof Schema = Object.keys(Schema);
+    const list = Object.keys(this).filter((key: string) => ['query', 'mutation', 'subscription'].indexOf(key) > -1);
     return list.reduce((acc, element) =>
-      `${acc}${generate(element.name, element.type)}`, 'schema {\n') + '}\n';
+      `${acc}${generate(element)(this)}`, 'schema {\n') + '}\n';
   }
 }

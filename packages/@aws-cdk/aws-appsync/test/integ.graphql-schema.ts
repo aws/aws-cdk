@@ -34,10 +34,19 @@ const api = new appsync.GraphQLApi(stack, 'code-first-api', {
   schema: schema,
 });
 
+const table = new db.Table(stack, 'table', {
+  partitionKey: {
+    name: 'id',
+    type: db.AttributeType.STRING,
+  },
+});
+
+const tableDS = api.addDynamoDbDataSource('planets', table);
+
 const planet = ObjectType.planet;
 schema.addToSchema(planet.toString());
 
-api.addObjectType('Species', {
+api.addType(new appsync.ObjectType('Species', {
   interfaceTypes: [node],
   definition: {
     name: ScalarType.string,
@@ -51,24 +60,13 @@ api.addObjectType('Species', {
     language: ScalarType.string,
     homeworld: planet.attribute(),
   },
-});
+}));
 
-api.addToSchema('type Query {\n  getPlanets: [Planet]\n}', '\n');
-
-const table = new db.Table(stack, 'table', {
-  partitionKey: {
-    name: 'id',
-    type: db.AttributeType.STRING,
-  },
-});
-
-const tableDS = api.addDynamoDbDataSource('planets', table);
-
-tableDS.createResolver({
-  typeName: 'Query',
-  fieldName: 'getPlanets',
+api.addQuery('getPlanets', new appsync.ResolvableField({
+  returnType: planet.attribute({ isList: true }),
+  dataSource: tableDS,
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
-});
+}));
 
 app.synth();
