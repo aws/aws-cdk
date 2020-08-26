@@ -12,7 +12,7 @@ import {
   UserPoolDefaultAction,
   Values,
   IamResource,
-  SchemaDefinition,
+  Schema,
 } from '../lib';
 
 /*
@@ -38,8 +38,7 @@ const userPool = new UserPool(stack, 'Pool', {
 
 const api = new GraphQLApi(stack, 'Api', {
   name: 'Integ_Test_IAM',
-  schemaDefinition: SchemaDefinition.FILE,
-  schemaDefinitionFile: join(__dirname, 'integ.graphql-iam.graphql'),
+  schema: Schema.fromAsset(join(__dirname, 'integ.graphql-iam.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: AuthorizationType.USER_POOL,

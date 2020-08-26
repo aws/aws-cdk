@@ -11,8 +11,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphQLApi(stack, 'baseApi', {
     name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.FILE,
-    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
   endpoint = 'aws.amazon.com';
 });
