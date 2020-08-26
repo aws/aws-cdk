@@ -70,6 +70,7 @@ export class LocalBundler implements cdk.ILocalBundling {
         process.stderr, // redirect stdout to stderr
         'inherit', // inherit stderr
       ],
+      cwd: path.dirname(path.join(this.props.projectRoot, this.props.relativeEntryPath)),
     });
     return true;
   }
@@ -113,7 +114,7 @@ export class DockerBundler {
       image,
       command: ['bash', '-c', command],
       environment: props.environment,
-      workingDirectory: path.dirname(path.join(cdk.AssetStaging.BUNDLING_INPUT_DIR, props.relativeEntryPath)),
+      workingDirectory: path.dirname(path.join(cdk.AssetStaging.BUNDLING_INPUT_DIR, props.relativeEntryPath)).replace(/\\/g, '/'), // Always use POSIX paths in the container,
     };
   }
 }
