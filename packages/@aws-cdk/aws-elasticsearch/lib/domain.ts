@@ -1233,19 +1233,19 @@ export class Domain extends DomainBase implements IDomain {
 
     const advancedSecurityEnabled = (masterUserArn ?? masterUserName) != null;
     const internalUserDatabaseEnabled = masterUserName != null;
-    const masterUserPasswordString =    
-      props.fineGrainedAccessControl?.masterUserPasswordSecret?.toString()
-    function createMasterUserPasswordSecret(): string {
-       new secretsmanager.Secret(this, id, {
-          generateSecretString: {
-            secretStringTemplate: JSON.stringify({
-              username: masterUserName,
-            }),
-            generateStringKey: 'password',
-          },
-        })
-          .secretValueFromJson('password')
-          .toString()
+    const masterUserPasswordString = props.fineGrainedAccessControl?.masterUserPasswordSecret?.toString();
+    const createMasterUserPasswordSecret = (): string => {
+      return new secretsmanager.Secret(this, id, {
+        generateSecretString: {
+          secretStringTemplate: JSON.stringify({
+            username: masterUserName,
+          }),
+          generateStringKey: 'password',
+        },
+      })
+        .secretValueFromJson('password')
+        .toString();
+    };
     const masterUserPassword =
       masterUserPasswordString ??
       internalUserDatabaseEnabled ? createMasterUserPasswordSecret() : undefined;
