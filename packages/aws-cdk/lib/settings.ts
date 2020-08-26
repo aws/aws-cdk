@@ -189,9 +189,13 @@ export class Settings {
 
     // Custom `bundling` default. If we deploy, diff or synth a list of stacks
     // exclusively we skip bundling for all other stacks.
-    let bundling = argv.bundling ?? ['*'];
-    if (CUSTOM_BUNDLING_DEFAULT_COMMANDS.includes(argv._[0]) && argv.exclusively) {
-      bundling = argv.STACKS ?? [];
+    let bundling = argv.bundling;
+    if (!bundling) {
+      if (CUSTOM_BUNDLING_DEFAULT_COMMANDS.includes(argv._[0]) && argv.exclusively) {
+        bundling = argv.STACKS ?? [];
+      } else {
+        bundling = ['*'];
+      }
     }
 
     return new Settings({

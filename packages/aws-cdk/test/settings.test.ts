@@ -94,11 +94,23 @@ test('custom default for bundling in case of deploy', () => {
 
 test('bundling defaults to *', () => {
   // GIVEN
-  // GIVEN
   const settings = Settings.fromCommandLineArguments({
     _: ['command'],
   });
 
   // THEN
   expect(settings.get(['bundling'])).toEqual(['*']);
+});
+
+test('deploy with bundling specified', () => {
+  // GIVEN
+  const settings = Settings.fromCommandLineArguments({
+    _: ['deploy'],
+    exclusively: true,
+    STACKS: ['cool-stack'],
+    bundling: ['other-stack', 'cool-stack'],
+  });
+
+  // THEN
+  expect(settings.get(['bundling'])).toEqual(['other-stack', 'cool-stack']);
 });
