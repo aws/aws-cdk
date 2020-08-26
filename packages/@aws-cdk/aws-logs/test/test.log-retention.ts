@@ -1,9 +1,8 @@
 import { ABSENT, countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
-import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { LogRetention } from '../lib/log-retention';
+import { LogRetention, RetentionDays } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -15,7 +14,7 @@ export = {
     // WHEN
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
-      retention: logs.RetentionDays.ONE_MONTH,
+      retention: RetentionDays.ONE_MONTH,
     });
 
     // THEN
@@ -64,7 +63,7 @@ export = {
     // WHEN
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
-      retention: logs.RetentionDays.ONE_MONTH,
+      retention: RetentionDays.ONE_MONTH,
       role,
     });
 
@@ -100,7 +99,7 @@ export = {
 
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
-      retention: logs.RetentionDays.INFINITE,
+      retention: RetentionDays.INFINITE,
     });
 
     expect(stack).to(haveResource('Custom::LogRetention', {
@@ -114,7 +113,7 @@ export = {
     const stack = new cdk.Stack();
     const group = new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
-      retention: logs.RetentionDays.ONE_MONTH,
+      retention: RetentionDays.ONE_MONTH,
     });
 
     const logGroupArn = group.logGroupArn;
