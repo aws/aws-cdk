@@ -12,6 +12,7 @@ import { bootstrapEnvironment2, BootstrappingParameters } from './api/bootstrap'
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
@@ -190,7 +191,7 @@ export class CdkToolkit {
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
-          allEvents: options.allEvents,
+          progress: options.progress,
         });
 
         const message = result.noOp
@@ -580,14 +581,12 @@ export interface DeployOptions {
   usePreviousParameters?: boolean;
 
   /**
-   * Whether to display all stack events or to display only the events for the
-   * resource currently being deployed
+   * Display mode for stack deployment progress.
    *
-   * If not set, the stack history with all stack events will be displayed
-   *
-   * @default false
+   * @default - StackActivityProgress.Bar - stack events will be displayed for
+   *   the resource currently being deployed.
    */
-  allEvents?: boolean;
+  progress?: StackActivityProgress;
 
   /**
    * Path to file where stack outputs will be written after a successful deploy as JSON

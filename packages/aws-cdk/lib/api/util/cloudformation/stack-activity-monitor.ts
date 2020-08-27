@@ -17,6 +17,21 @@ interface ResourceMetadata {
   constructPath: string;
 }
 
+/**
+ * Supported display modes for stack deployment activity
+ */
+export enum StackActivityProgress {
+  /**
+   * Displays a progress bar with only the events for the resource currently being deployed
+   */
+  Bar = 'bar',
+
+  /**
+   * Displays complete history with all CloudFormation stack events
+   */
+  Events = 'events',
+}
+
 export interface StackActivityMonitorProps {
   /**
    * Total number of resources to update
@@ -44,7 +59,7 @@ export interface StackActivityMonitorProps {
    *
    * @default false
    */
-  allEvents?: boolean;
+  progress?: StackActivityProgress;
 }
 
 export class StackActivityMonitor {
@@ -90,9 +105,9 @@ export class StackActivityMonitor {
     const isWindows = process.platform === 'win32';
     const verbose = options.logLevel ?? logLevel;
     const fancyOutputAvailable = !isWindows && stream.isTTY;
-    const allEvents = options.allEvents ?? false;
+    const progress = options.progress ?? StackActivityProgress.Bar;
 
-    this.printer = fancyOutputAvailable && !allEvents && !verbose
+    this.printer = fancyOutputAvailable && !verbose && (progress === StackActivityProgress.Bar)
       ? new CurrentActivityPrinter(props)
       : new HistoryActivityPrinter(props);
   }
