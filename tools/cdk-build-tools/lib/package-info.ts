@@ -76,7 +76,6 @@ export interface CompilerOverrides {
   eslint?: string;
   jsii?: string;
   tsc?: string;
-  tslint?: string;
 }
 
 /**
@@ -84,7 +83,7 @@ export interface CompilerOverrides {
  */
 export function packageCompiler(compilers: CompilerOverrides): string[] {
   if (isJsii()) {
-    return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--project-references', '--silence-warnings=reserved-word'];
+    return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--silence-warnings=reserved-word'];
   } else {
     return [compilers.tsc || require.resolve('typescript/bin/tsc'), '--build'];
   }
@@ -104,10 +103,6 @@ export interface CDKBuildOptions {
      * Disable linting
      * @default false
      */
-    disable?: boolean;
-  };
-
-  tslint?: {
     disable?: boolean;
   };
 

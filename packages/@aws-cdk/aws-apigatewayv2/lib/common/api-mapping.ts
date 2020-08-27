@@ -1,11 +1,12 @@
 import { IResource } from '@aws-cdk/core';
 
 /**
- * Defines the contract for an Api Gateway V2 Api Mapping.
+ * Represents an ApiGatewayV2 ApiMapping resource
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-apimapping.html
  */
 export interface IApiMapping extends IResource {
   /**
-   * The ID of this API Gateway Api Mapping.
+   * ID of the api mapping
    * @attribute
    */
   readonly apiMappingId: string;

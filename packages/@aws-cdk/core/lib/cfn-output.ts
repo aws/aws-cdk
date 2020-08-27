@@ -36,10 +36,10 @@ export interface CfnOutputProps {
 }
 
 export class CfnOutput extends CfnElement {
-  private readonly _description?: string;
-  private readonly _condition?: CfnCondition;
-  private readonly _value?: any;
-  private readonly _export?: string;
+  private _description?: string;
+  private _condition?: CfnCondition;
+  private _value?: any;
+  private _exportName?: string;
 
   /**
    * Creates an CfnOutput value for this stack.
@@ -56,7 +56,63 @@ export class CfnOutput extends CfnElement {
     this._description = props.description;
     this._value = props.value;
     this._condition = props.condition;
-    this._export = props.exportName;
+    this._exportName = props.exportName;
+  }
+
+  /**
+   * A String type that describes the output value.
+   * The description can be a maximum of 4 K in length.
+   *
+   * @default - No description.
+   */
+  public get description() {
+    return this._description;
+  }
+
+  public set description(description: string | undefined) {
+    this._description = description;
+  }
+
+  /**
+   * The value of the property returned by the aws cloudformation describe-stacks command.
+   * The value of an output can include literals, parameter references, pseudo-parameters,
+   * a mapping value, or intrinsic functions.
+   */
+  public get value() {
+    return this._value;
+  }
+
+  public set value(value: any) {
+    this._value = value;
+  }
+
+  /**
+   * A condition to associate with this output value. If the condition evaluates
+   * to `false`, this output value will not be included in the stack.
+   *
+   * @default - No condition is associated with the output.
+   */
+  public get condition() {
+    return this._condition;
+  }
+
+  public set condition(condition: CfnCondition | undefined) {
+    this._condition = condition;
+  }
+
+  /**
+   * The name used to export the value of this output across stacks.
+   *
+   * To import the value from another stack, use `Fn.importValue(exportName)`.
+   *
+   * @default - the output is not exported
+   */
+  public get exportName() {
+    return this._exportName;
+  }
+
+  public set exportName(exportName: string | undefined) {
+    this._exportName = exportName;
   }
 
   /**
@@ -68,7 +124,7 @@ export class CfnOutput extends CfnElement {
         [this.logicalId]: {
           Description: this._description,
           Value: this._value,
-          Export: this._export != null ? { Name: this._export } : undefined,
+          Export: this._exportName != null ? { Name: this._exportName } : undefined,
           Condition: this._condition ? this._condition.logicalId : undefined,
         },
       },

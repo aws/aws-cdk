@@ -4,27 +4,76 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "AWS": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":iam::12345678:root"
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::12345678:root"
+                    ]
                   ]
-                ]
+                }
               }
             }
-          }],
+          ],
           "Version": "2012-10-17"
         }
       }
+    },
+    "SecretsKey317DCF94": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::12345678:root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "Vpc8378EB38": {
       "Type": "AWS::EC2::VPC",
@@ -33,10 +82,12 @@
         "EnableDnsHostnames": true,
         "EnableDnsSupport": true,
         "InstanceTenancy": "default",
-        "Tags": [{
-          "Key": "Name",
-          "Value": "aws-cdk-eks-cluster-test/Vpc"
-        }]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-eks-cluster-test/Vpc"
+          }
+        ]
       }
     },
     "VpcPublicSubnet1Subnet5C2D37C4": {
@@ -48,7 +99,8 @@
         },
         "AvailabilityZone": "test-region-1a",
         "MapPublicIpOnLaunch": true,
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
@@ -73,7 +125,8 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
           },
@@ -114,7 +167,8 @@
       "Type": "AWS::EC2::EIP",
       "Properties": {
         "Domain": "vpc",
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
           },
@@ -137,7 +191,8 @@
         "SubnetId": {
           "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
         },
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
           },
@@ -157,7 +212,8 @@
         },
         "AvailabilityZone": "test-region-1b",
         "MapPublicIpOnLaunch": true,
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
@@ -182,7 +238,8 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
           },
@@ -228,7 +285,8 @@
         },
         "AvailabilityZone": "test-region-1c",
         "MapPublicIpOnLaunch": true,
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
@@ -253,7 +311,8 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
           },
@@ -299,7 +358,8 @@
         },
         "AvailabilityZone": "test-region-1a",
         "MapPublicIpOnLaunch": false,
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -324,7 +384,8 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
           },
@@ -367,7 +428,8 @@
         },
         "AvailabilityZone": "test-region-1b",
         "MapPublicIpOnLaunch": false,
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -392,7 +454,8 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
           },
@@ -435,7 +498,8 @@
         },
         "AvailabilityZone": "test-region-1c",
         "MapPublicIpOnLaunch": false,
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -460,7 +524,8 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
           },
@@ -497,10 +562,12 @@
     "VpcIGWD7BA715C": {
       "Type": "AWS::EC2::InternetGateway",
       "Properties": {
-        "Tags": [{
-          "Key": "Name",
-          "Value": "aws-cdk-eks-cluster-test/Vpc"
-        }]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-eks-cluster-test/Vpc"
+          }
+        ]
       }
     },
     "VpcVPCGWBF912B6E": {
@@ -518,41 +585,68 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "eks.amazonaws.com"
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "eks.amazonaws.com"
+              }
             }
-          }],
+          ],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [{
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":iam::aws:policy/AmazonEKSClusterPolicy"
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKSClusterPolicy"
+              ]
             ]
-          ]
-        }]
+          }
+        ]
       }
     },
     "ClusterControlPlaneSecurityGroupD274242C": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "EKS Control Plane Security Group",
-        "SecurityGroupEgress": [{
-          "CidrIp": "0.0.0.0/0",
-          "Description": "Allow all outbound traffic by default",
-          "IpProtocol": "-1"
-        }],
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }
+      }
+    },
+    "ClusterControlPlaneSecurityGroupfromawscdkeksclustertestClusterKubectlProviderSecurityGroup0285626644359187EDA": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterKubectlProviderSecurityGroup02856266:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterControlPlaneSecurityGroupD274242C",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ClusterKubectlProviderSecurityGroup2D90691C",
+            "GroupId"
+          ]
+        },
+        "ToPort": 443
       }
     },
     "ClusterControlPlaneSecurityGroupfromawscdkeksclustertestClusterNodesInstanceSecurityGroupD0B64C54443795AF111": {
@@ -639,15 +733,33 @@
         "ToPort": 443
       }
     },
+    "ClusterKubectlProviderSecurityGroup2D90691C": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Comminication between KubectlProvider and EKS Control Plane",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
     "ClusterCreationRole360249B6": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "AWS": [{
+                "AWS": [
+                  {
                     "Fn::GetAtt": [
                       "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
                       "Outputs.awscdkeksclustertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole5B783C71Arn"
@@ -677,13 +789,46 @@
           ],
           "Version": "2012-10-17"
         }
-      }
+      },
+      "DependsOn": [
+        "ClusterKubectlProviderSecurityGroup2D90691C",
+        "VpcIGWD7BA715C",
+        "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+        "VpcPrivateSubnet1RouteTableB2C5B500",
+        "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+        "VpcPrivateSubnet1Subnet536B997A",
+        "VpcPrivateSubnet2DefaultRoute060D2087",
+        "VpcPrivateSubnet2RouteTableA678073B",
+        "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
+        "VpcPrivateSubnet2Subnet3788AAA1",
+        "VpcPrivateSubnet3DefaultRoute94B74F0D",
+        "VpcPrivateSubnet3RouteTableD98824C7",
+        "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
+        "VpcPrivateSubnet3SubnetF258B56E",
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet1EIPD7E02669",
+        "VpcPublicSubnet1NATGateway4D7517AA",
+        "VpcPublicSubnet1RouteTable6C95E38E",
+        "VpcPublicSubnet1RouteTableAssociation97140677",
+        "VpcPublicSubnet1Subnet5C2D37C4",
+        "VpcPublicSubnet2DefaultRoute97F91067",
+        "VpcPublicSubnet2RouteTable94F7E489",
+        "VpcPublicSubnet2RouteTableAssociationDD5762D8",
+        "VpcPublicSubnet2Subnet691E08A3",
+        "VpcPublicSubnet3DefaultRoute4697774F",
+        "VpcPublicSubnet3RouteTable93458DBB",
+        "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
+        "VpcPublicSubnet3SubnetBE12F0B6",
+        "Vpc8378EB38",
+        "VpcVPCGWBF912B6E"
+      ]
     },
     "ClusterCreationRoleDefaultPolicyE8BDFC7B": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Statement": [{
+          "Statement": [
+            {
               "Action": "iam:PassRole",
               "Effect": "Allow",
               "Resource": {
@@ -727,7 +872,10 @@
               "Resource": "*"
             },
             {
-              "Action": "iam:GetRole",
+              "Action": [
+                "iam:GetRole",
+                "iam:listAttachedRolePolicies"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -735,6 +883,40 @@
               "Action": "iam:CreateServiceLinkedRole",
               "Effect": "Allow",
               "Resource": "*"
+            },
+            {
+              "Action": "ec2:DescribeVpcs",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ec2:test-region:12345678:vpc/",
+                    {
+                      "Ref": "Vpc8378EB38"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:CreateGrant"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "SecretsKey317DCF94",
+                  "Arn"
+                ]
+              }
             },
             {
               "Action": "iam:PassRole",
@@ -750,10 +932,44 @@
           "Version": "2012-10-17"
         },
         "PolicyName": "ClusterCreationRoleDefaultPolicyE8BDFC7B",
-        "Roles": [{
-          "Ref": "ClusterCreationRole360249B6"
-        }]
-      }
+        "Roles": [
+          {
+            "Ref": "ClusterCreationRole360249B6"
+          }
+        ]
+      },
+      "DependsOn": [
+        "ClusterKubectlProviderSecurityGroup2D90691C",
+        "VpcIGWD7BA715C",
+        "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+        "VpcPrivateSubnet1RouteTableB2C5B500",
+        "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+        "VpcPrivateSubnet1Subnet536B997A",
+        "VpcPrivateSubnet2DefaultRoute060D2087",
+        "VpcPrivateSubnet2RouteTableA678073B",
+        "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
+        "VpcPrivateSubnet2Subnet3788AAA1",
+        "VpcPrivateSubnet3DefaultRoute94B74F0D",
+        "VpcPrivateSubnet3RouteTableD98824C7",
+        "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
+        "VpcPrivateSubnet3SubnetF258B56E",
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet1EIPD7E02669",
+        "VpcPublicSubnet1NATGateway4D7517AA",
+        "VpcPublicSubnet1RouteTable6C95E38E",
+        "VpcPublicSubnet1RouteTableAssociation97140677",
+        "VpcPublicSubnet1Subnet5C2D37C4",
+        "VpcPublicSubnet2DefaultRoute97F91067",
+        "VpcPublicSubnet2RouteTable94F7E489",
+        "VpcPublicSubnet2RouteTableAssociationDD5762D8",
+        "VpcPublicSubnet2Subnet691E08A3",
+        "VpcPublicSubnet3DefaultRoute4697774F",
+        "VpcPublicSubnet3RouteTable93458DBB",
+        "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
+        "VpcPublicSubnet3SubnetBE12F0B6",
+        "Vpc8378EB38",
+        "VpcVPCGWBF912B6E"
+      ]
     },
     "Cluster9EE0221C": {
       "Type": "Custom::AWSCDK-EKS-Cluster",
@@ -765,21 +981,31 @@
           ]
         },
         "Config": {
+          "version": "1.16",
           "roleArn": {
             "Fn::GetAtt": [
               "ClusterRoleFA261979",
               "Arn"
             ]
           },
-          "version": "1.16",
-          "resourcesVpcConfig": {
-            "securityGroupIds": [{
-              "Fn::GetAtt": [
-                "ClusterControlPlaneSecurityGroupD274242C",
-                "GroupId"
+          "encryptionConfig": [
+            {
+              "provider": {
+                "keyArn": {
+                  "Fn::GetAtt": [
+                    "SecretsKey317DCF94",
+                    "Arn"
+                  ]
+                }
+              },
+              "resources": [
+                "secrets"
               ]
-            }],
-            "subnetIds": [{
+            }
+          ],
+          "resourcesVpcConfig": {
+            "subnetIds": [
+              {
                 "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
               },
               {
@@ -797,7 +1023,17 @@
               {
                 "Ref": "VpcPrivateSubnet3SubnetF258B56E"
               }
-            ]
+            ],
+            "securityGroupIds": [
+              {
+                "Fn::GetAtt": [
+                  "ClusterControlPlaneSecurityGroupD274242C",
+                  "GroupId"
+                ]
+              }
+            ],
+            "endpointPublicAccess": true,
+            "endpointPrivateAccess": true
           }
         },
         "AssumeRoleArn": {
@@ -809,11 +1045,55 @@
         "AttributesRevision": 2
       },
       "DependsOn": [
+        "ClusterKubectlProviderSecurityGroup2D90691C",
         "ClusterCreationRoleDefaultPolicyE8BDFC7B",
-        "ClusterCreationRole360249B6"
+        "ClusterCreationRole360249B6",
+        "VpcIGWD7BA715C",
+        "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+        "VpcPrivateSubnet1RouteTableB2C5B500",
+        "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+        "VpcPrivateSubnet1Subnet536B997A",
+        "VpcPrivateSubnet2DefaultRoute060D2087",
+        "VpcPrivateSubnet2RouteTableA678073B",
+        "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
+        "VpcPrivateSubnet2Subnet3788AAA1",
+        "VpcPrivateSubnet3DefaultRoute94B74F0D",
+        "VpcPrivateSubnet3RouteTableD98824C7",
+        "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
+        "VpcPrivateSubnet3SubnetF258B56E",
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet1EIPD7E02669",
+        "VpcPublicSubnet1NATGateway4D7517AA",
+        "VpcPublicSubnet1RouteTable6C95E38E",
+        "VpcPublicSubnet1RouteTableAssociation97140677",
+        "VpcPublicSubnet1Subnet5C2D37C4",
+        "VpcPublicSubnet2DefaultRoute97F91067",
+        "VpcPublicSubnet2RouteTable94F7E489",
+        "VpcPublicSubnet2RouteTableAssociationDD5762D8",
+        "VpcPublicSubnet2Subnet691E08A3",
+        "VpcPublicSubnet3DefaultRoute4697774F",
+        "VpcPublicSubnet3RouteTable93458DBB",
+        "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
+        "VpcPublicSubnet3SubnetBE12F0B6",
+        "Vpc8378EB38",
+        "VpcVPCGWBF912B6E"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
+    },
+    "ClusterKubectlReadyBarrier200052AF": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": "aws:cdk:eks:kubectl-ready"
+      },
+      "DependsOn": [
+        "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
+        "ClusterfargateprofiledefaultEFC59F14",
+        "ClusterCreationRoleDefaultPolicyE8BDFC7B",
+        "ClusterCreationRole360249B6",
+        "Cluster9EE0221C"
+      ]
     },
     "ClusterAwsAuthmanifestFE51F8AE": {
       "Type": "Custom::AWSCDK-EKS-KubernetesResource",
@@ -843,6 +1123,13 @@
                 ]
               },
               "\\\",\\\"groups\\\":[\\\"system:masters\\\"]},{\\\"rolearn\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
+                  "Arn"
+                ]
+              },
+              "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
               {
                 "Fn::GetAtt": [
                   "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
@@ -877,6 +1164,13 @@
                   "Arn"
                 ]
               },
+              "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "ClusterNodegroupextrangNodeGroupRole23AE23D0",
+                  "Arn"
+                ]
+              },
               "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
             ]
           ]
@@ -891,6 +1185,9 @@
           ]
         }
       },
+      "DependsOn": [
+        "ClusterKubectlReadyBarrier200052AF"
+      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -898,26 +1195,29 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "ec2.",
-                    {
-                      "Ref": "AWS::URLSuffix"
-                    }
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
                   ]
-                ]
+                }
               }
             }
-          }],
+          ],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [{
+        "ManagedPolicyArns": [
+          {
             "Fn::Join": [
               "",
               [
@@ -968,7 +1268,8 @@
             "Arn"
           ]
         },
-        "Subnets": [{
+        "Subnets": [
+          {
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
@@ -993,27 +1294,31 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "eks-fargate-pods.amazonaws.com"
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "eks-fargate-pods.amazonaws.com"
+              }
             }
-          }],
+          ],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [{
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
+              ]
             ]
-          ]
-        }]
+          }
+        ]
       }
     },
     "ClusterfargateprofiledefaultEFC59F14": {
@@ -1041,9 +1346,11 @@
               "Arn"
             ]
           },
-          "selectors": [{
-            "namespace": "default"
-          }]
+          "selectors": [
+            {
+              "namespace": "default"
+            }
+          ]
         }
       },
       "UpdateReplacePolicy": "Delete",
@@ -1053,12 +1360,15 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "aws-cdk-eks-cluster-test/Cluster/Nodes/InstanceSecurityGroup",
-        "SecurityGroupEgress": [{
-          "CidrIp": "0.0.0.0/0",
-          "Description": "Allow all outbound traffic by default",
-          "IpProtocol": "-1"
-        }],
-        "Tags": [{
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "Tags": [
+          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1147,26 +1457,29 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "ec2.",
-                    {
-                      "Ref": "AWS::URLSuffix"
-                    }
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
                   ]
-                ]
+                }
               }
             }
-          }],
+          ],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [{
+        "ManagedPolicyArns": [
+          {
             "Fn::Join": [
               "",
               [
@@ -1203,7 +1516,8 @@
             ]
           }
         ],
-        "Tags": [{
+        "Tags": [
+          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1227,9 +1541,11 @@
     "ClusterNodesInstanceProfileF2DD0E21": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
-        "Roles": [{
-          "Ref": "ClusterNodesInstanceRoleC3C01328"
-        }]
+        "Roles": [
+          {
+            "Ref": "ClusterNodesInstanceRoleC3C01328"
+          }
+        ]
       }
     },
     "ClusterNodesLaunchConfig7C420A27": {
@@ -1242,12 +1558,14 @@
         "IamInstanceProfile": {
           "Ref": "ClusterNodesInstanceProfileF2DD0E21"
         },
-        "SecurityGroups": [{
-          "Fn::GetAtt": [
-            "ClusterNodesInstanceSecurityGroup899246BD",
-            "GroupId"
-          ]
-        }],
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "ClusterNodesInstanceSecurityGroup899246BD",
+              "GroupId"
+            ]
+          }
+        ],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -1275,7 +1593,8 @@
         "LaunchConfigurationName": {
           "Ref": "ClusterNodesLaunchConfig7C420A27"
         },
-        "Tags": [{
+        "Tags": [
+          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1296,7 +1615,8 @@
             "Value": "aws-cdk-eks-cluster-test/Cluster/Nodes"
           }
         ],
-        "VPCZoneIdentifier": [{
+        "VPCZoneIdentifier": [
+          {
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
@@ -1308,17 +1628,6 @@
         ]
       },
       "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "WaitOnResourceSignals": false,
-          "PauseTime": "PT0S",
-          "SuspendProcesses": [
-            "HealthCheck",
-            "ReplaceUnhealthy",
-            "AZRebalance",
-            "AlarmNotification",
-            "ScheduledActions"
-          ]
-        },
         "AutoScalingScheduledAction": {
           "IgnoreUnmodifiedGroupSizeProperties": true
         }
@@ -1328,12 +1637,15 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/InstanceSecurityGroup",
-        "SecurityGroupEgress": [{
-          "CidrIp": "0.0.0.0/0",
-          "Description": "Allow all outbound traffic by default",
-          "IpProtocol": "-1"
-        }],
-        "Tags": [{
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "Tags": [
+          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1422,26 +1734,29 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "ec2.",
-                    {
-                      "Ref": "AWS::URLSuffix"
-                    }
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
                   ]
-                ]
+                }
               }
             }
-          }],
+          ],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [{
+        "ManagedPolicyArns": [
+          {
             "Fn::Join": [
               "",
               [
@@ -1478,7 +1793,8 @@
             ]
           }
         ],
-        "Tags": [{
+        "Tags": [
+          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1502,9 +1818,11 @@
     "ClusterBottlerocketNodesInstanceProfileB6E2F25A": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
-        "Roles": [{
-          "Ref": "ClusterBottlerocketNodesInstanceRole68E4BCFB"
-        }]
+        "Roles": [
+          {
+            "Ref": "ClusterBottlerocketNodesInstanceRole68E4BCFB"
+          }
+        ]
       }
     },
     "ClusterBottlerocketNodesLaunchConfig76D7BEBE": {
@@ -1517,12 +1835,14 @@
         "IamInstanceProfile": {
           "Ref": "ClusterBottlerocketNodesInstanceProfileB6E2F25A"
         },
-        "SecurityGroups": [{
-          "Fn::GetAtt": [
-            "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
-            "GroupId"
-          ]
-        }],
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
+              "GroupId"
+            ]
+          }
+        ],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -1564,7 +1884,8 @@
         "LaunchConfigurationName": {
           "Ref": "ClusterBottlerocketNodesLaunchConfig76D7BEBE"
         },
-        "Tags": [{
+        "Tags": [
+          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1585,7 +1906,8 @@
             "Value": "aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes"
           }
         ],
-        "VPCZoneIdentifier": [{
+        "VPCZoneIdentifier": [
+          {
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
@@ -1597,17 +1919,6 @@
         ]
       },
       "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "WaitOnResourceSignals": false,
-          "PauseTime": "PT0S",
-          "SuspendProcesses": [
-            "HealthCheck",
-            "ReplaceUnhealthy",
-            "AZRebalance",
-            "AlarmNotification",
-            "ScheduledActions"
-          ]
-        },
         "AutoScalingScheduledAction": {
           "IgnoreUnmodifiedGroupSizeProperties": true
         }
@@ -1617,12 +1928,15 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "aws-cdk-eks-cluster-test/Cluster/spot/InstanceSecurityGroup",
-        "SecurityGroupEgress": [{
-          "CidrIp": "0.0.0.0/0",
-          "Description": "Allow all outbound traffic by default",
-          "IpProtocol": "-1"
-        }],
-        "Tags": [{
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "Tags": [
+          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1711,26 +2025,29 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "ec2.",
-                    {
-                      "Ref": "AWS::URLSuffix"
-                    }
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
                   ]
-                ]
+                }
               }
             }
-          }],
+          ],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [{
+        "ManagedPolicyArns": [
+          {
             "Fn::Join": [
               "",
               [
@@ -1767,7 +2084,8 @@
             ]
           }
         ],
-        "Tags": [{
+        "Tags": [
+          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1791,9 +2109,11 @@
     "ClusterspotInstanceProfileAB88D077": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
-        "Roles": [{
-          "Ref": "ClusterspotInstanceRole39043830"
-        }]
+        "Roles": [
+          {
+            "Ref": "ClusterspotInstanceRole39043830"
+          }
+        ]
       }
     },
     "ClusterspotLaunchConfigCC19F2E6": {
@@ -1806,12 +2126,14 @@
         "IamInstanceProfile": {
           "Ref": "ClusterspotInstanceProfileAB88D077"
         },
-        "SecurityGroups": [{
-          "Fn::GetAtt": [
-            "ClusterspotInstanceSecurityGroup01F7B1CE",
-            "GroupId"
-          ]
-        }],
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "ClusterspotInstanceSecurityGroup01F7B1CE",
+              "GroupId"
+            ]
+          }
+        ],
         "SpotPrice": "0.1094",
         "UserData": {
           "Fn::Base64": {
@@ -1840,7 +2162,8 @@
         "LaunchConfigurationName": {
           "Ref": "ClusterspotLaunchConfigCC19F2E6"
         },
-        "Tags": [{
+        "Tags": [
+          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1861,7 +2184,8 @@
             "Value": "aws-cdk-eks-cluster-test/Cluster/spot"
           }
         ],
-        "VPCZoneIdentifier": [{
+        "VPCZoneIdentifier": [
+          {
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
@@ -1873,17 +2197,6 @@
         ]
       },
       "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "WaitOnResourceSignals": false,
-          "PauseTime": "PT0S",
-          "SuspendProcesses": [
-            "HealthCheck",
-            "ReplaceUnhealthy",
-            "AZRebalance",
-            "AlarmNotification",
-            "ScheduledActions"
-          ]
-        },
         "AutoScalingScheduledAction": {
           "IgnoreUnmodifiedGroupSizeProperties": true
         }
@@ -1915,6 +2228,9 @@
         "Repository": "https://aws.github.io/eks-charts",
         "CreateNamespace": true
       },
+      "DependsOn": [
+        "ClusterKubectlReadyBarrier200052AF"
+      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -1922,12 +2238,15 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "aws-cdk-eks-cluster-test/Cluster/InferenceInstances/InstanceSecurityGroup",
-        "SecurityGroupEgress": [{
-          "CidrIp": "0.0.0.0/0",
-          "Description": "Allow all outbound traffic by default",
-          "IpProtocol": "-1"
-        }],
-        "Tags": [{
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "Tags": [
+          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -2016,26 +2335,29 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "ec2.",
-                    {
-                      "Ref": "AWS::URLSuffix"
-                    }
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
                   ]
-                ]
+                }
               }
             }
-          }],
+          ],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [{
+        "ManagedPolicyArns": [
+          {
             "Fn::Join": [
               "",
               [
@@ -2072,7 +2394,8 @@
             ]
           }
         ],
-        "Tags": [{
+        "Tags": [
+          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -2096,9 +2419,11 @@
     "ClusterInferenceInstancesInstanceProfile5A1209B4": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
-        "Roles": [{
-          "Ref": "ClusterInferenceInstancesInstanceRole59AC6F56"
-        }]
+        "Roles": [
+          {
+            "Ref": "ClusterInferenceInstancesInstanceRole59AC6F56"
+          }
+        ]
       }
     },
     "ClusterInferenceInstancesLaunchConfig03BF48FE": {
@@ -2111,12 +2436,14 @@
         "IamInstanceProfile": {
           "Ref": "ClusterInferenceInstancesInstanceProfile5A1209B4"
         },
-        "SecurityGroups": [{
-          "Fn::GetAtt": [
-            "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-            "GroupId"
-          ]
-        }],
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
+              "GroupId"
+            ]
+          }
+        ],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -2144,7 +2471,8 @@
         "LaunchConfigurationName": {
           "Ref": "ClusterInferenceInstancesLaunchConfig03BF48FE"
         },
-        "Tags": [{
+        "Tags": [
+          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -2165,7 +2493,8 @@
             "Value": "aws-cdk-eks-cluster-test/Cluster/InferenceInstances"
           }
         ],
-        "VPCZoneIdentifier": [{
+        "VPCZoneIdentifier": [
+          {
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
@@ -2177,17 +2506,6 @@
         ]
       },
       "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "WaitOnResourceSignals": false,
-          "PauseTime": "PT0S",
-          "SuspendProcesses": [
-            "HealthCheck",
-            "ReplaceUnhealthy",
-            "AZRebalance",
-            "AlarmNotification",
-            "ScheduledActions"
-          ]
-        },
         "AutoScalingScheduledAction": {
           "IgnoreUnmodifiedGroupSizeProperties": true
         }
@@ -2213,6 +2531,9 @@
           ]
         }
       },
+      "DependsOn": [
+        "ClusterKubectlReadyBarrier200052AF"
+      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -2220,26 +2541,29 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "ec2.",
-                    {
-                      "Ref": "AWS::URLSuffix"
-                    }
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
                   ]
-                ]
+                }
               }
             }
-          }],
+          ],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [{
+        "ManagedPolicyArns": [
+          {
             "Fn::Join": [
               "",
               [
@@ -2290,7 +2614,8 @@
             "Arn"
           ]
         },
-        "Subnets": [{
+        "Subnets": [
+          {
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
@@ -2331,6 +2656,9 @@
           ]
         }
       },
+      "DependsOn": [
+        "ClusterKubectlReadyBarrier200052AF"
+      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -2358,6 +2686,35 @@
         "Repository": "https://kubernetes.github.io/dashboard/",
         "CreateNamespace": true
       },
+      "DependsOn": [
+        "ClusterKubectlReadyBarrier200052AF"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ClustermanifestnginxnamespaceA68B4CE0": {
+      "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+            "Outputs.awscdkeksclustertestawscdkawseksKubectlProviderframeworkonEventC681B49AArn"
+          ]
+        },
+        "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"nginx\"}}]",
+        "ClusterName": {
+          "Ref": "Cluster9EE0221C"
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "ClusterCreationRole360249B6",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ClusterKubectlReadyBarrier200052AF"
+      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -2383,10 +2740,13 @@
         "Chart": "nginx-ingress",
         "Wait": true,
         "Timeout": "900s",
-        "Namespace": "kube-system",
-        "Repository": "https://helm.nginx.com/stable",
-        "CreateNamespace": true
+        "Namespace": "nginx",
+        "Repository": "https://helm.nginx.com/stable"
       },
+      "DependsOn": [
+        "ClusterKubectlReadyBarrier200052AF",
+        "ClustermanifestnginxnamespaceA68B4CE0"
+      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -2429,23 +2789,25 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Action": "sts:AssumeRoleWithWebIdentity",
-            "Condition": {
-              "StringEquals": {
-                "Fn::GetAtt": [
-                  "ClusterMyServiceAccountConditionJson671C0633",
-                  "Value"
-                ]
-              }
-            },
-            "Effect": "Allow",
-            "Principal": {
-              "Federated": {
-                "Ref": "ClusterOpenIdConnectProviderE7EB0530"
+          "Statement": [
+            {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "Fn::GetAtt": [
+                    "ClusterMyServiceAccountConditionJson671C0633",
+                    "Value"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": {
+                  "Ref": "ClusterOpenIdConnectProviderE7EB0530"
+                }
               }
             }
-          }],
+          ],
           "Version": "2012-10-17"
         }
       }
@@ -2509,6 +2871,105 @@
           ]
         }
       },
+      "DependsOn": [
+        "ClusterKubectlReadyBarrier200052AF"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ClustermanifestsimplewebpodC2D35484": {
+      "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+            "Outputs.awscdkeksclustertestawscdkawseksKubectlProviderframeworkonEventC681B49AArn"
+          ]
+        },
+        "Manifest": "[{\"kind\":\"Pod\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"webpod\",\"labels\":{\"app\":\"simple-web\"}},\"spec\":{\"containers\":[{\"name\":\"simplewebcontainer\",\"image\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}]",
+        "ClusterName": {
+          "Ref": "Cluster9EE0221C"
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "ClusterCreationRole360249B6",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ClusterKubectlReadyBarrier200052AF"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "Clustermanifestsimplewebservice4594DB30": {
+      "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+            "Outputs.awscdkeksclustertestawscdkawseksKubectlProviderframeworkonEventC681B49AArn"
+          ]
+        },
+        "Manifest": {
+          "Fn::Join": [
+            "",
+            [
+              "[{\"kind\":\"Service\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"webservice\",\"annotations\":{\"service.beta.kubernetes.io/aws-load-balancer-internal\":\"true\",\"service.beta.kubernetes.io/aws-load-balancer-extra-security-groups\":\"",
+              {
+                "Fn::GetAtt": [
+                  "WebServiceSecurityGroupA556AEB5",
+                  "GroupId"
+                ]
+              },
+              "\"}},\"spec\":{\"type\":\"LoadBalancer\",\"ports\":[{\"port\":9000,\"targetPort\":80}],\"selector\":{\"app\":\"simple-web\"}}}]"
+            ]
+          ]
+        },
+        "ClusterName": {
+          "Ref": "Cluster9EE0221C"
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "ClusterCreationRole360249B6",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ClusterKubectlReadyBarrier200052AF"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ClusterwebserviceLoadBalancerAddress38B566FF": {
+      "Type": "Custom::AWSCDK-EKS-KubernetesObjectValue",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+            "Outputs.awscdkeksclustertestawscdkawseksKubectlProviderframeworkonEventC681B49AArn"
+          ]
+        },
+        "ClusterName": {
+          "Ref": "Cluster9EE0221C"
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "ClusterCreationRole360249B6",
+            "Arn"
+          ]
+        },
+        "ObjectType": "service",
+        "ObjectName": "webservice",
+        "ObjectNamespace": "default",
+        "JsonPath": ".status.loadBalancer.ingress[0].hostname",
+        "TimeoutSeconds": 300
+      },
+      "DependsOn": [
+        "ClusterKubectlReadyBarrier200052AF"
+      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -2525,7 +2986,7 @@
               },
               "/",
               {
-                "Ref": "AssetParameters7255958d303a278986617e8d7ce027c96cd00a70fb8f1ca02c1e0da94a571896S3BucketA0BEF119"
+                "Ref": "AssetParameters6ecca35abf6e120e05482cd9c32ba6b63ca36c403162c80cac6aa3af3f69d5dfS3Bucket9C877664"
               },
               "/",
               {
@@ -2535,7 +2996,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParameters7255958d303a278986617e8d7ce027c96cd00a70fb8f1ca02c1e0da94a571896S3VersionKey639A5314"
+                        "Ref": "AssetParameters6ecca35abf6e120e05482cd9c32ba6b63ca36c403162c80cac6aa3af3f69d5dfS3VersionKeyD136CE00"
                       }
                     ]
                   }
@@ -2548,7 +3009,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParameters7255958d303a278986617e8d7ce027c96cd00a70fb8f1ca02c1e0da94a571896S3VersionKey639A5314"
+                        "Ref": "AssetParameters6ecca35abf6e120e05482cd9c32ba6b63ca36c403162c80cac6aa3af3f69d5dfS3VersionKeyD136CE00"
                       }
                     ]
                   }
@@ -2558,17 +3019,17 @@
           ]
         },
         "Parameters": {
-          "referencetoawscdkeksclustertestAssetParametersc23ce59a47ffb1e28812148fb83f7dcb0d94f1f0286e122a2f1aa189c0b35d03S3BucketD5010C93Ref": {
-            "Ref": "AssetParametersc23ce59a47ffb1e28812148fb83f7dcb0d94f1f0286e122a2f1aa189c0b35d03S3Bucket2F8CA18B"
+          "referencetoawscdkeksclustertestAssetParameters7997347617940455774a736af2df2e6238c13b755ad25353a3d081446cfc80a4S3BucketAAB1A713Ref": {
+            "Ref": "AssetParameters7997347617940455774a736af2df2e6238c13b755ad25353a3d081446cfc80a4S3Bucket086F94BB"
           },
-          "referencetoawscdkeksclustertestAssetParametersc23ce59a47ffb1e28812148fb83f7dcb0d94f1f0286e122a2f1aa189c0b35d03S3VersionKeyAC8DDB71Ref": {
-            "Ref": "AssetParametersc23ce59a47ffb1e28812148fb83f7dcb0d94f1f0286e122a2f1aa189c0b35d03S3VersionKeyEFEE8BE5"
+          "referencetoawscdkeksclustertestAssetParameters7997347617940455774a736af2df2e6238c13b755ad25353a3d081446cfc80a4S3VersionKey481F0807Ref": {
+            "Ref": "AssetParameters7997347617940455774a736af2df2e6238c13b755ad25353a3d081446cfc80a4S3VersionKeyA4B5C598"
           },
-          "referencetoawscdkeksclustertestAssetParameters5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6S3Bucket8FECC379Ref": {
-            "Ref": "AssetParameters5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6S3Bucket03CDDE18"
+          "referencetoawscdkeksclustertestAssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3Bucket85526CA7Ref": {
+            "Ref": "AssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3BucketD25BCC90"
           },
-          "referencetoawscdkeksclustertestAssetParameters5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6S3VersionKey0555F20FRef": {
-            "Ref": "AssetParameters5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6S3VersionKey68B2E471"
+          "referencetoawscdkeksclustertestAssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3VersionKey46BA60C1Ref": {
+            "Ref": "AssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3VersionKey72DFE7A5"
           }
         }
       }
@@ -2586,7 +3047,7 @@
               },
               "/",
               {
-                "Ref": "AssetParametersf6c9f832ab537bf67a2e6f11d920c2b7462186e1dc599dc92a7ada76f087b3bfS3BucketAD1A1343"
+                "Ref": "AssetParametersc5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892S3Bucket55EC5E2E"
               },
               "/",
               {
@@ -2596,7 +3057,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersf6c9f832ab537bf67a2e6f11d920c2b7462186e1dc599dc92a7ada76f087b3bfS3VersionKeyA6C46C4E"
+                        "Ref": "AssetParametersc5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892S3VersionKey4D11177E"
                       }
                     ]
                   }
@@ -2609,7 +3070,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersf6c9f832ab537bf67a2e6f11d920c2b7462186e1dc599dc92a7ada76f087b3bfS3VersionKeyA6C46C4E"
+                        "Ref": "AssetParametersc5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892S3VersionKey4D11177E"
                       }
                     ]
                   }
@@ -2619,17 +3080,17 @@
           ]
         },
         "Parameters": {
-          "referencetoawscdkeksclustertestAssetParameters2d65340a9414c04d1844e421bd328aa3b80015d6a02e74afe9a222168b2ba050S3BucketA41B2C70Ref": {
-            "Ref": "AssetParameters2d65340a9414c04d1844e421bd328aa3b80015d6a02e74afe9a222168b2ba050S3Bucket0EAA682D"
+          "referencetoawscdkeksclustertestAssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2S3BucketC2E03523Ref": {
+            "Ref": "AssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2S3Bucket9ABBD5A2"
           },
-          "referencetoawscdkeksclustertestAssetParameters2d65340a9414c04d1844e421bd328aa3b80015d6a02e74afe9a222168b2ba050S3VersionKey4E1E47F7Ref": {
-            "Ref": "AssetParameters2d65340a9414c04d1844e421bd328aa3b80015d6a02e74afe9a222168b2ba050S3VersionKeyF3400812"
+          "referencetoawscdkeksclustertestAssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2S3VersionKey901D947ARef": {
+            "Ref": "AssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2S3VersionKey40FF2C4A"
           },
-          "referencetoawscdkeksclustertestAssetParameters5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6S3Bucket8FECC379Ref": {
-            "Ref": "AssetParameters5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6S3Bucket03CDDE18"
+          "referencetoawscdkeksclustertestAssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3Bucket85526CA7Ref": {
+            "Ref": "AssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3BucketD25BCC90"
           },
-          "referencetoawscdkeksclustertestAssetParameters5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6S3VersionKey0555F20FRef": {
-            "Ref": "AssetParameters5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6S3VersionKey68B2E471"
+          "referencetoawscdkeksclustertestAssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3VersionKey46BA60C1Ref": {
+            "Ref": "AssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3VersionKey72DFE7A5"
           }
         }
       }
@@ -2639,17 +3100,21 @@
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
-          "Statement": [{
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "lambda.amazonaws.com"
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
             }
-          }]
+          ]
         },
-        "ManagedPolicyArns": [{
-          "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-        }]
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
       }
     },
     "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57": {
@@ -2657,19 +3122,20 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters3b28f4ee261986c158a160900e3042a61238f644fe502199d60bcea592128086S3Bucket57C0655B"
+            "Ref": "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3Bucket055DC235"
           },
           "S3Key": {
             "Fn::Join": [
               "",
-              [{
+              [
+                {
                   "Fn::Select": [
                     0,
                     {
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters3b28f4ee261986c158a160900e3042a61238f644fe502199d60bcea592128086S3VersionKey4BC65AD6"
+                          "Ref": "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3VersionKey2FFFA299"
                         }
                       ]
                     }
@@ -2682,7 +3148,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters3b28f4ee261986c158a160900e3042a61238f644fe502199d60bcea592128086S3VersionKey4BC65AD6"
+                          "Ref": "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3VersionKey2FFFA299"
                         }
                       ]
                     }
@@ -2712,34 +3178,42 @@
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
-          "Statement": [{
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "lambda.amazonaws.com"
-            }
-          }]
-        },
-        "ManagedPolicyArns": [{
-          "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-        }],
-        "Policies": [{
-          "PolicyName": "Inline",
-          "PolicyDocument": {
-            "Version": "2012-10-17",
-            "Statement": [{
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": "*",
-              "Action": [
-                "iam:CreateOpenIDConnectProvider",
-                "iam:DeleteOpenIDConnectProvider",
-                "iam:UpdateOpenIDConnectProviderThumbprint",
-                "iam:AddClientIDToOpenIDConnectProvider",
-                "iam:RemoveClientIDFromOpenIDConnectProvider"
-              ]
-            }]
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
           }
-        }]
+        ],
+        "Policies": [
+          {
+            "PolicyName": "Inline",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Resource": "*",
+                  "Action": [
+                    "iam:CreateOpenIDConnectProvider",
+                    "iam:DeleteOpenIDConnectProvider",
+                    "iam:UpdateOpenIDConnectProviderThumbprint",
+                    "iam:AddClientIDToOpenIDConnectProvider",
+                    "iam:RemoveClientIDFromOpenIDConnectProvider"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
       }
     },
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0": {
@@ -2747,19 +3221,20 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersea46702e1c05b2735e48e826d630f7bf6acdf7e55d6fa8d9fa8df858d5542161S3Bucket0C424907"
+            "Ref": "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deS3Bucket14156880"
           },
           "S3Key": {
             "Fn::Join": [
               "",
-              [{
+              [
+                {
                   "Fn::Select": [
                     0,
                     {
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersea46702e1c05b2735e48e826d630f7bf6acdf7e55d6fa8d9fa8df858d5542161S3VersionKey6841F1F8"
+                          "Ref": "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deS3VersionKey5225BCA4"
                         }
                       ]
                     }
@@ -2772,7 +3247,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersea46702e1c05b2735e48e826d630f7bf6acdf7e55d6fa8d9fa8df858d5542161S3VersionKey6841F1F8"
+                          "Ref": "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deS3VersionKey5225BCA4"
                         }
                       ]
                     }
@@ -2796,6 +3271,314 @@
       "DependsOn": [
         "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
       ]
+    },
+    "WebServiceSecurityGroupA556AEB5": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-cdk-eks-cluster-test/WebServiceSecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
+    "WebServiceSecurityGroupfromawscdkeksclustertestWebServiceSecurityGroup62BA456890005BF0F34B": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "allow http 9000 access from myself",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "WebServiceSecurityGroupA556AEB5",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "WebServiceSecurityGroupA556AEB5",
+            "GroupId"
+          ]
+        },
+        "ToPort": 9000
+      }
+    },
+    "ServicePingerFunctionServiceRole3120191B": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "ServicePingerFunctionADF51BAF": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters2acc31b34c05692ab3ea9831a27e5f241cffb21857e633d8256b8f0ebf5f3f43S3BucketB43AFE04"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters2acc31b34c05692ab3ea9831a27e5f241cffb21857e633d8256b8f0ebf5f3f43S3VersionKeyD4B858BC"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters2acc31b34c05692ab3ea9831a27e5f241cffb21857e633d8256b8f0ebf5f3f43S3VersionKeyD4B858BC"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "ServicePingerFunctionServiceRole3120191B",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.6",
+        "Timeout": 600,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "WebServiceSecurityGroupA556AEB5",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Ref": "VpcPrivateSubnet1Subnet536B997A"
+            },
+            {
+              "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+            },
+            {
+              "Ref": "VpcPrivateSubnet3SubnetF258B56E"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ServicePingerFunctionServiceRole3120191B"
+      ]
+    },
+    "ServicePingerProviderframeworkonEventServiceRole3DB083B7": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "ServicePingerProviderframeworkonEventServiceRoleDefaultPolicyD142E8F7": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ServicePingerFunctionADF51BAF",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "ServicePingerProviderframeworkonEventServiceRoleDefaultPolicyD142E8F7",
+        "Roles": [
+          {
+            "Ref": "ServicePingerProviderframeworkonEventServiceRole3DB083B7"
+          }
+        ]
+      }
+    },
+    "ServicePingerProviderframeworkonEventEC59DE20": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3BucketD25BCC90"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3VersionKey72DFE7A5"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3VersionKey72DFE7A5"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Role": {
+          "Fn::GetAtt": [
+            "ServicePingerProviderframeworkonEventServiceRole3DB083B7",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x",
+        "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-test/ServicePinger/Provider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "ServicePingerFunctionADF51BAF",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "ServicePingerProviderframeworkonEventServiceRoleDefaultPolicyD142E8F7",
+        "ServicePingerProviderframeworkonEventServiceRole3DB083B7"
+      ]
+    },
+    "ServicePinger01F6DA06": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "ServicePingerProviderframeworkonEventEC59DE20",
+            "Arn"
+          ]
+        },
+        "Url": {
+          "Fn::Join": [
+            "",
+            [
+              "http://",
+              {
+                "Fn::GetAtt": [
+                  "ClusterwebserviceLoadBalancerAddress38B566FF",
+                  "Value"
+                ]
+              },
+              ":9000"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   },
   "Outputs": {
@@ -2836,6 +3619,14 @@
               ]
             }
           ]
+        ]
+      }
+    },
+    "Response": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ServicePinger01F6DA06",
+          "Value"
         ]
       }
     },
@@ -2886,89 +3677,101 @@
     }
   },
   "Parameters": {
-    "AssetParametersc23ce59a47ffb1e28812148fb83f7dcb0d94f1f0286e122a2f1aa189c0b35d03S3Bucket2F8CA18B": {
+    "AssetParameters7997347617940455774a736af2df2e6238c13b755ad25353a3d081446cfc80a4S3Bucket086F94BB": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"c23ce59a47ffb1e28812148fb83f7dcb0d94f1f0286e122a2f1aa189c0b35d03\""
+      "Description": "S3 bucket for asset \"7997347617940455774a736af2df2e6238c13b755ad25353a3d081446cfc80a4\""
     },
-    "AssetParametersc23ce59a47ffb1e28812148fb83f7dcb0d94f1f0286e122a2f1aa189c0b35d03S3VersionKeyEFEE8BE5": {
+    "AssetParameters7997347617940455774a736af2df2e6238c13b755ad25353a3d081446cfc80a4S3VersionKeyA4B5C598": {
       "Type": "String",
-      "Description": "S3 key for asset version \"c23ce59a47ffb1e28812148fb83f7dcb0d94f1f0286e122a2f1aa189c0b35d03\""
+      "Description": "S3 key for asset version \"7997347617940455774a736af2df2e6238c13b755ad25353a3d081446cfc80a4\""
     },
-    "AssetParametersc23ce59a47ffb1e28812148fb83f7dcb0d94f1f0286e122a2f1aa189c0b35d03ArtifactHashC187523A": {
+    "AssetParameters7997347617940455774a736af2df2e6238c13b755ad25353a3d081446cfc80a4ArtifactHash9B26D532": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"c23ce59a47ffb1e28812148fb83f7dcb0d94f1f0286e122a2f1aa189c0b35d03\""
+      "Description": "Artifact hash for asset \"7997347617940455774a736af2df2e6238c13b755ad25353a3d081446cfc80a4\""
     },
-    "AssetParameters5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6S3Bucket03CDDE18": {
+    "AssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3BucketD25BCC90": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6\""
+      "Description": "S3 bucket for asset \"34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1\""
     },
-    "AssetParameters5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6S3VersionKey68B2E471": {
+    "AssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3VersionKey72DFE7A5": {
       "Type": "String",
-      "Description": "S3 key for asset version \"5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6\""
+      "Description": "S3 key for asset version \"34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1\""
     },
-    "AssetParameters5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6ArtifactHash3651BF53": {
+    "AssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1ArtifactHashAA0236EE": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"5d5280180ad87e8a1c2a08423cb5b2dae41281832799cd51db5eff913091ade6\""
+      "Description": "Artifact hash for asset \"34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1\""
     },
-    "AssetParameters2d65340a9414c04d1844e421bd328aa3b80015d6a02e74afe9a222168b2ba050S3Bucket0EAA682D": {
+    "AssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2S3Bucket9ABBD5A2": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"2d65340a9414c04d1844e421bd328aa3b80015d6a02e74afe9a222168b2ba050\""
+      "Description": "S3 bucket for asset \"b7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2\""
     },
-    "AssetParameters2d65340a9414c04d1844e421bd328aa3b80015d6a02e74afe9a222168b2ba050S3VersionKeyF3400812": {
+    "AssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2S3VersionKey40FF2C4A": {
       "Type": "String",
-      "Description": "S3 key for asset version \"2d65340a9414c04d1844e421bd328aa3b80015d6a02e74afe9a222168b2ba050\""
+      "Description": "S3 key for asset version \"b7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2\""
     },
-    "AssetParameters2d65340a9414c04d1844e421bd328aa3b80015d6a02e74afe9a222168b2ba050ArtifactHashF4CEE19F": {
+    "AssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2ArtifactHashE86B38C7": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"2d65340a9414c04d1844e421bd328aa3b80015d6a02e74afe9a222168b2ba050\""
+      "Description": "Artifact hash for asset \"b7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2\""
     },
-    "AssetParameters3b28f4ee261986c158a160900e3042a61238f644fe502199d60bcea592128086S3Bucket57C0655B": {
+    "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3Bucket055DC235": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"3b28f4ee261986c158a160900e3042a61238f644fe502199d60bcea592128086\""
+      "Description": "S3 bucket for asset \"952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344\""
     },
-    "AssetParameters3b28f4ee261986c158a160900e3042a61238f644fe502199d60bcea592128086S3VersionKey4BC65AD6": {
+    "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3VersionKey2FFFA299": {
       "Type": "String",
-      "Description": "S3 key for asset version \"3b28f4ee261986c158a160900e3042a61238f644fe502199d60bcea592128086\""
+      "Description": "S3 key for asset version \"952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344\""
     },
-    "AssetParameters3b28f4ee261986c158a160900e3042a61238f644fe502199d60bcea592128086ArtifactHashD8D99435": {
+    "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344ArtifactHash1AB042BC": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"3b28f4ee261986c158a160900e3042a61238f644fe502199d60bcea592128086\""
+      "Description": "Artifact hash for asset \"952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344\""
     },
-    "AssetParametersea46702e1c05b2735e48e826d630f7bf6acdf7e55d6fa8d9fa8df858d5542161S3Bucket0C424907": {
+    "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deS3Bucket14156880": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"ea46702e1c05b2735e48e826d630f7bf6acdf7e55d6fa8d9fa8df858d5542161\""
+      "Description": "S3 bucket for asset \"b075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0de\""
     },
-    "AssetParametersea46702e1c05b2735e48e826d630f7bf6acdf7e55d6fa8d9fa8df858d5542161S3VersionKey6841F1F8": {
+    "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deS3VersionKey5225BCA4": {
       "Type": "String",
-      "Description": "S3 key for asset version \"ea46702e1c05b2735e48e826d630f7bf6acdf7e55d6fa8d9fa8df858d5542161\""
+      "Description": "S3 key for asset version \"b075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0de\""
     },
-    "AssetParametersea46702e1c05b2735e48e826d630f7bf6acdf7e55d6fa8d9fa8df858d5542161ArtifactHash67B22EF2": {
+    "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deArtifactHashC509349A": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"ea46702e1c05b2735e48e826d630f7bf6acdf7e55d6fa8d9fa8df858d5542161\""
+      "Description": "Artifact hash for asset \"b075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0de\""
     },
-    "AssetParameters7255958d303a278986617e8d7ce027c96cd00a70fb8f1ca02c1e0da94a571896S3BucketA0BEF119": {
+    "AssetParameters2acc31b34c05692ab3ea9831a27e5f241cffb21857e633d8256b8f0ebf5f3f43S3BucketB43AFE04": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"7255958d303a278986617e8d7ce027c96cd00a70fb8f1ca02c1e0da94a571896\""
+      "Description": "S3 bucket for asset \"2acc31b34c05692ab3ea9831a27e5f241cffb21857e633d8256b8f0ebf5f3f43\""
     },
-    "AssetParameters7255958d303a278986617e8d7ce027c96cd00a70fb8f1ca02c1e0da94a571896S3VersionKey639A5314": {
+    "AssetParameters2acc31b34c05692ab3ea9831a27e5f241cffb21857e633d8256b8f0ebf5f3f43S3VersionKeyD4B858BC": {
       "Type": "String",
-      "Description": "S3 key for asset version \"7255958d303a278986617e8d7ce027c96cd00a70fb8f1ca02c1e0da94a571896\""
+      "Description": "S3 key for asset version \"2acc31b34c05692ab3ea9831a27e5f241cffb21857e633d8256b8f0ebf5f3f43\""
     },
-    "AssetParameters7255958d303a278986617e8d7ce027c96cd00a70fb8f1ca02c1e0da94a571896ArtifactHash8FB2ECC5": {
+    "AssetParameters2acc31b34c05692ab3ea9831a27e5f241cffb21857e633d8256b8f0ebf5f3f43ArtifactHashC3527E8B": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"7255958d303a278986617e8d7ce027c96cd00a70fb8f1ca02c1e0da94a571896\""
+      "Description": "Artifact hash for asset \"2acc31b34c05692ab3ea9831a27e5f241cffb21857e633d8256b8f0ebf5f3f43\""
     },
-    "AssetParametersf6c9f832ab537bf67a2e6f11d920c2b7462186e1dc599dc92a7ada76f087b3bfS3BucketAD1A1343": {
+    "AssetParameters6ecca35abf6e120e05482cd9c32ba6b63ca36c403162c80cac6aa3af3f69d5dfS3Bucket9C877664": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"f6c9f832ab537bf67a2e6f11d920c2b7462186e1dc599dc92a7ada76f087b3bf\""
+      "Description": "S3 bucket for asset \"6ecca35abf6e120e05482cd9c32ba6b63ca36c403162c80cac6aa3af3f69d5df\""
     },
-    "AssetParametersf6c9f832ab537bf67a2e6f11d920c2b7462186e1dc599dc92a7ada76f087b3bfS3VersionKeyA6C46C4E": {
+    "AssetParameters6ecca35abf6e120e05482cd9c32ba6b63ca36c403162c80cac6aa3af3f69d5dfS3VersionKeyD136CE00": {
       "Type": "String",
-      "Description": "S3 key for asset version \"f6c9f832ab537bf67a2e6f11d920c2b7462186e1dc599dc92a7ada76f087b3bf\""
+      "Description": "S3 key for asset version \"6ecca35abf6e120e05482cd9c32ba6b63ca36c403162c80cac6aa3af3f69d5df\""
     },
-    "AssetParametersf6c9f832ab537bf67a2e6f11d920c2b7462186e1dc599dc92a7ada76f087b3bfArtifactHash0C55941B": {
+    "AssetParameters6ecca35abf6e120e05482cd9c32ba6b63ca36c403162c80cac6aa3af3f69d5dfArtifactHash95C25BEB": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"f6c9f832ab537bf67a2e6f11d920c2b7462186e1dc599dc92a7ada76f087b3bf\""
+      "Description": "Artifact hash for asset \"6ecca35abf6e120e05482cd9c32ba6b63ca36c403162c80cac6aa3af3f69d5df\""
+    },
+    "AssetParametersc5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892S3Bucket55EC5E2E": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"c5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892\""
+    },
+    "AssetParametersc5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892S3VersionKey4D11177E": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"c5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892\""
+    },
+    "AssetParametersc5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892ArtifactHash1733F1C4": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"c5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892\""
     },
     "SsmParameterValueawsserviceeksoptimizedami116amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",

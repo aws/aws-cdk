@@ -230,6 +230,7 @@ The following widgets are available:
 - `AlarmWidget` -- shows the graph and alarm line for a single alarm.
 - `SingleValueWidget` -- shows the current value of a set of metrics.
 - `TextWidget` -- shows some static Markdown.
+- `AlarmStatusWidget` -- shows the status of your alarms in a grid view.
 
 ### Graph widget
 
@@ -319,6 +320,19 @@ dashboard.addWidgets(new TextWidget({
 }));
 ```
 
+### Alarm Status widget
+
+An alarm status widget displays instantly the status of any type of alarms and gives the
+ability to aggregate one or more alarms together in a small surface.
+
+```ts
+dashboard.addWidgets(
+  new AlarmStatusWidget({
+    alarms: [errorAlarm],
+  })
+);
+```
+
 ### Query results widget
 
 A `LogQueryWidget` shows the results of a query from Logs Insights:
@@ -326,6 +340,7 @@ A `LogQueryWidget` shows the results of a query from Logs Insights:
 ```ts
 dashboard.addWidgets(new LogQueryWidget({
   logGroupNames: ['my-log-group'],
+  view: LogQueryVisualizationType.TABLE,
   // The lines will be automatically combined using '\n|'.
   queryLines: [
     'fields @message',

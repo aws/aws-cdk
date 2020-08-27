@@ -25,7 +25,8 @@
         "distName": "aws-cdk.cloudformation-include",
         "module": "aws_cdk.cloudformation_include"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
+    "integ": "cdk-integ",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -298,16 +300,17 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.3",
+    "@types/jest": "^26.0.10",
     "@types/yaml": "1.2.0",
     "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
     "jest": "^25.4.0",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.1.1"
+    "ts-jest": "^26.2.0"
   },
   "bundledDependencies": [
     "yaml"
@@ -326,6 +329,11 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "awslint": {
+    "exclude": [
+      "props-no-cfn-types:@aws-cdk/cloudformation-include.CfnIncludeProps.nestedStacks"
+    ]
   },
   "stability": "experimental",
   "maturity": "experimental",

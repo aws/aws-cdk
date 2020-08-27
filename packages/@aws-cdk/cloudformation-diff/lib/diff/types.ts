@@ -1,5 +1,5 @@
-import * as cfnspec from '@aws-cdk/cfnspec';
 import { AssertionError } from 'assert';
+import * as cfnspec from '@aws-cdk/cfnspec';
 import { IamChanges } from '../iam/iam-changes';
 import { SecurityGroupChanges } from '../network/security-group-changes';
 import { deepEqual } from './util';
@@ -119,7 +119,8 @@ export class TemplateDiff implements ITemplateDiff {
       const props = cfnspec.scrutinizablePropertyNames(resourceChange.newResourceType!, scrutinyTypes);
       for (const propertyName of props) {
         ret.push({
-          resourceLogicalId, propertyName,
+          resourceLogicalId,
+          propertyName,
           resourceType: resourceChange.resourceType,
           scrutinyType: cfnspec.propertySpecification(resourceChange.resourceType, propertyName).ScrutinyType!,
           oldValue: resourceChange.oldProperties && resourceChange.oldProperties[propertyName],

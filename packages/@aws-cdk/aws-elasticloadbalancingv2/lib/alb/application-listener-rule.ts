@@ -117,7 +117,7 @@ export interface ApplicationListenerRuleProps extends BaseApplicationListenerRul
 export enum ContentType {
   TEXT_PLAIN = 'text/plain',
   TEXT_CSS = 'text/css',
-  TEXT_HTML =  'text/html',
+  TEXT_HTML = 'text/html',
   APPLICATION_JAVASCRIPT = 'application/javascript',
   APPLICATION_JSON = 'application/json'
 }

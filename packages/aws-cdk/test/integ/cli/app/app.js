@@ -9,7 +9,10 @@ const docker = require('@aws-cdk/aws-ecr-assets');
 const core = require('@aws-cdk/core')
 const { StackWithNestedStack, StackWithNestedStackUsingParameters } = require('./nested-stack');
 
-const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
+const stackPrefix = process.env.STACK_NAME_PREFIX;
+if (!stackPrefix) {
+  throw new Error(`the STACK_NAME_PREFIX environment variable is required`);
+}
 
 class MyStack extends cdk.Stack {
   constructor(parent, id, props) {

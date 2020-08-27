@@ -19,22 +19,28 @@ describe('IAM policy document', () => {
     p.addAwsAccountPrincipal(`my${Token.asString({ account: 'account' })}name`);
     p.addAccountCondition('12221121221');
 
-    expect(stack.resolve(p.toStatementJson())).toEqual({ Action:
-      [ 'sqs:SendMessage',
+    expect(stack.resolve(p.toStatementJson())).toEqual({
+      Action:
+      ['sqs:SendMessage',
         'dynamodb:CreateTable',
-        'dynamodb:DeleteTable' ],
-    Resource: [ 'myQueue', 'yourQueue', '*' ],
-    Effect: 'Allow',
-    Principal:
-      { AWS:
-         { 'Fn::Join':
-          [ '',
-            [ 'arn:',
+        'dynamodb:DeleteTable'],
+      Resource: ['myQueue', 'yourQueue', '*'],
+      Effect: 'Allow',
+      Principal:
+      {
+        AWS:
+         {
+           'Fn::Join':
+          ['',
+            ['arn:',
               { Ref: 'AWS::Partition' },
               ':iam::my',
               { account: 'account' },
-              'name:root' ] ] } },
-    Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
+              'name:root']],
+         },
+      },
+      Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } },
+    });
   });
 
   test('the PolicyDocument class is a dom for iam policy documents', () => {
@@ -67,7 +73,8 @@ describe('IAM policy document', () => {
         [{ Effect: 'Allow', Action: 'sqs:SendMessage', NotResource: 'arn:aws:sqs:us-east-1:123456789012:forbidden_queue' },
           { Effect: 'Deny', Action: 'cloudformation:CreateStack' },
           { Effect: 'Allow', NotAction: 'cloudformation:UpdateTerminationProtection' },
-          { Effect: 'Deny', NotPrincipal: { CanonicalUser: 'OnlyAuthorizedUser' } } ] });
+          { Effect: 'Deny', NotPrincipal: { CanonicalUser: 'OnlyAuthorizedUser' } }],
+    });
   });
 
   test('Cannot combine Actions and NotActions', () => {
@@ -130,8 +137,9 @@ describe('IAM policy document', () => {
 
     expect(stack.resolve(perm.toStatementJson())).toEqual({
       Effect: 'Allow',
-      Action: [ 'Action1', 'Action2', 'Action3' ],
-      Resource: 'MyResource' });
+      Action: ['Action1', 'Action2', 'Action3'],
+      Resource: 'MyResource',
+    });
   });
 
   test('PolicyDoc resolves to undefined if there are no permissions', () => {
@@ -180,7 +188,7 @@ describe('IAM policy document', () => {
   test('addFederatedPrincipal adds a Federated principal with the passed value', () => {
     const stack = new Stack();
     const p = new PolicyStatement();
-    p.addFederatedPrincipal('com.amazon.cognito', { StringEquals: { key: 'value' }});
+    p.addFederatedPrincipal('com.amazon.cognito', { StringEquals: { key: 'value' } });
     expect(stack.resolve(p.toStatementJson())).toEqual({
       Effect: 'Allow',
       Principal: {
@@ -458,8 +466,8 @@ describe('IAM policy document', () => {
         },
         Effect: 'Allow',
         Principal: {
-          AWS: [ 'i:am:an:arn', '*', 'aws-principal-3' ],
-          Service: [ 'amazon.com', 'another.service' ],
+          AWS: ['i:am:an:arn', '*', 'aws-principal-3'],
+          Service: ['amazon.com', 'another.service'],
         },
       });
     });
@@ -550,7 +558,7 @@ describe('IAM policy document', () => {
 
       // WHEN
       const p = new ArnPrincipal('arn:of:principal').withConditions({
-        StringEquals: Lazy.anyValue({ produce: () => ({ goo: 'zar' })}),
+        StringEquals: Lazy.anyValue({ produce: () => ({ goo: 'zar' }) }),
       });
 
       statement.addPrincipals(p);
@@ -574,7 +582,7 @@ describe('IAM policy document', () => {
       const p = new FederatedPrincipal('fed', {
         StringEquals: { foo: 'bar' },
       }).withConditions({
-        StringEquals: Lazy.anyValue({ produce: () => ({ goo: 'zar' })}),
+        StringEquals: Lazy.anyValue({ produce: () => ({ goo: 'zar' }) }),
       });
 
       const statement = new PolicyStatement();
@@ -659,11 +667,11 @@ describe('IAM policy document', () => {
     });
 
     // WHEN
-    doc.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['resource1']}));
-    doc.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['resource1']}));
-    doc.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['resource1']}));
-    doc.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['resource1']}));
-    doc.addStatements(new PolicyStatement({ actions: ['service:action2'], resources: ['resource2']}));
+    doc.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['resource1'] }));
+    doc.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['resource1'] }));
+    doc.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['resource1'] }));
+    doc.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['resource1'] }));
+    doc.addStatements(new PolicyStatement({ actions: ['service:action2'], resources: ['resource2'] }));
 
     // THEN
     const stack = new Stack();
@@ -716,13 +724,34 @@ describe('IAM policy document', () => {
 
     const p = new PolicyStatement();
 
-    p.addCondition('StringEquals', {'kms:ViaService': 'service'});
+    p.addCondition('StringEquals', { 'kms:ViaService': 'service' });
 
     p.addAccountCondition('12221121221');
 
     expect(stack.resolve(p.toStatementJson())).toEqual({
       Effect: 'Allow',
-      Condition: {StringEquals: {'kms:ViaService': 'service', 'sts:ExternalId': '12221121221'}},
+      Condition: { StringEquals: { 'kms:ViaService': 'service', 'sts:ExternalId': '12221121221' } },
     });
+  });
+
+  test('validation error if policy statement has no actions', () => {
+    const policyStatement = new PolicyStatement({
+      principals: [new AnyPrincipal()],
+    });
+
+    // THEN
+    const validationErrorsForResourcePolicy: string[] = policyStatement.validateForResourcePolicy();
+    // const validationErrorsForIdentityPolicy: string[] = policyStatement.validateForIdentityPolicy();
+    expect(validationErrorsForResourcePolicy).toEqual(['A PolicyStatement must specify at least one \'action\' or \'notAction\'.']);
+  });
+
+  test('validation error if policy statement for resource-based policy has no principals specified', () => {
+    const policyStatement = new PolicyStatement({
+      actions: ['*'],
+    });
+
+    // THEN
+    const validationErrors: string[] = policyStatement.validateForResourcePolicy();
+    expect(validationErrors).toEqual(['A PolicyStatement used in a resource-based policy must specify at least one IAM principal.']);
   });
 });

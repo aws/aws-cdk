@@ -1,134 +1,117 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
-
-import { CfnDomainName } from '../apigatewayv2.generated';
-
-/**
- * Represents an endpoint type
- */
-export enum EndpointType {
-  /**
-   * Regional endpoint
-   */
-  REGIONAL = 'REGIONAL',
-
-  /**
-   * Edge endpoint
-   */
-  EDGE = 'EDGE'
-}
+import { ICertificate } from '@aws-cdk/aws-certificatemanager';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
+import { CfnDomainName, CfnDomainNameProps } from '../apigatewayv2.generated';
 
 /**
- * Specifies the configuration for a an API's domain name.
- */
-export interface DomainNameConfiguration {
-  /**
-   * An AWS-managed certificate that will be used by the edge-optimized endpoint for this domain name.
-   * AWS Certificate Manager is the only supported source.
-   *
-   * @default - uses `certificateName` if defined, or no certificate
-   */
-  readonly certificateArn?: string;
-
-  /**
-   * The user-friendly name of the certificate that will be used by the edge-optimized endpoint for this domain name.
-   *
-   * @default - uses `certificateArn` if defined, or no certificate
-   */
-  readonly certificateName?: string;
-
-  /**
-   * The endpoint type.
-   *
-   * @default 'REGIONAL'
-   */
-  readonly endpointType?: EndpointType;
-}
-
-/**
- * Defines the contract for an Api Gateway V2 Domain Name.
+ * Represents an APIGatewayV2 DomainName
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-domainname.html
  */
 export interface IDomainName extends IResource {
   /**
-   * The custom domain name for your API in Amazon API Gateway.
+   * The custom domain name
+   *
    * @attribute
+   *
    */
   readonly domainName: string;
-}
-
-/**
- * Defines the properties required for defining an Api Gateway V2 Api Mapping.
- */
-export interface DomainNameProps {
-  /**
-   * The custom domain name for your API in Amazon API Gateway.
-   */
-  readonly domainName: string;
-
-  /**
-   * The domain name configurations.
-   *
-   * @default - no specific configuration
-   */
-  readonly domainNameConfigurations?: DomainNameConfiguration[];
-  // TODO: Tags
-}
-
-/**
- * A Domain Name for an API. An API mapping relates a path of your custom domain name to a stage of your API.
- *
- * A custom domain name can have multiple API mappings, but the paths can't overlap.
- *
- * A custom domain can map only to APIs of the same protocol type.
- */
-export class DomainName extends Resource implements IDomainName {
-
-  /**
-   * Creates a new imported Domain Name
-   *
-   * @param scope scope of this imported resource
-   * @param id identifier of the resource
-   * @param domainName name of the domain
-   */
-  public static fromDomainName(scope: Construct, id: string, domainName: string): IDomainName {
-    class Import extends Resource implements IDomainName {
-      public readonly domainName = domainName;
-    }
-
-    return new Import(scope, id);
-  }
-
-  /**
-   * The custom domain name for your API in Amazon API Gateway.
-   */
-  public readonly domainName: string;
 
   /**
    * The domain name associated with the regional endpoint for this custom domain name.
-   * You set up this association by adding a DNS record that points the custom domain name to this regional domain name.
    *
    * @attribute
    */
-  public readonly regionalDomainName: string;
+  readonly regionalDomainName: string;
 
   /**
    * The region-specific Amazon Route 53 Hosted Zone ID of the regional endpoint.
    *
    * @attribute
    */
-  public readonly regionalHostedZoneId: string;
+  readonly regionalHostedZoneId: string;
+}
 
-  private resource: CfnDomainName;
+/**
+ * custom domain name attributes
+ */
+export interface DomainNameAttributes {
+  /**
+   * domain name string
+   */
+  readonly domainName: string;
+
+  /**
+   * The domain name associated with the regional endpoint for this custom domain name.
+   */
+  readonly regionalDomainName: string;
+
+  /**
+   * The region-specific Amazon Route 53 Hosted Zone ID of the regional endpoint.
+   */
+  readonly regionalHostedZoneId: string;
+}
+
+/**
+ * properties used for creating the DomainName
+ */
+export interface DomainNameProps {
+  /**
+   * The custom domain name
+   */
+  readonly domainName: string;
+  /**
+   * The ACM certificate for this domain name
+   */
+  readonly certificate: ICertificate;
+}
+
+/**
+ * Custom domain resource for the API
+ */
+export class DomainName extends Resource implements IDomainName {
+  /**
+   * import from attributes
+   */
+  public static fromDomainNameAttributes(scope: Construct, id: string, attrs: DomainNameAttributes): IDomainName {
+    class Import extends Resource implements IDomainName {
+      public readonly regionalDomainName = attrs.regionalDomainName;
+      public readonly regionalHostedZoneId = attrs.regionalHostedZoneId;
+      public readonly domainName = attrs.domainName;
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * The custom domain name for your API in Amazon API Gateway.
+   *
+   * @attribute
+   */
+  public readonly domainName: string;
+
+  /**
+   * The domain name associated with the regional endpoint for this custom domain name.
+   */
+  public readonly regionalDomainName: string;
+
+  /**
+   * The region-specific Amazon Route 53 Hosted Zone ID of the regional endpoint.
+   */
+  public readonly regionalHostedZoneId: string;
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
 
-    this.resource = new CfnDomainName(this, 'Resource', {
+    const domainNameProps: CfnDomainNameProps = {
       domainName: props.domainName,
-      domainNameConfigurations: props.domainNameConfigurations,
-      // TODO: tags: props.tags
-    });
-    this.domainName = this.resource.ref;
-    this.regionalDomainName = this.resource.attrRegionalDomainName;
-    this.regionalHostedZoneId = this.resource.attrRegionalHostedZoneId;
+      domainNameConfigurations: [
+        {
+          certificateArn: props.certificate.certificateArn,
+          endpointType: 'REGIONAL',
+        },
+      ],
+    };
+    const resource = new CfnDomainName(this, 'Resource', domainNameProps);
+    this.domainName = props.domainName ?? resource.ref;
+    this.regionalDomainName = Token.asString(resource.getAtt('RegionalDomainName'));
+    this.regionalHostedZoneId = Token.asString(resource.getAtt('RegionalHostedZoneId'));
   }
 }

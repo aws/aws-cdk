@@ -1,5 +1,6 @@
 import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
+import { DefaultDomainMappingOptions } from '../http/stage';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
@@ -13,6 +14,11 @@ export interface IHttpApi extends IResource {
    * @attribute
    */
   readonly httpApiId: string;
+
+  /**
+   * The default stage
+   */
+  readonly defaultStage?: HttpStage;
 }
 
 /**
@@ -43,6 +49,13 @@ export interface HttpApiProps {
    * @default - CORS disabled.
    */
   readonly corsPreflight?: CorsPreflightOptions;
+
+  /**
+   * Configure a custom domain with the API mapping resource to the HTTP API
+   *
+   * @default - no default domain mapping configured. meaningless if `createDefaultStage` is `false`.
+   */
+  readonly defaultDomainMapping?: DefaultDomainMappingOptions;
 }
 
 /**
@@ -118,7 +131,10 @@ export class HttpApi extends Resource implements IHttpApi {
   }
 
   public readonly httpApiId: string;
-  private readonly defaultStage: HttpStage | undefined;
+  /**
+   * default stage of the api resource
+   */
+  public readonly defaultStage: HttpStage | undefined;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
@@ -127,6 +143,10 @@ export class HttpApi extends Resource implements IHttpApi {
 
     let corsConfiguration: CfnApi.CorsProperty | undefined;
     if (props?.corsPreflight) {
+      const cors = props.corsPreflight;
+      if (cors.allowOrigins && cors.allowOrigins.includes('*') && cors.allowCredentials) {
+        throw new Error("CORS preflight - allowCredentials is not supported when allowOrigin is '*'");
+      }
       const {
         allowCredentials,
         allowHeaders,
@@ -166,7 +186,18 @@ export class HttpApi extends Resource implements IHttpApi {
       this.defaultStage = new HttpStage(this, 'DefaultStage', {
         httpApi: this,
         autoDeploy: true,
+        domainMapping: props?.defaultDomainMapping,
       });
+
+      // to ensure the domain is ready before creating the default stage
+      if (props?.defaultDomainMapping) {
+        this.defaultStage.node.addDependency(props.defaultDomainMapping.domainName);
+      }
+    }
+
+    if (props?.createDefaultStage === false && props.defaultDomainMapping) {
+      throw new Error('defaultDomainMapping not supported with createDefaultStage disabled',
+      );
     }
   }
 
@@ -182,10 +213,11 @@ export class HttpApi extends Resource implements IHttpApi {
    * Add a new stage.
    */
   public addStage(id: string, options: HttpStageOptions): HttpStage {
-    return new HttpStage(this, id, {
+    const stage = new HttpStage(this, id, {
       httpApi: this,
       ...options,
     });
+    return stage;
   }
 
   /**
@@ -193,7 +225,7 @@ export class HttpApi extends Resource implements IHttpApi {
    * methods.
    */
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
-    const methods = options.methods ?? [ HttpMethod.ANY ];
+    const methods = options.methods ?? [HttpMethod.ANY];
     return methods.map((method) => new HttpRoute(this, `${method}${options.path}`, {
       httpApi: this,
       routeKey: HttpRouteKey.with(options.path, method),

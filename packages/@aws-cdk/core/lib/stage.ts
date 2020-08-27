@@ -140,7 +140,14 @@ export class Stage extends Construct {
     this.account = props.env?.account ?? this.parentStage?.account;
 
     this._assemblyBuilder = this.createBuilder(props.outdir);
-    this.stageName = [ this.parentStage?.stageName, id ].filter(x => x).join('-');
+    this.stageName = [this.parentStage?.stageName, id].filter(x => x).join('-');
+  }
+
+  /**
+   * The cloud assembly output directory.
+   */
+  public get outdir() {
+    return this._assemblyBuilder.outdir;
   }
 
   /**
@@ -163,7 +170,7 @@ export class Stage extends Construct {
    * calls will return the same assembly.
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
-    if (!this.assembly) {
+    if (!this.assembly || options.force) {
       const runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
@@ -198,4 +205,12 @@ export interface StageSynthesisOptions {
    * @default - false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * Force a re-synth, even if the stage has already been synthesized.
+   * This is used by tests to allow for incremental verification of the output.
+   * Do not use in production.
+   * @default false
+   */
+  readonly force?: boolean;
 }

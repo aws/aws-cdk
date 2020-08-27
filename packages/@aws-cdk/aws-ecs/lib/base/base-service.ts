@@ -515,7 +515,7 @@ export abstract class BaseService extends Resource
     let dnsRecordType = options.dnsRecordType;
 
     if (networkMode === NetworkMode.BRIDGE || networkMode === NetworkMode.HOST) {
-      if (dnsRecordType ===  undefined) {
+      if (dnsRecordType === undefined) {
         dnsRecordType = cloudmap.DnsRecordType.SRV;
       }
       if (dnsRecordType !== cloudmap.DnsRecordType.SRV) {
@@ -525,7 +525,7 @@ export abstract class BaseService extends Resource
 
     // Default DNS record type for AwsVpc network mode is A Records
     if (networkMode === NetworkMode.AWS_VPC) {
-      if (dnsRecordType ===  undefined) {
+      if (dnsRecordType === undefined) {
         dnsRecordType = cloudmap.DnsRecordType.A;
       }
     }
@@ -591,7 +591,7 @@ export abstract class BaseService extends Resource
    * This method is called to create a networkConfiguration.
    * @deprecated use configureAwsVpcNetworkingWithSecurityGroups instead.
    */
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
     if (vpcSubnets === undefined) {
       vpcSubnets = assignPublicIp ? { subnetType: ec2.SubnetType.PUBLIC } : {};
@@ -613,13 +613,13 @@ export abstract class BaseService extends Resource
   /**
    * This method is called to create a networkConfiguration.
    */
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   protected configureAwsVpcNetworkingWithSecurityGroups(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroups?: ec2.ISecurityGroup[]) {
     if (vpcSubnets === undefined) {
       vpcSubnets = assignPublicIp ? { subnetType: ec2.SubnetType.PUBLIC } : {};
     }
     if (securityGroups === undefined || securityGroups.length === 0) {
-      securityGroups = [ new ec2.SecurityGroup(this, 'SecurityGroup', { vpc }) ];
+      securityGroups = [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc })];
     }
 
     securityGroups.forEach((sg) => { this.connections.addSecurityGroup(sg); }, this);
@@ -742,7 +742,7 @@ export interface CloudMapOptions {
   /**
    * The DNS record type that you want AWS Cloud Map to create. The supported record types are A or SRV.
    *
-   * @default DnsRecordType.A
+   * @default - DnsRecordType.A if TaskDefinition.networkMode = AWS_VPC, otherwise DnsRecordType.SRV
    */
   readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
 

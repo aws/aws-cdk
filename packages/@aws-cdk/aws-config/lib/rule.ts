@@ -60,7 +60,7 @@ abstract class RuleBase extends Resource implements IRule {
   public onComplianceChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'Config Rules Compliance Change' ],
+      detailType: ['Config Rules Compliance Change'],
     });
     return rule;
   }
@@ -71,7 +71,7 @@ abstract class RuleBase extends Resource implements IRule {
   public onReEvaluationStatus(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'Config Rules Re-evaluation Status' ],
+      detailType: ['Config Rules Re-evaluation Status'],
     });
     return rule;
   }
@@ -122,10 +122,10 @@ abstract class RuleNew extends RuleBase {
    * @param identifier the resource identifier
    */
   public scopeToResource(type: string, identifier?: string) {
-    this.scopeTo({
+    this.scope = {
       complianceResourceId: identifier,
       complianceResourceTypes: [type],
-    });
+    };
   }
 
   /**
@@ -136,9 +136,9 @@ abstract class RuleNew extends RuleBase {
    * @param types resource types
    */
   public scopeToResources(...types: string[]) {
-    this.scopeTo({
+    this.scope = {
       complianceResourceTypes: types,
-    });
+    };
   }
 
   /**
@@ -148,18 +148,10 @@ abstract class RuleNew extends RuleBase {
    * @param value the tag value
    */
   public scopeToTag(key: string, value?: string) {
-    this.scopeTo({
+    this.scope = {
       tagKey: key,
       tagValue: value,
-    });
-  }
-
-  private scopeTo(scope: CfnConfigRule.ScopeProperty) {
-    if (!this.isManaged && !this.isCustomWithChanges) {
-      throw new Error('Cannot scope rule when `configurationChanges` is set to false.');
-    }
-
-    this.scope = scope;
+    };
   }
 }
 

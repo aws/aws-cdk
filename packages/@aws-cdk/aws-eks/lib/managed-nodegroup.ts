@@ -1,7 +1,7 @@
 import { InstanceType, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
-import { Cluster } from './cluster';
+import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 
 /**
@@ -163,9 +163,8 @@ export interface NodegroupOptions {
 export interface NodegroupProps extends NodegroupOptions {
   /**
    * Cluster resource
-   * [disable-awslint:ref-via-interface]"
    */
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
 }
 
 /**
@@ -198,7 +197,7 @@ export class Nodegroup extends Resource implements INodegroup {
    *
    * @attribute ClusterName
    */
-  public readonly cluster: Cluster;
+  public readonly cluster: ICluster;
   /**
    * IAM role of the instance profile for the nodegroup
    */
@@ -263,8 +262,18 @@ export class Nodegroup extends Resource implements INodegroup {
       tags: props.tags,
     });
 
-    // As managed nodegroup will auto map the instance role to RBAC behind the scene and users don't have to manually
-    // do it anymore. We don't need to print out the instance role arn now.
+    // managed nodegroups update the `aws-auth` on creation, but we still need to track
+    // its state for consistency.
+    if (this.cluster instanceof Cluster) {
+      // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
+      this.cluster.awsAuth.addRoleMapping(this.role, {
+        username: 'system:node:{{EC2PrivateDNSName}}',
+        groups: [
+          'system:bootstrappers',
+          'system:nodes',
+        ],
+      });
+    }
 
     this.nodegroupArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'eks',

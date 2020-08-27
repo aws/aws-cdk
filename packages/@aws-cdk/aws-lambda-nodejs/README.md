@@ -34,12 +34,15 @@ automatically transpiled and bundled whether it's written in JavaScript or TypeS
 Alternatively, an entry file and handler can be specified:
 ```ts
 new lambda.NodejsFunction(this, 'MyFunction', {
-  entry: '/path/to/my/file.ts',
+  entry: '/path/to/my/file.ts', // accepts .js, .jsx, .ts and .tsx files
   handler: 'myExportedFunc'
 });
 ```
 
 All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
+
+The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
+when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
 
 Use the `containerEnvironment` prop to pass environments variables to the Docker container
 running Parcel:
@@ -48,6 +51,15 @@ running Parcel:
 new lambda.NodejsFunction(this, 'my-handler', {
   containerEnvironment: {
     NODE_ENV: 'production',
+  },
+});
+```
+
+Use the `buildArgs` prop to pass build arguments when building the bundling image:
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  buildArgs: {
+    HTTPS_PROXY: 'https://127.0.0.1:3001',
   },
 });
 ```
@@ -89,5 +101,26 @@ new lambda.NodejsFunction(this, 'my-handler', {
 
 The modules listed in `nodeModules` must be present in the `package.json`'s dependencies. The
 same version will be used for installation. If a lock file is detected (`package-lock.json` or
-`yarn.lock`) it will be used along with the right installer (`npm` or `yarn`). The modules are
-installed in a [Lambda compatible Docker container](https://github.com/lambci/docker-lambda).
+`yarn.lock`) it will be used along with the right installer (`npm` or `yarn`).
+
+### Local bundling
+If Parcel v2 is available it will be used to bundle your code in your environment. Otherwise,
+bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
+
+For macOS the recommendend approach is to install Parcel as Docker volume performance is really poor.
+
+Parcel v2 can be installed with:
+
+```bash
+$ npm install --save-dev parcel@next
+```
+
+OR
+
+```bash
+$ yarn add --dev @parcel@next
+```
+
+To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This
+is useful if your function relies on node modules that should be installed (`nodeModules` prop, see [above](#install-modules)) in a Lambda compatible environment. This is usually the
+case with modules using native dependencies.

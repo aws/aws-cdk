@@ -1,9 +1,10 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Writable } from 'stream';
-import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
+import { NodeStringDecoder, StringDecoder } from 'string_decoder';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
-import { classMockOf, MockCloudExecutable } from './util';
+import { instanceMockFrom, MockCloudExecutable } from './util';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<CloudFormationDeployments>;
@@ -22,7 +23,7 @@ beforeEach(() => {
     {
       stackName: 'C',
       depends: ['A'],
-      template: { resource: 'C'},
+      template: { resource: 'C' },
       metadata: {
         '/resource': [
           {
@@ -31,10 +32,14 @@ beforeEach(() => {
           },
         ],
       },
+    },
+    {
+      stackName: 'D',
+      template: { resource: 'D' },
     }],
   });
 
-  cloudFormation = classMockOf(CloudFormationDeployments);
+  cloudFormation = instanceMockFrom(CloudFormationDeployments);
 
   toolkit = new CdkToolkit({
     cloudExecutable,
@@ -44,7 +49,12 @@ beforeEach(() => {
   });
 
   // Default implementations
-  cloudFormation.readCurrentTemplate.mockResolvedValue({});
+  cloudFormation.readCurrentTemplate.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
+    if (stackArtifact.stackName === 'D') {
+      return Promise.resolve({ resource: 'D' });
+    }
+    return Promise.resolve({});
+  });
   cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
     noOp: true,
     outputs: {},
@@ -78,6 +88,21 @@ test('exits with 1 with diffs and fail set to true', async () => {
   // WHEN
   const exitCode = await toolkit.diff({
     stackNames: ['A'],
+    stream: buffer,
+    fail: true,
+  });
+
+  // THEN
+  expect(exitCode).toBe(1);
+});
+
+test('exits with 1 with diff in first stack, but not in second stack and fail set to true', async () => {
+  // GIVEN
+  const buffer = new StringWritable();
+
+  // WHEN
+  const exitCode = await toolkit.diff({
+    stackNames: ['A', 'D'],
     stream: buffer,
     fail: true,
   });

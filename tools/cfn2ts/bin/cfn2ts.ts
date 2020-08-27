@@ -3,8 +3,8 @@ import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
 import generate from '../lib';
 
-// tslint:disable:no-console
-// tslint:disable:max-line-length
+/* eslint-disable no-console */
+/* eslint-disable max-len */
 
 async function main() {
   const argv = yargs.usage('Usage: cfn2ts')

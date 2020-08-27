@@ -1,9 +1,11 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { basename, dirname } from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { major as nodeMajorVersion } from './node-version';
 
 // list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk
 const WHITELIST_SCOPES = ['@aws-cdk', '@aws-solutions-konstruk', '@aws-solutions-constructs'];
+// list of NPM packages included in version reporting
+const WHITELIST_PACKAGES = ['aws-rfdk'];
 
 /**
  * Returns a list of loaded modules and their versions.
@@ -26,6 +28,7 @@ export function collectRuntimeInformation(): cxschema.RuntimeInfo {
         foundMatch = true;
       }
     }
+    foundMatch = foundMatch || WHITELIST_PACKAGES.includes(name);
 
     if (!foundMatch) {
       delete libraries[name];
@@ -65,7 +68,7 @@ export function collectRuntimeInformation(): cxschema.RuntimeInfo {
 function findNpmPackage(fileName: string): { name: string, version: string, private?: boolean } | undefined {
   const mod = require.cache[fileName];
 
-  if (!mod.paths) {
+  if (!mod?.paths) {
     // sometimes this can be undefined. for example when querying for .json modules
     // inside a jest runtime environment.
     // see https://github.com/aws/aws-cdk/issues/7657
@@ -74,7 +77,7 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
   }
 
   // For any path in ``mod.paths`` that is a node_modules folder, use its parent directory instead.
-  const paths = mod.paths.map((path: string) => basename(path) === 'node_modules' ? dirname(path) : path);
+  const paths = mod?.paths.map((path: string) => basename(path) === 'node_modules' ? dirname(path) : path);
 
   try {
     const packagePath = require.resolve(

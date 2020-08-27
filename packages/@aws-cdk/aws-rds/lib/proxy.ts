@@ -91,8 +91,8 @@ export class ProxyTarget {
 
     return {
       engineFamily,
-      dbClusters: this.dbCluster ? [ this.dbCluster ] : undefined,
-      dbInstances: this.dbInstance ? [ this.dbInstance ] : undefined,
+      dbClusters: this.dbCluster ? [this.dbCluster] : undefined,
+      dbInstances: this.dbInstance ? [this.dbInstance] : undefined,
     };
   }
 }
@@ -235,10 +235,9 @@ export interface DatabaseProxyOptions {
   /**
    * The secret that the proxy uses to authenticate to the RDS DB instance or Aurora DB cluster.
    * These secrets are stored within Amazon Secrets Manager.
-   *
-   * @default - no secret
+   * One or more secrets are required.
    */
-  readonly secret: secretsmanager.ISecret;
+  readonly secrets: secretsmanager.ISecret[];
 
   /**
    * One or more VPC security groups to associate with the new proxy.
@@ -379,20 +378,26 @@ export class DatabaseProxy extends cdk.Resource
       assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
     });
 
-    props.secret.grantRead(role);
+    for (const secret of props.secrets) {
+      secret.grantRead(role);
+    }
 
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
 
     const bindResult = props.proxyTarget.bind(this);
 
+    if (props.secrets.length < 1) {
+      throw new Error('One or more secrets are required.');
+    }
+
     this.resource = new CfnDBProxy(this, 'Resource', {
-      auth: [
-        {
+      auth: props.secrets.map(_ => {
+        return {
           authScheme: 'SECRETS',
           iamAuth: props.iamAuth ? 'REQUIRED' : 'DISABLED',
-          secretArn: props.secret.secretArn,
-        },
-      ],
+          secretArn: _.secretArn,
+        };
+      }),
       dbProxyName: this.physicalName,
       debugLogging: props.debugLogging,
       engineFamily: bindResult.engineFamily,
@@ -408,18 +413,25 @@ export class DatabaseProxy extends cdk.Resource
     this.endpoint = this.resource.attrEndpoint;
 
     let dbInstanceIdentifiers: string[] | undefined;
-    if (bindResult.dbClusters) {
-      // support for only instances of a single cluster
-      dbInstanceIdentifiers = bindResult.dbClusters[0].instanceIdentifiers;
-    } else if (bindResult.dbInstances) {
+    if (bindResult.dbInstances) {
       // support for only single instance
-      dbInstanceIdentifiers = [ bindResult.dbInstances[0].instanceIdentifier ];
+      dbInstanceIdentifiers = [bindResult.dbInstances[0].instanceIdentifier];
+    }
+
+    let dbClusterIdentifiers: string[] | undefined;
+    if (bindResult.dbClusters) {
+      dbClusterIdentifiers = bindResult.dbClusters.map((c) => c.clusterIdentifier);
+    }
+
+    if (!!dbInstanceIdentifiers && !!dbClusterIdentifiers) {
+      throw new Error('Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers');
     }
 
     new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
+      targetGroupName: 'default',
       dbProxyName: this.dbProxyName,
       dbInstanceIdentifiers,
-      dbClusterIdentifiers: bindResult.dbClusters?.map((c) => c.clusterIdentifier),
+      dbClusterIdentifiers,
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
   }

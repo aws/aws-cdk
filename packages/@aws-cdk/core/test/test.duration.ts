@@ -78,33 +78,38 @@ export = nodeunit.testCase({
   },
 
   'toISOString'(test: nodeunit.Test) {
+    test.equal(Duration.millis(0).toISOString(), 'PT0S');
     test.equal(Duration.seconds(0).toISOString(), 'PT0S');
     test.equal(Duration.minutes(0).toISOString(), 'PT0S');
     test.equal(Duration.hours(0).toISOString(), 'PT0S');
     test.equal(Duration.days(0).toISOString(), 'PT0S');
 
+    test.equal(Duration.millis(5).toISOString(), 'PT0.005S');
     test.equal(Duration.seconds(5).toISOString(), 'PT5S');
     test.equal(Duration.minutes(5).toISOString(), 'PT5M');
     test.equal(Duration.hours(5).toISOString(), 'PT5H');
-    test.equal(Duration.days(5).toISOString(), 'PT5D');
+    test.equal(Duration.days(5).toISOString(), 'P5D');
 
-    test.equal(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toISOString(), 'PT1D1H1M1S');
+    test.equal(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toISOString(), 'P1DT1H1M1S');
 
     test.done();
   },
 
   'toIsoString'(test: nodeunit.Test) {
+    test.equal(Duration.millis(0).toIsoString(), 'PT0S');
     test.equal(Duration.seconds(0).toIsoString(), 'PT0S');
     test.equal(Duration.minutes(0).toIsoString(), 'PT0S');
     test.equal(Duration.hours(0).toIsoString(), 'PT0S');
     test.equal(Duration.days(0).toIsoString(), 'PT0S');
 
+    test.equal(Duration.millis(5).toIsoString(), 'PT0.005S');
     test.equal(Duration.seconds(5).toIsoString(), 'PT5S');
     test.equal(Duration.minutes(5).toIsoString(), 'PT5M');
     test.equal(Duration.hours(5).toIsoString(), 'PT5H');
-    test.equal(Duration.days(5).toIsoString(), 'PT5D');
+    test.equal(Duration.days(5).toIsoString(), 'P5D');
 
-    test.equal(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toIsoString(), 'PT1D1H1M1S');
+    test.equal(Duration.seconds(65).toIsoString(), 'PT1M5S');
+    test.equal(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toIsoString(), 'P1DT1H1M1S');
 
     test.done();
   },
@@ -113,14 +118,27 @@ export = nodeunit.testCase({
     test.equal(Duration.parse('PT0S').toSeconds(), 0);
     test.equal(Duration.parse('PT0M').toSeconds(), 0);
     test.equal(Duration.parse('PT0H').toSeconds(), 0);
-    test.equal(Duration.parse('PT0D').toSeconds(), 0);
+    test.equal(Duration.parse('P0D').toSeconds(), 0);
 
     test.equal(Duration.parse('PT5S').toSeconds(), 5);
     test.equal(Duration.parse('PT5M').toSeconds(), 300);
     test.equal(Duration.parse('PT5H').toSeconds(), 18_000);
-    test.equal(Duration.parse('PT5D').toSeconds(), 432_000);
+    test.equal(Duration.parse('P5D').toSeconds(), 432_000);
 
-    test.equal(Duration.parse('PT1D1H1M1S').toSeconds(), 1 + 60 * (1 + 60 * (1 + 24)));
+    test.equal(Duration.parse('P1DT1H1M1S').toSeconds(), 1 + 60 * (1 + 60 * (1 + 24)));
+
+    test.done();
+  },
+
+  'reject illegal parses'(test: nodeunit.Test) {
+    const err = 'Not a valid ISO duration';
+    test.throws(() => {
+      Duration.parse('PT1D');
+    }, err);
+
+    test.throws(() => {
+      Duration.parse('P5S');
+    }, err);
 
     test.done();
   },
@@ -140,6 +158,13 @@ export = nodeunit.testCase({
     test.equal(Duration.millis(3666).toHumanString(), '3 seconds 666 millis');
 
     test.equal(Duration.millis(3.6).toHumanString(), '3.6 millis');
+
+    test.done();
+  },
+
+  'add two durations'(test: nodeunit.Test) {
+    test.equal(Duration.minutes(1).plus(Duration.seconds(30)).toSeconds(), Duration.seconds(90).toSeconds());
+    test.equal(Duration.minutes(1).plus(Duration.seconds(30)).toMinutes({ integral: false }), Duration.seconds(90).toMinutes({ integral: false }));
 
     test.done();
   },

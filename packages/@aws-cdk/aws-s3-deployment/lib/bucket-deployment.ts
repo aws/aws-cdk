@@ -1,11 +1,11 @@
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as crypto from 'crypto';
-import * as fs from 'fs';
-import * as path from 'path';
 import { ISource, SourceConfig } from './source';
 
 const now = Date.now();
@@ -29,6 +29,16 @@ export interface BucketDeploymentProps {
    * @default "/" (unzip to root of the destination bucket)
    */
   readonly destinationKeyPrefix?: string;
+
+  /**
+   * If this is set to false, files in the destination bucket that
+   * do not exist in the asset, will NOT be deleted during deployment (create/update).
+   *
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
+   *
+   * @default true
+   */
+  readonly prune?: boolean
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -197,12 +207,14 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
+        Prune: props.prune ?? true,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
         DistributionPaths: props.distributionPaths,
       },
     });
+
   }
 
   private renderSingletonUuid(memoryLimit?: number) {
@@ -286,7 +298,7 @@ export class CacheControl {
   public static proxyRevalidate() { return new CacheControl('proxy-revalidate'); }
   public static maxAge(t: cdk.Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
   public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
-  public static fromString(s: string) {  return new CacheControl(s); }
+  public static fromString(s: string) { return new CacheControl(s); }
 
   private constructor(public readonly value: any) {}
 }

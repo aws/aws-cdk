@@ -5,3 +5,5 @@ export * from './integration';
 export * from './json-schema';
 export * from './route';
 export * from './stage';
+export * from './domain-name';
+export * from './api-mapping';
