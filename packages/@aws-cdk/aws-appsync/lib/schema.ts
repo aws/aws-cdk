@@ -104,8 +104,10 @@ export class Schema {
    * Set the Schema's queries to a given Object Type
    *
    * @param type the object type to set as Schema's Query
+   *
+   * @return the query attached to the schema
    */
-  public bindQueryType(type: ObjectType): ObjectType {
+  public attachQueryType(type: ObjectType): ObjectType {
     if (this.mode !== SchemaMode.CODE) {
       throw new Error('API cannot set schema\'s query because schema definition mode is not configured as CODE.');
     }

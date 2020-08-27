@@ -596,8 +596,8 @@ export class GraphQLApi extends GraphqlApiBase {
    *
    * @param type the object type to set as Schema's Query
    */
-  public bindQueryType(type: ObjectType): ObjectType {
-    return this.schema.bindQueryType(type);
+  public attachQueryType(type: ObjectType): ObjectType {
+    return this.schema.attachQueryType(type);
   }
 
   /**

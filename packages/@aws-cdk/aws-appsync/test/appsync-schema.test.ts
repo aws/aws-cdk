@@ -92,6 +92,40 @@ describe('basic testing schema definition mode `code`', () => {
       Definition: 'schema {\n  query: Query\n}\ntype Query {\n  test: String\n}\n',
     });
   });
+
+  test('definition mode `code` allows for api to attachQueryType', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+    });
+    api.addType(api.attachQueryType(new appsync.ObjectType('Root', { definition: {} })));
+    api.addQuery('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  query: Root\n}\ntype Root {\n  test: String\n}\n',
+    });
+  });
+
+  test('definition mode `code` allows for schema to attachQueryType', () => {
+    // WHEN
+    const schema = new appsync.Schema();
+    schema.addType(schema.attachQueryType(new appsync.ObjectType('Root', { definition: {} })));
+    new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema,
+    });
+    schema.addQuery('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  query: Root\n}\ntype Root {\n  test: String\n}\n',
+    });
+  });
 });
 
 describe('testing schema definition mode `file`', () => {
@@ -109,7 +143,7 @@ describe('testing schema definition mode `file`', () => {
     });
   });
 
-  test('definition mode `file` errors when addObjectType is called', () => {
+  test('definition mode `file` errors when addType for object is called', () => {
     // WHEN
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
@@ -124,7 +158,7 @@ describe('testing schema definition mode `file`', () => {
     }).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
   });
 
-  test('definition mode `file` errors when addInterfaceType is called', () => {
+  test('definition mode `file` errors when addType for interface is called', () => {
     // WHEN
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
@@ -152,4 +186,29 @@ describe('testing schema definition mode `file`', () => {
     }).toThrowError('API cannot append to schema because schema definition mode is not configured as CODE.');
   });
 
+  test('definition mode `file` errors when addQuery is called', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
+    });
+
+    // THEN
+    expect(() => {
+      api.addQuery('blah', new appsync.ResolvableField({ returnType: t.string }));
+    }).toThrowError('API cannot add to schema\'s query because schema definition mode is not configured as CODE.');
+  });
+
+  test('definition mode `file` errors when attachQueryType is called', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
+    });
+
+    // THEN
+    expect(() => {
+      api.attachQueryType(new appsync.ObjectType('test', { definition: {} }));
+    }).toThrowError('API cannot set schema\'s query because schema definition mode is not configured as CODE.');
+  });
 });
