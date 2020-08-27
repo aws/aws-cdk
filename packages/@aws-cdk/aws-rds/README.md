@@ -324,27 +324,3 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   // ...
 });
 ```
-
-### Option Groups
-
-Some DB engines offer additional features that make it easier to manage data and databases, and to provide additional security for your database.
-Amazon RDS uses option groups to enable and configure these features. An option group can specify features, called options,
-that are available for a particular Amazon RDS DB instance.
-
-```ts
-const vpc: ec2.IVpc = ...;
-const securityGroup: ec2.ISecurityGroup = ...;
-new rds.OptionGroup(stack, 'Options', {
-  engine: DatabaseInstanceEngine.oracleSe({
-    version: OracleLegacyEngineVersion.VER_11_2,
-  }),
-  configurations: [
-    {
-      name: 'OEM',
-      port: 5500,
-      vpc,
-      securityGroups: [securityGroup], // Optional - a default group will be created if not provided.
-    },
-  ],
-});
-```
