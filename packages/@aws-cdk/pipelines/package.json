@@ -40,7 +40,7 @@
     "@aws-cdk/aws-ecr-assets": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.0.2",
+    "constructs": "^3.0.4",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
@@ -53,7 +53,7 @@
     "@aws-cdk/aws-cloudformation": "0.0.0"
   },
   "dependencies": {
-    "constructs": "^3.0.2",
+    "constructs": "^3.0.4",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
@@ -105,7 +105,8 @@
         "distName": "aws-cdk.pipelines",
         "module": "aws_cdk.pipelines"
       }
-    }
+    },
+    "projectReferences": true
   },
   "awscdkio": {
     "announce": false

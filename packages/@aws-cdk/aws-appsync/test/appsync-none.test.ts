@@ -10,8 +10,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphQLApi(stack, 'baseApi', {
     name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.FILE,
-    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
 });
 
@@ -57,25 +56,19 @@ describe('None Data Source configuration', () => {
   });
 
   test('appsync errors when creating multiple none data sources with no configuration', () => {
-    // WHEN
-    const when = () => {
-      api.addNoneDataSource('ds');
-      api.addNoneDataSource('ds');
-    };
-
     // THEN
-    expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
+    expect(() => {
+      api.addNoneDataSource('ds');
+      api.addNoneDataSource('ds');
+    }).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
   });
 
   test('appsync errors when creating multiple none data sources with same name configuration', () => {
-    // WHEN
-    const when = () => {
+    // THEN
+    expect(() => {
       api.addNoneDataSource('ds1', { name: 'custom' });
       api.addNoneDataSource('ds2', { name: 'custom' });
-    };
-
-    // THEN
-    expect(when).not.toThrowError();
+    }).not.toThrowError();
   });
 });
 

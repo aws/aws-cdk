@@ -126,10 +126,37 @@ export function testStack(stack: TestStackArtifact) {
  * automatic detection of properties (as those exist on instances, not
  * classes).
  */
-export function classMockOf<A>(ctr: new (...args: any[]) => A): jest.Mocked<A> {
+export function instanceMockFrom<A>(ctr: new (...args: any[]) => A): jest.Mocked<A> {
   const ret: any = {};
   for (const methodName of Object.getOwnPropertyNames(ctr.prototype)) {
     ret[methodName] = jest.fn();
   }
   return ret;
+}
+
+/**
+ * Run an async block with a class (constructor) replaced with a mock
+ *
+ * The class constructor will be replaced with a constructor that returns
+ * a singleton, and the singleton will be passed to the block so that its
+ * methods can be mocked individually.
+ *
+ * Uses `instanceMockFrom` so is subject to the same limitations that hold
+ * for that function.
+ */
+export async function withMockedClassSingleton<A extends object, K extends keyof A, B>(
+  obj: A,
+  key: K,
+  cb: (mock: A[K] extends jest.Constructable ? jest.Mocked<InstanceType<A[K]>> : never) => Promise<B>,
+): Promise<B> {
+
+  const original = obj[key];
+  try {
+    const mock = instanceMockFrom(original as any);
+    obj[key] = jest.fn().mockReturnValue(mock) as any;
+    const ret = await cb(mock as any);
+    return ret;
+  } finally {
+    obj[key] = original;
+  }
 }

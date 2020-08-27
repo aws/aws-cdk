@@ -59,5 +59,16 @@ export async function deployBootstrapStack(
 }
 
 function bootstrapVersionFromTemplate(template: any): number {
-  return parseInt(template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT]?.Value ?? '0', 10);
+  const versionSources = [
+    template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT]?.Value,
+    template.Resources?.[BOOTSTRAP_VERSION_OUTPUT]?.Properties?.Value,
+  ];
+
+  for (const vs of versionSources) {
+    if (typeof vs === 'number') { return vs; }
+    if (typeof vs === 'string' && !isNaN(parseInt(vs, 10))) {
+      return parseInt(vs, 10);
+    }
+  }
+  return 0;
 }

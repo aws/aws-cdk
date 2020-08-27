@@ -1,3 +1,166 @@
+import { Resolver } from './resolver';
+import { ResolvableFieldOptions, BaseTypeOptions, GraphqlType } from './schema-field';
+import { InterfaceType } from './schema-intermediate';
+
+/**
+ * A Graphql Field
+ */
+export interface IField {
+  /**
+   * the type of attribute
+   */
+  readonly type: Type;
+
+  /**
+   * property determining if this attribute is a list
+   * i.e. if true, attribute would be `[Type]`
+   *
+   * @default false
+   */
+  readonly isList: boolean;
+
+  /**
+   * property determining if this attribute is non-nullable
+   * i.e. if true, attribute would be `Type!` and this attribute
+   * must always have a value
+   *
+   * @default false
+   */
+  readonly isRequired: boolean;
+
+  /**
+   * property determining if this attribute is a non-nullable list
+   * i.e. if true, attribute would be `[ Type ]!` and this attribute's
+   * list must always have a value
+   *
+   * @default false
+   */
+  readonly isRequiredList: boolean;
+
+  /**
+   * The options to make this field resolvable
+   *
+   * @default - not a resolvable field
+   */
+  readonly fieldOptions?: ResolvableFieldOptions;
+
+  /**
+   * the intermediate type linked to this attribute
+   * (i.e. an interface or an object)
+   *
+   * @default - no intermediate type
+   */
+  readonly intermediateType?: IIntermediateType;
+
+  /**
+   * Generate the string for this attribute
+   */
+  toString(): string;
+
+  /**
+   * Generate the arguments for this field
+   */
+  argsToString(): string;
+}
+
+/**
+ * Intermediate Types are types that includes a certain set of fields
+ * that define the entirety of your schema
+ */
+export interface IIntermediateType {
+  /**
+   * the name of this type
+   */
+  readonly name: string;
+
+  /**
+   * the attributes of this type
+   */
+  readonly definition: { [key: string]: IField };
+
+  /**
+   * The Interface Types this Intermediate Type implements
+   *
+   * @default - no interface types
+   */
+  readonly interfaceTypes?: InterfaceType[];
+
+  /**
+   * the directives for this object type
+   *
+   * @default - no directives
+   */
+  readonly directives?: Directive[];
+
+  /**
+   * The resolvers linked to this data source
+   */
+  resolvers?: Resolver[];
+
+  /**
+   * the intermediate type linked to this attribute
+   * (i.e. an interface or an object)
+   *
+   * @default - no intermediate type
+   */
+  readonly intermediateType?: InterfaceType;
+
+  /**
+   * Create an GraphQL Type representing this Intermediate Type
+   *
+   * @param options the options to configure this attribute
+   * - isList
+   * - isRequired
+   * - isRequiredList
+   */
+  attribute(options?: BaseTypeOptions): GraphqlType;
+
+  /**
+   * Generate the string of this object type
+   */
+  toString(): string;
+
+  /**
+   * Add a field to this Intermediate Type
+   *
+   * @param fieldName - The name of the field
+   * @param field - the resolvable field to add
+   */
+  addField(fieldName: string, field: IField): void;
+}
+
+/**
+ * Directives for types
+ *
+ * i.e. @aws_iam or @aws_subscribe
+ *
+ * @experimental
+ */
+export class Directive {
+  /**
+   * Add the @aws_iam directive
+   */
+  public static iam(): Directive {
+    return new Directive('@aws_iam');
+  }
+
+  /**
+   * Add a custom directive
+   *
+   * @param statement - the directive statement to append
+   */
+  public static custom(statement: string): Directive {
+    return new Directive(statement);
+  }
+
+  /**
+   * the directive statement
+   */
+  public readonly statement: string;
+
+  private constructor(statement: string) { this.statement = statement; }
+}
+
 /**
  * Enum containing the Types that can be used to define ObjectTypes
  */

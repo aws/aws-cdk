@@ -543,3 +543,24 @@ test('disable AWS SDK installation', () => {
     'InstallLatestAwsSdk': false,
   });
 });
+
+test('can specify function name', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    functionName: 'my-cool-function',
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    FunctionName: 'my-cool-function',
+  });
+});

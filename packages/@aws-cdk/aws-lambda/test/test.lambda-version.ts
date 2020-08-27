@@ -151,10 +151,10 @@ export = {
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
-    const version = fn.addVersion('1');
+    const version = fn.currentVersion;
 
     // THEN
-    test.deepEqual(stack.resolve(version.edgeArn), { Ref: 'FnVersion1C3F5F93D' });
+    test.deepEqual(stack.resolve(version.edgeArn), { Ref: 'FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005' });
 
     test.done();
   },
@@ -179,7 +179,7 @@ export = {
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
-    const version = fn.addVersion('1');
+    const version = fn.currentVersion;
 
     // WHEN
     new lambda.Function(stack, 'OtherFn', {

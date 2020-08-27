@@ -60,6 +60,12 @@ export class FromCloudFormation {
       return value.toString();
     }
 
+    // CloudFormation treats numbers and strings interchangeably;
+    // so, if we get a number here, convert it to a string
+    if (typeof value === 'number') {
+      return value.toString();
+    }
+
     // in all other cases, just return the input,
     // and let a validator handle it if it's not a string
     return value;

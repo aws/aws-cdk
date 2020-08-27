@@ -190,7 +190,7 @@ export class HttpApi extends Resource implements IHttpApi {
       });
 
       // to ensure the domain is ready before creating the default stage
-      if(props?.defaultDomainMapping) {
+      if (props?.defaultDomainMapping) {
         this.defaultStage.node.addDependency(props.defaultDomainMapping.domainName);
       }
     }

@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as elbv2 from '../../lib';
 
-export = {
-  'Enable proxy protocol v2 attribute for target group'(test: Test) {
+describe('tests', () => {
+  test('Enable proxy protocol v2 attribute for target group', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -18,19 +17,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'proxy_protocol_v2.enabled',
           Value: 'true',
         },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Disable proxy protocol v2 for attribute target group'(test: Test) {
+  test('Disable proxy protocol v2 for attribute target group', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -43,19 +40,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'proxy_protocol_v2.enabled',
           Value: 'false',
         },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Configure protocols for target group'(test: Test) {
+  test('Configure protocols for target group', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
@@ -65,14 +60,12 @@ export = {
       protocol: elbv2.Protocol.UDP,
     });
 
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Protocol: 'UDP',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Target group defaults to TCP'(test: Test) {
+  test('Target group defaults to TCP', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
@@ -81,25 +74,21 @@ export = {
       port: 80,
     });
 
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Protocol: 'TCP',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Throws error for unacceptable protocol'(test: Test) {
+  test('Throws error for unacceptable protocol', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
-    test.throws(() => {
+    expect(() => {
       new elbv2.NetworkTargetGroup(stack, 'Group', {
         vpc,
         port: 80,
         protocol: elbv2.Protocol.HTTPS,
       });
-    });
-
-    test.done();
-  },
-};
+    }).toThrow();
+  });
+});

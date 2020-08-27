@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-cloudwatch",
         "module": "aws_cdk.aws_cloudwatch"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -73,13 +74,13 @@
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "awslint": {
     "exclude": [

@@ -4,7 +4,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
-import { classMockOf, MockCloudExecutable } from './util';
+import { instanceMockFrom, MockCloudExecutable } from './util';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<CloudFormationDeployments>;
@@ -39,7 +39,7 @@ beforeEach(() => {
     }],
   });
 
-  cloudFormation = classMockOf(CloudFormationDeployments);
+  cloudFormation = instanceMockFrom(CloudFormationDeployments);
 
   toolkit = new CdkToolkit({
     cloudExecutable,

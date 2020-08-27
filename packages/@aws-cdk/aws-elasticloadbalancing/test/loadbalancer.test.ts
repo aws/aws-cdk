@@ -1,11 +1,10 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Connections, Peer, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { ILoadBalancerTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
 
-export = {
-  'test specifying nonstandard port works'(test: Test) {
+describe('tests', () => {
+  test('test specifying nonstandard port works', () => {
     const stack = new Stack(undefined, undefined, { env: { account: '1234', region: 'test' } });
     stack.node.setContext('availability-zones:1234:test', ['test-1a', 'test-1b']);
     const vpc = new Vpc(stack, 'VCP');
@@ -27,11 +26,9 @@ export = {
         Protocol: 'http',
       }],
     }));
+  });
 
-    test.done();
-  },
-
-  'add a health check'(test: Test) {
+  test('add a health check', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VCP');
@@ -57,11 +54,9 @@ export = {
         UnhealthyThreshold: '5',
       },
     }));
+  });
 
-    test.done();
-  },
-
-  'add a listener and load balancing target'(test: Test) {
+  test('add a listener and load balancing target', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VCP');
@@ -91,11 +86,9 @@ export = {
         },
       ],
     }));
+  });
 
-    test.done();
-  },
-
-  'enable cross zone load balancing'(test: Test) {
+  test('enable cross zone load balancing', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VCP');
@@ -110,11 +103,9 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       CrossZone: true,
     }));
+  });
 
-    test.done();
-  },
-
-  'disable cross zone load balancing'(test: Test) {
+  test('disable cross zone load balancing', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VCP');
@@ -129,11 +120,9 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       CrossZone: false,
     }));
+  });
 
-    test.done();
-  },
-
-  'cross zone load balancing enabled by default'(test: Test) {
+  test('cross zone load balancing enabled by default', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VCP');
@@ -147,11 +136,9 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       CrossZone: true,
     }));
+  });
 
-    test.done();
-  },
-
-  'use specified subnet'(test: Test) {
+  test('use specified subnet', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VCP', {
@@ -188,11 +175,8 @@ export = {
         subnetName: 'private1',
       }).subnetIds.map((subnetId: string) => stack.resolve(subnetId)),
     }));
-
-    test.done();
-  },
-
-};
+  });
+});
 
 class FakeTarget implements ILoadBalancerTarget {
   public readonly connections = new Connections({

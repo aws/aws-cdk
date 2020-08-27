@@ -8,6 +8,8 @@ export const REPOSITORY_NAME_OUTPUT = 'RepositoryName';
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 /** @experimental */
 export const BOOTSTRAP_VERSION_OUTPUT = 'BootstrapVersion';
+/** @experimental */
+export const BOOTSTRAP_VERSION_RESOURCE = 'CdkBootstrapVersion';
 
 /**
  * Options for the bootstrapEnvironment operation(s)

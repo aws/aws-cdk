@@ -1,4 +1,4 @@
-import { arrayWith, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -120,31 +120,6 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
           ],
         },
       ],
-    },
-  });
-});
-
-test('"grantRead" also gives KMS permissions when using the new bootstrap stack', () => {
-  const stack = new cdk.Stack(undefined, undefined, {
-    synthesizer: new cdk.DefaultStackSynthesizer(),
-  });
-  const group = new iam.Group(stack, 'MyGroup');
-
-  const asset = new Asset(stack, 'MyAsset', {
-    path: path.join(__dirname, 'sample-asset-directory'),
-    readers: [group],
-  });
-
-  asset.grantRead(group);
-
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Version: '2012-10-17',
-      Statement: arrayWith({
-        Action: ['kms:Decrypt', 'kms:DescribeKey'],
-        Effect: 'Allow',
-        Resource: { 'Fn::ImportValue': 'CdkBootstrap-hnb659fds-FileAssetKeyArn' },
-      }),
     },
   });
 });

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-ecs-patterns",
         "module": "aws_cdk.aws_ecs_patterns"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -82,7 +83,7 @@
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -99,7 +100,7 @@
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

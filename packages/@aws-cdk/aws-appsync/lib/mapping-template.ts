@@ -16,7 +16,7 @@ export abstract class MappingTemplate {
    * Create a mapping template from the given file
    */
   public static fromFile(fileName: string): MappingTemplate {
-    return new StringMappingTemplate(readFileSync(fileName).toString('UTF-8'));
+    return new StringMappingTemplate(readFileSync(fileName).toString('utf-8'));
   }
 
   /**
