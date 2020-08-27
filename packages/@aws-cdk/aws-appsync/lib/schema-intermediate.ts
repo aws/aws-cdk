@@ -1,3 +1,4 @@
+import { shapeAddition } from './private';
 import { Resolver } from './resolver';
 import { Directive, IField, IIntermediateType } from './schema-base';
 import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-field';
@@ -73,19 +74,15 @@ export class InterfaceType implements IIntermediateType {
    * Generate the string of this object type
    */
   public toString(): string {
-    return Object.keys(this.definition).reduce((acc, key) => {
-      return `${acc}${this.fieldToString(key, this.definition[key])}`;
-    }, `interface ${this.name} ${this.generateDirectives()}{\n`) + '}';
-  }
-
-  /**
-   * Generate the field from its attributes
-   *
-   * @param key the key for this field
-   * @param field the attributes of this field
-   */
-  protected fieldToString(key: string, field: IField): string {
-    return `  ${key}${field.argsToString()}: ${field.toString()}${field.directivesToString()}\n`;
+    return shapeAddition({
+      prefix: 'interface',
+      name: this.name,
+      directives: this.directives,
+      fields: Object.keys(this.definition).map((key) => {
+        const field = this.definition[key];
+        return `${key}${field.argsToString()}: ${field.toString()}${field.directivesToString()}`;
+      }),
+    });
   }
 
   /**
@@ -179,29 +176,30 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
    * Generate the string of this object type
    */
   public toString(): string {
-    let title = this.name;
-    if (this.interfaceTypes && this.interfaceTypes.length) {
-      title = this.interfaceTypes.reduce((acc, interfaceType) =>
-        `${acc} ${interfaceType.name},`, `${title} implements`).slice(0, -1);
-    }
-    return Object.keys(this.definition).reduce((acc, key) => {
-      return `${acc}${this.fieldToString(key, this.definition[key])}`;
-    }, `type ${title} ${this.generateDirectives()}{\n`) + '}';
+    return shapeAddition({
+      prefix: 'type',
+      name: this.name,
+      interfaceTypes: this.interfaceTypes,
+      directives: this.directives,
+      fields: Object.keys(this.definition).map((key) => {
+        const field = this.definition[key];
+        return `${key}${field.argsToString()}: ${field.toString()}${field.directivesToString()}`;
+      }),
+    });
   }
 
   /**
    * Generate the resolvers linked to this Object Type
    */
   protected generateResolver(fieldName: string, options?: ResolvableFieldOptions): void {
-    if (options?.dataSource) {
-      if (!this.resolvers) { this.resolvers = []; }
-      this.resolvers.push(options.dataSource.createResolver({
-        typeName: this.name,
-        fieldName: fieldName,
-        pipelineConfig: options.pipelineConfig,
-        requestMappingTemplate: options.requestMappingTemplate,
-        responseMappingTemplate: options.responseMappingTemplate,
-      }));
-    }
+    if (!options?.dataSource) return;
+    if (!this.resolvers) { this.resolvers = []; }
+    this.resolvers.push(options.dataSource.createResolver({
+      typeName: this.name,
+      fieldName: fieldName,
+      pipelineConfig: options.pipelineConfig,
+      requestMappingTemplate: options.requestMappingTemplate,
+      responseMappingTemplate: options.responseMappingTemplate,
+    }));
   }
 }
