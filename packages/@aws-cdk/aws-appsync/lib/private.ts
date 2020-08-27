@@ -1,12 +1,6 @@
 import { Directive } from './schema-base';
 import { InterfaceType } from './schema-intermediate';
 
-function concatAndDedup<T>(left: T[], right: T[]): T[] {
-  return left.concat(right).filter((elem, index, self) => {
-    return index === self.indexOf(elem);
-  });
-}
-
 /**
  * Utility enum for Schema class
  */
@@ -50,31 +44,11 @@ export interface SchemaAdditionOptions {
 }
 
 /**
- * Utility function to generate interfaces for object types
- *
- * @param interfaceTypes the interfaces this object type implements
- */
-function generateInterfaces(interfaceTypes?: InterfaceType[]): string {
-  if (!interfaceTypes || interfaceTypes.length === 0) return '';
-  return interfaceTypes.reduce((acc, interfaceType) =>
-    `${acc} ${interfaceType.name},`, ' implements').slice(0, -1);
-}
-
-/**
- * Utility function to generate directives
- *
- * @param directives the directives of a given type
- * @param delimiter the separator betweeen directives
- * @default - ' '
- */
-function generateDirectives(directives?: Directive[], delimiter?: string): string {
-  if (!directives || directives.length === 0) return '';
-  return directives.reduce((acc, directive) =>
-    `${acc}${directive.statement}${delimiter ?? ' '}`, ' ').slice(0, -1);
-}
-
-/**
  * Generates an addition to the schema
+ *
+ * @param options the options to produced a stringfied addition
+ *
+ * @returns the following shape:
  *
  * ```
  * prefix name interfaces directives {
@@ -83,8 +57,6 @@ function generateDirectives(directives?: Directive[], delimiter?: string): strin
  *   ...
  * }
  * ```
- *
- * @param options the options to produced a stringfied addition
  */
 export function shapeAddition(options: SchemaAdditionOptions): string {
   const typeName = (): string => { return options.name ? ` ${options.name}` : ''; };
@@ -200,4 +172,33 @@ export class Between extends BaseKeyCondition {
   public args(): string[] {
     return [this.arg1, this.arg2];
   }
+}
+
+function concatAndDedup<T>(left: T[], right: T[]): T[] {
+  return left.concat(right).filter((elem, index, self) => {
+    return index === self.indexOf(elem);
+  });
+}
+
+/**
+ * Utility function to generate interfaces for object types
+ *
+ * @param interfaceTypes the interfaces this object type implements
+ */
+function generateInterfaces(interfaceTypes?: InterfaceType[]): string {
+  if (!interfaceTypes || interfaceTypes.length === 0) return '';
+  return interfaceTypes.reduce((acc, interfaceType) =>
+    `${acc} ${interfaceType.name},`, ' implements').slice(0, -1);
+}
+
+/**
+ * Utility function to generate directives
+ *
+ * @param directives the directives of a given type
+ * @param delimiter the separator betweeen directives (by default we will add a space)
+ */
+function generateDirectives(directives?: Directive[], delimiter?: string): string {
+  if (!directives || directives.length === 0) return '';
+  return directives.reduce((acc, directive) =>
+    `${acc}${directive.statement}${delimiter ?? ' '}`, ' ').slice(0, -1);
 }
