@@ -22,7 +22,6 @@ manifests within EKS clusters.
 > This module will eventually be replaced by the [`aws-eks-next`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-eks-next) module.
 > This change will require you to replace your existing clusters.
 > Since we know this kind of operation is highly intrusive, when the replacement happens, we will still be supporting the current module under the `aws-eks-experimental` name.
-> This way, you can choose to migrate at your own pace, and plan out the cluster replacement as needed.
 
 This example defines an Amazon EKS cluster with the following configuration:
 
