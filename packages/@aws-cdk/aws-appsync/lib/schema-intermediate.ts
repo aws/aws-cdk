@@ -185,3 +185,80 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
     }
   }
 }
+
+/**
+ * Properties for configuring an Enum Type
+ *
+ * @param definition - the strings that define this enum type
+ *
+ * @experimental
+ */
+export interface EnumTypeProps {
+  /**
+   * the attributes of this type
+   */
+  readonly definition: string[];
+}
+
+/**
+ * Enum Types are abstract types that includes a set of fields
+ * that represent the strings this type can create.
+ *
+ * @experimental
+ */
+export class EnumType implements IIntermediateType {
+  /**
+   * the name of this type
+   */
+  public readonly name: string;
+  /**
+   * the attributes of this type
+   */
+  public readonly definition: { [key: string]: IField };
+
+  public constructor(name: string, props: EnumTypeProps) {
+    this.name = name;
+    this.definition = props.definition.reduce((acc: { [key: string]: IField }, field: string) => {
+      acc[field] = GraphqlType.string();
+      return acc;
+    }, {});
+  }
+
+  /**
+   * Create an GraphQL Type representing this Enum Type
+   *
+   * @param options the options to configure this attribute
+   * - isList
+   * - isRequired
+   * - isRequiredList
+   */
+  public attribute(options?: BaseTypeOptions): GraphqlType {
+    return GraphqlType.intermediate({
+      isList: options?.isList,
+      isRequired: options?.isRequired,
+      isRequiredList: options?.isRequiredList,
+      intermediateType: this,
+    });
+  }
+
+  /**
+   * Generate the string of this object type
+   */
+  public toString(): string {
+    return shapeAddition({
+      prefix: 'enum',
+      name: this.name,
+      fields: Object.keys(this.definition),
+    });
+  }
+
+  /**
+   * Add a field to this Enum Type
+   *
+   * @param fieldName the name of the field
+   * @param field the IField (this does nothing)
+   */
+  public addField(fieldName: string, field: IField): void {
+    this.definition[fieldName] = field;
+  }
+}
