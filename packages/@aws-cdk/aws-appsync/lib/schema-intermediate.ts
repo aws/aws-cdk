@@ -218,10 +218,8 @@ export class EnumType implements IIntermediateType {
 
   public constructor(name: string, props: EnumTypeProps) {
     this.name = name;
-    this.definition = props.definition.reduce((acc: { [key: string]: IField }, field: string) => {
-      acc[field] = GraphqlType.string();
-      return acc;
-    }, {});
+    this.definition = {};
+    props.definition.map((field: string) => this.addField(field, GraphqlType.string()));
   }
 
   /**
@@ -259,6 +257,7 @@ export class EnumType implements IIntermediateType {
    * @param field the IField (this does nothing)
    */
   public addField(fieldName: string, field: IField): void {
+    if (fieldName.indexOf(' ') > -1) throw new Error('Enum fields cannot contain white space.');
     this.definition[fieldName] = field;
   }
 }

@@ -4,7 +4,6 @@ import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
 
 const out = 'enum Test {\n  test1\n  test2\n  test3\n}\n';
-
 let stack: cdk.Stack;
 let api: appsync.GraphQLApi;
 beforeEach(() => {
@@ -61,5 +60,25 @@ describe('testing Enum Type properties', () => {
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}${obj}`,
     });
+  });
+
+  test('appsync errors when enum type is configured with white space', () => {
+    // THEN
+    expect(() => {
+      new appsync.EnumType('Test', {
+        definition: ['test 1', 'test2', 'test3'],
+      });
+    }).toThrowError('Enum fields cannot contain white space.');
+  });
+
+  test('appsync errors when enum type is configured with white space', () => {
+    // WHEN
+    const test = new appsync.EnumType('Test', {
+      definition: [],
+    });
+    // THEN
+    expect(() => {
+      test.addField(' ', t.string);
+    }).toThrowError('Enum fields cannot contain white space.');
   });
 });
