@@ -2,7 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { bundleDependenciesLayer, hasDependencies, bundleFunction } from './bundling';
+import { hasDependencies, bundleFunction } from './bundling';
+import { PythonLayerVersion } from './layer';
 
 /**
  * Properties for a PythonFunction
@@ -102,12 +103,9 @@ export class PythonFunction extends lambda.Function {
     });
 
     if (dependenciesLocation === DependenciesLocation.LAYER && hasDependencies(entry)) {
-      this.addLayers(new lambda.LayerVersion(this, 'Dependencies', {
+      this.addLayers(new PythonLayerVersion(this, 'Dependencies', {
+        entry: entry,
         compatibleRuntimes: [runtime],
-        code: bundleDependenciesLayer({
-          entry,
-          runtime,
-        }),
       }));
     }
   }
