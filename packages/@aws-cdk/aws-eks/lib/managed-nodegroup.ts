@@ -1,7 +1,7 @@
 import { InstanceType, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
-import { Cluster, ICluster, CpuType } from './cluster';
+import { Cluster, ICluster, CpuArch } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 
 /**
@@ -310,12 +310,12 @@ export class InstanceInfo {
             NodegroupAmiType.AL2_X86_64;
   }
   /**
-   * determine the cpu type from the instance type
+   * determine the cpu architecture from the instance type
    * @param instanceType the EC2 instance type
    */
-  public cpuTypeForInstanceType(instanceType: InstanceType) {
-    return GRAVITON2_INSTANCETYPES.includes(instanceType.toString().substring(0, 3)) ? CpuType.ARM_64 :
-      GRAVITON_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? CpuType.ARM_64 :
-        CpuType.X86_64;
+  public cpuArchForInstanceType(instanceType: InstanceType) {
+    return GRAVITON2_INSTANCETYPES.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
+      GRAVITON_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
+        CpuArch.X86_64;
   }
 }

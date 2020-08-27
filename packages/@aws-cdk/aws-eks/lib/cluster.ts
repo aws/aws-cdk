@@ -815,7 +815,7 @@ export class Cluster extends Resource implements ICluster {
         new BottleRocketImage() :
         new EksOptimizedImage({
           nodeType: nodeTypeForInstanceType(options.instanceType),
-          cpuType: new InstanceInfo().cpuTypeForInstanceType(options.instanceType),
+          cpuArch: new InstanceInfo().cpuArchForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
         }),
       updateType: options.updateType,
@@ -1441,11 +1441,11 @@ export interface EksOptimizedImageProps {
   readonly nodeType?: NodeType;
 
   /**
-   * What cpu type to retrieve the image for (arm64 or x86_64)
+   * What cpu architcture to retrieve the image for (arm64 or x86_64)
    *
-   * @default CpuType.X86_64
+   * @default CpuArch.X86_64
    */
-  readonly cpuType?: CpuType;
+  readonly cpuArch?: CpuArch;
 
   /**
    * The Kubernetes version to use
@@ -1460,7 +1460,7 @@ export interface EksOptimizedImageProps {
  */
 export class EksOptimizedImage implements ec2.IMachineImage {
   private readonly nodeType?: NodeType;
-  private readonly cpuType?: CpuType;
+  private readonly cpuArch?: CpuArch;
   private readonly kubernetesVersion?: string;
   private readonly amiParameterName: string;
 
@@ -1469,12 +1469,12 @@ export class EksOptimizedImage implements ec2.IMachineImage {
    */
   public constructor(props: EksOptimizedImageProps = {}) {
     this.nodeType = props.nodeType ?? NodeType.STANDARD;
-    this.cpuType = props.cpuType ?? CpuType.X86_64;
+    this.cpuArch = props.cpuArch ?? CpuArch.X86_64;
     this.kubernetesVersion = props.kubernetesVersion ?? LATEST_KUBERNETES_VERSION;
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
-      + ( this.nodeType === NodeType.STANDARD ? this.cpuType === CpuType.X86_64 ?
+      + ( this.nodeType === NodeType.STANDARD ? this.cpuArch === CpuArch.X86_64 ?
         'amazon-linux-2/' : 'amazon-linux-2-arm64/' :'' )
       + ( this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '' )
       + (this.nodeType === NodeType.INFERENTIA ? 'amazon-linux-2-gpu/' : '')
@@ -1550,9 +1550,9 @@ export enum NodeType {
 }
 
 /**
- * CPU type
+ * CPU architecture
  */
-export enum CpuType {
+export enum CpuArch {
   /**
    * arm64 CPU type
    */
