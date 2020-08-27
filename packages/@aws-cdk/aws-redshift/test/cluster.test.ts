@@ -178,7 +178,7 @@ describe('node count', () => {
         clusterType: ClusterType.SINGLE_NODE,
         numberOfNodes: 2,
       });
-    }).toThrow(/Number of nodes must be not be supplied for cluster type single-node/);
+    }).toThrow(/Number of nodes must be not be supplied or be 1 for cluster type single-node/);
   });
 
   test('Multi-Node Clusters default to 2 nodes', () => {

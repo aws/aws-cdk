@@ -538,7 +538,7 @@ export class Cluster extends ClusterBase {
     if (clusterType === ClusterType.SINGLE_NODE) {
       // This property must not be set for single-node clusters; be generous and treat a value of 1 node as undefined.
       if (numberOfNodes !== undefined && numberOfNodes !== 1) {
-        throw new Error('Number of nodes must be not be supplied for cluster type single-node');
+        throw new Error('Number of nodes must be not be supplied or be 1 for cluster type single-node');
       }
       return undefined;
     } else {
