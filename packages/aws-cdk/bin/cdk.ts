@@ -236,7 +236,7 @@ async function initCommandLine() {
         // new style stack synthesis has been configured in `cdk.json`.
         //
         // In code it's optimistically called "default" bootstrapping but that is in
-        // inticipation of flipping the switch, in user messaging we still call it
+        // anticipation of flipping the switch, in user messaging we still call it
         // "new" bootstrapping.
         let source: BootstrapSource = { source: 'legacy' };
         if (args.template) {

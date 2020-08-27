@@ -253,7 +253,7 @@ $ cdk bootstrap --app='node bin/main.js' foo bar
 By default, bootstrap stack will be protected from stack termination. This can be disabled using
 `--termination-protection` argument.
 
-Your company may require specific tweaks to the bootstrapping template. You can customize the template
+If you have specific needs, policies, or requirements not met by the default template, you can customize it
 to fit your own situation, by exporting the default one to a file and either deploying it yourself
 using CloudFormation directly, or by telling the CLI to use a custom template. That looks as follows:
 
