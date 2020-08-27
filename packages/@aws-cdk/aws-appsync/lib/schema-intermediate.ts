@@ -1,37 +1,6 @@
-import { BaseGraphqlTypeOptions, GraphqlType } from './schema-field';
-
-/**
- * Directives for types
- *
- * i.e. @aws_iam or @aws_subscribe
- *
- * @experimental
- */
-export class Directive {
-  /**
-   * Add the @aws_iam directive
-   */
-  public static iam(): Directive{
-    return new Directive('@aws_iam');
-  }
-
-  /**
-   * Add a custom directive
-   *
-   * @param statement - the directive statement to append
-   * Note: doesn't guarantee functionality
-   */
-  public static custom(statement: string): Directive {
-    return new Directive(statement);
-  }
-
-  /**
-   * the directive statement
-   */
-  public readonly statement: string;
-
-  private constructor(statement: string) { this.statement = statement; }
-}
+import { Resolver } from './resolver';
+import { Directive, IField, IIntermediateType } from './schema-base';
+import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-field';
 
 /**
  * Properties for configuring an Intermediate Type
@@ -45,7 +14,7 @@ export interface IntermediateTypeProps {
   /**
    * the attributes of this type
    */
-  readonly definition: { [key: string]: GraphqlType };
+  readonly definition: { [key: string]: IField };
 }
 
 /**
@@ -54,7 +23,7 @@ export interface IntermediateTypeProps {
  *
  * @experimental
  */
-export class InterfaceType {
+export class InterfaceType implements IIntermediateType {
   /**
    * the name of this type
    */
@@ -62,7 +31,7 @@ export class InterfaceType {
   /**
    * the attributes of this type
    */
-  public readonly definition: { [key: string]: GraphqlType };
+  public readonly definition: { [key: string]: IField };
 
   public constructor(name: string, props: IntermediateTypeProps) {
     this.name = name;
@@ -77,7 +46,7 @@ export class InterfaceType {
    * - isRequired
    * - isRequiredList
    */
-  public attribute(options?: BaseGraphqlTypeOptions): GraphqlType{
+  public attribute(options?: BaseTypeOptions): GraphqlType {
     return GraphqlType.intermediate({
       isList: options?.isList,
       isRequired: options?.isRequired,
@@ -93,9 +62,20 @@ export class InterfaceType {
     let schemaAddition = `interface ${this.name} {\n`;
     Object.keys(this.definition).forEach( (key) => {
       const attribute = this.definition[key];
-      schemaAddition = `${schemaAddition}  ${key}: ${attribute.toString()}\n`;
+      const args = attribute.argsToString();
+      schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
     });
     return `${schemaAddition}}`;
+  }
+
+  /**
+   * Add a field to this Object Type
+   *
+   * @param fieldName - The name of the field
+   * @param field - the field to add
+   */
+  public addField(fieldName: string, field: IField): void {
+    this.definition[fieldName] = field;
   }
 }
 
@@ -129,22 +109,7 @@ export interface ObjectTypeProps extends IntermediateTypeProps {
  *
  * @experimental
  */
-export class ObjectType extends InterfaceType {
-  /**
-   * A method to define Object Types from an interface
-   */
-  public static implementInterface(name: string, props: ObjectTypeProps): ObjectType {
-    if (!props.interfaceTypes || !props.interfaceTypes.length) {
-      throw new Error('Static function `implementInterface` requires an interfaceType to implement');
-    }
-    return new ObjectType(name, {
-      interfaceTypes: props.interfaceTypes,
-      definition: props.interfaceTypes.reduce((def, interfaceType) => {
-        return Object.assign({}, def, interfaceType.definition);
-      }, props.definition),
-      directives: props.directives,
-    });
-  }
+export class ObjectType extends InterfaceType implements IIntermediateType {
   /**
    * The Interface Types this Object Type implements
    *
@@ -157,11 +122,37 @@ export class ObjectType extends InterfaceType {
    * @default - no directives
    */
   public readonly directives?: Directive[];
+  /**
+   * The resolvers linked to this data source
+   */
+  public resolvers?: Resolver[];
 
   public constructor(name: string, props: ObjectTypeProps) {
-    super(name, props);
+    const options = {
+      definition: props.interfaceTypes?.reduce((def, interfaceType) => {
+        return Object.assign({}, def, interfaceType.definition);
+      }, props.definition) ?? props.definition,
+    };
+    super(name, options);
     this.interfaceTypes = props.interfaceTypes;
     this.directives = props.directives;
+    this.resolvers = [];
+
+    Object.keys(this.definition).forEach((fieldName) => {
+      const field = this.definition[fieldName];
+      this.generateResolver(fieldName, field.fieldOptions);
+    });
+  }
+
+  /**
+   * Add a field to this Object Type
+   *
+   * @param fieldName - The name of the field
+   * @param field - the resolvable field to add
+   */
+  public addField(fieldName: string, field: IField): void {
+    this.generateResolver(fieldName, field.fieldOptions);
+    this.definition[fieldName] = field;
   }
 
   /**
@@ -169,7 +160,7 @@ export class ObjectType extends InterfaceType {
    */
   public toString(): string {
     let title = this.name;
-    if(this.interfaceTypes && this.interfaceTypes.length){
+    if (this.interfaceTypes && this.interfaceTypes.length) {
       title = `${title} implements`;
       this.interfaceTypes.map((interfaceType) => {
         title = `${title} ${interfaceType.name},`;
@@ -180,7 +171,8 @@ export class ObjectType extends InterfaceType {
     let schemaAddition = `type ${title} ${directives}{\n`;
     Object.keys(this.definition).forEach( (key) => {
       const attribute = this.definition[key];
-      schemaAddition = `${schemaAddition}  ${key}: ${attribute.toString()}\n`;
+      const args = attribute.argsToString();
+      schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
     });
     return `${schemaAddition}}`;
   }
@@ -192,12 +184,28 @@ export class ObjectType extends InterfaceType {
    * @param delimiter the separator betweeen directives
    * @default - ' '
    */
-  private generateDirectives(directives?: Directive[], delimiter?: string): string{
+  private generateDirectives(directives?: Directive[], delimiter?: string): string {
     let schemaAddition = '';
-    if (!directives){ return schemaAddition; }
+    if (!directives) { return schemaAddition; }
     directives.map((directive) => {
       schemaAddition = `${schemaAddition}${directive.statement}${delimiter ?? ' '}`;
     });
     return schemaAddition;
+  }
+
+  /**
+   * Generate the resolvers linked to this Object Type
+   */
+  protected generateResolver(fieldName: string, options?: ResolvableFieldOptions): void {
+    if (options?.dataSource) {
+      if (!this.resolvers) { this.resolvers = []; }
+      this.resolvers.push(options.dataSource.createResolver({
+        typeName: this.name,
+        fieldName: fieldName,
+        pipelineConfig: options.pipelineConfig,
+        requestMappingTemplate: options.requestMappingTemplate,
+        responseMappingTemplate: options.responseMappingTemplate,
+      }));
+    }
   }
 }
