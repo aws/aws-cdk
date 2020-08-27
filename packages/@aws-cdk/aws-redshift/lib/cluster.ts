@@ -183,11 +183,11 @@ export interface ClusterProps {
   readonly parameterGroup?: IClusterParameterGroup;
 
   /**
-   * Number of compute nodes in the cluster
+   * Number of compute nodes in the cluster. Only specify this property for multi-node clusters.
    *
-   * Value must be at least 1 and no more than 100.
+   * Value must be at least 2 and no more than 100.
    *
-   * @default 1
+   * @default - 2 if `clusterType` is ClusterType.MULTI_NODE, undefined otherwise
    */
   readonly numberOfNodes?: number;
 
@@ -425,11 +425,7 @@ export class Cluster extends ClusterBase {
     }
 
     const clusterType = props.clusterType || ClusterType.MULTI_NODE;
-    const nodeCount = props.numberOfNodes !== undefined ? props.numberOfNodes : (clusterType === ClusterType.MULTI_NODE ? 2 : 1);
-
-    if (clusterType === ClusterType.MULTI_NODE && nodeCount < 2) {
-      throw new Error('Number of nodes for cluster type multi-node must be at least 2');
-    }
+    const nodeCount = this.validateNodeCount(clusterType, props.numberOfNodes);
 
     if (props.encrypted === false && props.encryptionKey !== undefined) {
       throw new Error('Cannot set property encryptionKey without enabling encryption!');
@@ -536,5 +532,21 @@ export class Cluster extends ClusterBase {
       vpcSubnets: this.vpcSubnets,
       target: this,
     });
+  }
+
+  private validateNodeCount(clusterType: ClusterType, numberOfNodes?: number): number | undefined {
+    if (clusterType === ClusterType.SINGLE_NODE) {
+      // This property must not be set for single-node clusters; be generous and treat a value of 1 node as undefined.
+      if (numberOfNodes !== undefined && numberOfNodes !== 1) {
+        throw new Error('Number of nodes must be not be supplied or be 1 for cluster type single-node');
+      }
+      return undefined;
+    } else {
+      const nodeCount = numberOfNodes ?? 2;
+      if (nodeCount < 2 || nodeCount > 100) {
+        throw new Error('Number of nodes for cluster type multi-node must be at least 2 and no more than 100');
+      }
+      return nodeCount;
+    }
   }
 }
