@@ -185,3 +185,76 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
     }
   }
 }
+
+/**
+ * Properties for configuring an Union Type
+ *
+ * @props definition - the object types for this union type
+ *
+ * @experimental
+ */
+export interface UnionTypeProps {
+  /**
+   * the object types for this union type
+   */
+  readonly definition: ObjectType[];
+}
+
+/**
+ * Union Types are abstract types that are similar to Interface Types,
+ * but they don't get to specify any common fields between types.
+ *
+ * @experimental
+ */
+export class UnionType implements IIntermediateType {
+  /**
+   * the name of this type
+   */
+  public readonly name: string;
+  /**
+   * the attributes of this type
+   */
+  public readonly definition: { [key: string]: IField };
+
+  public constructor(name: string, props: UnionTypeProps) {
+    this.name = name;
+    this.definition = {};
+    props.definition.map((def) => this.addField(def.name, def.attribute()));
+  }
+
+  /**
+   * Create an GraphQL Type representing this Union Type
+   *
+   * @param options the options to configure this attribute
+   * - isList
+   * - isRequired
+   * - isRequiredList
+   */
+  public attribute(options?: BaseTypeOptions): GraphqlType {
+    return GraphqlType.intermediate({
+      isList: options?.isList,
+      isRequired: options?.isRequired,
+      isRequiredList: options?.isRequiredList,
+      intermediateType: this,
+    });
+  }
+
+  /**
+   * Generate the string of this Union type
+   */
+  public toString(): string {
+    return Object.values(this.definition).reduce((acc, field) =>
+      `${acc} ${field.toString()} |`, `union ${this.name} =`).slice(0, -2);
+  }
+
+  /**
+   * Add a field to this Union Type
+   *
+   * @param fieldName the name of the field (this does nothing for union types)
+   * @param field the field to add (must be from an Object Type)
+   */
+  public addField(fieldName: string, field: IField): void {
+    if (!(field.intermediateType instanceof ObjectType)) throw new Error('Fields for Union Types must be Object Types.');
+    this.definition[field.toString() + fieldName] = field;
+  }
+}
