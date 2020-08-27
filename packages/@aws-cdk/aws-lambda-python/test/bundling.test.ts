@@ -4,7 +4,7 @@ import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { DependenciesLocation } from '../lib';
-import { bundle, hasDependencies, IMAGE_LAYER_DIR, IMAGE_FUNCTION_DIR, bundleLayer } from '../lib/bundling';
+import { bundle, hasDependencies, bundleDependenciesLayer } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
 const existsSyncOriginal = fs.existsSync;
@@ -147,26 +147,18 @@ test('Bundling dependencies into a layer', () => {
 
   // WHEN
   bundle(opts);
-  bundleLayer(opts);
+  bundleDependenciesLayer(opts);
 
   // THEN
   expect(Code.fromAsset).toHaveBeenCalledWith(entryPath, expect.objectContaining({
     bundling: expect.objectContaining({
       image: expect.anything(),
-      command: ['sh', '-c', `rsync -r ${IMAGE_LAYER_DIR}/. /asset-output/`],
     }),
     assetHashType: cdk.AssetHashType.BUNDLE,
     exclude: expect.arrayContaining(['*.pyc']),
   }));
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entryPath, expect.objectContaining({
-    bundling: expect.objectContaining({
-      image: expect.anything(),
-      command: ['sh', '-c', `rsync -r ${IMAGE_FUNCTION_DIR}/. /asset-output/`],
-    }),
-    assetHashType: cdk.AssetHashType.BUNDLE,
-    exclude: expect.arrayContaining(['*.pyc']),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(entryPath);
 });
 
 describe('Dependency detection', () => {
