@@ -96,7 +96,6 @@ export class Dashboard extends Resource {
       dashboardBody: Lazy.stringValue({
         produce: () => {
           const column = new Column(...this.rows);
-          column.position(0, 0);
           return Stack.of(this).toJsonString({
             start: props.start,
             end: props.end,
