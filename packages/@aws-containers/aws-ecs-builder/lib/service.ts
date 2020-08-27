@@ -137,7 +137,7 @@ export class Service extends cdk.Construct {
    * Build the service, running all addon hooks to generate the
    * settings and resources required for the service to operate
    */
-  public prepare() {
+  protected prepare() {
     if (this._prepared) {
       return; // Already prepared
     }
