@@ -21,7 +21,7 @@ export interface LogGroupResourcePolicyProps {
  */
 export class LogGroupResourcePolicy extends cr.AwsCustomResource {
   constructor(scope: cdk.Construct, id: string, props: LogGroupResourcePolicyProps) {
-    const policy = new iam.Policy(scope, props.policyName, {
+    const policyDocument = new iam.PolicyDocument({
       statements: props.policyStatements,
     });
 
@@ -32,7 +32,7 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
         action: 'putResourcePolicy',
         parameters: {
           policyName: props.policyName,
-          policyDocument: JSON.stringify(policy.document),
+          policyDocument: JSON.stringify(policyDocument),
         },
         physicalResourceId: cr.PhysicalResourceId.of(id),
       },
