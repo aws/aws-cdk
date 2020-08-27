@@ -9,16 +9,16 @@ export = testCase({
     test.equal(capitalizePropertyNames(c, undefined), undefined);
     test.equal(capitalizePropertyNames(c, 12), 12);
     test.equal(capitalizePropertyNames(c, 'hello'), 'hello');
-    test.deepEqual(capitalizePropertyNames(c, [ 'hello', 88 ]), [ 'hello', 88 ]);
+    test.deepEqual(capitalizePropertyNames(c, ['hello', 88]), ['hello', 88]);
     test.deepEqual(capitalizePropertyNames(c,
       { Hello: 'world', hey: 'dude' }),
     { Hello: 'world', Hey: 'dude' });
     test.deepEqual(capitalizePropertyNames(c,
-      [ 1, 2, { three: 3 }]),
-    [ 1, 2, { Three: 3 }]);
+      [1, 2, { three: 3 }]),
+    [1, 2, { Three: 3 }]);
     test.deepEqual(capitalizePropertyNames(c,
-      { Hello: 'world', recursive: { foo: 123, there: { another: [ 'hello', { world: 123 } ]} } }),
-    { Hello: 'world', Recursive: { Foo: 123, There: { Another: [ 'hello', { World: 123 } ]} } });
+      { Hello: 'world', recursive: { foo: 123, there: { another: ['hello', { world: 123 }] } } }),
+    { Hello: 'world', Recursive: { Foo: 123, There: { Another: ['hello', { World: 123 }] } } });
 
     // make sure tokens are resolved and result is also capitalized
     test.deepEqual(capitalizePropertyNames(c,
@@ -58,17 +58,17 @@ export = testCase({
 
     'non-empty arrays/objects'(test: Test) {
       const stack = new Stack();
-      test.deepEqual(stack.resolve(ignoreEmpty([ 1, 2, 3, undefined ])), [ 1, 2, 3 ]); // undefined array values is cleaned up by "resolve"
+      test.deepEqual(stack.resolve(ignoreEmpty([1, 2, 3, undefined])), [1, 2, 3]); // undefined array values is cleaned up by "resolve"
       test.deepEqual(stack.resolve(ignoreEmpty({ o: 1, b: 2, j: 3 })), { o: 1, b: 2, j: 3 });
       test.done();
     },
 
     'resolve first'(test: Test) {
       const stack = new Stack();
-      test.deepEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => 123 }})), { xoo: 123 });
-      test.strictEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => undefined }})), undefined);
-      test.deepEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [ ] }})), { xoo: [] });
-      test.deepEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [ undefined, undefined ] }})), { xoo: [] });
+      test.deepEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => 123 } })), { xoo: 123 });
+      test.strictEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => undefined } })), undefined);
+      test.deepEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [] } })), { xoo: [] });
+      test.deepEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [undefined, undefined] } })), { xoo: [] });
       test.done();
     },
   },
@@ -90,13 +90,13 @@ export = testCase({
     const aa = new Nested(a, 'aa');
     const aaa = new Nested(aa, 'aaa');
 
-    test.deepEqual(path(aaa), [ 'a', 'aa', 'aaa' ]);
-    test.deepEqual(path(aa), [ 'a', 'aa' ]);
-    test.deepEqual(path(a), [ 'a' ]);
+    test.deepEqual(path(aaa), ['a', 'aa', 'aaa']);
+    test.deepEqual(path(aa), ['a', 'aa']);
+    test.deepEqual(path(a), ['a']);
     test.done();
 
     function path(s: Stack) {
-      return pathToTopLevelStack(s).map(x => x.construct.id);
+      return pathToTopLevelStack(s).map(x => x.node.id);
     }
   },
 
@@ -132,7 +132,7 @@ export = testCase({
     function lca(s1: Stack, s2: Stack) {
       const res = findLastCommonElement(pathToTopLevelStack(s1), pathToTopLevelStack(s2));
       if (!res) { return undefined; }
-      return res.construct.id;
+      return res.node.id;
     }
   },
 });

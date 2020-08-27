@@ -1,11 +1,11 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { renderJsonPath, State } from './state';
 
-import * as cdk from '@aws-cdk/core';
 
 /**
  * Props that are common to all tasks

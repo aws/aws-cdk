@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { CfnWorkGroup }from '../lib';
+import { CfnWorkGroup } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-athena-workgroup-tags');
@@ -17,7 +17,8 @@ new CfnWorkGroup(stack, 'AthenaWorkgroup', {
     {
       key: 'key2',
       value: 'value2',
-    }],
+    },
+  ],
 });
 
 app.synth();

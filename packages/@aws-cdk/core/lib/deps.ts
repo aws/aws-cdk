@@ -36,7 +36,7 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
   const targetStage = Stage.of(targetStack);
   if (sourceStage !== targetStage) {
     // eslint-disable-next-line max-len
-    throw new Error(`You cannot add a dependency from '${source.construct.path}' (in ${describeStage(sourceStage)}) to '${target.construct.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
+    throw new Error(`You cannot add a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
   }
 
   // find the deepest common stack between the two elements
@@ -70,7 +70,7 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
   // `source` is a direct or indirect nested stack of `target`, and this is not
   // possible (nested stacks cannot depend on their parents).
   if (commonStack === target) {
-    throw new Error(`Nested stack '${sourceStack.construct.path}' cannot depend on a parent stack '${targetStack.construct.path}': ${reason}`);
+    throw new Error(`Nested stack '${sourceStack.node.path}' cannot depend on a parent stack '${targetStack.node.path}': ${reason}`);
   }
 
   // we have a common stack from which we can reach both `source` and `target`
@@ -103,5 +103,5 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
 function describeStage(assembly: Stage | undefined): string {
   if (!assembly) { return 'an unrooted construct tree'; }
   if (!assembly.parentStage) { return 'the App'; }
-  return `Stage '${assembly.construct.path}'`;
+  return `Stage '${assembly.node.path}'`;
 }

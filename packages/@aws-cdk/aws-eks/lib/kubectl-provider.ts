@@ -56,7 +56,7 @@ export class KubectlProvider extends NestedStack {
       handler: 'index.handler',
       timeout: Duration.minutes(15),
       description: 'onEvent handler for EKS kubectl resource provider',
-      layers: [ KubectlLayer.getOrCreate(this, { version: '2.0.0' }) ],
+      layers: [KubectlLayer.getOrCreate(this, { version: '2.0.0' })],
       memorySize: 256,
       vpc: props.vpc,
       securityGroups: props.securityGroups,
@@ -71,8 +71,8 @@ export class KubectlProvider extends NestedStack {
     this.role = handler.role!;
 
     this.role.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'eks:DescribeCluster' ],
-      resources: [ '*' ],
+      actions: ['eks:DescribeCluster'],
+      resources: ['*'],
     }));
   }
 
