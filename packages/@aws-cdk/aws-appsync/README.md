@@ -372,7 +372,7 @@ is `String!` and is applied to both the names `id` and `version`.
 While `GraphqlType` is a base implementation for GraphQL fields, we have abstractions
 on top of `GraphqlType` that provide finer grain support.
 
-###### Field
+##### Field
 
 `Field` extends `GraphqlType` and will allow you to define arguments. [**Interface Types**](#Interface-Types) are not resolvable and this class will allow you to define arguments,
 but not its resolvers.
@@ -563,3 +563,42 @@ You can create Object Types in three ways:
     ```
     > This method provides easy use and is ideal for smaller projects.
 
+#### Query
+
+Every schema requires a top level Query type. By default, the schema will look
+for the `Object Type` named `Query`. However, you can set the top level `query`
+to be another `Object Type` (i.e. `Root`).
+
+```ts
+schema {
+  query: Root
+}
+```
+
+To accomplish this with a code-first approach, we would use the following
+functions. 
+
+```ts
+const api = new appsync.GraphQLApi(stack, 'Api', { name: 'demo' });
+api.attachQueryType(new appsync.ObjectType('Root', { definition: {} }));
+```
+
+To add fields for these queries, we can simplify run the `addQuery` function
+to add to the schema's `Query` type.
+
+```ts
+const string = appsync.GraphqlType.string();
+const int = appsync.GraphqlType.int();
+api.addQuery('allFilms', new appsync.ResolvableField({
+  returnType: filmConnection.attribute(),
+  args: { after: string, first: int, before: string, last: int},
+  dataSource: api.addNoneDataSource('none'),
+  requestMappingTemplate: dummyRequest,
+  responseMappingTemplate: dummyResponse,
+}));
+```
+
+**Note**: if we do not specify a `Query` type for this schema using `appsync.Schema.attachQueryType`
+CDK will generate an `Object Type` called `Query` for you. In other words,
+if you dont need a special name for your top level `Query` type, you simply
+need to run `appsync.Schema.addQuery` to construct your desired query fields.
