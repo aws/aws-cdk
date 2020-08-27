@@ -27,14 +27,20 @@ export interface SchemaAdditionOptions {
   readonly prefix: string;
   /**
    * the name for this addition (some additions dont need this [i.e. schema])
+   *
+   * @default - no name
    */
   readonly name?: string;
   /**
    * the interface types if this is creating an object type
+   *
+   * @default - no interfaces
    */
   readonly interfaceTypes?: InterfaceType[];
   /**
    * the directives for this type
+   *
+   * @default - no directives
    */
   readonly directives?: Directive[];
   /**
