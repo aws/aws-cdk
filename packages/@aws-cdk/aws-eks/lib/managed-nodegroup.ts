@@ -22,7 +22,7 @@ export interface INodegroup extends IResource {
  */
 export enum NodegroupAmiType {
   /**
-   * Amazon Linux 2(X86_64)
+   * Amazon Linux 2 (x86-64)
    */
   AL2_X86_64 = 'AL2_x86_64',
   /**
