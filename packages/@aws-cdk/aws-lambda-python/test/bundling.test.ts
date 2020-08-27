@@ -1,5 +1,6 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
+import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { DependenciesLocation } from '../lib';
@@ -29,11 +30,10 @@ test('Bundling', () => {
 });
 
 test('Bundling with requirements.txt installed', () => {
-  const MOCK_BUILD_IMAGE_ID = '1234567890abcdef';
   spawnSyncMock.mockImplementation(() => ({
     status: 0,
     stderr: Buffer.from('stderr'),
-    stdout: Buffer.from(`sha256:${MOCK_BUILD_IMAGE_ID}`),
+    stdout: Buffer.from('sha256:1234567890abcdef'),
     pid: 123,
     output: ['stdout', 'stderr'],
     signal: null,
@@ -46,16 +46,17 @@ test('Bundling with requirements.txt installed', () => {
     return existsSyncOriginal(p);
   });
 
+  const entryPath = path.join(__dirname, 'lambda-handler-requirements');
   bundle({
-    entry: '/project/folder',
+    entry: entryPath,
     runtime: Runtime.PYTHON_3_7,
     dependenciesLocation: DependenciesLocation.INLINE,
   });
 
   // Correctly bundles with requirements.txt pip installed
-  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', expect.objectContaining({
+  expect(Code.fromAsset).toHaveBeenCalledWith(entryPath, expect.objectContaining({
     bundling: expect.objectContaining({
-      image: { image: MOCK_BUILD_IMAGE_ID },
+      image: expect.anything(),
     }),
     assetHashType: cdk.AssetHashType.BUNDLE,
     exclude: expect.arrayContaining(['*.pyc']),
@@ -80,16 +81,17 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
     return existsSyncOriginal(p);
   });
 
+  const entryPath = path.join(__dirname, 'lambda-handler-requirements');
   bundle({
-    entry: '/project/folder',
+    entry: entryPath,
     runtime: Runtime.PYTHON_2_7,
     dependenciesLocation: DependenciesLocation.INLINE,
   });
 
   // Correctly bundles with requirements.txt pip installed
-  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', expect.objectContaining({
+  expect(Code.fromAsset).toHaveBeenCalledWith(entryPath, expect.objectContaining({
     bundling: expect.objectContaining({
-      image: { image: MOCK_BUILD_IMAGE_ID },
+      image: expect.anything(),
     }),
     assetHashType: cdk.AssetHashType.BUNDLE,
     exclude: expect.arrayContaining(['*.pyc']),
@@ -135,8 +137,10 @@ test('Bundling dependencies into a layer', () => {
     return existsSyncOriginal(p);
   });
 
+  const entryPath = path.join(__dirname, 'lambda-handler-requirements');
+
   const opts = {
-    entry: '/project/folder',
+    entry: entryPath,
     runtime: Runtime.PYTHON_2_7,
     dependenciesLocation: DependenciesLocation.LAYER,
   };
@@ -146,18 +150,18 @@ test('Bundling dependencies into a layer', () => {
   bundleLayer(opts);
 
   // THEN
-  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', expect.objectContaining({
+  expect(Code.fromAsset).toHaveBeenCalledWith(entryPath, expect.objectContaining({
     bundling: expect.objectContaining({
-      image: { image: MOCK_BUILD_IMAGE_ID },
+      image: expect.anything(),
       command: ['sh', '-c', `rsync -r ${IMAGE_LAYER_DIR}/. /asset-output/`],
     }),
     assetHashType: cdk.AssetHashType.BUNDLE,
     exclude: expect.arrayContaining(['*.pyc']),
   }));
 
-  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', expect.objectContaining({
+  expect(Code.fromAsset).toHaveBeenCalledWith(entryPath, expect.objectContaining({
     bundling: expect.objectContaining({
-      image: { image: MOCK_BUILD_IMAGE_ID },
+      image: expect.anything(),
       command: ['sh', '-c', `rsync -r ${IMAGE_FUNCTION_DIR}/. /asset-output/`],
     }),
     assetHashType: cdk.AssetHashType.BUNDLE,
