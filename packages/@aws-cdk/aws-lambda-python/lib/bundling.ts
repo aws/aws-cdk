@@ -128,6 +128,7 @@ export function bundlePythonCodeLayer(options: BundlePythonCodeLayerOptions) {
   // Use local bundling instead of docker to copy the user's code into a
   // subdirectory while respecting the given excludes.
   return lambda.Code.fromAsset(options.entry, {
+    assetHashType: cdk.AssetHashType.BUNDLE,
     bundling: {
       // Local bundling is employed instead of running docker, but the bundler
       // still wants `image`. So, I've rigged the docker component of this
