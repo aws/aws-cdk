@@ -185,3 +185,64 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
     }
   }
 }
+
+/**
+ * Input Types are abstract types that define complex objects.
+ * They are used in arguments to represent
+ *
+ * @experimental
+ */
+export class InputType implements IIntermediateType {
+  /**
+   * the name of this type
+   */
+  public readonly name: string;
+  /**
+   * the attributes of this type
+   */
+  public readonly definition: { [key: string]: IField };
+
+  public constructor(name: string, props: IntermediateTypeProps) {
+    this.name = name;
+    this.definition = props.definition;
+  }
+
+  /**
+   * Create an GraphQL Type representing this Input Type
+   *
+   * @param options the options to configure this attribute
+   * - isList
+   * - isRequired
+   * - isRequiredList
+   */
+  public attribute(options?: BaseTypeOptions): GraphqlType {
+    return GraphqlType.intermediate({
+      isList: options?.isList,
+      isRequired: options?.isRequired,
+      isRequiredList: options?.isRequiredList,
+      intermediateType: this,
+    });
+  }
+
+  /**
+   * Generate the string of this input type
+   */
+  public toString(): string {
+    return shapeAddition({
+      prefix: 'input',
+      name: this.name,
+      fields: Object.keys(this.definition).map((key) =>
+        `${key}${this.definition[key].argsToString()}: ${this.definition[key].toString()}`),
+    });
+  }
+
+  /**
+   * Add a field to this input Type
+   *
+   * @param fieldName the name of the field
+   * @param field the field to add
+   */
+  public addField(fieldName: string, field: IField): void {
+    this.definition[fieldName] = field;
+  }
+}
