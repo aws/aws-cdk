@@ -54,14 +54,14 @@ describe('With bucket', () => {
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
       CloudFrontOriginAccessIdentityConfig: {
-        Comment: 'Allows CloudFront to reach the bucket',
+        Comment: 'Access identity for StackDistOrigin15754CE84',
       },
     });
     expect(stack).toHaveResourceLike('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: [{
           Principal: {
-            CanonicalUser: { 'Fn::GetAtt': [ 'DistOrigin1S3Origin87D64058', 'S3CanonicalUserId' ] },
+            CanonicalUser: { 'Fn::GetAtt': ['DistOrigin1S3Origin87D64058', 'S3CanonicalUserId'] },
           },
         }],
       },

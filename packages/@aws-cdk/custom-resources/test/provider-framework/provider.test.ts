@@ -25,7 +25,7 @@ test('minimal setup', () => {
   // framework "onEvent" handler
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: 'framework.onEvent',
-    Environment: { Variables: { USER_ON_EVENT_FUNCTION_ARN: { 'Fn::GetAtt': [ 'MyHandler6B74D312', 'Arn' ] } } },
+    Environment: { Variables: { USER_ON_EVENT_FUNCTION_ARN: { 'Fn::GetAtt': ['MyHandler6B74D312', 'Arn'] } } },
     Timeout: 900,
   });
 
@@ -62,8 +62,8 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
   // framework "onEvent" handler
   const expectedEnv = {
     Variables: {
-      USER_ON_EVENT_FUNCTION_ARN: { 'Fn::GetAtt': ['MyHandler6B74D312', 'Arn' ] },
-      USER_IS_COMPLETE_FUNCTION_ARN: { 'Fn::GetAtt': [ 'MyHandler6B74D312', 'Arn' ] },
+      USER_ON_EVENT_FUNCTION_ARN: { 'Fn::GetAtt': ['MyHandler6B74D312', 'Arn'] },
+      USER_IS_COMPLETE_FUNCTION_ARN: { 'Fn::GetAtt': ['MyHandler6B74D312', 'Arn'] },
     },
   };
 

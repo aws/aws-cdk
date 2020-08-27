@@ -68,7 +68,7 @@ export interface LoadBalancer {
 /**
  * EC2 Instance interface
  */
-export interface Ec2Instance  {
+export interface Ec2Instance {
   /**
    * The id of the instance resource
    */

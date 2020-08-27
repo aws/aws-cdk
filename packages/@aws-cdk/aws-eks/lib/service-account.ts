@@ -1,5 +1,5 @@
-import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role  } from '@aws-cdk/aws-iam';
-import { CfnJson, Construct  } from '@aws-cdk/core';
+import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role } from '@aws-cdk/aws-iam';
+import { CfnJson, Construct } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
@@ -78,7 +78,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     this.grantPrincipal = this.role.grantPrincipal;
     this.policyFragment = this.role.policyFragment;
 
-    cluster.addResource(`${id}ServiceAccountResource`, {
+    cluster.addManifest(`${id}ServiceAccountResource`, {
       apiVersion: 'v1',
       kind: 'ServiceAccount',
       metadata: {

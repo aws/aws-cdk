@@ -251,8 +251,8 @@ export = {
   'if only the custom log destination log group is set'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', {cloudWatchRole: false, deploy: false});
-    const deployment = new apigateway.Deployment(stack, 'my-deployment', {api});
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
 
     // WHEN
@@ -282,8 +282,8 @@ export = {
   'if the custom log destination log group and format is set'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', {cloudWatchRole: false, deploy: false});
-    const deployment = new apigateway.Deployment(stack, 'my-deployment', {api});
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
 
     // WHEN
@@ -329,6 +329,27 @@ export = {
       accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
       accessLogFormat: testFormat,
     }), /Access log must include at least `AccessLogFormat.contextRequestId\(\)`/);
+
+    test.done();
+  },
+
+  'does not fail when access log format is a token'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    const testFormat = apigateway.AccessLogFormat.custom(cdk.Lazy.stringValue({ produce: () => 'test' }));
+
+    // THEN
+    test.doesNotThrow(() => new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+      accessLogFormat: testFormat,
+    }));
 
     test.done();
   },

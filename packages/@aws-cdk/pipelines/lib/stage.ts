@@ -1,6 +1,6 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
-import { Construct, Stage } from '@aws-cdk/core';
+import { Construct, Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssetType, DeployCdkStackAction } from './actions';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from './private/asset-manifest';
@@ -55,7 +55,7 @@ export class CdkStage extends Construct {
     this.cloudAssemblyArtifact = props.cloudAssemblyArtifact;
     this.host = props.host;
 
-    this.node.applyAspect({ visit: () => this.prepareStage() });
+    Aspects.of(this).add({ visit: () => this.prepareStage() });
   }
 
   /**

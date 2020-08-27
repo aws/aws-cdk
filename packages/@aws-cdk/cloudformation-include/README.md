@@ -131,6 +131,20 @@ and any changes you make to it will be reflected in the resulting template:
 param.default = 'MyDefault';
 ```
 
+You can also provide values for them when including the template:
+
+```typescript
+new inc.CfnInclude(stack, 'includeTemplate', {
+  templateFile: 'path/to/my/template'
+  parameters: {
+    'MyParam': 'my-value',
+  },
+});
+```
+
+This will replace all references to `MyParam` with the string 'my-value',
+and `MyParam` will be removed from the Parameters section of the template.
+
 ## Conditions
 
 If your template uses [CloudFormation Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html),
@@ -147,6 +161,43 @@ and any changes you make to it will be reflected in the resulting template:
 
 ```typescript
 condition.expression = core.Fn.conditionEquals(1, 2);
+```
+
+## Mappings
+
+If your template uses [CloudFormation Mappings](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const mapping: core.CfnMapping = cfnTemplate.getMapping('MyMapping');
+```
+
+The `CfnMapping` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+mapping.setValue('my-region', 'AMI', 'ami-04681a1dbd79675a5');
+```
+
+## Rules
+
+If your template uses [Service Catalog template Rules](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const rule: core.CfnRule = cfnTemplate.getRule('MyRule');
+```
+
+The `CfnRule` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+rule.addAssertion(core.Fn.conditionContains(['m1.small'], myParameter.value),
+  'MyParameter has to be m1.small');
 ```
 
 ## Outputs
