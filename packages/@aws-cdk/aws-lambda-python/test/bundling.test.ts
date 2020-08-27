@@ -1,9 +1,10 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { bundleFunction, hasDependencies, bundleDependenciesLayer, bundlePythonCodeLayer } from '../lib/bundling';
+import { bundleFunction, hasDependencies, bundleDependenciesLayer, bundlePythonCodeLayer, PythonCodeLocalBundler } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
 const existsSyncOriginal = fs.existsSync;
@@ -215,5 +216,48 @@ describe('Dependency detection', () => {
   test('No known dependencies', () => {
     existsSyncMock.mockImplementation(() => false);
     expect(hasDependencies('/asset-input')).toEqual(false);
+  });
+});
+
+describe('Local bundler for python code layers', () => {
+  test('asset without excludes', () => {
+    const entryPath = path.join(__dirname, 'lambda-handler-project');
+    const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
+
+    // WHEN
+    const bundler = new PythonCodeLocalBundler({
+      entry: entryPath,
+    });
+    const tryBundleResult = bundler.tryBundle(outputDir);
+
+    // THEN
+    expect(tryBundleResult).toBe(true);
+    expect(fs.readdirSync(path.join(outputDir, 'python'))).toEqual([
+      'lambda',
+      'requirements.txt',
+      'shared',
+    ]);
+  });
+
+  test('asset with excludes', () => {
+    const entryPath = path.join(__dirname, 'lambda-handler-project');
+    const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
+
+    // WHEN
+    const bundler = new PythonCodeLocalBundler({
+      entry: entryPath,
+      exclude: [
+        '*',
+        '!shared',
+        '!shared/**',
+      ],
+    });
+    const tryBundleResult = bundler.tryBundle(outputDir);
+
+    // THEN
+    expect(tryBundleResult).toBe(true);
+    expect(fs.readdirSync(path.join(outputDir, 'python'))).toEqual([
+      'shared',
+    ]);
   });
 });

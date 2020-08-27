@@ -34,8 +34,8 @@ test('bundling a layer from files', () => {
   const stack = new Stack(app, 'stack');
 
   // WHEN
-  new PythonLayerVersion(stack, 'layer', {
-    entry: path.join(__dirname, 'lambda-handler-project'),
+  const layer = new PythonLayerVersion(stack, 'layer', {
+    entry: 'test/lambda-handler-project',
     bundlingStrategy: BundlingStrategy.FILES,
     exclude: [
       '*',
@@ -45,7 +45,8 @@ test('bundling a layer from files', () => {
   });
 
   // THEN
-  const expectedAsset = 'asset.047a67b3a9eadd5acb42903187d20feef00544ece1fc0d6c0390e582ccaf4272';
+  const layerCodeAssetHash = (layer.node.findChild('Code') as any).assetHash;
+  const expectedAsset = `asset.${layerCodeAssetHash}`;
   expect(fs.readdirSync(app.outdir)).toEqual([
     expectedAsset,
   ]);
@@ -64,7 +65,7 @@ test('bundling a layer by building dependencies', () => {
 
   // WHEN
   new PythonLayerVersion(stack, 'layer', {
-    entry: path.join(__dirname, 'lambda-handler-project'),
+    entry: 'test/lambda-handler-project',
     bundlingStrategy: BundlingStrategy.DEPENDENCIES,
   });
 
