@@ -2,11 +2,11 @@ import '@aws-cdk/assert/jest';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { PythonFunction } from '../lib';
-import { bundle } from '../lib/bundling';
+import { bundleFunction } from '../lib/bundling';
 
 jest.mock('../lib/bundling', () => {
   return {
-    bundle: jest.fn().mockReturnValue({
+    bundleFunction: jest.fn().mockReturnValue({
       bind: () => {
         return { inlineCode: 'code' };
       },
@@ -27,7 +27,7 @@ test('PythonFunction with defaults', () => {
     entry: 'test/lambda-handler',
   });
 
-  expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(bundleFunction).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler$/),
   }));
 
@@ -43,7 +43,7 @@ test('PythonFunction with index in a subdirectory', () => {
     handler: 'custom_handler',
   });
 
-  expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(bundleFunction).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler-sub$/),
   }));
 

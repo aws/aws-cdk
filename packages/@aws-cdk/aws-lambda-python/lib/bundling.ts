@@ -2,47 +2,35 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { DependenciesLocation } from './function';
 
 /**
- * Options for bundling dependencies
+ * Options for bundleFunction
  */
-export interface DependenciesBundlingOptions {
+export interface BundleFunctionOptions {
   /**
-   * Entry path
+   * User-provided location containing the function code
    */
-  readonly entry: string;
+  entry: string;
 
   /**
-   * The runtime of the lambda function
+   * Allow the function to install dependencies inline with the function code
    */
-  readonly runtime: lambda.Runtime;
+  installDependenciesInline: boolean;
 
   /**
-   * When bundling a layer from dependencies, exclude these files from the
-   * fingerprint. When bundling a layer from files
-   *
-   * @default string[] Only *.pyc files are excluded
-   */
-  readonly exclude?: string[],
-}
-
-export interface FunctionBundlingOptions extends DependenciesBundlingOptions {
-  /**
-   * The location to install dependencies.
-   */
-  readonly dependenciesLocation: DependenciesLocation;
+   * The Lambda runtime to install dependencies from
+   * */
+  runtime: lambda.Runtime;
 }
 
 /**
- * Produce bundled Lambda asset code. When there are no dependencies, we
- * short-circuit and simply create an asset from the directory, leaving the user
- * code alone.
+ * Produce bundled Lambda function code. When instructed to install dependencies
+ * inline, and if we detect recognize the dependencies, we bundle them inline.
  */
-export function bundle(options: FunctionBundlingOptions): lambda.AssetCode {
-  const { dependenciesLocation, entry } = options;
+export function bundleFunction(options: BundleFunctionOptions): lambda.AssetCode {
+  const { entry } = options;
 
-  if (dependenciesLocation === DependenciesLocation.INLINE && hasDependencies(entry)) {
+  if (options.installDependenciesInline && hasDependencies(entry)) {
     return bundleDependenciesInline(options);
   }
 
@@ -55,12 +43,22 @@ export function bundle(options: FunctionBundlingOptions): lambda.AssetCode {
 export const DEPENDENCY_EXCLUDES = ['*.pyc'];
 
 /**
- * Bundles dependencies into an asset that is inline with the user code.
+ * Options for bundleDependenciesInline
  */
-function bundleDependenciesInline(options: DependenciesBundlingOptions): lambda.AssetCode {
+export interface BundleDependenciesInlineOptions {
+  entry: string;
+  runtime: lambda.Runtime;
+}
+
+/**
+ * Bundles dependencies into an asset that is inline with the function code.
+ */
+export function bundleDependenciesInline(options: BundleDependenciesInlineOptions): lambda.AssetCode {
   const { entry, runtime } = options;
 
   return lambda.Code.fromAsset(entry, {
+    assetHashType: cdk.AssetHashType.BUNDLE,
+    exclude: DEPENDENCY_EXCLUDES,
     bundling: {
       image: cdk.BundlingDockerImage.fromAsset(entry, {
         buildArgs: {
@@ -69,12 +67,33 @@ function bundleDependenciesInline(options: DependenciesBundlingOptions): lambda.
         file: path.join(__dirname, 'inline-bundler/Dockerfile'),
       }),
     },
-    assetHashType: cdk.AssetHashType.BUNDLE,
-    exclude: DEPENDENCY_EXCLUDES,
   });
 }
 
-export function bundleDependenciesLayer(options: DependenciesBundlingOptions): lambda.AssetCode {
+/**
+ * Options for bundleDependenciesLayer
+ */
+export interface BundleDependencyLayerOptions {
+  /**
+   * Base directory containing the dependency specification.
+   */
+  readonly entry: string;
+
+  /**
+   * The python runtime to install the dependencies from.
+   */
+  readonly runtime: lambda.Runtime;
+
+  /**
+   * Files to exclude from the bundled asset fingerprint.
+   */
+  readonly exclude?: string[],
+}
+
+/**
+ * Bundles an asset for a python dependencies layer.
+ */
+export function bundleDependenciesLayer(options: BundleDependencyLayerOptions): lambda.AssetCode {
   const { entry, runtime } = options;
   const exclude = options.exclude ?? DEPENDENCY_EXCLUDES;
 
@@ -92,10 +111,19 @@ export function bundleDependenciesLayer(options: DependenciesBundlingOptions): l
   });
 }
 
-interface BundlePythonCodeLayerOptions extends cdk.CopyOptions {
+/**
+ * Options for bundlePythonCodeLayer
+ */
+export interface BundlePythonCodeLayerOptions extends cdk.CopyOptions {
+  /**
+   * The base directory containing the code to create a lambda layer asset from.
+   */
   entry: string;
 }
 
+/**
+ * Bundles an asset containing python code.
+ */
 export function bundlePythonCodeLayer(options: BundlePythonCodeLayerOptions) {
   // Use local bundling instead of docker to copy the user's code into a
   // subdirectory while respecting the given excludes.
@@ -111,6 +139,10 @@ export function bundlePythonCodeLayer(options: BundlePythonCodeLayerOptions) {
   });
 }
 
+/**
+ * A local bundling implementation which copies files to a python subdirectory
+ * in the emitted asset.
+ */
 class BundlePythonCodeLayerLocalBundler implements cdk.ILocalBundling {
   constructor(private options: BundlePythonCodeLayerOptions) {}
 
@@ -129,6 +161,10 @@ class BundlePythonCodeLayerLocalBundler implements cdk.ILocalBundling {
   }
 }
 
+/**
+ * Checks to see if the `entry` directory contains a type of dependency that
+ * we know how to install.
+ */
 export function hasDependencies(entry: string): boolean {
   if (fs.existsSync(path.join(entry, 'Pipfile'))) {
     return true;

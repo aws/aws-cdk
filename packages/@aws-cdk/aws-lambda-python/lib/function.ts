@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { bundleDependenciesLayer, bundle, hasDependencies } from './bundling';
+import { bundleDependenciesLayer, hasDependencies, bundleFunction } from './bundling';
 
 /**
  * Properties for a PythonFunction
@@ -88,14 +88,16 @@ export class PythonFunction extends lambda.Function {
     const runtime = props.runtime ?? lambda.Runtime.PYTHON_3_7;
     const dependenciesLocation = props.dependenciesLocation ?? DependenciesLocation.LAYER;
 
+    const code = bundleFunction({
+      runtime,
+      entry,
+      installDependenciesInline: dependenciesLocation === DependenciesLocation.INLINE,
+    });
+
     super(scope, id, {
       ...props,
       runtime,
-      code: bundle({
-        entry,
-        runtime,
-        dependenciesLocation,
-      }),
+      code,
       handler: `${index.slice(0, -3)}.${handler}`,
     });
 

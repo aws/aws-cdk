@@ -3,8 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { DependenciesLocation } from '../lib';
-import { bundle, hasDependencies, bundleDependenciesLayer, bundlePythonCodeLayer } from '../lib/bundling';
+import { bundleFunction, hasDependencies, bundleDependenciesLayer, bundlePythonCodeLayer } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
 const existsSyncOriginal = fs.existsSync;
@@ -16,10 +15,10 @@ beforeEach(() => {
 });
 
 test('Bundling', () => {
-  bundle({
+  bundleFunction({
     entry: '/project/folder',
     runtime: Runtime.PYTHON_3_7,
-    dependenciesLocation: DependenciesLocation.INLINE,
+    installDependenciesInline: true,
   });
 
   // Correctly bundles
@@ -75,10 +74,10 @@ test('Bundling with requirements.txt installed', () => {
   });
 
   const entryPath = path.join(__dirname, 'lambda-handler-requirements');
-  bundle({
+  bundleFunction({
     entry: entryPath,
     runtime: Runtime.PYTHON_3_7,
-    dependenciesLocation: DependenciesLocation.INLINE,
+    installDependenciesInline: true,
   });
 
   // Correctly bundles with requirements.txt pip installed
@@ -110,10 +109,10 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
   });
 
   const entryPath = path.join(__dirname, 'lambda-handler-requirements');
-  bundle({
+  bundleFunction({
     entry: entryPath,
     runtime: Runtime.PYTHON_2_7,
-    dependenciesLocation: DependenciesLocation.INLINE,
+    installDependenciesInline: true,
   });
 
   // Correctly bundles with requirements.txt pip installed
@@ -136,10 +135,10 @@ test('Bundling dependencies can be switched off', () => {
   });
 
   // WHEN
-  bundle({
+  bundleFunction({
     entry: '/project/folder',
     runtime: Runtime.PYTHON_3_7,
-    dependenciesLocation: DependenciesLocation.NONE,
+    installDependenciesInline: false,
   });
 
   // THEN
@@ -167,15 +166,16 @@ test('Bundling dependencies into a layer', () => {
 
   const entryPath = path.join(__dirname, 'lambda-handler-requirements');
 
-  const opts = {
+  // WHEN
+  bundleFunction({
     entry: entryPath,
     runtime: Runtime.PYTHON_2_7,
-    dependenciesLocation: DependenciesLocation.LAYER,
-  };
-
-  // WHEN
-  bundle(opts);
-  bundleDependenciesLayer(opts);
+    installDependenciesInline: false,
+  });
+  bundleDependenciesLayer({
+    entry: entryPath,
+    runtime: Runtime.PYTHON_2_7,
+  });
 
   // THEN
   expect(Code.fromAsset).toHaveBeenCalledWith(entryPath, expect.objectContaining({
