@@ -106,8 +106,9 @@ export class StackActivityMonitor {
     // need an individual check for whether we're running on CI.
     // see: https://discuss.circleci.com/t/circleci-terminal-is-a-tty-but-term-is-not-set/9965
     const fancyOutputAvailable = !isWindows && stream.isTTY && !options.ci;
+    const progress = options.progress ?? StackActivityProgress.Bar;
 
-    const printer = fancyOutputAvailable && !verbose
+    const printer = fancyOutputAvailable && !verbose && (progress === StackActivityProgress.Bar)
       ? new CurrentActivityPrinter(props)
       : new HistoryActivityPrinter(props);
 
