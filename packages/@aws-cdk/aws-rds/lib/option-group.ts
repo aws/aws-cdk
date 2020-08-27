@@ -53,14 +53,6 @@ export interface OptionConfiguration {
    * @default - no VPC
    */
   readonly vpc?: ec2.IVpc;
-
-  /**
-   * Optional list of security groups to use for this option, if `vpc` is specified.
-   * If no groups are provided, a default one will be created.
-   *
-   * @default - a default group will be created if `port` or `vpc` are specified.
-   */
-  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
@@ -143,22 +135,20 @@ export class OptionGroup extends Resource implements IOptionGroup {
           throw new Error('`port` and `vpc` must be specified together.');
         }
 
-        const securityGroups = config.securityGroups && config.securityGroups.length > 0
-          ? config.securityGroups
-          : [new ec2.SecurityGroup(this, `SecurityGroup${config.name}`, {
-            description: `Security group for ${config.name} option`,
-            vpc: config.vpc,
-          })];
+        const securityGroup = new ec2.SecurityGroup(this, `SecurityGroup${config.name}`, {
+          description: `Security group for ${config.name} option`,
+          vpc: config.vpc,
+        });
 
         this.optionConnections[config.name] = new ec2.Connections({
-          securityGroups: securityGroups,
+          securityGroups: [securityGroup],
           defaultPort: ec2.Port.tcp(config.port),
         });
 
         configuration = {
           ...configuration,
           port: config.port,
-          vpcSecurityGroupMemberships: securityGroups.map(sg => sg.securityGroupId),
+          vpcSecurityGroupMemberships: [securityGroup.securityGroupId],
         };
       }
 
