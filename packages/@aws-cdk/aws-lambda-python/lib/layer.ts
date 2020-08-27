@@ -1,13 +1,12 @@
 import * as path from 'path';
-import * as assets from '@aws-cdk/assets';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { bundleDependenciesLayer, hasDependencies } from './bundling';
+import { bundleDependenciesLayer, hasDependencies, bundlePythonCodeLayer } from './bundling';
 
 /**
  * Properties for PythonDependenciesLayer
  */
-export interface PythonDependenciesLayerProps {
+export interface PythonLayerVersionProps extends cdk.CopyOptions {
   /**
    * The path to the root directory of the lambda layer.
    */
@@ -40,16 +39,38 @@ export interface PythonDependenciesLayerProps {
    * @default - A name will be generated.
    */
   readonly layerVersionName?: string;
+
+  /**
+   * Specify how the layer should bundle the files it finds in the `entry`
+   * directory.
+   *
+   * @default FILES
+   */
+  readonly bundlingStrategy?: BundlingStrategy;
 }
 
 /**
- * A lambda layer constructed from dependencies bundled by a supported
- * dependency system. (requirements.txt, Pipfile*)
+ * Specifies the approach that bundling should take with the files
+ */
+export enum BundlingStrategy {
+  /**
+   * Bundle the files by treating them as dependencies
+   */
+  DEPENDENCIES = 'dependencies',
+
+  /**
+   * Bundle the files by copying them directly into the layer
+   */
+  FILES = 'files',
+}
+
+/**
+ * A lambda layer version.
  *
  * @experimental
  */
-export class PythonDependenciesLayer extends lambda.LayerVersion {
-  constructor(scope: cdk.Construct, id: string, props: PythonDependenciesLayerProps) {
+export class PythonLayerVersion extends lambda.LayerVersion {
+  constructor(scope: cdk.Construct, id: string, props: PythonLayerVersionProps) {
     const compatibleRuntimes = props.compatibleRuntimes ?? [lambda.Runtime.PYTHON_3_7];
 
     // Ensure that all compatible runtimes are python
@@ -63,44 +84,31 @@ export class PythonDependenciesLayer extends lambda.LayerVersion {
     const entry = path.resolve(props.entry);
     // Pick the first compatibleRuntime or PYTHON_3_7
     const runtime = compatibleRuntimes[0] ?? lambda.Runtime.PYTHON_3_7;
+    const bundlingStrategy = props.bundlingStrategy ?? BundlingStrategy.DEPENDENCIES;
 
-    if (!hasDependencies(entry)) {
-      throw new Error(`There are no dependencies at ${entry}`);
+    let code: lambda.AssetCode;
+    if (bundlingStrategy == BundlingStrategy.DEPENDENCIES) {
+      if (!hasDependencies(entry)) {
+        throw new Error(`No dependencies were detected in ${entry}`);
+      }
+
+      code = bundleDependenciesLayer({
+        entry,
+        runtime,
+        exclude: props.exclude,
+      });
+    } else {
+      code = bundlePythonCodeLayer({
+        entry: props.entry,
+        exclude: props.exclude,
+        follow: props.follow,
+      });
     }
 
     super(scope, id, {
       ...props,
       compatibleRuntimes,
-      code: bundleDependenciesLayer({
-        entry,
-        runtime,
-      }),
-    });
-  }
-}
-
-/**
- * Properties for PythonSharedCodeLayer
- */
-export interface PythonSharedCodeLayerProps extends PythonDependenciesLayerProps, assets.CopyOptions {
-}
-
-/**
- * A Python lambda layer for shared code.
- *
- * @experimental
- */
-export class PythonSharedCodeLayer extends lambda.LayerVersion {
-  constructor(scope: cdk.Construct, id: string, props: PythonSharedCodeLayerProps) {
-    super(scope, id, {
-      ...props,
-      code: lambda.Code.fromAsset(props.entry, {
-        ...props,
-        bundling: {
-          image: cdk.BundlingDockerImage.fromRegistry('alpine'),
-          command: ['sh', '-c', 'cp -r /asset-input /asset-output/python'],
-        },
-      }),
+      code,
     });
   }
 }

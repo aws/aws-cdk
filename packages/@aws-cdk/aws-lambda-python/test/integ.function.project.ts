@@ -16,15 +16,18 @@ class TestStack extends Stack {
       entry: path.join(projectDirectory, 'lambda'),
       dependenciesLocation: lambda.DependenciesLocation.NONE,
       layers: [
-        new lambda.PythonDependenciesLayer(this, 'Dependencies', {
+        new lambda.PythonLayerVersion(this, 'Dependencies', {
           entry: projectDirectory,
+          bundlingStrategy: lambda.BundlingStrategy.DEPENDENCIES,
         }),
-        new lambda.PythonSharedCodeLayer(this, 'SharedCode', {
+        new lambda.PythonLayerVersion(this, 'SharedCode', {
           entry: projectDirectory,
           exclude: [
             '*',
             '!shared',
+            '!shared/**',
           ],
+          bundlingStrategy: lambda.BundlingStrategy.FILES,
         }),
       ],
     });

@@ -4,7 +4,7 @@ import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { DependenciesLocation } from '../lib';
-import { bundle, hasDependencies, bundleDependenciesLayer } from '../lib/bundling';
+import { bundle, hasDependencies, bundleDependenciesLayer, bundlePythonCodeLayer } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
 const existsSyncOriginal = fs.existsSync;
@@ -27,6 +27,34 @@ test('Bundling', () => {
 
   // Searches for requirements.txt in entry
   expect(existsSyncMock).toHaveBeenCalledWith('/project/folder/requirements.txt');
+});
+
+test('Bundling a python code layer', () => {
+  bundlePythonCodeLayer({
+    entry: '/project/folder',
+    exclude: [
+      '*',
+      '!shared',
+      '!shared/**',
+    ],
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', expect.objectContaining({
+    bundling: expect.objectContaining({
+      // Docker should report it is being run erroneously
+      command: expect.arrayContaining([expect.stringContaining('exit 1')]),
+      // Local bundling
+      local: {
+        options: expect.objectContaining({
+          entry: '/project/folder',
+          exclude: expect.arrayContaining([
+            '*',
+            '!shared',
+          ]),
+        }),
+      },
+    }),
+  }));
 });
 
 test('Bundling with requirements.txt installed', () => {
