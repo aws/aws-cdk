@@ -21,13 +21,15 @@ const stack = new cdk.Stack(app, 'code-first-schema');
 
 const schema = new appsync.Schema();
 
-const node = schema.addInterfaceType('Node', {
+const node = new appsync.InterfaceType('Node', {
   definition: {
     created: ScalarType.string,
     edited: ScalarType.string,
     id: ScalarType.required_id,
   },
 });
+
+schema.addType(node);
 
 const api = new appsync.GraphQLApi(stack, 'code-first-api', {
   name: 'api',
@@ -37,7 +39,7 @@ const api = new appsync.GraphQLApi(stack, 'code-first-api', {
 const planet = ObjectType.planet;
 schema.addToSchema(planet.toString());
 
-api.addObjectType('Species', {
+api.addType(new appsync.ObjectType('Species', {
   interfaceTypes: [node],
   definition: {
     name: ScalarType.string,
@@ -51,7 +53,7 @@ api.addObjectType('Species', {
     language: ScalarType.string,
     homeworld: planet.attribute(),
   },
-});
+}));
 
 api.addToSchema('type Query {\n  getPlanets: [Planet]\n}', '\n');
 

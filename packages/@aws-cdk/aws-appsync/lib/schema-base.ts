@@ -1,5 +1,5 @@
 import { Resolver } from './resolver';
-import { ResolvableFieldOptions } from './schema-field';
+import { ResolvableFieldOptions, BaseTypeOptions, GraphqlType } from './schema-field';
 import { InterfaceType } from './schema-intermediate';
 
 /**
@@ -109,6 +109,16 @@ export interface IIntermediateType {
    * @default - no intermediate type
    */
   readonly intermediateType?: InterfaceType;
+
+  /**
+   * Create an GraphQL Type representing this Intermediate Type
+   *
+   * @param options the options to configure this attribute
+   * - isList
+   * - isRequired
+   * - isRequiredList
+   */
+  attribute(options?: BaseTypeOptions): GraphqlType;
 
   /**
    * Generate the string of this object type
