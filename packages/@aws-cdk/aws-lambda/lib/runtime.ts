@@ -98,6 +98,11 @@ export class Runtime {
   public static readonly JAVA_8 = new Runtime('java8', RuntimeFamily.JAVA);
 
   /**
+   * The Java 8 Corretto runtime (java8.al2)
+   */
+  public static readonly JAVA_8_CORRETTO = new Runtime('java8.al2', RuntimeFamily.JAVA);
+
+  /**
    * The Java 11 runtime (java11)
    */
   public static readonly JAVA_11 = new Runtime('java11', RuntimeFamily.JAVA);
