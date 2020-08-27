@@ -25,18 +25,27 @@ export enum SchemaMode {
  *   ...
  * }
  * ```
- *
- * @param prefix the prefix for this additon (type, interface, enum, input, schema)
- * @param name the name for this addition (some additions dont need this [i.e. schema])
- * @param interfaceTypes the interface types if this is creating an object type
- * @param directives the directives for this type
- * @param fields the fields to reduce onto the addition
  */
 export interface SchemaAdditionOptions {
+  /**
+   * the prefix for this additon (type, interface, enum, input, schema)
+   */
   readonly prefix: string;
+  /**
+   * the name for this addition (some additions dont need this [i.e. schema])
+   */
   readonly name?: string;
+  /**
+   * the interface types if this is creating an object type
+   */
   readonly interfaceTypes?: InterfaceType[];
+  /**
+   * the directives for this type
+   */
   readonly directives?: Directive[];
+  /**
+   * the fields to reduce onto the addition
+   */
   readonly fields: string[];
 }
 
