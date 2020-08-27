@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { Lazy } from '@aws-cdk/core';
 import { CfnGraphQLSchema } from './appsync.generated';
 import { GraphQLApi } from './graphqlapi';
-import { SchemaMode } from './private';
+import { SchemaMode, shapeAddition } from './private';
 import { IIntermediateType } from './schema-base';
 import { ResolvableField } from './schema-field';
 import { ObjectType } from './schema-intermediate';
@@ -167,11 +167,10 @@ export class Schema {
     if (!this.query && !this.mutation && !this.subscription) return '';
     type root = 'mutation' | 'query' | 'subscription';
     const list: root[] = ['query', 'mutation', 'subscription'];
-    const generate = (key: root): string => {
-      const type: ObjectType | undefined = this[key];
-      return type ? `  ${key}: ${type.name}\n` : '';
-    };
-    return list.reduce((acc, element) =>
-      `${acc}${generate(element)}`, 'schema {\n') + '}\n';
+    return shapeAddition({
+      prefix: 'schema',
+      fields: list.map((key: root) => this[key] ? `${key}: ${this[key]?.name}` : '')
+        .filter((field) => field != ''),
+    }) + '\n';
   }
 }
