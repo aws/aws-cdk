@@ -46,7 +46,12 @@ test('bundling a layer from files', () => {
 
   // THEN
   const expectedAsset = 'asset.047a67b3a9eadd5acb42903187d20feef00544ece1fc0d6c0390e582ccaf4272';
-  expect(fs.existsSync(path.join(app.outdir, expectedAsset, 'python'))).toBeTruthy();
+  expect(fs.readdirSync(app.outdir)).toEqual([
+    expectedAsset,
+  ]);
+  expect(fs.readdirSync(path.join(app.outdir, expectedAsset))).toEqual([
+    'python',
+  ]);
   expect(fs.readdirSync(path.join(app.outdir, expectedAsset, 'python'))).toEqual([
     'shared',
   ]);
