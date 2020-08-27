@@ -101,7 +101,17 @@ export = {
               [
                 'arn:',
                 { Ref: 'AWS::Partition' },
-                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda',
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited',
+              ],
+            ],
+          },
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::aws:policy/AmazonSNSFullAccess',
               ],
             ],
           },
@@ -160,7 +170,17 @@ export = {
               [
                 'arn:',
                 { Ref: 'AWS::Partition' },
-                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda',
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited',
+              ],
+            ],
+          },
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::aws:policy/AmazonSNSFullAccess',
               ],
             ],
           },
