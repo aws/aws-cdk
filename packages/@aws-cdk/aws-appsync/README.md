@@ -47,8 +47,7 @@ import * as db from '@aws-cdk/aws-dynamodb';
 
 const api = new appsync.GraphQLApi(stack, 'Api', {
   name: 'demo',
-  schemaDefinition: appsync.SchemaDefinition.FILE,
-  schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+  schema: appsync.Schema.fromAsset(join(__dirname, 'schema.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: appsync.AuthorizationType.IAM
@@ -83,7 +82,53 @@ demoDS.createResolver({
 });
 ```
 
-## Imports
+### Schema
+
+Every GraphQL Api needs a schema to define the Api. CDK offers `appsync.Schema`
+for static convenience methods for various types of schema declaration: code-first
+or schema-first.
+
+#### Code-First
+
+When declaring your GraphQL Api, CDK defaults to a code-first approach if the
+`schema` property is not configured. 
+
+```ts
+const api = new appsync.GraphQLApi(stack, 'api', { name: 'myApi' });
+```
+
+CDK will declare a `Schema` class that will give your Api access functions to
+define your schema code-first: `addType`, `addObjectType`, `addToSchema`, etc.
+
+You can also declare your `Schema` class outside of your CDK stack, to define
+your schema externally.
+
+```ts
+const schema = new appsync.Schema();
+schema.addObjectType('demo', {
+  definition: { id: appsync.GraphqlType.id() },
+});
+const api = new appsync.GraphQLApi(stack, 'api', {
+  name: 'myApi',
+  schema
+});
+```
+
+See the [code-first schema](#Code-First-Schema) section for more details.
+
+#### Schema-First
+
+You can define your GraphQL Schema from a file on disk. For convenience, use
+the `appsync.Schema.fromAsset` to specify the file representing your schema.
+
+```ts
+const api = appsync.GraphQLApi(stack, 'api', {
+  name: 'myApi',
+  schema: appsync.Schema.fromAsset(join(__dirname, 'schema.graphl')),
+});
+```
+
+### Imports
 
 Any GraphQL Api that has been created outside the stack can be imported from 
 another stack into your CDK app. Utilizing the `fromXxx` function, you have 
@@ -101,7 +146,7 @@ If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
 the expected `arn` for the imported api, given the `apiId`. For creating data 
 sources and resolvers, an `apiId` is sufficient.
 
-## Permissions
+### Permissions
 
 When using `AWS_IAM` as the authorization type for GraphQL API, an IAM Role
 with correct permissions must be used for access to API.
@@ -153,7 +198,7 @@ const api = new appsync.GraphQLApi(stack, 'API', {
 api.grant(role, appsync.IamResource.custom('types/Mutation/fields/updateExample'), 'appsync:GraphQL')
 ```
 
-### IamResource
+#### IamResource
 
 In order to use the `grant` functions, you need to use the class `IamResource`.
 
@@ -163,7 +208,7 @@ In order to use the `grant` functions, you need to use the class `IamResource`.
 
 - `IamResource.all()` permits ALL resources.
 
-### Generic Permissions
+#### Generic Permissions
 
 Alternatively, you can use more generic `grant` functions to accomplish the same usage.
 
@@ -280,7 +325,6 @@ import * as schema from './object-types';
 
 const api = new appsync.GraphQLApi(stack, 'Api', {
   name: 'demo',
-  schemaDefinition: appsync.SchemaDefinition.CODE,
 });
 
 this.objectTypes = [ schema.Node, schema.Film ];
@@ -294,13 +338,12 @@ api.addType('Query', {
       args: schema.args,
       requestMappingTemplate: dummyRequest,
       responseMappingTemplate: dummyResponse,
-    },
+    }),
   }
-  });
-})
+});
 
-this.objectTypes.map((t) => api.appendToSchema(t));
-Object.keys(filmConnections).forEach((key) => api.appendToSchema(filmConnections[key]));
+this.objectTypes.map((t) => api.addType(t));
+Object.keys(filmConnections).forEach((key) => api.addType(filmConnections[key]));
 ```
 
 Notice how we can utilize the `generateEdgeAndConnection` function to generate
@@ -457,7 +500,6 @@ You can create Object Types in three ways:
     ```ts
     const api = new appsync.GraphQLApi(stack, 'Api', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
     });
     const demo = new appsync.ObjectType('Demo', {
       defintion: {
@@ -466,7 +508,7 @@ You can create Object Types in three ways:
       },
     });
 
-    api.appendToSchema(object.toString());
+    api.addType(object);
     ```
     > This method allows for reusability and modularity, ideal for larger projects. 
     For example, imagine moving all Object Type definition outside the stack.
@@ -490,7 +532,7 @@ You can create Object Types in three ways:
     `cdk-stack.ts` - a file containing our cdk stack
     ```ts
     import { demo } from './object-types';
-    api.appendToSchema(demo.toString());
+    api.addType(demo);
     ```
 
 2. Object Types can be created ***externally*** from an Interface Type.
@@ -513,7 +555,6 @@ You can create Object Types in three ways:
     ```ts
     const api = new appsync.GraphQLApi(stack, 'Api', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
     });
     api.addType('Demo', {
       defintion: {
