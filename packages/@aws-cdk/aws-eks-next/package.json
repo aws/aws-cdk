@@ -8,22 +8,22 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.eks",
+        "package": "software.amazon.awscdk.services.eksnext",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "eks"
+          "artifactId": "eks-next"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.EKS",
-        "packageId": "Amazon.CDK.AWS.EKS",
+        "namespace": "Amazon.CDK.AWS.EKSNEXT",
+        "packageId": "Amazon.CDK.AWS.EKSNEXT",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-eks",
-        "module": "aws_cdk.aws_eks"
+        "distName": "aws-cdk.aws-eks-next",
+        "module": "aws_cdk.aws_eks_next"
       }
     },
     "projectReferences": true
