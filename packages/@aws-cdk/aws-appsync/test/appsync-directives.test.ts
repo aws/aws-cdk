@@ -36,13 +36,13 @@ beforeEach(() => {
 
 const testObjectType = (IApi: appsync.GraphQLApi, directives: appsync.Directive[], tag: string): any => {
   // WHEN
-  IApi.addObjectType('Test', {
+  IApi.addType(new appsync.ObjectType('Test', {
     definition: {
       field: generateField(directives),
       rfield: generateRField(directives),
     },
     directives: directives,
-  });
+  }));
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
     Definition: `type Test ${tag} {\n  field: String\n  ${tag}\n  rfield: String\n  ${tag}\n}\n`,
@@ -51,13 +51,13 @@ const testObjectType = (IApi: appsync.GraphQLApi, directives: appsync.Directive[
 
 const testInterfaceType = (IApi: appsync.GraphQLApi, directives: appsync.Directive[], tag: string): any => {
   // WHEN
-  IApi.addInterfaceType('Test', {
+  IApi.addType(new appsync.InterfaceType('Test', {
     definition: {
       field: generateField(directives),
       rfield: generateRField(directives),
     },
     directives: directives,
-  });
+  }));
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
     Definition: `interface Test ${tag} {\n  field: String\n  ${tag}\n  rfield: String\n  ${tag}\n}\n`,
