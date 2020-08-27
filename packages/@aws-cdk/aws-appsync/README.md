@@ -472,6 +472,7 @@ Types will be the meat of your GraphQL Schema as they are the types defined by y
 Intermediate Types include:
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
+- [**Enum Type**](#Enum-Types)
 
 ### Interface Types
 
@@ -487,6 +488,8 @@ const node = new appsync.InterfaceType('Node', {
   },
 });
 ```
+
+To learn more about **Interface Types**, read the docs [here](https://graphql.org/learn/schema/#interfaces).
 
 ### Object Types
 
@@ -549,19 +552,34 @@ You can create Object Types in three ways:
       },
     });
     ```
-    > This method allows for reusability and modularity, ideal for reducing code duplication. 
+    > This method allows for reusability and modularity, ideal for reducing code duplication.
 
-3. Object Types can be created ***internally*** within the GraphQL API.
-    ```ts
-    const api = new appsync.GraphQLApi(stack, 'Api', {
-      name: 'demo',
-    });
-    api.addType('Demo', {
-      defintion: {
-        id: appsync.GraphqlType.string({ isRequired: true }),
-        version: appsync.GraphqlType.string({ isRequired: true }),
-      },
-    });
-    ```
-    > This method provides easy use and is ideal for smaller projects.
+To learn more about **Interface Types**, read the docs [here](https://graphql.org/learn/schema/#object-types-and-fields).
 
+### Enum Types
+
+**Enum Types** are a special type of Intermediate Type. They restrict a particular
+set of values for other Intermediate Types.
+
+```gql
+enum Episode {
+  NEWHOPE
+  EMPIRE
+  JEDI
+}
+```
+
+The above GraphQL Enumeration Type can be expressed in CDK as the following:
+
+```ts
+const episode = new appsync.EnumType('Episode', {
+  definition: [
+    'NEWHOPE',
+    'EMPIRE',
+    'JEDI',
+  ],
+}); 
+api.addType(episode);
+```
+
+To learn more about **Enum Types**, read the docs [here](https://graphql.org/learn/schema/#enumeration-types).
