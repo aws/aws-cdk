@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import * as path from 'path';
 import { Test } from 'nodeunit';
 import * as sinon from 'sinon';
 import { BundlingDockerImage, FileSystem } from '../lib';
@@ -153,7 +154,6 @@ export = {
     test.done();
   },
 
-
   'custom dockerfile is passed through to docker exec'(test: Test) {
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
@@ -164,7 +164,8 @@ export = {
       signal: null,
     });
 
-    BundlingDockerImage.fromAsset('/some-path', {
+    const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    BundlingDockerImage.fromAsset(sourcePath, {
       file: 'my-dockerfile',
     });
 
