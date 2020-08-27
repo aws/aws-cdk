@@ -19,6 +19,11 @@ for Kubernetes (EKS)](https://aws.amazon.com/eks/) clusters programmatically.
 This library also supports programmatically defining Kubernetes resource
 manifests within EKS clusters.
 
+> This module will eventually be replaced by the [`aws-eks-next`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-eks-next) module.
+> This change will require you to replace your existing clusters.
+> Since we know this kind of operation is highly intrusive, when the replacement happens, we will still be supporting the current module under the `aws-eks-experimental` name.
+> This way, you can choose to migrate at your own pace, and plan out the cluster replacement as needed.
+
 This example defines an Amazon EKS cluster with the following configuration:
 
 - Managed nodegroup with 2x **m5.large** instances (this instance type suits most common use-cases, and is good value for money)
@@ -477,7 +482,7 @@ Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled
 on [creating a cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
 can provide more details about the customer master key (CMK) that can be used for the encryption.
 
-You can use the `secretsEncryptionKey` to configure which key the cluster will use to encrypt Kubernetes secrets. By default, an AWS Managed key will be used. 
+You can use the `secretsEncryptionKey` to configure which key the cluster will use to encrypt Kubernetes secrets. By default, an AWS Managed key will be used.
 
 > This setting can only be specified when the cluster is created and cannot be updated.
 
