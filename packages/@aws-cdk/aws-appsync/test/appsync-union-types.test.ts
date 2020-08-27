@@ -22,8 +22,8 @@ beforeEach(() => {
   api.addType(test2);
 });
 
-describe('testing Enum Type properties', () => {
-  test('EnumType configures properly', () => {
+describe('testing Union Type properties', () => {
+  test('UnionType configures properly', () => {
     // WHEN
     const union = new appsync.UnionType('UnionTest', {
       definition: [test1, test2],
@@ -36,7 +36,7 @@ describe('testing Enum Type properties', () => {
     expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
   });
 
-  test('EnumType can addField', () => {
+  test('UnionType can addField', () => {
     // WHEN
     const union = new appsync.UnionType('UnionTest', {
       definition: [test1],
@@ -50,7 +50,7 @@ describe('testing Enum Type properties', () => {
     });
   });
 
-  test('EnumType can be a GraphqlType', () => {
+  test('UnionType can be a GraphqlType', () => {
     // WHEN
     const union = new appsync.UnionType('UnionTest', {
       definition: [test1, test2],

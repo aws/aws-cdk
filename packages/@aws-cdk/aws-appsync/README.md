@@ -472,6 +472,7 @@ Types will be the meat of your GraphQL Schema as they are the types defined by y
 Intermediate Types include:
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
+- [**Union Types**](#Union-Types)
 
 ### Interface Types
 
@@ -565,3 +566,28 @@ You can create Object Types in three ways:
     ```
     > This method provides easy use and is ideal for smaller projects.
 
+### Union Types
+
+**Union Types** are a special type of Intermediate Type. They are similar to
+Interface Types, but they don't get to specify any common fields between types.
+
+**Note:** the fields of a union type need to be `Object Types`. In other words, you
+can't create a union type out of interfaces, other unions, or inputs.
+
+```gql
+union Search = Human | Droid | Starship
+```
+
+The above GraphQL Union Type can be expressed in CDK as the following:
+
+```ts
+const human = new appsync.ObjectType('Human', { definition: {} });
+const droid = new appsync.ObjectType('Droid', { definition: {} });
+const starship = new appsync.ObjectType('Starship', { definition: {} });
+const search = new appsync.UnionType('Search', {
+  definition: [ human, droid, starship ],
+}); 
+api.addType(search);
+```
+
+To learn more about **Union Types**, read the docs [here](https://graphql.org/learn/schema/#union-types).

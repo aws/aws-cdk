@@ -197,12 +197,15 @@ export interface UnionTypeProps {
   /**
    * the object types for this union type
    */
-  readonly definition: ObjectType[];
+  readonly definition: IIntermediateType[];
 }
 
 /**
  * Union Types are abstract types that are similar to Interface Types,
  * but they don't get to specify any common fields between types.
+ *
+ * Note that fields of a union type need to be object types. In other words,
+ * you can't create a union type out of interfaces, other unions, or inputs.
  *
  * @experimental
  */

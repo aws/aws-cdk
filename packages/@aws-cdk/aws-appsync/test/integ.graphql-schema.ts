@@ -37,7 +37,7 @@ const api = new appsync.GraphQLApi(stack, 'code-first-api', {
 const planet = ObjectType.planet;
 schema.addToSchema(planet.toString());
 
-api.addType(new appsync.ObjectType('Species', {
+const species = api.addType(new appsync.ObjectType('Species', {
   interfaceTypes: [node],
   definition: {
     name: ScalarType.string,
@@ -70,5 +70,9 @@ tableDS.createResolver({
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
 });
+
+api.addType(new appsync.UnionType('Union', {
+  definition: [species, planet],
+}));
 
 app.synth();
