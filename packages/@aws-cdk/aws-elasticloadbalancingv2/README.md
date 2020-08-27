@@ -25,7 +25,7 @@ and adding Targets to the Listener:
 ```ts
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 
 // ...
 
@@ -51,7 +51,7 @@ const listener = lb.addListener('Listener', {
 
 // Create an AutoScaling group and add it as a load balancing
 // target to the listener.
-const asg = new autoscaling.AutoScalingGroup(...);
+const asg = new AutoScalingGroup(...);
 listener.addTargets('ApplicationFleet', {
   port: 8080,
   targets: [asg]

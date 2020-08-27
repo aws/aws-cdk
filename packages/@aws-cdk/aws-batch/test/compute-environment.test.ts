@@ -1,10 +1,10 @@
-import {expect, haveResource, haveResourceLike, ResourcePart} from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import {throws} from 'assert';
+import { throws } from 'assert';
 import * as batch from '../lib';
 
 describe('Batch Compute Evironment', () => {
@@ -169,7 +169,7 @@ describe('Batch Compute Evironment', () => {
             hardwareType: ecs.AmiHardwareType.STANDARD,
           }),
           instanceRole: new iam.CfnInstanceProfile(stack, 'Instance-Profile', {
-            roles: [ new iam.Role(stack, 'Ecs-Instance-Role', {
+            roles: [new iam.Role(stack, 'Ecs-Instance-Role', {
               assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
               managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'),
@@ -374,7 +374,7 @@ describe('Batch Compute Evironment', () => {
         // THEN
         expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
           ...expectedManagedDefaultComputeProps({
-            InstanceTypes: [ 'optimal' ],
+            InstanceTypes: ['optimal'],
           }),
         }, ResourcePart.Properties));
       });

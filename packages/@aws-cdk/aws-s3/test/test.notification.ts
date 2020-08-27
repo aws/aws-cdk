@@ -85,8 +85,9 @@ export = {
             'Arn',
           ],
         },
-      }, DependsOn: [ 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
-        'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC' ],
+      },
+      DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
+        'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC'],
     }, ResourcePart.CompleteDefinition ) );
 
     test.done();
@@ -102,7 +103,7 @@ export = {
         arn: 'ARN',
         type: s3.BucketNotificationDestinationType.TOPIC,
       }),
-    }, { prefix: 'images/'}, { prefix: 'archive/' }), /prefix rule/);
+    }, { prefix: 'images/' }, { prefix: 'archive/' }), /prefix rule/);
 
     test.done();
   },
@@ -117,7 +118,7 @@ export = {
         arn: 'ARN',
         type: s3.BucketNotificationDestinationType.TOPIC,
       }),
-    }, { suffix: '.png'}, { suffix: '.zip' }), /suffix rule/);
+    }, { suffix: '.png' }, { suffix: '.zip' }), /suffix rule/);
 
     test.done();
   },

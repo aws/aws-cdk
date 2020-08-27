@@ -60,7 +60,7 @@ abstract class RuleBase extends Resource implements IRule {
   public onComplianceChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'Config Rules Compliance Change' ],
+      detailType: ['Config Rules Compliance Change'],
     });
     return rule;
   }
@@ -71,7 +71,7 @@ abstract class RuleBase extends Resource implements IRule {
   public onReEvaluationStatus(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'Config Rules Re-evaluation Status' ],
+      detailType: ['Config Rules Re-evaluation Status'],
     });
     return rule;
   }

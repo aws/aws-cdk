@@ -270,7 +270,7 @@ export = {
         desiredCount: 2,
         assignPublicIp: true,
         daemon: false,
-        securityGroups: [ securityGroup1, securityGroup2 ],
+        securityGroups: [securityGroup1, securityGroup2],
         serviceName: 'bonjour',
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
@@ -387,7 +387,7 @@ export = {
           maxHealthyPercent: 150,
           minHealthyPercent: 55,
           securityGroup: securityGroup1,
-          securityGroups: [ securityGroup2 ],
+          securityGroups: [securityGroup2],
           serviceName: 'bonjour',
           vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
         });

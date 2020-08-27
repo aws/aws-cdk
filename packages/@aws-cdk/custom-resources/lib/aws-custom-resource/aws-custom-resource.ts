@@ -244,6 +244,24 @@ export interface AwsCustomResourceProps {
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * Whether to install the latest AWS SDK v2. Allows to use the latest API
+   * calls documented at https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html.
+   *
+   * The installation takes around 60 seconds.
+   *
+   * @default true
+   */
+  readonly installLatestAwsSdk?: boolean;
+
+  /**
+   * A name for the Lambda function implementing this custom resource.
+   *
+   * @default - AWS CloudFormation generates a unique physical ID and uses that
+   * ID for the function's name. For more information, see Name Type.
+   */
+  readonly functionName?: string;
 }
 
 /**
@@ -302,6 +320,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,
       logRetention: props.logRetention,
+      functionName: props.functionName,
     });
     this.grantPrincipal = provider.grantPrincipal;
 
@@ -332,6 +351,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
         create: create && encodeBooleans(create),
         update: props.onUpdate && encodeBooleans(props.onUpdate),
         delete: props.onDelete && encodeBooleans(props.onDelete),
+        installLatestAwsSdk: props.installLatestAwsSdk ?? true,
       },
     });
   }

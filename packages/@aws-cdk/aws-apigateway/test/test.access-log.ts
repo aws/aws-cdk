@@ -1,4 +1,4 @@
-import {Test} from 'nodeunit';
+import { Test } from 'nodeunit';
 import * as apigateway from '../lib';
 
 export = {

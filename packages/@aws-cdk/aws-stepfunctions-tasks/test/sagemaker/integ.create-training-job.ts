@@ -38,11 +38,14 @@ const sm = new StateMachine(stack, 'StateMachine', {
     algorithmSpecification: {
       algorithmName: 'arn:aws:sagemaker:us-east-1:865070037744:algorithm/scikit-decision-trees-15423055-57b73412d2e93e9239e4e16f83298b8f',
     },
-    inputDataConfig: [{ channelName: 'InputData', dataSource: {
-      s3DataSource: {
-        s3Location: S3Location.fromBucket(trainingData, 'data/'),
+    inputDataConfig: [{
+      channelName: 'InputData',
+      dataSource: {
+        s3DataSource: {
+          s3Location: S3Location.fromBucket(trainingData, 'data/'),
+        },
       },
-    } }],
+    }],
     outputDataConfig: { s3OutputLocation: S3Location.fromBucket(trainingData, 'result/') },
     trainingJobName: 'mytrainingjob',
   }),

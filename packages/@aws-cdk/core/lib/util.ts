@@ -98,9 +98,9 @@ export class PostResolveToken extends Intrinsic implements IPostProcessor {
  */
 export function pathToTopLevelStack(s: Stack): Stack[] {
   if (s.nestedStackParent) {
-    return [ ...pathToTopLevelStack(s.nestedStackParent), s ];
+    return [...pathToTopLevelStack(s.nestedStackParent), s];
   } else {
-    return [ s ];
+    return [s];
   }
 }
 

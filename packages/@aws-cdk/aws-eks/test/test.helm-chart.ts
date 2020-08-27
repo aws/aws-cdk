@@ -79,7 +79,7 @@ export = {
       const { stack, cluster } = testFixtureCluster();
 
       // WHEN
-      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: false  });
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: false });
 
       // THEN
       expect(stack).notTo(haveResource(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: true }));

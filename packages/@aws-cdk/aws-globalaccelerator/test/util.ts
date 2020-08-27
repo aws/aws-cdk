@@ -19,7 +19,7 @@ export function testFixtureAlb() {
   const { stack, app, vpc } = testFixture();
   const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc, internetFacing: true });
 
-  return { stack, app, alb };
+  return { stack, app, alb, vpc };
 }
 
 export function testFixtureNlb() {

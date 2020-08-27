@@ -201,8 +201,13 @@ The default value is `false`.
 
 Cognito sends various messages to its users via SMS, for different actions, ranging from account verification to
 marketing. In order to send SMS messages, Cognito needs an IAM role that it can assume, with permissions that allow it
-to send SMS messages. By default, CDK will create this IAM role but can also be explicily specified to an existing IAM
-role using the `smsRole` property.
+to send SMS messages.
+
+By default, the CDK looks at all of the specified properties (and their defaults when not explicitly specified) and
+automatically creates an SMS role, when needed. For example, if MFA second factor by SMS is enabled, the CDK will
+create a new role. The `smsRole` property can be used to specify the user supplied role that should be used instead.
+Additionally, the property `enableSmsRole` can be used to override the CDK's default behaviour to either enable or
+suppress automatic role creation.
 
 ```ts
 import { Role } from '@aws-cdk/aws-iam';
@@ -278,7 +283,7 @@ can either be email and/or SMS. Read more at [Recovering User Accounts](https://
 ```ts
 new UserPool(this, 'UserPool', {
   ...,
-  accountRecoverySettings: AccountRecovery.EMAIL_ONLY,
+  accountRecovery: AccountRecovery.EMAIL_ONLY,
 })
 ```
 
@@ -291,7 +296,7 @@ Read more about [email settings here](https://docs.aws.amazon.com/cognito/latest
 ```ts
 new UserPool(this, 'myuserpool', {
   // ...
-  emailTransmission: {
+  emailSettings: {
     from: 'noreply@myawesomeapp.com',
     replyTo: 'support@myawesomeapp.com',
   },

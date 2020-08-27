@@ -1,4 +1,4 @@
-import { expect, haveResource  } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { PublicSubnet, Vpc, VpnConnection } from '../lib';

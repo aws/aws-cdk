@@ -327,6 +327,11 @@ Path to data must be specified using a dot notation, e.g. to get the string valu
 of the `Title` attribute for the first item returned by `dynamodb.query` it should
 be `Items.0.Title.S`.
 
+To make sure that the newest API calls are available the latest AWS SDK v2 is installed
+in the Lambda function implementing the custom resource. The installation takes around 60
+seconds. If you prefer to optimize for speed, you can disable the installation by setting
+the `installLatestAwsSdk` prop to `false`.
+
 ### Execution Policy
 
 You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
@@ -380,8 +385,8 @@ Since a successful resource provisioning might or might not produce outputs, thi
 In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
 
 ### Customizing the Lambda function implementing the custom resource
-Use the `role`, `timeout` and `logRetention` properties to customize the Lambda function implementing the custom
-resource:
+Use the `role`, `timeout`, `logRetention` and `functionName` properties to customize
+the Lambda function implementing the custom resource:
 
 ```ts
 new AwsCustomResource(this, 'Customized', {
@@ -389,6 +394,7 @@ new AwsCustomResource(this, 'Customized', {
   role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
   timeout: cdk.Duration.minutes(10) // defaults to 2 minutes
   logRetention: logs.RetentionDays.ONE_WEEK // defaults to never delete logs
+  functionName: 'my-custom-name', // defaults to a CloudFormation generated name
 })
 ```
 

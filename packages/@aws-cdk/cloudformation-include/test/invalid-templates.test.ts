@@ -74,7 +74,7 @@ describe('CDK Include', () => {
   test("throws an exception when encountering a CFN function it doesn't support", () => {
     expect(() => {
       includeTestTemplate(stack, 'only-codecommit-repo-using-cfn-functions.json');
-    }).toThrow(/Unsupported CloudFormation function 'Fn::DoesNotExist'/);
+    }).toThrow(/Unsupported CloudFormation function 'Fn::ValueOfAll'/);
   });
 
   test('throws a validation exception when encountering an unrecognized resource attribute', () => {
@@ -95,10 +95,22 @@ describe('CDK Include', () => {
     }).toThrow(/Resource used in GetAtt expression with logical ID: 'DoesNotExist' not found/);
   });
 
-  test("throws a validation exception when an output references a condition that doesn't exist", () => {
+  test("throws a validation exception when an Output references a Condition that doesn't exist", () => {
     expect(() => {
       includeTestTemplate(stack, 'output-referencing-nonexistant-condition.json');
     }).toThrow(/Output with name 'SomeOutput' refers to a Condition with name 'NonexistantCondition' which was not found in this template/);
+  });
+
+  test("throws a validation exception when a Resource property references a Mapping that doesn't exist", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'non-existent-mapping.json');
+    }).toThrow(/Mapping used in FindInMap expression with name 'NonExistentMapping' was not found in the template/);
+  });
+
+  test("throws a validation exception when a Rule references a Parameter that isn't in the template", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'rule-referencing-a-non-existent-parameter.json');
+    }).toThrow(/Rule references parameter 'Subnets' which was not found in the template/);
   });
 
   test("throws a validation exception when Fn::Sub in string form uses a key that isn't in the template", () => {
@@ -111,6 +123,14 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'fn-sub-${}-only.json');
     }).toThrow(/Element referenced in Fn::Sub expression with logical ID: '' was not found in the template/);
+  });
+
+  test('throws an error when a template supplies an invalid string to a number parameter', () => {
+    includeTestTemplate(stack, 'alphabetical-string-passed-to-number.json');
+
+    expect(() => {
+      SynthUtils.synthesize(stack);
+    }).toThrow(/"abc" should be a number/);
   });
 });
 

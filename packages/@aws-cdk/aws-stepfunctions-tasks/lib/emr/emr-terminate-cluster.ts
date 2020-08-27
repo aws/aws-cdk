@@ -21,7 +21,7 @@ export interface EmrTerminateClusterProps extends sfn.TaskStateBaseProps {
  * @experimental
  */
 export class EmrTerminateCluster extends sfn.TaskStateBase {
-  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] =  [
+  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
   ];

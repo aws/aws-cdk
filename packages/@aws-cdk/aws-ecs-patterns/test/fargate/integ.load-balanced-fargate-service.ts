@@ -1,7 +1,7 @@
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
 import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
-import { HostedZone } from '@aws-cdk/aws-route53';
+import * as route53 from '@aws-cdk/aws-route53';
 import { App, Stack } from '@aws-cdk/core';
 
 import { ApplicationLoadBalancedFargateService } from '../../lib';
@@ -21,10 +21,11 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
   protocol: ApplicationProtocol.HTTPS,
   enableECSManagedTags: true,
   domainName: 'test.example.com',
-  domainZone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+  domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
     hostedZoneId: 'fakeId',
-    zoneName: 'example.com',
+    zoneName: 'example.com.',
   }),
+  redirectHTTP: true,
 });
 
 app.synth();

@@ -35,6 +35,7 @@ const shortForms: yaml_types.Schema.CustomTag[] = [
   'Select', 'Split', 'Transform', 'And', 'Equals', 'If', 'Not', 'Or',
 ].map(name => makeTagForCfnIntrinsic(name)).concat(
   makeTagForCfnIntrinsic('Ref', false),
+  makeTagForCfnIntrinsic('Condition', false),
   makeTagForCfnIntrinsic('GetAtt', true, (_doc: yaml.Document, cstNode: yaml_cst.CST.Node): any => {
     // The position of the leftmost period and opening bracket tell us what syntax is being used
     // If no brackets are found, then the dot notation is being used; the leftmost dot separates the

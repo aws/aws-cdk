@@ -4,7 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
   App, BootstraplessSynthesizer, Construct, DefaultStackSynthesizer,
-  IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token,
+  IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token, TokenComparison,
 } from '@aws-cdk/core';
 import { ActionCategory, IAction, IPipeline, IStage } from './action';
 import { CfnPipeline } from './codepipeline.generated';
@@ -119,8 +119,8 @@ abstract class PipelineBase extends Resource implements IPipeline {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
-      source: [ 'aws.codepipeline' ],
-      resources: [ this.pipelineArn ],
+      source: ['aws.codepipeline'],
+      resources: [this.pipelineArn],
     });
     return rule;
   }
@@ -135,7 +135,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
   public onStateChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'CodePipeline Pipeline Execution State Change' ],
+      detailType: ['CodePipeline Pipeline Execution State Change'],
     });
     return rule;
   }
@@ -343,7 +343,7 @@ export class Pipeline extends PipelineBase {
    * @experimental
    */
   public get crossRegionSupport(): { [region: string]: CrossRegionSupport } {
-    const ret: { [region: string]: CrossRegionSupport }  = {};
+    const ret: { [region: string]: CrossRegionSupport } = {};
     Object.keys(this._crossRegionSupport).forEach((key) => {
       ret[key] = this._crossRegionSupport[key];
     });
@@ -400,12 +400,22 @@ export class Pipeline extends PipelineBase {
 
     const actionResource = action.actionProperties.resource;
     if (actionResource) {
-      const actionResourceStack = Stack.of(actionResource);
-      if (pipelineStack.region !== actionResourceStack.region) {
-        actionRegion = actionResourceStack.region;
+      const pipelineAndActionRegionComparison = Token.compareStrings(this.env.region, actionResource.env.region);
+      const pipelineAndActionInDifferentRegions = pipelineAndActionRegionComparison === TokenComparison.ONE_UNRESOLVED ||
+        pipelineAndActionRegionComparison === TokenComparison.DIFFERENT;
+      if (pipelineAndActionInDifferentRegions) {
+        actionRegion = actionResource.env.region;
+
         // if the resource is from a different stack in another region but the same account,
         // use that stack as home for the cross-region support resources
-        if (pipelineStack.account === actionResourceStack.account) {
+        const actionResourceStack = Stack.of(actionResource);
+        const actionResourceAndItsStackRegionComparison = Token.compareStrings(actionResource.env.region, actionResourceStack.region);
+        const actionResourceInSameRegionAsItsStack = actionResourceAndItsStackRegionComparison === TokenComparison.SAME ||
+          actionResourceAndItsStackRegionComparison === TokenComparison.BOTH_UNRESOLVED;
+        const pipelineAndActionResourceStackAccountComparison = Token.compareStrings(this.env.account, actionResourceStack.account);
+        const pipelineAndActionResourceStackInSameAccount = pipelineAndActionResourceStackAccountComparison === TokenComparison.SAME ||
+          pipelineAndActionResourceStackAccountComparison === TokenComparison.BOTH_UNRESOLVED;
+        if (pipelineAndActionResourceStackInSameAccount && actionResourceInSameRegionAsItsStack) {
           otherStack = actionResourceStack;
         }
       }
@@ -850,7 +860,7 @@ export class Pipeline extends PipelineBase {
   }
 
   private requireRegion(): string {
-    const region = Stack.of(this).region;
+    const region = this.env.region;
     if (Token.isUnresolved(region)) {
       throw new Error('Pipeline stack which uses cross-environment actions must have an explicitly set region');
     }

@@ -19,7 +19,8 @@ describe('Athena Workgroup Tags', () => {
         {
           key: 'key2',
           value: 'value2',
-        }],
+        },
+      ],
       workGroupConfiguration: {
         requesterPaysEnabled: true,
         resultConfiguration: {
@@ -42,8 +43,8 @@ describe('Athena Workgroup Tags', () => {
   });
   test('test tag aspect spec correction', () => {
     const stack = new cdk.Stack();
-    cdk.Tag.add(stack, 'key1', 'value1');
-    cdk.Tag.add(stack, 'key2', 'value2');
+    cdk.Tags.of(stack).add('key1', 'value1');
+    cdk.Tags.of(stack).add('key2', 'value2');
     new CfnWorkGroup(stack, 'Athena-Workgroup', {
       name: 'HelloWorld',
       description: 'A WorkGroup',

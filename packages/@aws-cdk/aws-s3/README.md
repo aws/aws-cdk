@@ -135,6 +135,17 @@ const byName = Bucket.fromBucketName(this, 'BucketByName', 'my-bucket');
 const byArn  = Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::my-bucket');
 ```
 
+The bucket's region defaults to the current stack's region, but can also be explicitly set in cases where one of the bucket's
+regional properties needs to contain the correct values.
+
+```ts
+const myCrossRegionBucket = Bucket.fromBucketAttributes(this, 'CrossRegionImport', {
+  bucketArn: 'arn:aws:s3:::my-bucket',
+  region: 'us-east-1',
+});
+// myCrossRegionBucket.bucketRegionalDomainName === 'my-bucket.s3.us-east-1.amazonaws.com'
+```
+
 ### Bucket Notifications
 
 The Amazon S3 notification feature enables you to receive notifications when

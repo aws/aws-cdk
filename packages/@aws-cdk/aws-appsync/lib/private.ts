@@ -5,6 +5,14 @@ function concatAndDedup<T>(left: T[], right: T[]): T[] {
 }
 
 /**
+ * Utility enum for Schema class
+ */
+export enum SchemaMode {
+  FILE = 'FILE',
+  CODE = 'CODE',
+};
+
+/**
  * Utility class to represent DynamoDB key conditions.
  */
 export abstract class BaseKeyCondition {

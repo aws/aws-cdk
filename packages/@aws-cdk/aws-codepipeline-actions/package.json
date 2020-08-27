@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-codepipeline-actions",
         "module": "aws_cdk.aws_codepipeline_actions"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -64,11 +65,11 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
-    "@types/lodash": "^4.14.157",
+    "@types/lodash": "^4.14.160",
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.20",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
@@ -92,7 +93,7 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "case": "1.6.3",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -114,7 +115,7 @@
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "bundledDependencies": [
     "case"

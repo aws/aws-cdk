@@ -7,7 +7,7 @@ import * as sns from '@aws-cdk/aws-sns';
 
 import {
   CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
-  Tag, Tokenization, withResolved,
+  Tokenization, withResolved, Tags,
 } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
@@ -595,7 +595,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
+    Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
@@ -609,7 +609,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [ this.role.roleName ],
+      roles: [this.role.roleName],
     });
 
     // use delayed evaluation
@@ -663,7 +663,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.maxInstanceLifetime = props.maxInstanceLifetime;
-    if (this.maxInstanceLifetime  &&
+    if (this.maxInstanceLifetime &&
       (this.maxInstanceLifetime.toSeconds() < 604800 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
       throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive)');
     }
@@ -912,7 +912,7 @@ export enum ScalingEvent {
   /**
    * Notify when an instance failed to launch
    */
-  INSTANCE_LAUNCH_ERROR =  'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
+  INSTANCE_LAUNCH_ERROR = 'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
 
   /**
    * Send a test notification to the topic

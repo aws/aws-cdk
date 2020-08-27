@@ -1,7 +1,7 @@
+import * as path from 'path';
 import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Stack } from '@aws-cdk/core';
-import * as path from 'path';
 import { Cluster } from './cluster';
 import { KubectlLayer } from './kubectl-layer';
 
@@ -106,7 +106,7 @@ export class HelmChart extends Construct {
         runtime: lambda.Runtime.PYTHON_3_7,
         handler: 'index.handler',
         timeout: Duration.minutes(15),
-        layers: [ KubectlLayer.getOrCreate(this, { version: '2.0.0-beta1' }) ],
+        layers: [KubectlLayer.getOrCreate(this, { version: '2.0.0-beta1' })],
         memorySize: 256,
         environment: {
           CLUSTER_NAME: cluster.clusterName,

@@ -22,7 +22,7 @@ check_which() {
 
     w=$(which ${app}) || w=""
 
-    if [ -z $w ] || [ $w == "$app not found" ]
+    if [ -z "$w" ] || [ "$w" == "$app not found" ]
     then
         die "Missing dependency: $app. Install $app >= $min"
     else

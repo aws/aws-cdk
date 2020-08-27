@@ -95,11 +95,11 @@ export class Stage implements IStage {
     const rule = new events.Rule(this.scope, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
-      detailType: [ 'CodePipeline Stage Execution State Change' ],
-      source: [ 'aws.codepipeline' ],
-      resources: [ this.pipeline.pipelineArn ],
+      detailType: ['CodePipeline Stage Execution State Change'],
+      source: ['aws.codepipeline'],
+      resources: [this.pipeline.pipelineArn],
       detail: {
-        stage: [ this.stageName ],
+        stage: [this.stageName],
       },
     });
     return rule;
@@ -142,8 +142,8 @@ export class Stage implements IStage {
   }
 
   private renderAction(action: FullActionDescriptor): CfnPipeline.ActionDeclarationProperty {
-    const outputArtifacts = cdk.Lazy.anyValue({ produce: () =>  this.renderArtifacts(action.outputs) }, { omitEmptyArray: true});
-    const inputArtifacts = cdk.Lazy.anyValue({ produce: () =>  this.renderArtifacts(action.inputs)}, { omitEmptyArray: true});
+    const outputArtifacts = cdk.Lazy.anyValue({ produce: () => this.renderArtifacts(action.outputs) }, { omitEmptyArray: true });
+    const inputArtifacts = cdk.Lazy.anyValue({ produce: () => this.renderArtifacts(action.inputs) }, { omitEmptyArray: true });
     return {
       name: action.actionName,
       inputArtifacts,

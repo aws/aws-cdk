@@ -17,7 +17,7 @@ class TestBucketDeployment extends cdk.Stack {
           s3OriginSource: {
             s3BucketSource: bucket,
           },
-          behaviors: [ {isDefaultBehavior: true}],
+          behaviors: [{ isDefaultBehavior: true }],
         },
       ],
     });

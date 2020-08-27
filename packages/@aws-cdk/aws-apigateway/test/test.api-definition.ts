@@ -1,7 +1,7 @@
+import * as path from 'path';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import * as apigw from '../lib';
 
 export = {

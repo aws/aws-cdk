@@ -648,7 +648,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default sum over a minute
    */
   public metricConsumedReadCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConsumedReadCapacityUnits', { statistic: 'sum', ...props});
+    return this.metric('ConsumedReadCapacityUnits', { statistic: 'sum', ...props });
   }
 
   /**
@@ -657,7 +657,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default sum over a minute
    */
   public metricConsumedWriteCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConsumedWriteCapacityUnits', { statistic: 'sum', ...props});
+    return this.metric('ConsumedWriteCapacityUnits', { statistic: 'sum', ...props });
   }
 
   /**
@@ -666,7 +666,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default sum over a minute
    */
   public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('SystemErrors', { statistic: 'sum', ...props});
+    return this.metric('SystemErrors', { statistic: 'sum', ...props });
   }
 
   /**
@@ -675,7 +675,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default sum over a minute
    */
   public metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('UserErrors', { statistic: 'sum', ...props});
+    return this.metric('UserErrors', { statistic: 'sum', ...props });
   }
 
   /**
@@ -684,7 +684,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default sum over a minute
    */
   public metricConditionalCheckFailedRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConditionalCheckFailedRequests', { statistic: 'sum', ...props});
+    return this.metric('ConditionalCheckFailedRequests', { statistic: 'sum', ...props });
   }
 
   /**
@@ -693,7 +693,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default avg over a minute
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props});
+    return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props });
   }
 
   protected abstract get hasIndex(): boolean;
@@ -714,8 +714,7 @@ abstract class TableBase extends Resource implements ITable {
         ...this.regionalArns,
         ...this.regionalArns.map(arn => Lazy.stringValue({
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
-      ];
+        }))];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.tableActions,
@@ -731,7 +730,7 @@ abstract class TableBase extends Resource implements ITable {
       if (!this.tableStreamArn) {
         throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
       }
-      const resources = [ this.tableStreamArn];
+      const resources = [this.tableStreamArn];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.streamActions,

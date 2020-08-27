@@ -689,7 +689,7 @@ export class RestApi extends RestApiBase {
    */
   protected validate() {
     if (this.methods.length === 0) {
-      return [ "The REST API doesn't contain any methods" ];
+      return ["The REST API doesn't contain any methods"];
     }
 
     return [];

@@ -34,3 +34,4 @@ export * from './dynamodb/put-item';
 export * from './dynamodb/update-item';
 export * from './dynamodb/delete-item';
 export * from './dynamodb/shared-types';
+export * from './codebuild/start-build';

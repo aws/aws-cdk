@@ -107,6 +107,7 @@ async function main() {
       types: 'lib/index.d.ts',
       jsii: {
         outdir: 'dist',
+        projectReferences: true,
         targets: {
           dotnet: {
             namespace: dotnetPackage,

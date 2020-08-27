@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { PolicyStatement } from '@aws-cdk/aws-iam';
-import { RemovalPolicy, Stack } from '@aws-cdk/core';
+import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
+import { RemovalPolicy, Stack, App } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as s3 from '../lib';
 
@@ -18,6 +18,7 @@ export = {
     myBucketPolicy.document.addStatements(new PolicyStatement({
       resources: [myBucket.bucketArn],
       actions: ['s3:GetObject*'],
+      principals: [new AnyPrincipal()],
     }));
 
     expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
@@ -30,6 +31,7 @@ export = {
           {
             'Action': 's3:GetObject*',
             'Effect': 'Allow',
+            'Principal': '*',
             'Resource': { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
           },
         ],
@@ -50,6 +52,7 @@ export = {
     myBucketPolicy.document.addStatements(new PolicyStatement({
       resources: [myBucket.bucketArn],
       actions: ['s3:GetObject*'],
+      principals: [new AnyPrincipal()],
     }));
 
     expect(stack).toMatch({
@@ -70,6 +73,7 @@ export = {
                 {
                   'Action': 's3:GetObject*',
                   'Effect': 'Allow',
+                  'Principal': '*',
                   'Resource': { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
                 },
               ],
@@ -92,6 +96,7 @@ export = {
     myBucket.addToResourcePolicy(new PolicyStatement({
       resources: [myBucket.bucketArn],
       actions: ['s3:GetObject*'],
+      principals: [new AnyPrincipal()],
     }));
     myBucket.policy?.applyRemovalPolicy(RemovalPolicy.RETAIN);
 
@@ -113,6 +118,7 @@ export = {
                 {
                   'Action': 's3:GetObject*',
                   'Effect': 'Allow',
+                  'Principal': '*',
                   'Resource': { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
                 },
               ],
@@ -124,6 +130,34 @@ export = {
         },
       },
     });
+
+    test.done();
+  },
+
+  'fails if bucket policy has no actions'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const myBucket = new s3.Bucket(stack, 'MyBucket');
+    myBucket.addToResourcePolicy(new PolicyStatement({
+      resources: [myBucket.bucketArn],
+      principals: [new AnyPrincipal()],
+    }));
+
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+
+    test.done();
+  },
+
+  'fails if bucket policy has no IAM principals'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const myBucket = new s3.Bucket(stack, 'MyBucket');
+    myBucket.addToResourcePolicy(new PolicyStatement({
+      resources: [myBucket.bucketArn],
+      actions: ['s3:GetObject*'],
+    }));
+
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
 
     test.done();
   },

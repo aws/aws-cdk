@@ -15,10 +15,10 @@ export = {
   'AvailabilityZoneProvider will return context list if available'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
-    test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+    test.deepEqual(before, ['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
 
-    stack.construct.setContext(key, ['us-east-1a', 'us-east-1b']);
+    stack.node.setContext(key, ['us-east-1a', 'us-east-1b']);
 
     const azs = stack.availabilityZones;
     test.deepEqual(azs, ['us-east-1a', 'us-east-1b']);
@@ -29,10 +29,10 @@ export = {
   'AvailabilityZoneProvider will complain if not given a list'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
-    test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+    test.deepEqual(before, ['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
 
-    stack.construct.setContext(key, 'not-a-list');
+    stack.node.setContext(key, 'not-a-list');
 
     test.throws(
       () => stack.availabilityZones,
@@ -142,14 +142,14 @@ export = {
 
   'context provider errors are attached to tree'(test: Test) {
     const contextProps = { provider: 'availability-zones' };
-    const contextKey = 'availability-zones:account=12345:region=us-east-1';  // Depends on the mangling algo
+    const contextKey = 'availability-zones:account=12345:region=us-east-1'; // Depends on the mangling algo
 
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
 
     // NOTE: error key is inlined here because it's part of the CX-API
     // compatibility surface.
-    stack.construct.setContext(contextKey, { $providerError: 'I had a boo-boo' });
+    stack.node.setContext(contextKey, { $providerError: 'I had a boo-boo' });
     const construct = new Construct(stack, 'Child');
 
     // Verify that we got the right hardcoded key above, give a descriptive error if not
@@ -162,7 +162,7 @@ export = {
     });
 
     // THEN
-    const error = construct.construct.metadata.find(m => m.type === 'aws:cdk:error');
+    const error = construct.node.metadata.find(m => m.type === 'aws:cdk:error');
     test.equals(error && error.data, 'I had a boo-boo');
 
     test.done();

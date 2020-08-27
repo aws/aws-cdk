@@ -238,7 +238,7 @@ describe('CDK Include', () => {
           "Type": "AWS::CloudFormation::Stack",
           "Properties": {
             "TemplateURL": {
-              "Fn::Join": [ "", [
+              "Fn::Join": ["", [
                 "https://s3.",
                 { "Ref": "AWS::Region" },
                 ".",
@@ -246,20 +246,28 @@ describe('CDK Include', () => {
                 "/",
                 { "Ref": assetParam },
                 "/",
-                { "Fn::Select": [
-                  0,
-                  { "Fn::Split": [
-                    "||",
-                    { "Ref": assetParamKey },
-                  ]},
-                ]},
-                { "Fn::Select": [
-                  1,
-                  { "Fn::Split": [
-                    "||",
-                    { "Ref": assetParamKey },
-                  ]},
-                ]},
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        { "Ref": assetParamKey },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        { "Ref": assetParamKey },
+                      ],
+                    },
+                  ],
+                },
               ]],
             },
             "Parameters": {
@@ -452,7 +460,7 @@ describe('CDK Include', () => {
       parentBucketParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C';
       parentKeyParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2';
       grandChildBucketParam = 'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0CRef';
-      grandChildKeyParam =  'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref';
+      grandChildKeyParam = 'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref';
 
       childBucketParam = 'AssetParameters891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5S3Bucket23278F13';
       childKeyParam = 'AssetParameters891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5S3VersionKey7316205A';
@@ -491,7 +499,7 @@ describe('CDK Include', () => {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
               "TemplateURL": {
-                "Fn::Join": [ "", [
+                "Fn::Join": ["", [
                   "https://s3.",
                   { "Ref": "AWS::Region" },
                   ".",
@@ -499,20 +507,28 @@ describe('CDK Include', () => {
                   "/",
                   { "Ref": childBucketParam },
                   "/",
-                  { "Fn::Select": [
-                    0,
-                    { "Fn::Split": [
-                      "||",
-                      { "Ref": childKeyParam },
-                    ]},
-                  ]},
-                  { "Fn::Select": [
-                    1,
-                    { "Fn::Split": [
-                      "||",
-                      { "Ref": childKeyParam },
-                    ]},
-                  ]},
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          { "Ref": childKeyParam },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          { "Ref": childKeyParam },
+                        ],
+                      },
+                    ],
+                  },
                 ]],
               },
               "Parameters": {
@@ -549,7 +565,7 @@ describe('CDK Include', () => {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
               "TemplateURL": {
-                "Fn::Join": [ "", [
+                "Fn::Join": ["", [
                   "https://s3.",
                   { "Ref": "AWS::Region" },
                   ".",
@@ -557,20 +573,26 @@ describe('CDK Include', () => {
                   "/",
                   { "Ref": grandChildBucketParam },
                   "/",
-                  { "Fn::Select": [
-                    0,
-                    { "Fn::Split": [
-                      "||",
-                      { "Ref": grandChildKeyParam },
-                    ]},
-                  ]},
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          { "Ref": grandChildKeyParam },
+                        ],
+                      },
+                    ],
+                  },
                   {
                     "Fn::Select": [
                       1,
-                      { "Fn::Split": [
-                        "||",
-                        { "Ref": grandChildKeyParam },
-                      ]},
+                      {
+                        "Fn::Split": [
+                          "||",
+                          { "Ref": grandChildKeyParam },
+                        ],
+                      },
                     ],
                   },
                 ]],

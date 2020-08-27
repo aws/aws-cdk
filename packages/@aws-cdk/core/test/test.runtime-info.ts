@@ -22,7 +22,7 @@ export = {
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const version = require('../package.json').version;
-    test.deepEqual(runtimeInfo.libraries , {
+    test.deepEqual(runtimeInfo.libraries, {
       '@aws-cdk/core': version,
       '@aws-cdk/cx-api': version,
       '@aws-cdk/cloud-assembly-schema': version,
@@ -49,7 +49,7 @@ export = {
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const version = require('../package.json').version;
-    test.deepEqual(runtimeInfo.libraries , {
+    test.deepEqual(runtimeInfo.libraries, {
       '@aws-cdk/core': version,
       '@aws-cdk/cx-api': version,
       '@aws-cdk/cloud-assembly-schema': version,

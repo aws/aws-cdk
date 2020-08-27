@@ -72,6 +72,7 @@ abstract class GroupBase extends Resource implements IGroup {
   public abstract readonly groupArn: string;
 
   public readonly grantPrincipal: IPrincipal = this;
+  public readonly principalAccount: string | undefined = this.env.account;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   private readonly attachedPolicies = new AttachedPolicies();
@@ -143,10 +144,12 @@ export class Group extends GroupBase {
    * @param groupArn the ARN of the group to import (e.g. `arn:aws:iam::account-id:group/group-name`)
    */
   public static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
-    const groupName = Stack.of(scope).parseArn(groupArn).resourceName!;
+    const arnComponents = Stack.of(scope).parseArn(groupArn);
+    const groupName = arnComponents.resourceName!;
     class Import extends GroupBase {
       public groupName = groupName;
       public groupArn = groupArn;
+      public principalAccount = arnComponents.account;
     }
 
     return new Import(scope, id);

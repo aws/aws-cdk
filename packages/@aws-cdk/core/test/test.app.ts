@@ -28,11 +28,11 @@ function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
     const c1 = new MyConstruct(stack2, 's1c2');
 
     // add some metadata
-    stack1.construct.addMetadata('meta', 111);
+    stack1.node.addMetadata('meta', 111);
     Annotations.of(r2).addWarning('warning1');
     Annotations.of(r2).addWarning('warning2');
-    c1.construct.addMetadata('meta', { key: 'value' });
-    app.construct.addMetadata('applevel', 123); // apps can also have metadata
+    c1.node.addMetadata('meta', { key: 'value' });
+    app.node.addMetadata('applevel', 123); // apps can also have metadata
   });
 }
 
@@ -60,9 +60,13 @@ export = {
     test.deepEqual(stack1.environment.account, 12345);
     test.deepEqual(stack1.environment.region, 'us-east-1');
     test.deepEqual(stack1.environment.name, 'aws://12345/us-east-1');
-    test.deepEqual(stack1.template, { Resources:
-      { s1c1: { Type: 'DummyResource', Properties: { Prop1: 'Prop1' } },
-        s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } } } });
+    test.deepEqual(stack1.template, {
+      Resources:
+      {
+        s1c1: { Type: 'DummyResource', Properties: { Prop1: 'Prop1' } },
+        s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } },
+      },
+    });
     test.deepEqual(stack1.manifest.metadata, {
       '/stack1': [{ type: 'meta', data: 111 }],
       '/stack1/s1c1': [{ type: 'aws:cdk:logicalId', data: 's1c1' }],
@@ -76,10 +80,14 @@ export = {
     test.deepEqual(stack2.stackName, 'stack2');
     test.deepEqual(stack2.id, 'stack2');
     test.deepEqual(stack2.environment.name, 'aws://unknown-account/unknown-region');
-    test.deepEqual(stack2.template, { Resources:
-      { s2c1: { Type: 'DummyResource', Properties: { Prog2: 'Prog2' } },
+    test.deepEqual(stack2.template, {
+      Resources:
+      {
+        s2c1: { Type: 'DummyResource', Properties: { Prog2: 'Prog2' } },
         s1c2r1D1791C01: { Type: 'ResourceType1' },
-        s1c2r25F685FFF: { Type: 'ResourceType2' } } });
+        s1c2r25F685FFF: { Type: 'ResourceType2' },
+      },
+    });
     test.deepEqual(stack2.manifest.metadata, {
       '/stack2/s2c1': [{ type: 'aws:cdk:logicalId', data: 's2c1' }],
       '/stack2/s1c2': [{ type: 'meta', data: { key: 'value' } }],
@@ -98,8 +106,8 @@ export = {
       key2: 'val2',
     });
     const prog = new App();
-    test.deepEqual(prog.construct.tryGetContext('key1'), 'val1');
-    test.deepEqual(prog.construct.tryGetContext('key2'), 'val2');
+    test.deepEqual(prog.node.tryGetContext('key1'), 'val1');
+    test.deepEqual(prog.node.tryGetContext('key2'), 'val2');
     test.done();
   },
 
@@ -114,8 +122,8 @@ export = {
         key2: 'val4',
       },
     });
-    test.deepEqual(prog.construct.tryGetContext('key1'), 'val1');
-    test.deepEqual(prog.construct.tryGetContext('key2'), 'val2');
+    test.deepEqual(prog.node.tryGetContext('key1'), 'val1');
+    test.deepEqual(prog.node.tryGetContext('key2'), 'val2');
     test.done();
   },
 
@@ -150,14 +158,14 @@ export = {
         foo: 'bar',
       },
     });
-    test.deepEqual(prog.construct.tryGetContext('foo'), 'bar');
+    test.deepEqual(prog.node.tryGetContext('foo'), 'bar');
     test.done();
   },
 
   'setContext(k,v) cannot be called after stacks have been added because stacks may use the context'(test: Test) {
     const prog = new App();
     new Stack(prog, 's1');
-    test.throws(() => prog.construct.setContext('foo', 'bar'));
+    test.throws(() => prog.node.setContext('foo', 'bar'));
     test.done();
   },
 
@@ -165,7 +173,7 @@ export = {
 
     class Child extends Construct {
       protected validate() {
-        return [`Error from ${this.construct.id}`];
+        return [`Error from ${this.node.id}`];
       }
     }
 
@@ -361,9 +369,9 @@ export = {
       },
     });
 
-    test.ok(app.construct.tryGetContext('isString') === 'string');
-    test.ok(app.construct.tryGetContext('isNumber') === 10);
-    test.deepEqual(app.construct.tryGetContext('isObject'), { isString: 'string', isNumber: 10 });
+    test.ok(app.node.tryGetContext('isString') === 'string');
+    test.ok(app.node.tryGetContext('isNumber') === 10);
+    test.deepEqual(app.node.tryGetContext('isObject'), { isString: 'string', isNumber: 10 });
 
     test.done();
   },
@@ -374,6 +382,6 @@ class MyConstruct extends Construct {
     super(scope, id);
 
     new CfnResource(this, 'r1', { type: 'ResourceType1' });
-    new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.construct.tryGetContext('ctx1') } });
+    new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.tryGetContext('ctx1') } });
   }
 }

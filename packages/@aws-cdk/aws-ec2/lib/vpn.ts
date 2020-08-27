@@ -7,7 +7,7 @@ import {
   CfnVPNConnectionRoute,
   CfnVPNGateway,
 } from './ec2.generated';
-import {IVpc, SubnetSelection} from './vpc';
+import { IVpc, SubnetSelection } from './vpc';
 
 export interface IVpnConnection extends cdk.IResource {
   /**

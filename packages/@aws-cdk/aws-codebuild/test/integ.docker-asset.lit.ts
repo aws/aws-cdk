@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
 import * as path from 'path';
+import * as cdk from '@aws-cdk/core';
 import * as codebuild from '../lib';
 
 class TestStack extends cdk.Stack {
@@ -11,7 +11,7 @@ class TestStack extends cdk.Stack {
         version: '0.2',
         phases: {
           build: {
-            commands: [ 'ls' ],
+            commands: ['ls'],
           },
         },
       }),

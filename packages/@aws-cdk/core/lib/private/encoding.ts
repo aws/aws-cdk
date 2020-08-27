@@ -173,7 +173,7 @@ export function createTokenDouble(x: number) {
   const ints = new Uint32Array(buf);
 
   /* eslint-disable no-bitwise */
-  ints[0] =  x & 0x0000FFFFFFFF; // Bottom 32 bits of number
+  ints[0] = x & 0x0000FFFFFFFF; // Bottom 32 bits of number
 
   // This needs an "x >> 32" but that will make it a 32-bit number instead
   // of a 64-bit number.

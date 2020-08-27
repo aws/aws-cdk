@@ -48,15 +48,10 @@ export class CacheBehavior {
       smoothStreaming: this.props.smoothStreaming,
       viewerProtocolPolicy: this.props.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL,
       lambdaFunctionAssociations: this.props.edgeLambdas
-        ? this.props.edgeLambdas.map(edgeLambda => {
-          if (edgeLambda.functionVersion.version === '$LATEST') {
-            throw new Error('$LATEST function version cannot be used for Lambda@Edge');
-          }
-          return {
-            lambdaFunctionArn: edgeLambda.functionVersion.functionArn,
-            eventType: edgeLambda.eventType.toString(),
-          };
-        })
+        ? this.props.edgeLambdas.map(edgeLambda => ({
+          lambdaFunctionArn: edgeLambda.functionVersion.edgeArn,
+          eventType: edgeLambda.eventType.toString(),
+        }))
         : undefined,
     };
   }

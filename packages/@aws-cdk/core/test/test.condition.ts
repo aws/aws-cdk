@@ -8,7 +8,7 @@ export = {
     const stack = new cdk.Stack();
     const param = new cdk.CfnParameter(stack, 'Param1', { type: 'String' });
     const cond1 = new cdk.CfnCondition(stack, 'Condition1', { expression: cdk.Fn.conditionEquals('a', 'b') });
-    const cond2 = new cdk.CfnCondition(stack, 'Condition2', { expression: cdk.Fn.conditionContains([ 'a', 'b', 'c' ], 'c') });
+    const cond2 = new cdk.CfnCondition(stack, 'Condition2', { expression: cdk.Fn.conditionContains(['a', 'b', 'c'], 'c') });
     const cond3 = new cdk.CfnCondition(stack, 'Condition3', { expression: cdk.Fn.conditionEquals(param, 'hello') });
 
     // WHEN
@@ -20,13 +20,18 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Parameters: { Param1: { Type: 'String' } },
       Conditions: {
-        Condition1: { 'Fn::Equals': [ 'a', 'b' ] },
-        Condition2: { 'Fn::Contains': [ [ 'a', 'b', 'c' ], 'c' ] },
-        Condition3: { 'Fn::Equals': [ { Ref: 'Param1' }, 'hello' ] },
-        Condition4: { 'Fn::Or': [
-          { Condition: 'Condition1' },
-          { Condition: 'Condition2' },
-          { 'Fn::Not': [ { Condition: 'Condition3' } ] } ] } } });
+        Condition1: { 'Fn::Equals': ['a', 'b'] },
+        Condition2: { 'Fn::Contains': [['a', 'b', 'c'], 'c'] },
+        Condition3: { 'Fn::Equals': [{ Ref: 'Param1' }, 'hello'] },
+        Condition4: {
+          'Fn::Or': [
+            { Condition: 'Condition1' },
+            { Condition: 'Condition2' },
+            { 'Fn::Not': [{ Condition: 'Condition3' }] },
+          ],
+        },
+      },
+    });
 
     test.done();
   },
@@ -51,7 +56,7 @@ export = {
         MyResource: {
           Type: 'AWS::Foo::Bar',
           Properties: {
-            StringProp: { 'Fn::If': [ 'Cond', 'A', 'B' ] },
+            StringProp: { 'Fn::If': ['Cond', 'A', 'B'] },
           },
         },
       },

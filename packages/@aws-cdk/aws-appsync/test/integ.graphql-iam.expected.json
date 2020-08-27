@@ -1,42 +1,5 @@
 {
   "Resources": {
-    "PoolsmsRoleC3352CE6": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Condition": {
-                "StringEquals": {
-                  "sts:ExternalId": "awsappsyncintegPool5D14B05B"
-                }
-              },
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "cognito-idp.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Policies": [
-          {
-            "PolicyDocument": {
-              "Statement": [
-                {
-                  "Action": "sns:Publish",
-                  "Effect": "Allow",
-                  "Resource": "*"
-                }
-              ],
-              "Version": "2012-10-17"
-            },
-            "PolicyName": "sns-publish"
-          }
-        ]
-      }
-    },
     "PoolD3F588B8": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
@@ -57,15 +20,6 @@
         },
         "EmailVerificationMessage": "The verification code to your new account is {####}",
         "EmailVerificationSubject": "Verify your new account",
-        "SmsConfiguration": {
-          "ExternalId": "awsappsyncintegPool5D14B05B",
-          "SnsCallerArn": {
-            "Fn::GetAtt": [
-              "PoolsmsRoleC3352CE6",
-              "Arn"
-            ]
-          }
-        },
         "SmsVerificationMessage": "The verification code to your new account is {####}",
         "UserPoolName": "myPool",
         "VerificationMessageTemplate": {
@@ -109,7 +63,7 @@
         "Definition": "type test @aws_iam {\n  id: String!\n  version: String!\n}\n\ntype Query {\n  getTest(id: String!): test\n  getTests: [ test! ]\n    @aws_iam \n}\n\ninput TestInput {\n  version: String!\n}\n\ntype Mutation {\n  addTest(input: TestInput!): test\n    @aws_iam\n}\n"
       }
     },
-    "ApitestDataSourceDSServiceRoleE543E310": {
+    "ApidsServiceRoleADC7D124": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -126,7 +80,7 @@
         }
       }
     },
-    "ApitestDataSourceDSServiceRoleDefaultPolicy53D2252C": {
+    "ApidsServiceRoleDefaultPolicyE5E18D6D": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -160,15 +114,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ApitestDataSourceDSServiceRoleDefaultPolicy53D2252C",
+        "PolicyName": "ApidsServiceRoleDefaultPolicyE5E18D6D",
         "Roles": [
           {
-            "Ref": "ApitestDataSourceDSServiceRoleE543E310"
+            "Ref": "ApidsServiceRoleADC7D124"
           }
         ]
       }
     },
-    "ApitestDataSourceDS776EA507": {
+    "Apids0DB53FEA": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -179,7 +133,6 @@
         },
         "Name": "testDataSource",
         "Type": "AMAZON_DYNAMODB",
-        "Description": "Table for Tests\"",
         "DynamoDBConfig": {
           "AwsRegion": {
             "Ref": "AWS::Region"
@@ -190,13 +143,13 @@
         },
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "ApitestDataSourceDSServiceRoleE543E310",
+            "ApidsServiceRoleADC7D124",
             "Arn"
           ]
         }
       }
     },
-    "ApitestDataSourceDSQuerygetTestResolver1A3C9201": {
+    "ApidsQuerygetTestResolverCCED7EC2": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -213,11 +166,11 @@
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
-        "ApiSchema510EECD7",
-        "ApitestDataSourceDS776EA507"
+        "Apids0DB53FEA",
+        "ApiSchema510EECD7"
       ]
     },
-    "ApitestDataSourceDSQuerygetTestsResolver61ED88B6": {
+    "ApidsQuerygetTestsResolver952F49EE": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -234,11 +187,11 @@
         "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
       },
       "DependsOn": [
-        "ApiSchema510EECD7",
-        "ApitestDataSourceDS776EA507"
+        "Apids0DB53FEA",
+        "ApiSchema510EECD7"
       ]
     },
-    "ApitestDataSourceDSMutationaddTestResolver0D3A4591": {
+    "ApidsMutationaddTestResolverBCF0400B": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -255,8 +208,8 @@
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
-        "ApiSchema510EECD7",
-        "ApitestDataSourceDS776EA507"
+        "Apids0DB53FEA",
+        "ApiSchema510EECD7"
       ]
     },
     "TestTable5769773A": {

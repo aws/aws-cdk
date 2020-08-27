@@ -25,7 +25,8 @@
         "distName": "aws-cdk.cx-api",
         "module": "aws_cdk.cx_api"
       }
-    }
+    },
+    "projectReferences": true
   },
   "scripts": {
     "build": "cdk-build",
@@ -45,20 +46,20 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.2.2",
-    "@aws-cdk/cloud-assembly-schema": "0.0.0"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "semver": "^7.2.2"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.4",
+    "@types/jest": "^26.0.10",
     "@types/mock-fs": "^4.10.0",
-    "@types/semver": "^7.3.1",
+    "@types/semver": "^7.3.3",
     "cdk-build-tools": "0.0.0",
     "jest": "^25.5.4",
-    "mock-fs": "^4.12.0",
+    "mock-fs": "^4.13.0",
     "pkglint": "0.0.0"
   },
   "repository": {

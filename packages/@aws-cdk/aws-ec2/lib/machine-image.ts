@@ -126,7 +126,7 @@ export interface WindowsImageProps {
  *
  * https://aws.amazon.com/blogs/mt/query-for-the-latest-windows-ami-using-systems-manager-parameter-store/
  */
-export class WindowsImage implements IMachineImage  {
+export class WindowsImage implements IMachineImage {
   constructor(private readonly version: WindowsVersion, private readonly props: WindowsImageProps = {}) {
   }
 
@@ -354,7 +354,7 @@ export interface GenericWindowsImageProps {
  * Linux images IDs are not published to SSM parameter store yet, so you'll have to
  * manually specify an AMI map.
  */
-export class GenericLinuxImage implements IMachineImage  {
+export class GenericLinuxImage implements IMachineImage {
   constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericLinuxImageProps = {}) {
   }
 
@@ -382,7 +382,7 @@ export class GenericLinuxImage implements IMachineImage  {
  *
  * Allows you to create a generic Windows EC2 , manually specify an AMI map.
  */
-export class GenericWindowsImage implements IMachineImage  {
+export class GenericWindowsImage implements IMachineImage {
   constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericWindowsImageProps = {}) {
   }
 

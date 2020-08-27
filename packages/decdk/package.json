@@ -179,20 +179,20 @@
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.0.2",
+    "constructs": "^3.0.4",
     "fs-extra": "^9.0.1",
-    "jsii-reflect": "^1.9.0",
+    "jsii-reflect": "^1.11.0",
     "jsonschema": "^1.2.6",
     "yaml": "1.9.2",
-    "yargs": "^15.3.1"
+    "yargs": "^15.4.1"
   },
   "devDependencies": {
-    "@types/fs-extra": "^8.1.0",
-    "@types/jest": "^26.0.4",
+    "@types/fs-extra": "^8.1.1",
+    "@types/jest": "^26.0.10",
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.5",
     "jest": "^25.5.4",
-    "jsii": "^1.9.0"
+    "jsii": "^1.11.0"
   },
   "keywords": [
     "aws",

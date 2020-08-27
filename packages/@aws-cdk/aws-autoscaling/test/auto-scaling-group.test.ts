@@ -457,7 +457,7 @@ nodeunitShim({
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      healthCheck: autoscaling.HealthCheck.elb({grace: cdk.Duration.minutes(15)}),
+      healthCheck: autoscaling.HealthCheck.elb({ grace: cdk.Duration.minutes(15) }),
     });
 
     // THEN
@@ -489,7 +489,8 @@ nodeunitShim({
             'GroupId',
           ],
         },
-        'most-secure'],
+        'most-secure',
+      ],
     }));
     test.done();
   },
@@ -511,8 +512,9 @@ nodeunitShim({
         pauseTime: cdk.Duration.seconds(345),
       },
     });
-    asg.node.applyAspect(new cdk.Tag('superfood', 'acai'));
-    asg.node.applyAspect(new cdk.Tag('notsuper', 'caramel', { applyToLaunchedInstances: false }));
+
+    cdk.Tags.of(asg).add('superfood', 'acai');
+    cdk.Tags.of(asg).add('notsuper', 'caramel', { applyToLaunchedInstances: false });
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
@@ -1140,10 +1142,10 @@ nodeunitShim({
       MetricsCollection: [
         {
           Granularity: '1Minute',
-          Metrics: [ 'GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances' ],
+          Metrics: ['GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances'],
         }, {
           Granularity: '1Minute',
-          Metrics: [ 'GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances' ],
+          Metrics: ['GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances'],
         },
       ],
     }));
@@ -1170,7 +1172,7 @@ nodeunitShim({
       MetricsCollection: [
         {
           Granularity: '1Minute',
-          Metrics: [ 'GroupMinSize', 'GroupMaxSize' ],
+          Metrics: ['GroupMinSize', 'GroupMaxSize'],
         },
       ],
     }));
@@ -1216,7 +1218,8 @@ nodeunitShim({
             'autoscaling:EC2_INSTANCE_TERMINATE',
           ],
         },
-      ]},
+      ],
+    },
     ));
 
     test.done();
@@ -1273,7 +1276,8 @@ nodeunitShim({
             'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
           ],
         },
-      ]},
+      ],
+    },
     ));
 
     test.done();
@@ -1305,7 +1309,8 @@ nodeunitShim({
             'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
           ],
         },
-      ]},
+      ],
+    },
     ));
 
     test.done();
@@ -1341,7 +1346,7 @@ test('Can set autoScalingGroupName', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup',  {
+  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
     AutoScalingGroupName: 'MyAsg',
   }));
 });

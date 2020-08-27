@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
-import { Role } from '@aws-cdk/aws-iam';
+import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnParameter, Construct, Duration, Stack, Tag } from '@aws-cdk/core';
+import { CfnParameter, Construct, Duration, Stack, Tags } from '@aws-cdk/core';
 import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
@@ -28,48 +28,8 @@ describe('User Pool', () => {
         EmailSubject: 'Verify your new account',
         SmsMessage: 'The verification code to your new account is {####}',
       },
-      SmsConfiguration: {
-        SnsCallerArn: {
-          'Fn::GetAtt': [ 'PoolsmsRoleC3352CE6', 'Arn' ],
-        },
-        ExternalId: 'Pool',
-      },
+      SmsConfiguration: ABSENT,
       lambdaTriggers: ABSENT,
-    });
-
-    expect(stack).toHaveResource('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Condition: {
-              StringEquals: {
-                'sts:ExternalId': 'Pool',
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              Service: 'cognito-idp.amazonaws.com',
-            },
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      Policies: [
-        {
-          PolicyDocument: {
-            Statement: [
-              {
-                Action: 'sns:Publish',
-                Effect: 'Allow',
-                Resource: '*',
-              },
-            ],
-            Version: '2012-10-17',
-          },
-          PolicyName: 'sns-publish',
-        },
-      ],
     });
   });
 
@@ -247,7 +207,7 @@ describe('User Pool', () => {
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
     expect(stack.resolve(pool.userPoolArn)).toEqual({
-      'Fn::Join': [ '', [
+      'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':cognito-idp:',
@@ -255,7 +215,7 @@ describe('User Pool', () => {
         ':',
         { Ref: 'AWS::AccountId' },
         ':userpool/test-user-pool',
-      ] ],
+      ]],
     });
   });
 
@@ -267,7 +227,7 @@ describe('User Pool', () => {
     const pool = new UserPool(stack, 'Pool', {
       userPoolName: 'myPool',
     });
-    Tag.add(pool, 'PoolTag', 'PoolParty');
+    Tags.of(pool).add('PoolTag', 'PoolParty');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
@@ -347,9 +307,9 @@ describe('User Pool', () => {
       },
     });
 
-    [ createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
+    [createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
       postConfirmation, preAuthentication, preSignUp, preTokenGeneration, userMigration,
-      verifyAuthChallengeResponse ].forEach((fn) => {
+      verifyAuthChallengeResponse].forEach((fn) => {
       expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: stack.resolve(fn.functionArn),
@@ -412,7 +372,7 @@ describe('User Pool', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UsernameAttributes: ABSENT,
-      AliasAttributes: [ 'email' ],
+      AliasAttributes: ['email'],
     });
   });
 
@@ -427,7 +387,7 @@ describe('User Pool', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      UsernameAttributes: [ 'email', 'phone_number' ],
+      UsernameAttributes: ['email', 'phone_number'],
       AliasAttributes: ABSENT,
     });
   });
@@ -449,11 +409,11 @@ describe('User Pool', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
-      AutoVerifiedAttributes: [ 'email' ],
+      AutoVerifiedAttributes: ['email'],
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
-      AutoVerifiedAttributes: [ 'email', 'phone_number' ],
+      AutoVerifiedAttributes: ['email', 'phone_number'],
     });
   });
 
@@ -469,7 +429,7 @@ describe('User Pool', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      AutoVerifiedAttributes: [ 'email', 'phone_number' ],
+      AutoVerifiedAttributes: ['email', 'phone_number'],
     });
   });
 
@@ -760,12 +720,12 @@ describe('User Pool', () => {
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
       MfaConfiguration: 'OPTIONAL',
-      EnabledMfas: [ 'SMS_MFA' ],
+      EnabledMfas: ['SMS_MFA'],
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
       MfaConfiguration: 'ON',
-      EnabledMfas: [ 'SMS_MFA' ],
+      EnabledMfas: ['SMS_MFA'],
     });
   });
 
@@ -784,7 +744,7 @@ describe('User Pool', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      EnabledMfas: [ 'SMS_MFA', 'SOFTWARE_TOKEN_MFA' ],
+      EnabledMfas: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA'],
     });
   });
 
@@ -1083,6 +1043,231 @@ describe('User Pool', () => {
           ],
         },
       });
+    });
+  });
+
+  describe('sms roles', () => {
+    test('default', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool');
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: ABSENT,
+      });
+    });
+
+    test('smsRole and smsExternalId is set', () => {
+      // GIVEN
+      const stack = new Stack();
+      const smsRole = new Role(stack, 'smsRole', {
+        assumedBy: new ServicePrincipal('service.amazonaws.com'),
+      });
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        smsRole,
+        smsRoleExternalId: 'role-external-id',
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: {
+          ExternalId: 'role-external-id',
+          SnsCallerArn: { 'Fn::GetAtt': ['smsRoleA4587CE8', 'Arn'] },
+        },
+      });
+    });
+
+    test('setting enableSmsRole creates an sms role', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        enableSmsRole: true,
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: {
+          ExternalId: 'pool',
+          SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
+        },
+      });
+      expect(stack).toHaveResource('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Condition: {
+                StringEquals: {
+                  'sts:ExternalId': 'pool',
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Service: 'cognito-idp.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        Policies: [
+          {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sns:Publish',
+                  Effect: 'Allow',
+                  Resource: '*',
+                },
+              ],
+              Version: '2012-10-17',
+            },
+            PolicyName: 'sns-publish',
+          },
+        ],
+      });
+    });
+
+    test('auto sms role is not created when MFA and phoneVerification is off', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        mfa: Mfa.OFF,
+        signInAliases: {
+          phone: false,
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: ABSENT,
+      });
+    });
+
+    test('auto sms role is not created when OTP-based MFA is enabled and phoneVerification is off', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        mfa: Mfa.REQUIRED,
+        mfaSecondFactor: {
+          otp: true,
+          sms: false,
+        },
+        signInAliases: {
+          phone: false,
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: ABSENT,
+      });
+    });
+
+    test('auto sms role is created when phone verification is turned on', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        mfa: Mfa.OFF,
+        signInAliases: { phone: true },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: {
+          ExternalId: 'pool',
+          SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
+        },
+      });
+    });
+
+    test('auto sms role is created when phone auto-verification is set', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        mfa: Mfa.OFF,
+        signInAliases: { phone: false },
+        autoVerify: { phone: true },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: {
+          ExternalId: 'pool',
+          SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
+        },
+      });
+    });
+
+    test('auto sms role is created when MFA is turned on', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        mfa: Mfa.REQUIRED,
+        mfaSecondFactor: {
+          sms: true,
+          otp: false,
+        },
+        signInAliases: {
+          phone: false,
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: {
+          ExternalId: 'pool',
+          SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
+        },
+      });
+    });
+
+    test('auto sms role is not created when enableSmsRole is unset, even when MFA is configured', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        mfa: Mfa.REQUIRED,
+        mfaSecondFactor: {
+          sms: true,
+          otp: false,
+        },
+        enableSmsRole: false,
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: ABSENT,
+      });
+    });
+
+    test('throws an error when smsRole is specified but enableSmsRole is unset', () => {
+      const stack = new Stack();
+      const smsRole = new Role(stack, 'smsRole', {
+        assumedBy: new ServicePrincipal('service.amazonaws.com'),
+      });
+
+      expect(() => new UserPool(stack, 'pool', {
+        smsRole,
+        enableSmsRole: false,
+      })).toThrow(/enableSmsRole cannot be disabled/);
     });
   });
 });

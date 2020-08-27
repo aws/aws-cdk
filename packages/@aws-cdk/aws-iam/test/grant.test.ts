@@ -1,6 +1,6 @@
 import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import { CfnResource, Construct, Stack } from '@aws-cdk/core';
+import { CfnResource, Construct, Resource, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
 let stack: Stack;
@@ -113,13 +113,12 @@ function expectDependencyOn(id: string) {
   }, ResourcePart.CompleteDefinition);
 }
 
-class FakeResourceWithPolicy extends CfnResource implements iam.IResourceWithPolicy {
-  private policy: CfnResource;
+class FakeResourceWithPolicy extends Resource implements iam.IResourceWithPolicy {
+  private readonly policy: CfnResource;
 
   constructor(scope: Construct, id: string) {
-    super(scope, id, {
-      type: 'CDK::Test::Buckaroo',
-    });
+    super(scope, id);
+
     this.policy = new CfnResource(this, 'Policy', {
       type: 'CDK::Test::BuckarooPolicy',
     });

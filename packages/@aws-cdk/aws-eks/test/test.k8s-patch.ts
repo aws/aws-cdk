@@ -16,7 +16,7 @@ export = {
     new KubernetesPatch(stack, 'MyPatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
-      restorePatch: { restore: { patch: 123 }},
+      restorePatch: { restore: { patch: 123 } },
       resourceName: 'myResourceName',
     });
 
@@ -53,7 +53,7 @@ export = {
     new KubernetesPatch(stack, 'MyPatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
-      restorePatch: { restore: { patch: 123 }},
+      restorePatch: { restore: { patch: 123 } },
       resourceName: 'myResourceName',
     });
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
@@ -70,21 +70,21 @@ export = {
     new KubernetesPatch(stack, 'jsonPatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
-      restorePatch: { restore: { patch: 123 }},
+      restorePatch: { restore: { patch: 123 } },
       resourceName: 'jsonPatchResource',
       patchType: PatchType.JSON,
     });
     new KubernetesPatch(stack, 'mergePatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
-      restorePatch: { restore: { patch: 123 }},
+      restorePatch: { restore: { patch: 123 } },
       resourceName: 'mergePatchResource',
       patchType: PatchType.MERGE,
     });
     new KubernetesPatch(stack, 'strategicPatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
-      restorePatch: { restore: { patch: 123 }},
+      restorePatch: { restore: { patch: 123 } },
       resourceName: 'strategicPatchResource',
       patchType: PatchType.STRATEGIC,
     });

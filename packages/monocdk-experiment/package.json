@@ -70,7 +70,8 @@
         "distName": "monocdk.experiment",
         "module": "monocdk_experiment"
       }
-    }
+    },
+    "projectReferences": false
   },
   "author": {
     "name": "Amazon Web Services",
@@ -88,7 +89,7 @@
   ],
   "dependencies": {
     "case": "1.6.3",
-    "constructs": "^3.0.2",
+    "constructs": "^3.0.4",
     "fs-extra": "^9.0.1",
     "jsonschema": "^1.2.5",
     "minimatch": "^3.0.4",
@@ -249,7 +250,7 @@
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "@types/fs-extra": "^8.1.1",
-    "@types/node": "^10.17.27",
+    "@types/node": "^10.17.28",
     "cdk-build-tools": "0.0.0",
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
@@ -257,7 +258,7 @@
     "typescript": "~3.8.3"
   },
   "peerDependencies": {
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {

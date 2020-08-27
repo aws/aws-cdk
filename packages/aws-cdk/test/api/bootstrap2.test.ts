@@ -108,11 +108,8 @@ describe('Bootstrapping v2', () => {
       .map((o: any) => o.Export.Name);
 
     expect(exports).toEqual([
-      // This is used by aws-s3-assets
+      // This used to be used by aws-s3-assets
       { 'Fn::Sub': 'CdkBootstrap-${Qualifier}-FileAssetKeyArn' },
-      // This is used by the CLI to verify the bootstrap stack version,
-      // and could also be used by templates which are deployed through pipelines.
-      { 'Fn::Sub': 'CdkBootstrap-${Qualifier}-Version' },
     ]);
   });
 

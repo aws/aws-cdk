@@ -1,6 +1,8 @@
 import * as cdk from '@aws-cdk/core';
-import { BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
+import {
+  BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
+  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
+} from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { validateNetworkProtocol } from '../shared/util';
@@ -111,7 +113,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
 
-  protected validate(): string[]  {
+  protected validate(): string[] {
     const ret = super.validate();
 
     const healthCheck: HealthCheck = this.healthCheck || {};
@@ -198,7 +200,7 @@ export interface INetworkLoadBalancerTarget {
 
 const NLB_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS, Protocol.TCP];
 const NLB_PATH_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS];
-const NLB_HEALTH_CHECK_TIMEOUTS: {[protocol in Protocol]?: number} =  {
+const NLB_HEALTH_CHECK_TIMEOUTS: {[protocol in Protocol]?: number} = {
   [Protocol.HTTP]: 6,
   [Protocol.HTTPS]: 10,
   [Protocol.TCP]: 10,
