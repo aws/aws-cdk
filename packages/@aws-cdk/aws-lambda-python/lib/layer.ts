@@ -70,7 +70,7 @@ export class PythonDependenciesLayer extends lambda.LayerVersion {
 
     super(scope, id, {
       ...props,
-      compatibleRuntimes: [runtime],
+      compatibleRuntimes,
       code: bundleDependenciesLayer({
         entry,
         runtime,
