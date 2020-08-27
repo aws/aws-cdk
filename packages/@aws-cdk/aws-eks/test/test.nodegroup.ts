@@ -67,7 +67,7 @@ export = {
 
     // THEN
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -124,7 +124,7 @@ export = {
       cluster,
       remoteAccess: {
         sshKeyName: 'foo',
-        sourceSecurityGroups: [ new ec2.SecurityGroup(stack, 'SG', { vpc }) ],
+        sourceSecurityGroups: [new ec2.SecurityGroup(stack, 'SG', { vpc })],
       },
     });
     // THEN

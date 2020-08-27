@@ -55,7 +55,7 @@ export class BucketNotifications extends cdk.Construct {
     // policies to allow this notification to happen.
     const targetProps = target.bind(this, this.bucket);
     const commonConfig: CommonConfiguration = {
-      Events: [ event ],
+      Events: [event],
       Filter: renderFilters(filters),
     };
 
@@ -63,7 +63,7 @@ export class BucketNotifications extends cdk.Construct {
     // for example, the SNS topic policy must be created /before/ the notification resource.
     // otherwise, S3 won't be able to confirm the subscription.
     if (targetProps.dependencies) {
-      resource.construct.addDependency(...targetProps.dependencies);
+      resource.node.addDependency(...targetProps.dependencies);
     }
 
     // based on the target type, add the the correct configurations array

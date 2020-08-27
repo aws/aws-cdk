@@ -1,6 +1,6 @@
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
-import {StreamEventSource, StreamEventSourceProps} from './stream';
+import { StreamEventSource, StreamEventSourceProps } from './stream';
 
 export interface DynamoEventSourceProps extends StreamEventSourceProps {
 }
@@ -21,11 +21,11 @@ export class DynamoEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     if (!this.table.tableStreamArn) {
-      throw new Error(`DynamoDB Streams must be enabled on the table ${this.table.construct.path}`);
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.table.node.path}`);
     }
 
-    const eventSourceMapping = target.addEventSourceMapping(`DynamoDBEventSource:${this.table.construct.uniqueId}`,
-      this.enrichMappingOptions({eventSourceArn: this.table.tableStreamArn}),
+    const eventSourceMapping = target.addEventSourceMapping(`DynamoDBEventSource:${this.table.node.uniqueId}`,
+      this.enrichMappingOptions({ eventSourceArn: this.table.tableStreamArn }),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 

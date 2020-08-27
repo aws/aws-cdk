@@ -60,7 +60,7 @@ abstract class RuleBase extends Resource implements IRule {
   public onComplianceChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'Config Rules Compliance Change' ],
+      detailType: ['Config Rules Compliance Change'],
     });
     return rule;
   }
@@ -71,7 +71,7 @@ abstract class RuleBase extends Resource implements IRule {
   public onReEvaluationStatus(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'Config Rules Re-evaluation Status' ],
+      detailType: ['Config Rules Re-evaluation Status'],
     });
     return rule;
   }
@@ -357,7 +357,7 @@ export class CustomRule extends RuleNew {
     }
 
     // The lambda permission must be created before the rule
-    this.construct.addDependency(props.lambdaFunction);
+    this.node.addDependency(props.lambdaFunction);
 
     const rule = new CfnConfigRule(this, 'Resource', {
       configRuleName: this.physicalName,

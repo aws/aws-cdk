@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 
 import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
-import { Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Tag, Token } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags } from '@aws-cdk/core';
 import { CfnInstance, CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 
@@ -176,12 +176,14 @@ export function synthesizeBlockDeviceMappings(construct: Construct, blockDevices
           throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        construct.construct.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
       }
     }
 
     return {
-      deviceName, ebs, virtualName,
+      deviceName,
+      ebs,
+      virtualName,
       noDevice: mappingEnabled === false ? {} : undefined,
     };
   });
@@ -468,7 +470,7 @@ abstract class VolumeBase extends Resource implements IVolume {
   public grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
-      actions: [ 'ec2:AttachVolume' ],
+      actions: ['ec2:AttachVolume'],
       resourceArns: this.collectGrantResourceArns(instances),
     });
 
@@ -494,7 +496,7 @@ abstract class VolumeBase extends Resource implements IVolume {
 
   public grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
     const tagValue = this.calculateResourceTagValue([this, ...constructs]);
-    const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? tagValue.slice(0,10).toUpperCase()}`;
+    const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
     const grantCondition: { [key: string]: string } = {};
     grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
 
@@ -505,8 +507,8 @@ abstract class VolumeBase extends Resource implements IVolume {
 
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
-    Tag.add(this, tagKey, tagValue);
-    constructs.forEach(construct => Tag.add(construct, tagKey, tagValue));
+    Tags.of(this).add(tagKey, tagValue);
+    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
 
     return result;
   }
@@ -514,7 +516,7 @@ abstract class VolumeBase extends Resource implements IVolume {
   public grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
-      actions: [ 'ec2:DetachVolume' ],
+      actions: ['ec2:DetachVolume'],
       resourceArns: this.collectGrantResourceArns(instances),
     });
     // Note: No encryption key permissions are required to detach an encrypted volume.
@@ -523,7 +525,7 @@ abstract class VolumeBase extends Resource implements IVolume {
 
   public grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
     const tagValue = this.calculateResourceTagValue([this, ...constructs]);
-    const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? tagValue.slice(0,10).toUpperCase()}`;
+    const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
     const grantCondition: { [key: string]: string } = {};
     grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
 
@@ -534,8 +536,8 @@ abstract class VolumeBase extends Resource implements IVolume {
 
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
-    Tag.add(this, tagKey, tagValue);
-    constructs.forEach(construct => Tag.add(construct, tagKey, tagValue));
+    Tags.of(this).add(tagKey, tagValue);
+    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
 
     return result;
   }
@@ -556,7 +558,7 @@ abstract class VolumeBase extends Resource implements IVolume {
 
   private calculateResourceTagValue(constructs: Construct[]): string {
     const md5 = crypto.createHash('md5');
-    constructs.forEach(construct => md5.update(construct.construct.uniqueId));
+    constructs.forEach(construct => md5.update(construct.node.uniqueId));
     return md5.digest('hex');
   }
 }
@@ -603,7 +605,7 @@ export class Volume extends VolumeBase {
       kmsKeyId: props.encryptionKey?.keyArn,
       iops: props.iops,
       multiAttachEnabled: props.enableMultiAttach ?? false,
-      size: props.size?.toGibibytes({rounding: SizeRoundingBehavior.FAIL}),
+      size: props.size?.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }),
       snapshotId: props.snapshotId,
       volumeType: props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
     });
@@ -654,7 +656,7 @@ export class Volume extends VolumeBase {
         throw new Error('`iops` must be in the range 100 to 64,000, inclusive.');
       }
 
-      if (props.size && (props.iops > 50 * props.size.toGibibytes({rounding: SizeRoundingBehavior.FAIL}))) {
+      if (props.size && (props.iops > 50 * props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }))) {
         throw new Error('`iops` has a maximum ratio of 50 IOPS/GiB.');
       }
     }
@@ -664,7 +666,7 @@ export class Volume extends VolumeBase {
     }
 
     if (props.size) {
-      const size = props.size.toGibibytes({rounding: SizeRoundingBehavior.FAIL});
+      const size = props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL });
       // Enforce maximum volume size:
       // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html#ebs-volume-characteristics
       const sizeRanges: { [key: string]: { Min: number, Max: number } } = {};

@@ -97,6 +97,13 @@ export interface DeployStackOptions {
    *   the resource currently being deployed.
    */
   progress?: StackActivityProgress;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -166,6 +173,7 @@ export class CloudFormationDeployments {
       parameters: options.parameters,
       usePreviousParameters: options.usePreviousParameters,
       progress: options.progress,
+      ci: options.ci,
     });
   }
 

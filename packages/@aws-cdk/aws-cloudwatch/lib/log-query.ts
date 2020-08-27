@@ -2,6 +2,32 @@ import * as cdk from '@aws-cdk/core';
 import { ConcreteWidget } from './widget';
 
 /**
+ * Types of view
+ */
+export enum LogQueryVisualizationType {
+  /**
+   * Table view
+   */
+  TABLE = 'table',
+  /**
+   * Line view
+   */
+  LINE = 'line',
+  /**
+   * Stacked area view
+   */
+  STACKEDAREA = 'stackedarea',
+  /**
+   * Bar view
+   */
+  BAR = 'bar',
+  /**
+   * Pie view
+   */
+  PIE = 'pie',
+}
+
+/**
  * Properties for a Query widget
  */
 export interface LogQueryWidgetProps {
@@ -44,6 +70,13 @@ export interface LogQueryWidgetProps {
   readonly region?: string;
 
   /**
+   * The type of view to use
+   *
+   * @default LogQueryVisualizationType.TABLE
+   */
+  readonly view?: LogQueryVisualizationType;
+
+  /**
    * Width of the widget, in a grid of 24 units wide
    *
    * @default 6
@@ -83,18 +116,27 @@ export class LogQueryWidget extends ConcreteWidget {
       ? this.props.queryLines.join('\n| ')
       : this.props.queryString;
 
+    const properties: any = {
+      view: this.props.view? this.props.view : LogQueryVisualizationType.TABLE,
+      title: this.props.title,
+      region: this.props.region || cdk.Aws.REGION,
+      query: `${sources} | ${query}`,
+    };
+
+    // adding stacked property in case of LINE or STACKEDAREA
+    if (this.props.view === LogQueryVisualizationType.LINE || this.props.view === LogQueryVisualizationType.STACKEDAREA) {
+      // assign the right native view value. both types share the same value
+      properties.view = 'timeSeries',
+      properties.stacked = this.props.view === LogQueryVisualizationType.STACKEDAREA ? true : false;
+    }
+
     return [{
       type: 'log',
       width: this.width,
       height: this.height,
       x: this.x,
       y: this.y,
-      properties: {
-        view: 'table',
-        title: this.props.title,
-        region: this.props.region || cdk.Aws.REGION,
-        query: `${sources} | ${query}`,
-      },
+      properties: properties,
     }];
   }
 }

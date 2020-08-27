@@ -145,12 +145,12 @@ export class VirtualRouter extends VirtualRouterBase {
 
   constructor(scope: cdk.Construct, id: string, props: VirtualRouterProps) {
     super(scope, id, {
-      physicalName: props.virtualRouterName || cdk.Lazy.stringValue({ produce: () => this.construct.uniqueId }),
+      physicalName: props.virtualRouterName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
 
     this.mesh = props.mesh;
 
-    this.addListener(props.listener || { portMapping: { port: 8080, protocol: Protocol.HTTP }});
+    this.addListener(props.listener || { portMapping: { port: 8080, protocol: Protocol.HTTP } });
 
     const router = new CfnVirtualRouter(this, 'Resource', {
       virtualRouterName: this.physicalName,

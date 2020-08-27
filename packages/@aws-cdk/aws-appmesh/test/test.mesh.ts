@@ -121,7 +121,7 @@ export = {
         ServiceDiscovery: {
           AWSCloudMap: {
             NamespaceName: 'domain.local',
-            ServiceName: { 'Fn::GetAtt': [ 'testnamespaceSvcB55702EC', 'Name' ] },
+            ServiceName: { 'Fn::GetAtt': ['testnamespaceSvcB55702EC', 'Name'] },
           },
         },
       },

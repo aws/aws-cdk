@@ -80,9 +80,9 @@ describe('DatabaseInstance', () => {
         'Fn::Join': [
           '',
           [
-            { 'Fn::GetAtt': [ 'InstanceC1063A87', 'Endpoint' ] },
+            { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint'] },
             ':',
-            { 'Fn::GetAtt': [ 'InstanceC1063A87', 'Port' ] },
+            { 'Fn::GetAtt': ['InstanceC1063A87', 'Port'] },
           ],
         ],
       },
@@ -173,7 +173,7 @@ class TestStack extends cdk.Stack {
   constructor(scope?: cdk.Construct, id?: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
-    this.construct.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
+    this.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
 
     this.vpc = new ec2.Vpc(this, 'VPC');
     this.cluster = new DatabaseCluster(this, 'Database', {

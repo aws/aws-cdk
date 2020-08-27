@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CfnDeletionPolicy, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
@@ -83,6 +84,13 @@ export interface DatabaseClusterProps {
   readonly defaultDatabaseName?: string;
 
   /**
+   * Indicates whether the DB cluster should have deletion protection enabled.
+   *
+   * @default false
+   */
+  readonly deletionProtection?: boolean;
+
+  /**
    * Whether to enable storage encryption.
    *
    * @default - true if storageEncryptionKey is provided, false otherwise
@@ -122,6 +130,31 @@ export interface DatabaseClusterProps {
    * @default - RemovalPolicy.SNAPSHOT (remove the cluster and instances, but retain a snapshot of the data)
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The list of log types that need to be enabled for exporting to
+   * CloudWatch Logs.
+   *
+   * @default - no log exports
+   */
+  readonly cloudwatchLogsExports?: string[];
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs. When updating
+   * this property, unsetting it doesn't remove the log retention policy. To
+   * remove the retention policy, set the value to `Infinity`.
+   *
+   * @default - logs never expire
+   */
+  readonly cloudwatchLogsRetention?: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - a new role is created.
+   */
+  readonly cloudwatchLogsRetentionRole?: IRole;
 
   /**
    * The interval, in seconds, between points when Amazon RDS collects enhanced
@@ -341,7 +374,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnetIds.length < 2) {
-      this.construct.addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
+      this.node.addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
@@ -370,6 +403,129 @@ export class DatabaseCluster extends DatabaseClusterBase {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
+    const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
+    let { s3ImportRole, s3ExportRole } = this.setupS3ImportExport(props);
+    if (s3ImportRole) {
+      clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn });
+    }
+    if (s3ExportRole) {
+      clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn });
+    }
+
+    // bind the engine to the Cluster
+    const clusterEngineBindConfig = props.engine.bindToCluster(this, {
+      s3ImportRole,
+      s3ExportRole,
+      parameterGroup: props.parameterGroup,
+    });
+    const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
+    const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
+
+    const cluster = new CfnDBCluster(this, 'Resource', {
+      // Basic
+      engine: props.engine.engineType,
+      engineVersion: props.engine.engineVersion?.fullVersion,
+      dbClusterIdentifier: props.clusterIdentifier,
+      dbSubnetGroupName: subnetGroup.ref,
+      vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+      port: props.port ?? clusterEngineBindConfig.port,
+      dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
+      associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
+      deletionProtection: props.deletionProtection,
+      // Admin
+      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
+      masterUserPassword: secret
+        ? secret.secretValueFromJson('password').toString()
+        : (props.masterUser.password
+          ? props.masterUser.password.toString()
+          : undefined),
+      backupRetentionPeriod: props.backup?.retention?.toDays(),
+      preferredBackupWindow: props.backup?.preferredWindow,
+      preferredMaintenanceWindow: props.preferredMaintenanceWindow,
+      databaseName: props.defaultDatabaseName,
+      enableCloudwatchLogsExports: props.cloudwatchLogsExports,
+      // Encryption
+      kmsKeyId: props.storageEncryptionKey?.keyArn,
+      storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+    });
+
+    // if removalPolicy was not specified,
+    // leave it as the default, which is Snapshot
+    if (props.removalPolicy) {
+      cluster.applyRemovalPolicy(props.removalPolicy);
+    } else {
+      // The CFN default makes sense for DeletionPolicy,
+      // but doesn't cover UpdateReplacePolicy.
+      // Fix that here.
+      cluster.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
+    }
+
+    this.clusterIdentifier = cluster.ref;
+
+    // create a number token that represents the port of the cluster
+    const portAttribute = Token.asNumber(cluster.attrEndpointPort);
+    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
+
+    this.setLogRetention(props);
+
+    if (secret) {
+      this.secret = secret.attach(this);
+    }
+
+    this.createInstances(props, cluster, subnetGroup, portAttribute);
+
+    const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
+    this.connections = new ec2.Connections({ securityGroups, defaultPort });
+  }
+
+
+  /**
+   * Adds the single user rotation of the master password to this cluster.
+   *
+   * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
+   * before Secrets Manager triggers the next automatic rotation.
+   */
+  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
+    if (!this.secret) {
+      throw new Error('Cannot add single user rotation for a cluster without secret.');
+    }
+
+    const id = 'RotationSingleUser';
+    const existing = this.node.tryFindChild(id);
+    if (existing) {
+      throw new Error('A single user rotation was already added to this cluster.');
+    }
+
+    return new secretsmanager.SecretRotation(this, id, {
+      secret: this.secret,
+      automaticallyAfter,
+      application: this.singleUserRotationApplication,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcSubnets,
+      target: this,
+    });
+  }
+
+  /**
+   * Adds the multi user rotation to this cluster.
+   */
+  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (!this.secret) {
+      throw new Error('Cannot add multi user rotation for a cluster without secret.');
+    }
+    return new secretsmanager.SecretRotation(this, id, {
+      secret: options.secret,
+      masterSecret: this.secret,
+      automaticallyAfter: options.automaticallyAfter,
+      application: this.multiUserRotationApplication,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcSubnets,
+      target: this,
+    });
+  }
+
+  private setupS3ImportExport(props: DatabaseClusterProps): { s3ImportRole?: IRole, s3ExportRole?: IRole } {
     let s3ImportRole = props.s3ImportRole;
     if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
       if (props.s3ImportRole) {
@@ -398,73 +554,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
       }
     }
 
-    const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
-    if (s3ImportRole || s3ExportRole) {
-      if (s3ImportRole) {
-        clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn });
-      }
-      if (s3ExportRole) {
-        clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn });
-      }
-    }
+    return { s3ImportRole, s3ExportRole };
+  }
 
-    // bind the engine to the Cluster
-    const clusterEngineBindConfig = props.engine.bindToCluster(this, {
-      s3ImportRole,
-      s3ExportRole,
-      parameterGroup: props.parameterGroup,
-    });
-    const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
-    const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
-
-    const cluster = new CfnDBCluster(this, 'Resource', {
-      // Basic
-      engine: props.engine.engineType,
-      engineVersion: props.engine.engineVersion?.fullVersion,
-      dbClusterIdentifier: props.clusterIdentifier,
-      dbSubnetGroupName: subnetGroup.ref,
-      vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
-      port: props.port ?? clusterEngineBindConfig.port,
-      dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
-      associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
-      // Admin
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
-      masterUserPassword: secret
-        ? secret.secretValueFromJson('password').toString()
-        : (props.masterUser.password
-          ? props.masterUser.password.toString()
-          : undefined),
-      backupRetentionPeriod: props.backup && props.backup.retention && props.backup.retention.toDays(),
-      preferredBackupWindow: props.backup && props.backup.preferredWindow,
-      preferredMaintenanceWindow: props.preferredMaintenanceWindow,
-      databaseName: props.defaultDatabaseName,
-      // Encryption
-      kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
-      storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
-    });
-
-    // if removalPolicy was not specified,
-    // leave it as the default, which is Snapshot
-    if (props.removalPolicy) {
-      cluster.applyRemovalPolicy(props.removalPolicy);
-    } else {
-      // The CFN default makes sense for DeletionPolicy,
-      // but doesn't cover UpdateReplacePolicy.
-      // Fix that here.
-      cluster.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
-    }
-
-    this.clusterIdentifier = cluster.ref;
-
-    // create a number token that represents the port of the cluster
-    const portAttribute = Token.asNumber(cluster.attrEndpointPort);
-    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
-    this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
-
-    if (secret) {
-      this.secret = secret.attach(this);
-    }
-
+  private createInstances(props: DatabaseClusterProps, cluster: CfnDBCluster, subnetGroup: CfnDBSubnetGroup, portAttribute: number) {
     const instanceCount = props.instances != null ? props.instances : 2;
     if (instanceCount < 1) {
       throw new Error('At least one instance is required');
@@ -487,7 +580,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
     const instanceParameterGroupConfig = props.instanceProps.parameterGroup?.bindToInstance({});
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
-
       const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}` :
         props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
           undefined;
@@ -520,59 +612,30 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
-      instance.construct.addDependency(internetConnected);
+      instance.node.addDependency(internetConnected);
 
       this.instanceIdentifiers.push(instance.ref);
       this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
     }
-
-    const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
-    this.connections = new ec2.Connections({ securityGroups, defaultPort });
   }
 
-  /**
-   * Adds the single user rotation of the master password to this cluster.
-   *
-   * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
-   * before Secrets Manager triggers the next automatic rotation.
-   */
-  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
-    if (!this.secret) {
-      throw new Error('Cannot add single user rotation for a cluster without secret.');
-    }
+  private setLogRetention(props: DatabaseClusterProps) {
+    if (props.cloudwatchLogsExports) {
+      const unsupportedLogTypes = props.cloudwatchLogsExports.filter(logType => !props.engine.supportedLogTypes.includes(logType));
+      if (unsupportedLogTypes.length > 0) {
+        throw new Error(`Unsupported logs for the current engine type: ${unsupportedLogTypes.join(',')}`);
+      }
 
-    const id = 'RotationSingleUser';
-    const existing = this.construct.tryFindChild(id);
-    if (existing) {
-      throw new Error('A single user rotation was already added to this cluster.');
+      if (props.cloudwatchLogsRetention) {
+        for (const log of props.cloudwatchLogsExports) {
+          new logs.LogRetention(this, `LogRetention${log}`, {
+            logGroupName: `/aws/rds/cluster/${this.clusterIdentifier}/${log}`,
+            retention: props.cloudwatchLogsRetention,
+            role: props.cloudwatchLogsRetentionRole,
+          });
+        }
+      }
     }
-
-    return new secretsmanager.SecretRotation(this, id, {
-      secret: this.secret,
-      automaticallyAfter,
-      application: this.singleUserRotationApplication,
-      vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
-      target: this,
-    });
-  }
-
-  /**
-   * Adds the multi user rotation to this cluster.
-   */
-  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
-    if (!this.secret) {
-      throw new Error('Cannot add multi user rotation for a cluster without secret.');
-    }
-    return new secretsmanager.SecretRotation(this, id, {
-      secret: options.secret,
-      masterSecret: this.secret,
-      automaticallyAfter: options.automaticallyAfter,
-      application: this.multiUserRotationApplication,
-      vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
-      target: this,
-    });
   }
 }
 

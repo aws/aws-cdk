@@ -62,7 +62,7 @@ export = {
     const assembly = app.synth();
 
     // THEN
-    const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${nested.construct.uniqueId}.nested.template.json`), 'utf-8'));
+    const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${nested.node.uniqueId}.nested.template.json`), 'utf-8'));
     test.deepEqual(template, {
       Resources: {
         ResourceInNestedStack: {
@@ -446,7 +446,7 @@ export = {
     // THEN
     const manifest = app.synth();
     const consumerDeps = manifest.getStackArtifact(consumerTopLevel.artifactId).dependencies.map(d => d.id);
-    test.deepEqual(consumerDeps, [ 'ProducerTopLevel' ]);
+    test.deepEqual(consumerDeps, ['ProducerTopLevel']);
     test.done();
   },
 
@@ -847,7 +847,7 @@ export = {
     const resource = new CfnResource(nested, 'resource', { type: 'foo' });
 
     // WHEN
-    resource.construct.addMetadata('foo', 'bar');
+    resource.node.addMetadata('foo', 'bar');
 
     // THEN: the first non-nested stack records the assembly metadata
     const asm = app.synth();

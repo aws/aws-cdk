@@ -144,7 +144,7 @@ export class FargateProfile extends Construct implements ITaggable {
 
     this.podExecutionRole = props.podExecutionRole ?? new iam.Role(this, 'PodExecutionRole', {
       assumedBy: new iam.ServicePrincipal('eks-fargate-pods.amazonaws.com'),
-      managedPolicies: [ iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy') ],
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy')],
     });
 
     this.podExecutionRole.grantPassRole(props.cluster._kubectlCreationRole);
@@ -189,7 +189,7 @@ export class FargateProfile extends Construct implements ITaggable {
     const clusterFargateProfiles = props.cluster._attachFargateProfile(this);
     if (clusterFargateProfiles.length > 1) {
       const previousProfile = clusterFargateProfiles[clusterFargateProfiles.length - 2];
-      resource.construct.addDependency(previousProfile);
+      resource.node.addDependency(previousProfile);
     }
 
     // map the fargate pod execution role to the relevant groups in rbac

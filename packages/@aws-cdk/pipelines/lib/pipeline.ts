@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput, Construct, PhysicalName, Stack, Stage } from '@aws-cdk/core';
+import { App, CfnOutput, Construct, PhysicalName, Stack, Stage, Aspects } from '@aws-cdk/core';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
@@ -65,7 +65,7 @@ export class CdkPipeline extends Construct {
   constructor(scope: Construct, id: string, props: CdkPipelineProps) {
     super(scope, id);
 
-    if (!App.isApp(this.construct.root)) {
+    if (!App.isApp(this.node.root)) {
       throw new Error('CdkPipeline must be created under an App');
     }
 
@@ -103,7 +103,7 @@ export class CdkPipeline extends Construct {
       projectName: maybeSuffix(props.pipelineName, '-publish'),
     });
 
-    this.construct.applyAspect({ visit: () => this._assets.removeAssetsStageIfEmpty() });
+    Aspects.of(this).add({ visit: () => this._assets.removeAssetsStageIfEmpty() });
   }
 
   /**
@@ -195,7 +195,7 @@ export class CdkPipeline extends Construct {
         const depAction = stackActions.find(s => s.stackArtifactId === depId);
 
         if (depAction === undefined) {
-          this.construct.addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
+          this.node.addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
               `'${depId}', but that dependency is not deployed through the pipeline!`);
         } else if (!(depAction.executeRunOrder < stackAction.prepareRunOrder)) {
           yield `Stack '${stackAction.stackName}' depends on stack ` +
