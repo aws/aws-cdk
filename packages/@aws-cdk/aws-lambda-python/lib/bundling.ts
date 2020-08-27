@@ -10,17 +10,17 @@ export interface BundleFunctionOptions {
   /**
    * User-provided location containing the function code
    */
-  entry: string;
+  readonly entry: string;
 
   /**
    * Allow the function to install dependencies inline with the function code
    */
-  installDependenciesInline: boolean;
+  readonly installDependenciesInline: boolean;
 
   /**
    * The Lambda runtime to install dependencies from
    * */
-  runtime: lambda.Runtime;
+  readonly runtime: lambda.Runtime;
 }
 
 /**
@@ -46,8 +46,8 @@ export const DEPENDENCY_EXCLUDES = ['*.pyc'];
  * Options for bundleDependenciesInline
  */
 export interface BundleDependenciesInlineOptions {
-  entry: string;
-  runtime: lambda.Runtime;
+  readonly entry: string;
+  readonly runtime: lambda.Runtime;
 }
 
 /**
@@ -118,7 +118,7 @@ export interface BundlePythonCodeLayerOptions extends cdk.CopyOptions {
   /**
    * The base directory containing the code to create a lambda layer asset from.
    */
-  entry: string;
+  readonly entry: string;
 }
 
 /**
