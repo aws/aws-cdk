@@ -1,10 +1,10 @@
-import { readFileSync } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { CfnResource, Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
-import { ObjectType, ObjectTypeProps } from './schema-intermediate';
+import { Schema } from './schema';
+import { IIntermediateType } from './schema-base';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -202,21 +202,6 @@ export interface LogConfig {
 }
 
 /**
- * Enum containing the different modes of schema definition
- */
-export enum SchemaDefinition {
-  /**
-   * Define schema through functions like addType, addQuery, etc.
-   */
-  CODE = 'CODE',
-
-  /**
-   * Define schema in a file, i.e. schema.graphql
-   */
-  FILE = 'FILE',
-}
-
-/**
  * Properties for an AppSync GraphQL API
  */
 export interface GraphQLApiProps {
@@ -242,18 +227,13 @@ export interface GraphQLApiProps {
   /**
    * GraphQL schema definition. Specify how you want to define your schema.
    *
-   * SchemaDefinition.CODE allows schema definition through CDK
-   * SchemaDefinition.FILE allows schema definition through schema.graphql file
+   * Schema.fromFile(filePath: string) allows schema definition through schema.graphql file
+   *
+   * @default - schema will be generated code-first (i.e. addType, addObjectType, etc.)
    *
    * @experimental
    */
-  readonly schemaDefinition: SchemaDefinition;
-  /**
-   * File containing the GraphQL schema definition. You have to specify a definition or a file containing one.
-   *
-   * @default - Use schemaDefinition
-   */
-  readonly schemaDefinitionFile?: string;
+  readonly schema?: Schema;
   /**
    * A flag indicating whether or not X-Ray tracing is enabled for the GraphQL API.
    *
@@ -390,9 +370,9 @@ export class GraphQLApi extends GraphqlApiBase {
   public readonly name: string;
 
   /**
-   * underlying CFN schema resource
+   * the schema attached to this api
    */
-  public readonly schema: CfnGraphQLSchema;
+  public readonly schema: Schema;
 
   /**
    * the configured API key, if present
@@ -401,9 +381,9 @@ export class GraphQLApi extends GraphqlApiBase {
    */
   public readonly apiKey?: string;
 
-  private schemaMode: SchemaDefinition;
+  private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
-  private _apiKey?: CfnApiKey;
+  private apiKeyResource?: CfnApiKey;
 
   constructor(scope: Construct, id: string, props: GraphQLApiProps) {
     super(scope, id);
@@ -429,16 +409,16 @@ export class GraphQLApi extends GraphqlApiBase {
     this.arn = this.api.attrArn;
     this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
-    this.schemaMode = props.schemaDefinition;
-    this.schema = this.defineSchema(props.schemaDefinitionFile);
+    this.schema = props.schema ?? new Schema();
+    this.schemaResource = this.schema.bind(this);
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
       const config = modes.find((mode: AuthorizationMode) => {
         return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
       })?.apiKeyConfig;
-      this._apiKey = this.createAPIKey(config);
-      this._apiKey.addDependsOn(this.schema);
-      this.apiKey = this._apiKey.attrApiKey;
+      this.apiKeyResource = this.createAPIKey(config);
+      this.apiKeyResource.addDependsOn(this.schemaResource);
+      this.apiKey = this.apiKeyResource.attrApiKey;
     }
   }
 
@@ -515,7 +495,7 @@ export class GraphQLApi extends GraphqlApiBase {
    * @param construct the dependee
    */
   public addSchemaDependency(construct: CfnResource): boolean {
-    construct.addDependsOn(this.schema);
+    construct.addDependsOn(this.schemaResource);
     return true;
   }
 
@@ -585,29 +565,6 @@ export class GraphQLApi extends GraphqlApiBase {
   }
 
   /**
-   * Define schema based on props configuration
-   * @param file the file name/s3 location of Schema
-   */
-  private defineSchema(file?: string): CfnGraphQLSchema {
-    let definition;
-
-    if ( this.schemaMode === SchemaDefinition.FILE && !file) {
-      throw new Error('schemaDefinitionFile must be configured if using FILE definition mode.');
-    } else if ( this.schemaMode === SchemaDefinition.FILE && file ) {
-      definition = readFileSync(file).toString('utf-8');
-    } else if ( this.schemaMode === SchemaDefinition.CODE && !file ) {
-      definition = '';
-    } else if ( this.schemaMode === SchemaDefinition.CODE && file) {
-      throw new Error('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
-    }
-
-    return new CfnGraphQLSchema(this, 'Schema', {
-      apiId: this.apiId,
-      definition,
-    });
-  }
-
-  /**
    * Escape hatch to append to Schema as desired. Will always result
    * in a newline.
    *
@@ -617,31 +574,18 @@ export class GraphQLApi extends GraphqlApiBase {
    *
    * @experimental
    */
-  public appendToSchema(addition: string, delimiter?: string): void {
-    if ( this.schemaMode !== SchemaDefinition.CODE ) {
-      throw new Error('API cannot append to schema because schema definition mode is not configured as CODE.');
-    }
-    const sep = delimiter ?? '';
-    this.schema.definition = `${this.schema.definition}${sep}${addition}\n`;
+  public addToSchema(addition: string, delimiter?: string): void {
+    this.schema.addToSchema(addition, delimiter);
   }
 
   /**
-   * Add an object type to the schema
+   * Add type to the schema
    *
-   * @param name the name of the object type
-   * @param props the definition
+   * @param type the intermediate type to add to the schema
    *
    * @experimental
    */
-  public addType(name: string, props: ObjectTypeProps): ObjectType {
-    if ( this.schemaMode !== SchemaDefinition.CODE ) {
-      throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
-    };
-    const type = new ObjectType(name, {
-      definition: props.definition,
-      directives: props.directives,
-    });
-    this.appendToSchema(type.toString());
-    return type;
+  public addType(type: IIntermediateType): IIntermediateType {
+    return this.schema.addType(type);
   }
 }
