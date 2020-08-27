@@ -340,7 +340,6 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
             actions: [awsSdkToIamAction(call.service, call.action)],
             resources: props.policy.resources,
           });
-          provider.addToRolePolicy(statement);
           statements.push(statement);
         }
       }
