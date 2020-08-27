@@ -134,7 +134,7 @@ export function bundlePythonCodeLayer(options: BundlePythonCodeLayerOptions) {
       // bundle to emit an error if the bundler runs docker.
       image: cdk.BundlingDockerImage.fromRegistry('alpine'),
       command: ['sh', '-c', 'echo The bundler attempted to run docker && exit 1'],
-      local: new BundlePythonCodeLayerLocalBundler(options),
+      local: new PythonCodeLocalBundler(options),
     },
   });
 }
@@ -143,7 +143,7 @@ export function bundlePythonCodeLayer(options: BundlePythonCodeLayerOptions) {
  * A local bundling implementation which copies files to a python subdirectory
  * in the emitted asset.
  */
-class BundlePythonCodeLayerLocalBundler implements cdk.ILocalBundling {
+export class PythonCodeLocalBundler implements cdk.ILocalBundling {
   constructor(private options: BundlePythonCodeLayerOptions) {}
 
   tryBundle(outputDir: string) {
