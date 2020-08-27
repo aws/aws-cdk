@@ -1,3 +1,6 @@
+import { Directive } from './schema-base';
+import { InterfaceType } from './schema-intermediate';
+
 function concatAndDedup<T>(left: T[], right: T[]): T[] {
   return left.concat(right).filter((elem, index, self) => {
     return index === self.indexOf(elem);
@@ -11,6 +14,76 @@ export enum SchemaMode {
   FILE = 'FILE',
   CODE = 'CODE',
 };
+
+/**
+ * Generates an addition to the schema
+ *
+ * ```
+ * prefix name interfaces directives {
+ *   field
+ *   field
+ *   ...
+ * }
+ * ```
+ *
+ * @param prefix the prefix for this additon (type, interface, enum, input, schema)
+ * @param name the name for this addition (some additions dont need this [i.e. schema])
+ * @param interfaceTypes the interface types if this is creating an object type
+ * @param directives the directives for this type
+ * @param fields the fields to reduce onto the addition
+ */
+export interface SchemaAdditionOptions {
+  readonly prefix: string;
+  readonly name?: string;
+  readonly interfaceTypes?: InterfaceType[];
+  readonly directives?: Directive[];
+  readonly fields: string[];
+}
+
+/**
+ * Utility function to generate interfaces for object types
+ *
+ * @param interfaceTypes the interfaces this object type implements
+ */
+function generateInterfaces(interfaceTypes?: InterfaceType[]): string {
+  if (!interfaceTypes || interfaceTypes.length === 0) return '';
+  return interfaceTypes.reduce((acc, interfaceType) =>
+    `${acc} ${interfaceType.name},`, ' implements').slice(0, -1);
+}
+
+/**
+ * Utility function to generate directives
+ *
+ * @param directives the directives of a given type
+ * @param delimiter the separator betweeen directives
+ * @default - ' '
+ */
+function generateDirectives(directives?: Directive[], delimiter?: string): string {
+  if (!directives || directives.length === 0) return '';
+  return directives.reduce((acc, directive) =>
+    `${acc}${directive.statement}${delimiter ?? ' '}`, ' ').slice(0, -1);
+}
+
+/**
+ * Generates an addition to the schema
+ *
+ * ```
+ * prefix name interfaces directives {
+ *   field
+ *   field
+ *   ...
+ * }
+ * ```
+ *
+ * @param options the options to produced a stringfied addition
+ */
+export function shapeAddition(options: SchemaAdditionOptions): string {
+  const typeName = (): string => { return options.name ? ` ${options.name}` : ''; };
+  const interfaces = generateInterfaces(options.interfaceTypes);
+  const directives = generateDirectives(options.directives);
+  return options.fields.reduce((acc, field) =>
+    `${acc}  ${field}\n`, `${options.prefix}${typeName()}${interfaces}${directives} {\n`) + '}';
+}
 
 /**
  * Utility class to represent DynamoDB key conditions.
