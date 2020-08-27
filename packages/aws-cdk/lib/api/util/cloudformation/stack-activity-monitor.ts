@@ -23,12 +23,12 @@ export enum StackActivityProgress {
   /**
    * Displays a progress bar with only the events for the resource currently being deployed
    */
-  Bar = 'bar',
+  BAR = 'bar',
 
   /**
    * Displays complete history with all CloudFormation stack events
    */
-  Events = 'events',
+  EVENTS = 'events',
 }
 
 export interface WithDefaultPrinterProps {
@@ -106,9 +106,9 @@ export class StackActivityMonitor {
     // need an individual check for whether we're running on CI.
     // see: https://discuss.circleci.com/t/circleci-terminal-is-a-tty-but-term-is-not-set/9965
     const fancyOutputAvailable = !isWindows && stream.isTTY && !options.ci;
-    const progress = options.progress ?? StackActivityProgress.Bar;
+    const progress = options.progress ?? StackActivityProgress.BAR;
 
-    const printer = fancyOutputAvailable && !verbose && (progress === StackActivityProgress.Bar)
+    const printer = fancyOutputAvailable && !verbose && (progress === StackActivityProgress.BAR)
       ? new CurrentActivityPrinter(props)
       : new HistoryActivityPrinter(props);
 
