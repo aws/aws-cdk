@@ -99,7 +99,7 @@ export class PythonLayerVersion extends lambda.LayerVersion {
       });
     } else {
       code = bundlePythonCodeLayer({
-        entry: props.entry,
+        entry,
         exclude: props.exclude,
         follow: props.follow,
       });
