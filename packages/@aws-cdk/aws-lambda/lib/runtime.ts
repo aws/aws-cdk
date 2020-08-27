@@ -158,6 +158,11 @@ export class Runtime {
   public static readonly PROVIDED = new Runtime('provided', RuntimeFamily.OTHER);
 
   /**
+   * The custom provided runtime (provided)
+   */
+  public static readonly PROVIDED_AL2 = new Runtime('provided.al2', RuntimeFamily.OTHER);
+
+  /**
    * The name of this runtime, as expected by the Lambda resource.
    */
   public readonly name: string;
