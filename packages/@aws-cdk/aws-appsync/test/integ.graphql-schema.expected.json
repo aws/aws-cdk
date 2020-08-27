@@ -16,7 +16,7 @@
             "ApiId"
           ]
         },
-        "Definition": "interface Node {\n  created: String\n  edited: String\n  id: ID!\n}\ntype Planet {\n  name: String\n  diameter: Int\n  rotationPeriod: Int\n  orbitalPeriod: Int\n  gravity: String\n  population: [String]\n  climates: [String]\n  terrains: [String]\n  surfaceWater: Float\n  created: String\n  edited: String\n  id: ID!\n}\ntype Species implements Node {\n  name: String\n  classification: String\n  designation: String\n  averageHeight: Float\n  averageLifespan: Int\n  eyeColors: [String]\n  hairColors: [String]\n  skinColors: [String]\n  language: String\n  homeworld: Planet\n  created: String\n  edited: String\n  id: ID!\n}\n\ntype Query {\n  getPlanets: [Planet]\n}\n"
+        "Definition": "interface Node {\n  created: String\n  edited: String\n  id: ID!\n}\ntype Planet {\n  name: String\n  diameter: Int\n  rotationPeriod: Int\n  orbitalPeriod: Int\n  gravity: String\n  population: [String]\n  climates: [String]\n  terrains: [String]\n  surfaceWater: Float\n  created: String\n  edited: String\n  id: ID!\n}\ntype Species implements Node {\n  name: String\n  classification: String\n  designation: String\n  averageHeight: Float\n  averageLifespan: Int\n  eyeColors: [String]\n  hairColors: [String]\n  skinColors: [String]\n  language: String\n  homeworld: Planet\n  created: String\n  edited: String\n  id: ID!\n}\n\ntype Query {\n  getPlanets: [Planet]\n}\ninput input {\n  awesomeInput: String\n}\n"
       }
     },
     "codefirstapiDefaultApiKey89863A80": {

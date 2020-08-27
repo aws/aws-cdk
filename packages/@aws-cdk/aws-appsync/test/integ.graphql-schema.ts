@@ -71,4 +71,8 @@ tableDS.createResolver({
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
 });
 
+api.addType(new appsync.InputType('input', {
+  definition: { awesomeInput: ScalarType.string },
+}));
+
 app.synth();
