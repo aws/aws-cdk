@@ -424,6 +424,14 @@ export interface LambdaFunctionAssociation {
    * A version of the lambda to associate
    */
   readonly lambdaFunction: lambda.IVersion;
+
+  /**
+   * Allows a Lambda function to have read access to the body content.
+   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
+   *
+   * @default false
+   */
+  readonly includeBody?: boolean;
 }
 
 export interface ViewerCertificateOptions {
@@ -897,6 +905,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
           .map(fna => ({
             eventType: fna.eventType,
             lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.edgeArn,
+            includeBody: fna.includeBody,
           })),
       });
 

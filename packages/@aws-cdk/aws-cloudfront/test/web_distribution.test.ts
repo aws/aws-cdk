@@ -444,6 +444,7 @@ nodeunitShim({
               lambdaFunctionAssociations: [{
                 eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
                 lambdaFunction: lambdaFunction.currentVersion,
+                includeBody: true,
               }],
             },
           ],
@@ -457,6 +458,7 @@ nodeunitShim({
           'LambdaFunctionAssociations': [
             {
               'EventType': 'origin-request',
+              'IncludeBody': true,
               'LambdaFunctionARN': {
                 'Ref': 'LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e',
               },

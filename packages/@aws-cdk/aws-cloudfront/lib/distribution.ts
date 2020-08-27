@@ -621,6 +621,14 @@ export interface EdgeLambda {
 
   /** The type of event in response to which should the function be invoked. */
   readonly eventType: LambdaEdgeEventType;
+
+  /**
+   * Allows a Lambda function to have read access to the body content.
+   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
+   *
+   * @default false
+   */
+  readonly includeBody?: boolean;
 }
 
 /**

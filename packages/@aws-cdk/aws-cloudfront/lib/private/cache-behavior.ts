@@ -51,6 +51,7 @@ export class CacheBehavior {
         ? this.props.edgeLambdas.map(edgeLambda => ({
           lambdaFunctionArn: edgeLambda.functionVersion.edgeArn,
           eventType: edgeLambda.eventType.toString(),
+          includeBody: edgeLambda.includeBody,
         }))
         : undefined,
     };
