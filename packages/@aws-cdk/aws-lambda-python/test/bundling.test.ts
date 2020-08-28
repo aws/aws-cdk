@@ -1,8 +1,7 @@
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { bundleFunction, bundleFilesLayer, LocalPythonLayersBundler, hasDependencies, bundleDependenciesLayer } from '../lib/bundling';
+import { bundleFunction, hasDependencies, bundleLayer } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
 const existsSyncOriginal = fs.existsSync;
@@ -91,7 +90,7 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
 test('Bundling a layer with dependencies', () => {
   const entry = path.join(__dirname, 'lambda-handler');
 
-  bundleDependenciesLayer({
+  bundleLayer({
     entry: entry,
     runtime: Runtime.PYTHON_2_7,
   });
@@ -100,81 +99,28 @@ test('Bundling a layer with dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'rsync -r /var/dependencies /asset-output/python',
+        'rsync -r /var/dependencies/. /asset-output/python && rsync -r . /asset-output/python',
       ],
     }),
   }));
 });
 
 test('Bundling a python code layer', () => {
-  bundleFilesLayer({
-    entry: '/project/folder',
-    exclude: [
-      '*',
-      '!shared',
-      '!shared/**',
-    ],
+  const entry = path.join(__dirname, 'lambda-handler-nodeps');
+
+  bundleLayer({
+    entry: path.join(entry, '.'),
+    runtime: Runtime.PYTHON_2_7,
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith('/project/folder', expect.objectContaining({
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
     bundling: expect.objectContaining({
-      // Docker should report it is being run erroneously
-      command: expect.arrayContaining([expect.stringContaining('exit 1')]),
-      // Local bundling
-      local: {
-        options: expect.objectContaining({
-          entry: '/project/folder',
-          exclude: expect.arrayContaining([
-            '*',
-            '!shared',
-          ]),
-        }),
-      },
+      command: [
+        'bash', '-c',
+        'rsync -r . /asset-output/python',
+      ],
     }),
   }));
-});
-
-describe('Local bundler for python code layers', () => {
-  test('asset without excludes', () => {
-    const entryPath = path.join(__dirname, 'lambda-handler-project');
-    const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
-
-    // WHEN
-    const bundler = new LocalPythonLayersBundler({
-      entry: entryPath,
-    });
-    const tryBundleResult = bundler.tryBundle(outputDir);
-
-    // THEN
-    expect(tryBundleResult).toBe(true);
-    expect(fs.readdirSync(path.join(outputDir, 'python'))).toEqual([
-      'lambda',
-      'requirements.txt',
-      'shared',
-    ]);
-  });
-
-  test('asset with excludes', () => {
-    const entryPath = path.join(__dirname, 'lambda-handler-project');
-    const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
-
-    // WHEN
-    const bundler = new LocalPythonLayersBundler({
-      entry: entryPath,
-      exclude: [
-        '*',
-        '!shared',
-        '!shared/**',
-      ],
-    });
-    const tryBundleResult = bundler.tryBundle(outputDir);
-
-    // THEN
-    expect(tryBundleResult).toBe(true);
-    expect(fs.readdirSync(path.join(outputDir, 'python'))).toEqual([
-      'shared',
-    ]);
-  });
 });
 
 describe('Dependency detection', () => {

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { bundleDependenciesLayer, bundleFilesLayer, hasDependencies } from './bundling';
+import { bundleLayer } from './bundling';
 
 /**
  * Properties for PythonDependenciesLayer
@@ -39,29 +39,6 @@ export interface PythonLayerVersionProps extends cdk.CopyOptions {
    * @default - A name will be generated.
    */
   readonly layerVersionName?: string;
-
-  /**
-   * Specify how the layer should bundle the files it finds in the `entry`
-   * directory.
-   *
-   * @default - DEPENDENCIES if `entry` has dependencies, FILES otherwise.
-   */
-  readonly bundlingStrategy?: BundlingStrategy;
-}
-
-/**
- * Specifies the approach that bundling should take with the files
- */
-export enum BundlingStrategy {
-  /**
-   * Bundle the files by treating them as dependencies
-   */
-  DEPENDENCIES = 'dependencies',
-
-  /**
-   * Bundle the files by copying them directly into the layer
-   */
-  FILES = 'files',
 }
 
 /**
@@ -84,31 +61,14 @@ export class PythonLayerVersion extends lambda.LayerVersion {
     const entry = path.resolve(props.entry);
     // Pick the first compatibleRuntime or PYTHON_3_7
     const runtime = compatibleRuntimes[0] ?? lambda.Runtime.PYTHON_3_7;
-    const bundlingStrategy = props.bundlingStrategy ??
-      (hasDependencies(entry) ? BundlingStrategy.DEPENDENCIES : BundlingStrategy.FILES);
-
-    let code: lambda.AssetCode;
-    if (bundlingStrategy == BundlingStrategy.DEPENDENCIES) {
-      if (!hasDependencies(entry)) {
-        throw new Error(`No dependencies were detected in ${entry}`);
-      }
-
-      code = bundleDependenciesLayer({
-        entry,
-        runtime,
-      });
-    } else {
-      code = bundleFilesLayer({
-        entry,
-        exclude: props.exclude,
-        follow: props.follow,
-      });
-    }
 
     super(scope, id, {
       ...props,
       compatibleRuntimes,
-      code,
+      code: bundleLayer({
+        entry,
+        runtime,
+      }),
     });
   }
 }

@@ -15,18 +15,8 @@ class TestStack extends Stack {
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(projectDirectory, 'lambda'),
       layers: [
-        new lambda.PythonLayerVersion(this, 'Dependencies', {
-          entry: projectDirectory,
-          bundlingStrategy: lambda.BundlingStrategy.DEPENDENCIES,
-        }),
-        new lambda.PythonLayerVersion(this, 'SharedCode', {
-          entry: projectDirectory,
-          exclude: [
-            '*',
-            '!shared',
-            '!shared/**',
-          ],
-          bundlingStrategy: lambda.BundlingStrategy.FILES,
+        new lambda.PythonLayerVersion(this, 'Shared', {
+          entry: path.join(projectDirectory, 'shared'),
         }),
       ],
     });
