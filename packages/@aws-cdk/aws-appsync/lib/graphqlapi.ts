@@ -531,7 +531,7 @@ export class GraphQLApi extends GraphqlApiBase {
       userPoolId: config.userPool.userPoolId,
       awsRegion: config.userPool.stack.region,
       appIdClientRegex: config.appIdClientRegex,
-      defaultAction: config.defaultAction,
+      defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
     };
   }
 
