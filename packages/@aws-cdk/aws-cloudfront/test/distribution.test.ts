@@ -468,6 +468,7 @@ describe('with Lambda@Edge functions', () => {
           {
             functionVersion: lambdaFunction.currentVersion,
             eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+            includeBody: true,
           },
         ],
       },
@@ -479,6 +480,7 @@ describe('with Lambda@Edge functions', () => {
           LambdaFunctionAssociations: [
             {
               EventType: 'origin-request',
+              IncludeBody: true,
               LambdaFunctionARN: {
                 Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
               },
