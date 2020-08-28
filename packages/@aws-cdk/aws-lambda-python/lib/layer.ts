@@ -6,7 +6,7 @@ import { bundleLayer } from './bundling';
 /**
  * Properties for PythonDependenciesLayer
  */
-export interface PythonLayerVersionProps extends cdk.CopyOptions {
+export interface PythonLayerVersionProps {
   /**
    * The path to the root directory of the lambda layer.
    */
