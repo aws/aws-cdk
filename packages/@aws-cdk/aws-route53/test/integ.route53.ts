@@ -46,6 +46,13 @@ new CaaAmazonRecord(stack, 'CaaAmazon', {
   zone: publicZone,
 });
 
+new TxtRecord(stack, 'TXT', {
+  zone: publicZone,
+  values: [
+    'this is a very long string'.repeat(10),
+  ],
+});
+
 new cdk.CfnOutput(stack, 'PrivateZoneId', { value: privateZone.hostedZoneId });
 new cdk.CfnOutput(stack, 'PublicZoneId', { value: publicZone.hostedZoneId });
 
