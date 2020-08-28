@@ -14,7 +14,7 @@
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "@types/jest": "^25.2.3",
+    "@types/jest": "^26.0.10",
     "@types/node": "^10.17.25",
     "@typescript-eslint/parser": "^2.19.2",
     "conventional-changelog-cli": "^2.1.0",
