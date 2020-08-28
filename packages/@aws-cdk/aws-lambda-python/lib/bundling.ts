@@ -26,7 +26,8 @@ export function bundle(options: BundleOptions) {
   let image: cdk.BundlingDockerImage;
   if (hasDependencies(entry)) {
     // When dependencies are present, we use a Dockerfile that can create a
-    // cacheable layer.
+    // cacheable layer. We can't use this Dockerfile if there aren't
+    // dependencies or the Dockerfile will complain about missing sources.
     image = cdk.BundlingDockerImage.fromAsset(entry, {
       buildArgs: {
         IMAGE: runtime.bundlingDockerImage.image,
