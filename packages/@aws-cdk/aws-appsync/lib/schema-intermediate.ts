@@ -1,3 +1,4 @@
+import { shapeAddition } from './private';
 import { Resolver } from './resolver';
 import { Directive, IField, IIntermediateType } from './schema-base';
 import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-field';
@@ -59,13 +60,12 @@ export class InterfaceType implements IIntermediateType {
    * Generate the string of this object type
    */
   public toString(): string {
-    let schemaAddition = `interface ${this.name} {\n`;
-    Object.keys(this.definition).forEach( (key) => {
-      const attribute = this.definition[key];
-      const args = attribute.argsToString();
-      schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
+    return shapeAddition({
+      prefix: 'interface',
+      name: this.name,
+      fields: Object.keys(this.definition).map((key) =>
+        `${key}${this.definition[key].argsToString()}: ${this.definition[key].toString()}`),
     });
-    return `${schemaAddition}}`;
   }
 
   /**
@@ -159,38 +159,14 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
    * Generate the string of this object type
    */
   public toString(): string {
-    let title = this.name;
-    if (this.interfaceTypes && this.interfaceTypes.length) {
-      title = `${title} implements`;
-      this.interfaceTypes.map((interfaceType) => {
-        title = `${title} ${interfaceType.name},`;
-      });
-      title = title.slice(0, -1);
-    }
-    const directives = this.generateDirectives(this.directives);
-    let schemaAddition = `type ${title} ${directives}{\n`;
-    Object.keys(this.definition).forEach( (key) => {
-      const attribute = this.definition[key];
-      const args = attribute.argsToString();
-      schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
+    return shapeAddition({
+      prefix: 'type',
+      name: this.name,
+      interfaceTypes: this.interfaceTypes,
+      directives: this.directives,
+      fields: Object.keys(this.definition).map((key) =>
+        `${key}${this.definition[key].argsToString()}: ${this.definition[key].toString()}`),
     });
-    return `${schemaAddition}}`;
-  }
-
-  /**
-   * Utility function to generate directives
-   *
-   * @param directives the directives of a given type
-   * @param delimiter the separator betweeen directives
-   * @default - ' '
-   */
-  private generateDirectives(directives?: Directive[], delimiter?: string): string {
-    let schemaAddition = '';
-    if (!directives) { return schemaAddition; }
-    directives.map((directive) => {
-      schemaAddition = `${schemaAddition}${directive.statement}${delimiter ?? ' '}`;
-    });
-    return schemaAddition;
   }
 
   /**
