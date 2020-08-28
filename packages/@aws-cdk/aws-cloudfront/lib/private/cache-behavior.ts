@@ -1,5 +1,6 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { CfnDistribution } from '../cloudfront.generated';
-import { AddBehaviorOptions, ViewerProtocolPolicy } from '../distribution';
+import { AddBehaviorOptions, EdgeLambda, ViewerProtocolPolicy } from '../distribution';
 
 /**
  * Properties for specifying custom behaviors for origins.
@@ -24,6 +25,8 @@ export class CacheBehavior {
 
   constructor(originId: string, private readonly props: CacheBehaviorProps) {
     this.originId = originId;
+
+    this.grantEdgeLambdaFunctionExecutionRole(props.edgeLambdas);
   }
 
   /**
@@ -54,5 +57,18 @@ export class CacheBehavior {
         }))
         : undefined,
     };
+  }
+
+  private grantEdgeLambdaFunctionExecutionRole(edgeLambdas?: EdgeLambda[]) {
+    if (!edgeLambdas || edgeLambdas.length === 0) { return; }
+    edgeLambdas.forEach((edgeLambda) => {
+      const role = edgeLambda.functionVersion.role;
+      if (role && role instanceof iam.Role && role.assumeRolePolicy) {
+        role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
+          actions: ['sts:AssumeRole'],
+          principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],
+        }));
+      }
+    });
   }
 }
