@@ -1,41 +1,51 @@
-import * as fs from 'fs';
+import '@aws-cdk/assert/jest';
 import * as path from 'path';
-import { Stack, App } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { bundleDependenciesLayer, bundleFilesLayer, hasDependencies } from '../lib/bundling';
 import { PythonLayerVersion, BundlingStrategy } from '../lib/layer';
 
-// Path to a file containing the commandline that docker stub receives
-const DOCKER_STUB_INPUT = '/tmp/docker-stub.input';
-// The image id that the docker stub emits when building
-const DOCKER_STUB_IMAGE_ID = '1234567890abcdef';
-
-// Reads a docker stub and cleans the volume paths out of the stub.
-function readAndCleanDockerStubInput() {
-  return fs
-    .readFileSync(DOCKER_STUB_INPUT, 'utf-8')
-    .trim()
-    .replace(/-v ([^:]+):\/asset-input/g, '-v /input:/asset-input')
-    .replace(/-v ([^:]+):\/asset-output/g, '-v /output:/asset-output')
-    .split(/\n/);
-}
-
-// this is a way to provide a custom "docker" command for staging.
-process.env.CDK_DOCKER = path.join(__dirname, 'docker-stub.sh');
-
-beforeEach(() => {
-  // Clean out the docker stub before every test.
-  if (fs.existsSync(DOCKER_STUB_INPUT)) {
-    fs.unlinkSync(DOCKER_STUB_INPUT);
-  }
+jest.mock('../lib/bundling', () => {
+  return {
+    bundleDependenciesLayer: jest.fn().mockReturnValue({
+      bind: () => {
+        return {
+          s3Location: {
+            bucketName: 'bucket',
+            objectKey: 'key',
+          },
+        };
+      },
+      bindToResource: () => { return; },
+    }),
+    bundleFilesLayer: jest.fn().mockReturnValue({
+      bind: () => {
+        return {
+          s3Location: {
+            bucketName: 'bucket',
+            objectKey: 'key',
+          },
+        };
+      },
+      bindToResource: () => { return; },
+    }),
+    hasDependencies: jest.fn().mockReturnValue(true),
+  };
 });
 
-test('bundling a layer from files', () => {
-  // GIVEN
-  const app = new App();
-  const stack = new Stack(app, 'stack');
+const hasDependenciesMock = (hasDependencies as jest.Mock);
 
-  // WHEN
-  const layer = new PythonLayerVersion(stack, 'layer', {
-    entry: 'test/lambda-handler-project',
+let stack: Stack;
+beforeEach(() => {
+  stack = new Stack();
+  jest.clearAllMocks();
+});
+
+test('Bundling a layer from files', () => {
+  hasDependenciesMock.mockReturnValue(false);
+
+  const entry = path.join(__dirname, 'test/lambda-handler-project');
+  new PythonLayerVersion(stack, 'layer', {
+    entry,
     bundlingStrategy: BundlingStrategy.FILES,
     exclude: [
       '*',
@@ -44,42 +54,56 @@ test('bundling a layer from files', () => {
     ],
   });
 
-  // THEN
-  const layerCodeAssetHash = (layer.node.findChild('Code') as any).assetHash;
-  const expectedAsset = `asset.${layerCodeAssetHash}`;
-  expect(fs.readdirSync(app.outdir)).toEqual([
-    expectedAsset,
-  ]);
-  expect(fs.readdirSync(path.join(app.outdir, expectedAsset))).toEqual([
-    'python',
-  ]);
-  expect(fs.readdirSync(path.join(app.outdir, expectedAsset, 'python'))).toEqual([
-    'shared',
-  ]);
+  expect(bundleFilesLayer).toHaveBeenCalledWith(expect.objectContaining({
+    entry,
+  }));
 });
 
-test('bundling a layer by building dependencies', () => {
-  // GIVEN
-  const app = new App();
-  const stack = new Stack(app, 'stack');
+test('Bundling a layer by installing dependencies', () => {
+  hasDependenciesMock.mockReturnValue(true);
 
-  // WHEN
+  const entry = path.join(__dirname, 'test/lambda-handler-project');
   new PythonLayerVersion(stack, 'layer', {
-    entry: 'test/lambda-handler-project',
+    entry,
     bundlingStrategy: BundlingStrategy.DEPENDENCIES,
   });
 
-  // THEN
-  expect(fs.readdirSync(app.outdir)).toEqual([
-    'asset.4c4978c45c8ca21a940eadb88562131ed40c03ea6593f0c60c0d9ce1fe6d10ae',
-  ]);
-
-  expect(readAndCleanDockerStubInput()).toEqual([
-    // it builds from the layer-bundler image
-    expect.stringMatching(/^build.*layer-bundler/),
-    // runs the image
-    expect.stringMatching(new RegExp(`^run.*${DOCKER_STUB_IMAGE_ID}`)),
-  ]);
+  expect(bundleDependenciesLayer).toHaveBeenCalledWith(expect.objectContaining({
+    entry,
+  }));
 });
 
+test('Bundling a layer by installing dependencies throws when there are no dependencies', () => {
+  hasDependenciesMock.mockReturnValue(false);
 
+  const entry = path.join(__dirname, 'test/lambda-handler-project');
+
+  expect(() => {
+    new PythonLayerVersion(stack, 'layer', {
+      entry,
+      bundlingStrategy: BundlingStrategy.DEPENDENCIES,
+    });
+  }).toThrow(/No dependencies/i);
+});
+
+test('Bundling strategy defaults to DEPENDENCIES when there are dependencies', () => {
+  hasDependenciesMock.mockReturnValue(true);
+
+  const entry = path.join(__dirname, 'test/lambda-handler-project');
+  new PythonLayerVersion(stack, 'layer', {
+    entry,
+  });
+
+  expect(bundleDependenciesLayer).toHaveBeenCalled();
+});
+
+test('Bundling strategy defaults to FILES when there are not dependencies', () => {
+  hasDependenciesMock.mockReturnValue(false);
+
+  const entry = path.join(__dirname, 'test/lambda-handler-project');
+  new PythonLayerVersion(stack, 'layer', {
+    entry,
+  });
+
+  expect(bundleFilesLayer).toHaveBeenCalled();
+});

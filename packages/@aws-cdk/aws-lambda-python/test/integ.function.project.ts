@@ -14,7 +14,6 @@ class TestStack extends Stack {
     const projectDirectory = path.join(__dirname, 'lambda-handler-project');
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(projectDirectory, 'lambda'),
-      dependenciesLocation: lambda.DependenciesLocation.NONE,
       layers: [
         new lambda.PythonLayerVersion(this, 'Dependencies', {
           entry: projectDirectory,

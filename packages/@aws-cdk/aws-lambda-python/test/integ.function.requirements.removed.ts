@@ -28,7 +28,7 @@ class TestStack extends Stack {
 
     // Find the asset hash of the dependencies
     this.dependenciesAssetHash = (fn.node.findAll(ConstructOrder.POSTORDER)
-      .find(c => c.node.path.endsWith('Dependencies/Code')) as any)
+      .find(c => c.node.path.endsWith('Code')) as any)
       .assetHash;
   }
 }
@@ -38,7 +38,7 @@ class TestStack extends Stack {
 
 // Create a working directory for messing around with requirements.txt
 const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-integ'));
-fs.copyFileSync(path.join(__dirname, 'lambda-handler-requirements', 'index.py'), path.join(workDir, 'index.py'));
+fs.copyFileSync(path.join(__dirname, 'lambda-handler', 'index.py'), path.join(workDir, 'index.py'));
 const requirementsTxtPath = path.join(workDir, 'requirements.txt');
 
 // Write a requirements.txt with an extraneous dependency (colorama)

@@ -4,129 +4,104 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 
 /**
- * Options for bundleFunction
- */
-export interface BundleFunctionOptions {
-  /**
-   * User-provided location containing the function code
-   */
-  readonly entry: string;
-
-  /**
-   * Allow the function to install dependencies inline with the function code
-   */
-  readonly installDependenciesInline: boolean;
-
-  /**
-   * The Lambda runtime to install dependencies from
-   * */
-  readonly runtime: lambda.Runtime;
-}
-
-/**
- * Produce bundled Lambda function code. When instructed to install dependencies
- * inline, and if we detect recognize the dependencies, we bundle them inline.
- */
-export function bundleFunction(options: BundleFunctionOptions): lambda.AssetCode {
-  const { entry } = options;
-
-  if (options.installDependenciesInline && hasDependencies(entry)) {
-    return bundleDependenciesInline(options);
-  }
-
-  return lambda.Code.fromAsset(entry);
-}
-
-/**
  * Dependency files to exclude from the asset hash.
  */
 export const DEPENDENCY_EXCLUDES = ['*.pyc'];
 
 /**
- * Options for bundleDependenciesInline
+ * The location in the image that the bundler image caches dependencies.
  */
-export interface BundleDependenciesInlineOptions {
-  readonly entry: string;
-  readonly runtime: lambda.Runtime;
+export const BUNDLER_DEPENDENCIES_CACHE = '/var/dependencies';
+
+export interface BundleOptions {
+  entry: string;
+  runtime: lambda.Runtime;
+  depsCommand: string;
 }
 
-/**
- * Bundles dependencies into an asset that is inline with the function code.
- */
-export function bundleDependenciesInline(options: BundleDependenciesInlineOptions): lambda.AssetCode {
-  const { entry, runtime } = options;
+export function bundle(options: BundleOptions) {
+  const { entry, runtime, depsCommand } = options;
+
+  // Determine which bundling image to use.
+  let image: cdk.BundlingDockerImage;
+  if (hasDependencies(entry)) {
+    // When dependencies are present, we use a Dockerfile that can create a
+    // cacheable layer.
+    image = cdk.BundlingDockerImage.fromAsset(entry, {
+      buildArgs: {
+        IMAGE: runtime.bundlingDockerImage.image,
+      },
+      file: path.join(__dirname, 'Dockerfile.dependencies'),
+    });
+  } else {
+    // When dependencies aren't present, we can use the default Dockerfile that
+    // doesn't need to create a cacheable layer.
+    image = cdk.BundlingDockerImage.fromAsset(entry, {
+      buildArgs: {
+        IMAGE: runtime.bundlingDockerImage.image,
+      },
+      file: path.join(__dirname, 'Dockerfile'),
+    });
+  }
 
   return lambda.Code.fromAsset(entry, {
     assetHashType: cdk.AssetHashType.BUNDLE,
     exclude: DEPENDENCY_EXCLUDES,
     bundling: {
-      image: cdk.BundlingDockerImage.fromAsset(entry, {
-        buildArgs: {
-          FROM: runtime.bundlingDockerImage.image,
-        },
-        file: path.join(__dirname, 'inline-bundler/Dockerfile'),
-      }),
+      image,
+      command: ['bash', '-c', depsCommand],
     },
   });
 }
 
-/**
- * Options for bundleDependenciesLayer
- */
-export interface BundleDependencyLayerOptions {
-  /**
-   * Base directory containing the dependency specification.
-   */
+export interface BundleFunctionOptions {
   readonly entry: string;
-
-  /**
-   * The python runtime to install the dependencies from.
-   */
   readonly runtime: lambda.Runtime;
-
-  /**
-   * Files to exclude from the bundled asset fingerprint.
-   */
-  readonly exclude?: string[],
 }
 
-/**
- * Bundles an asset for a python dependencies layer.
- */
+export function bundleFunction(options: BundleFunctionOptions): lambda.AssetCode {
+  const { entry, runtime } = options;
+
+  const depsCommand = chain([
+    hasDependencies(entry) ? `rsync -r ${BUNDLER_DEPENDENCIES_CACHE}/. ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}` : '',
+    `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}`,
+  ]);
+
+  return bundle({
+    entry,
+    runtime,
+    depsCommand,
+  });
+}
+
+export interface BundleDependencyLayerOptions {
+  readonly entry: string;
+  readonly runtime: lambda.Runtime;
+}
+
 export function bundleDependenciesLayer(options: BundleDependencyLayerOptions): lambda.AssetCode {
   const { entry, runtime } = options;
-  const exclude = options.exclude ?? DEPENDENCY_EXCLUDES;
 
-  return lambda.Code.fromAsset(entry, {
-    assetHashType: cdk.AssetHashType.BUNDLE,
-    exclude,
-    bundling: {
-      image: cdk.BundlingDockerImage.fromAsset(options.entry, {
-        buildArgs: {
-          FROM: runtime.bundlingDockerImage.image,
-        },
-        file: path.join(__dirname, 'layer-bundler/Dockerfile'),
-      }),
-    },
+  const depsCommand = chain([
+    `rsync -r ${BUNDLER_DEPENDENCIES_CACHE} ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/python`,
+  ]);
+
+  return bundle({
+    entry,
+    runtime,
+    depsCommand,
   });
 }
 
-/**
- * Options for bundlePythonCodeLayer
- */
-export interface BundlePythonCodeLayerOptions extends cdk.CopyOptions {
-  /**
-   * The base directory containing the code to create a lambda layer asset from.
-   */
+export interface BundleFilesLayerOptions extends cdk.CopyOptions {
   readonly entry: string;
 }
 
-/**
- * Bundles an asset containing python code.
- */
-export function bundlePythonCodeLayer(options: BundlePythonCodeLayerOptions) {
+export function bundleFilesLayer(options: BundleFilesLayerOptions) {
   // Use local bundling instead of docker to copy the user's code into a
-  // subdirectory while respecting the given excludes.
+  // subdirectory while respecting the given excludes. We can't easily do this
+  // in the container as the container doesn't have access to
+  // `FileSystem.copyDirectory` that accepts the excludes.
   return lambda.Code.fromAsset(options.entry, {
     assetHashType: cdk.AssetHashType.BUNDLE,
     bundling: {
@@ -145,7 +120,7 @@ export function bundlePythonCodeLayer(options: BundlePythonCodeLayerOptions) {
  * in the emitted asset.
  */
 export class PythonCodeLocalBundler implements cdk.ILocalBundling {
-  constructor(private options: BundlePythonCodeLayerOptions) {}
+  constructor(private options: BundleFilesLayerOptions) {}
 
   tryBundle(outputDir: string) {
     const { entry } = this.options;
@@ -176,4 +151,8 @@ export function hasDependencies(entry: string): boolean {
   }
 
   return false;
+}
+
+function chain(commands: string[]): string {
+  return commands.filter(c => !!c).join(' && ');
 }

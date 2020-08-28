@@ -1,2 +1,3 @@
 requests==2.23.0
-pillow==7.2.0
+# Pillow 6.x so that python 2.7 and 3.x can both use this fixture
+pillow==6.2.2

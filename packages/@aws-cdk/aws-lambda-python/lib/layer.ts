@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { bundleDependenciesLayer, hasDependencies, bundlePythonCodeLayer } from './bundling';
+import { bundleDependenciesLayer, bundleFilesLayer, hasDependencies } from './bundling';
 
 /**
  * Properties for PythonDependenciesLayer
@@ -44,7 +44,7 @@ export interface PythonLayerVersionProps extends cdk.CopyOptions {
    * Specify how the layer should bundle the files it finds in the `entry`
    * directory.
    *
-   * @default FILES
+   * @default - DEPENDENCIES if `entry` has dependencies, FILES otherwise.
    */
   readonly bundlingStrategy?: BundlingStrategy;
 }
@@ -84,7 +84,8 @@ export class PythonLayerVersion extends lambda.LayerVersion {
     const entry = path.resolve(props.entry);
     // Pick the first compatibleRuntime or PYTHON_3_7
     const runtime = compatibleRuntimes[0] ?? lambda.Runtime.PYTHON_3_7;
-    const bundlingStrategy = props.bundlingStrategy ?? BundlingStrategy.DEPENDENCIES;
+    const bundlingStrategy = props.bundlingStrategy ??
+      (hasDependencies(entry) ? BundlingStrategy.DEPENDENCIES : BundlingStrategy.FILES);
 
     let code: lambda.AssetCode;
     if (bundlingStrategy == BundlingStrategy.DEPENDENCIES) {
@@ -95,10 +96,9 @@ export class PythonLayerVersion extends lambda.LayerVersion {
       code = bundleDependenciesLayer({
         entry,
         runtime,
-        exclude: props.exclude,
       });
     } else {
-      code = bundlePythonCodeLayer({
+      code = bundleFilesLayer({
         entry,
         exclude: props.exclude,
         follow: props.follow,

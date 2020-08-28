@@ -2,8 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { hasDependencies, bundleFunction } from './bundling';
-import { PythonLayerVersion } from './layer';
+import { bundleFunction } from './bundling';
 
 /**
  * Properties for a PythonFunction
@@ -35,33 +34,6 @@ export interface PythonFunctionProps extends lambda.FunctionOptions {
    * @default lambda.Runtime.PYTHON_3_7
    */
   readonly runtime?: lambda.Runtime;
-
-  /**
-   * The location to install dependencies.
-   *
-   * @default DependenciesLocation.LAYER
-   */
-  readonly dependenciesLocation?: DependenciesLocation;
-}
-
-/**
- * Where to install dependencies.
- */
-export enum DependenciesLocation {
-  /**
-   * Does not install dependencies.
-   */
-  NONE = 'none',
-
-  /**
-   * Includes dependencies inside the lambda bundle.
-   */
-  INLINE = 'inline',
-
-  /**
-   * Bundles dependencies into a separate lambda layer.
-   */
-  LAYER = 'layer',
 }
 
 /**
@@ -87,26 +59,15 @@ export class PythonFunction extends lambda.Function {
 
     const handler = props.handler ?? 'handler';
     const runtime = props.runtime ?? lambda.Runtime.PYTHON_3_7;
-    const dependenciesLocation = props.dependenciesLocation ?? DependenciesLocation.LAYER;
-
-    const code = bundleFunction({
-      runtime,
-      entry,
-      installDependenciesInline: dependenciesLocation === DependenciesLocation.INLINE,
-    });
 
     super(scope, id, {
       ...props,
       runtime,
-      code,
+      code: bundleFunction({
+        runtime,
+        entry,
+      }),
       handler: `${index.slice(0, -3)}.${handler}`,
     });
-
-    if (dependenciesLocation === DependenciesLocation.LAYER && hasDependencies(entry)) {
-      this.addLayers(new PythonLayerVersion(this, 'Dependencies', {
-        entry: entry,
-        compatibleRuntimes: [runtime],
-      }));
-    }
   }
 }
