@@ -638,6 +638,27 @@ interface BehaviorWithOrigin extends Behavior {
 }
 
 /**
+ * Attributes used to import a Distribution.
+ *
+ * @experimental
+ */
+export interface CloudFrontWebDistributionAttributes {
+  /**
+   * The generated domain name of the Distribution, such as d111111abcdef8.cloudfront.net.
+   *
+   * @attribute
+   */
+  readonly domainName: string;
+
+  /**
+   * The distribution ID for this distribution.
+   *
+   * @attribute
+   */
+  readonly distributionId: string;
+}
+
+/**
  * Amazon CloudFront is a global content delivery network (CDN) service that securely delivers data, videos,
  * applications, and APIs to your viewers with low latency and high transfer speeds.
  * CloudFront fronts user provided content and caches it at edge locations across the world.
@@ -668,6 +689,25 @@ interface BehaviorWithOrigin extends Behavior {
  * @resource AWS::CloudFront::Distribution
  */
 export class CloudFrontWebDistribution extends cdk.Resource implements IDistribution {
+
+  /**
+   * Creates a construct that represents an external (imported) distribution.
+   */
+  public static fromDistributionAttributes(scope: cdk.Construct, id: string, attrs: CloudFrontWebDistributionAttributes): IDistribution {
+    return new class extends cdk.Resource implements IDistribution {
+      public readonly domainName: string;
+      public readonly distributionDomainName: string;
+      public readonly distributionId: string;
+
+      constructor() {
+        super(scope, id);
+        this.domainName = attrs.domainName;
+        this.distributionDomainName = attrs.domainName;
+        this.distributionId = attrs.distributionId;
+      }
+    }();
+  }
+
   /**
    * The logging bucket for this CloudFront distribution.
    * If logging is not enabled for this distribution - this property will be undefined.

@@ -491,6 +491,42 @@ describe('with Lambda@Edge functions', () => {
     });
   });
 
+  test('edgelambda.amazonaws.com is added to the trust policy of lambda', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: lambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+          },
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'edgelambda.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('can add an edge lambdas to additional behaviors', () => {
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },

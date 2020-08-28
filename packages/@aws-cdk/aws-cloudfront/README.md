@@ -82,7 +82,7 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
-## From an HTTP endpoint
+#### From an HTTP endpoint
 
 Origins can also be created from any other HTTP endpoint, given the domain name, and optionally, other origin properties.
 
@@ -247,6 +247,18 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+### Importing Distributions
+
+Existing distributions can be imported as well; note that like most imported constructs, an imported distribution cannot be modified.
+However, it can be used as a reference for other higher-level constructs.
+
+```ts
+const distribution = cloudfront.Distribution.fromDistributionAttributes(scope, 'ImportedDist', {
+  domainName: 'd111111abcdef8.cloudfront.net',
+  distributionId: '012345ABCDEF',
+});
+```
+
 ## CloudFrontWebDistribution API - Stable
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
@@ -306,7 +318,7 @@ Example:
 
 [create a distrubution with an iam certificate example](test/example.iam-cert-alias.lit.ts)
 
-#### Restrictions
+### Restrictions
 
 CloudFront supports adding restrictions to your distribution.
 
