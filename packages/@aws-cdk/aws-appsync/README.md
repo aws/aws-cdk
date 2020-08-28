@@ -581,9 +581,10 @@ union Search = Human | Droid | Starship
 The above GraphQL Union Type can be expressed in CDK as the following:
 
 ```ts
-const human = new appsync.ObjectType('Human', { definition: {} });
-const droid = new appsync.ObjectType('Droid', { definition: {} });
-const starship = new appsync.ObjectType('Starship', { definition: {} });
+const string = appsync.GraphqlType.string();
+const human = new appsync.ObjectType('Human', { definition: { name: string } });
+const droid = new appsync.ObjectType('Droid', { definition: { name: string } });
+const starship = new appsync.ObjectType('Starship', { definition: { name: string } }););
 const search = new appsync.UnionType('Search', {
   definition: [ human, droid, starship ],
 }); 
