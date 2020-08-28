@@ -153,6 +153,7 @@ test('create complex training job', () => {
         recordWrapperType: tasks.RecordWrapperType.RECORD_IO,
         dataSource: {
           s3DataSource: {
+            attributeNames: ['source-ref', 'class'],
             s3DataType: tasks.S3DataType.S3_PREFIX,
             s3Location: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucketA', 'mybucket'), 'mytrainpath'),
           },
@@ -165,6 +166,7 @@ test('create complex training job', () => {
         recordWrapperType: tasks.RecordWrapperType.RECORD_IO,
         dataSource: {
           s3DataSource: {
+            attributeNames: ['source-ref', 'class'],
             s3DataType: tasks.S3DataType.S3_PREFIX,
             s3Location: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucketB', 'mybucket'), 'mytestpath'),
           },
@@ -230,6 +232,7 @@ test('create complex training job', () => {
           ContentType: 'image/jpeg',
           DataSource: {
             S3DataSource: {
+              AttributeNames: ['source-ref', 'class'],
               S3DataType: 'S3Prefix',
               S3Uri: {
                 'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytrainpath']],
@@ -244,6 +247,7 @@ test('create complex training job', () => {
           ContentType: 'image/jpeg',
           DataSource: {
             S3DataSource: {
+              AttributeNames: ['source-ref', 'class'],
               S3DataType: 'S3Prefix',
               S3Uri: {
                 'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytestpath']],

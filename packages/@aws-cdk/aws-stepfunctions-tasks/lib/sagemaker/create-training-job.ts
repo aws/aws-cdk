@@ -253,7 +253,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
             ...(channel.dataSource.s3DataSource.s3DataDistributionType
               ? { S3DataDistributionType: channel.dataSource.s3DataSource.s3DataDistributionType }
               : {}),
-            ...(channel.dataSource.s3DataSource.attributeNames ? { AtttributeNames: channel.dataSource.s3DataSource.attributeNames } : {}),
+            ...(channel.dataSource.s3DataSource.attributeNames ? { AttributeNames: channel.dataSource.s3DataSource.attributeNames } : {}),
           },
         },
         ...(channel.compressionType ? { CompressionType: channel.compressionType } : {}),
