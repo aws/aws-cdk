@@ -91,7 +91,7 @@ export class Configuration {
    * Save the project context
    */
   public async saveContext(): Promise<this> {
-    if (!this.loaded) { return this; }  // Avoid overwriting files with nothing
+    if (!this.loaded) { return this; } // Avoid overwriting files with nothing
 
     await this.projectContext.save(PROJECT_CONTEXT);
 
@@ -204,6 +204,7 @@ export class Settings {
       versionReporting: argv.versionReporting,
       staging: argv.staging,
       output: argv.output,
+      progress: argv.progress,
     });
   }
 

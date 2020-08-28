@@ -36,7 +36,8 @@ for more complex use cases.
 
 CloudFront distributions deliver your content from one or more origins; an origin is the location where you store the original version of your
 content. Origins can be created from S3 buckets or a custom origin (HTTP server). Each distribution has a default behavior which applies to all
-requests to that distribution, and routes requests to a primary origin.
+requests to that distribution, and routes requests to a primary origin. Constructs to define origins are in the `@aws-cdk/aws-cloudfront-origins`
+module.
 
 #### From an S3 Bucket
 
@@ -81,7 +82,7 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
-## From an HTTP endpoint
+#### From an HTTP endpoint
 
 Origins can also be created from any other HTTP endpoint, given the domain name, and optionally, other origin properties.
 
@@ -96,9 +97,11 @@ new cloudfront.Distribution(this, 'myDist', {
 When you create a distribution, CloudFront assigns a domain name for the distribution, for example: `d111111abcdef8.cloudfront.net`; this value can
 be retrieved from `distribution.distributionDomainName`. CloudFront distributions use a default certificate (`*.cloudfront.net`) to support HTTPS by
 default. If you want to use your own domain name, such as `www.example.com`, you must associate a certificate with your distribution that contains
-your domain name. The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate
+your domain name, and provide one (or more) domain names from the certificate for the distribution.
+
+The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate
 may either be created by ACM, or created elsewhere and imported into ACM. When a certificate is used, the distribution will support HTTPS connections
-from SNI only and a minimum protocol version of TLSv1.2_2018.
+from SNI only and a minimum protocol version of TLSv1.2_2019.
 
 ```ts
 const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
@@ -107,6 +110,7 @@ const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
 });
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.S3Origin(myBucket) },
+  domainNames: ['www.example.com'],
   certificate: myCertificate,
 });
 ```
@@ -132,12 +136,11 @@ const myWebDistribution = new cloudfront.Distribution(this, 'myDist', {
 
 Additional behaviors can be specified at creation, or added after the initial creation. Each additional behavior is associated with an origin,
 and enable customization for a specific set of resources based on a URL path pattern. For example, we can add a behavior to `myWebDistribution` to
-override the default time-to-live (TTL) for all of the images.
+override the default viewer protocol policy for all of the images.
 
 ```ts
 myWebDistribution.addBehavior('/images/*.jpg', new origins.S3Origin(myBucket), {
   viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-  defaultTtl: cdk.Duration.days(7),
 });
 ```
 
@@ -155,7 +158,6 @@ new cloudfront.Distribution(this, 'myDist', {
     '/images/*.jpg': {
       origin: bucketOrigin,
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      defaultTtl: cdk.Duration.days(7),
     },
   },
 });
@@ -222,6 +224,40 @@ myDistribution.addBehavior('images/*', myOrigin, {
 });
 ```
 
+### Logging
+
+You can configure CloudFront to create log files that contain detailed information about every user request that CloudFront receives.
+The logs can go to either an existing bucket, or a bucket will be created for you.
+
+```ts
+// Simplest form - creates a new bucket and logs to it.
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+  enableLogging: true,
+});
+
+// You can optionally log to a specific bucket, configure whether cookies are logged, and give the log files a prefix.
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+  enableLogging: true, // Optional, this is implied if loggingBucket is specified
+  loggingBucket: new s3.Bucket(this, 'LoggingBucket'),
+  loggingFilePrefix: 'distribution-access-logs/',
+  loggingIncludesCookies: true,
+});
+```
+
+### Importing Distributions
+
+Existing distributions can be imported as well; note that like most imported constructs, an imported distribution cannot be modified.
+However, it can be used as a reference for other higher-level constructs.
+
+```ts
+const distribution = cloudfront.Distribution.fromDistributionAttributes(scope, 'ImportedDist', {
+  domainName: 'd111111abcdef8.cloudfront.net',
+  distributionId: '012345ABCDEF',
+});
+```
+
 ## CloudFrontWebDistribution API - Stable
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
@@ -281,7 +317,7 @@ Example:
 
 [create a distrubution with an iam certificate example](test/example.iam-cert-alias.lit.ts)
 
-#### Restrictions
+### Restrictions
 
 CloudFront supports adding restrictions to your distribution.
 
@@ -322,7 +358,6 @@ const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
 
 In case the origin source is not available and answers with one of the
 specified status code the failover origin source will be used.
-
 
 ```ts
 new CloudFrontWebDistribution(stack, 'ADistribution', {

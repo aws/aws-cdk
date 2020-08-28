@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-lambda-nodejs",
         "module": "aws_cdk.aws_lambda_nodejs"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -63,19 +64,20 @@
     "aws-sdk": "^2.713.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "delay": "4.3.0",
+    "delay": "4.4.0",
+    "parcel": "2.0.0-beta.1",
     "pkglint": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 12"

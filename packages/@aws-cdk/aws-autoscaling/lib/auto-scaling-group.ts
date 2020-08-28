@@ -7,7 +7,7 @@ import * as sns from '@aws-cdk/aws-sns';
 
 import {
   CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
-  Tag, Tokenization, withResolved,
+  Tokenization, withResolved, Tags,
 } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
@@ -390,7 +390,9 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
 
   public abstract autoScalingGroupName: string;
   public abstract autoScalingGroupArn: string;
+  public abstract readonly osType: ec2.OperatingSystemType;
   protected albTargetGroup?: elbv2.ApplicationTargetGroup;
+  public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
@@ -490,6 +492,10 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps): StepScalingPolicy {
     return new StepScalingPolicy(this, id, { ...props, autoScalingGroup: this });
   }
+
+  public addUserData(..._commands: string[]): void {
+    // do nothing
+  }
 }
 
 /**
@@ -508,8 +514,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
-  elbv2.INetworkLoadBalancerTarget,
-  iam.IGrantable {
+  elbv2.INetworkLoadBalancerTarget {
 
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
@@ -519,6 +524,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         resource: 'autoScalingGroup:*:autoScalingGroupName',
         resourceName: this.autoScalingGroupName,
       });
+      public readonly osType = ec2.OperatingSystemType.UNKNOWN;
     }
 
     return new Import(scope, id);
@@ -589,7 +595,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
+    Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
@@ -603,7 +609,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [ this.role.roleName ],
+      roles: [this.role.roleName],
     });
 
     // use delayed evaluation
@@ -657,7 +663,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.maxInstanceLifetime = props.maxInstanceLifetime;
-    if (this.maxInstanceLifetime  &&
+    if (this.maxInstanceLifetime &&
       (this.maxInstanceLifetime.toSeconds() < 604800 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
       throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive)');
     }
@@ -760,11 +766,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     return { targetType: elbv2.TargetType.INSTANCE };
   }
 
-  /**
-   * Add command to the startup script of fleet instances.
-   * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
-   */
-  public addUserData(...commands: string[]) {
+  public addUserData(...commands: string[]): void {
     this.userData.addCommands(...commands);
   }
 
@@ -910,7 +912,7 @@ export enum ScalingEvent {
   /**
    * Notify when an instance failed to launch
    */
-  INSTANCE_LAUNCH_ERROR =  'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
+  INSTANCE_LAUNCH_ERROR = 'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
 
   /**
    * Send a test notification to the topic
@@ -1121,7 +1123,7 @@ function validatePercentage(x?: number): number | undefined {
 /**
  * An AutoScalingGroup
  */
-export interface IAutoScalingGroup extends IResource {
+export interface IAutoScalingGroup extends IResource, iam.IGrantable {
   /**
    * The name of the AutoScalingGroup
    * @attribute
@@ -1133,6 +1135,19 @@ export interface IAutoScalingGroup extends IResource {
    * @attribute
    */
   readonly autoScalingGroupArn: string;
+
+  /**
+   * The operating system family that the instances in this auto-scaling group belong to.
+   * Is 'UNKNOWN' for imported ASGs.
+   */
+  readonly osType: ec2.OperatingSystemType;
+
+  /**
+   * Add command to the startup script of fleet instances.
+   * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
+   * Does nothing for imported ASGs.
+   */
+  addUserData(...commands: string[]): void;
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate

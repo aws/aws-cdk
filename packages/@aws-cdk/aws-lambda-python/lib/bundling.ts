@@ -22,6 +22,13 @@ export interface BundlingOptions {
  * Produce bundled Lambda asset code
  */
 export function bundle(options: BundlingOptions): lambda.AssetCode {
+  // Bundling image derived from runtime bundling image (AWS SAM docker image)
+  const image = cdk.BundlingDockerImage.fromAsset(__dirname, {
+    buildArgs: {
+      IMAGE: options.runtime.bundlingDockerImage.image,
+    },
+  });
+
   let installer = options.runtime === lambda.Runtime.PYTHON_2_7 ? Installer.PIP : Installer.PIP3;
 
   let hasRequirements = fs.existsSync(path.join(options.entry, 'requirements.txt'));
@@ -33,7 +40,7 @@ export function bundle(options: BundlingOptions): lambda.AssetCode {
 
   return lambda.Code.fromAsset(options.entry, {
     bundling: {
-      image: options.runtime.bundlingDockerImage,
+      image,
       command: ['bash', '-c', depsCommand],
     },
   });

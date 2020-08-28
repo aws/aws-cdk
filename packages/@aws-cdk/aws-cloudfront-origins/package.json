@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-cloudfront-origins",
         "module": "aws_cdk.aws_cloudfront_origins"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -63,7 +64,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "aws-sdk": "^2.715.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "aws-sdk": "^2.739.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "pkglint": "0.0.0"
@@ -73,12 +75,12 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2",
+    "constructs": "^3.0.4",
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0"

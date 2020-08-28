@@ -227,6 +227,33 @@ Example `outputs.json` after deployment of multiple stacks
 }
 ```
 
+##### Deployment Progress
+
+By default, stack deployment events are displayed as a progress bar with the events for the resource
+currently being deployed.
+
+Set the `--progress` flag to request the complete history which includes all CloudFormation events
+```console
+$ cdk deploy --progress events
+```
+
+Alternatively, the `progress` key can be specified in the project config (`cdk.json`).
+
+The following shows a sample `cdk.json` where the `progress` key is set to *events*.
+When `cdk deploy` is executed, deployment events will include the complete history.
+```
+{
+  "app": "npx ts-node bin/myproject.ts",
+  "context": {
+    "@aws-cdk/core:enableStackNameDuplicates": "true",
+    "aws-cdk:enableDiffNoFail": "true",
+    "@aws-cdk/core:stackRelativeExports": "true"
+  },
+  "progress": "events"
+}
+```
+The `progress` key can also be specified as a user setting (`~/.cdk.json`)
+
 #### `cdk destroy`
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
 configured with a `DeletionPolicy` of `Retain`). During the stack destruction, the command will output progress
@@ -264,6 +291,19 @@ $ cdk doctor
 ℹ️ AWS environment variables:
   - AWS_EC2_METADATA_DISABLED = 1
   - AWS_SDK_LOAD_CONFIG = 1
+```
+
+### MFA support
+
+If `mfa_serial` is found in the active profile of the shared ini file AWS CDK
+will ask for token defined in the `mfa_serial`. This token will be provided to STS assume role call.
+
+Example profile in `~/.aws/config` where `mfa_serial` is used to assume role:
+```ini
+[profile my_assume_role_profile]
+source_profile=my_source_role
+role_arn=arn:aws:iam::123456789123:role/role_to_be_assumed
+mfa_serial=arn:aws:iam::123456789123:mfa/my_user
 ```
 
 ### Configuration

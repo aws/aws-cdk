@@ -46,7 +46,7 @@ afterEach(() => {
 const TEN_SECOND_TIMEOUT = 10000;
 
 function createApp(): cdk.App {
-  const app = new cdk.App({outdir: 'cdk.out'});
+  const app = new cdk.App({ outdir: 'cdk.out' });
   const stack = new cdk.Stack(app, 'Stack');
 
   new cdk.CfnResource(stack, 'Role', {

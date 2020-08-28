@@ -8,6 +8,7 @@ import {
   KeyCondition,
   MappingTemplate,
   PrimaryKey,
+  Schema,
   UserPoolDefaultAction,
   Values,
 } from '../lib';
@@ -35,7 +36,7 @@ const userPool = new UserPool(stack, 'Pool', {
 
 const api = new GraphQLApi(stack, 'Api', {
   name: 'demoapi',
-  schemaDefinitionFile: join(__dirname, 'integ.graphql.graphql'),
+  schema: Schema.fromAsset(join(__dirname, 'integ.graphql.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: AuthorizationType.USER_POOL,
@@ -52,7 +53,7 @@ const api = new GraphQLApi(stack, 'Api', {
   },
 });
 
-const noneDS = api.addNoneDataSource('None', 'Dummy data source');
+const noneDS = api.addNoneDataSource('none', { name: 'None' });
 
 noneDS.createResolver({
   typeName: 'Query',
@@ -95,11 +96,11 @@ new Table(stack, 'PaymentTable', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
-const paymentTable =  Table.fromTableName(stack, 'ImportedPaymentTable', 'PaymentTable');
+const paymentTable = Table.fromTableName(stack, 'ImportedPaymentTable', 'PaymentTable');
 
-const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
-const orderDS = api.addDynamoDbDataSource('Order', 'The order data source', orderTable);
-const paymentDS = api.addDynamoDbDataSource('Payment', 'The payment data source', paymentTable);
+const customerDS = api.addDynamoDbDataSource('customerDs', customerTable, { name: 'Customer' });
+const orderDS = api.addDynamoDbDataSource('orderDs', orderTable, { name: 'Order' });
+const paymentDS = api.addDynamoDbDataSource('paymentDs', paymentTable, { name: 'Payment' });
 
 customerDS.createResolver({
   typeName: 'Query',
@@ -145,13 +146,13 @@ customerDS.createResolver({
 });
 
 const ops = [
-  { suffix: 'Eq', op: KeyCondition.eq},
-  { suffix: 'Lt', op: KeyCondition.lt},
-  { suffix: 'Le', op: KeyCondition.le},
-  { suffix: 'Gt', op: KeyCondition.gt},
-  { suffix: 'Ge', op: KeyCondition.ge},
+  { suffix: 'Eq', op: KeyCondition.eq },
+  { suffix: 'Lt', op: KeyCondition.lt },
+  { suffix: 'Le', op: KeyCondition.le },
+  { suffix: 'Gt', op: KeyCondition.gt },
+  { suffix: 'Ge', op: KeyCondition.ge },
 ];
-for (const {suffix, op} of ops) {
+for (const { suffix, op } of ops) {
   orderDS.createResolver({
     typeName: 'Query',
     fieldName: 'getCustomerOrders' + suffix,
@@ -187,7 +188,7 @@ paymentDS.createResolver({
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
-const httpDS = api.addHttpDataSource('http', 'The http data source', 'https://aws.amazon.com/');
+const httpDS = api.addHttpDataSource('ds', 'https://aws.amazon.com/', { name: 'http' });
 
 httpDS.createResolver({
   typeName: 'Mutation',

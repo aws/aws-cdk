@@ -13,11 +13,12 @@ export function flatten(object: object): { [key: string]: string } {
     {},
     ...function _flatten(child: any, path: string[] = []): any {
       return [].concat(...Object.keys(child)
-        .map(key =>
-          typeof child[key] === 'object' && child[key] !== null
-            ? _flatten(child[key], path.concat([key]))
-            : ({ [path.concat([key]).join('.')]: child[key] }),
-        ));
+        .map(key => {
+          const childKey = Buffer.isBuffer(child[key]) ? child[key].toString('utf8') : child[key];
+          return typeof childKey === 'object' && childKey !== null
+            ? _flatten(childKey, path.concat([key]))
+            : ({ [path.concat([key]).join('.')]: childKey });
+        }));
     }(object),
   );
 }
@@ -64,7 +65,6 @@ function installLatestSdk(): void {
   console.log('Installing latest AWS SDK v2');
   // Both HOME and --prefix are needed here because /tmp is the only writable location
   execSync('HOME=/tmp npm install aws-sdk@2 --production --no-package-lock --no-save --prefix /tmp');
-  execSync('tree /tmp/node_modules');
   latestSdkInstalled = true;
 }
 
@@ -72,7 +72,7 @@ function installLatestSdk(): void {
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
     let AWS: any;
-    if (!latestSdkInstalled) {
+    if (!latestSdkInstalled && event.ResourceProperties.InstallLatestAwsSdk === 'true') {
       try {
         installLatestSdk();
         AWS = require('/tmp/node_modules/aws-sdk');
@@ -80,11 +80,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         console.log(`Failed to install latest AWS SDK v2: ${e}`);
         AWS = require('aws-sdk'); // Fallback to pre-installed version
       }
-    } else {
+    } else if (latestSdkInstalled) {
       AWS = require('/tmp/node_modules/aws-sdk');
-    }
-
-    if (process.env.USE_NORMAL_SDK) { // For tests only
+    } else {
       AWS = require('aws-sdk');
     }
 

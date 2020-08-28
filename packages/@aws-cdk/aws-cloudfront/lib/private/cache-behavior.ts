@@ -1,5 +1,6 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { CfnDistribution } from '../cloudfront.generated';
-import { AddBehaviorOptions, ViewerProtocolPolicy } from '../distribution';
+import { AddBehaviorOptions, EdgeLambda, ViewerProtocolPolicy } from '../distribution';
 
 /**
  * Properties for specifying custom behaviors for origins.
@@ -24,6 +25,8 @@ export class CacheBehavior {
 
   constructor(originId: string, private readonly props: CacheBehaviorProps) {
     this.originId = originId;
+
+    this.grantEdgeLambdaFunctionExecutionRole(props.edgeLambdas);
   }
 
   /**
@@ -38,23 +41,34 @@ export class CacheBehavior {
     return {
       pathPattern: this.props.pathPattern,
       targetOriginId: this.originId,
-      allowedMethods: this.props.allowedMethods?.methods ?? undefined,
+      allowedMethods: this.props.allowedMethods?.methods,
+      cachedMethods: this.props.cachedMethods?.methods,
+      compress: this.props.compress,
       forwardedValues: {
         queryString: this.props.forwardQueryString ?? false,
         queryStringCacheKeys: this.props.forwardQueryStringCacheKeys,
       },
-      viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+      smoothStreaming: this.props.smoothStreaming,
+      viewerProtocolPolicy: this.props.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL,
       lambdaFunctionAssociations: this.props.edgeLambdas
-        ? this.props.edgeLambdas.map(edgeLambda => {
-          if (edgeLambda.functionVersion.version === '$LATEST') {
-            throw new Error('$LATEST function version cannot be used for Lambda@Edge');
-          }
-          return {
-            lambdaFunctionArn: edgeLambda.functionVersion.functionArn,
-            eventType: edgeLambda.eventType.toString(),
-          };
-        })
+        ? this.props.edgeLambdas.map(edgeLambda => ({
+          lambdaFunctionArn: edgeLambda.functionVersion.edgeArn,
+          eventType: edgeLambda.eventType.toString(),
+        }))
         : undefined,
     };
+  }
+
+  private grantEdgeLambdaFunctionExecutionRole(edgeLambdas?: EdgeLambda[]) {
+    if (!edgeLambdas || edgeLambdas.length === 0) { return; }
+    edgeLambdas.forEach((edgeLambda) => {
+      const role = edgeLambda.functionVersion.role;
+      if (role && role instanceof iam.Role && role.assumeRolePolicy) {
+        role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
+          actions: ['sts:AssumeRole'],
+          principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],
+        }));
+      }
+    });
   }
 }

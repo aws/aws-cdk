@@ -25,7 +25,8 @@
         "distName": "aws-cdk.custom-resources",
         "module": "aws_cdk.custom_resources"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -70,18 +71,18 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
-    "@types/aws-lambda": "^8.10.39",
-    "@types/fs-extra": "^8.1.0",
-    "@types/sinon": "^9.0.4",
-    "aws-sdk": "^2.715.0",
+    "@types/aws-lambda": "^8.10.61",
+    "@types/fs-extra": "^8.1.1",
+    "@types/sinon": "^9.0.5",
+    "aws-sdk": "^2.739.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "fs-extra": "^9.0.1",
-    "nock": "^13.0.2",
+    "nock": "^13.0.4",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.2"
+    "sinon": "^9.0.3"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "0.0.0",
@@ -90,7 +91,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -100,7 +101,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

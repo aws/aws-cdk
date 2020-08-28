@@ -194,6 +194,14 @@ export abstract class FunctionBase extends Resource implements IFunction {
    */
   protected _connections?: ec2.Connections;
 
+  private _latestVersion?: LatestVersion;
+
+  /**
+   * Mapping of invocation principals to grants. Used to de-dupe `grantInvoke()` calls.
+   * @internal
+   */
+  protected _invocationGrants: Record<string, iam.Grant> = {};
+
   /**
    * Adds a permission to the Lambda resource policy.
    * @param id The id ƒor the permission construct
@@ -244,8 +252,10 @@ export abstract class FunctionBase extends Resource implements IFunction {
   }
 
   public get latestVersion(): IVersion {
-    // Dynamic to avoid infinite recursion when creating the LatestVersion instance...
-    return new LatestVersion(this);
+    if (!this._latestVersion) {
+      this._latestVersion = new LatestVersion(this);
+    }
+    return this._latestVersion;
   }
 
   /**
@@ -268,27 +278,36 @@ export abstract class FunctionBase extends Resource implements IFunction {
    * Grant the given identity permissions to invoke this Lambda
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions: ['lambda:InvokeFunction'],
-      resourceArns: [this.functionArn],
+    const identifier = `Invoke${grantee.grantPrincipal}`; // calls the .toString() of the principal
 
-      // Fake resource-like object on which to call addToResourcePolicy(), which actually
-      // calls addPermission()
-      resource: {
-        addToResourcePolicy: (_statement) => {
-          // Couldn't add permissions to the principal, so add them locally.
-          const identifier = `Invoke${grantee.grantPrincipal}`; // calls the .toString() of the princpal
-          this.addPermission(identifier, {
-            principal: grantee.grantPrincipal!,
-            action: 'lambda:InvokeFunction',
-          });
+    // Memoize the result so subsequent grantInvoke() calls are idempotent
+    let grant = this._invocationGrants[identifier];
+    if (!grant) {
+      grant = iam.Grant.addToPrincipalOrResource({
+        grantee,
+        actions: ['lambda:InvokeFunction'],
+        resourceArns: [this.functionArn],
 
-          return { statementAdded: true, policyDependable: this._functionNode().findChild(identifier) } as iam.AddToResourcePolicyResult;
+        // Fake resource-like object on which to call addToResourcePolicy(), which actually
+        // calls addPermission()
+        resource: {
+          addToResourcePolicy: (_statement) => {
+            // Couldn't add permissions to the principal, so add them locally.
+            this.addPermission(identifier, {
+              principal: grantee.grantPrincipal!,
+              action: 'lambda:InvokeFunction',
+            });
+
+            return { statementAdded: true, policyDependable: this._functionNode().findChild(identifier) } as iam.AddToResourcePolicyResult;
+          },
+          node: this.node,
+          stack: this.stack,
+          env: this.env,
         },
-        node: this.node,
-      },
-    });
+      });
+      this._invocationGrants[identifier] = grant;
+    }
+    return grant;
   }
 
   /**
@@ -416,5 +435,9 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public addAlias(aliasName: string, options: AliasOptions = {}) {
     return addAlias(this, this, aliasName, options);
+  }
+
+  public get edgeArn(): never {
+    throw new Error('$LATEST function version cannot be used for Lambda@Edge');
   }
 }

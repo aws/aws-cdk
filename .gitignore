@@ -40,3 +40,6 @@ yarn-error.log
 # Parcel default cache directory
 .parcel-cache
 nozem.json
+
+# Cloud9
+.c9

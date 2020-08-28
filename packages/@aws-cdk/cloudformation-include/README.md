@@ -13,11 +13,12 @@
 This module contains a set of classes whose goal is to facilitate working
 with existing CloudFormation templates in the CDK.
 It can be thought of as an extension of the capabilities of the
-[`CfnInclude` class](../@aws-cdk/core/lib/cfn-include.ts).
+[`CfnInclude` class](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CfnInclude.html).
 
 ## Basic usage
 
-Assume we have a file with an existing template. It could be in JSON format, in a file `my-template.json`:
+Assume we have a file with an existing template.
+It could be in JSON format, in a file `my-template.json`:
 
 ```json
 {
@@ -52,7 +53,7 @@ const cfnTemplate = new cfn_inc.CfnInclude(this, 'Template', {
 });
 ```
 
-Or, if our template is YAML, we can use
+Or, if your template uses YAML:
 
 ```typescript
 const cfnTemplate = new cfn_inc.CfnInclude(this, 'Template', {
@@ -60,7 +61,7 @@ const cfnTemplate = new cfn_inc.CfnInclude(this, 'Template', {
 });
 ```
 
-This will add all resources from `my-template.json` into the CDK application,
+This will add all resources from `my-template.json` / `my-template.yaml` into the CDK application,
 preserving their original logical IDs from the template file.
 
 Any resource from the included template can be retrieved by referring to it by its logical ID from the template.
@@ -73,6 +74,12 @@ import * as s3 from '@aws-cdk/aws-s3';
 const cfnBucket = cfnTemplate.getResource('Bucket') as s3.CfnBucket;
 // cfnBucket is of type s3.CfnBucket
 ```
+
+Note that any resources not present in the latest version of the CloudFormation schema
+at the time of publishing the version of this module that you depend on,
+including [Custom Resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html),
+will be returned as instances of the class `CfnResource`,
+and so cannot be cast to a different resource type.
 
 Any modifications made to that resource will be reflected in the resulting CDK template;
 for example, the name of the bucket can be changed:
@@ -99,16 +106,44 @@ role.addToPolicy(new iam.PolicyStatement({
 ```
 
 If you need, you can also convert the CloudFormation resource to a higher-level
-resource by importing it by its name:
+resource by importing it:
 
 ```typescript
 const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
 
-Note that [Custom Resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html)
-will be of type CfnResource, and hence won't need to be casted.
-This holds for any resource that isn't in the CloudFormation schema.
+## Parameters
+
+If your template uses [CloudFormation Parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const param: core.CfnParameter = cfnTemplate.getParameter('MyParameter');
+```
+
+The `CfnParameter` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+param.default = 'MyDefault';
+```
+
+You can also provide values for them when including the template:
+
+```typescript
+new inc.CfnInclude(stack, 'includeTemplate', {
+  templateFile: 'path/to/my/template'
+  parameters: {
+    'MyParam': 'my-value',
+  },
+});
+```
+
+This will replace all references to `MyParam` with the string 'my-value',
+and `MyParam` will be removed from the Parameters section of the template.
 
 ## Conditions
 
@@ -126,6 +161,43 @@ and any changes you make to it will be reflected in the resulting template:
 
 ```typescript
 condition.expression = core.Fn.conditionEquals(1, 2);
+```
+
+## Mappings
+
+If your template uses [CloudFormation Mappings](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const mapping: core.CfnMapping = cfnTemplate.getMapping('MyMapping');
+```
+
+The `CfnMapping` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+mapping.setValue('my-region', 'AMI', 'ami-04681a1dbd79675a5');
+```
+
+## Rules
+
+If your template uses [Service Catalog template Rules](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const rule: core.CfnRule = cfnTemplate.getRule('MyRule');
+```
+
+The `CfnRule` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+rule.addAssertion(core.Fn.conditionContains(['m1.small'], myParameter.value),
+  'MyParameter has to be m1.small');
 ```
 
 ## Outputs
@@ -158,27 +230,26 @@ For example, if you have the following parent template:
     "ChildStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json"
+        "TemplateURL": "https://my-s3-template-source.s3.amazonaws.com/child-stack.json"
       }
     }
   }
 }
 ```
 
-where the child template pointed to by `https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json` is:
+where the child template pointed to by `https://my-s3-template-source.s3.amazonaws.com/child-stack.json` is:
 
 ```json
 {
   "Resources": {
     "MyBucket": {
       "Type": "AWS::S3::Bucket"
-      }
     }
   }
 }
 ```
 
-You can include both the parent stack and the nested stack in your CDK Application as follows:
+You can include both the parent stack and the nested stack in your CDK application as follows:
 
 ```typescript
 const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
@@ -191,74 +262,30 @@ const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
 });
 ```
 
-Now you can access the ChildStack nested stack and included template with:
+The included nested stack can be accessed with the `getNestedStack` method:
 
 ```typescript
 const includedChildStack = parentTemplate.getNestedStack('ChildStack');
 const childStack: core.NestedStack = includedChildStack.stack;
-const childStackTemplate: cfn_inc.CfnInclude = includedChildStack.includedTemplate;
+const childTemplate: cfn_inc.CfnInclude = includedChildStack.includedTemplate;
 ```
 
 Now you can reference resources from `ChildStack` and modify them like any other included template:
 
 ```typescript
-const bucket = childStackTemplate.getResource('MyBucket') as s3.CfnBucket;
-bucket.bucketName = 'my-new-bucket-name';
+const cfnBucket = childTemplate.getResource('MyBucket') as s3.CfnBucket;
+cfnBucket.bucketName = 'my-new-bucket-name';
 
-const bucketReadRole = new iam.Role(childStack, 'MyRole', {
+const role = new iam.Role(childStack, 'MyRole', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
 
-bucketReadRole.addToPolicy(new iam.PolicyStatement({
+role.addToPolicy(new iam.PolicyStatement({
   actions: [
     's3:GetObject*',
     's3:GetBucket*',
     's3:List*',
   ],
-  resources: [bucket.attrArn],
+  resources: [cfnBucket.attrArn],
 }));
 ```
-
-## Known limitations
-
-This module is still in its early, experimental stage,
-and so does not implement all features of CloudFormation templates.
-All items unchecked below are currently not supported.
-
-### Ability to retrieve CloudFormation objects from the template:
-
-- [x] Resources
-- [x] Parameters
-- [x] Conditions
-- [x] Outputs
-
-### [Resource attributes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html):
-
-- [x] Properties
-- [x] Condition
-- [x] DependsOn
-- [x] CreationPolicy
-- [x] UpdatePolicy
-- [x] UpdateReplacePolicy
-- [x] DeletionPolicy
-- [x] Metadata
-
-### [CloudFormation functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html):
-
-- [x] Ref
-- [x] Fn::GetAtt
-- [x] Fn::Join
-- [x] Fn::If
-- [x] Fn::And
-- [x] Fn::Equals
-- [x] Fn::Not
-- [x] Fn::Or
-- [x] Fn::Base64
-- [x] Fn::Cidr
-- [x] Fn::FindInMap
-- [x] Fn::GetAZs
-- [x] Fn::ImportValue
-- [x] Fn::Select
-- [x] Fn::Split
-- [ ] Fn::Sub
-- [x] Fn::Transform

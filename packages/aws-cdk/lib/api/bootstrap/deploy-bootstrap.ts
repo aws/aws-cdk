@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import { Mode, SdkProvider } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
-import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions } from './bootstrap-props';
+import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions, BOOTSTRAP_VERSION_RESOURCE } from './bootstrap-props';
 
 /**
  * Perform the actual deployment of a bootstrap stack, given a template and some parameters
@@ -59,5 +59,16 @@ export async function deployBootstrapStack(
 }
 
 function bootstrapVersionFromTemplate(template: any): number {
-  return parseInt(template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT]?.Value ?? '0', 10);
+  const versionSources = [
+    template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT]?.Value,
+    template.Resources?.[BOOTSTRAP_VERSION_RESOURCE]?.Properties?.Value,
+  ];
+
+  for (const vs of versionSources) {
+    if (typeof vs === 'number') { return vs; }
+    if (typeof vs === 'string' && !isNaN(parseInt(vs, 10))) {
+      return parseInt(vs, 10);
+    }
+  }
+  return 0;
 }
