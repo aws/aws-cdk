@@ -7,13 +7,9 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const projectRoot = process.env.NZM_PACKAGE_SOURCE
-      ? path.join(process.env.NZM_PACKAGE_SOURCE, '..', '..', '..')
-      : undefined;
-
     // This function uses aws-sdk but it will not be included
     new lambda.NodejsFunction(this, 'external', {
-      projectRoot,
+      projectRoot: path.resolve(__dirname, '..'),
       entry: path.join(__dirname, 'integ-handlers/dependencies.ts'),
       runtime: Runtime.NODEJS_12_X,
       minify: true,
@@ -21,7 +17,6 @@ class TestStack extends Stack {
       // (delay is a zero dependency package and its version is fixed
       // in the package.json to ensure a stable hash for this integ test)
       nodeModules: ['delay'],
-      forceDockerBundling: true,
     });
   }
 }
