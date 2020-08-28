@@ -10,6 +10,7 @@ import { SdkProvider } from '../lib/api/aws-auth';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
+import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
@@ -89,7 +90,8 @@ async function parseCommandLineArguments() {
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
-      .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
+      .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' })
+      .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events.' }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
@@ -279,6 +281,7 @@ async function initCommandLine() {
           parameters: parameterMap,
           usePreviousParameters: args['previous-parameters'],
           outputsFile: args.outputsFile,
+          progress: configuration.settings.get(['progress']),
           ci: args.ci,
         });
 
