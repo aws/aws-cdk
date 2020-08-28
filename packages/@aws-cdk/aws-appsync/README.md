@@ -84,7 +84,7 @@ demoDS.createResolver({
 });
 ```
 
-#### Http data source example. Integrating SterFunctions workflow.
+#### HTTP Endpoints
 GraphQL schema file `schema.graphql`:
 
 ```gql
