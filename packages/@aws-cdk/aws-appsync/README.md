@@ -137,8 +137,7 @@ import * as appsync from '@aws-cdk/aws-appsync';
 
 const api = new appsync.GraphQLApi(scope, 'id', {
   name: 'api',
-  schemaDefinition: SchemaDefinition.FILE,
-  schemaDefinitionFile: 'schema.graphql'
+  schema: appsync.Schema.fromFile(join(__dirname, 'schema.graphql))
 });
 
 const httpDs = api.addHttpDataSource(
@@ -647,4 +646,3 @@ You can create Object Types in three ways:
     });
     ```
     > This method provides easy use and is ideal for smaller projects.
-
