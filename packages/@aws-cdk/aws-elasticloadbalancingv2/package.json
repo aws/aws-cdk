@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-elasticloadbalancingv2",
         "module": "aws_cdk.aws_elasticloadbalancingv2"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -47,7 +48,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::ElasticLoadBalancingV2"
+    "cloudformation": "AWS::ElasticLoadBalancingV2",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -63,11 +65,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -79,7 +79,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -90,7 +90,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2",
+    "constructs": "^3.0.4",
     "@aws-cdk/region-info": "0.0.0"
   },
   "engines": {
