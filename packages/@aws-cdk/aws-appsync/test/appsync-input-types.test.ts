@@ -33,12 +33,45 @@ describe('testing Input Type properties', () => {
     // WHEN
     const test = new appsync.InputType('Test', { definition: {} });
     api.addType(test);
-    test.addField('test', t.string);
+    test.addField({ fieldName: 'test', field: t.string });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
+  });
+
+  test('appsync fails addField with InputType missing fieldName', () => {
+    // WHEN
+    const test = new appsync.InputType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({ fieldName: 'test' });
+    }).toThrowError('Input Types must have both fieldName and field options.');
+  });
+
+  test('appsync fails addField with InputType missing field', () => {
+    // WHEN
+    const test = new appsync.InputType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({ field: t.string });
+    }).toThrowError('Input Types must have both fieldName and field options.');
+  });
+
+  test('appsync fails addField with InputType missing both fieldName and field options', () => {
+    // WHEN
+    const test = new appsync.InputType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({});
+    }).toThrowError('Input Types must have both fieldName and field options.');
   });
 
   test('InputType can be a GraphqlType', () => {

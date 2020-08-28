@@ -1,6 +1,6 @@
 import { shapeAddition } from './private';
 import { Resolver } from './resolver';
-import { Directive, IField, IIntermediateType } from './schema-base';
+import { Directive, IField, IIntermediateType, AddFieldOptions } from './schema-base';
 import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-field';
 
 /**
@@ -69,13 +69,17 @@ export class InterfaceType implements IIntermediateType {
   }
 
   /**
-   * Add a field to this Object Type
+   * Add a field to this Interface Type.
    *
-   * @param fieldName - The name of the field
-   * @param field - the field to add
+   * Interface Types must have both fieldName and field options.
+   *
+   * @param options the options to add a field
    */
-  public addField(fieldName: string, field: IField): void {
-    this.definition[fieldName] = field;
+  public addField(options: AddFieldOptions): void {
+    if (!options.fieldName || !options.field) {
+      throw new Error('Interface Types must have both fieldName and field options.');
+    }
+    this.definition[options.fieldName] = options.field;
   }
 }
 
@@ -144,15 +148,20 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
     });
   }
 
+
   /**
-   * Add a field to this Object Type
+   * Add a field to this Object Type.
    *
-   * @param fieldName - The name of the field
-   * @param field - the resolvable field to add
+   * Object Types must have both fieldName and field options.
+   *
+   * @param options the options to add a field
    */
-  public addField(fieldName: string, field: IField): void {
-    this.generateResolver(fieldName, field.fieldOptions);
-    this.definition[fieldName] = field;
+  public addField(options: AddFieldOptions): void {
+    if (!options.fieldName || !options.field) {
+      throw new Error('Object Types must have both fieldName and field options.');
+    }
+    this.generateResolver(options.fieldName, options.field.fieldOptions);
+    this.definition[options.fieldName] = options.field;
   }
 
   /**
@@ -237,12 +246,16 @@ export class InputType implements IIntermediateType {
   }
 
   /**
-   * Add a field to this input Type
+   * Add a field to this Input Type.
    *
-   * @param fieldName the name of the field
-   * @param field the field to add
+   * Input Types must have both fieldName and field options.
+   *
+   * @param options the options to add a field
    */
-  public addField(fieldName: string, field: IField): void {
-    this.definition[fieldName] = field;
+  public addField(options: AddFieldOptions): void {
+    if (!options.fieldName || !options.field) {
+      throw new Error('Input Types must have both fieldName and field options.');
+    }
+    this.definition[options.fieldName] = options.field;
   }
 }
