@@ -472,6 +472,7 @@ Types will be the meat of your GraphQL Schema as they are the types defined by y
 Intermediate Types include:
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
+- [**Input Types**](#Input-Types)
 
 ### Interface Types
 
