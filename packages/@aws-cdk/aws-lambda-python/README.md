@@ -51,16 +51,16 @@ according to the `runtime`.
 **Lambda Layer Support**
 
 You may create a python-based lambda layer with `PythonLayerVersion`. If `PythonLayerVersion` detects a `requirements.txt`
-or `Pipfile` at the entry path, then `PythonLayerVersion` will install the dependencies and use the dependencies as the
-content of the layer.
+or `Pipfile` at the entry path, then `PythonLayerVersion` will include the dependencies inline with your code in the
+layer.
 
 ```ts
 new lambda.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function',
   layers: [
     new lambda.PythonLayerVersion(this, 'MyLayer', {
-      entry: '/path/to/my/layer', // required
+      entry: '/path/to/my/layer', // point this to your library's directory
     }),
   ],
-})
+});
 ```
