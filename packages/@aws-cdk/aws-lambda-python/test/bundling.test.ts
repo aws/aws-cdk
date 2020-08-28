@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { bundleFunction, bundleFilesLayer, PythonCodeLocalBundler, hasDependencies, bundleDependenciesLayer } from '../lib/bundling';
+import { bundleFunction, bundleFilesLayer, LocalPythonLayersBundler, hasDependencies, bundleDependenciesLayer } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
 const existsSyncOriginal = fs.existsSync;
@@ -140,7 +140,7 @@ describe('Local bundler for python code layers', () => {
     const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
 
     // WHEN
-    const bundler = new PythonCodeLocalBundler({
+    const bundler = new LocalPythonLayersBundler({
       entry: entryPath,
     });
     const tryBundleResult = bundler.tryBundle(outputDir);
@@ -159,7 +159,7 @@ describe('Local bundler for python code layers', () => {
     const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
 
     // WHEN
-    const bundler = new PythonCodeLocalBundler({
+    const bundler = new LocalPythonLayersBundler({
       entry: entryPath,
       exclude: [
         '*',

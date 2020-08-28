@@ -13,13 +13,30 @@ export const DEPENDENCY_EXCLUDES = ['*.pyc'];
  */
 export const BUNDLER_DEPENDENCIES_CACHE = '/var/dependencies';
 
-export interface BundleOptions {
-  entry: string;
-  runtime: lambda.Runtime;
-  depsCommand: string;
+/**
+ * Options for bundling
+ */
+export interface BundlingOptions {
+  /**
+   * Entry path
+   */
+  readonly entry: string;
+
+  /**
+   * The runtime of the lambda function
+   */
+  readonly runtime: lambda.Runtime;
+
+  /**
+   * Commands to run
+   */
+  readonly depsCommand: string;
 }
 
-export function bundle(options: BundleOptions) {
+/**
+ * Produce bundled Lambda asset code
+ */
+export function bundle(options: BundlingOptions): lambda.AssetCode {
   const { entry, runtime, depsCommand } = options;
 
   // Determine which bundling image to use.
@@ -111,7 +128,7 @@ export function bundleFilesLayer(options: BundleFilesLayerOptions) {
       // bundle to emit an error if the bundler runs docker.
       image: cdk.BundlingDockerImage.fromRegistry('alpine'),
       command: ['sh', '-c', 'echo The bundler attempted to run docker && exit 1'],
-      local: new PythonCodeLocalBundler(options),
+      local: new LocalPythonLayersBundler(options),
     },
   });
 }
@@ -120,7 +137,7 @@ export function bundleFilesLayer(options: BundleFilesLayerOptions) {
  * A local bundling implementation which copies files to a python subdirectory
  * in the emitted asset.
  */
-export class PythonCodeLocalBundler implements cdk.ILocalBundling {
+export class LocalPythonLayersBundler implements cdk.ILocalBundling {
   constructor(private options: BundleFilesLayerOptions) {}
 
   tryBundle(outputDir: string) {
