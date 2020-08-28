@@ -6,7 +6,7 @@ import * as ScalarType from './scalar-type-defintions';
 
 /*
  * Creates an Appsync GraphQL API and schema in a code-first approach.
- * da2-4s5ymedmwjfezg2ovmrlsxv5fi https://4mm622kkuvfdbhvhqmpyx4wmve.appsync-api.us-east-1.amazonaws.com/graphql
+ *
  * Stack verification steps:
  * Deploy stack, get api key and endpoinScalarType. Check if schema connects to data source.
  *

@@ -592,15 +592,6 @@ export class GraphQLApi extends GraphqlApiBase {
   }
 
   /**
-   * Set the Schema's queries to a given Object Type
-   *
-   * @param type the object type to set as Schema's Query
-   */
-  public attachQueryType(type: ObjectType): ObjectType {
-    return this.schema.attachQueryType(type);
-  }
-
-  /**
    * Add a query field to the schema's Query. If one isn't set by
    * the user, CDK will create an Object Type called 'Query'. For example,
    *
@@ -613,17 +604,6 @@ export class GraphQLApi extends GraphqlApiBase {
    */
   public addQuery(fieldName: string, field: ResolvableField): ObjectType {
     return this.schema.addQuery(fieldName, field);
-  }
-
-  /**
-   * Set the Schema's mutation to a given Object Type
-   *
-   * @param type the object type to set as Schema's Mutation
-   *
-   * @return the mutation attached to the schema
-   */
-  public attachMutationType(type: ObjectType): ObjectType {
-    return this.schema.attachMutationType(type);
   }
 
   /**

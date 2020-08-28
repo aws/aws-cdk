@@ -101,21 +101,6 @@ export class Schema {
   }
 
   /**
-   * Set the Schema's queries to a given Object Type
-   *
-   * @param type the object type to set as Schema's Query
-   *
-   * @return the query attached to the schema
-   */
-  public attachQueryType(type: ObjectType): ObjectType {
-    if (this.mode !== SchemaMode.CODE) {
-      throw new Error('API cannot set schema\'s query because schema definition mode is not configured as CODE.');
-    }
-    this.query = this.query ?? type;
-    return this.query;
-  }
-
-  /**
    * Add a query field to the schema's Query. If one isn't set by
    * the user, CDK will create an Object Type called 'Query'. For example,
    *
@@ -139,21 +124,6 @@ export class Schema {
   }
 
   /**
-   * Set the Schema's mutation to a given Object Type
-   *
-   * @param type the object type to set as Schema's Mutation
-   *
-   * @return the mutation attached to the schema
-   */
-  public attachMutationType(type: ObjectType): ObjectType {
-    if (this.mode !== SchemaMode.CODE) {
-      throw new Error('API cannot set schema\'s mutation because schema definition mode is not configured as CODE.');
-    }
-    this.mutation = this.mutation ?? type;
-    return this.mutation;
-  }
-
-  /**
    * Add a mutation field to the schema's Mutation. If one isn't set by
    * the user, CDK will create an Object Type called 'Mutation'. For example,
    *
@@ -166,7 +136,7 @@ export class Schema {
    */
   public addMutation(fieldName: string, field: ResolvableField): ObjectType {
     if (this.mode !== SchemaMode.CODE) {
-      throw new Error('API cannot add to schema\'s Mutation because schema definition mode is not configured as CODE.');
+      throw new Error('API cannot add to schema\'s mutation because schema definition mode is not configured as CODE.');
     }
     if (!this.mutation) {
       this.mutation = new ObjectType('Mutation', { definition: {} });
