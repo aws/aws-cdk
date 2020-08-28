@@ -429,6 +429,7 @@ test('flatten correctly flattens an object with buffers', () => {
   });
 });
 
+jest.setTimeout(30000);
 test('installs the latest SDK', async () => {
   const tmpPath = '/tmp/node_modules/aws-sdk';
 
