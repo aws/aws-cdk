@@ -207,6 +207,7 @@ new cloudfront.Distribution(this, 'myDist', {
         {
           functionVersion: myFunc.currentVersion,
           eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
+          includeBody: true, // Optional - defaults to false
         },
       ],
     },
