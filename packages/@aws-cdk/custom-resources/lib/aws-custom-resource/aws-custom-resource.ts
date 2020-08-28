@@ -329,7 +329,6 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     if (props.policy.statements.length !== 0) {
       // Use custom statements provided by the user
       for (const statement of props.policy.statements) {
-        provider.addToRolePolicy(statement);
         statements.push(statement);
       }
     } else {
