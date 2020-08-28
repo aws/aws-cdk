@@ -1,5 +1,5 @@
 import { CfnDistribution } from '../cloudfront.generated';
-import { AddBehaviorOptions, ViewerProtocolPolicy } from '../distribution';
+import { AddBehaviorOptions, LambdaEdgeEventType, ViewerProtocolPolicy, EdgeLambda } from '../distribution';
 
 /**
  * Properties for specifying custom behaviors for origins.
@@ -24,6 +24,8 @@ export class CacheBehavior {
 
   constructor(originId: string, private readonly props: CacheBehaviorProps) {
     this.originId = originId;
+
+    this.validateEdgeLambdas(props.edgeLambdas);
   }
 
   /**
@@ -55,5 +57,12 @@ export class CacheBehavior {
         }))
         : undefined,
     };
+  }
+
+  private validateEdgeLambdas(edgeLambdas?: EdgeLambda[]) {
+    const includeBodyEventTypes = [LambdaEdgeEventType.ORIGIN_REQUEST, LambdaEdgeEventType.VIEWER_REQUEST];
+    if (edgeLambdas && edgeLambdas.some(lambda => lambda.includeBody && !includeBodyEventTypes.includes(lambda.eventType))) {
+      throw new Error('\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.');
+    }
   }
 }

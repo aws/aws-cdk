@@ -547,6 +547,38 @@ nodeunitShim({
     test.done();
   },
 
+  'throws when associating a lambda with includeBody and a response event type'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    const fnVersion = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:testregion:111111111111:function:myTestFun:v1');
+
+    test.throws(() => {
+      new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+        originConfigs: [
+          {
+            s3OriginSource: {
+              s3BucketSource: sourceBucket,
+            },
+            behaviors: [
+              {
+                isDefaultBehavior: true,
+                lambdaFunctionAssociations: [{
+                  eventType: LambdaEdgeEventType.VIEWER_RESPONSE,
+                  includeBody: true,
+                  lambdaFunction: fnVersion,
+                }],
+              },
+            ],
+          },
+        ],
+      });
+    }, /'includeBody' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types./);
+
+    test.done();
+  },
+
   'distribution has a defaultChild'(test: Test) {
     const stack = new cdk.Stack();
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
