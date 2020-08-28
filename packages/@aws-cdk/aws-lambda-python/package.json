@@ -83,6 +83,10 @@
   "awscdkio": {
     "announce": false
   },
+  "nozem": {
+    "ostools": ["docker"],
+    "copyAllSourcesForTest": true
+  },
   "cdk-build": {
     "jest": true
   }
