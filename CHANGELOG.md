@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.61.1](https://github.com/aws/aws-cdk/compare/v1.61.0...v1.61.1) (2020-08-28)
+
+
+### Bug Fixes
+
+* **cli:** unable to upgrade new style bootstrap to version ([#10030](https://github.com/aws/aws-cdk/issues/10030)) ([8d3e422](https://github.com/aws/aws-cdk/commit/8d3e422809c29da926bae878276619a59ae82ecb)), closes [#10016](https://github.com/aws/aws-cdk/issues/10016)
+
 ## [1.61.0](https://github.com/aws/aws-cdk/compare/v1.60.0...v1.61.0) (2020-08-27)
 
 
@@ -39,7 +46,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
 * **cloudfront:** Distribution: `.domains` must be specified if `certificate` is provided.
-* **appsync:** **appsync.addXxxDataSource** `name` and `description` props are now optional and in an `DataSourceOptions` interface. 
+* **appsync:** **appsync.addXxxDataSource** `name` and `description` props are now optional and in an `DataSourceOptions` interface.
 - **appsync**:  the props `name` and `description` in `addXxxDataSource` have been moved into new props `options`  of type `DataSourceOptions`
 - **appsync**: `DataSourceOptions.name` defaults to id
 - **appsync**: `DataSourceOptions.description` defaults to undefined
