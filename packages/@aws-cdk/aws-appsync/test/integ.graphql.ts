@@ -9,7 +9,6 @@ import {
   MappingTemplate,
   PrimaryKey,
   Schema,
-  UserPoolDefaultAction,
   Values,
 } from '../lib';
 
@@ -42,7 +41,6 @@ const api = new GraphQLApi(stack, 'Api', {
       authorizationType: AuthorizationType.USER_POOL,
       userPoolConfig: {
         userPool,
-        defaultAction: UserPoolDefaultAction.ALLOW,
       },
     },
     additionalAuthorizationModes: [
