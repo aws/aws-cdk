@@ -64,10 +64,8 @@ describe('Http Data Source configuration', () => {
       description: 'custom description',
       authorizationConfig: {
         authorizationType: 'AWS_IAM',
-        awsIamConfig: {
-          signingRegion: 'us-east-1',
-          signingServiceName: 'states'
-        }
+        signingRegion: 'us-east-1',
+        signingServiceName: 'states'
       }
     });
 

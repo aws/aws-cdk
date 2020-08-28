@@ -212,24 +212,14 @@ export interface AwsIamConfig {
    */
   readonly authorizationType: 'AWS_IAM';
   /**
-   * The IAM signing configuration required by the HTTP endpoint
+   * The signing region for AWS IAM authorization
    */
-  readonly awsIamConfig: AwsIamConfigSigning; 
-}
+  readonly signingRegion: string;
 
-/**
- * The IAM signing config in case the HTTP endpoint requires authorization
- */
-export interface AwsIamConfigSigning {
-    /**
-     * The signing region for AWS IAM authorization
-     */
-    readonly signingRegion: string;
-  
-    /**
-     * The signing service name for AWS IAM authorization
-     */
-    readonly signingServiceName: string;  
+  /**
+   * The signing service name for AWS IAM authorization
+   */
+  readonly signingServiceName: string;
 }
 
 /**
@@ -248,13 +238,30 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
  */
 export class HttpDataSource extends BaseDataSource {
   constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
-    super(scope, id, props, {
-      httpConfig: {
-        endpoint: props.endpoint,
-        authorizationConfig: props.authorizationConfig
-      },
-      type: 'HTTP',
-    });
+    if (!props.authorizationConfig) {
+      super(scope, id, props, {
+        httpConfig: {
+          endpoint: props.endpoint
+        },
+        type: 'HTTP',        
+      })
+    } else {
+      const authConfig = props.authorizationConfig
+      super(scope, id, props, {
+        httpConfig: {
+          endpoint: props.endpoint,
+          authorizationConfig: {
+            authorizationType: authConfig.authorizationType,
+            awsIamConfig: {
+              signingRegion: authConfig.signingRegion,
+              signingServiceName: authConfig.signingServiceName
+            } 
+            
+          }
+        },
+        type: 'HTTP',        
+      })
+    }
   }
 }
 
