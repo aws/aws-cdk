@@ -139,6 +139,44 @@ export class Schema {
   }
 
   /**
+   * Set the Schema's mutation to a given Object Type
+   *
+   * @param type the object type to set as Schema's Mutation
+   *
+   * @return the mutation attached to the schema
+   */
+  public attachMutationType(type: ObjectType): ObjectType {
+    if (this.mode !== SchemaMode.CODE) {
+      throw new Error('API cannot set schema\'s mutation because schema definition mode is not configured as CODE.');
+    }
+    this.mutation = this.mutation ?? type;
+    return this.mutation;
+  }
+
+  /**
+   * Add a mutation field to the schema's Mutation. If one isn't set by
+   * the user, CDK will create an Object Type called 'Mutation'. For example,
+   *
+   * type Mutation {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the Mutation
+   * @param field the resolvable field to for this Mutation
+   */
+  public addMutation(fieldName: string, field: ResolvableField): ObjectType {
+    if (this.mode !== SchemaMode.CODE) {
+      throw new Error('API cannot add to schema\'s Mutation because schema definition mode is not configured as CODE.');
+    }
+    if (!this.mutation) {
+      this.mutation = new ObjectType('Mutation', { definition: {} });
+      this.addType(this.mutation);
+    };
+    this.mutation.addField(fieldName, field);
+    return this.mutation;
+  }
+
+  /**
    * Add type to the schema
    *
    * @param type the intermediate type to add to the schema

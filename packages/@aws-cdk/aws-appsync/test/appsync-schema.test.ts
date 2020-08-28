@@ -126,6 +126,72 @@ describe('basic testing schema definition mode `code`', () => {
       Definition: 'schema {\n  query: Root\n}\ntype Root {\n  test: String\n}\n',
     });
   });
+
+  test('definition mode `code` allows for api to addMutation', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+    });
+    api.addMutation('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  mutation: Mutation\n}\ntype Mutation {\n  test: String\n}\n',
+    });
+  });
+
+  test('definition mode `code` allows for schema to addMutation', () => {
+    // WHEN
+    const schema = new appsync.Schema();
+    new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema,
+    });
+    schema.addMutation('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  mutation: Mutation\n}\ntype Mutation {\n  test: String\n}\n',
+    });
+  });
+
+  test('definition mode `code` allows for api to attachMutationType', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+    });
+    api.addType(api.attachMutationType(new appsync.ObjectType('Root', { definition: {} })));
+    api.addMutation('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  mutation: Root\n}\ntype Root {\n  test: String\n}\n',
+    });
+  });
+
+  test('definition mode `code` allows for schema to attachQueryType', () => {
+    // WHEN
+    const schema = new appsync.Schema();
+    schema.addType(schema.attachQueryType(new appsync.ObjectType('Root', { definition: {} })));
+    new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema,
+    });
+    schema.addQuery('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  query: Root\n}\ntype Root {\n  test: String\n}\n',
+    });
+  });
 });
 
 describe('testing schema definition mode `file`', () => {

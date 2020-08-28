@@ -6,7 +6,7 @@ import * as ScalarType from './scalar-type-defintions';
 
 /*
  * Creates an Appsync GraphQL API and schema in a code-first approach.
- *
+ * da2-4s5ymedmwjfezg2ovmrlsxv5fi https://4mm622kkuvfdbhvhqmpyx4wmve.appsync-api.us-east-1.amazonaws.com/graphql
  * Stack verification steps:
  * Deploy stack, get api key and endpoinScalarType. Check if schema connects to data source.
  *
@@ -67,6 +67,38 @@ api.addQuery('getPlanets', new appsync.ResolvableField({
   dataSource: tableDS,
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
+}));
+
+/* ATTRIBUTES */
+const name = new appsync.Assign('name', '$context.arguments.name');
+const diameter = new appsync.Assign('diameter', '$context.arguments.diameter');
+const rotationPeriod = new appsync.Assign('rotationPeriod', '$context.arguments.rotationPeriod');
+const orbitalPeriod = new appsync.Assign('orbitalPeriod', '$context.arguments.orbitalPeriod');
+const gravity = new appsync.Assign('gravityPeriod', '$context.arguments.gravity');
+const population = new appsync.Assign('population', '$context.arguments.population');
+const climates = new appsync.Assign('climates', '$context.arguments.climates');
+const terrains = new appsync.Assign('terrains', '$context.arguments.terrains');
+const surfaceWater = new appsync.Assign('surfaceWater', '$context.arguments.surfaceWater');
+api.addMutation('addPlanet', new appsync.ResolvableField({
+  returnType: planet.attribute(),
+  args: {
+    name: ScalarType.string,
+    diameter: ScalarType.int,
+    rotationPeriod: ScalarType.int,
+    orbitalPeriod: ScalarType.int,
+    gravity: ScalarType.string,
+    population: ScalarType.list_string,
+    climates: ScalarType.list_string,
+    terrains: ScalarType.list_string,
+    surfaceWater: ScalarType.float,
+  },
+  dataSource: tableDS,
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbPutItem(
+    appsync.PrimaryKey.partition('id').auto(), new appsync.AttributeValues('$context.arguments',
+      [name, diameter, rotationPeriod, orbitalPeriod, gravity, population, climates, terrains, surfaceWater],
+    ),
+  ),
+  responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 }));
 
 app.synth();

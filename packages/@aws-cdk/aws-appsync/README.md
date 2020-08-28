@@ -602,3 +602,47 @@ api.addQuery('allFilms', new appsync.ResolvableField({
 CDK will generate an `Object Type` called `Query` for you. In other words,
 if you dont need a special name for your top level `Query` type, you simply
 need to run `appsync.Schema.addQuery` to construct your desired query fields.
+
+To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html). 
+
+#### Mutation
+
+Every schema **can** have a top level Mutation type. By default, the schema will look
+for the `Object Type` named `Mutation`. However, you can set the top level `mutation`
+to be another `Object Type` (i.e. `Root`).
+
+```ts
+schema {
+  mutation: Root
+}
+```
+
+To accomplish this with a code-first approach, we would use the following
+functions. 
+
+```ts
+const api = new appsync.GraphQLApi(stack, 'Api', { name: 'demo' });
+api.attachMutationType(new appsync.ObjectType('Root', { definition: {} }));
+```
+
+To add fields for these queries, we can simplify run the `addMutation` function
+to add to the schema's `Mutation` type.
+
+```ts
+const string = appsync.GraphqlType.string();
+const int = appsync.GraphqlType.int();
+api.addMutation('addFilm', new appsync.ResolvableField({
+  returnType: film.attribute(),
+  args: { name: string, film_number: int },
+  dataSource: api.addNoneDataSource('none'),
+  requestMappingTemplate: dummyRequest,
+  responseMappingTemplate: dummyResponse,
+}));
+```
+
+**Note**: if we do not specify a `Mutation` type for this schema using `Schema.attachMutationType`
+CDK will generate an `Object Type` called `Mutation` for you. In other words,
+if you dont need a special name for your top level `Mutation` type, you simply
+need to run `Schema.addMutation` to construct your desired mutation fields.
+
+To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html). 

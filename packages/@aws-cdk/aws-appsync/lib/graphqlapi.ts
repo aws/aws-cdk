@@ -614,4 +614,30 @@ export class GraphQLApi extends GraphqlApiBase {
   public addQuery(fieldName: string, field: ResolvableField): ObjectType {
     return this.schema.addQuery(fieldName, field);
   }
+
+  /**
+   * Set the Schema's mutation to a given Object Type
+   *
+   * @param type the object type to set as Schema's Mutation
+   *
+   * @return the mutation attached to the schema
+   */
+  public attachMutationType(type: ObjectType): ObjectType {
+    return this.schema.attachMutationType(type);
+  }
+
+  /**
+   * Add a mutation field to the schema's Mutation. If one isn't set by
+   * the user, CDK will create an Object Type called 'Mutation'. For example,
+   *
+   * type Mutation {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the Mutation
+   * @param field the resolvable field to for this Mutation
+   */
+  public addMutation(fieldName: string, field: ResolvableField): ObjectType {
+    return this.schema.addMutation(fieldName, field);
+  }
 }
