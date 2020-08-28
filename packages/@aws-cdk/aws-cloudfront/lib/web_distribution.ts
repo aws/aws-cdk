@@ -424,6 +424,15 @@ export interface LambdaFunctionAssociation {
    * A version of the lambda to associate
    */
   readonly lambdaFunction: lambda.IVersion;
+
+  /**
+   * Allows a Lambda function to have read access to the body content.
+   * Only valid for "request" event types (`ORIGIN_REQUEST` or `VIEWER_REQUEST`).
+   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
+   *
+   * @default false
+   */
+  readonly includeBody?: boolean;
 }
 
 export interface ViewerCertificateOptions {
@@ -932,11 +941,17 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       toReturn = Object.assign(toReturn, { pathPattern: input.pathPattern });
     }
     if (input.lambdaFunctionAssociations) {
+      const includeBodyEventTypes = [LambdaEdgeEventType.ORIGIN_REQUEST, LambdaEdgeEventType.VIEWER_REQUEST];
+      if (input.lambdaFunctionAssociations.some(fna => fna.includeBody && !includeBodyEventTypes.includes(fna.eventType))) {
+        throw new Error('\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.');
+      }
+
       toReturn = Object.assign(toReturn, {
         lambdaFunctionAssociations: input.lambdaFunctionAssociations
           .map(fna => ({
             eventType: fna.eventType,
             lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.edgeArn,
+            includeBody: fna.includeBody,
           })),
       });
 

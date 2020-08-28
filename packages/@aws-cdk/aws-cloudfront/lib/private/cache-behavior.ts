@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnDistribution } from '../cloudfront.generated';
-import { AddBehaviorOptions, EdgeLambda, ViewerProtocolPolicy } from '../distribution';
+import { AddBehaviorOptions, EdgeLambda, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
 
 /**
  * Properties for specifying custom behaviors for origins.
@@ -26,6 +26,7 @@ export class CacheBehavior {
   constructor(originId: string, private readonly props: CacheBehaviorProps) {
     this.originId = originId;
 
+    this.validateEdgeLambdas(props.edgeLambdas);
     this.grantEdgeLambdaFunctionExecutionRole(props.edgeLambdas);
   }
 
@@ -54,9 +55,17 @@ export class CacheBehavior {
         ? this.props.edgeLambdas.map(edgeLambda => ({
           lambdaFunctionArn: edgeLambda.functionVersion.edgeArn,
           eventType: edgeLambda.eventType.toString(),
+          includeBody: edgeLambda.includeBody,
         }))
         : undefined,
     };
+  }
+
+  private validateEdgeLambdas(edgeLambdas?: EdgeLambda[]) {
+    const includeBodyEventTypes = [LambdaEdgeEventType.ORIGIN_REQUEST, LambdaEdgeEventType.VIEWER_REQUEST];
+    if (edgeLambdas && edgeLambdas.some(lambda => lambda.includeBody && !includeBodyEventTypes.includes(lambda.eventType))) {
+      throw new Error('\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.');
+    }
   }
 
   private grantEdgeLambdaFunctionExecutionRole(edgeLambdas?: EdgeLambda[]) {
