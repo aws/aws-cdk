@@ -1,12 +1,11 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
-export = {
-  'security groups are automatically opened bidi for default rule'(test: Test) {
+describe('tests', () => {
+  test('security groups are automatically opened bidi for default rule', () => {
     // GIVEN
     const fixture = new TestFixture();
     const target = new FakeSelfRegisteringTarget(fixture.stack, 'Target', fixture.vpc);
@@ -19,11 +18,9 @@ export = {
 
     // THEN
     expectSameStackSGRules(fixture.stack);
+  });
 
-    test.done();
-  },
-
-  'security groups are automatically opened bidi for additional rule'(test: Test) {
+  test('security groups are automatically opened bidi for additional rule', () => {
     // GIVEN
     const fixture = new TestFixture();
     const target1 = new FakeSelfRegisteringTarget(fixture.stack, 'DefaultTarget', fixture.vpc);
@@ -47,11 +44,9 @@ export = {
 
     // THEN
     expectSameStackSGRules(fixture.stack);
+  });
 
-    test.done();
-  },
-
-  'adding the same targets twice also works'(test: Test) {
+  test('adding the same targets twice also works', () => {
     // GIVEN
     const fixture = new TestFixture();
     const target = new FakeSelfRegisteringTarget(fixture.stack, 'Target', fixture.vpc);
@@ -74,11 +69,9 @@ export = {
 
     // THEN
     expectSameStackSGRules(fixture.stack);
+  });
 
-    test.done();
-  },
-
-  'same result if target is added to group after assigning to listener'(test: Test) {
+  test('same result if target is added to group after assigning to listener', () => {
     // GIVEN
     const fixture = new TestFixture();
     const group = new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup', {
@@ -95,11 +88,9 @@ export = {
 
     // THEN
     expectSameStackSGRules(fixture.stack);
+  });
 
-    test.done();
-  },
-
-  'ingress is added to child stack SG instead of parent stack'(test: Test) {
+  test('ingress is added to child stack SG instead of parent stack', () => {
     // GIVEN
     const fixture = new TestFixture(true);
 
@@ -132,11 +123,9 @@ export = {
     // THEN
     expectSameStackSGRules(fixture.stack);
     expectedImportedSGRules(childStack);
+  });
 
-    test.done();
-  },
-
-  'SG peering works on exported/imported load balancer'(test: Test) {
+  test('SG peering works on exported/imported load balancer', () => {
     // GIVEN
     const fixture = new TestFixture(false);
     const stack2 = new cdk.Stack(fixture.app, 'stack2');
@@ -159,11 +148,9 @@ export = {
 
     // THEN
     expectedImportedSGRules(stack2);
+  });
 
-    test.done();
-  },
-
-  'SG peering works on exported/imported listener'(test: Test) {
+  test('SG peering works on exported/imported listener', () => {
     // GIVEN
     const fixture = new TestFixture();
     const stack2 = new cdk.Stack(fixture.app, 'stack2');
@@ -192,11 +179,9 @@ export = {
 
     // THEN
     expectedImportedSGRules(stack2);
+  });
 
-    test.done();
-  },
-
-  'default port peering works on constructed listener'(test: Test) {
+  test('default port peering works on constructed listener', () => {
     // GIVEN
     const fixture = new TestFixture();
     fixture.listener.addTargets('Default', { port: 8080, targets: [new elbv2.InstanceTarget('i-12345')] });
@@ -205,7 +190,7 @@ export = {
     fixture.listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
     // THEN
-    expect(fixture.stack).to(haveResource('AWS::EC2::SecurityGroup', {
+    expect(fixture.stack).toHaveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
         {
           CidrIp: '0.0.0.0/0',
@@ -215,12 +200,10 @@ export = {
           ToPort: 80,
         },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'default port peering works on imported listener'(test: Test) {
+  test('default port peering works on imported listener', () => {
     // GIVEN
     const stack2 = new cdk.Stack();
 
@@ -233,18 +216,16 @@ export = {
     listener2.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
     // THEN
-    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+    expect(stack2).toHaveResource('AWS::EC2::SecurityGroupIngress', {
       CidrIp: '0.0.0.0/0',
       Description: 'Open to the world',
       IpProtocol: 'tcp',
       FromPort: 8080,
       ToPort: 8080,
       GroupId: 'imported-security-group-id',
-    }));
-
-    test.done();
-  },
-};
+    });
+  });
+});
 
 const LB_SECURITY_GROUP = { 'Fn::GetAtt': ['LBSecurityGroup8A41EA2B', 'GroupId'] };
 const IMPORTED_LB_SECURITY_GROUP = { 'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttLBSecurityGroup8A41EA2BGroupId851EE1F6' };
@@ -258,22 +239,22 @@ function expectedImportedSGRules(stack: cdk.Stack) {
 }
 
 function expectSGRules(stack: cdk.Stack, lbGroup: any) {
-  expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+  expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
     GroupId: lbGroup,
     IpProtocol: 'tcp',
     Description: 'Load balancer to target',
     DestinationSecurityGroupId: { 'Fn::GetAtt': ['TargetSGDB98152D', 'GroupId'] },
     FromPort: 8008,
     ToPort: 8008,
-  }));
-  expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+  });
+  expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
     IpProtocol: 'tcp',
     Description: 'Load balancer to target',
     FromPort: 8008,
     GroupId: { 'Fn::GetAtt': ['TargetSGDB98152D', 'GroupId'] },
     SourceSecurityGroupId: lbGroup,
     ToPort: 8008,
-  }));
+  });
 }
 
 class TestFixture {

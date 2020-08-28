@@ -21,7 +21,6 @@ describe('basic testing schema definition mode `code`', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
     });
 
     // THEN
@@ -30,33 +29,20 @@ describe('basic testing schema definition mode `code`', () => {
     });
   });
 
-  test('definition mode `code` generates correct schema with appendToSchema', () => {
+  test('definition mode `code` generates correct schema with addToSchema', () => {
     // WHEN
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
     });
-    api.appendToSchema(type);
-    api.appendToSchema(query);
-    api.appendToSchema(mutation);
+    api.addToSchema(type);
+    api.addToSchema(query);
+    api.addToSchema(mutation);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
       Definition: `${type}\n${query}\n${mutation}\n`,
     });
   });
-
-  test('definition mode `code` errors when schemaDefinitionFile is configured', () => {
-    // THEN
-    expect(() => {
-      new appsync.GraphQLApi(stack, 'API', {
-        name: 'demo',
-        schemaDefinition: appsync.SchemaDefinition.CODE,
-        schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
-      });
-    }).toThrowError('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
-  });
-
 });
 
 describe('testing schema definition mode `file`', () => {
@@ -65,8 +51,7 @@ describe('testing schema definition mode `file`', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.FILE,
-      schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     });
 
     // THEN
@@ -75,43 +60,46 @@ describe('testing schema definition mode `file`', () => {
     });
   });
 
-  test('definition mode `file` errors when schemaDefinitionFile is not configured', () => {
-    // THEN
-    expect(() => {
-      new appsync.GraphQLApi(stack, 'API', {
-        name: 'demo',
-        schemaDefinition: appsync.SchemaDefinition.FILE,
-      });
-    }).toThrowError('schemaDefinitionFile must be configured if using FILE definition mode.');
-  });
-
-  test('definition mode `file` errors when addType is called', () => {
+  test('definition mode `file` errors when addObjectType is called', () => {
     // WHEN
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.FILE,
-      schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     });
 
     // THEN
     expect(() => {
-      api.addType('blah', {
+      api.addType(new appsync.ObjectType('blah', {
         definition: { fail: t.id },
-      });
+      }));
     }).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
   });
 
-  test('definition mode `file` errors when appendToSchema is called', () => {
+  test('definition mode `file` errors when addInterfaceType is called', () => {
     // WHEN
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.FILE,
-      schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     });
 
     // THEN
     expect(() => {
-      api.appendToSchema('blah');
+      api.addType(new appsync.InterfaceType('blah', {
+        definition: { fail: t.id },
+      }));
+    }).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
+  });
+
+  test('definition mode `file` errors when addToSchema is called', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
+    });
+
+    // THEN
+    expect(() => {
+      api.addToSchema('blah');
     }).toThrowError('API cannot append to schema because schema definition mode is not configured as CODE.');
   });
 
