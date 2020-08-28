@@ -1288,4 +1288,17 @@ nodeunitShim({
       },
     },
   },
+
+  'existing distributions can be imported'(test: Test) {
+    const stack = new cdk.Stack();
+    const dist = CloudFrontWebDistribution.fromDistributionAttributes(stack, 'ImportedDist', {
+      domainName: 'd111111abcdef8.cloudfront.net',
+      distributionId: '012345ABCDEF',
+    });
+
+    test.equals(dist.distributionDomainName, 'd111111abcdef8.cloudfront.net');
+    test.equals(dist.distributionId, '012345ABCDEF');
+
+    test.done();
+  },
 });
