@@ -6,6 +6,7 @@ import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { debug } from '../../logging';
+import { PatchedSharedIniFileCredentials } from './aws-sdk-inifile';
 import { SharedIniFile } from './sdk_ini_file';
 
 /**
@@ -44,7 +45,7 @@ export class AwsCliCompatible {
       // Force reading the `config` file if it exists by setting the appropriate
       // environment variable.
       await forceSdkToReadConfigIfPresent();
-      sources.push(() => new AWS.SharedIniFileCredentials({
+      sources.push(() => new PatchedSharedIniFileCredentials({
         profile,
         filename: credentialsFileName(),
         httpOptions: options.httpOptions,
@@ -310,3 +311,4 @@ async function tokenCodeFn(serialArn: string, cb: (err?: Error, token?: string) 
     cb(err);
   }
 }
+
