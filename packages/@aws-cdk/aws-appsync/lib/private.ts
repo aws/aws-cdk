@@ -1,8 +1,5 @@
-function concatAndDedup<T>(left: T[], right: T[]): T[] {
-  return left.concat(right).filter((elem, index, self) => {
-    return index === self.indexOf(elem);
-  });
-}
+import { Directive } from './schema-base';
+import { InterfaceType } from './schema-intermediate';
 
 /**
  * Utility enum for Schema class
@@ -11,6 +8,69 @@ export enum SchemaMode {
   FILE = 'FILE',
   CODE = 'CODE',
 };
+
+/**
+ * Generates an addition to the schema
+ *
+ * ```
+ * prefix name interfaces directives {
+ *   field
+ *   field
+ *   ...
+ * }
+ * ```
+ */
+export interface SchemaAdditionOptions {
+  /**
+   * the prefix for this additon (type, interface, enum, input, schema)
+   */
+  readonly prefix: string;
+  /**
+   * the name for this addition (some additions dont need this [i.e. schema])
+   *
+   * @default - no name
+   */
+  readonly name?: string;
+  /**
+   * the interface types if this is creating an object type
+   *
+   * @default - no interfaces
+   */
+  readonly interfaceTypes?: InterfaceType[];
+  /**
+   * the directives for this type
+   *
+   * @default - no directives
+   */
+  readonly directives?: Directive[];
+  /**
+   * the fields to reduce onto the addition
+   */
+  readonly fields: string[];
+}
+
+/**
+ * Generates an addition to the schema
+ *
+ * @param options the options to produced a stringfied addition
+ *
+ * @returns the following shape:
+ *
+ * ```
+ * prefix name interfaces directives {
+ *   field
+ *   field
+ *   ...
+ * }
+ * ```
+ */
+export function shapeAddition(options: SchemaAdditionOptions): string {
+  const typeName = (): string => { return options.name ? ` ${options.name}` : ''; };
+  const interfaces = generateInterfaces(options.interfaceTypes);
+  const directives = generateDirectives(options.directives);
+  return options.fields.reduce((acc, field) =>
+    `${acc}  ${field}\n`, `${options.prefix}${typeName()}${interfaces}${directives} {\n`) + '}';
+}
 
 /**
  * Utility class to represent DynamoDB key conditions.
@@ -118,4 +178,33 @@ export class Between extends BaseKeyCondition {
   public args(): string[] {
     return [this.arg1, this.arg2];
   }
+}
+
+function concatAndDedup<T>(left: T[], right: T[]): T[] {
+  return left.concat(right).filter((elem, index, self) => {
+    return index === self.indexOf(elem);
+  });
+}
+
+/**
+ * Utility function to generate interfaces for object types
+ *
+ * @param interfaceTypes the interfaces this object type implements
+ */
+function generateInterfaces(interfaceTypes?: InterfaceType[]): string {
+  if (!interfaceTypes || interfaceTypes.length === 0) return '';
+  return interfaceTypes.reduce((acc, interfaceType) =>
+    `${acc} ${interfaceType.name},`, ' implements').slice(0, -1);
+}
+
+/**
+ * Utility function to generate directives
+ *
+ * @param directives the directives of a given type
+ * @param delimiter the separator betweeen directives (by default we will add a space)
+ */
+function generateDirectives(directives?: Directive[], delimiter?: string): string {
+  if (!directives || directives.length === 0) return '';
+  return directives.reduce((acc, directive) =>
+    `${acc}${directive.statement}${delimiter ?? ' '}`, ' ').slice(0, -1);
 }
