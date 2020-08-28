@@ -164,7 +164,6 @@ httpDs.createResolver({
 });
 ```
 
-## Imports
 ### Schema
 
 Every GraphQL Api needs a schema to define the Api. CDK offers `appsync.Schema`
@@ -211,7 +210,7 @@ const api = appsync.GraphQLApi(stack, 'api', {
 });
 ```
 
-
+## Imports
 Any GraphQL Api that has been created outside the stack can be imported from 
 another stack into your CDK app. Utilizing the `fromXxx` function, you have 
 the ability to add data sources and resolvers through a `IGraphQLApi` interface.
