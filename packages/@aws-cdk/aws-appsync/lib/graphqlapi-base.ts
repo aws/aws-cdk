@@ -77,7 +77,7 @@ export interface IGraphqlApi extends IResource {
    * @param endpoint The http endpoint
    * @param options The optional configuration for this data source
    */
-  addHttpDataSource(id: string, endpoint: string, options?: DataSourceOptions): HttpDataSource;
+  addHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions): HttpDataSource;
 
   /**
    * add a new Lambda data source to this API
@@ -86,7 +86,7 @@ export interface IGraphqlApi extends IResource {
    * @param lambdaFunction The Lambda function to call to interact with this data source
    * @param options The optional configuration for this data source
    */
-  addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: HttpDataSourceOptions): LambdaDataSource;
+  addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource;
 
   /**
    * Add schema dependency if not imported
