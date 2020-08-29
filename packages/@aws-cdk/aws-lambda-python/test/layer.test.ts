@@ -1,12 +1,12 @@
 import '@aws-cdk/assert/jest';
 import * as path from 'path';
 import { Stack } from '@aws-cdk/core';
-import { hasDependencies, bundleLayer } from '../lib/bundling';
+import { hasDependencies, bundle } from '../lib/bundling';
 import { PythonLayerVersion } from '../lib/layer';
 
 jest.mock('../lib/bundling', () => {
   return {
-    bundleLayer: jest.fn().mockReturnValue({
+    bundle: jest.fn().mockReturnValue({
       bind: () => {
         return {
           s3Location: {
@@ -37,7 +37,8 @@ test('Bundling a layer from files', () => {
     entry,
   });
 
-  expect(bundleLayer).toHaveBeenCalledWith(expect.objectContaining({
+  expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry,
+    outputPathSuffix: 'python',
   }));
 });

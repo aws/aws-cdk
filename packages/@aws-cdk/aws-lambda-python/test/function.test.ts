@@ -2,11 +2,11 @@ import '@aws-cdk/assert/jest';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { PythonFunction } from '../lib';
-import { bundleFunction } from '../lib/bundling';
+import { bundle } from '../lib/bundling';
 
 jest.mock('../lib/bundling', () => {
   return {
-    bundleFunction: jest.fn().mockReturnValue({
+    bundle: jest.fn().mockReturnValue({
       bind: () => {
         return { inlineCode: 'code' };
       },
@@ -27,8 +27,9 @@ test('PythonFunction with defaults', () => {
     entry: 'test/lambda-handler',
   });
 
-  expect(bundleFunction).toHaveBeenCalledWith(expect.objectContaining({
+  expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler$/),
+    outputPathSuffix: '.',
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
@@ -43,8 +44,9 @@ test('PythonFunction with index in a subdirectory', () => {
     handler: 'custom_handler',
   });
 
-  expect(bundleFunction).toHaveBeenCalledWith(expect.objectContaining({
+  expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler-sub$/),
+    outputPathSuffix: '.',
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {

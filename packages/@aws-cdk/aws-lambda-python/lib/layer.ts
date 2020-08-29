@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { bundleLayer } from './bundling';
+import { bundle } from './bundling';
 
 /**
  * Properties for PythonDependenciesLayer
@@ -65,9 +65,10 @@ export class PythonLayerVersion extends lambda.LayerVersion {
     super(scope, id, {
       ...props,
       compatibleRuntimes,
-      code: bundleLayer({
+      code: bundle({
         entry,
         runtime,
+        outputPathSuffix: 'python',
       }),
     });
   }

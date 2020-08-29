@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { bundleFunction } from './bundling';
+import { bundle } from './bundling';
 
 /**
  * Properties for a PythonFunction
@@ -63,9 +63,10 @@ export class PythonFunction extends lambda.Function {
     super(scope, id, {
       ...props,
       runtime,
-      code: bundleFunction({
+      code: bundle({
         runtime,
         entry,
+        outputPathSuffix: '.',
       }),
       handler: `${index.slice(0, -3)}.${handler}`,
     });

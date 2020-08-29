@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { bundleFunction, hasDependencies, bundleLayer } from '../lib/bundling';
+import { hasDependencies, bundle } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
 const existsSyncOriginal = fs.existsSync;
@@ -26,9 +26,10 @@ beforeEach(() => {
 
 test('Bundling a function without dependencies', () => {
   const entry = path.join(__dirname, 'lambda-handler-nodeps');
-  bundleFunction({
+  bundle({
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
+    outputPathSuffix: '.',
   });
 
   // Correctly bundles
@@ -36,7 +37,7 @@ test('Bundling a function without dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'rsync -r . /asset-output',
+        'rsync -r . /asset-output/.',
       ],
     }),
   }));
@@ -47,9 +48,10 @@ test('Bundling a function without dependencies', () => {
 
 test('Bundling a function with requirements.txt installed', () => {
   const entry = path.join(__dirname, 'lambda-handler');
-  bundleFunction({
+  bundle({
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
+    outputPathSuffix: '.',
   });
 
   // Correctly bundles
@@ -57,7 +59,7 @@ test('Bundling a function with requirements.txt installed', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'rsync -r /var/dependencies/. /asset-output && rsync -r . /asset-output',
+        'rsync -r /var/dependencies/. /asset-output/. && rsync -r . /asset-output/.',
       ],
     }),
   }));
@@ -68,9 +70,10 @@ test('Bundling a function with requirements.txt installed', () => {
 
 test('Bundling Python 2.7 with requirements.txt installed', () => {
   const entry = path.join(__dirname, 'lambda-handler');
-  bundleFunction({
+  bundle({
     entry: entry,
     runtime: Runtime.PYTHON_2_7,
+    outputPathSuffix: '.',
   });
 
   // Correctly bundles with requirements.txt pip installed
@@ -78,7 +81,7 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'rsync -r /var/dependencies/. /asset-output && rsync -r . /asset-output',
+        'rsync -r /var/dependencies/. /asset-output/. && rsync -r . /asset-output/.',
       ],
     }),
   }));
@@ -90,9 +93,10 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
 test('Bundling a layer with dependencies', () => {
   const entry = path.join(__dirname, 'lambda-handler');
 
-  bundleLayer({
+  bundle({
     entry: entry,
     runtime: Runtime.PYTHON_2_7,
+    outputPathSuffix: 'python',
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
@@ -108,9 +112,10 @@ test('Bundling a layer with dependencies', () => {
 test('Bundling a python code layer', () => {
   const entry = path.join(__dirname, 'lambda-handler-nodeps');
 
-  bundleLayer({
+  bundle({
     entry: path.join(entry, '.'),
     runtime: Runtime.PYTHON_2_7,
+    outputPathSuffix: 'python',
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({

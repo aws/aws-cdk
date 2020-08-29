@@ -28,39 +28,38 @@ export interface BundlingOptions {
   readonly runtime: lambda.Runtime;
 
   /**
-   * Commands to run
+   * Output path suffix ('python' for a layer, '.' otherwise)
    */
-  readonly depsCommand: string;
+  readonly outputPathSuffix: string;
 }
 
 /**
  * Produce bundled Lambda asset code
  */
 export function bundle(options: BundlingOptions): lambda.AssetCode {
-  const { entry, runtime, depsCommand } = options;
+  const { entry, runtime, outputPathSuffix: pathSuffix } = options;
 
-  // Determine which bundling image to use.
-  let image: cdk.BundlingDockerImage;
-  if (hasDependencies(entry)) {
-    // When dependencies are present, we use a Dockerfile that can create a
-    // cacheable layer. We can't use this Dockerfile if there aren't
-    // dependencies or the Dockerfile will complain about missing sources.
-    image = cdk.BundlingDockerImage.fromAsset(entry, {
-      buildArgs: {
-        IMAGE: runtime.bundlingDockerImage.image,
-      },
-      file: path.join(__dirname, 'Dockerfile.dependencies'),
-    });
-  } else {
-    // When dependencies aren't present, we can use the default Dockerfile that
-    // doesn't need to create a cacheable layer.
-    image = cdk.BundlingDockerImage.fromAsset(entry, {
-      buildArgs: {
-        IMAGE: runtime.bundlingDockerImage.image,
-      },
-      file: path.join(__dirname, 'Dockerfile'),
-    });
-  }
+  const hasDeps = hasDependencies(entry);
+
+  const depsCommand = chain([
+    hasDeps ? `rsync -r ${BUNDLER_DEPENDENCIES_CACHE}/. ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${pathSuffix}` : '',
+    `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${pathSuffix}`,
+  ]);
+
+  // Determine which dockerfile to use. When dependencies are present, we use a
+  // Dockerfile that can create a cacheable layer. We can't use this Dockerfile
+  // if there aren't dependencies or the Dockerfile will complain about missing
+  // sources.
+  const dockerfile = hasDeps
+    ? 'Dockerfile.dependencies'
+    : 'Dockerfile';
+
+  const image = cdk.BundlingDockerImage.fromAsset(entry, {
+    buildArgs: {
+      IMAGE: runtime.bundlingDockerImage.image,
+    },
+    file: path.join(__dirname, dockerfile),
+  });
 
   return lambda.Code.fromAsset(entry, {
     assetHashType: cdk.AssetHashType.BUNDLE,
@@ -69,46 +68,6 @@ export function bundle(options: BundlingOptions): lambda.AssetCode {
       image,
       command: ['bash', '-c', depsCommand],
     },
-  });
-}
-
-export interface BundleFunctionOptions {
-  readonly entry: string;
-  readonly runtime: lambda.Runtime;
-}
-
-export function bundleFunction(options: BundleFunctionOptions): lambda.AssetCode {
-  const { entry, runtime } = options;
-
-  const depsCommand = chain([
-    hasDependencies(entry) ? `rsync -r ${BUNDLER_DEPENDENCIES_CACHE}/. ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}` : '',
-    `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}`,
-  ]);
-
-  return bundle({
-    entry,
-    runtime,
-    depsCommand,
-  });
-}
-
-export interface BundleLayerOptions {
-  readonly entry: string;
-  readonly runtime: lambda.Runtime;
-}
-
-export function bundleLayer(options: BundleLayerOptions): lambda.AssetCode {
-  const { entry, runtime } = options;
-
-  const depsCommand = chain([
-    hasDependencies(entry) ? `rsync -r ${BUNDLER_DEPENDENCIES_CACHE}/. ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/python` : '',
-    `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/python`,
-  ]);
-
-  return bundle({
-    entry,
-    runtime,
-    depsCommand,
   });
 }
 
