@@ -4,7 +4,7 @@ import * as cdk from '@aws-cdk/core';
 import { bundle } from './bundling';
 
 /**
- * Properties for PythonDependenciesLayer
+ * Properties for PythonLayerVersionProps
  */
 export interface PythonLayerVersionProps {
   /**
