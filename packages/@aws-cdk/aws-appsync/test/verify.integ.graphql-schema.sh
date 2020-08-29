@@ -20,7 +20,13 @@ elif [[ "$1" == "--check" ]]; then
     usage
     exit 1
   fi
-  echo THIS TEST SHOULD SUCCEED
+  echo THIS TEST SHOULD PRODUCE AN EMPTY LIST
+  curl -XPOST -H "Content-Type:application/graphql" -H "x-api-key:$2" -d '{ "query": "query { getPlanets { id name } }" }" }' $3
+  echo ""
+  echo THIS TEST SHOULD RETURN A PLANET OBJECT
+  curl -XPOST -H "Content-Type:application/graphql" -H "x-api-key:$2" -d '{ "query": "mutation ($name: String!) { addPlanet(name: $name) { id name diameter } }", "variables": { "name": "smolPlanet" } }' $3
+  echo ""
+  echo THIS TEST SHOULD PRODUCE AN LIST WITH A SINGLE PLANET
   curl -XPOST -H "Content-Type:application/graphql" -H "x-api-key:$2" -d '{ "query": "query { getPlanets { id name } }" }" }' $3
   echo ""
 elif [[ "$1" == "--clean" ]];then

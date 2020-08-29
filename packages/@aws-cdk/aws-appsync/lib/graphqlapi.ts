@@ -5,6 +5,8 @@ import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated'
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { Schema } from './schema';
 import { IIntermediateType } from './schema-base';
+import { ResolvableField } from './schema-field';
+import { ObjectType } from './schema-intermediate';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -587,5 +589,35 @@ export class GraphQLApi extends GraphqlApiBase {
    */
   public addType(type: IIntermediateType): IIntermediateType {
     return this.schema.addType(type);
+  }
+
+  /**
+   * Add a query field to the schema's Query. If one isn't set by
+   * the user, CDK will create an Object Type called 'Query'. For example,
+   *
+   * type Query {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the query
+   * @param field the resolvable field to for this query
+   */
+  public addQuery(fieldName: string, field: ResolvableField): ObjectType {
+    return this.schema.addQuery(fieldName, field);
+  }
+
+  /**
+   * Add a mutation field to the schema's Mutation. If one isn't set by
+   * the user, CDK will create an Object Type called 'Mutation'. For example,
+   *
+   * type Mutation {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the Mutation
+   * @param field the resolvable field to for this Mutation
+   */
+  public addMutation(fieldName: string, field: ResolvableField): ObjectType {
+    return this.schema.addMutation(fieldName, field);
   }
 }
