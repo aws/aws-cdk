@@ -250,6 +250,7 @@ describe('AppSync User Pool Authorization', () => {
       AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
       UserPoolConfig: {
         AwsRegion: { Ref: 'AWS::Region' },
+        DefaultAction: 'ALLOW',
         UserPoolId: { Ref: 'pool056F3F7E' },
       },
     });
@@ -371,6 +372,7 @@ describe('AppSync User Pool Authorization', () => {
       AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
       UserPoolConfig: {
         AwsRegion: { Ref: 'AWS::Region' },
+        DefaultAction: 'ALLOW',
         UserPoolId: { Ref: 'pool056F3F7E' },
       },
       AdditionalAuthenticationProviders: [
