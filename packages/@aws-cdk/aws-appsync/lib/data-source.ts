@@ -238,28 +238,17 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
  */
 export class HttpDataSource extends BaseDataSource {
   constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
-    if (!props.authorizationConfig) {
-      super(scope, id, props, {
-        httpConfig: {
-          endpoint: props.endpoint
-        },
-        type: 'HTTP',        
-      })
-    } else {
-      const authConfig = props.authorizationConfig
-      super(scope, id, props, {
-        httpConfig: {
-          endpoint: props.endpoint,
-          authorizationConfig: {
-            authorizationType: authConfig.authorizationType,
-            awsIamConfig: {
-              signingRegion: authConfig.signingRegion,
-              signingServiceName: authConfig.signingServiceName
-            } 
-            
-          }
-        },
-        type: 'HTTP',        
+   const authorizationConfig = props.authorizationConfig ? {
+     authorizationType: 'AWS_IAM',
+     awsIamConfig: props.authorizationConfig,
+   } : undefined;
+   
+   super(scope, id, props, {
+     httpConfig: {
+       endpoint: props.endpoint,
+       authorizationConfig,
+    },
+  }); 
       })
     }
   }
