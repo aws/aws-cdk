@@ -110,7 +110,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     if (call) {
 
       let awsService: any;
-      if(call.assumedRole){
+      if (call.assumedRole) {
         const sts = new AWS.STS();
         const { Credentials } = await sts
           .assumeRole({
