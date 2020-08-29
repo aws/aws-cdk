@@ -113,7 +113,7 @@ export class Schema {
    */
   public addQuery(fieldName: string, field: ResolvableField): ObjectType {
     if (this.mode !== SchemaMode.CODE) {
-      throw new Error('API cannot add to schema\'s query because schema definition mode is not configured as CODE.');
+      throw new Error(`Unable to add query. Schema definition mode must be ${SchemaMode.CODE} Received: ${this.mode}`);
     }
     if (!this.query) {
       this.query = new ObjectType('Query', { definition: {} });
@@ -136,7 +136,7 @@ export class Schema {
    */
   public addMutation(fieldName: string, field: ResolvableField): ObjectType {
     if (this.mode !== SchemaMode.CODE) {
-      throw new Error('API cannot add to schema\'s mutation because schema definition mode is not configured as CODE.');
+      throw new Error(`Unable to add mutation. Schema definition mode must be ${SchemaMode.CODE} Received: ${this.mode}`);
     }
     if (!this.mutation) {
       this.mutation = new ObjectType('Mutation', { definition: {} });
@@ -172,7 +172,9 @@ export class Schema {
    * }
    */
   private declareSchema(): string {
-    if (!this.query && !this.mutation && !this.subscription) return '';
+    if (!this.query && !this.mutation && !this.subscription) {
+      return '';
+    }
     type root = 'mutation' | 'query' | 'subscription';
     const list: root[] = ['query', 'mutation', 'subscription'];
     return shapeAddition({

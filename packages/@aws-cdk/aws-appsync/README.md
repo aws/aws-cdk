@@ -566,8 +566,11 @@ You can create Object Types in three ways:
 #### Query
 
 Every schema requires a top level Query type. By default, the schema will look
-for the `Object Type` named `Query`. To add fields for these queries, we can 
-simply run the `addQuery` function to add to the schema's `Query` type.
+for the `Object Type` named `Query`. The top level `Query` is the **only** exposed
+type that users can access to perform `GET` operations on your Api.
+
+To add fields for these queries, we can simply run the `addQuery` function to add
+to the schema's `Query` type.
 
 ```ts
 const string = appsync.GraphqlType.string();
@@ -586,8 +589,11 @@ To learn more about top level operations, check out the docs [here](https://docs
 #### Mutation
 
 Every schema **can** have a top level Mutation type. By default, the schema will look
-for the `Object Type` named `Mutation`. To add fields for these mutations, we can
-simply run the `addMutation` function to add to the schema's `Mutation` type.
+for the `Object Type` named `Mutation`. The top level `Mutation` Type is the only exposed
+type that users can access to perform `mutable` operations on your Api.
+
+To add fields for these mutations, we can simply run the `addMutation` function to add
+to the schema's `Mutation` type.
 
 ```ts
 const string = appsync.GraphqlType.string();
