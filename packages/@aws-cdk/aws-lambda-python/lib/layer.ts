@@ -4,41 +4,20 @@ import * as cdk from '@aws-cdk/core';
 import { bundle } from './bundling';
 
 /**
- * Properties for PythonLayerVersionProps
+ * Properties for PythonLayerVersion
  */
-export interface PythonLayerVersionProps {
+export interface PythonLayerVersionProps extends lambda.LayerVersionOptions {
   /**
    * The path to the root directory of the lambda layer.
    */
   readonly entry: string;
 
   /**
-   * The runtimes compatible with this Layer.
+   * The runtimes compatible with the python layer.
    *
    * @default - All runtimes are supported.
    */
   readonly compatibleRuntimes?: lambda.Runtime[];
-
-  /**
-   * The description the this Lambda Layer.
-   *
-   * @default - No description.
-   */
-  readonly description?: string;
-
-  /**
-   * The SPDX licence identifier or URL to the license file for this layer.
-   *
-   * @default - No license information will be recorded.
-   */
-  readonly license?: string;
-
-  /**
-   * The name of the layer.
-   *
-   * @default - A name will be generated.
-   */
-  readonly layerVersionName?: string;
 }
 
 /**
@@ -59,7 +38,7 @@ export class PythonLayerVersion extends lambda.LayerVersion {
 
     // Entry and defaults
     const entry = path.resolve(props.entry);
-    // Pick the first compatibleRuntime or PYTHON_3_7
+    // Pick the first compatibleRuntime to use for bundling or PYTHON_3_7
     const runtime = compatibleRuntimes[0] ?? lambda.Runtime.PYTHON_3_7;
 
     super(scope, id, {
