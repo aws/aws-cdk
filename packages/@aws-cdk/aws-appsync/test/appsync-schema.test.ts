@@ -194,7 +194,7 @@ describe('testing schema definition mode `file`', () => {
     // THEN
     expect(() => {
       api.addQuery('blah', new appsync.ResolvableField({ returnType: t.string }));
-    }).toThrowError('API cannot add to schema\'s query because schema definition mode is not configured as CODE.');
+    }).toThrowError('Unable to add query. Schema definition mode must be CODE Received: FILE');
   });
 
   test('definition mode `file` errors when addMutation is called', () => {
@@ -207,6 +207,6 @@ describe('testing schema definition mode `file`', () => {
     // THEN
     expect(() => {
       api.addMutation('blah', new appsync.ResolvableField({ returnType: t.string }));
-    }).toThrowError('API cannot add to schema\'s mutation because schema definition mode is not configured as CODE.');
+    }).toThrowError('Unable to add mutation. Schema definition mode must be CODE Received: FILE');
   });
 });
