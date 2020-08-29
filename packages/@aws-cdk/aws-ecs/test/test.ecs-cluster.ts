@@ -526,7 +526,10 @@ export = {
       // THEN
       expect(stack).to(haveResourceLike('AWS::SNS::Topic', {
         KmsMasterKeyId: {
-          Ref: 'Key961B73FD',
+          'Fn::GetAtt': [
+            'keyFEDD6EC0',
+            'Arn',
+          ],
         },
       }));
 
