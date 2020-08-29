@@ -147,11 +147,8 @@ const httpDs = api.addHttpDataSource(
     name: 'httpDsWithStepF',
     description: 'from appsync to StepFunctions Workflow',
     authorizationConfig: {
-      authorizationType: 'AWS_IAM',
-      awsIamConfig: {
-        signingRegion: 'us-east-1',
-        signingServiceName: 'states'
-      }
+      signingRegion: 'us-east-1',
+      signingServiceName: 'states'
     }
   }
 );
