@@ -28,6 +28,8 @@ export interface DataSourceOptions {
 export interface HttpDataSourceOptions extends DataSourceOptions {
   /**
    * The authorization config in case the HTTP endpoint requires authorization
+   *
+   * @default - none
    */
   readonly authorizationConfig?: AwsIamConfig;
 }
