@@ -156,7 +156,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       endpoint,
       name: options?.name,
       description: options?.description,
-      authorizationConfig: options?.authorizationConfig
+      authorizationConfig: options?.authorizationConfig,
     });
   }
 
