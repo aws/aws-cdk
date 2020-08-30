@@ -226,7 +226,7 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
    * The http endpoint
    */
   readonly endpoint: string;
-  readonly authorizationConfig?: AwsIamConfig; 
+  readonly authorizationConfig?: AwsIamConfig;
 }
 
 /**
@@ -234,18 +234,17 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
  */
 export class HttpDataSource extends BaseDataSource {
   constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
-   const authorizationConfig = props.authorizationConfig ? {
-     authorizationType: 'AWS_IAM',
-     awsIamConfig: props.authorizationConfig,
-   } : undefined;
-   
-   super(scope, id, props, {
-     type: 'HTTP',
-     httpConfig: {
-       endpoint: props.endpoint,
-       authorizationConfig
-     }
-   })
+    const authorizationConfig = props.authorizationConfig ? {
+      authorizationType: 'AWS_IAM',
+      awsIamConfig: props.authorizationConfig,
+    } : undefined;
+    super(scope, id, props, {
+      type: 'HTTP',
+      httpConfig: {
+        endpoint: props.endpoint,
+        authorizationConfig,
+      },
+    });
   }
 }
 

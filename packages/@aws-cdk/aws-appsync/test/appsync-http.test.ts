@@ -81,7 +81,7 @@ describe('Http Data Source configuration', () => {
         }
       }
     });
-  })
+  });
 
   test('appsync errors when creating multiple http data sources with no configuration', () => {
     // THEN
