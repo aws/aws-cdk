@@ -73,11 +73,14 @@ describe('Http Data Source configuration', () => {
       Type: 'HTTP',
       Name: 'custom',
       Description: 'custom description',
-      AuthorizationConfig: {
-        authorizationType: 'AWS_IAM',
-        awsIamConfig: {
-          signingRegion: 'us-east-1',
-          signingServiceName: 'states',
+      HttpConfig: {
+        Endpoint: endpoint,
+        AuthorizationConfig: {
+          AuthorizationType: 'AWS_IAM',
+          AwsIamConfig: {
+            SigningRegion: 'us-east-1',
+            SigningServiceName: 'states',
+          },
         },
       },
     });
