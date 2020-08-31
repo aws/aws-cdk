@@ -36,7 +36,7 @@ export = {
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack');
 
-    const templateHash = '19e1e8612660f79362e091714ab7b3583961936d762c75be8b8083c3af40850a';
+    const templateHash = '040a6374d4c48c0db867f1d4f95c69b12d28e69c3b8a9903a1db1ec651dcf480';
 
     test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateHash}`);
 
@@ -70,7 +70,7 @@ export = {
     // THEN
     const template = app.synth().getStackByName('Stack').template;
     test.deepEqual(template?.Parameters?.BootstrapVersion?.Type, 'AWS::SSM::Parameter::Value<String>');
-    test.deepEqual(template?.Parameters?.BootstrapVersion?.Default, '/aws-cdk-bootstrap/hnb659fds/version');
+    test.deepEqual(template?.Parameters?.BootstrapVersion?.Default, '/cdk-bootstrap/hnb659fds/version');
 
     const assertions = template?.Rules?.CheckBootstrapVersion?.Assertions ?? [];
     test.deepEqual(assertions.length, 1);

@@ -227,6 +227,33 @@ Example `outputs.json` after deployment of multiple stacks
 }
 ```
 
+##### Deployment Progress
+
+By default, stack deployment events are displayed as a progress bar with the events for the resource
+currently being deployed.
+
+Set the `--progress` flag to request the complete history which includes all CloudFormation events
+```console
+$ cdk deploy --progress events
+```
+
+Alternatively, the `progress` key can be specified in the project config (`cdk.json`).
+
+The following shows a sample `cdk.json` where the `progress` key is set to *events*.
+When `cdk deploy` is executed, deployment events will include the complete history.
+```
+{
+  "app": "npx ts-node bin/myproject.ts",
+  "context": {
+    "@aws-cdk/core:enableStackNameDuplicates": "true",
+    "aws-cdk:enableDiffNoFail": "true",
+    "@aws-cdk/core:stackRelativeExports": "true"
+  },
+  "progress": "events"
+}
+```
+The `progress` key can also be specified as a user setting (`~/.cdk.json`)
+
 #### `cdk destroy`
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
 configured with a `DeletionPolicy` of `Retain`). During the stack destruction, the command will output progress

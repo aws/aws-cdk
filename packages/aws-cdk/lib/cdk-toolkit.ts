@@ -11,6 +11,7 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
@@ -189,6 +190,7 @@ export class CdkToolkit {
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
+          progress: options.progress,
           ci: options.ci,
         });
 
@@ -570,6 +572,14 @@ export interface DeployOptions {
    * @default true
    */
   usePreviousParameters?: boolean;
+
+  /**
+   * Display mode for stack deployment progress.
+   *
+   * @default - StackActivityProgress.Bar - stack events will be displayed for
+   *   the resource currently being deployed.
+   */
+  progress?: StackActivityProgress;
 
   /**
    * Path to file where stack outputs will be written after a successful deploy as JSON
