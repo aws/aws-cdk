@@ -6,14 +6,14 @@ import * as appsync from '../lib';
 
 let stack: cdk.Stack;
 let role: iam.Role;
-let api: appsync.GraphqlApi;
+let api: appsync.GraphQLApi;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
   role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   });
-  api = new appsync.GraphqlApi(stack, 'API', {
+  api = new appsync.GraphQLApi(stack, 'API', {
     name: 'demo',
     schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     authorizationConfig: {

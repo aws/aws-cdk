@@ -6,7 +6,7 @@ import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import {
   AuthorizationType,
-  GraphqlApi,
+  GraphQLApi,
   MappingTemplate,
   PrimaryKey,
   UserPoolDefaultAction,
@@ -36,7 +36,7 @@ const userPool = new UserPool(stack, 'Pool', {
   userPoolName: 'myPool',
 });
 
-const api = new GraphqlApi(stack, 'Api', {
+const api = new GraphQLApi(stack, 'Api', {
   name: 'Integ_Test_IAM',
   schema: Schema.fromAsset(join(__dirname, 'integ.graphql-iam.graphql')),
   authorizationConfig: {
@@ -98,14 +98,14 @@ new Function(stack, 'testQuery', {
   code: Code.fromAsset('verify'),
   handler: 'iam-query.handler',
   runtime: Runtime.NODEJS_12_X,
-  environment: { APPSYNC_ENDPOINT: api.graphqlUrl },
+  environment: { APPSYNC_ENDPOINT: api.graphQlUrl },
   role: lambdaIAM,
 });
 new Function(stack, 'testFail', {
   code: Code.fromAsset('verify'),
   handler: 'iam-query.handler',
   runtime: Runtime.NODEJS_12_X,
-  environment: { APPSYNC_ENDPOINT: api.graphqlUrl },
+  environment: { APPSYNC_ENDPOINT: api.graphQlUrl },
 });
 
 app.synth();

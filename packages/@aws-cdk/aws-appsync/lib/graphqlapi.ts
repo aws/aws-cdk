@@ -206,7 +206,7 @@ export interface LogConfig {
 /**
  * Properties for an AppSync GraphQL API
  */
-export interface GraphqlApiProps {
+export interface GraphQLApiProps {
   /**
    * the name of the GraphQL API
    */
@@ -293,7 +293,7 @@ export class IamResource {
    *
    * @param api The GraphQL API to give permissions
    */
-  public resourceArns(api: GraphqlApi): string[] {
+  public resourceArns(api: GraphQLApi): string[] {
     return this.arns.map((arn) => Stack.of(api).formatArn({
       service: 'appsync',
       resource: `apis/${api.apiId}`,
@@ -325,7 +325,7 @@ export interface GraphqlApiAttributes {
  *
  * @resource AWS::AppSync::GraphQLApi
  */
-export class GraphqlApi extends GraphqlApiBase {
+export class GraphQLApi extends GraphqlApiBase {
   /**
    * Import a GraphQL API through this function
    *
@@ -362,9 +362,9 @@ export class GraphqlApi extends GraphqlApiBase {
   /**
    * the URL of the endpoint created by AppSync
    *
-   * @attribute GraphQlUrl
+   * @attribute
    */
-  public readonly graphqlUrl: string;
+  public readonly graphQlUrl: string;
 
   /**
    * the name of the API
@@ -387,7 +387,7 @@ export class GraphqlApi extends GraphqlApiBase {
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
 
-  constructor(scope: Construct, id: string, props: GraphqlApiProps) {
+  constructor(scope: Construct, id: string, props: GraphQLApiProps) {
     super(scope, id);
 
     const defaultMode = props.authorizationConfig?.defaultAuthorization ??
@@ -409,7 +409,7 @@ export class GraphqlApi extends GraphqlApiBase {
 
     this.apiId = this.api.attrApiId;
     this.arn = this.api.attrArn;
-    this.graphqlUrl = this.api.attrGraphQlUrl;
+    this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
     this.schema = props.schema ?? new Schema();
     this.schemaResource = this.schema.bind(this);
