@@ -5,12 +5,12 @@ import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudf
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
-import { MockCloudExecutable, TestStackArtifact, classMockOf } from './util';
+import { MockCloudExecutable, TestStackArtifact, instanceMockFrom } from './util';
 
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
 beforeEach(() => {
-  bootstrapper = classMockOf(Bootstrapper);
+  bootstrapper = instanceMockFrom(Bootstrapper);
   bootstrapper.bootstrapEnvironment.mockResolvedValue({ noOp: false, outputs: {} } as any);
 
   cloudExecutable = new MockCloudExecutable({
