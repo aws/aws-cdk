@@ -1,13 +1,13 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { ResourcePart } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as elbv2 from '../../lib';
 
-export = {
-  'Trivial construction: internet facing'(test: Test) {
+describe('tests', () => {
+  test('Trivial construction: internet facing', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -19,19 +19,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
       Subnets: [
         { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
         { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
       ],
       Type: 'application',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'internet facing load balancer has dependency on IGW'(test: Test) {
+  test('internet facing load balancer has dependency on IGW', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -43,17 +41,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       DependsOn: [
         'StackPublicSubnet1DefaultRoute16154E3D',
         'StackPublicSubnet2DefaultRoute0319539B',
       ],
-    }, ResourcePart.CompleteDefinition));
+    }, ResourcePart.CompleteDefinition);
+  });
 
-    test.done();
-  },
-
-  'Trivial construction: internal'(test: Test) {
+  test('Trivial construction: internal', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -62,19 +58,17 @@ export = {
     new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
       Subnets: [
         { Ref: 'StackPrivateSubnet1Subnet47AC2BC7' },
         { Ref: 'StackPrivateSubnet2SubnetA2F8EDD8' },
       ],
       Type: 'application',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Attributes'(test: Test) {
+  test('Attributes', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -88,7 +82,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       LoadBalancerAttributes: [
         {
           Key: 'deletion_protection.enabled',
@@ -103,12 +97,10 @@ export = {
           Value: '1000',
         },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Access logging'(test: Test) {
+  test('Access logging', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -121,7 +113,7 @@ export = {
     // THEN
 
     // verify that the LB attributes reference the bucket
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       LoadBalancerAttributes: [
         {
           Key: 'access_logs.s3.enabled',
@@ -132,10 +124,10 @@ export = {
           Value: { Ref: 'AccessLoggingBucketA6D88F29' },
         },
       ],
-    }));
+    });
 
     // verify the bucket policy allows the ALB to put objects in the bucket
-    expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
+    expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -150,17 +142,15 @@ export = {
           },
         ],
       },
-    }));
+    });
 
     // verify the ALB depends on the bucket *and* the bucket policy
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29'],
-    }, ResourcePart.CompleteDefinition));
+    }, ResourcePart.CompleteDefinition);
+  });
 
-    test.done();
-  },
-
-  'access logging with prefix'(test: Test) {
+  test('access logging with prefix', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -172,7 +162,7 @@ export = {
 
     // THEN
     // verify that the LB attributes reference the bucket
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       LoadBalancerAttributes: [
         {
           Key: 'access_logs.s3.enabled',
@@ -187,10 +177,10 @@ export = {
           Value: 'prefix-of-access-logs',
         },
       ],
-    }));
+    });
 
     // verify the bucket policy allows the ALB to put objects in the bucket
-    expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
+    expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -205,12 +195,10 @@ export = {
           },
         ],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Exercise metrics'(test: Test) {
+  test('Exercise metrics', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -242,16 +230,14 @@ export = {
     metrics.push(lb.metricTargetTLSNegotiationErrorCount());
 
     for (const metric of metrics) {
-      test.equal('AWS/ApplicationELB', metric.namespace);
-      test.deepEqual(stack.resolve(metric.dimensions), {
+      expect(metric.namespace).toEqual('AWS/ApplicationELB');
+      expect(stack.resolve(metric.dimensions)).toEqual({
         LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] },
       });
     }
+  });
 
-    test.done();
-  },
-
-  'loadBalancerName'(test: Test) {
+  test('loadBalancerName', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -263,13 +249,12 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Name: 'myLoadBalancer',
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'imported load balancer with no vpc throws error when calling addTargets'(test: Test) {
+  test('imported load balancer with no vpc throws error when calling addTargets', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -285,12 +270,10 @@ export = {
 
     // WHEN
     const listener = alb.addListener('Listener', { port: 80 });
-    test.throws(() => listener.addTargets('Targets', { port: 8080 }));
+    expect(() => listener.addTargets('Targets', { port: 8080 })).toThrow();
+  });
 
-    test.done();
-  },
-
-  'imported load balancer with vpc does not throw error when calling addTargets'(test: Test) {
+  test('imported load balancer with vpc does not throw error when calling addTargets', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -307,8 +290,6 @@ export = {
 
     // WHEN
     const listener = alb.addListener('Listener', { port: 80 });
-    test.doesNotThrow(() => listener.addTargets('Targets', { port: 8080 }));
-
-    test.done();
-  },
-};
+    expect(() => listener.addTargets('Targets', { port: 8080 })).not.toThrow();
+  });
+});

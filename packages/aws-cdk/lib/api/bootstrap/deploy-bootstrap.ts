@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import { Mode, SdkProvider } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
-import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions } from './bootstrap-props';
+import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions, BOOTSTRAP_VERSION_RESOURCE } from './bootstrap-props';
 
 /**
  * Perform the actual deployment of a bootstrap stack, given a template and some parameters
@@ -16,7 +16,7 @@ export async function deployBootstrapStack(
   parameters: Record<string, string | undefined>,
   environment: cxapi.Environment,
   sdkProvider: SdkProvider,
-  options: BootstrapEnvironmentOptions): Promise<DeployStackResult> {
+  options: Omit<BootstrapEnvironmentOptions, 'parameters'>): Promise<DeployStackResult> {
 
   const toolkitStackName = options.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
 
@@ -39,7 +39,7 @@ export async function deployBootstrapStack(
     environment: cxapi.EnvironmentUtils.format(environment.account, environment.region),
     properties: {
       templateFile,
-      terminationProtection: options.parameters?.terminationProtection ?? false,
+      terminationProtection: options.terminationProtection ?? false,
     },
   });
 
@@ -52,16 +52,16 @@ export async function deployBootstrapStack(
     sdkProvider,
     force: options.force,
     roleArn: options.roleArn,
-    tags: options.parameters?.tags,
-    execute: options?.parameters?.execute,
+    tags: options.tags,
+    execute: options.execute,
     parameters,
   });
 }
 
-function bootstrapVersionFromTemplate(template: any): number {
+export function bootstrapVersionFromTemplate(template: any): number {
   const versionSources = [
     template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT]?.Value,
-    template.Resources?.[BOOTSTRAP_VERSION_OUTPUT]?.Properties?.Value,
+    template.Resources?.[BOOTSTRAP_VERSION_RESOURCE]?.Properties?.Value,
   ];
 
   for (const vs of versionSources) {

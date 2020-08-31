@@ -36,7 +36,7 @@ export = {
     test.done();
   },
 
-  'option group with security groups'(test: Test) {
+  'option group with new security group'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -91,6 +91,51 @@ export = {
       VpcId: {
         Ref: 'VPCB9E5F0B4',
       },
+    }));
+
+    test.done();
+  },
+
+  'option group with existing security group'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const securityGroup = new ec2.SecurityGroup(stack, 'CustomSecurityGroup', { vpc });
+    new OptionGroup(stack, 'Options', {
+      engine: DatabaseInstanceEngine.oracleSe({
+        version: OracleLegacyEngineVersion.VER_11_2,
+      }),
+      configurations: [
+        {
+          name: 'OEM',
+          port: 1158,
+          vpc,
+          securityGroups: [securityGroup],
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::OptionGroup', {
+      EngineName: 'oracle-se',
+      MajorEngineVersion: '11.2',
+      OptionGroupDescription: 'Option group for oracle-se 11.2',
+      OptionConfigurations: [
+        {
+          OptionName: 'OEM',
+          Port: 1158,
+          VpcSecurityGroupMemberships: [
+            {
+              'Fn::GetAtt': [
+                'CustomSecurityGroupE5E500E5',
+                'GroupId',
+              ],
+            },
+          ],
+        },
+      ],
     }));
 
     test.done();
