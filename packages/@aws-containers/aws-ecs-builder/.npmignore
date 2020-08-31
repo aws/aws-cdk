@@ -19,3 +19,6 @@ dist
 
 tsconfig.json
 .eslintrc.js
+
+**/cdk.out
+junit.xml

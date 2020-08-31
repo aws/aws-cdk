@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Container, Environment, HttpLoadBalancerAddon } from '../lib';
+import { Container, Environment, HttpLoadBalancerAddon, Service, ServiceDescription } from '../lib';
 
 export = {
   'should be able to add an HTTP load balancer to a service'(test: Test) {
@@ -11,16 +11,21 @@ export = {
 
     // WHEN
     const environment = new Environment(stack, 'production');
-    const myService = environment.addService('my-service');
+    const serviceDescription = new ServiceDescription();
 
-    myService.add(new Container({
+    serviceDescription.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
 
-    myService.add(new HttpLoadBalancerAddon());
+    serviceDescription.add(new HttpLoadBalancerAddon());
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+    });
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {

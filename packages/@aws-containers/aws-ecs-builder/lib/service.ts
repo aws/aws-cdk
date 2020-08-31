@@ -1,27 +1,23 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { EnvironmentCapacityType, ServiceAddon, ServiceBuild } from './addons/addon-interfaces';
+import { EnvironmentCapacityType, ServiceBuild } from './addons/addon-interfaces';
+import { Environment } from './environment';
+import { ServiceDescription } from './service-description';
 
 /**
  * The settings for an ECS Service
  */
 export interface ServiceProps {
   /**
-   * The VPC used by the service for networking
+   * A service description to use in building out the service
    */
-  readonly vpc: ec2.IVpc,
+  readonly serviceDescription: ServiceDescription;
 
   /**
-   * The ECS cluster which provides compute capacity to this service
-   * [disable-awslint:ref-via-interface]
+   * The environment to launch the service in
    */
-  readonly cluster: ecs.Cluster,
-
-  /**
-   * The capacity type that this service is being placed onto
-   */
-  readonly capacityType: EnvironmentCapacityType
+  readonly environment: Environment
 }
 
 /**
@@ -56,22 +52,15 @@ export class Service extends cdk.Construct {
   public readonly capacityType: EnvironmentCapacityType;
 
   /**
+   * The service description used to build this service
+   */
+  public readonly serviceDescription: ServiceDescription;
+
+  /**
    * The generated task definition for this service, is only
    * generated once .prepare() has been executed
    */
   protected taskDefinition!: ecs.TaskDefinition;
-
-  /**
-   * The list of addons that have been registered to run when
-   * preparing this service.
-   */
-  private addons: Record<string, ServiceAddon>;
-
-  // Whether or not this service has been prepared. This is used
-  // for dependency resolution. Sometimes the preparation of one service
-  // requires preparing other services recursively. In the case of
-  // a circular dependency this flag prevents infinite recursion.
-  private _prepared: boolean;
 
   // A list of downstream services, allows addons to
   // establish connections to other services
@@ -84,77 +73,32 @@ export class Service extends cdk.Construct {
 
     this.scope = scope;
     this.id = id;
-    this.vpc = props.vpc;
-    this.cluster = props.cluster;
-    this.capacityType = props.capacityType;
-    this.addons = {};
+    this.vpc = props.environment.vpc;
+    this.cluster = props.environment.cluster;
+    this.capacityType = props.environment.capacityType;
+    this.serviceDescription = props.serviceDescription;
     this.downstreamServices = [];
-    this._prepared = false;
-  }
-
-  /**
-   * Adds a new addon to the service. The addon mutates the results service
-   * to add resources or features to the service
-   * @param addon - The addon that you wish to add
-   */
-  public add(addon: ServiceAddon) {
-    if (this._prepared) {
-      throw new Error('This service has already been prepared, new addons can not be added now');
-    }
-
-    if (this.addons[addon.name]) {
-      throw new Error(`An addon called ${addon.name} has already been added`);
-    }
-
-    this.addons[addon.name] = addon;
-
-    if (addon.prehook) {
-      addon.prehook(this, this.scope);
-    }
-
-    return this;
-  }
-
-  /**
-   * Tell addons from one service to connect to addons from
-   * another sevice if they have implemented a hook for that.
-   * @param service
-   */
-  public connectTo(service: Service) {
-    this.downstreamServices.push(service);
-  }
-
-  /**
-   * Get the addon with a specific name. This is generally used for
-   * addons to discover each other's existence.
-   * @param name
-   */
-  public getAddon(name: string) {
-    return this.addons[name];
-  }
-
-  /**
-   * Build the service, running all addon hooks to generate the
-   * settings and resources required for the service to operate
-   */
-  protected prepare() {
-    if (this._prepared) {
-      return; // Already prepared
-    }
 
     // Check to make sure that the user has actually added a container
-    const containerAddon = this.getAddon('service-container');
+    const containerAddon = this.serviceDescription.get('service-container');
 
     if (!containerAddon) {
       throw new Error(`Service '${this.id}' must have a Container addon`);
     }
 
+    // First set the scope for all the extensions
+    for (const extensions in this.serviceDescription.extensions) {
+      if (this.serviceDescription.extensions[extensions]) {
+        this.serviceDescription.extensions[extensions].prehook(this, this.scope);
+      }
+    }
+
     // At the point of preparation all addons have been defined on the service
     // so give each addon a chance to now add hooks to other addons if
     // needed
-    for (const addon in this.addons) {
-      if (this.addons[addon]) {
-        this.addons[addon].addHooks();
+    for (const extensions in this.serviceDescription.extensions) {
+      if (this.serviceDescription.extensions[extensions]) {
+        this.serviceDescription.extensions[extensions].addHooks();
       }
     }
 
@@ -168,9 +112,9 @@ export class Service extends cdk.Construct {
       compatibility: ecs.Compatibility.EC2_AND_FARGATE,
     } as ecs.TaskDefinitionProps;
 
-    for (const addon in this.addons) {
-      if (this.addons[addon]) {
-        taskDefProps = this.addons[addon].mutateTaskDefinitionProps(taskDefProps);
+    for (const extensions in this.serviceDescription.extensions) {
+      if (this.serviceDescription.extensions[extensions]) {
+        taskDefProps = this.serviceDescription.extensions[extensions].mutateTaskDefinitionProps(taskDefProps);
       }
     }
 
@@ -178,17 +122,17 @@ export class Service extends cdk.Construct {
     this.taskDefinition = new ecs.TaskDefinition(this.scope, `${this.id}-task-definition`, taskDefProps);
 
     // Now give each addon a chance to use the task definition
-    for (const addon in this.addons) {
-      if (this.addons[addon]) {
-        this.addons[addon].useTaskDefinition(this.taskDefinition);
+    for (const extensions in this.serviceDescription.extensions) {
+      if (this.serviceDescription.extensions[extensions]) {
+        this.serviceDescription.extensions[extensions].useTaskDefinition(this.taskDefinition);
       }
     }
 
     // Now that all containers are created, give each addon a chance
     // to bake its dependency graph
-    for (const addon in this.addons) {
-      if (this.addons[addon]) {
-        this.addons[addon].bakeContainerDependencies();
+    for (const extensions in this.serviceDescription.extensions) {
+      if (this.serviceDescription.extensions[extensions]) {
+        this.serviceDescription.extensions[extensions].bakeContainerDependencies();
       }
     }
 
@@ -199,9 +143,9 @@ export class Service extends cdk.Construct {
       taskDefinition: this.taskDefinition,
     } as ServiceBuild;
 
-    for (const addon in this.addons) {
-      if (this.addons[addon]) {
-        serviceProps = this.addons[addon].mutateServiceProps(serviceProps);
+    for (const extensions in this.serviceDescription.extensions) {
+      if (this.serviceDescription.extensions[extensions]) {
+        serviceProps = this.serviceDescription.extensions[extensions].mutateServiceProps(serviceProps);
       }
     }
 
@@ -216,29 +160,29 @@ export class Service extends cdk.Construct {
     }
 
     // Now give all addons a chance to use the service
-    for (const addon in this.addons) {
-      if (this.addons[addon]) {
-        this.addons[addon].useService(this.service);
+    for (const extensions in this.serviceDescription.extensions) {
+      if (this.serviceDescription.extensions[extensions]) {
+        this.serviceDescription.extensions[extensions].useService(this.service);
       }
     }
-
-    this._prepared = true;
 
     // Last but not least give each addon a chance to
     // establish a connection to each downstream service.
     this.downstreamServices.forEach((service) => {
-      for (const addon in this.addons) {
-        if (this.addons[addon]) {
-          this.addons[addon].connectToService(service);
+      for (const extensions in this.serviceDescription.extensions) {
+        if (this.serviceDescription.extensions[extensions]) {
+          this.serviceDescription.extensions[extensions].connectToService(service);
         }
       }
     });
   }
 
   /**
-   * Getter for checking to see whether this service has already been prepared
+   * Tell addons from one service to connect to addons from
+   * another sevice if they have implemented a hook for that.
+   * @param service
    */
-  public get prepared() {
-    return this._prepared;
+  public connectTo(service: Service) {
+    this.downstreamServices.push(service);
   }
 }

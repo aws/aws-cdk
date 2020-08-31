@@ -2,7 +2,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as awslogs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ContainerMutatingHook, ServiceAddon } from './addon-interfaces';
+import { ContainerMutatingHook, ServiceExtension } from './addon-interfaces';
 import { Container } from './container';
 
 /**
@@ -56,7 +56,7 @@ export class FirelensMutatingHook extends ContainerMutatingHook {
  * and does all the configuration necessarily to enable log routing
  * for the task using FireLens
  */
-export class FireLensAddon extends ServiceAddon {
+export class FireLensAddon extends ServiceExtension {
   private logGroup!: awslogs.LogGroup;
 
   constructor() {
@@ -79,7 +79,7 @@ export class FireLensAddon extends ServiceAddon {
   // have logging properties that enable sending logs via the
   // Firelens log router container
   public addHooks() {
-    const container = this.parentService.getAddon('service-container') as Container;
+    const container = this.parentService.serviceDescription.get('service-container') as Container;
 
     if (!container) {
       throw new Error('Firelens addon requires an application addon');
@@ -115,7 +115,7 @@ export class FireLensAddon extends ServiceAddon {
       throw new Error('The container dependency hook was called before the container was created');
     }
 
-    const appmeshAddon = this.parentService.getAddon('appmesh');
+    const appmeshAddon = this.parentService.serviceDescription.get('appmesh');
     if (appmeshAddon && appmeshAddon.container) {
       this.container.addContainerDependencies({
         container: appmeshAddon.container,

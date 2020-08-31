@@ -2,7 +2,6 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { EnvironmentCapacityType } from './addons/addon-interfaces';
-import { Service } from './service';
 
 /**
  * Settings for the deploy environment you want to deploy
@@ -54,12 +53,6 @@ export class Environment extends cdk.Construct {
    */
   public readonly capacityType: EnvironmentCapacityType;
 
-  /**
-   * The list of services that have been registered to run when
-   * preparing this service.
-   */
-  private services: Record<string, Service>;
-
   private readonly scope: cdk.Construct;
 
   constructor(scope: cdk.Construct, id: string, props?: EnvironmentProps) {
@@ -85,24 +78,5 @@ export class Environment extends cdk.Construct {
     } else {
       this.capacityType = EnvironmentCapacityType.FARGATE;
     }
-
-    this.services = {};
-  }
-
-  /**
-   * Adds a new addon to the service. The addon mutates the results service
-   * to add resources or features to the service
-   * @param serviceName - A name for the service to add
-   */
-  public addService(serviceName: string) {
-    const newService = new Service(this.scope, serviceName, {
-      vpc: this.vpc,
-      cluster: this.cluster,
-      capacityType: this.capacityType,
-    });
-
-    this.services[newService.id] = newService;
-
-    return newService;
   }
 }

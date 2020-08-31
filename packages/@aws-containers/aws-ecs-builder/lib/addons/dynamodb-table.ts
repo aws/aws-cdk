@@ -2,7 +2,7 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ContainerMutatingHook, ServiceAddon } from './addon-interfaces';
+import { ContainerMutatingHook, ServiceExtension } from './addon-interfaces';
 import { Container } from './container';
 
 /**
@@ -72,7 +72,7 @@ export interface TableAddonProps extends dynamodb.TableProps {
 /**
  * This addon adds a DynamoDB table to a service
  */
-export class Table extends ServiceAddon {
+export class Table extends ServiceExtension {
   private environmentVariableName: string;
   private table?: dynamodb.Table;
   private props: TableAddonProps;
@@ -104,7 +104,7 @@ export class Table extends ServiceAddon {
   // Register a hook on the application container to add the
   // table to the env variables on the app container
   public addHooks() {
-    const container = this.parentService.getAddon('service-container') as Container;
+    const container = this.parentService.serviceDescription.get('service-container') as Container;
 
     if (!container) {
       throw new Error('DynamoDB table addon requires an application addon');

@@ -4,7 +4,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ServiceAddon, ServiceBuild } from './addon-interfaces';
+import { ServiceExtension, ServiceBuild } from './addon-interfaces';
 import { Container } from './container';
 
 /**
@@ -22,7 +22,7 @@ export interface MeshProps {
  * creates the App Mesh resources required to route network traffic
  * to the container in a service mesh
  */
-export class AppMeshAddon extends ServiceAddon {
+export class AppMeshAddon extends ServiceExtension {
   protected virtualNode!: appmesh.VirtualNode;
   protected virtualService!: appmesh.VirtualService;
   private mesh: appmesh.Mesh;
@@ -47,7 +47,7 @@ export class AppMeshAddon extends ServiceAddon {
 
   public mutateTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
     // Find the app addon, to get its port
-    const containerAddon = this.parentService.getAddon('service-container') as Container;
+    const containerAddon = this.parentService.serviceDescription.get('service-container') as Container;
 
     if (!containerAddon) {
       throw new Error('Firelens addon requires an application addon');
@@ -149,7 +149,7 @@ export class AppMeshAddon extends ServiceAddon {
   // Now that the service is defined we can create the AppMesh virtual service
   // and virtual node for the real service
   public useService(service: ecs.Ec2Service | ecs.FargateService) {
-    const containerAddon = this.parentService.getAddon('service-container') as Container;
+    const containerAddon = this.parentService.serviceDescription.get('service-container') as Container;
 
     if (!containerAddon) {
       throw new Error('Firelens addon requires an application addon');
@@ -196,14 +196,8 @@ export class AppMeshAddon extends ServiceAddon {
   // Connect the app mesh addon for this service to an app mesh
   // addon on another service.
   public connectToService(otherService: Service) {
-    const otherAppMesh = otherService.getAddon('appmesh') as AppMeshAddon;
-    const otherContainer = otherService.getAddon('service-container') as Container;
-
-    // Downstream services must have already been prepared otherwise they
-    // can't be utilized for connections
-    if (!otherService.prepared) {
-      otherService.prepare();
-    }
+    const otherAppMesh = otherService.serviceDescription.get('appmesh') as AppMeshAddon;
+    const otherContainer = otherService.serviceDescription.get('service-container') as Container;
 
     // First allow this service to talk to the other service
     // at a network level. This opens the security groups so that

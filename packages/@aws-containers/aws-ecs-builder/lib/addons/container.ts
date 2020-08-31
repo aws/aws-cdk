@@ -1,7 +1,7 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ServiceAddon } from './addon-interfaces';
+import { ServiceExtension } from './addon-interfaces';
 
 /**
  * Setting for the main application container of a service
@@ -41,7 +41,7 @@ export interface ContainerAddonProps {
  * which runs your application business logic. Other addons will attach
  * sidecars alongside this main container.
  */
-export class Container extends ServiceAddon {
+export class Container extends ServiceExtension {
   /**
    * The port on which the container expects to receive network traffic
    */
@@ -110,7 +110,7 @@ export class Container extends ServiceAddon {
       throw new Error('The container dependency hook was called before the container was created');
     }
 
-    const firelens = this.parentService.getAddon('firelens');
+    const firelens = this.parentService.serviceDescription.get('firelens');
     if (firelens && firelens.container) {
       this.container.addContainerDependencies({
         container: firelens.container,
@@ -118,7 +118,7 @@ export class Container extends ServiceAddon {
       });
     }
 
-    const appmeshAddon = this.parentService.getAddon('appmesh');
+    const appmeshAddon = this.parentService.serviceDescription.get('appmesh');
     if (appmeshAddon && appmeshAddon.container) {
       this.container.addContainerDependencies({
         container: appmeshAddon.container,
@@ -126,7 +126,7 @@ export class Container extends ServiceAddon {
       });
     }
 
-    const cloudwatchAddon = this.parentService.getAddon('cloudwatchAgent');
+    const cloudwatchAddon = this.parentService.serviceDescription.get('cloudwatchAgent');
     if (cloudwatchAddon && cloudwatchAddon.container) {
       this.container.addContainerDependencies({
         container: cloudwatchAddon.container,
@@ -134,7 +134,7 @@ export class Container extends ServiceAddon {
       });
     }
 
-    const xrayAddon = this.parentService.getAddon('xray');
+    const xrayAddon = this.parentService.serviceDescription.get('xray');
     if (xrayAddon && xrayAddon.container) {
       this.container.addContainerDependencies({
         container: xrayAddon.container,

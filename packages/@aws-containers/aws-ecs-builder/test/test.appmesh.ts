@@ -4,7 +4,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 
 import { Test } from 'nodeunit';
-import { AppMeshAddon, Container, Environment} from '../lib';
+import { AppMeshAddon, Container, Environment, ServiceDescription, Service } from '../lib';
 
 export = {
   'should be able to add AWS X-Ray to a service'(test: Test) {
@@ -13,9 +13,10 @@ export = {
 
     // WHEN
     const environment = new Environment(stack, 'production');
-    const myService = environment.addService('my-service');
 
-    myService.add(new Container({
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
@@ -24,9 +25,14 @@ export = {
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
-    myService.add(new AppMeshAddon({
+    serviceDescription.add(new AppMeshAddon({
       mesh,
     }));
+
+    new Service(stack, 'name-service', {
+      environment,
+      serviceDescription,
+    });
 
     // THEN
 
@@ -204,11 +210,9 @@ export = {
     // WHEN
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
     const environment = new Environment(stack, 'production');
-    const greeterService = environment.addService('greeter');
-    const greetingService = environment.addService('greeting');
-    const nameService = environment.addService('name');
 
-    nameService.add(new Container({
+    const nameDescription = new ServiceDescription();
+    nameDescription.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
@@ -217,9 +221,10 @@ export = {
         PORT: '80',
       },
     }));
-    nameService.add(new AppMeshAddon({ mesh }));
+    nameDescription.add(new AppMeshAddon({ mesh }));
 
-    greetingService.add(new Container({
+    const greetingDescription = new ServiceDescription();
+    greetingDescription.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
@@ -228,9 +233,10 @@ export = {
         PORT: '80',
       },
     }));
-    greetingService.add(new AppMeshAddon({ mesh }));
+    greetingDescription.add(new AppMeshAddon({ mesh }));
 
-    greeterService.add(new Container({
+    const greeterDescription = new ServiceDescription();
+    greeterDescription.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
@@ -240,13 +246,25 @@ export = {
 
       },
     }));
-    greeterService.add(new AppMeshAddon({ mesh }));
+    greeterDescription.add(new AppMeshAddon({ mesh }));
+
+    const greeterService = new Service(stack, 'greeter', {
+      environment,
+      serviceDescription: greeterDescription,
+    });
+    const greetingService = new Service(stack, 'greeting', {
+      environment,
+      serviceDescription: greetingDescription,
+    });
+    const nameService = new Service(stack, 'name', {
+      environment,
+      serviceDescription: nameDescription,
+    });
 
     greeterService.connectTo(nameService);
     greeterService.connectTo(greetingService);
 
     // THEN
-
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition'));
 
     test.done();

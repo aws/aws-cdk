@@ -1,7 +1,8 @@
 import { Mesh } from '@aws-cdk/aws-appmesh';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
-import { AppMeshAddon, CloudwatchAgentAddon, Container, Environment, FireLensAddon, HttpLoadBalancerAddon, XRayAddon } from '../lib';
+import { AppMeshAddon, CloudwatchAgentAddon, Container, Environment, FireLensAddon, HttpLoadBalancerAddon, Service, XRayAddon } from '../lib';
+import { ServiceDescription } from '../lib/service-description';
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ');
@@ -10,8 +11,8 @@ const mesh = new Mesh(stack, 'my-mesh');
 const environment = new Environment(stack, 'production');
 
 /** Name service */
-const nameService = environment.addService('name');
-nameService.add(new Container({
+const nameDescription = new ServiceDescription();
+nameDescription.add(new Container({
   cpu: 1024,
   memoryMiB: 2048,
   trafficPort: 80,
@@ -20,14 +21,19 @@ nameService.add(new Container({
     PORT: '80',
   },
 }));
-nameService.add(new AppMeshAddon({ mesh }));
-nameService.add(new FireLensAddon());
-nameService.add(new XRayAddon());
-nameService.add(new CloudwatchAgentAddon());
+nameDescription.add(new AppMeshAddon({ mesh }));
+nameDescription.add(new FireLensAddon());
+nameDescription.add(new XRayAddon());
+nameDescription.add(new CloudwatchAgentAddon());
+
+const nameService = new Service(stack, 'name', {
+  environment: environment,
+  serviceDescription: nameDescription,
+});
 
 /** Greeting service */
-const greetingService = environment.addService('greeting');
-greetingService.add(new Container({
+const greetingDescription = new ServiceDescription();
+greetingDescription.add(new Container({
   cpu: 1024,
   memoryMiB: 2048,
   trafficPort: 80,
@@ -36,14 +42,19 @@ greetingService.add(new Container({
     PORT: '80',
   },
 }));
-greetingService.add(new AppMeshAddon({ mesh }));
-greetingService.add(new FireLensAddon());
-greetingService.add(new XRayAddon());
-greetingService.add(new CloudwatchAgentAddon());
+greetingDescription.add(new AppMeshAddon({ mesh }));
+greetingDescription.add(new FireLensAddon());
+greetingDescription.add(new XRayAddon());
+greetingDescription.add(new CloudwatchAgentAddon());
+
+const greetingService = new Service(stack, 'greeting', {
+  environment: environment,
+  serviceDescription: greetingDescription,
+});
 
 /** Greeter service */
-const greeterService = environment.addService('greeter');
-greeterService.add(new Container({
+const greeterDescription = new ServiceDescription();
+greeterDescription.add(new Container({
   cpu: 1024,
   memoryMiB: 2048,
   trafficPort: 80,
@@ -54,11 +65,16 @@ greeterService.add(new Container({
     NAME_URL: 'http://name.internal',
   },
 }));
-greeterService.add(new AppMeshAddon({ mesh }));
-greeterService.add(new FireLensAddon());
-greeterService.add(new XRayAddon());
-greeterService.add(new CloudwatchAgentAddon());
-greeterService.add(new HttpLoadBalancerAddon());
+greeterDescription.add(new AppMeshAddon({ mesh }));
+greeterDescription.add(new FireLensAddon());
+greeterDescription.add(new XRayAddon());
+greeterDescription.add(new CloudwatchAgentAddon());
+greeterDescription.add(new HttpLoadBalancerAddon());
+
+const greeterService = new Service(stack, 'greeter', {
+  environment: environment,
+  serviceDescription: greeterDescription,
+});
 
 greeterService.connectTo(nameService);
 greeterService.connectTo(greetingService);

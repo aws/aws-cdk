@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Container, Environment, EnvironmentCapacityType} from '../lib';
+import { Container, Environment, EnvironmentCapacityType, Service, ServiceDescription } from '../lib';
 
 export = {
   'should be able to add a service to an environment'(test: Test) {
@@ -12,14 +12,19 @@ export = {
 
     // WHEN
     const environment = new Environment(stack, 'production');
-    const myService = environment.addService('my-service');
+    const serviceDescription = new ServiceDescription();
 
-    myService.add(new Container({
+    serviceDescription.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+    });
 
     // THEN
     expect(stack).to(countResources('AWS::ECS::Service', 1));
@@ -78,14 +83,19 @@ export = {
       vpc,
       cluster,
     });
-    const myService = environment.addService('my-service');
+    const serviceDescription = new ServiceDescription();
 
-    myService.add(new Container({
+    serviceDescription.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+    });
 
     // THEN
     expect(stack).to(countResources('AWS::ECS::Service', 1));
@@ -148,14 +158,19 @@ export = {
       cluster,
       capacityType: EnvironmentCapacityType.EC2,
     });
-    const myService = environment.addService('my-service');
+    const serviceDescription = new ServiceDescription();
 
-    myService.add(new Container({
+    serviceDescription.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+    });
 
     // THEN
     expect(stack).to(countResources('AWS::ECS::Service', 1));

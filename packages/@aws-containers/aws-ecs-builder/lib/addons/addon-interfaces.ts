@@ -4,7 +4,7 @@ import { Service } from '../service';
 
 /**
  * A list of the capacity types that are supported. These
- * capacity types may change the behavior of an addon.
+ * capacity types may change the behavior of an extension.
  */
 export enum EnvironmentCapacityType {
   /**
@@ -53,19 +53,19 @@ export interface ServiceBuild {
 }
 
 /**
- * The shape of a service addon. This abstract class is implemented
- * by other addons which extend the hooks to implement their own
+ * The shape of a service extension. This abstract class is implemented
+ * by other extensions which extend the hooks to implement their own
  * logic that they want to run during each step of preparing the service
  */
-export abstract class ServiceAddon {
+export abstract class ServiceExtension {
   /**
-   * The name of the addon
+   * The name of the extension
    */
   public name: string;
 
   /**
-   * The container of this addon. Most addons have a container, but not
-   * every addon is required to have a container, some addons may just
+   * The container of this extension. Most extensions have a container, but not
+   * every extension is required to have a container, some extensions may just
    * modify the properties of the service, or create external resources
    * connected to the service
    */
@@ -74,8 +74,8 @@ export abstract class ServiceAddon {
   protected parentService!: Service;
   protected scope!: cdk.Construct;
 
-  // A list of other addons which want to mutate the
-  // container definition for this addon.
+  // A list of other extensions which want to mutate the
+  // container definition for this extension.
   protected containerMutatingHooks: ContainerMutatingHook[] = [];
 
   constructor(name: string) {
@@ -83,15 +83,15 @@ export abstract class ServiceAddon {
   }
 
   /**
-   * A hook that allows the addon to add hooks to other
-   * addons that are registered
+   * A hook that allows the extension to add hooks to other
+   * extensions that are registered
    */
   public addHooks() { } // tslint:disable-line
 
   /**
-   * This hook allows another service addon to register a mutating hook for
-   * changing the primary container of this addon. This is primarily used
-   * for the application addon. For example the Firelens addon wants to
+   * This hook allows another service extension to register a mutating hook for
+   * changing the primary container of this extension. This is primarily used
+   * for the application extension. For example the Firelens extension wants to
    * be able to modify the settings of the application container to
    * route logs through Firelens.
    * @param hook
@@ -101,10 +101,10 @@ export abstract class ServiceAddon {
   }
 
   /**
-   * This is a hook which allows addons to modify the settings of the
+   * This is a hook which allows extensions to modify the settings of the
    * task definition prior to it being created. For example App Mesh
-   * addon needs to configure an Envoy proxy in the task definition,
-   * or the application addon wants to set the overall resource for
+   * extension needs to configure an Envoy proxy in the task definition,
+   * or the application extension wants to set the overall resource for
    * the task.
    * @param props - Properties of the task definition to be created
    */
@@ -115,11 +115,11 @@ export abstract class ServiceAddon {
   }
 
   /**
-   * A hook that is called for each addon adhead of time to
+   * A hook that is called for each extension adhead of time to
    * let it do any initial setup, such as creating resources in
    * advance.
-   * @param parent - The parent service which this addon has been added to
-   * @param scope - The scope that this addon should create resources in
+   * @param parent - The parent service which this extension has been added to
+   * @param scope - The scope that this extension should create resources in
    */
   public prehook(parent: Service, scope: cdk.Construct) {
     this.parentService = parent;
@@ -128,7 +128,7 @@ export abstract class ServiceAddon {
 
   /**
    * Once the task definition is created, this hook is called for each
-   * addon to give it a chance to add containers to the task definition,
+   * extension to give it a chance to add containers to the task definition,
    * change the task definition's role to add permissions, etc
    * @param taskDefinition - The created task definition to add containers to
    */
@@ -138,9 +138,9 @@ export abstract class ServiceAddon {
 
   /**
    * Once all containers are added to the task definition this hook is
-   * called for each addon to give it a chance to bake its dependency
+   * called for each extension to give it a chance to bake its dependency
    * graph so that its container starts in the right order based on the
-   * other addons that were enabled
+   * other extensions that were enabled
    */
   public bakeContainerDependencies() {
     return;
@@ -148,7 +148,7 @@ export abstract class ServiceAddon {
 
   /**
    * Prior to launching the task definition as a service this hook
-   * is called on each addon to give it a chance to mutate the properties
+   * is called on each extension to give it a chance to mutate the properties
    * of the service to be created
    * @param props - The service properties to mutate
    */
@@ -159,7 +159,7 @@ export abstract class ServiceAddon {
   }
 
   /**
-   * When this hook is implemented by addon it allows the addon
+   * When this hook is implemented by extension it allows the extension
    * to use the service which has been created. It is generally used to
    * create any final resources which might depend on the service itself
    * @param service - The generated service
@@ -169,8 +169,8 @@ export abstract class ServiceAddon {
   }
 
   /**
-   * This hook allows the addon to establish a connection to
-   * addons from another service. Usually used for things like
+   * This hook allows the extension to establish a connection to
+   * extensions from another service. Usually used for things like
    * allowing one service to talk to the load balancer or service mesh
    * proxy for another service.
    * @param service - The other service to connect to
@@ -182,13 +182,13 @@ export abstract class ServiceAddon {
 
 /**
  * This is an abstract class wrapper for a mutating hook. It is
- * extended by any addon which wants to mutate other addon's containers.
+ * extended by any extension which wants to mutate other extension's containers.
  */
 export abstract class ContainerMutatingHook {
   /**
    * This is a hook for modifying the container definition of any upstream
-   * containers. This is primarily used for the application addon.
-   * For example the Firelens addon wants to be able to modify the logging
+   * containers. This is primarily used for the application extension.
+   * For example the Firelens extension wants to be able to modify the logging
    * settings of the application container.
    * @param props - The container definition to mutate
    */

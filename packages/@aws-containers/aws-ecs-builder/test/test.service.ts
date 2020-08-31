@@ -3,25 +3,23 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Container, EnvironmentCapacityType, Service } from '../lib';
+import { Container, EnvironmentCapacityType, Environment, Service, ServiceDescription } from '../lib';
 
 export = {
   'should error if a service is prepared with no addons'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new Service(stack, 'my-service', {
-      vpc,
-      cluster,
-      capacityType: EnvironmentCapacityType.EC2,
-    });
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
 
     // THEN
     test.throws(() => {
-      expect(stack).to(countResources('AWS::ECS::Service', 1));
+      new Service(stack, 'my-service', {
+        environment,
+        serviceDescription,
+      });
     }, /Service 'my-service' must have a Container addon/);
 
     test.done();
@@ -36,19 +34,24 @@ export = {
       instanceType: new ec2.InstanceType('t2.micro'),
     });
 
-    // WHEN
-    const myService = new Service(stack, 'my-service', {
+    const environment = new Environment(stack, 'production', {
       vpc,
       cluster,
       capacityType: EnvironmentCapacityType.EC2,
     });
+    const serviceDescription = new ServiceDescription();
 
-    myService.add(new Container({
+    serviceDescription.add(new Container({
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+    });
 
     // THEN
     expect(stack).to(countResources('AWS::ECS::Service', 1));
