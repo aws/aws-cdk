@@ -225,7 +225,7 @@ api.grantMutation(role, 'updateExample');
 api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```
 
-## Code-First Schema
+### Code-First Schema
 
 CDK offers the ability to generate your schema in a code-first approach. 
 A code-first approach offers a developer workflow with:
@@ -235,7 +235,7 @@ A code-first approach offers a developer workflow with:
 
 The code-first approach allows for **dynamic** schema generation. You can generate your schema based on variables and templates to reduce code duplication.
 
-### Code-First Example
+#### Code-First Example
 
 To showcase the code-first approach. Let's try to model the following schema segment.
 
@@ -331,15 +331,13 @@ this.objectTypes = [ schema.Node, schema.Film ];
 
 const filmConnections = schema.generateEdgeAndConnection(schema.Film);
 
-api.addType('Query', {
-  definition: {
-    allFilms: new appsync.ResolvableField(dummyDataSource, {
-      returnType: filmConnections.connection.attribute(),
-      args: schema.args,
-      requestMappingTemplate: dummyRequest,
-      responseMappingTemplate: dummyResponse,
-    }),
-  }
+api.addQuery('allFilms', new appsync.ResolvableField({
+    returnType: filmConnections.connection.attribute(),
+    args: schema.args,
+    dataSource: dummyDataSource,
+    requestMappingTemplate: dummyRequest,
+    responseMappingTemplate: dummyResponse,
+  }),
 });
 
 this.objectTypes.map((t) => api.addType(t));
@@ -353,7 +351,7 @@ create the base Object Type (i.e. Film) and from there we can generate its respe
 
 Check out a more in-depth example [here](https://github.com/BryanPan342/starwars-code-first).
 
-### GraphQL Types
+#### GraphQL Types
 
 One of the benefits of GraphQL is its strongly typed nature. We define the 
 types within an object, query, mutation, interface, etc. as **GraphQL Types**. 
@@ -369,12 +367,12 @@ More concretely, GraphQL Types are simply the types appended to variables.
 Referencing the object type `Demo` in the previous example, the GraphQL Types 
 is `String!` and is applied to both the names `id` and `version`.
 
-### Field and Resolvable Fields
+#### Field and Resolvable Fields
 
 While `GraphqlType` is a base implementation for GraphQL fields, we have abstractions
 on top of `GraphqlType` that provide finer grain support.
 
-#### Field
+##### Field
 
 `Field` extends `GraphqlType` and will allow you to define arguments. [**Interface Types**](#Interface-Types) are not resolvable and this class will allow you to define arguments,
 but not its resolvers.
@@ -401,7 +399,7 @@ const type = new appsync.InterfaceType('Node', {
 });
 ```
 
-#### Resolvable Fields
+##### Resolvable Fields
 
 `ResolvableField` extends `Field` and will allow you to define arguments and its resolvers.
 [**Object Types**](#Object-Types) can have fields that resolve and perform operations on
@@ -463,7 +461,7 @@ const query = new appsync.ObjectType('Query', {
 
 Learn more about fields and resolvers [here](https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-overview.html).
 
-### Intermediate Types
+#### Intermediate Types
 
 Intermediate Types are defined by Graphql Types and Fields. They have a set of defined 
 fields, where each field corresponds to another type in the system. Intermediate 
@@ -473,7 +471,7 @@ Intermediate Types include:
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
 
-### Interface Types
+##### Interface Types
 
 **Interface Types** are abstract types that define the implementation of other
 intermediate types. They are useful for eliminating duplication and can be used
@@ -488,7 +486,7 @@ const node = new appsync.InterfaceType('Node', {
 });
 ```
 
-### Object Types
+##### Object Types
 
 **Object Types** are types that you declare. For example, in the [code-first example](#code-first-example)
 the `demo` variable is an **Object Type**. **Object Types** are defined by 
@@ -565,3 +563,48 @@ You can create Object Types in three ways:
     ```
     > This method provides easy use and is ideal for smaller projects.
 
+#### Query
+
+Every schema requires a top level Query type. By default, the schema will look
+for the `Object Type` named `Query`. The top level `Query` is the **only** exposed
+type that users can access to perform `GET` operations on your Api.
+
+To add fields for these queries, we can simply run the `addQuery` function to add
+to the schema's `Query` type.
+
+```ts
+const string = appsync.GraphqlType.string();
+const int = appsync.GraphqlType.int();
+api.addQuery('allFilms', new appsync.ResolvableField({
+  returnType: filmConnection.attribute(),
+  args: { after: string, first: int, before: string, last: int},
+  dataSource: api.addNoneDataSource('none'),
+  requestMappingTemplate: dummyRequest,
+  responseMappingTemplate: dummyResponse,
+}));
+```
+
+To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html). 
+
+#### Mutation
+
+Every schema **can** have a top level Mutation type. By default, the schema will look
+for the `Object Type` named `Mutation`. The top level `Mutation` Type is the only exposed
+type that users can access to perform `mutable` operations on your Api.
+
+To add fields for these mutations, we can simply run the `addMutation` function to add
+to the schema's `Mutation` type.
+
+```ts
+const string = appsync.GraphqlType.string();
+const int = appsync.GraphqlType.int();
+api.addMutation('addFilm', new appsync.ResolvableField({
+  returnType: film.attribute(),
+  args: { name: string, film_number: int },
+  dataSource: api.addNoneDataSource('none'),
+  requestMappingTemplate: dummyRequest,
+  responseMappingTemplate: dummyResponse,
+}));
+```
+
+To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html). 
