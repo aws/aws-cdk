@@ -94,8 +94,7 @@ describe('AppSync API Key Authorization', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'API', {
       name: 'apiKeyUnitTest',
-      schemaDefinition: appsync.SchemaDefinition.FILE,
-      schemaDefinitionFile: path.join(__dirname, 'appsync.auth.graphql'),
+      schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.auth.graphql')),
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.API_KEY,
@@ -117,8 +116,7 @@ describe('AppSync API Key Authorization', () => {
     const when = () => {
       new appsync.GraphQLApi(stack, 'API', {
         name: 'apiKeyUnitTest',
-        schemaDefinition: appsync.SchemaDefinition.FILE,
-        schemaDefinitionFile: path.join(__dirname, 'appsync.auth.graphql'),
+        schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.auth.graphql')),
         authorizationConfig: {
           defaultAuthorization: {
             authorizationType: appsync.AuthorizationType.API_KEY,
@@ -139,8 +137,7 @@ describe('AppSync API Key Authorization', () => {
     const when = () => {
       new appsync.GraphQLApi(stack, 'API', {
         name: 'apiKeyUnitTest',
-        schemaDefinition: appsync.SchemaDefinition.FILE,
-        schemaDefinitionFile: path.join(__dirname, 'appsync.auth.graphql'),
+        schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.auth.graphql')),
         authorizationConfig: {
           defaultAuthorization: {
             authorizationType: appsync.AuthorizationType.API_KEY,
