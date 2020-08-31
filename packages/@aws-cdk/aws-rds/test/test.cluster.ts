@@ -1178,6 +1178,33 @@ export = {
     test.done();
   },
 
+  'can set deletion protection'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.plainText('tooshort'),
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      deletionProtection: true,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+      DeletionProtection: true,
+    }));
+
+    test.done();
+  },
+
   'does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets'(test: Test) {
     // GIVEN
     const stack = testStack();

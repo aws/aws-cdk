@@ -1,5 +1,7 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { cloudFormation } from './aws-helpers';
-import { cdk, cdkDeploy, cleanup, fullStackName, prepareAppFixture, rememberToDeleteBucket } from './cdk-helpers';
+import { cdk, cdkDeploy, cleanup, fullStackName, prepareAppFixture, rememberToDeleteBucket, INTEG_TEST_DIR } from './cdk-helpers';
 import { integTest } from './test-helpers';
 
 jest.setTimeout(600_000);
@@ -173,6 +175,34 @@ integTest('can create multiple legacy bootstrap stacks', async () => {
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
+});
+
+integTest('can dump the template, modify and use it to deploy a custom bootstrap stack', async () => {
+  let template = await cdk(['bootstrap', '--show-template'], {
+    captureStderr: false,
+    modEnv: {
+      CDK_NEW_BOOTSTRAP: '1',
+    },
+  });
+
+  expect(template).toContain('BootstrapVersion:');
+
+  template += '\n' + [
+    '  TwiddleDee:',
+    '    Value: Template got twiddled',
+  ].join('\n');
+
+  const filename = path.join(INTEG_TEST_DIR, `${QUALIFIER}-template.yaml`);
+  fs.writeFileSync(filename, template, { encoding: 'utf-8' });
+  await cdk(['bootstrap',
+    '--toolkit-stack-name', fullStackName('bootstrap-stack'),
+    '--qualifier', QUALIFIER,
+    '--template', filename,
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess'], {
+    modEnv: {
+      CDK_NEW_BOOTSTRAP: '1',
+    },
+  });
 });
 
 function randomString() {

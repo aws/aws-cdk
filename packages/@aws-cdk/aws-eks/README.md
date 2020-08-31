@@ -519,7 +519,7 @@ to add Kubernetes resources to this cluster using Helm.
 > When using `cluster.addChart`, the chart is created inside the cluster stack. If the chart contains attributes from a different stack that depends on the cluster stack, a circular dependency will be created and you will get a synth time error. To avoid this, directly use `new HelmChart` to create the chart in the other stack.
 
 The following example will install the [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)
-to you cluster using Helm.
+to your cluster using Helm.
 
 ```ts
 // option 1: use a construct
