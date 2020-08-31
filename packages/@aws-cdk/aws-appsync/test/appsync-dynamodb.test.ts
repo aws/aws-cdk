@@ -15,8 +15,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphQLApi(stack, 'baseApi', {
     name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.FILE,
-    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
 });
 
@@ -72,14 +71,11 @@ describe('DynamoDb Data Source configuration', () => {
   });
 
   test('appsync errors when creating multiple dynamo db data sources with no configuration', () => {
-    // WHEN
-    const when = () => {
-      api.addDynamoDbDataSource('ds', table);
-      api.addDynamoDbDataSource('ds', table);
-    };
-
     // THEN
-    expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
+    expect(() => {
+      api.addDynamoDbDataSource('ds', table);
+      api.addDynamoDbDataSource('ds', table);
+    }).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
   });
 });
 

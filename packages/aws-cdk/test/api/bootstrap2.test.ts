@@ -14,9 +14,14 @@ jest.mock('../../lib/api/toolkit-info', () => ({
   },
 }));
 
-import { bootstrapEnvironment2 } from '../../lib/api/bootstrap';
+import { Bootstrapper } from '../../lib/api/bootstrap';
 import { DeployStackOptions } from '../../lib/api/deploy-stack';
 import { MockSdkProvider } from '../util/mock-sdk';
+
+let bootstrapper: Bootstrapper;
+beforeEach(() => {
+  bootstrapper = new Bootstrapper({ source: 'default' });
+});
 
 describe('Bootstrapping v2', () => {
   const env = {
@@ -32,7 +37,7 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passes the bucket name as a CFN parameter', async () => {
-    await bootstrapEnvironment2(env, sdk, {
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
         bucketName: 'my-bucket-name',
       },
@@ -47,7 +52,7 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passes the KMS key ID as a CFN parameter', async () => {
-    await bootstrapEnvironment2(env, sdk, {
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
         kmsKeyId: 'my-kms-key-id',
       },
@@ -62,7 +67,7 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passes false to PublicAccessBlockConfiguration', async () => {
-    await bootstrapEnvironment2(env, sdk, {
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
         publicAccessBlockConfiguration: false,
       },
@@ -76,7 +81,7 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passing trusted accounts without CFN managed policies results in an error', async () => {
-    await expect(bootstrapEnvironment2(env, sdk, {
+    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
         trustedAccounts: ['123456789012'],
       },
@@ -91,7 +96,7 @@ describe('Bootstrapping v2', () => {
       version: 999,
     };
 
-    await expect(bootstrapEnvironment2(env, sdk, {}))
+    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {}))
       .rejects.toThrow('Not downgrading existing bootstrap stack');
   });
 
@@ -101,23 +106,20 @@ describe('Bootstrapping v2', () => {
       template = args.stack.template;
     });
 
-    await bootstrapEnvironment2(env, sdk, {});
+    await bootstrapper.bootstrapEnvironment(env, sdk, {});
 
     const exports = Object.values(template.Outputs ?? {})
       .filter((o: any) => o.Export !== undefined)
       .map((o: any) => o.Export.Name);
 
     expect(exports).toEqual([
-      // This is used by aws-s3-assets
+      // This used to be used by aws-s3-assets
       { 'Fn::Sub': 'CdkBootstrap-${Qualifier}-FileAssetKeyArn' },
-      // This is used by the CLI to verify the bootstrap stack version,
-      // and could also be used by templates which are deployed through pipelines.
-      { 'Fn::Sub': 'CdkBootstrap-${Qualifier}-Version' },
     ]);
   });
 
   test('stack is not termination protected by default', async () => {
-    await bootstrapEnvironment2(env, sdk);
+    await bootstrapper.bootstrapEnvironment(env, sdk);
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
       stack: expect.objectContaining({
@@ -127,10 +129,8 @@ describe('Bootstrapping v2', () => {
   });
 
   test('stack is termination protected when option is set', async () => {
-    await bootstrapEnvironment2(env, sdk, {
-      parameters: {
-        terminationProtection: true,
-      },
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      terminationProtection: true,
     });
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
