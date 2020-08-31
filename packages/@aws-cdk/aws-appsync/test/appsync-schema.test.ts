@@ -124,6 +124,38 @@ describe('basic testing schema definition mode `code`', () => {
       Definition: 'schema {\n  mutation: Mutation\n}\ntype Mutation {\n  test: String\n}\n',
     });
   });
+
+  test('definition mode `code` allows for api to addSubscription', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+    });
+    api.addSubscription('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n}\n',
+    });
+  });
+
+  test('definition mode `code` allows for schema to addSubscription', () => {
+    // WHEN
+    const schema = new appsync.Schema();
+    new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema,
+    });
+    schema.addSubscription('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n}\n',
+    });
+  });
 });
 
 describe('testing schema definition mode `file`', () => {
@@ -208,5 +240,18 @@ describe('testing schema definition mode `file`', () => {
     expect(() => {
       api.addMutation('blah', new appsync.ResolvableField({ returnType: t.string }));
     }).toThrowError('Unable to add mutation. Schema definition mode must be CODE Received: FILE');
+  });
+
+  test('definition mode `file` errors when addSubscription is called', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
+    });
+
+    // THEN
+    expect(() => {
+      api.addSubscription('blah', new appsync.ResolvableField({ returnType: t.string }));
+    }).toThrowError('Unable to add subscription. Schema definition mode must be CODE Received: FILE');
   });
 });
