@@ -6,6 +6,11 @@ import * as sinon from 'sinon';
 import { AwsSdkCall, PhysicalResourceId } from '../../lib';
 import { flatten, handler, forceSdkInstallation } from '../../lib/aws-custom-resource/runtime';
 
+
+// This test performs an 'npm install' which may take longer than the default
+// 5s timeout
+jest.setTimeout(60_000);
+
 /* eslint-disable no-console */
 
 console.log = jest.fn();

@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as yargs from 'yargs';
 
-import { ToolkitInfo } from '../lib';
+import { ToolkitInfo, BootstrapSource, Bootstrapper } from '../lib';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
@@ -77,7 +77,9 @@ async function parseCommandLineArguments() {
       .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
       .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false })
-      .option('termination-protection', { type: 'boolean', default: false, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' }),
+      .option('termination-protection', { type: 'boolean', default: false, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
+      .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization.', default: false })
+      .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example).' }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
@@ -234,30 +236,44 @@ async function initCommandLine() {
       case 'bootstrap':
         // Use new bootstrapping if it's requested via environment variable, or if
         // new style stack synthesis has been configured in `cdk.json`.
-        let useNewBootstrapping = false;
-        if (process.env.CDK_NEW_BOOTSTRAP) {
+        //
+        // In code it's optimistically called "default" bootstrapping but that is in
+        // anticipation of flipping the switch, in user messaging we still call it
+        // "new" bootstrapping.
+        let source: BootstrapSource = { source: 'legacy' };
+        if (args.template) {
+          print(`Using bootstrapping template from ${args.template}`);
+          source = { source: 'custom', templateFile: args.template };
+        } else if (process.env.CDK_NEW_BOOTSTRAP) {
           print('CDK_NEW_BOOTSTRAP set, using new-style bootstrapping');
-          useNewBootstrapping = true;
+          source = { source: 'default' };
         } else if (configuration.context.get(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)) {
           print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
-          useNewBootstrapping = true;
+          source = { source: 'default' };
         }
 
-        return await cli.bootstrap(args.ENVIRONMENTS, toolkitStackName,
-          args.roleArn,
-          useNewBootstrapping,
-          argv.force,
-          {
+        const bootstrapper = new Bootstrapper(source);
+
+        if (args.showTemplate) {
+          return await bootstrapper.showTemplate();
+        }
+
+        return await cli.bootstrap(args.ENVIRONMENTS, bootstrapper, {
+          roleArn: args.roleArn,
+          force: argv.force,
+          toolkitStackName: toolkitStackName,
+          execute: args.execute,
+          tags: configuration.settings.get(['tags']),
+          terminationProtection: args.terminationProtection,
+          parameters: {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
             qualifier: args.qualifier,
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
-            tags: configuration.settings.get(['tags']),
-            execute: args.execute,
             trustedAccounts: args.trust,
             cloudFormationExecutionPolicies: args.cloudformationExecutionPolicies,
-            terminationProtection: args.terminationProtection,
-          });
+          },
+        });
 
       case 'deploy':
         const parameterMap: { [name: string]: string | undefined } = {};
