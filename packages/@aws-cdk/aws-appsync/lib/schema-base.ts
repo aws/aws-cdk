@@ -198,8 +198,9 @@ export class Directive {
    */
   public static cognito(...groups: string[]): Directive {
     if (groups.length === 0) {
-      throw new Error('Groups parameter must not be empty.');
+      throw new Error(`Cognito authorization requires at least one Cognito group to be supplied. Received: ${groups.length}`);
     }
+    // this function creates the cognito groups as a string (i.e. ["group1", "group2", "group3"])
     const stringify = (array: string[]): string => {
       return array.reduce((acc, element) => `${acc}"${element}", `, '[').slice(0, -2) + ']';
     };
@@ -233,7 +234,7 @@ export class Directive {
    */
   public toString(modes?: AuthorizationType[]): string {
     if (modes && this.mode && !modes.some((mode) => mode === this.mode)) {
-      throw new Error(`No Authoration Type ${this.mode} declared in GraphQL Api.`);
+      throw new Error(`No Authorization Type ${this.mode} declared in GraphQL Api.`);
     }
     if (this.mode === AuthorizationType.USER_POOL && modes && modes.length > 1) {
       this.statement = this.statement.replace('@aws_auth', '@aws_cognito_user_pools');

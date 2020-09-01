@@ -27,16 +27,16 @@ const generateRField = (directives: appsync.Directive[]): appsync.ResolvableFiel
 
 let stack: cdk.Stack;
 
-let api_apiKey: appsync.GraphQLApi, api_iam: appsync.GraphQLApi, api_oidc: appsync.GraphQLApi,
-  api_auth: appsync.GraphQLApi, api_cognito: appsync.GraphQLApi;
+let api_apiKey: appsync.GraphqlApi, api_iam: appsync.GraphqlApi, api_oidc: appsync.GraphqlApi,
+  api_auth: appsync.GraphqlApi, api_cognito: appsync.GraphqlApi;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
   const userPool = new cognito.UserPool(stack, 'userpool');
-  api_apiKey = new appsync.GraphQLApi(stack, 'api_apiKey', {
+  api_apiKey = new appsync.GraphqlApi(stack, 'api_apiKey', {
     name: 'api',
   });
-  api_iam = new appsync.GraphQLApi(stack, 'api_iam', {
+  api_iam = new appsync.GraphqlApi(stack, 'api_iam', {
     name: 'api',
     authorizationConfig: {
       defaultAuthorization: {
@@ -44,7 +44,7 @@ beforeEach(() => {
       },
     },
   });
-  api_oidc = new appsync.GraphQLApi(stack, 'api_oidc', {
+  api_oidc = new appsync.GraphqlApi(stack, 'api_oidc', {
     name: 'api',
     authorizationConfig: {
       defaultAuthorization: {
@@ -53,7 +53,7 @@ beforeEach(() => {
       },
     },
   });
-  api_auth = new appsync.GraphQLApi(stack, 'api_cognito_default', {
+  api_auth = new appsync.GraphqlApi(stack, 'api_cognito_default', {
     name: 'api',
     authorizationConfig: {
       defaultAuthorization: {
@@ -62,7 +62,7 @@ beforeEach(() => {
       },
     },
   });
-  api_cognito = new appsync.GraphQLApi(stack, 'api_cognito_additional', {
+  api_cognito = new appsync.GraphqlApi(stack, 'api_cognito_additional', {
     name: 'api',
     authorizationConfig: {
       additionalAuthorizationModes: [
@@ -75,7 +75,7 @@ beforeEach(() => {
   });
 });
 
-const testObjectType = (IApi: appsync.GraphQLApi, directives: appsync.Directive[], tag: string): any => {
+const testObjectType = (IApi: appsync.GraphqlApi, directives: appsync.Directive[], tag: string): any => {
   // WHEN
   IApi.addType(new appsync.ObjectType('Test', {
     definition: {
@@ -90,7 +90,7 @@ const testObjectType = (IApi: appsync.GraphQLApi, directives: appsync.Directive[
   });
 };
 
-const testInterfaceType = (IApi: appsync.GraphQLApi, directives: appsync.Directive[], tag: string): any => {
+const testInterfaceType = (IApi: appsync.GraphqlApi, directives: appsync.Directive[], tag: string): any => {
   // WHEN
   IApi.addType(new appsync.InterfaceType('Test', {
     definition: {
