@@ -60,6 +60,8 @@ export class CodeBuildStartBuild extends sfn.TaskStateBase {
         actions: [
           'codebuild:StartBuild',
           'codebuild:StopBuild',
+          'codebuild:BatchGetBuilds',
+          'codebuild:BatchGetReports',
         ],
       }),
     ];
