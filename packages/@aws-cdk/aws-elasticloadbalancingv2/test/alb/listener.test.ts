@@ -661,6 +661,68 @@ describe('tests', () => {
     });
   });
 
+  test('Can add simple redirect responses', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc,
+    });
+
+    // WHEN
+    lb.addRedirect();
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 80,
+      Protocol: 'HTTP',
+      DefaultActions: [
+        {
+          RedirectConfig: {
+            Port: '443',
+            Protocol: 'HTTPS',
+            StatusCode: 'HTTP_301',
+          },
+          Type: 'redirect',
+        },
+      ],
+    });
+  });
+
+  test('Can add simple redirect responses with custom values', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc,
+    });
+
+    // WHEN
+    const listener = lb.addRedirect({
+      sourceProtocol: elbv2.ApplicationProtocol.HTTPS,
+      sourcePort: 8443,
+      targetProtocol: elbv2.ApplicationProtocol.HTTP,
+      targetPort: 8080,
+    });
+    listener.addCertificateArns('ListenerCertificateX', ['cert3']);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 8443,
+      Protocol: 'HTTPS',
+      DefaultActions: [
+        {
+          RedirectConfig: {
+            Port: '8080',
+            Protocol: 'HTTP',
+            StatusCode: 'HTTP_301',
+          },
+          Type: 'redirect',
+        },
+      ],
+    });
+  });
+
   test('Can configure deregistration_delay for targets', () => {
     // GIVEN
     const stack = new cdk.Stack();

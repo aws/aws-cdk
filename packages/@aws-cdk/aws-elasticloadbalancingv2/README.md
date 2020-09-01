@@ -151,6 +151,19 @@ listener.addAction('DefaultAction', {
 });
 ```
 
+If you just want to redirect all incoming traffic on one port to another port, you can use the following code:
+
+```ts
+lb.addRedirect({
+  sourceProtocol: elbv2.ApplicationProtocol.HTTPS,
+  sourcePort: 8443,
+  targetProtocol: elbv2.ApplicationProtocol.HTTP,
+  targetPort: 8080,
+});
+```
+
+If you do not provide any options for this method, it redirects HTTP port 80 to HTTPS port 443.
+
 ### Defining a Network Load Balancer
 
 Network Load Balancers are defined in a similar way to Application Load
