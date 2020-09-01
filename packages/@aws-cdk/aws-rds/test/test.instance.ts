@@ -237,6 +237,39 @@ export = {
     test.done();
   },
 
+  'can specify subnet type'(test: Test) {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      masterUsername: 'syscdk',
+      vpc,
+      vpcPlacement: {
+        subnetType: ec2.SubnetType.PRIVATE,
+      }
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      DBSubnetGroupName: {
+        Ref: 'InstanceSubnetGroupF2CBA54F',
+      },
+      PubliclyAccessible: false,
+    }));
+    expect(stack).to(haveResource('AWS::RDS::DBSubnetGroup', {
+      DBSubnetGroupDescription: 'Subnet group for Instance database',
+      SubnetIds: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
   'create an instance from snapshot'(test: Test) {
     // WHEN
     new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
