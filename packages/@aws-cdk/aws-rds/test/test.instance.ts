@@ -246,7 +246,7 @@ export = {
       vpc,
       vpcPlacement: {
         subnetType: ec2.SubnetType.PRIVATE,
-      }
+      },
     });
 
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
