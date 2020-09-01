@@ -4,11 +4,11 @@ import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
 
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'api', {
+  api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
   });
 });

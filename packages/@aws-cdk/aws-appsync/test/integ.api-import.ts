@@ -11,7 +11,7 @@ import * as appsync from '../lib';
  *
  * Stack verification steps:
  * Install dependencies and deploy integration test. Check if data sources are
- * connected to the graphQL Api
+ * connected to the GraphQL Api
  *
  * -- cdk deploy --app 'node integ.api-import.js' stack            -- start         --
  * -- aws appsync list-graphql-apis                                -- obtain api id --
@@ -22,13 +22,13 @@ import * as appsync from '../lib';
 const app = new cdk.App();
 const baseStack = new cdk.Stack(app, 'baseStack');
 
-const baseApi = new appsync.GraphQLApi(baseStack, 'baseApi', {
+const baseApi = new appsync.GraphqlApi(baseStack, 'baseApi', {
   name: 'baseApi',
   schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
 });
 
 const stack = new cdk.Stack(app, 'stack');
-const api = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'Api', {
+const api = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'Api', {
   graphqlApiId: `${baseApi.apiId}`,
 });
 
@@ -57,7 +57,7 @@ testDS.createResolver({
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
 
-const api2 = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'api2', {
+const api2 = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'api2', {
   graphqlApiId: baseApi.apiId,
   graphqlApiArn: baseApi.arn,
 });
