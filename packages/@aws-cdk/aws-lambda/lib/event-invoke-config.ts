@@ -5,8 +5,61 @@ import { CfnEventInvokeConfig } from './lambda.generated';
 
 /**
  * Options to add an EventInvokeConfig to a function.
+ * @deprecated - use `EventInvokeConfigProps` instead.
  */
 export interface EventInvokeConfigOptions {
+  /**
+   * The destination for failed invocations.
+   * @deprecated - use `EventInvokeConfig` construct instead
+   * @default - no destination
+   */
+  readonly onFailure?: IDestination;
+
+  /**
+   * The destination for successful invocations.
+   * @deprecated - use `EventInvokeConfig` construct instead
+   * @default - no destination
+   */
+  readonly onSuccess?: IDestination;
+
+  /**
+   * The maximum age of a request that Lambda sends to a function for
+   * processing.
+   *
+   * Minimum: 60 seconds
+   * Maximum: 6 hours
+   * @deprecated - use `EventInvokeConfig` construct instead
+   * @default Duration.hours(6)
+   */
+  readonly maxEventAge?: Duration;
+
+  /**
+   * The maximum number of times to retry when the function returns an error.
+   *
+   * Minimum: 0
+   * Maximum: 2
+   * @deprecated - use `EventInvokeConfig` construct instead
+   * @default 2
+   */
+  readonly retryAttempts?: number;
+}
+
+/**
+ * Properties for an EventInvokeConfig
+ */
+export interface EventInvokeConfigProps {
+  /**
+   * The Lambda function
+   */
+  readonly function: IFunction;
+
+  /**
+   * The qualifier
+   *
+   * @default - latest version
+   */
+  readonly qualifier?: string;
+
   /**
    * The destination for failed invocations.
    *
@@ -41,23 +94,6 @@ export interface EventInvokeConfigOptions {
    * @default 2
    */
   readonly retryAttempts?: number;
-}
-
-/**
- * Properties for an EventInvokeConfig
- */
-export interface EventInvokeConfigProps extends EventInvokeConfigOptions {
-  /**
-   * The Lambda function
-   */
-  readonly function: IFunction;
-
-  /**
-   * The qualifier
-   *
-   * @default - latest version
-   */
-  readonly qualifier?: string;
 }
 
 /**
