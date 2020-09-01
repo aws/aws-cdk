@@ -131,8 +131,7 @@
       "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.XML",
       "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.PARQUET",
       "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.ORC",
-      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.value",
-      "docs-public-apis:@aws-cdk/aws-glue.CsvSeparator.character"
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.value"
     ]
   },
   "awscdkio": {

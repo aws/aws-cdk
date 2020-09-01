@@ -148,9 +148,6 @@
             },
             "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
             "SerdeInfo": {
-              "Parameters": {
-                "separatorChar": ","
-              },
               "SerializationLibrary": "org.apache.hadoop.hive.serde2.OpenCSVSerde"
             },
             "StoredAsSubDirectories": false
