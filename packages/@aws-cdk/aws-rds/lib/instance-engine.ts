@@ -193,12 +193,11 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
   }
 
   public bindToInstance(_scope: core.Construct, _options: InstanceEngineBindOptions): InstanceEngineConfig {
-    super.bindToInstance(_scope, _options);
+    const config = super.bindToInstance(_scope, _options);
     if (_options.domain) {
       throw new Error(`domain property cannot be configured for ${this.engineType}`);
     }
-    return {
-    };
+    return { ...config };
   }
 }
 
