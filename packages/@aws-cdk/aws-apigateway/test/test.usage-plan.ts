@@ -82,6 +82,60 @@ export = {
 
   },
 
+  'usage plan with blocked methods'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'my-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+    const method: apigateway.Method = api.root.addMethod('GET'); // Need at least one method on the api
+    const usagePlanName = 'Basic';
+    const usagePlanDescription = 'Basic Usage Plan with throttling limits';
+
+    // WHEN
+    new apigateway.UsagePlan(stack, 'my-usage-plan', {
+      name: usagePlanName,
+      description: usagePlanDescription,
+      apiStages: [
+        {
+          stage: api.deploymentStage,
+          throttle: [
+            {
+              method,
+              throttle: {
+                burstLimit: 0,
+                rateLimit: 0,
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResource(RESOURCE_TYPE, {
+      UsagePlanName: usagePlanName,
+      Description: usagePlanDescription,
+      ApiStages: [
+        {
+          ApiId: {
+            Ref: 'myapi4C7BF186',
+          },
+          Stage: {
+            Ref: 'myapiDeploymentStagetest4A4AB65E',
+          },
+          Throttle: {
+            '//GET': {
+              BurstLimit: 0,
+              RateLimit: 0,
+            },
+          },
+        },
+      ],
+    }, ResourcePart.Properties));
+
+    test.done();
+
+  },
+
   'usage plan with quota limits'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
