@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
-  ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-  IDependable, IResource, Lazy, Resource, Stack, Token, Tags,
+  Annotations, ConcreteDependable, Construct, ContextProvider, DependableTrait,
+  IConstruct, IDependable, IResource, Lazy, Resource, Stack, Token, Tags,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
@@ -468,17 +468,8 @@ abstract class VpcBase extends Resource implements IVpc {
       subnets = this.selectSubnetObjectsByType(type);
     }
 
-    let subnetFilters = selection.subnetFilters ?? [];
-
-    if (selection.availabilityZones !== undefined) { // Filter by AZs, if specified
-      subnetFilters.push(new AvailabilityZoneSubnetSelector(selection.availabilityZones));
-    }
-
-    if (!!selection.onePerAz && subnets.length > 0) { // Ensure one per AZ if specified
-      subnetFilters.push(new OnePerAZSubnetSelector());
-    }
-
-    subnets = this.applySubnetFilters(subnets, subnetFilters);
+    // Apply all the filters
+    subnets = this.applySubnetFilters(subnets, selection.subnetFilters ?? []);
 
     return subnets;
   }
@@ -531,9 +522,26 @@ abstract class VpcBase extends Resource implements IVpc {
    * PUBLIC (in that order) that has any subnets.
    */
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
+
+    // Establish which subnet filters are going to be used
+    let subnetFilters = placement.subnetFilters ?? [];
+
+    // Backwards compatibility with existing `availabilityZones` and `onePerAz` functionality
+    if (placement.availabilityZones !== undefined) { // Filter by AZs, if specified
+      subnetFilters.push(new AvailabilityZoneSubnetSelector(placement.availabilityZones));
+    }
+    if (!!placement.onePerAz) { // Ensure one per AZ if specified
+      subnetFilters.push(new OnePerAZSubnetSelector());
+    }
+
+    // Overwrite the provided placement filters
+    placement = { ...placement, subnetFilters: subnetFilters };
+
     if (placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
         throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');
+      } else {
+        Annotations.of(this).addWarning('Usage of \'subnetName\' in SubnetSelection is deprecated, use \'subnetGroupName\' instead');
       }
       placement = { ...placement, subnetGroupName: placement.subnetName };
     }
@@ -545,25 +553,18 @@ abstract class VpcBase extends Resource implements IVpc {
     }
 
     if (placement.subnetType === undefined && placement.subnetGroupName === undefined && placement.subnets === undefined) {
+      let subnetType;
       // Return default subnet type based on subnets that actually exist
       if (this.privateSubnets.length > 0) {
-        return {
-          subnetType: SubnetType.PRIVATE,
-          onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones,
-        };
-      }
-      if (this.isolatedSubnets.length > 0) {
-        return {
-          subnetType: SubnetType.ISOLATED,
-          onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones,
-        };
+        subnetType = SubnetType.PRIVATE;
+      } else if (this.isolatedSubnets.length > 0) {
+        subnetType = SubnetType.ISOLATED;
+      } else {
+        subnetType = SubnetType.PUBLIC;
       }
       return {
-        subnetType: SubnetType.PUBLIC,
-        onePerAz: placement.onePerAz,
-        availabilityZones: placement.availabilityZones,
+        subnetType: subnetType,
+        subnetFilters: placement.subnetFilters,
       };
     }
 
