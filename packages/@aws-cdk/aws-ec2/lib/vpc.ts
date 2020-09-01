@@ -11,6 +11,7 @@ import {
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
+import { AvailabilityZoneSubnetSelector, OnePerAZSubnetSelector, ISubnetSelector } from './subnet';
 import { allRouteTableIds, defaultSubnetName, flatten, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
@@ -237,6 +238,13 @@ export interface SubnetSelection {
   readonly onePerAz?: boolean;
 
   /**
+   * List of provided subnet filters.
+   *
+   * @default - none
+   */
+  readonly subnetFilters?: ISubnetSelector[];
+
+  /**
    * Explicitly select individual subnets
    *
    * Use this if you don't want to automatically use all subnets in
@@ -460,15 +468,30 @@ abstract class VpcBase extends Resource implements IVpc {
       subnets = this.selectSubnetObjectsByType(type);
     }
 
+    let subnetFilters = selection.subnetFilters ?? [];
+
     if (selection.availabilityZones !== undefined) { // Filter by AZs, if specified
+      subnetFilters.push(new AvailabilityZoneSubnetSelector(selection.availabilityZones));
       subnets = retainByAZ(subnets, selection.availabilityZones);
     }
 
     if (!!selection.onePerAz && subnets.length > 0) { // Ensure one per AZ if specified
+      subnetFilters.push(new OnePerAZSubnetSelector());
       subnets = retainOnePerAz(subnets);
     }
 
+    subnets = this.applySubnetFilters(subnets, subnetFilters);
+
     return subnets;
+  }
+
+  private applySubnetFilters(subnets: ISubnet[], filters: ISubnetSelector[]): ISubnet[] {
+    let filtered = subnets;
+    // Apply each filter in sequence
+    for (const filter of filters) {
+      filtered = filter.selectSubnets(filtered);
+    }
+    return filtered;
   }
 
   private selectSubnetObjectsByName(groupName: string) {
