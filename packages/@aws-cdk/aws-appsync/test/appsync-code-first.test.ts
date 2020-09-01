@@ -30,7 +30,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
       },
     });
     api.addType(test);
-    test.addField('dupid', t.dup_id);
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
@@ -51,7 +51,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
       },
     });
     api.addType(test);
-    test.addField('dupid', t.dup_id);
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
@@ -92,7 +92,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
       },
     }));
 
-    test.addField('dupid', t.dup_id);
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
@@ -133,7 +133,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
       },
     }));
 
-    test.addField('dupid', t.dup_id);
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
@@ -162,7 +162,7 @@ describe('code-first implementation through Schema functions`', () => {
       },
     });
     schema.addType(test);
-    test.addField('dupid', t.dup_id);
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
 
     new appsync.GraphQLApi(stack, 'api', {
       name: 'api',
@@ -188,7 +188,7 @@ describe('code-first implementation through Schema functions`', () => {
       },
     });
     schema.addType(test);
-    test.addField('dupid', t.dup_id);
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
 
     new appsync.GraphQLApi(stack, 'api', {
       name: 'api',
@@ -240,7 +240,7 @@ describe('code-first implementation through Schema functions`', () => {
       },
     }));
 
-    test.addField('dupid', t.dup_id);
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
     new appsync.GraphQLApi(stack, 'api', {
       name: 'api',
       schema,
@@ -289,7 +289,7 @@ describe('code-first implementation through Schema functions`', () => {
       },
     }));
 
-    test.addField('dupid', t.dup_id);
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
     new appsync.GraphQLApi(stack, 'api', {
       name: 'api',
       schema,

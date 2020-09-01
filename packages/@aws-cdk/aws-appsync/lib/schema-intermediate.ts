@@ -1,6 +1,6 @@
 import { shapeAddition } from './private';
 import { Resolver } from './resolver';
-import { Directive, IField, IIntermediateType } from './schema-base';
+import { Directive, IField, IIntermediateType, AddFieldOptions } from './schema-base';
 import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-field';
 
 /**
@@ -69,13 +69,17 @@ export class InterfaceType implements IIntermediateType {
   }
 
   /**
-   * Add a field to this Object Type
+   * Add a field to this Interface Type.
    *
-   * @param fieldName - The name of the field
-   * @param field - the field to add
+   * Interface Types must have both fieldName and field options.
+   *
+   * @param options the options to add a field
    */
-  public addField(fieldName: string, field: IField): void {
-    this.definition[fieldName] = field;
+  public addField(options: AddFieldOptions): void {
+    if (!options.fieldName || !options.field) {
+      throw new Error('Interface Types must have both fieldName and field options.');
+    }
+    this.definition[options.fieldName] = options.field;
   }
 }
 
@@ -145,14 +149,18 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
   }
 
   /**
-   * Add a field to this Object Type
+   * Add a field to this Object Type.
    *
-   * @param fieldName - The name of the field
-   * @param field - the resolvable field to add
+   * Object Types must have both fieldName and field options.
+   *
+   * @param options the options to add a field
    */
-  public addField(fieldName: string, field: IField): void {
-    this.generateResolver(fieldName, field.fieldOptions);
-    this.definition[fieldName] = field;
+  public addField(options: AddFieldOptions): void {
+    if (!options.fieldName || !options.field) {
+      throw new Error('Object Types must have both fieldName and field options.');
+    }
+    this.generateResolver(options.fieldName, options.field.fieldOptions);
+    this.definition[options.fieldName] = options.field;
   }
 
   /**
@@ -183,6 +191,71 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
         responseMappingTemplate: options.responseMappingTemplate,
       }));
     }
+  }
+}
+
+/**
+ * Input Types are abstract types that define complex objects.
+ * They are used in arguments to represent
+ *
+ * @experimental
+ */
+export class InputType implements IIntermediateType {
+  /**
+   * the name of this type
+   */
+  public readonly name: string;
+  /**
+   * the attributes of this type
+   */
+  public readonly definition: { [key: string]: IField };
+
+  public constructor(name: string, props: IntermediateTypeProps) {
+    this.name = name;
+    this.definition = props.definition;
+  }
+
+  /**
+   * Create an GraphQL Type representing this Input Type
+   *
+   * @param options the options to configure this attribute
+   * - isList
+   * - isRequired
+   * - isRequiredList
+   */
+  public attribute(options?: BaseTypeOptions): GraphqlType {
+    return GraphqlType.intermediate({
+      isList: options?.isList,
+      isRequired: options?.isRequired,
+      isRequiredList: options?.isRequiredList,
+      intermediateType: this,
+    });
+  }
+
+  /**
+   * Generate the string of this input type
+   */
+  public toString(): string {
+    return shapeAddition({
+      prefix: 'input',
+      name: this.name,
+      fields: Object.keys(this.definition).map((key) =>
+        `${key}${this.definition[key].argsToString()}: ${this.definition[key].toString()}`),
+    });
+  }
+
+  /**
+   * Add a field to this Input Type.
+   *
+   * Input Types must have both fieldName and field options.
+   *
+   * @param options the options to add a field
+   */
+  public addField(options: AddFieldOptions): void {
+    if (!options.fieldName || !options.field) {
+      throw new Error('Input Types must have both fieldName and field options.');
+    }
+    this.definition[options.fieldName] = options.field;
   }
 }
 
@@ -219,7 +292,7 @@ export class EnumType implements IIntermediateType {
   public constructor(name: string, props: EnumTypeProps) {
     this.name = name;
     this.definition = {};
-    props.definition.map((field: string) => this.addField(field, GraphqlType.string()));
+    props.definition.map((fieldName: string) => this.addField({ fieldName }));
   }
 
   /**
@@ -240,7 +313,7 @@ export class EnumType implements IIntermediateType {
   }
 
   /**
-   * Generate the string of this object type
+   * Generate the string of this enum type
    */
   public toString(): string {
     return shapeAddition({
@@ -253,11 +326,18 @@ export class EnumType implements IIntermediateType {
   /**
    * Add a field to this Enum Type
    *
-   * @param fieldName the name of the field
-   * @param field the IField (this does nothing)
+   * Enum Types must have fieldName options.
+   *
+   * @param options the options to add a field
    */
-  public addField(fieldName: string, field: IField): void {
-    if (fieldName.indexOf(' ') > -1) throw new Error('Enum fields cannot contain white space.');
-    this.definition[fieldName] = field;
+  public addField(options: AddFieldOptions): void {
+    if (options.field) {
+      throw new Error('Enum Types does not support IField properties. Use the fieldName option.');
+    }
+    if (!options.fieldName) {
+      throw new Error('The Field option, fieldName, must be declared.');
+    }
+    if (options.fieldName.indexOf(' ') > -1) throw new Error('Enum fields cannot contain white space.');
+    this.definition[options.fieldName] = GraphqlType.string();
   }
 }

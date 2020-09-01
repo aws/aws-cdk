@@ -34,6 +34,15 @@ const api = new appsync.GraphQLApi(stack, 'code-first-api', {
   schema: schema,
 });
 
+const table = new db.Table(stack, 'table', {
+  partitionKey: {
+    name: 'id',
+    type: db.AttributeType.STRING,
+  },
+});
+
+const tableDS = api.addDynamoDbDataSource('planets', table);
+
 const planet = ObjectType.planet;
 schema.addType(planet);
 
@@ -53,23 +62,48 @@ api.addType(new appsync.ObjectType('Species', {
   },
 }));
 
-api.addToSchema('type Query {\n  getPlanets: [Planet]\n}', '\n');
-
-const table = new db.Table(stack, 'table', {
-  partitionKey: {
-    name: 'id',
-    type: db.AttributeType.STRING,
-  },
-});
-
-const tableDS = api.addDynamoDbDataSource('planets', table);
-
-tableDS.createResolver({
-  typeName: 'Query',
-  fieldName: 'getPlanets',
+api.addQuery('getPlanets', new appsync.ResolvableField({
+  returnType: planet.attribute({ isList: true }),
+  dataSource: tableDS,
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
-});
+}));
+
+/* ATTRIBUTES */
+const name = new appsync.Assign('name', '$context.arguments.name');
+const diameter = new appsync.Assign('diameter', '$context.arguments.diameter');
+const rotationPeriod = new appsync.Assign('rotationPeriod', '$context.arguments.rotationPeriod');
+const orbitalPeriod = new appsync.Assign('orbitalPeriod', '$context.arguments.orbitalPeriod');
+const gravity = new appsync.Assign('gravityPeriod', '$context.arguments.gravity');
+const population = new appsync.Assign('population', '$context.arguments.population');
+const climates = new appsync.Assign('climates', '$context.arguments.climates');
+const terrains = new appsync.Assign('terrains', '$context.arguments.terrains');
+const surfaceWater = new appsync.Assign('surfaceWater', '$context.arguments.surfaceWater');
+api.addMutation('addPlanet', new appsync.ResolvableField({
+  returnType: planet.attribute(),
+  args: {
+    name: ScalarType.string,
+    diameter: ScalarType.int,
+    rotationPeriod: ScalarType.int,
+    orbitalPeriod: ScalarType.int,
+    gravity: ScalarType.string,
+    population: ScalarType.list_string,
+    climates: ScalarType.list_string,
+    terrains: ScalarType.list_string,
+    surfaceWater: ScalarType.float,
+  },
+  dataSource: tableDS,
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbPutItem(
+    appsync.PrimaryKey.partition('id').auto(), new appsync.AttributeValues('$context.arguments',
+      [name, diameter, rotationPeriod, orbitalPeriod, gravity, population, climates, terrains, surfaceWater],
+    ),
+  ),
+  responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
+}));
+
+api.addType(new appsync.InputType('input', {
+  definition: { awesomeInput: ScalarType.string },
+}));
 
 api.addType(new appsync.EnumType('Films', {
   definition: [
