@@ -15,19 +15,19 @@
 ---
 <!--END STABILITY BANNER-->
 
-To create an Elasticsearch domain:
+Create a development cluster by simply specifying the version:
 
 ```ts
 import * as es from '@aws-cdk/aws-elasticsearch';
 
 const devDomain = new es.Domain(this, 'Domain', {
     version: es.ElasticsearchVersion.V7_1,
-    logging: {
-        slowSearchLogEnabled: true,
-        appLogEnabled: true
-    },
 });
+```
 
+Create a production grade cluster by also specifying things like capacity and az distribution
+
+```ts
 const prodDomain = new es.Domain(this, 'Domain', {
     version: es.ElasticsearchVersion.V7_1,
     capacity: {
@@ -43,7 +43,7 @@ const prodDomain = new es.Domain(this, 'Domain', {
     logging: {
         slowSearchLogEnabled: true,
         appLogEnabled: true,
-        slowIndexLogEnabled: true
+        slowIndexLogEnabled: true,
     },
 });
 ```
@@ -109,3 +109,24 @@ const masterSysMemoryUtilization = domain.metric('MasterSysMemoryUtilization');
 ```
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
+### Fine grained access control
+
+The domain can also be created with a master user configured. The password can
+be supplied or dynamically created if not supplied.
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_1,
+    enforceHttps: true,
+    nodeToNodeEncryption: true,
+    encryptionAtRest: {
+        enabled: true,
+    },
+    fineGrainedAccessControl: {
+        masterUserName: 'master-user',
+    },
+});
+
+const masterUserPassword = domain.masterUserPassword;
+```

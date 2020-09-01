@@ -422,14 +422,30 @@ describe('import', () => {
     expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
   });
 
+  test('static fromDomainAttributes(attributes) allows importing an external/existing domain', () => {
+    const domainName = 'test-domain-2w2x2u3tifly';
+    const domainArn = `es:testregion:1234:domain/${domainName}`;
+    const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const imported = Domain.fromDomainAttributes(stack, 'Domain', {
+      domainArn,
+      domainEndpoint,
+    });
+
+    expect(imported.domainName).toEqual(domainName);
+    expect(imported.domainArn).toEqual(domainArn);
+
+    expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
+  });
+
 });
 
 describe('advanced security options', () => {
   const masterUserArn = 'arn:aws:iam::123456789012:user/JohnDoe';
   const masterUserName = 'JohnDoe';
-  const masterUserPasswordSecret = SecretValue.plainText('password');
+  const password = 'password';
+  const masterUserPassword = SecretValue.plainText(password);
 
-  test('enable fine-grained access logging with a master user ARN', () => {
+  test('enable fine-grained access control with a master user ARN', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
       fineGrainedAccessControl: {
@@ -462,12 +478,46 @@ describe('advanced security options', () => {
     });
   });
 
-  test('enable fine-grained access logging with a master user name and password', () => {
+  test('enable fine-grained access control with a master user name and password', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
       fineGrainedAccessControl: {
         masterUserName,
-        masterUserPasswordSecret,
+        masterUserPassword,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+      nodeToNodeEncryption: true,
+      enforceHttps: true,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      AdvancedSecurityOptions: {
+        Enabled: true,
+        InternalUserDatabaseEnabled: true,
+        MasterUserOptions: {
+          MasterUserName: masterUserName,
+          MasterUserPassword: password,
+        },
+      },
+      EncryptionAtRestOptions: {
+        Enabled: true,
+      },
+      NodeToNodeEncryptionOptions: {
+        Enabled: true,
+      },
+      DomainEndpointOptions: {
+        EnforceHTTPS: true,
+      },
+    });
+  });
+
+  test('enable fine-grained access control with a master user name and dynamically generated password', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+      fineGrainedAccessControl: {
+        masterUserName,
       },
       encryptionAtRest: {
         enabled: true,
@@ -488,7 +538,7 @@ describe('advanced security options', () => {
               [
                 '{{resolve:secretsmanager:',
                 {
-                  Ref: 'Domain15DC21D9',
+                  Ref: 'DomainDomainPassword65DAD325',
                 },
                 ':SecretString:password::}}',
               ],
@@ -514,7 +564,7 @@ describe('advanced security options', () => {
     });
   });
 
-  test('enabling fine-grained access logging throws with Elasticsearch < 6.7', () => {
+  test('enabling fine-grained access control throws with Elasticsearch < 6.7', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V6_5,
       fineGrainedAccessControl: {
@@ -525,10 +575,10 @@ describe('advanced security options', () => {
       },
       nodeToNodeEncryption: true,
       enforceHttps: true,
-    })).toThrow(/Fine-grained access logging requires Elasticsearch version 6\.7 or later/);
+    })).toThrow(/Fine-grained access control requires Elasticsearch version 6\.7 or later/);
   });
 
-  test('enabling fine-grained access logging throws without node-to-node encryption enabled', () => {
+  test('enabling fine-grained access control throws without node-to-node encryption enabled', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_7,
       fineGrainedAccessControl: {
@@ -542,7 +592,7 @@ describe('advanced security options', () => {
     })).toThrow(/Node-to-node encryption is required when fine-grained access control is enabled/);
   });
 
-  test('enabling fine-grained access logging throws without encryption-at-rest enabled', () => {
+  test('enabling fine-grained access control throws without encryption-at-rest enabled', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_7,
       fineGrainedAccessControl: {
@@ -556,7 +606,7 @@ describe('advanced security options', () => {
     })).toThrow(/Encryption-at-rest is required when fine-grained access control is enabled/);
   });
 
-  test('enabling fine-grained access logging throws without enforceHttps enabled', () => {
+  test('enabling fine-grained access control throws without enforceHttps enabled', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_7,
       fineGrainedAccessControl: {
@@ -757,7 +807,7 @@ describe('custom error responses', () => {
       capacity: {
         masterNodeInstanceType: 'm5.large.elasticsearch',
       },
-    })).toThrow(/EBS volumes are required for all instance types except R3 and I3/);
+    })).toThrow(/EBS volumes are required when using instance types other than r3 or i3/);
   });
 
   test('error when availabilityZoneCount is not 2 or 3', () => {

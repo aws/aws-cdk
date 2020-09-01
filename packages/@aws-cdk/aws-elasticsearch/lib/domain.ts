@@ -351,7 +351,7 @@ export interface AdvancedSecurityOptions {
    *
    * @default - A Secrets Manager generated password
    */
-  readonly masterUserPasswordSecret?: cdk.SecretValue;
+  readonly masterUserPassword?: cdk.SecretValue;
 }
 
 /**
@@ -388,7 +388,10 @@ export interface DomainProps {
 
   /**
    * The configurations of Amazon Elastic Block Store (Amazon EBS) volumes that
-   * are attached to data nodes in the Amazon ES domain.
+   * are attached to data nodes in the Amazon ES domain. For more information, see
+   * [Configuring EBS-based Storage]
+   * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-ebs)
+   * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default - 10 GiB General Purpose (SSD) volumes per node.
    */
@@ -410,11 +413,6 @@ export interface DomainProps {
 
   /**
    * The Elasticsearch version that your domain will leverage.
-   *
-   * Per https://aws.amazon.com/elasticsearch-service/faqs/, Amazon Elasticsearch Service
-   * currently supports Elasticsearch versions 7.7, 7.4, 7.1, 6.8, 6.7, 6.5, 6.4, 6.3, 6.2,
-   * 6.0, 5.6, 5.5, 5.3, 5.1, 2.3, and 1.5.
-   *
    */
   readonly version: ElasticsearchVersion;
 
@@ -425,14 +423,12 @@ export interface DomainProps {
    */
   readonly encryptionAtRest?: EncryptionAtRestOptions;
 
-
   /**
    * Configuration log publishing configuration options.
    *
    * @default - No logs are published
    */
   readonly logging?: LoggingOptions;
-
 
   /**
    * Specify true to enable node to node encryption.
@@ -510,27 +506,6 @@ export interface IDomain extends cdk.IResource {
    * @attribute
    */
   readonly domainEndpoint: string;
-
-  /**
-   * Log group that slow searches are logged to.
-   *
-   * @attribute
-   */
-  readonly slowSearchLogGroup?: logs.ILogGroup;
-
-  /**
-   * Log group that slow indices are logged to.
-   *
-   * @attribute
-   */
-  readonly slowIndexLogGroup?: logs.ILogGroup;
-
-  /**
-   * Log group that application logs are logged to.
-   *
-   * @attribute
-   */
-  readonly appLogGroup?: logs.ILogGroup;
 
   /**
    * Grant read permissions for this domain and its contents to an IAM
@@ -1149,9 +1124,32 @@ export class Domain extends DomainBase implements IDomain {
   public readonly domainArn: string;
   public readonly domainName: string;
   public readonly domainEndpoint: string;
+
+  /**
+   * Log group that slow searches are logged to.
+   *
+   * @attribute
+   */
   public readonly slowSearchLogGroup?: logs.ILogGroup;
+
+  /**
+   * Log group that slow indices are logged to.
+   *
+   * @attribute
+   */
   public readonly slowIndexLogGroup?: logs.ILogGroup;
+
+  /**
+   * Log group that application logs are logged to.
+   *
+   * @attribute
+   */
   public readonly appLogGroup?: logs.ILogGroup;
+
+  /**
+   * Master user password if fine grained access control is configured.
+   */
+  public readonly masterUserPassword?: cdk.SecretValue;
 
 
   private readonly domain: CfnDomain;
@@ -1160,11 +1158,6 @@ export class Domain extends DomainBase implements IDomain {
     super(scope, id, {
       physicalName: props.domainName,
     });
-
-    // If VPC options are supplied ensure that the number of subnets matches the number AZ
-    if (props.vpcOptions?.subnets.map((subnet) => subnet.availabilityZone).length != props?.zoneAwareness?.availabilityZoneCount) {
-      throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
-    };
 
     const defaultInstanceType = 'r5.large.elasticsearch';
 
@@ -1189,6 +1182,12 @@ export class Domain extends DomainBase implements IDomain {
     const zoneAwarenessEnabled =
       props.zoneAwareness?.enabled ??
       props.zoneAwareness?.availabilityZoneCount != null;
+
+    // If VPC options are supplied ensure that the number of subnets matches the number AZ
+    if (props.vpcOptions != null && zoneAwarenessEnabled &&
+      new Set(props.vpcOptions?.subnets.map((subnet) => subnet.availabilityZone)).size < availabilityZoneCount) {
+      throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
+    };
 
     if ([dedicatedMasterType, instanceType].some(t => !t.endsWith('.elasticsearch'))) {
       throw new Error('Master and data node instance types must end with ".elasticsearch".');
@@ -1231,11 +1230,15 @@ export class Domain extends DomainBase implements IDomain {
     const masterUserArn = props.fineGrainedAccessControl?.masterUserArn;
     const masterUserName = props.fineGrainedAccessControl?.masterUserName;
 
+    if (masterUserArn != null && masterUserName != null) {
+      throw new Error('Invalid fine grained access control settings. Only provide one of master user ARN or master user name. Not both.');
+    }
+
     const advancedSecurityEnabled = (masterUserArn ?? masterUserName) != null;
     const internalUserDatabaseEnabled = masterUserName != null;
-    const masterUserPasswordString = props.fineGrainedAccessControl?.masterUserPasswordSecret?.toString();
-    const createMasterUserPasswordSecret = (): string => {
-      return new secretsmanager.Secret(this, id, {
+    const masterUserPasswordProp = props.fineGrainedAccessControl?.masterUserPassword;
+    const createMasterUserPassword = (): cdk.SecretValue => {
+      return new secretsmanager.Secret(this, `${id}Password`, {
         generateSecretString: {
           secretStringTemplate: JSON.stringify({
             username: masterUserName,
@@ -1243,12 +1246,11 @@ export class Domain extends DomainBase implements IDomain {
           generateStringKey: 'password',
         },
       })
-        .secretValueFromJson('password')
-        .toString();
+        .secretValueFromJson('password');
     };
-    const masterUserPassword =
-      masterUserPasswordString ??
-      internalUserDatabaseEnabled ? createMasterUserPasswordSecret() : undefined;
+    this.masterUserPassword = internalUserDatabaseEnabled ?
+      (masterUserPasswordProp ?? createMasterUserPassword())
+      : undefined;
 
     const encryptionAtRestEnabled =
       props.encryptionAtRest?.enabled ?? props.encryptionAtRest?.kmsKey != null;
@@ -1460,7 +1462,7 @@ export class Domain extends DomainBase implements IDomain {
           masterUserOptions: {
             masterUserArn: masterUserArn,
             masterUserName: masterUserName,
-            masterUserPassword: masterUserPassword,
+            masterUserPassword: this.masterUserPassword?.toString(),
           },
         }
         : undefined,
