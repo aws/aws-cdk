@@ -847,14 +847,34 @@ export = {
     test.done();
   },
 
-  'domain - throws if incompatible engine type'(test: Test) {
-    const domain = 'd-90670a8d36';
-    test.throws(() => new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_4_8 }),
-      vpc,
-      masterUsername: 'admin',
-      domain: domain,
-    }), 'Cannot specify `domain` unless engine is MySQL, Oracle, PostgreSQL, or SQL Server.');
+  'throws when domain is set for mariadb database engine'(test: Test) {
+    const domainSupportedEngines = [rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
+      rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB, rds.DatabaseInstanceEngine.MYSQL,
+      rds.DatabaseInstanceEngine.POSTGRES, rds.DatabaseInstanceEngine.ORACLE_EE];
+    const domainUnsupportedEngines = [rds.DatabaseInstanceEngine.MARIADB];
+
+    // THEN
+    domainSupportedEngines.forEach((engine) => {
+      test.ok(new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+        engine,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
+        masterUsername: 'master',
+        domain: 'd-90670a8d36',
+        vpc,
+      }));
+    });
+
+    domainUnsupportedEngines.forEach((engine) => {
+      const expectedError = new RegExp(`domain property cannot be configured for ${engine.engineType}`);
+
+      test.throws(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+        engine,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
+        masterUsername: 'master',
+        domain: 'd-90670a8d36',
+        vpc,
+      }), expectedError);
+    });
 
     test.done();
   },

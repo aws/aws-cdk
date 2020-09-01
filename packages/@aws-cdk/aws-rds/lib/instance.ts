@@ -728,10 +728,6 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    if (props.domain && !props.engine.engineType.match(/^(mysql|postgres|oracle|sqlserver)/)) {
-      throw new Error('Cannot specify `domain` unless engine is MySQL, Oracle, PostgreSQL, or SQL Server.');
-    }
-
     props.engine.bindToInstance(this, props);
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 

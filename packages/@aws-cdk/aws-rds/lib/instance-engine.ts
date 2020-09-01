@@ -8,6 +8,13 @@ import { EngineVersion } from './engine-version';
  */
 export interface InstanceEngineBindOptions {
   /**
+   * The Active Directory directory ID to create the DB instance in.
+   *
+   * @default - none (it's an optional field)
+   */
+  readonly domain?: string;
+
+  /**
    * The timezone of the database, set by the customer.
    *
    * @default - none (it's an optional field)
@@ -183,6 +190,15 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
         }
         : undefined,
     });
+  }
+
+  public bindToInstance(_scope: core.Construct, _options: InstanceEngineBindOptions): InstanceEngineConfig {
+    super.bindToInstance(_scope, _options);
+    if (_options.domain) {
+      throw new Error(`domain property cannot be configured for ${this.engineType}`);
+    }
+    return {
+    };
   }
 }
 
