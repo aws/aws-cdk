@@ -189,7 +189,7 @@ cluster = new eks.Cluster(this, 'Cluster', {
   version: eks.KubernetesVersion.V1_17,
 });
 
-// add the 2nd ARM64 managed nodegroup
+// add a managed ARM64 nodegroup
 cluster.addNodegroup('extra-ng-arm', {
   instanceType: new ec2.InstanceType('m6g.medium'),
   minSize: 2,
