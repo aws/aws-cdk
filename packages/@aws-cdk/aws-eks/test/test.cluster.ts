@@ -18,49 +18,6 @@ const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
 
-  'can declare a control plane security group in a different stack than the cluster'(test: Test) {
-
-    class ClusterStack extends cdk.Stack {
-      public eksCluster: eks.Cluster;
-
-      constructor(scope: cdk.Construct, id: string, props: { securityGroup: ec2.SecurityGroup, vpc: ec2.Vpc }) {
-        super(scope, id);
-        this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
-          securityGroup: props.securityGroup,
-          vpc: props.vpc,
-        });
-      }
-    }
-
-    class SecurityGroupStack extends cdk.Stack {
-
-      public readonly securityGroup: ec2.SecurityGroup;
-      public readonly vpc: ec2.Vpc;
-
-      constructor(scope: cdk.Construct, id: string) {
-        super(scope, id);
-
-        this.vpc = new ec2.Vpc(this, 'Vpc');
-        this.securityGroup = new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
-          vpc: this.vpc,
-        });
-      }
-    }
-
-    const { app } = testFixture();
-    const securityGroupStack = new SecurityGroupStack(app, 'SecurityGroupStack');
-    new ClusterStack(app, 'ClusterStack', {
-      securityGroup: securityGroupStack.securityGroup,
-      vpc: securityGroupStack.vpc,
-    });
-
-    // make sure we can synth (no circular dependencies between the stacks)
-    app.synth();
-
-    test.done();
-  },
-
   'can declare a manifest with a token from a different stack than the cluster that depends on the cluster stack'(test: Test) {
 
     class ClusterStack extends cdk.Stack {
@@ -1138,7 +1095,6 @@ export = {
           resourcesVpcConfig: {
             securityGroupIds: [
               { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },
-              { 'Fn::GetAtt': ['MyClusterKubectlProviderSecurityGroupC6655256', 'GroupId'] },
             ],
             subnetIds: [
               { Ref: 'MyClusterDefaultVpcPublicSubnet1SubnetFAE5A9B6' },
