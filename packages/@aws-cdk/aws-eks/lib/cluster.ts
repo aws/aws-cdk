@@ -622,11 +622,9 @@ export class Cluster extends Resource implements ICluster {
       description: 'EKS Control Plane Security Group',
     });
 
-    const controlPlanePort = ec2.Port.tcp(443); // Control Plane has an HTTPS API
-
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
-      defaultPort: controlPlanePort,
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
     this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
@@ -634,22 +632,12 @@ export class Cluster extends Resource implements ICluster {
     // Get subnetIds for all selected subnets
     const subnetIds = [...new Set(Array().concat(...this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds)))];
 
-    this.kubctlProviderSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
-      vpc: this.vpc,
-      description: 'Comminication between KubectlProvider and EKS Control Plane',
-    });
-
-    this.kubctlProviderSecurityGroup.addIngressRule(this.kubctlProviderSecurityGroup, controlPlanePort);
-
     const clusterProps: CfnClusterProps = {
       name: this.physicalName,
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
-        securityGroupIds: [
-          securityGroup.securityGroupId,
-          this.kubctlProviderSecurityGroup.securityGroupId,
-        ],
+        securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
       },
       ...(props.secretsEncryptionKey ? {
@@ -671,6 +659,14 @@ export class Cluster extends Resource implements ICluster {
         throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
       }
     }
+
+    this.kubctlProviderSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
+      vpc: this.vpc,
+      description: 'Comminication between KubectlProvider and EKS Control Plane',
+    });
+
+    // grant the kubectl provider access to the cluster control plane.
+    this.connections.allowFrom(this.kubctlProviderSecurityGroup, this.connections.defaultPort!);
 
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       ...clusterProps,
