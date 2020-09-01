@@ -206,6 +206,28 @@ The rotation will start as soon as this user exists.
 
 See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters/instances.
 
+### IAM Authentication
+
+You can also authenticate to a database instance using AWS Identity and Access Management (IAM) database authentication;
+See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html for more information
+and a list of supported versions and limitations.
+
+The following example shows enabling IAM authentication for a database instance and granting connection access to an IAM role.
+
+```ts
+const instance = new rds.DatabaseInstance(stack, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+  masterUsername: 'admin',
+  vpc,
+  iamAuthentication: true, // Optional - will be automatically set if you call grantConnect().
+});
+const role = new Role(stack, 'DBRole', { assumedBy: new AccountPrincipal(stack.account) });
+instance.grantConnect(role); // Grant the role connection access to the DB.
+```
+
+**Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
+See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html for setup instructions.
+
 ### Metrics
 
 Database instances expose metrics (`cloudwatch.Metric`):
@@ -300,5 +322,29 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   // ...
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
   // ...
+});
+```
+
+### Option Groups
+
+Some DB engines offer additional features that make it easier to manage data and databases, and to provide additional security for your database.
+Amazon RDS uses option groups to enable and configure these features. An option group can specify features, called options,
+that are available for a particular Amazon RDS DB instance.
+
+```ts
+const vpc: ec2.IVpc = ...;
+const securityGroup: ec2.ISecurityGroup = ...;
+new rds.OptionGroup(stack, 'Options', {
+  engine: DatabaseInstanceEngine.oracleSe({
+    version: OracleLegacyEngineVersion.VER_11_2,
+  }),
+  configurations: [
+    {
+      name: 'OEM',
+      port: 5500,
+      vpc,
+      securityGroups: [securityGroup], // Optional - a default group will be created if not provided.
+    },
+  ],
 });
 ```

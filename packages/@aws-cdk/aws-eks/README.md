@@ -477,6 +477,19 @@ Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled
 on [creating a cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
 can provide more details about the customer master key (CMK) that can be used for the encryption.
 
+You can use the `secretsEncryptionKey` to configure which key the cluster will use to encrypt Kubernetes secrets. By default, an AWS Managed key will be used. 
+
+> This setting can only be specified when the cluster is created and cannot be updated.
+
+
+```ts
+const secretsKey = new kms.Key(this, 'SecretsKey');
+const cluster = new eks.Cluster(this, 'MyCluster', {
+  secretsEncryptionKey: secretsKey,
+  // ...
+});
+```
+
 The Amazon Resource Name (ARN) for that CMK can be retrieved.
 
 ```ts
@@ -502,7 +515,7 @@ The `HelmChart` construct or `cluster.addChart` method can be used
 to add Kubernetes resources to this cluster using Helm.
 
 The following example will install the [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)
-to you cluster using Helm.
+to your cluster using Helm.
 
 ```ts
 // option 1: use a construct

@@ -16,6 +16,21 @@ export interface ResourceMetadata {
   constructPath: string;
 }
 
+/**
+ * Supported display modes for stack deployment activity
+ */
+export enum StackActivityProgress {
+  /**
+   * Displays a progress bar with only the events for the resource currently being deployed
+   */
+  BAR = 'bar',
+
+  /**
+   * Displays complete history with all CloudFormation stack events
+   */
+  EVENTS = 'events',
+}
+
 export interface WithDefaultPrinterProps {
   /**
    * Total number of resources to update
@@ -34,6 +49,16 @@ export interface WithDefaultPrinterProps {
    * @default - Use value from logging.logLevel
    */
   readonly logLevel?: LogLevel;
+
+  /**
+   * Whether to display all stack events or to display only the events for the
+   * resource currently being deployed
+   *
+   * If not set, the stack history with all stack events will be displayed
+   *
+   * @default false
+   */
+  progress?: StackActivityProgress;
 
   /**
    * Whether we are on a CI system
@@ -81,8 +106,9 @@ export class StackActivityMonitor {
     // need an individual check for whether we're running on CI.
     // see: https://discuss.circleci.com/t/circleci-terminal-is-a-tty-but-term-is-not-set/9965
     const fancyOutputAvailable = !isWindows && stream.isTTY && !options.ci;
+    const progress = options.progress ?? StackActivityProgress.BAR;
 
-    const printer = fancyOutputAvailable && !verbose
+    const printer = fancyOutputAvailable && !verbose && (progress === StackActivityProgress.BAR)
       ? new CurrentActivityPrinter(props)
       : new HistoryActivityPrinter(props);
 
@@ -383,7 +409,7 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
       this.resourcesInProgress[activity.event.LogicalResourceId] = activity;
     }
 
-    if (status.endsWith('_FAILED')) {
+    if (hasErrorMessage(status)) {
       const isCancelled = (activity.event.ResourceStatusReason ?? '').indexOf('cancelled') > -1;
 
       // Cancelled is not an interesting failure reason
@@ -630,7 +656,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   }
 
   private failureReasonOnNextLine(activity: StackActivity) {
-    return (activity.event.ResourceStatus ?? '').endsWith('_FAILED')
+    return hasErrorMessage(activity.event.ResourceStatus ?? '')
       ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${colors.red(activity.event.ResourceStatusReason ?? '')}`
       : '';
   }
@@ -641,6 +667,10 @@ const PARTIAL_BLOCK = ['', '▏', '▎', '▍', '▌', '▋', '▊', '▉'];
 const MAX_PROGRESSBAR_WIDTH = 60;
 const MIN_PROGRESSBAR_WIDTH = 10;
 const PROGRESSBAR_EXTRA_SPACE = 2 /* leading spaces */ + 2 /* brackets */ + 4 /* progress number decoration */ + 6 /* 2 progress numbers up to 999 */;
+
+function hasErrorMessage(status: string) {
+  return status.endsWith('_FAILED') || status === 'ROLLBACK_IN_PROGRESS' || status === 'UPDATE_ROLLBACK_IN_PROGRESS';
+}
 
 function colorFromStatusResult(status?: string) {
   if (!status) {
@@ -672,7 +702,8 @@ function colorFromStatusActivity(status?: string) {
   if (status.startsWith('CREATE_') || status.startsWith('UPDATE_')) {
     return colors.green;
   }
-  if (status.startsWith('ROLLBACK_')) {
+  // For stacks, it may also be 'UPDDATE_ROLLBACK_IN_PROGRESS'
+  if (status.indexOf('ROLLBACK_') !== -1) {
     return colors.yellow;
   }
   if (status.startsWith('DELETE_')) {
