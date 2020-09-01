@@ -185,8 +185,8 @@ export class Cluster extends Resource implements ICluster {
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
    */
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
-    if ((options.machineImage && options.machineImageType) || (options.machineImage === undefined && options.machineImageType === undefined)) {
-      throw new Error('You must specify either a machineImage or machineImageType, at least one, not both.');
+    if (options.machineImage && options.machineImageType) {
+      throw new Error('You can only specify either a machineImage or machineImageType, not both.');
     }
 
     let machineImage: ec2.IMachineImage;
@@ -204,7 +204,7 @@ export class Cluster extends Resource implements ICluster {
 
     this.addAutoScalingGroup(autoScalingGroup, {
       machineImageType: options.machineImageType,
-      ...options
+      ...options,
     });
 
     return autoScalingGroup;
@@ -223,20 +223,20 @@ export class Cluster extends Resource implements ICluster {
 
     // Tie instances to cluster
     // Bottlerocket AMI
-    if(options.machineImageType===MachineImageType.BOTTLEROCKET) {
+    if (options.machineImageType===MachineImageType.BOTTLEROCKET) {
       autoScalingGroup.addUserData(
         '[settings.ecs]',
-        `cluster = "${this.clusterName}"`
-      )
+        `cluster = "${this.clusterName}"`,
+      );
       // Enabling SSM
       // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#enabling-ssm
-      autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'))
+      autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
       // required managed policy
-      autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'))
-    } else  {
+      autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'));
+    } else {
       // Amazon ECS-optimized AMI for Amazon Linux 2
       autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
-    
+
       if (!options.canContainersAccessInstanceRole) {
         // Deny containers access to instance metadata service
         // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
@@ -543,7 +543,7 @@ class BottleRocketImage implements ec2.IMachineImage {
    */
   public constructor() {
     // only `aws-ecs-1` is currently available
-    this.variant = 'aws-ecs-1'
+    this.variant = 'aws-ecs-1';
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/bottlerocket/${this.variant}/x86_64/latest/image_id`;
@@ -756,7 +756,7 @@ export interface AddAutoScalingGroupCapacityOptions {
 
   /**
    * Specify the machine image type.
-   * 
+   *
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;

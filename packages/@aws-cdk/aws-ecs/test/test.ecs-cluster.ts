@@ -1475,4 +1475,78 @@ export = {
 
     test.done();
   },
+  'cluster capacity with bottlerocket AMI'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Cluster'));
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup'));
+    expect(stack).to(haveResourceLike('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'ec2.',
+                    {
+                      Ref: 'AWS::URLSuffix',
+                    },
+                  ],
+                ],
+              },
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/AmazonSSMManagedInstanceCore',
+            ],
+          ],
+        },
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role',
+            ],
+          ],
+        },
+      ],
+      Tags: [
+        {
+          Key: 'Name',
+          Value: 'test/EcsCluster/bottlerocket-asg',
+        },
+      ],
+    }),
+    );
+
+    test.done();
+  },
 };
