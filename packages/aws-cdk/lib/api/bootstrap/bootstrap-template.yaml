@@ -368,7 +368,7 @@ Resources:
     Properties:
       Type: String
       Name:
-        Fn::Sub: '/aws-cdk-bootstrap/${Qualifier}/version'
+        Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
       Value: 4
 Outputs:
   BucketName:
