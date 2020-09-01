@@ -10,7 +10,7 @@ import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { BackupProps, InstanceProps, Login, RotationMultiUserOptions } from './props';
+import { BackupProps, InstanceProps, Login, PerformanceInsightRetention, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
@@ -563,8 +563,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       throw new Error('At least one instance is required');
     }
 
+    const instanceProps = props.instanceProps;
     // Get the actual subnet objects so we can depend on internet connectivity.
-    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectivityEstablished;
+    const internetConnected = instanceProps.vpc.selectSubnets(instanceProps.vpcSubnets).internetConnectivityEstablished;
 
     let monitoringRole;
     if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
@@ -576,15 +577,15 @@ export class DatabaseCluster extends DatabaseClusterBase {
       });
     }
 
-    const instanceType = props.instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
-    const instanceParameterGroupConfig = props.instanceProps.parameterGroup?.bindToInstance({});
+    const instanceType = instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
+    const instanceParameterGroupConfig = instanceProps.parameterGroup?.bindToInstance({});
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
       const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}` :
         props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
           undefined;
 
-      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
+      const publiclyAccessible = instanceProps.vpcSubnets && instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
@@ -595,6 +596,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
         // Instance properties
         dbInstanceClass: databaseInstanceType(instanceType),
         publiclyAccessible,
+        enablePerformanceInsights: instanceProps.enablePerformanceInsights,
+        performanceInsightsKmsKeyId: instanceProps.enablePerformanceInsights
+          ? instanceProps.performanceInsightEncryptionKey?.keyArn
+          : undefined,
+        performanceInsightsRetentionPeriod: instanceProps.enablePerformanceInsights
+          ? (instanceProps.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
+          : undefined,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
         dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,

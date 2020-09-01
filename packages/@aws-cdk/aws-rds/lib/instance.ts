@@ -10,7 +10,7 @@ import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { RotationMultiUserOptions } from './props';
+import { PerformanceInsightRetention, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
 
@@ -241,21 +241,6 @@ export enum StorageType {
    * Provisioned IOPS (SSD).
    */
   IO1 = 'io1'
-}
-
-/**
- * The retention period for Performance Insight.
- */
-export enum PerformanceInsightRetention {
-  /**
-   * Default retention period of 7 days.
-   */
-  DEFAULT = 7,
-
-  /**
-   * Long term retention period of 2 years.
-   */
-  LONG_TERM = 731
 }
 
 /**
