@@ -185,7 +185,7 @@ export = {
       clusterStack.eksCluster.addAutoScalingGroup(capacityStack.group, {});
       test.ok(false, 'expected error');
     } catch (err) {
-      test.equal(err.message, 'CapacityStackautoScalingInstanceRoleF041EB53 must be in the ClusterStack stack');
+      test.equal(err.message, 'CapacityStackautoScalingInstanceRoleF041EB53 should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
     }
 
     test.done();

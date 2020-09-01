@@ -581,6 +581,27 @@
         }
       }
     },
+    "ClusterControlPlaneSecurityGroupfromawscdkeksclusterprivateendpointtestClusterKubectlProviderSecurityGroup6A0B729C443DF3A2707": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclusterprivateendpointtestClusterKubectlProviderSecurityGroup6A0B729C:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterControlPlaneSecurityGroupD274242C",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ClusterKubectlProviderSecurityGroup2D90691C",
+            "GroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
     "ClusterKubectlProviderSecurityGroup2D90691C": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -595,27 +616,6 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }
-      }
-    },
-    "ClusterKubectlProviderSecurityGroupfromawscdkeksclusterprivateendpointtestClusterKubectlProviderSecurityGroup6A0B729C443DAFAAE67": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "IpProtocol": "tcp",
-        "Description": "from awscdkeksclusterprivateendpointtestClusterKubectlProviderSecurityGroup6A0B729C:443",
-        "FromPort": 443,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterKubectlProviderSecurityGroup2D90691C",
-            "GroupId"
-          ]
-        },
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterKubectlProviderSecurityGroup2D90691C",
-            "GroupId"
-          ]
-        },
-        "ToPort": 443
       }
     },
     "ClusterCreationRole360249B6": {
@@ -660,7 +660,6 @@
         }
       },
       "DependsOn": [
-        "ClusterKubectlProviderSecurityGroupfromawscdkeksclusterprivateendpointtestClusterKubectlProviderSecurityGroup6A0B729C443DAFAAE67",
         "ClusterKubectlProviderSecurityGroup2D90691C",
         "VpcIGWD7BA715C",
         "VpcPrivateSubnet1DefaultRouteBE02A9ED",
@@ -784,7 +783,6 @@
         ]
       },
       "DependsOn": [
-        "ClusterKubectlProviderSecurityGroupfromawscdkeksclusterprivateendpointtestClusterKubectlProviderSecurityGroup6A0B729C443DAFAAE67",
         "ClusterKubectlProviderSecurityGroup2D90691C",
         "VpcIGWD7BA715C",
         "VpcPrivateSubnet1DefaultRouteBE02A9ED",
@@ -861,12 +859,6 @@
                   "ClusterControlPlaneSecurityGroupD274242C",
                   "GroupId"
                 ]
-              },
-              {
-                "Fn::GetAtt": [
-                  "ClusterKubectlProviderSecurityGroup2D90691C",
-                  "GroupId"
-                ]
               }
             ],
             "endpointPublicAccess": false,
@@ -882,7 +874,6 @@
         "AttributesRevision": 2
       },
       "DependsOn": [
-        "ClusterKubectlProviderSecurityGroupfromawscdkeksclusterprivateendpointtestClusterKubectlProviderSecurityGroup6A0B729C443DAFAAE67",
         "ClusterKubectlProviderSecurityGroup2D90691C",
         "ClusterCreationRoleDefaultPolicyE8BDFC7B",
         "ClusterCreationRole360249B6",
