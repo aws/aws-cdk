@@ -553,7 +553,7 @@ You can create Object Types in three ways:
     ```
     > This method allows for reusability and modularity, ideal for reducing code duplication.
 
-To learn more about **Interface Types**, read the docs [here](https://graphql.org/learn/schema/#object-types-and-fields).
+To learn more about **Object Types**, read the docs [here](https://graphql.org/learn/schema/#object-types-and-fields).
 
 ### Enum Types
 

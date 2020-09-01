@@ -71,7 +71,7 @@ describe('testing Enum Type properties', () => {
     }).toThrowError('Enum fields cannot contain white space.');
   });
 
-  test('appsync errors when enum type is configured with white space', () => {
+  test('appsync errors on enum type when the fieldName in addField has white space', () => {
     // WHEN
     const test = new appsync.EnumType('Test', {
       definition: [],

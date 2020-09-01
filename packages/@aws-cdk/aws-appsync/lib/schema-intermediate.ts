@@ -337,7 +337,9 @@ export class EnumType implements IIntermediateType {
     if (!options.fieldName) {
       throw new Error('The Field option, fieldName, must be declared.');
     }
-    if (options.fieldName.indexOf(' ') > -1) throw new Error('Enum fields cannot contain white space.');
+    if (options.fieldName.indexOf(' ') > -1) {
+      throw new Error('Enum fields cannot contain white space.');
+    }
     this.definition[options.fieldName] = GraphqlType.string();
   }
 }
