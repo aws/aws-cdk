@@ -2,13 +2,13 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as alb from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ServiceExtension, ServiceBuild } from './addon-interfaces';
+import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
 /**
- * This addon add a public facing load balancer for sending traffic
+ * This extension add a public facing load balancer for sending traffic
  * to one or more replicas of the application container
  */
-export class HttpLoadBalancerAddon extends ServiceExtension {
+export class HttpLoadBalancerExtension extends ServiceExtension {
   private loadBalancer!: alb.IApplicationLoadBalancer;
   private listener!: alb.IApplicationListener;
 

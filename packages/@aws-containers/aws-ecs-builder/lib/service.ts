@@ -1,8 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { EnvironmentCapacityType, ServiceBuild } from './addons/addon-interfaces';
 import { Environment } from './environment';
+import { EnvironmentCapacityType, ServiceBuild } from './extensions/extension-interfaces';
 import { ServiceDescription } from './service-description';
 
 /**
@@ -21,7 +21,7 @@ export interface ServiceProps {
 }
 
 /**
- * A service builder class. This construct support various addons
+ * A service builder class. This construct support various extensions
  * which can construct an ECS service progressively.
  */
 export class Service extends cdk.Construct {
@@ -62,10 +62,6 @@ export class Service extends cdk.Construct {
    */
   protected taskDefinition!: ecs.TaskDefinition;
 
-  // A list of downstream services, allows addons to
-  // establish connections to other services
-  private downstreamServices: Service[];
-
   private readonly scope: cdk.Construct;
 
   constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
@@ -77,13 +73,12 @@ export class Service extends cdk.Construct {
     this.cluster = props.environment.cluster;
     this.capacityType = props.environment.capacityType;
     this.serviceDescription = props.serviceDescription;
-    this.downstreamServices = [];
 
     // Check to make sure that the user has actually added a container
-    const containerAddon = this.serviceDescription.get('service-container');
+    const containerextension = this.serviceDescription.get('service-container');
 
-    if (!containerAddon) {
-      throw new Error(`Service '${this.id}' must have a Container addon`);
+    if (!containerextension) {
+      throw new Error(`Service '${this.id}' must have a Container extension`);
     }
 
     // First set the scope for all the extensions
@@ -93,8 +88,8 @@ export class Service extends cdk.Construct {
       }
     }
 
-    // At the point of preparation all addons have been defined on the service
-    // so give each addon a chance to now add hooks to other addons if
+    // At the point of preparation all extensions have been defined on the service
+    // so give each extension a chance to now add hooks to other extensions if
     // needed
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
@@ -102,7 +97,7 @@ export class Service extends cdk.Construct {
       }
     }
 
-    // Give each addon a chance to mutate the task def creation properties
+    // Give each extension a chance to mutate the task def creation properties
     let taskDefProps = {
       // Default CPU and memoryyarn clean
       cpu: '256',
@@ -121,14 +116,14 @@ export class Service extends cdk.Construct {
     // Now that the task definition properties are assembled, create it
     this.taskDefinition = new ecs.TaskDefinition(this.scope, `${this.id}-task-definition`, taskDefProps);
 
-    // Now give each addon a chance to use the task definition
+    // Now give each extension a chance to use the task definition
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
         this.serviceDescription.extensions[extensions].useTaskDefinition(this.taskDefinition);
       }
     }
 
-    // Now that all containers are created, give each addon a chance
+    // Now that all containers are created, give each extension a chance
     // to bake its dependency graph
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
@@ -136,7 +131,7 @@ export class Service extends cdk.Construct {
       }
     }
 
-    // Give each addon a chance to mutate the service props before
+    // Give each extension a chance to mutate the service props before
     // service creation
     let serviceProps = {
       cluster: this.cluster,
@@ -159,30 +154,24 @@ export class Service extends cdk.Construct {
       throw new Error(`Unknown capacity type for service ${this.id}`);
     }
 
-    // Now give all addons a chance to use the service
+    // Now give all extensions a chance to use the service
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
         this.serviceDescription.extensions[extensions].useService(this.service);
       }
     }
-
-    // Last but not least give each addon a chance to
-    // establish a connection to each downstream service.
-    this.downstreamServices.forEach((service) => {
-      for (const extensions in this.serviceDescription.extensions) {
-        if (this.serviceDescription.extensions[extensions]) {
-          this.serviceDescription.extensions[extensions].connectToService(service);
-        }
-      }
-    });
   }
 
   /**
-   * Tell addons from one service to connect to addons from
+   * Tell extensions from one service to connect to extensions from
    * another sevice if they have implemented a hook for that.
    * @param service
    */
   public connectTo(service: Service) {
-    this.downstreamServices.push(service);
+    for (const extensions in this.serviceDescription.extensions) {
+      if (this.serviceDescription.extensions[extensions]) {
+        this.serviceDescription.extensions[extensions].connectToService(service);
+      }
+    }
   }
 }

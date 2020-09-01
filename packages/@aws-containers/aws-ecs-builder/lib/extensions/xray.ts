@@ -2,14 +2,14 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ServiceExtension } from './addon-interfaces';
+import { ServiceExtension } from './extension-interfaces';
 
 /**
- * This addon adds an X-Ray daemon inside the task definition, for
+ * This extension adds an X-Ray daemon inside the task definition, for
  * capturing application trace spans and submitting them to the AWS
  * X-Ray service.
  */
-export class XRayAddon extends ServiceExtension {
+export class XRayExtension extends ServiceExtension {
   constructor() {
     super('xray');
   }
@@ -53,10 +53,10 @@ export class XRayAddon extends ServiceExtension {
       throw new Error('The container dependency hook was called before the container was created');
     }
 
-    const appmeshAddon = this.parentService.serviceDescription.get('appmesh');
-    if (appmeshAddon && appmeshAddon.container) {
+    const appmeshextension = this.parentService.serviceDescription.get('appmesh');
+    if (appmeshextension && appmeshextension.container) {
       this.container.addContainerDependencies({
-        container: appmeshAddon.container,
+        container: appmeshextension.container,
         condition: ecs.ContainerDependencyCondition.HEALTHY,
       });
     }

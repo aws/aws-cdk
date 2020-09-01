@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Container, Environment, HttpLoadBalancerAddon, Service, ServiceDescription } from '../lib';
+import { Container, Environment, HttpLoadBalancerExtension, Service, ServiceDescription } from '../lib';
 
 export = {
   'should be able to add an HTTP load balancer to a service'(test: Test) {
@@ -20,7 +20,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
 
-    serviceDescription.add(new HttpLoadBalancerAddon());
+    serviceDescription.add(new HttpLoadBalancerExtension());
 
     new Service(stack, 'my-service', {
       environment,

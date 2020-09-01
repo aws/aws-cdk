@@ -20,7 +20,7 @@ export = {
         environment,
         serviceDescription,
       });
-    }, /Service 'my-service' must have a Container addon/);
+    }, /Service 'my-service' must have a Container extension/);
 
     test.done();
   },

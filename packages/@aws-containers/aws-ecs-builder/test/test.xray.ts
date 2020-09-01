@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Container, Environment, XRayAddon, Service, ServiceDescription } from '../lib';
+import { Container, Environment, XRayExtension, Service, ServiceDescription } from '../lib';
 
 export = {
   'should be able to add AWS X-Ray to a service'(test: Test) {
@@ -20,7 +20,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
 
-    serviceDescription.add(new XRayAddon());
+    serviceDescription.add(new XRayExtension());
 
     new Service(stack, 'my-service', {
       environment,

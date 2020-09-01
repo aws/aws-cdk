@@ -1,7 +1,7 @@
 import { Mesh } from '@aws-cdk/aws-appmesh';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
-import { AppMeshAddon, CloudwatchAgentAddon, Container, Environment, FireLensAddon, HttpLoadBalancerAddon, Service, XRayAddon } from '../lib';
+import { AppMeshExtension, CloudwatchAgentExtension, Container, Environment, FireLensExtension, HttpLoadBalancerExtension, Service, XRayExtension } from '../lib';
 import { ServiceDescription } from '../lib/service-description';
 
 const app = new App();
@@ -21,10 +21,10 @@ nameDescription.add(new Container({
     PORT: '80',
   },
 }));
-nameDescription.add(new AppMeshAddon({ mesh }));
-nameDescription.add(new FireLensAddon());
-nameDescription.add(new XRayAddon());
-nameDescription.add(new CloudwatchAgentAddon());
+nameDescription.add(new AppMeshExtension({ mesh }));
+nameDescription.add(new FireLensExtension());
+nameDescription.add(new XRayExtension());
+nameDescription.add(new CloudwatchAgentExtension());
 
 const nameService = new Service(stack, 'name', {
   environment: environment,
@@ -42,10 +42,10 @@ greetingDescription.add(new Container({
     PORT: '80',
   },
 }));
-greetingDescription.add(new AppMeshAddon({ mesh }));
-greetingDescription.add(new FireLensAddon());
-greetingDescription.add(new XRayAddon());
-greetingDescription.add(new CloudwatchAgentAddon());
+greetingDescription.add(new AppMeshExtension({ mesh }));
+greetingDescription.add(new FireLensExtension());
+greetingDescription.add(new XRayExtension());
+greetingDescription.add(new CloudwatchAgentExtension());
 
 const greetingService = new Service(stack, 'greeting', {
   environment: environment,
@@ -65,11 +65,11 @@ greeterDescription.add(new Container({
     NAME_URL: 'http://name.internal',
   },
 }));
-greeterDescription.add(new AppMeshAddon({ mesh }));
-greeterDescription.add(new FireLensAddon());
-greeterDescription.add(new XRayAddon());
-greeterDescription.add(new CloudwatchAgentAddon());
-greeterDescription.add(new HttpLoadBalancerAddon());
+greeterDescription.add(new AppMeshExtension({ mesh }));
+greeterDescription.add(new FireLensExtension());
+greeterDescription.add(new XRayExtension());
+greeterDescription.add(new CloudwatchAgentExtension());
+greeterDescription.add(new HttpLoadBalancerExtension());
 
 const greeterService = new Service(stack, 'greeter', {
   environment: environment,

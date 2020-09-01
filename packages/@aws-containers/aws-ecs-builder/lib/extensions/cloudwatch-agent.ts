@@ -2,13 +2,13 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ServiceExtension } from './addon-interfaces';
+import { ServiceExtension } from './extension-interfaces';
 
 /**
- * This addon adds a CloudWatch agent to the task definition and
+ * This extension adds a CloudWatch agent to the task definition and
  * configures the task to be able to publish metrics to CloudWatch
  */
-export class CloudwatchAgentAddon extends ServiceExtension {
+export class CloudwatchAgentExtension extends ServiceExtension {
   private CW_CONFIG_CONTENT = {
     logs: {
       metrics_collected: {
@@ -59,10 +59,10 @@ export class CloudwatchAgentAddon extends ServiceExtension {
       throw new Error('The container dependency hook was called before the container was created');
     }
 
-    const appmeshAddon = this.parentService.serviceDescription.get('appmesh');
-    if (appmeshAddon && appmeshAddon.container) {
+    const appmeshextension = this.parentService.serviceDescription.get('appmesh');
+    if (appmeshextension && appmeshextension.container) {
       this.container.addContainerDependencies({
-        container: appmeshAddon.container,
+        container: appmeshextension.container,
         condition: ecs.ContainerDependencyCondition.HEALTHY,
       });
     }

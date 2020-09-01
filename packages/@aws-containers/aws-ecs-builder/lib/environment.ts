@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { EnvironmentCapacityType } from './addons/addon-interfaces';
+import { EnvironmentCapacityType } from './extensions/extension-interfaces';
 
 /**
  * Settings for the deploy environment you want to deploy
@@ -29,7 +29,7 @@ export interface EnvironmentProps {
 }
 
 /**
- * A service builder class. This construct support various addons
+ * A service builder class. This construct support various extensions
  * which can construct an ECS service progressively.
  */
 export class Environment extends cdk.Construct {

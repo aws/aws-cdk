@@ -1,4 +1,4 @@
-import { ServiceExtension } from './addons/addon-interfaces';
+import { ServiceExtension } from './extensions/extension-interfaces';
 
 /**
  * A description of a service to construct. This construct collects
@@ -17,11 +17,11 @@ export class ServiceDescription {
   /**
    * Adds a new extension to the service. The extensions mutate a service
    * to add resources or features to the service
-   * @param extension - The addon that you wish to add
+   * @param extension - The extension that you wish to add
    */
   public add(extension: ServiceExtension) {
     if (this.extensions[extension.name]) {
-      throw new Error(`An addon called ${extension.name} has already been added`);
+      throw new Error(`An extension called ${extension.name} has already been added`);
     }
 
     this.extensions[extension.name] = extension;

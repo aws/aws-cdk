@@ -1,12 +1,12 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ServiceExtension } from './addon-interfaces';
+import { ServiceExtension } from './extension-interfaces';
 
 /**
  * Setting for the main application container of a service
  */
-export interface ContainerAddonProps {
+export interface ContainerExtensionProps {
   /**
    * How much CPU the container requires
    */
@@ -38,7 +38,7 @@ export interface ContainerAddonProps {
 
 /**
  * The main container of a service. This is generally the container
- * which runs your application business logic. Other addons will attach
+ * which runs your application business logic. Other extensions will attach
  * sidecars alongside this main container.
  */
 export class Container extends ServiceExtension {
@@ -50,9 +50,9 @@ export class Container extends ServiceExtension {
   /**
    * The settings for the container
    */
-  private props: ContainerAddonProps;
+  private props: ContainerExtensionProps;
 
-  constructor(props: ContainerAddonProps) {
+  constructor(props: ContainerExtensionProps) {
     super('service-container');
     this.props = props;
     this.trafficPort = props.trafficPort;
@@ -82,8 +82,8 @@ export class Container extends ServiceExtension {
       environment: this.props.environment,
     } as ecs.ContainerDefinitionOptions;
 
-    // Let other addons mutate the container definition. This is
-    // used by addons which want to add environment variables, modify
+    // Let other extensions mutate the container definition. This is
+    // used by extensions which want to add environment variables, modify
     // logging parameters, etc.
     this.containerMutatingHooks.forEach((hookProvider) => {
       containerProps = hookProvider.mutateContainerDefinition(containerProps);
@@ -118,26 +118,26 @@ export class Container extends ServiceExtension {
       });
     }
 
-    const appmeshAddon = this.parentService.serviceDescription.get('appmesh');
-    if (appmeshAddon && appmeshAddon.container) {
+    const appmeshextension = this.parentService.serviceDescription.get('appmesh');
+    if (appmeshextension && appmeshextension.container) {
       this.container.addContainerDependencies({
-        container: appmeshAddon.container,
+        container: appmeshextension.container,
         condition: ecs.ContainerDependencyCondition.HEALTHY,
       });
     }
 
-    const cloudwatchAddon = this.parentService.serviceDescription.get('cloudwatchAgent');
-    if (cloudwatchAddon && cloudwatchAddon.container) {
+    const cloudwatchextension = this.parentService.serviceDescription.get('cloudwatchAgent');
+    if (cloudwatchextension && cloudwatchextension.container) {
       this.container.addContainerDependencies({
-        container: cloudwatchAddon.container,
+        container: cloudwatchextension.container,
         condition: ecs.ContainerDependencyCondition.START,
       });
     }
 
-    const xrayAddon = this.parentService.serviceDescription.get('xray');
-    if (xrayAddon && xrayAddon.container) {
+    const xrayextension = this.parentService.serviceDescription.get('xray');
+    if (xrayextension && xrayextension.container) {
       this.container.addContainerDependencies({
-        container: xrayAddon.container,
+        container: xrayextension.container,
         condition: ecs.ContainerDependencyCondition.HEALTHY,
       });
     }

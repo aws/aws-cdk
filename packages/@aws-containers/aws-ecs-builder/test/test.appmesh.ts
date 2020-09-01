@@ -4,7 +4,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 
 import { Test } from 'nodeunit';
-import { AppMeshAddon, Container, Environment, ServiceDescription, Service } from '../lib';
+import { AppMeshExtension, Container, Environment, ServiceDescription, Service } from '../lib';
 
 export = {
   'should be able to add AWS X-Ray to a service'(test: Test) {
@@ -25,11 +25,11 @@ export = {
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
-    serviceDescription.add(new AppMeshAddon({
+    serviceDescription.add(new AppMeshExtension({
       mesh,
     }));
 
-    new Service(stack, 'name-service', {
+    new Service(stack, 'my-service', {
       environment,
       serviceDescription,
     });
@@ -221,7 +221,7 @@ export = {
         PORT: '80',
       },
     }));
-    nameDescription.add(new AppMeshAddon({ mesh }));
+    nameDescription.add(new AppMeshExtension({ mesh }));
 
     const greetingDescription = new ServiceDescription();
     greetingDescription.add(new Container({
@@ -233,7 +233,7 @@ export = {
         PORT: '80',
       },
     }));
-    greetingDescription.add(new AppMeshAddon({ mesh }));
+    greetingDescription.add(new AppMeshExtension({ mesh }));
 
     const greeterDescription = new ServiceDescription();
     greeterDescription.add(new Container({
@@ -246,7 +246,7 @@ export = {
 
       },
     }));
-    greeterDescription.add(new AppMeshAddon({ mesh }));
+    greeterDescription.add(new AppMeshExtension({ mesh }));
 
     const greeterService = new Service(stack, 'greeter', {
       environment,

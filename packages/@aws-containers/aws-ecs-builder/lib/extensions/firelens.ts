@@ -2,8 +2,8 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as awslogs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ContainerMutatingHook, ServiceExtension } from './addon-interfaces';
 import { Container } from './container';
+import { ContainerMutatingHook, ServiceExtension } from './extension-interfaces';
 
 /**
  * Settings for the hook which mutates the application container
@@ -52,11 +52,11 @@ export class FirelensMutatingHook extends ContainerMutatingHook {
 }
 
 /**
- * This addon adds a FluentBit log router to the task definition
+ * This extension adds a FluentBit log router to the task definition
  * and does all the configuration necessarily to enable log routing
  * for the task using FireLens
  */
-export class FireLensAddon extends ServiceExtension {
+export class FireLensExtension extends ServiceExtension {
   private logGroup!: awslogs.LogGroup;
 
   constructor() {
@@ -75,14 +75,14 @@ export class FireLensAddon extends ServiceExtension {
     });
   }
 
-  // Add hooks to the main application addon so that it is modified to
+  // Add hooks to the main application extension so that it is modified to
   // have logging properties that enable sending logs via the
   // Firelens log router container
   public addHooks() {
     const container = this.parentService.serviceDescription.get('service-container') as Container;
 
     if (!container) {
-      throw new Error('Firelens addon requires an application addon');
+      throw new Error('Firelens extension requires an application extension');
     }
 
     container.addContainerMutatingHook(new FirelensMutatingHook({
@@ -115,10 +115,10 @@ export class FireLensAddon extends ServiceExtension {
       throw new Error('The container dependency hook was called before the container was created');
     }
 
-    const appmeshAddon = this.parentService.serviceDescription.get('appmesh');
-    if (appmeshAddon && appmeshAddon.container) {
+    const appmeshextension = this.parentService.serviceDescription.get('appmesh');
+    if (appmeshextension && appmeshextension.container) {
       this.container.addContainerDependencies({
-        container: appmeshAddon.container,
+        container: appmeshextension.container,
         condition: ecs.ContainerDependencyCondition.HEALTHY,
       });
     }

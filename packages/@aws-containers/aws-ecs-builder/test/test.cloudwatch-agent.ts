@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { CloudwatchAgentAddon, Container, Environment, Service, ServiceDescription } from '../lib';
+import { CloudwatchAgentExtension, Container, Environment, Service, ServiceDescription } from '../lib';
 
 export = {
   'should be able to add AWS X-Ray to a service'(test: Test) {
@@ -20,7 +20,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
 
-    serviceDescription.add(new CloudwatchAgentAddon());
+    serviceDescription.add(new CloudwatchAgentExtension());
 
     new Service(stack, 'my-service', {
       environment,
