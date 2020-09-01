@@ -11,8 +11,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphQLApi(stack, 'baseApi', {
     name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.FILE,
-    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
 });
 
@@ -67,14 +66,11 @@ describe('Lambda Data Source configuration', () => {
   });
 
   test('appsync errors when creating multiple lambda data sources with no configuration', () => {
-    // WHEN
-    const when = () => {
-      api.addLambdaDataSource('ds', func);
-      api.addLambdaDataSource('ds', func);
-    };
-
     // THEN
-    expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
+    expect(() => {
+      api.addLambdaDataSource('ds', func);
+      api.addLambdaDataSource('ds', func);
+    }).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
   });
 });
 
