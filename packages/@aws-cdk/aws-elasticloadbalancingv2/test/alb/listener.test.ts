@@ -670,7 +670,7 @@ describe('tests', () => {
     });
 
     // WHEN
-    lb.addRedirect({});
+    lb.addRedirect();
 
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {

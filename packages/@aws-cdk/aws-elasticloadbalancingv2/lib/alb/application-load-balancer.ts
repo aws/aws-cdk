@@ -92,16 +92,16 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Add a redirection listener to this load balancer
    */
-  public addRedirect(props?: ApplicationLoadBalancerRedirectConfig): ApplicationListener {
-    const sourcePort = props?.sourcePort ?? 80;
-    const targetPort = (props?.targetPort ?? 443).toString();
+  public addRedirect(props: ApplicationLoadBalancerRedirectConfig = {}): ApplicationListener {
+    const sourcePort = props.sourcePort ?? 80;
+    const targetPort = (props.targetPort ?? 443).toString();
     return this.addListener(`Redirect${sourcePort}To${targetPort}`, {
-      protocol: props?.sourceProtocol ?? ApplicationProtocol.HTTP,
+      protocol: props.sourceProtocol ?? ApplicationProtocol.HTTP,
       port: sourcePort,
       open: true,
       defaultAction: ListenerAction.redirect({
         port: targetPort,
-        protocol: props?.targetProtocol ?? ApplicationProtocol.HTTPS,
+        protocol: props.targetProtocol ?? ApplicationProtocol.HTTPS,
         permanent: true,
       }),
     });
