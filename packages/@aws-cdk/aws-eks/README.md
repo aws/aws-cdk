@@ -515,7 +515,7 @@ The `HelmChart` construct or `cluster.addChart` method can be used
 to add Kubernetes resources to this cluster using Helm.
 
 The following example will install the [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)
-to you cluster using Helm.
+to your cluster using Helm.
 
 ```ts
 // option 1: use a construct

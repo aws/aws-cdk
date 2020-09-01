@@ -35,10 +35,13 @@ describe('testing InterfaceType properties', () => {
 
   test('InterfaceType fields can have arguments', () => {
     // WHEN
-    baseTest.addField('test', new appsync.Field({
-      returnType: t.string,
-      args: { success: t.int },
-    }));
+    baseTest.addField({
+      fieldName: 'test',
+      field: new appsync.Field({
+        returnType: t.string,
+        args: { success: t.int },
+      }),
+    });
     api.addToSchema(baseTest.toString());
     const out = 'interface baseTest {\n  id: ID\n  test(success: Int): String\n}\n';
 
@@ -50,11 +53,14 @@ describe('testing InterfaceType properties', () => {
 
   test('InterfaceType fields will not produce resolvers', () => {
     // WHEN
-    baseTest.addField('test', new appsync.ResolvableField({
-      returnType: t.string,
-      args: { success: t.int },
-      dataSource: api.addNoneDataSource('none'),
-    }));
+    baseTest.addField({
+      fieldName: 'test',
+      field: new appsync.ResolvableField({
+        returnType: t.string,
+        args: { success: t.int },
+        dataSource: api.addNoneDataSource('none'),
+      }),
+    });
     api.addToSchema(baseTest.toString());
     const out = 'interface baseTest {\n  id: ID\n  test(success: Int): String\n}\n';
 
@@ -81,5 +87,38 @@ describe('testing InterfaceType properties', () => {
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
+  });
+
+  test('appsync fails addField with InterfaceType missing fieldName', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({ fieldName: 'test' });
+    }).toThrowError('Interface Types must have both fieldName and field options.');
+  });
+
+  test('appsync fails addField with InterfaceType missing field', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({ field: t.string });
+    }).toThrowError('Interface Types must have both fieldName and field options.');
+  });
+
+  test('appsync fails addField with InterfaceType missing both fieldName and field options', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({});
+    }).toThrowError('Interface Types must have both fieldName and field options.');
   });
 });
