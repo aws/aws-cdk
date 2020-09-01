@@ -14,8 +14,8 @@ export interface LogRetentionProps {
   readonly logGroupName: string;
 
   /**
-   * The region of the log group
-   * @default Stack region
+   * The region where the log group should be created
+   * @default - same region as the stack
    */
   readonly logGroupRegion?: string;
 

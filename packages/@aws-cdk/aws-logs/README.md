@@ -32,13 +32,19 @@ retention period (including infinite retention).
 
 [retention example](test/example.retention.lit.ts)
 
-**Note** When using `LogRetention` to configure retention period for the log group,
+#### LogRetention
+
+The `LogRetention` construct is a way to manage retention on the log groups that are implicitly created by services upon the first execution.
+
+When using `LogRetention` to configure retention for the log group,
  a [CloudFormation custom resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html)
   is added
 to the stack that pre-creates the log group as part of the stack deployment,
  if it already doesn't exist, and sets the specified log retention period (never expire, by default).
- `LogRetention` can also be used to  configure a retention period on the log group which is in the different region than the stack itself by specifying `logGroupRegion`.
-
+ 
+ **Note** `LogRetention` can also be used to configure a retention for the log group which is in the different region than the stack itself by specifying `logGroupRegion`.
+  A typical use case for it is when using global services that publish their logs to `us-east-1` and the stack itself is created in non `us-east-1` region.
+ 
 ### Subscriptions and Destinations
 
 Log events matching a particular filter can be sent to either a Lambda function
