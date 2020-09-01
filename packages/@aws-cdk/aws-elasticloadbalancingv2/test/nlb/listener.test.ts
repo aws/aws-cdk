@@ -112,6 +112,55 @@ describe('tests', () => {
     });
   });
 
+  test('implicitly created target group but overrides inherited protocol', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const cert = new acm.Certificate(stack, 'Certificate', {
+      domainName: 'example.com',
+    });
+
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 443,
+      protocol: elbv2.Protocol.TLS,
+      certificates: [elbv2.ListenerCertificate.fromCertificateManager(cert)],
+      sslPolicy: elbv2.SslPolicy.TLS12,
+    });
+
+    // WHEN
+    listener.addTargets('Targets', {
+      port: 80,
+      protocol: elbv2.Protocol.TCP,
+      targets: [new elbv2.InstanceTarget('i-12345')],
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'TLS',
+      Port: 443,
+      Certificates: [
+        { CertificateArn: { Ref: 'Certificate4E7ABB08' } },
+      ],
+      SslPolicy: 'ELBSecurityPolicy-TLS-1-2-2017-01',
+      DefaultActions: [
+        {
+          TargetGroupArn: { Ref: 'LBListenerTargetsGroup76EF81E8' },
+          Type: 'forward',
+        },
+      ],
+    });
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      VpcId: { Ref: 'Stack8A423254' },
+      Port: 80,
+      Protocol: 'TCP',
+      Targets: [
+        { Id: 'i-12345' },
+      ],
+    });
+  });
+
   test('Enable health check for targets', () => {
     // GIVEN
     const stack = new cdk.Stack();
