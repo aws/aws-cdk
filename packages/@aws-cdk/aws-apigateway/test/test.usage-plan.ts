@@ -34,7 +34,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'my-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
     const method: apigateway.Method = api.root.addMethod('GET'); // Need at least one method on the api
     const usagePlanName = 'Basic';
-    const usagePlanDescription = 'Basic Usage Plan with no throttling limits';
+    const usagePlanDescription = 'Basic Usage Plan with throttling limits';
 
     // WHEN
     new apigateway.UsagePlan(stack, 'my-usage-plan', {
