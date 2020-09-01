@@ -81,6 +81,7 @@ export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantabl
 
   /**
    * The ARN of the Slack channel configuration
+   * In the form of arn:aws:chatbot:{region}:{account}:chat-configuration/slack-channel/{slackChannelName}
    * @attribute
    */
   readonly slackChannelConfigurationArn: string;
@@ -144,6 +145,13 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
    * @returns a reference to the existing Slack channel configuration
    */
   public static fromSlackChannelConfigurationArn(scope: cdk.Construct, id: string, slackChannelConfigurationArn: string): ISlackChannelConfiguration {
+    const re = /^slack-channel\//;
+    const resourceName = cdk.Stack.of(scope).parseArn(slackChannelConfigurationArn).resourceName as string;
+
+    if (!re.test(resourceName)) {
+      throw new Error('The ARN of a Slack integration must be in the form: arn:aws:chatbot:{region}:{account}:chat-configuration/slack-channel/{slackChannelName}');
+    }
+
     class Import extends SlackChannelConfigurationBase {
 
       /**
@@ -154,20 +162,14 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       readonly grantPrincipal: iam.IPrincipal;
 
       /**
+       * Returns a name of Slack channel configuration
+       *
+       * NOTE:
        * For example: arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack
        * The ArnComponents API will return `slack-channel/my-slack`
-       * So i need to handle that to gets a correct name.`my-slack`
+       * It need to handle that to gets a correct name.`my-slack`
        */
-      readonly slackChannelConfigurationName = (() => {
-        const re = /^slack-channel\//;
-        const resourceName = cdk.Stack.of(scope).parseArn(slackChannelConfigurationArn).resourceName as string;
-
-        if (!re.test(resourceName)) {
-          throw new Error('The ARN of a Slack integration must be in the form: arn:aws:chatbot:accountId:chat-configuration/slack-channel/slackChannelName');
-        }
-
-        return resourceName.substring('slack-channel/'.length);
-      })();
+      readonly slackChannelConfigurationName = resourceName.substring('slack-channel/'.length);
 
       constructor(s: cdk.Construct, i: string) {
         super(s, i);
