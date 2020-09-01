@@ -319,6 +319,11 @@ export class EndpointAccess {
    * @param cidr CIDR blocks.
    */
   public onlyFrom(...cidr: string[]) {
+    if (!this._config.privateAccess) {
+      // when private access is disabled, we can't restric public
+      // access since it will render the kubectl provider unusable.
+      throw new Error('Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
+    }
     return new EndpointAccess({
       ...this._config,
       // override CIDR
@@ -1095,35 +1100,36 @@ export class Cluster extends Resource implements ICluster {
         env: this.kubectlProviderEnv,
       };
 
+      if (this.endpointAccess._config.privateAccess) {
 
-      const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+        // when private access is enabled, its best to connect the provider to
+        // the vpc so that it may work even when restricting public access.
+        // however, sometimes thats not possible.
 
-      if (privateSubents.length === 0) {
+        const privateSubents = this.selectPrivateSubnets().slice(0, 16);
 
-        // there are some scenarios where configuring a VPC without any private subnets
-        // would cause kubectl provider to not work.
+        const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
+        const publicAccessRestricted = this.endpointAccess._config.publicCidrs && this.endpointAccess._config.publicCidrs.length !== 0;
 
-        if (!this.endpointAccess._config.publicAccess) {
-          // no public access
-          throw new Error('Vpc must contain private subnets to configure private endpoint access');
+        if (privateSubents.length === 0 && publicAccessDisabled) {
+          // no private subnets and no public access at all, no good.
+          throw new Error('Vpc must contain private subnets to configure private only access');
         }
 
-        if (this.endpointAccess._config.publicCidrs?.length !== 0) {
-          // public access is restricted
+        if (privateSubents.length === 0 && publicAccessRestricted) {
+          // no private subents and public access is restricted, no good.
           throw new Error('Vpc must contain private subnets to configure restricted public access');
         }
 
-      }
+        providerProps = {
+          ...providerProps,
+          vpc: this.vpc,
+          // lambda can only be accociated with max 16 subnets and they all need to be private.
+          vpcSubnets: { subnets: privateSubents },
+          securityGroups: [this.kubctlProviderSecurityGroup],
+        };
 
-      // endpoint access is private only, we need to attach the
-      // provider to the VPC so that it can access the cluster.
-      providerProps = {
-        ...providerProps,
-        vpc: this.vpc,
-        // lambda can only be accociated with max 16 subnets and they all need to be private.
-        vpcSubnets: { subnets: privateSubents },
-        securityGroups: [this.kubctlProviderSecurityGroup],
-      };
+      }
 
       provider = new KubectlProvider(this.stack, uid, providerProps);
     }

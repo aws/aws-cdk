@@ -1421,7 +1421,52 @@ export = {
 
   'endpoint access': {
 
-    'private endpoint access fails if selected subnets are empty'(test: Test) {
+    'fails if public restricted'(test: Test) {
+      const { stack } = testFixture();
+
+      test.throws(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          endpointAccess: eks.EndpointAccess.PUBLIC.onlyFrom('1.2.3.4/32'),
+        });
+      }, /Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom\(\) instead./);
+
+      test.done();
+    },
+
+    'fails if public and private restricted and no private subnets'(test: Test) {
+
+      const { stack } = testFixture();
+
+      test.throws(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+        });
+      }, /Vpc must contain private subnets to configure restricted public access/);
+
+      test.done();
+
+    },
+
+    'works if no private subnets but public access is not restricted'(test: Test) {
+
+      const { stack, app } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom(),
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+      });
+
+      app.synth();
+
+      test.done();
+
+    },
+
+    'fails if private and no private subnets'(test: Test) {
 
       const { stack } = testFixture();
 
@@ -1432,7 +1477,7 @@ export = {
           endpointAccess: eks.EndpointAccess.PRIVATE,
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         });
-      }, /Vpc must contain private subnets to configure private endpoint access/);
+      }, /Vpc must contain private subnets to configure private only access/);
 
       test.done();
     },
@@ -1542,33 +1587,6 @@ export = {
             ],
             endpointPrivateAccess: true,
             endpointPublicAccess: false,
-          },
-        },
-      }));
-
-      test.done();
-    },
-
-    'can configure cidr blocks in public endpoint access'(test: Test) {
-      // GIVEN
-      const { stack } = testFixture();
-      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PUBLIC.onlyFrom('1.2.3.4/5') });
-
-      expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
-        Config: {
-          roleArn: { 'Fn::GetAtt': ['Cluster1RoleE88C32AD', 'Arn'] },
-          version: '1.16',
-          resourcesVpcConfig: {
-            securityGroupIds: [{ 'Fn::GetAtt': ['Cluster1ControlPlaneSecurityGroupF9C67C32', 'GroupId'] }],
-            subnetIds: [
-              { Ref: 'Cluster1DefaultVpcPublicSubnet1SubnetBEABA6ED' },
-              { Ref: 'Cluster1DefaultVpcPublicSubnet2Subnet947A5158' },
-              { Ref: 'Cluster1DefaultVpcPrivateSubnet1Subnet4E30ECA1' },
-              { Ref: 'Cluster1DefaultVpcPrivateSubnet2Subnet707FCD37' },
-            ],
-            endpointPrivateAccess: false,
-            endpointPublicAccess: true,
-            publicAccessCidrs: ['1.2.3.4/5'],
           },
         },
       }));
