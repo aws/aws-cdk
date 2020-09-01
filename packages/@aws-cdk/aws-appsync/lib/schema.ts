@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { Lazy } from '@aws-cdk/core';
 import { CfnGraphQLSchema } from './appsync.generated';
-import { GraphQLApi } from './graphqlapi';
+import { GraphqlApi } from './graphqlapi';
 import { SchemaMode, shapeAddition } from './private';
 import { IIntermediateType } from './schema-base';
 import { ResolvableField } from './schema-field';
@@ -75,7 +75,7 @@ export class Schema {
    *
    * @param api The binding GraphQL Api
    */
-  public bind(api: GraphQLApi): CfnGraphQLSchema {
+  public bind(api: GraphqlApi): CfnGraphQLSchema {
     if (!this.schema) {
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
