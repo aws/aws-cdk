@@ -5,6 +5,7 @@ import { Construct, IResolvable } from '@aws-cdk/core';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
+import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 
 /**
  * Base properties for an AppSync datasource
@@ -119,6 +120,17 @@ export abstract class BaseDataSource extends Construct {
    */
   public createResolver(props: BaseResolverProps): Resolver {
     return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+      api: this.api,
+      dataSource: this,
+      ...props,
+    });
+  }
+
+  /**
+   * creates a new appsync function for this datasource and API using the given properties
+   */
+  public createFunction(props: BaseAppsyncFunctionProps): AppsyncFunction {
+    return new AppsyncFunction(this, `${props.name}Function`, {
       api: this.api,
       dataSource: this,
       ...props,
