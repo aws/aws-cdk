@@ -127,7 +127,7 @@ export class Schema {
       this.query = new ObjectType('Query', { definition: {} });
       this.addType(this.query);
     };
-    this.query.addField(fieldName, field);
+    this.query.addField({ fieldName, field });
     return this.query;
   }
 
@@ -150,7 +150,7 @@ export class Schema {
       this.mutation = new ObjectType('Mutation', { definition: {} });
       this.addType(this.mutation);
     };
-    this.mutation.addField(fieldName, field);
+    this.mutation.addField({ fieldName, field });
     return this.mutation;
   }
 

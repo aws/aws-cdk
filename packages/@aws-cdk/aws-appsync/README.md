@@ -486,6 +486,7 @@ Types will be the meat of your GraphQL Schema as they are the types defined by y
 Intermediate Types include:
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
+- [**Input Types**](#Input-Types)
 
 ##### Interface Types
 
@@ -578,6 +579,32 @@ You can create Object Types in three ways:
     });
     ```
     > This method provides easy use and is ideal for smaller projects.
+
+##### Input Types
+
+**Input Types** are special types of Intermediate Types. They give users an
+easy way to pass complex objects for top level Mutation and Queries.
+
+```gql
+input Review {
+  stars: Int!
+  commentary: String
+}
+```
+
+The above GraphQL Input Type can be expressed in CDK as the following:
+
+```ts
+const review = new appsync.InputType('Review', {
+  definition: {
+    stars: GraphqlType.int({ isRequired: true }),
+    commentary: GraphqlType.string(),
+  },
+}); 
+api.addType(review);
+```
+
+To learn more about **Input Types**, read the docs [here](https://graphql.org/learn/schema/#input-types).
 
 #### Query
 

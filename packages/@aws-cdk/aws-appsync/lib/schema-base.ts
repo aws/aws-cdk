@@ -72,6 +72,30 @@ export interface IField {
 }
 
 /**
+ * The options to add a field to an Intermediate Type
+ */
+export interface AddFieldOptions {
+  /**
+   * The name of the field
+   *
+   * This option must be configured for Object, Interface,
+   * Input and Enum Types.
+   *
+   * @default - no fieldName
+   */
+  readonly fieldName?: string;
+  /**
+   * The resolvable field to add
+   *
+   * This option must be configured for Object, Interface,
+   * Input and Union Types.
+   *
+   * @default - no IField
+   */
+  readonly field?: IField;
+}
+
+/**
  * Intermediate Types are types that includes a certain set of fields
  * that define the entirety of your schema
  */
@@ -133,10 +157,9 @@ export interface IIntermediateType {
   /**
    * Add a field to this Intermediate Type
    *
-   * @param fieldName - The name of the field
-   * @param field - the resolvable field to add
+   * @param options - the options to add a field
    */
-  addField(fieldName: string, field: IField): void;
+  addField(options: AddFieldOptions): void;
 }
 
 /**
