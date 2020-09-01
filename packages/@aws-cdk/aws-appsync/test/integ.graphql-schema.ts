@@ -29,7 +29,7 @@ const node = schema.addType(new appsync.InterfaceType('Node', {
   },
 }));
 
-const api = new appsync.GraphQLApi(stack, 'code-first-api', {
+const api = new appsync.GraphqlApi(stack, 'code-first-api', {
   name: 'api',
   schema: schema,
 });

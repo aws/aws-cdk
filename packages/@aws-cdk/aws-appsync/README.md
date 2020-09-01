@@ -45,7 +45,7 @@ CDK stack file `app-stack.ts`:
 import * as appsync from '@aws-cdk/aws-appsync';
 import * as db from '@aws-cdk/aws-dynamodb';
 
-const api = new appsync.GraphQLApi(stack, 'Api', {
+const api = new appsync.GraphqlApi(stack, 'Api', {
   name: 'demo',
   schema: appsync.Schema.fromAsset(join(__dirname, 'schema.graphql')),
   authorizationConfig: {
@@ -94,7 +94,7 @@ When declaring your GraphQL Api, CDK defaults to a code-first approach if the
 `schema` property is not configured. 
 
 ```ts
-const api = new appsync.GraphQLApi(stack, 'api', { name: 'myApi' });
+const api = new appsync.GraphqlApi(stack, 'api', { name: 'myApi' });
 ```
 
 CDK will declare a `Schema` class that will give your Api access functions to
@@ -108,7 +108,7 @@ const schema = new appsync.Schema();
 schema.addObjectType('demo', {
   definition: { id: appsync.GraphqlType.id() },
 });
-const api = new appsync.GraphQLApi(stack, 'api', {
+const api = new appsync.GraphqlApi(stack, 'api', {
   name: 'myApi',
   schema
 });
@@ -122,7 +122,7 @@ You can define your GraphQL Schema from a file on disk. For convenience, use
 the `appsync.Schema.fromAsset` to specify the file representing your schema.
 
 ```ts
-const api = appsync.GraphQLApi(stack, 'api', {
+const api = appsync.GraphqlApi(stack, 'api', {
   name: 'myApi',
   schema: appsync.Schema.fromAsset(join(__dirname, 'schema.graphl')),
 });
@@ -132,10 +132,10 @@ const api = appsync.GraphQLApi(stack, 'api', {
 
 Any GraphQL Api that has been created outside the stack can be imported from 
 another stack into your CDK app. Utilizing the `fromXxx` function, you have 
-the ability to add data sources and resolvers through a `IGraphQLApi` interface.
+the ability to add data sources and resolvers through a `IGraphqlApi` interface.
 
 ```ts
-const importedApi = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'IApi', {
+const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'IApi', {
   graphqlApiId: api.apiId,
   graphqlArn: api.arn,
 });
@@ -191,7 +191,7 @@ Use the `grant` function for more granular authorization.
 const role = new iam.Role(stack, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
-const api = new appsync.GraphQLApi(stack, 'API', {
+const api = new appsync.GraphqlApi(stack, 'API', {
   definition
 });
 
@@ -323,7 +323,7 @@ to generate our schema.
 import * as appsync from '@aws-cdk/aws-appsync';
 import * as schema from './object-types';
 
-const api = new appsync.GraphQLApi(stack, 'Api', {
+const api = new appsync.GraphqlApi(stack, 'Api', {
   name: 'demo',
 });
 
@@ -500,7 +500,7 @@ You can create Object Types in three ways:
 
 1. Object Types can be created ***externally***.
     ```ts
-    const api = new appsync.GraphQLApi(stack, 'Api', {
+    const api = new appsync.GraphqlApi(stack, 'Api', {
       name: 'demo',
     });
     const demo = new appsync.ObjectType('Demo', {
