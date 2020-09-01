@@ -556,23 +556,31 @@ export class CfnInclude extends core.CfnElement {
 
     const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);
     const nestedStack = new core.NestedStack(this, nestedStackId, {
-      parameters: nestedStackProps.Parameters,
+      parameters: this.parametersForNestedStack(nestedStackProps.Parameters, nestedStackId),
       notificationArns: nestedStackProps.NotificationArns,
       timeout: nestedStackProps.Timeout,
     });
+    const template = new CfnInclude(nestedStack, nestedStackId, this.nestedStacksToInclude[nestedStackId]);
+    this.nestedStacks[nestedStackId] = { stack: nestedStack, includedTemplate: template };
 
     // we know this is never undefined for nested stacks
     const nestedStackResource: core.CfnResource = nestedStack.nestedStackResource!;
     cfnParser.handleAttributes(nestedStackResource, nestedStackAttributes, nestedStackId);
-
-    const propStack = this.nestedStacksToInclude[nestedStackId];
-    const template = new CfnInclude(nestedStack, nestedStackId, {
-      templateFile: propStack.templateFile,
-      nestedStacks: propStack.nestedStacks,
-    });
-    const includedStack: IncludedNestedStack = { stack: nestedStack, includedTemplate: template };
-    this.nestedStacks[nestedStackId] = includedStack;
-
     return nestedStackResource;
+  }
+
+  private parametersForNestedStack(parameters: any, nestedStackId: string): { [key: string]: any } | undefined {
+    if (parameters == null) {
+      return undefined;
+    }
+
+    const parametersToReplace = this.nestedStacksToInclude[nestedStackId].parameters ?? {};
+    const ret: { [key: string]: string } = {};
+    for (const paramName of Object.keys(parameters)) {
+      if (!(paramName in parametersToReplace)) {
+        ret[paramName] = parameters[paramName];
+      }
+    }
+    return ret;
   }
 }
