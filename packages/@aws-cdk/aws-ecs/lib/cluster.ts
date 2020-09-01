@@ -51,6 +51,20 @@ export interface ClusterProps {
 }
 
 /**
+ * The machine image type
+ */
+export enum MachineImageType {
+  /**
+   * Amazon ECS-optimized Amazon Linux 2 AMI
+   */
+  AMAZON_LINUX_2,
+  /**
+   * Bottlerocket AMI
+   */
+  BOTTLEROCKET
+}
+
+/**
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export class Cluster extends Resource implements ICluster {
@@ -171,15 +185,27 @@ export class Cluster extends Resource implements ICluster {
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
    */
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
+    if ((options.machineImage && options.machineImageType) || (!options.machineImage && !options.machineImageType)) {
+      throw new Error('You must specify either a machineImage or machineImageType, at least one, not both.');
+    }
+
+    let machineImage: ec2.IMachineImage;
+
+    machineImage = options.machineImage ?? options.machineImageType === MachineImageType.BOTTLEROCKET ?
+      new BottleRocketImage() : new EcsOptimizedAmi();
+
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
-      machineImage: options.machineImage || new EcsOptimizedAmi(),
+      machineImage,
       updateType: options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
       instanceType: options.instanceType,
     });
 
-    this.addAutoScalingGroup(autoScalingGroup, options);
+    this.addAutoScalingGroup(autoScalingGroup, {
+      machineImageType: options.machineImageType,
+      ...options
+    });
 
     return autoScalingGroup;
   }
@@ -196,7 +222,14 @@ export class Cluster extends Resource implements ICluster {
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
 
     // Tie instances to cluster
-    autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
+    if(options.machineImageType===MachineImageType.BOTTLEROCKET) {
+      autoScalingGroup.addUserData(
+        '[settings.ecs]',
+        `cluster = "${this.clusterName}"`
+      )
+    } else  {
+      autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
+    }
 
     if (!options.canContainersAccessInstanceRole) {
       // Deny containers access to instance metadata service
@@ -488,6 +521,41 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
 }
 
 /**
+ * Construct an Bottlerocket image from the latest AMI published in SSM
+ */
+class BottleRocketImage implements ec2.IMachineImage {
+  private readonly amiParameterName: string;
+  /**
+   * Bottlerocket AMI variant
+   * @default - `aws-ecs-1`
+   */
+  private readonly variant?: string;
+
+  /**
+   * Constructs a new instance of the BottleRocketImage class.
+   */
+  public constructor() {
+    // only `aws-ecs-1` is currently available
+    this.variant = 'aws-ecs-1'
+
+    // set the SSM parameter name
+    this.amiParameterName = `/aws/service/bottlerocket/${this.variant}/x86_64/latest/image_id`;
+  }
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImageConfig {
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.LINUX,
+      userData: ec2.UserData.custom(''),
+    };
+  }
+}
+
+/**
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export interface ICluster extends IResource {
@@ -678,6 +746,13 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @default The SNS Topic will not be encrypted.
    */
   readonly topicEncryptionKey?: kms.IKey;
+
+  /**
+   * Specify the machine image type.
+   * 
+   * @default MachineImageType.AMAZON_LINUX_2
+   */
+  readonly machineImageType?: MachineImageType;
 }
 
 /**
@@ -690,8 +765,16 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
   readonly instanceType: ec2.InstanceType;
 
   /**
+     * Machine image type. Ignored if `machineImage` is defined.
+     *
+     * @default MachineImageType.AMAZON_LINUX_2
+     */
+  readonly machineImageType?: MachineImageType;
+
+  /**
    * The ECS-optimized AMI variant to use. For more information, see
    * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
+   * Ignored if `MachineImageType` is defined.
    *
    * @default - Amazon Linux 2
    */
