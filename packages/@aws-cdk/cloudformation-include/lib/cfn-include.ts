@@ -444,7 +444,9 @@ export class CfnInclude extends core.CfnElement {
             ? self.getOrCreateCondition(cName)
             : undefined;
         },
-        findMapping() { throw new Error('Using FindInMap in Condition definitions is not allowed'); },
+        findMapping(mappingName: string): core.CfnMapping | undefined {
+          return self.mappings[mappingName];
+        },
       },
       context: cfn_parse.CfnParsingContext.CONDITIONS,
       parameters: this.parametersToReplace,
