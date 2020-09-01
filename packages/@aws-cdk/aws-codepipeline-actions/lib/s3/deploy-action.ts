@@ -37,7 +37,7 @@ export class CacheControl {
    * Allows you to create an arbitrary cache control directive,
    * in case our support is missing a method for a particular directive.
    */
-  public static fromString(s: string) {  return new CacheControl(s); }
+  public static fromString(s: string) { return new CacheControl(s); }
 
   /** @param value the actual text value of the created directive */
   private constructor(public value: string) {}

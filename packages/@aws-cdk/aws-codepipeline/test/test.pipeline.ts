@@ -49,7 +49,7 @@ export = {
     'that is cross-region': {
       'validates that source actions are in the same region as the pipeline'(test: Test) {
         const app = new cdk.App();
-        const stack = new cdk.Stack(app, 'PipelineStack', { env: { region: 'us-west-1', account: '123456789012' }});
+        const stack = new cdk.Stack(app, 'PipelineStack', { env: { region: 'us-west-1', account: '123456789012' } });
         const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
         const sourceStage = pipeline.addStage({
           stageName: 'Source',
@@ -342,7 +342,7 @@ export = {
     'that is cross-account': {
       'does not allow passing a dynamic value in the Action account property'(test: Test) {
         const app = new cdk.App();
-        const stack = new cdk.Stack(app, 'PipelineStack', { env: { account: '123456789012' }});
+        const stack = new cdk.Stack(app, 'PipelineStack', { env: { account: '123456789012' } });
         const sourceOutput = new codepipeline.Artifact();
         const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
           stages: [

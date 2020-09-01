@@ -446,7 +446,7 @@ export = {
     // THEN
     const manifest = app.synth();
     const consumerDeps = manifest.getStackArtifact(consumerTopLevel.artifactId).dependencies.map(d => d.id);
-    test.deepEqual(consumerDeps, [ 'ProducerTopLevel' ]);
+    test.deepEqual(consumerDeps, ['ProducerTopLevel']);
     test.done();
   },
 

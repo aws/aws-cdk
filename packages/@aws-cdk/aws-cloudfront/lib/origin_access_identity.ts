@@ -17,7 +17,7 @@ export interface OriginAccessIdentityProps {
 /**
  * Interface for CloudFront OriginAccessIdentity
  */
-export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable  {
+export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable {
   /**
    * The Origin Access Identity Name
    */

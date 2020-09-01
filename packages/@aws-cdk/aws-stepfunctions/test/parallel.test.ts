@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
 
-describe('Parallel State',  () => {
+describe('Parallel State', () => {
   test('State Machine With Parallel State', () => {
     // GIVEN
     const stack = new cdk.Stack();

@@ -2,11 +2,29 @@ import { join } from 'path';
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
+import * as t from './scalar-type-defintions';
 
 // Schema Definitions
-const type = 'type test {\n  version: String!\n}\n\n';
-const query = 'type Query {\n  getTests: [ test! ]!\n}\n\n';
-const mutation = 'type Mutation {\n  addTest(version: String!): test\n}\n';
+const type = new appsync.ObjectType('test', {
+  definition: {
+    version: t.required_string,
+  },
+});
+const query = new appsync.ObjectType('Query', {
+  definition: {
+    getTests: new appsync.ResolvableField({
+      returnType: type.attribute({ isRequiredList: true, isList: true }),
+    }),
+  },
+});
+const mutation = new appsync.ObjectType('Mutation', {
+  definition: {
+    addTest: new appsync.ResolvableField({
+      returnType: type.attribute(),
+      args: { version: t.required_string },
+    }),
+  },
+});
 
 let stack: cdk.Stack;
 beforeEach(() => {
@@ -14,49 +32,98 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
-describe('testing schema definition mode `code`', () => {
+describe('basic testing schema definition mode `code`', () => {
 
   test('definition mode `code` produces empty schema definition', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
     });
 
-    //THEN
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
       Definition: '',
     });
   });
 
-  test('definition mode `code` generates correct schema with updateDefinition', () => {
+  test('definition mode `code` generates correct schema with addToSchema', () => {
     // WHEN
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
     });
-    api.updateDefinition(`${type}${query}${mutation}`);
+    api.addType(type);
+    api.addType(query);
+    api.addType(mutation);
 
-    //THEN
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${type}${query}${mutation}`,
+      Definition: `${type.toString()}\n${query.toString()}\n${mutation.toString()}\n`,
     });
   });
 
-  test('definition mode `code` errors when schemaDefinitionFile is configured', () => {
+  test('definition mode `code` allows for api to addQuery', () => {
     // WHEN
-    const when = () => {
-      new appsync.GraphQLApi(stack, 'API', {
-        name: 'demo',
-        schemaDefinition: appsync.SchemaDefinition.CODE,
-        schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
-      });
-    };
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+    });
+    api.addQuery('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
 
-    //THEN
-    expect(when).toThrowError('definition mode CODE is incompatible with file definition. Change mode to FILE/S3 or unconfigure schemaDefinitionFile');
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  query: Query\n}\ntype Query {\n  test: String\n}\n',
+    });
   });
 
+  test('definition mode `code` allows for schema to addQuery', () => {
+    // WHEN
+    const schema = new appsync.Schema();
+    new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema,
+    });
+    schema.addQuery('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  query: Query\n}\ntype Query {\n  test: String\n}\n',
+    });
+  });
+
+  test('definition mode `code` allows for api to addMutation', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+    });
+    api.addMutation('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  mutation: Mutation\n}\ntype Mutation {\n  test: String\n}\n',
+    });
+  });
+
+  test('definition mode `code` allows for schema to addMutation', () => {
+    // WHEN
+    const schema = new appsync.Schema();
+    new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema,
+    });
+    schema.addMutation('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  mutation: Mutation\n}\ntype Mutation {\n  test: String\n}\n',
+    });
+  });
 });
 
 describe('testing schema definition mode `file`', () => {
@@ -65,40 +132,81 @@ describe('testing schema definition mode `file`', () => {
     // WHEN
     new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.FILE,
-      schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     });
 
-    //THEN
+    // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${type}${query}${mutation}`,
+      Definition: `${type.toString()}\n${query.toString()}\n${mutation.toString()}\n`,
     });
   });
 
-  test('definition mode `file` errors when calling updateDefiniton function', () => {
+  test('definition mode `file` errors when addType for object is called', () => {
     // WHEN
     const api = new appsync.GraphQLApi(stack, 'API', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.FILE,
-      schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     });
-    const when = () => { api.updateDefinition('error'); };
 
-    //THEN
-    expect(when).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
+    // THEN
+    expect(() => {
+      api.addType(new appsync.ObjectType('blah', {
+        definition: { fail: t.id },
+      }));
+    }).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
   });
 
-  test('definition mode `file` errors when schemaDefinitionFile is not configured', () => {
+  test('definition mode `file` errors when addType for interface is called', () => {
     // WHEN
-    const when = () => {
-      new appsync.GraphQLApi(stack, 'API', {
-        name: 'demo',
-        schemaDefinition: appsync.SchemaDefinition.FILE,
-      });
-    };
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
+    });
 
-    //THEN
-    expect(when).toThrowError('schemaDefinitionFile must be configured if using FILE definition mode.');
+    // THEN
+    expect(() => {
+      api.addType(new appsync.InterfaceType('blah', {
+        definition: { fail: t.id },
+      }));
+    }).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
   });
 
+  test('definition mode `file` errors when addToSchema is called', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
+    });
+
+    // THEN
+    expect(() => {
+      api.addToSchema('blah');
+    }).toThrowError('API cannot append to schema because schema definition mode is not configured as CODE.');
+  });
+
+  test('definition mode `file` errors when addQuery is called', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
+    });
+
+    // THEN
+    expect(() => {
+      api.addQuery('blah', new appsync.ResolvableField({ returnType: t.string }));
+    }).toThrowError('Unable to add query. Schema definition mode must be CODE Received: FILE');
+  });
+
+  test('definition mode `file` errors when addMutation is called', () => {
+    // WHEN
+    const api = new appsync.GraphQLApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
+    });
+
+    // THEN
+    expect(() => {
+      api.addMutation('blah', new appsync.ResolvableField({ returnType: t.string }));
+    }).toThrowError('Unable to add mutation. Schema definition mode must be CODE Received: FILE');
+  });
 });

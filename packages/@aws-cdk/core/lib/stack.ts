@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Annotations } from './annotations';
+import { App } from './app';
 import { Arn, ArnComponents } from './arn';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
@@ -161,7 +163,7 @@ export class Stack extends Construct implements ITaggable {
       return value;
     }
 
-    function _lookup(c: IConstruct): Stack  {
+    function _lookup(c: IConstruct): Stack {
       if (Stack.isStack(c)) {
         return c;
       }
@@ -201,7 +203,7 @@ export class Stack extends Construct implements ITaggable {
    * value is an unresolved token (`Token.isUnresolved(stack.region)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **region-agnostic template**. In this case, your code should either
-   * fail (throw an error, emit a synth error using `node.addError`) or
+   * fail (throw an error, emit a synth error using `Annotations.of(construct).addError()`) or
    * implement some other region-agnostic behavior.
    */
   public readonly region: string;
@@ -223,7 +225,7 @@ export class Stack extends Construct implements ITaggable {
    * value is an unresolved token (`Token.isUnresolved(stack.account)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **account-agnostic template**. In this case, your code should either
-   * fail (throw an error, emit a synth error using `node.addError`) or
+   * fail (throw an error, emit a synth error using `Annotations.of(construct).addError()`) or
    * implement some other region-agnostic behavior.
    */
   public readonly account: string;
@@ -571,7 +573,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Returnst the list of AZs that are availability in the AWS environment
+   * Returns the list of AZs that are available in the AWS environment
    * (account/region) associated with this stack.
    *
    * If the stack is environment-agnostic (either account and/or region are
@@ -582,6 +584,8 @@ export class Stack extends Construct implements ITaggable {
    * If they are not available in the context, returns a set of dummy values and
    * reports them as missing, and let the CLI resolve them by calling EC2
    * `DescribeAvailabilityZones` on the target environment.
+   *
+   * To specify a different strategy for selecting availability zones override this method.
    */
   public get availabilityZones(): string[] {
     // if account/region are tokens, we can't obtain AZs through the context
@@ -798,7 +802,7 @@ export class Stack extends Construct implements ITaggable {
 
     if (this.templateOptions.transform) {
       // eslint-disable-next-line max-len
-      this.node.addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
+      Annotations.of(this).addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
 
@@ -858,16 +862,17 @@ export class Stack extends Construct implements ITaggable {
     // between producer and consumer anyway, so we can just assume that they are).
     const containingAssembly = Stage.of(this);
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
-    const region  = env.region  ?? containingAssembly?.region ?? Aws.REGION;
+    const region = env.region ?? containingAssembly?.region ?? Aws.REGION;
 
     // this is the "aws://" env specification that will be written to the cloud assembly
     // manifest. it will use "unknown-account" and "unknown-region" to indicate
     // environment-agnosticness.
     const envAccount = !Token.isUnresolved(account) ? account : cxapi.UNKNOWN_ACCOUNT;
-    const envRegion  = !Token.isUnresolved(region)  ? region  : cxapi.UNKNOWN_REGION;
+    const envRegion = !Token.isUnresolved(region) ? region : cxapi.UNKNOWN_REGION;
 
     return {
-      account, region,
+      account,
+      region,
       environment: cxapi.EnvironmentUtils.format(envAccount, envRegion),
     };
   }
@@ -883,7 +888,7 @@ export class Stack extends Construct implements ITaggable {
     for (const dep of Object.values(this._stackDependencies)) {
       const ret = dep.stack.stackDependencyReasons(other);
       if (ret !== undefined) {
-        return [ ...dep.reasons, ...ret ];
+        return [...dep.reasons, ...ret];
       }
     }
     return undefined;
@@ -910,7 +915,7 @@ export class Stack extends Construct implements ITaggable {
    * Stage, and prefix the path components of the Stage before it.
    */
   private generateStackName() {
-    const assembly  = Stage.of(this);
+    const assembly = Stage.of(this);
     const prefix = (assembly && assembly.stageName) ? `${assembly.stageName}-` : '';
     return `${prefix}${this.generateStackId(assembly)}`;
   }
@@ -1092,7 +1097,6 @@ import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 import { FileSystem } from './fs';
-import { App } from './app';
 
 interface StackDependency {
   stack: Stack;

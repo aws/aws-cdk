@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CfnResource, CfnResourceProps, Construct, RemoveTag, Stack, Tag, TagManager, TagType } from '../lib';
+import { CfnResource, CfnResourceProps, Construct, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
 class TaggableResource extends CfnResource {
@@ -54,14 +54,14 @@ export = {
     const map = new MapTaggableResource(res, 'MapFakeResource', {
       type: 'AWS::Fake::Thing',
     });
-    res.node.applyAspect(new Tag('foo', 'bar'));
+    Aspects.of(res).add(new Tag('foo', 'bar'));
 
     synthesize(root);
 
-    test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
-    test.deepEqual(res2.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
-    test.deepEqual(map.tags.renderTags(), {foo: 'bar'});
-    test.deepEqual(asg.tags.renderTags(), [{key: 'foo', value: 'bar', propagateAtLaunch: true}]);
+    test.deepEqual(res.tags.renderTags(), [{ key: 'foo', value: 'bar' }]);
+    test.deepEqual(res2.tags.renderTags(), [{ key: 'foo', value: 'bar' }]);
+    test.deepEqual(map.tags.renderTags(), { foo: 'bar' });
+    test.deepEqual(asg.tags.renderTags(), [{ key: 'foo', value: 'bar', propagateAtLaunch: true }]);
     test.done();
   },
   'The last aspect applied takes precedence'(test: Test) {
@@ -72,13 +72,13 @@ export = {
     const res2 = new TaggableResource(res, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
-    res.node.applyAspect(new Tag('foo', 'bar'));
-    res.node.applyAspect(new Tag('foo', 'foobar'));
-    res.node.applyAspect(new Tag('foo', 'baz'));
-    res2.node.applyAspect(new Tag('foo', 'good'));
+    Aspects.of(res).add(new Tag('foo', 'bar'));
+    Aspects.of(res).add(new Tag('foo', 'foobar'));
+    Aspects.of(res).add(new Tag('foo', 'baz'));
+    Aspects.of(res2).add(new Tag('foo', 'good'));
     synthesize(root);
-    test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'baz'}]);
-    test.deepEqual(res2.tags.renderTags(), [{key: 'foo', value: 'good'}]);
+    test.deepEqual(res.tags.renderTags(), [{ key: 'foo', value: 'baz' }]);
+    test.deepEqual(res2.tags.renderTags(), [{ key: 'foo', value: 'good' }]);
     test.done();
   },
   'RemoveTag will remove a tag if it exists'(test: Test) {
@@ -96,16 +96,16 @@ export = {
     const map = new MapTaggableResource(res, 'MapFakeResource', {
       type: 'AWS::Fake::Thing',
     });
-    root.node.applyAspect(new Tag('root', 'was here'));
-    res.node.applyAspect(new Tag('first', 'there is only 1'));
-    res.node.applyAspect(new RemoveTag('root'));
-    res.node.applyAspect(new RemoveTag('doesnotexist'));
+    Aspects.of(root).add(new Tag('root', 'was here'));
+    Aspects.of(res).add(new Tag('first', 'there is only 1'));
+    Aspects.of(res).add(new RemoveTag('root'));
+    Aspects.of(res).add(new RemoveTag('doesnotexist'));
     synthesize(root);
 
-    test.deepEqual(res.tags.renderTags(), [{key: 'first', value: 'there is only 1'}]);
-    test.deepEqual(map.tags.renderTags(), {first: 'there is only 1'});
-    test.deepEqual(asg.tags.renderTags(), [{key: 'first', value: 'there is only 1', propagateAtLaunch: true}]);
-    test.deepEqual(res2.tags.renderTags(), [{key: 'first', value: 'there is only 1'}]);
+    test.deepEqual(res.tags.renderTags(), [{ key: 'first', value: 'there is only 1' }]);
+    test.deepEqual(map.tags.renderTags(), { first: 'there is only 1' });
+    test.deepEqual(asg.tags.renderTags(), [{ key: 'first', value: 'there is only 1', propagateAtLaunch: true }]);
+    test.deepEqual(res2.tags.renderTags(), [{ key: 'first', value: 'there is only 1' }]);
     test.done();
   },
   'add will add a tag and remove will remove a tag if it exists'(test: Test) {
@@ -123,17 +123,17 @@ export = {
     const map = new MapTaggableResource(res, 'MapFakeResource', {
       type: 'AWS::Fake::Thing',
     });
-    Tag.add(root, 'root', 'was here');
-    Tag.add(res, 'first', 'there is only 1');
-    Tag.remove(res, 'root');
-    Tag.remove(res, 'doesnotexist');
+    Tags.of(root).add('root', 'was here');
+    Tags.of(res).add('first', 'there is only 1');
+    Tags.of(res).remove('root');
+    Tags.of(res).remove('doesnotexist');
 
     synthesize(root);
 
-    test.deepEqual(res.tags.renderTags(), [{key: 'first', value: 'there is only 1'}]);
-    test.deepEqual(map.tags.renderTags(), {first: 'there is only 1'});
-    test.deepEqual(asg.tags.renderTags(), [{key: 'first', value: 'there is only 1', propagateAtLaunch: true}]);
-    test.deepEqual(res2.tags.renderTags(), [{key: 'first', value: 'there is only 1'}]);
+    test.deepEqual(res.tags.renderTags(), [{ key: 'first', value: 'there is only 1' }]);
+    test.deepEqual(map.tags.renderTags(), { first: 'there is only 1' });
+    test.deepEqual(asg.tags.renderTags(), [{ key: 'first', value: 'there is only 1', propagateAtLaunch: true }]);
+    test.deepEqual(res2.tags.renderTags(), [{ key: 'first', value: 'there is only 1' }]);
     test.done();
   },
   'the #visit function is idempotent'(test: Test) {
@@ -142,13 +142,13 @@ export = {
       type: 'AWS::Fake::Thing',
     });
 
-    res.node.applyAspect(new Tag('foo', 'bar'));
+    Aspects.of(res).add(new Tag('foo', 'bar'));
     synthesize(root);
-    test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
+    test.deepEqual(res.tags.renderTags(), [{ key: 'foo', value: 'bar' }]);
     synthesize(root);
-    test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
+    test.deepEqual(res.tags.renderTags(), [{ key: 'foo', value: 'bar' }]);
     synthesize(root);
-    test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
+    test.deepEqual(res.tags.renderTags(), [{ key: 'foo', value: 'bar' }]);
     test.done();
   },
   'removeTag Aspects by default will override child Tag Aspects'(test: Test) {
@@ -159,8 +159,8 @@ export = {
     const res2 = new TaggableResource(res, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
-    res.node.applyAspect(new RemoveTag('key'));
-    res2.node.applyAspect(new Tag('key', 'value'));
+    Aspects.of(res).add(new RemoveTag('key'));
+    Aspects.of(res2).add(new Tag('key', 'value'));
     synthesize(root);
     test.deepEqual(res.tags.renderTags(), undefined);
     test.deepEqual(res2.tags.renderTags(), undefined);
@@ -174,11 +174,11 @@ export = {
     const res2 = new TaggableResource(res, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
-    res.node.applyAspect(new RemoveTag('key', {priority: 0}));
-    res2.node.applyAspect(new Tag('key', 'value'));
+    Aspects.of(res).add(new RemoveTag('key', { priority: 0 }));
+    Aspects.of(res2).add(new Tag('key', 'value'));
     synthesize(root);
     test.deepEqual(res.tags.renderTags(), undefined);
-    test.deepEqual(res2.tags.renderTags(), [{key: 'key', value: 'value'}]);
+    test.deepEqual(res2.tags.renderTags(), [{ key: 'key', value: 'value' }]);
     test.done();
   },
   'Aspects are merged with tags created by L1 Constructor'(test: Test) {
@@ -187,8 +187,8 @@ export = {
       type: 'AWS::Fake::Thing',
       properties: {
         tags: [
-          {key: 'aspects', value: 'overwrite'},
-          {key: 'cfn', value: 'is cool'},
+          { key: 'aspects', value: 'overwrite' },
+          { key: 'cfn', value: 'is cool' },
         ],
       },
     });
@@ -196,8 +196,8 @@ export = {
       type: 'AWS::Fake::Thing',
       properties: {
         tags: [
-          {key: 'aspects', value: 'overwrite', propagateAtLaunch: false},
-          {key: 'cfn', value: 'is cool', propagateAtLaunch: true},
+          { key: 'aspects', value: 'overwrite', propagateAtLaunch: false },
+          { key: 'cfn', value: 'is cool', propagateAtLaunch: true },
         ],
       },
     });
@@ -214,22 +214,22 @@ export = {
       type: 'AWS::Fake::Thing',
       properties: {
         tags: [
-          {key: 'cfn', value: 'is cool'},
+          { key: 'cfn', value: 'is cool' },
         ],
       },
     });
-    aspectBranch.node.applyAspect(new Tag('aspects', 'rule'));
+    Aspects.of(aspectBranch).add(new Tag('aspects', 'rule'));
     synthesize(root);
-    test.deepEqual(aspectBranch.testProperties().tags, [{key: 'aspects', value: 'rule'}, {key: 'cfn', value: 'is cool'}]);
+    test.deepEqual(aspectBranch.testProperties().tags, [{ key: 'aspects', value: 'rule' }, { key: 'cfn', value: 'is cool' }]);
     test.deepEqual(asgResource.testProperties().tags, [
-      {key: 'aspects', value: 'rule', propagateAtLaunch: true},
-      {key: 'cfn', value: 'is cool', propagateAtLaunch: true},
+      { key: 'aspects', value: 'rule', propagateAtLaunch: true },
+      { key: 'cfn', value: 'is cool', propagateAtLaunch: true },
     ]);
     test.deepEqual(mapTaggable.testProperties().tags, {
       aspects: 'rule',
       cfn: 'is cool',
     });
-    test.deepEqual(cfnBranch.testProperties().tags, [{key: 'cfn', value: 'is cool'}]);
+    test.deepEqual(cfnBranch.testProperties().tags, [{ key: 'cfn', value: 'is cool' }]);
     test.done();
   },
   'when invalid tag properties are passed from L1s': {
@@ -267,8 +267,8 @@ export = {
           type: 'AWS::Fake::Thing',
           properties: {
             tags: [
-              {key: 'cfn', value: 'is cool', propagateAtLaunch: true},
-              {key: 'aspects', value: 'overwrite'},
+              { key: 'cfn', value: 'is cool', propagateAtLaunch: true },
+              { key: 'aspects', value: 'overwrite' },
             ],
           },
         });

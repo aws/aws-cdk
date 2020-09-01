@@ -1,4 +1,7 @@
+import { CfnCondition } from './cfn-condition';
+import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
+import { CfnMapping } from './cfn-mapping';
 import { Aws } from './cfn-pseudo';
 import { CfnResource } from './cfn-resource';
 import {
@@ -6,7 +9,6 @@ import {
   CfnCreationPolicy, CfnDeletionPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
 } from './cfn-resource-policy';
 import { CfnTag } from './cfn-tag';
-import { ICfnFinder } from './from-cfn';
 import { Lazy } from './lazy';
 import { CfnReference } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
@@ -50,9 +52,17 @@ export class FromCloudFormation {
     return value;
   }
 
+  // won't always return a string; if the input can't be resolved to a string,
+  // the input will be returned.
   public static getString(value: any): string {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
+      return value.toString();
+    }
+
+    // CloudFormation treats numbers and strings interchangeably;
+    // so, if we get a number here, convert it to a string
+    if (typeof value === 'number') {
       return value.toString();
     }
 
@@ -61,13 +71,24 @@ export class FromCloudFormation {
     return value;
   }
 
+  // won't always return a number; if the input can't be parsed to a number,
+  // the input will be returned.
   public static getNumber(value: any): number {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
       return Token.asNumber(value);
     }
 
-    // in all other cases, just return the input,
+    // return a number, if the input can be parsed as one
+    let parsedValue;
+    if (typeof value === 'string') {
+      parsedValue = parseFloat(value);
+      if (!isNaN(parsedValue)) {
+        return parsedValue;
+      }
+    }
+
+    // otherwise return the input,
     // and let a validator handle it if it's not a number
     return value;
   }
@@ -143,6 +164,51 @@ export class FromCloudFormation {
 }
 
 /**
+ * An interface that represents callbacks into a CloudFormation template.
+ * Used by the fromCloudFormation methods in the generated L1 classes.
+ */
+export interface ICfnFinder {
+  /**
+   * Return the Condition with the given name from the template.
+   * If there is no Condition with that name in the template,
+   * returns undefined.
+   */
+  findCondition(conditionName: string): CfnCondition | undefined;
+
+  /**
+   * Return the Mapping with the given name from the template.
+   * If there is no Mapping with that name in the template,
+   * returns undefined.
+   */
+  findMapping(mappingName: string): CfnMapping | undefined;
+
+  /**
+   * Returns the element referenced using a Ref expression with the given name.
+   * If there is no element with this name in the template,
+   * return undefined.
+   */
+  findRefTarget(elementName: string): CfnElement | undefined;
+
+  /**
+   * Returns the resource with the given logical ID in the template.
+   * If a resource with that logical ID was not found in the template,
+   * returns undefined.
+   */
+  findResource(logicalId: string): CfnResource | undefined;
+}
+
+/**
+ * The interface used as the last argument to the fromCloudFormation
+ * static method of the generated L1 classes.
+ */
+export interface FromCloudFormationOptions {
+  /**
+   * The parser used to convert CloudFormation to values the CDK understands.
+   */
+  readonly parser: CfnParser;
+}
+
+/**
  * The context in which the parsing is taking place.
  *
  * Some fragments of CloudFormation templates behave differently than others
@@ -154,6 +220,9 @@ export class FromCloudFormation {
 export enum CfnParsingContext {
   /** We're currently parsing the 'Conditions' section. */
   CONDITIONS,
+
+  /** We're currently parsing the 'Rules' section. */
+  RULES,
 }
 
 /**
@@ -171,6 +240,11 @@ export interface ParseCfnOptions {
    * @default - the default context (no special behavior)
    */
   readonly context?: CfnParsingContext;
+
+  /**
+   * Values provided here will replace references to parameters in the parsed template.
+   */
+  readonly parameters: { [parameterName: string]: any };
 }
 
 /**
@@ -357,7 +431,7 @@ export class CfnParser {
         return undefined;
       case 'Ref': {
         const refTarget = object[key];
-        const specialRef = specialCaseRefs(refTarget);
+        const specialRef = this.specialCaseRefs(refTarget);
         if (specialRef) {
           return specialRef;
         } else {
@@ -394,7 +468,12 @@ export class CfnParser {
       }
       case 'Fn::FindInMap': {
         const value = this.parseValue(object[key]);
-        return Fn.findInMap(value[0], value[1], value[2]);
+        // the first argument to FindInMap is the mapping name
+        const mapping = this.options.finder.findMapping(value[0]);
+        if (!mapping) {
+          throw new Error(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
+        }
+        return Fn.findInMap(mapping.logicalId, value[1], value[2]);
       }
       case 'Fn::Select': {
         const value = this.parseValue(object[key]);
@@ -469,7 +548,11 @@ export class CfnParser {
         return { Condition: condition.logicalId };
       }
       default:
-        throw new Error(`Unsupported CloudFormation function '${key}'`);
+        if (this.options.context === CfnParsingContext.RULES) {
+          return this.handleRulesIntrinsic(key, object);
+        } else {
+          throw new Error(`Unsupported CloudFormation function '${key}'`);
+        }
     }
   }
 
@@ -509,7 +592,7 @@ export class CfnParser {
     }
 
     // since it's not in the map, check if it's a pseudo parameter
-    const specialRef = specialCaseSubRefs(refTarget);
+    const specialRef = this.specialCaseSubRefs(refTarget);
     if (specialRef) {
       return leftHalf + specialRef + this.parseFnSubString(rightHalf, map);
     }
@@ -532,24 +615,66 @@ export class CfnParser {
       return leftHalf + CfnReference.for(refResource, attribute, true).toString() + this.parseFnSubString(rightHalf, map);
     }
   }
-}
 
-function specialCaseRefs(value: any): any {
-  switch (value) {
-    case 'AWS::AccountId': return Aws.ACCOUNT_ID;
-    case 'AWS::Region': return Aws.REGION;
-    case 'AWS::Partition': return Aws.PARTITION;
-    case 'AWS::URLSuffix': return Aws.URL_SUFFIX;
-    case 'AWS::NotificationARNs': return Aws.NOTIFICATION_ARNS;
-    case 'AWS::StackId': return Aws.STACK_ID;
-    case 'AWS::StackName': return Aws.STACK_NAME;
-    case 'AWS::NoValue': return Aws.NO_VALUE;
-    default: return undefined;
+  private handleRulesIntrinsic(key: string, object: any): any {
+    // Rules have their own set of intrinsics:
+    // https://docs.aws.amazon.com/servicecatalog/latest/adminguide/intrinsic-function-reference-rules.html
+    switch (key) {
+      case 'Fn::ValueOf': {
+        // ValueOf is special,
+        // as it takes the name of a Parameter as its first argument
+        const value = this.parseValue(object[key]);
+        const parameterName = value[0];
+        if (parameterName in this.parameters) {
+          // since ValueOf returns the value of a specific attribute,
+          // fail here - this substitution is not allowed
+          throw new Error(`Cannot substitute parameter '${parameterName}' used in Fn::ValueOf expression with attribute '${value[1]}'`);
+        }
+        const param = this.options.finder.findRefTarget(parameterName);
+        if (!param) {
+          throw new Error(`Rule references parameter '${parameterName}' which was not found in the template`);
+        }
+        // create an explicit IResolvable,
+        // as Fn.valueOf() returns a string,
+        // which is incorrect
+        // (Fn::ValueOf can also return an array)
+        return Lazy.anyValue({ produce: () => ({ 'Fn::ValueOf': [param.logicalId, value[1]] }) });
+      }
+      default:
+        // I don't want to hard-code the list of supported Rules-specific intrinsics in this function;
+        // so, just return undefined here,
+        // and they will be treated as a regular JSON object
+        return undefined;
+    }
   }
-}
 
-function specialCaseSubRefs(value: string): string | undefined {
-  return value.indexOf('::') === -1 ? undefined: '${' + value + '}';
+  private specialCaseRefs(value: any): any {
+    if (value in this.parameters) {
+      return this.parameters[value];
+    }
+    switch (value) {
+      case 'AWS::AccountId': return Aws.ACCOUNT_ID;
+      case 'AWS::Region': return Aws.REGION;
+      case 'AWS::Partition': return Aws.PARTITION;
+      case 'AWS::URLSuffix': return Aws.URL_SUFFIX;
+      case 'AWS::NotificationARNs': return Aws.NOTIFICATION_ARNS;
+      case 'AWS::StackId': return Aws.STACK_ID;
+      case 'AWS::StackName': return Aws.STACK_NAME;
+      case 'AWS::NoValue': return Aws.NO_VALUE;
+      default: return undefined;
+    }
+  }
+
+  private specialCaseSubRefs(value: string): string | undefined {
+    if (value in this.parameters) {
+      return this.parameters[value];
+    }
+    return value.indexOf('::') === -1 ? undefined: '${' + value + '}';
+  }
+
+  private get parameters(): { [parameterName: string]: any } {
+    return this.options.parameters || {};
+  }
 }
 
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
