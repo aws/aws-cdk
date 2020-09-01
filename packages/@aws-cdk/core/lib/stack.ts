@@ -615,7 +615,7 @@ export class Stack extends Construct implements ITaggable {
    * Register a file asset on this Stack
    *
    * @deprecated Use `stack.synthesizer.addFileAsset()` if you are calling,
-   * and a different IDeploymentEnvironment class if you are implementing.
+   * and a different IStackSynthesizer class if you are implementing.
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     return this.synthesizer.addFileAsset(asset);
@@ -625,7 +625,7 @@ export class Stack extends Construct implements ITaggable {
    * Register a docker image asset on this Stack
    *
    * @deprecated Use `stack.synthesizer.addDockerImageAsset()` if you are calling,
-   * and a different `IDeploymentEnvironment` class if you are implementing.
+   * and a different `IStackSynthesizer` class if you are implementing.
    */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     return this.synthesizer.addDockerImageAsset(asset);
