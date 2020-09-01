@@ -7,10 +7,10 @@ describe('tests', () => {
     //GIVEN
     const array1 = ['/u1', '/u2', '/u3', '/u4', '/u5'];
     const array2 = ['/u1', '/u2', '/u3', '/u4', '/u5', '/u6'];
-    const listenerCondition = elbv2.ListenerCondition.pathPatterns(array1)
+    const listenerCondition = elbv2.ListenerCondition.pathPatterns(array1);
 
     // THEN
-    expect(listenerCondition.renderRawCondition()["pathPatternConfig"]["values"]).toEqual(array1);
+    expect(listenerCondition.renderRawCondition().pathPatternConfig.values).toEqual(array1);
 
     expect(() => {
       elbv2.ListenerCondition.pathPatterns(array2);
