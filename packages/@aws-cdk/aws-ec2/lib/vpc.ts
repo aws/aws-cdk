@@ -472,12 +472,10 @@ abstract class VpcBase extends Resource implements IVpc {
 
     if (selection.availabilityZones !== undefined) { // Filter by AZs, if specified
       subnetFilters.push(new AvailabilityZoneSubnetSelector(selection.availabilityZones));
-      subnets = retainByAZ(subnets, selection.availabilityZones);
     }
 
     if (!!selection.onePerAz && subnets.length > 0) { // Ensure one per AZ if specified
       subnetFilters.push(new OnePerAZSubnetSelector());
-      subnets = retainOnePerAz(subnets);
     }
 
     subnets = this.applySubnetFilters(subnets, subnetFilters);
@@ -571,19 +569,6 @@ abstract class VpcBase extends Resource implements IVpc {
 
     return placement;
   }
-}
-
-function retainByAZ(subnets: ISubnet[], azs: string[]): ISubnet[] {
-  return subnets.filter(s => azs.includes(s.availabilityZone));
-}
-
-function retainOnePerAz(subnets: ISubnet[]): ISubnet[] {
-  const azsSeen = new Set<string>();
-  return subnets.filter(subnet => {
-    if (azsSeen.has(subnet.availabilityZone)) { return false; }
-    azsSeen.add(subnet.availabilityZone);
-    return true;
-  });
 }
 
 /**
