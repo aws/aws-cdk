@@ -1,3 +1,4 @@
+import { AuthorizationType } from './graphqlapi';
 import { Resolver } from './resolver';
 import { ResolvableFieldOptions, BaseTypeOptions, GraphqlType } from './schema-field';
 import { InterfaceType } from './schema-intermediate';
@@ -64,8 +65,10 @@ export interface IField {
 
   /**
    * Generate the directives for this field
+   *
+   * @param modes the authorization modes of the graphql api
    */
-  directivesToString(): string
+  directivesToString(modes?: AuthorizationType[]): string
 }
 
 /**
@@ -122,8 +125,10 @@ export interface IIntermediateType {
 
   /**
    * Generate the string of this object type
+   *
+   * @param modes the authorization modes for the graphql api
    */
-  toString(): string;
+  toString(modes?: AuthorizationType[]): string;
 
   /**
    * Add a field to this Intermediate Type
@@ -146,39 +151,36 @@ export class Directive {
    * Add the @aws_iam directive
    */
   public static iam(): Directive {
-    return new Directive('@aws_iam');
+    return new Directive('@aws_iam', AuthorizationType.IAM);
   }
 
   /**
    * Add the @aws_oidc directive
    */
   public static oidc(): Directive {
-    return new Directive('@aws_oidc');
+    return new Directive('@aws_oidc', AuthorizationType.OIDC);
   }
 
   /**
    * Add the @aws_api_key directive
    */
   public static apiKey(): Directive {
-    return new Directive('@aws_api_key');
+    return new Directive('@aws_api_key', AuthorizationType.API_KEY);
   }
 
   /**
    * Add the @aws_auth or @aws_cognito_user_pools directive
    *
    * @param groups the groups to allow access to
-   * @param additional is cognito an additional authorization?
-   * @default false
    */
-  public static cognito(groups: string[], additional?: boolean): Directive {
+  public static cognito(...groups: string[]): Directive {
     if (groups.length === 0) {
       throw new Error('Groups parameter must not be empty.');
     }
-    const prefix = additional ? '@aws_cognito_user_pools' : '@aws_auth';
     const stringify = (array: string[]): string => {
       return array.reduce((acc, element) => `${acc}"${element}", `, '[').slice(0, -2) + ']';
     };
-    return new Directive(`${prefix}(cognito_groups: ${stringify(groups)})`);
+    return new Directive(`@aws_auth(cognito_groups: ${stringify(groups)})`, AuthorizationType.USER_POOL);
   }
 
   /**
@@ -193,9 +195,28 @@ export class Directive {
   /**
    * the directive statement
    */
-  public readonly statement: string;
+  private statement: string;
 
-  private constructor(statement: string) { this.statement = statement; }
+  private readonly mode?: AuthorizationType;
+
+  private constructor(statement: string, mode?: AuthorizationType) {
+    this.statement = statement;
+    this.mode = mode;
+  }
+
+  /**
+   * Generate the directive statement
+   * @param modes the authorization modes of the graphql api
+   */
+  public toString(modes?: AuthorizationType[]): string {
+    if (modes && this.mode && !modes.some((mode) => mode === this.mode)) {
+      throw new Error(`No Authoration Type ${this.mode} declared in GraphQL Api.`);
+    }
+    if (this.mode === AuthorizationType.USER_POOL && modes && modes.length > 1) {
+      this.statement = this.statement.replace('@aws_auth', '@aws_cognito_user_pools');
+    }
+    return this.statement;
+  }
 }
 
 /**

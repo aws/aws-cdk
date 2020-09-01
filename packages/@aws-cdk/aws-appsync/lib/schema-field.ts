@@ -1,4 +1,5 @@
 import { BaseDataSource } from './data-source';
+import { AuthorizationType } from './graphqlapi';
 import { MappingTemplate } from './mapping-template';
 import { Type, IField, IIntermediateType, Directive } from './schema-base';
 
@@ -325,7 +326,7 @@ export class GraphqlType implements IField {
   /**
    * Generate the directives for this field
    */
-  public directivesToString(): string {
+  public directivesToString(_modes?: AuthorizationType[]): string {
     return '';
   }
 }
@@ -395,10 +396,10 @@ export class Field extends GraphqlType implements IField {
   /**
    * Generate the directives for this field
    */
-  public directivesToString(): string {
+  public directivesToString(modes?: AuthorizationType[]): string {
     if (!this.fieldOptions || !this.fieldOptions.directives) { return ''; }
     return this.fieldOptions.directives.reduce((acc, directive) =>
-      `${acc}${directive.statement} `, '\n  ').slice(0, -1);
+      `${acc}${directive.toString(modes)} `, '\n  ').slice(0, -1);
   }
 }
 

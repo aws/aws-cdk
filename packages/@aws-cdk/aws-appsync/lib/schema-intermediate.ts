@@ -1,3 +1,4 @@
+import { AuthorizationType } from './graphqlapi';
 import { shapeAddition } from './private';
 import { Resolver } from './resolver';
 import { Directive, IField, IIntermediateType } from './schema-base';
@@ -73,15 +74,16 @@ export class InterfaceType implements IIntermediateType {
   /**
    * Generate the string of this object type
    */
-  public toString(): string {
+  public toString(modes?: AuthorizationType[]): string {
     return shapeAddition({
       prefix: 'interface',
       name: this.name,
       directives: this.directives,
       fields: Object.keys(this.definition).map((key) => {
         const field = this.definition[key];
-        return `${key}${field.argsToString()}: ${field.toString()}${field.directivesToString()}`;
+        return `${key}${field.argsToString()}: ${field.toString()}${field.directivesToString(modes)}`;
       }),
+      modes,
     });
   }
 
@@ -93,18 +95,6 @@ export class InterfaceType implements IIntermediateType {
    */
   public addField(fieldName: string, field: IField): void {
     this.definition[fieldName] = field;
-  }
-
-  /**
-   * Utility function to generate directives
-   *
-   * @param delimiter the separator betweeen directives
-   * @default - ' '
-   */
-  protected generateDirectives(delimiter?: string): string {
-    if (!this.directives) { return ''; }
-    return this.directives.reduce((acc, directive) =>
-      `${acc}${directive.statement}${delimiter ?? ' '}`, '');
   }
 }
 
@@ -175,7 +165,7 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
   /**
    * Generate the string of this object type
    */
-  public toString(): string {
+  public toString(modes?: AuthorizationType[]): string {
     return shapeAddition({
       prefix: 'type',
       name: this.name,
@@ -183,8 +173,9 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
       directives: this.directives,
       fields: Object.keys(this.definition).map((key) => {
         const field = this.definition[key];
-        return `${key}${field.argsToString()}: ${field.toString()}${field.directivesToString()}`;
+        return `${key}${field.argsToString()}: ${field.toString()}${field.directivesToString(modes)}`;
       }),
+      modes,
     });
   }
 

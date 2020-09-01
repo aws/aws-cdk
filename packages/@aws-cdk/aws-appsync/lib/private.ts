@@ -1,3 +1,4 @@
+import { AuthorizationType } from './graphqlapi';
 import { Directive } from './schema-base';
 import { InterfaceType } from './schema-intermediate';
 
@@ -47,6 +48,10 @@ export interface SchemaAdditionOptions {
    * the fields to reduce onto the addition
    */
   readonly fields: string[];
+  /**
+   * the authorization modes for this graphql type
+   */
+  readonly modes?: AuthorizationType[];
 }
 
 /**
@@ -203,8 +208,8 @@ function generateInterfaces(interfaceTypes?: InterfaceType[]): string {
  * @param directives the directives of a given type
  * @param delimiter the separator betweeen directives (by default we will add a space)
  */
-function generateDirectives(directives?: Directive[], delimiter?: string): string {
+function generateDirectives(directives?: Directive[], delimiter?: string, modes?: AuthorizationType[]): string {
   if (!directives || directives.length === 0) return '';
   return directives.reduce((acc, directive) =>
-    `${acc}${directive.statement}${delimiter ?? ' '}`, ' ').slice(0, -1);
+    `${acc}${directive.toString(modes)}${delimiter ?? ' '}`, ' ').slice(0, -1);
 }

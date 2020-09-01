@@ -198,11 +198,11 @@ describe('testing Object Type properties', () => {
     });
     test.addField('resolve', new appsync.Field({
       returnType: t.string,
-      directives: [appsync.Directive.iam()],
+      directives: [appsync.Directive.apiKey()],
     }));
 
     api.addType(test);
-    const out = 'type Test {\n  test: String\n  resolve: String\n  @aws_iam\n}\n';
+    const out = 'type Test {\n  test: String\n  resolve: String\n  @aws_api_key\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
@@ -219,12 +219,12 @@ describe('testing Object Type properties', () => {
     });
     test.addField('resolve', new appsync.ResolvableField({
       returnType: t.string,
-      directives: [appsync.Directive.iam()],
+      directives: [appsync.Directive.apiKey()],
       dataSource: api.addNoneDataSource('none'),
     }));
 
     api.addType(test);
-    const out = 'type Test {\n  test: String\n  resolve: String\n  @aws_iam\n}\n';
+    const out = 'type Test {\n  test: String\n  resolve: String\n  @aws_api_key\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {

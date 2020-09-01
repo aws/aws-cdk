@@ -377,6 +377,11 @@ export class GraphQLApi extends GraphqlApiBase {
   public readonly schema: Schema;
 
   /**
+   * The Authorization Types for this GraphQL Api
+   */
+  public readonly modes: AuthorizationType[];
+
+  /**
    * the configured API key, if present
    *
    * @default - no api key
@@ -394,6 +399,8 @@ export class GraphQLApi extends GraphqlApiBase {
       { authorizationType: AuthorizationType.API_KEY };
     const additionalModes = props.authorizationConfig?.additionalAuthorizationModes ?? [];
     const modes = [defaultMode, ...additionalModes];
+
+    this.modes = modes.map((mode) => mode.authorizationType );
 
     this.validateAuthorizationProps(modes);
 

@@ -46,7 +46,7 @@ const table = new db.Table(stack, 'table', {
 const tableDS = api.addDynamoDbDataSource('planets', table);
 
 const planet = ObjectType.planet;
-schema.addToSchema(planet.toString());
+schema.addType(planet);
 
 api.addType(new appsync.ObjectType('Species', {
   interfaceTypes: [node],

@@ -1,13 +1,14 @@
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
+import * as cognito from '@aws-cdk/aws-cognito';
 import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
 
 const iam = [appsync.Directive.iam()];
 const apiKey = [appsync.Directive.apiKey()];
 const oidc = [appsync.Directive.oidc()];
-const cognito_default = [appsync.Directive.cognito(['test', 'test2'])];
-const cognito_additional = [appsync.Directive.cognito(['test', 'test2'], true)];
+const cognito_default = [appsync.Directive.cognito('test', 'test2')];
+const cognito_additional = [appsync.Directive.cognito('test', 'test2')];
 const custom = [appsync.Directive.custom('custom')];
 
 const generateField = (directives: appsync.Directive[]): appsync.Field => {
@@ -25,12 +26,52 @@ const generateRField = (directives: appsync.Directive[]): appsync.ResolvableFiel
 };
 
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+
+let api_apiKey: appsync.GraphQLApi, api_iam: appsync.GraphQLApi, api_oidc: appsync.GraphQLApi,
+  api_auth: appsync.GraphQLApi, api_cognito: appsync.GraphQLApi;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'api', {
+  const userPool = new cognito.UserPool(stack, 'userpool');
+  api_apiKey = new appsync.GraphQLApi(stack, 'api_apiKey', {
     name: 'api',
+  });
+  api_iam = new appsync.GraphQLApi(stack, 'api_iam', {
+    name: 'api',
+    authorizationConfig: {
+      defaultAuthorization: {
+        authorizationType: appsync.AuthorizationType.IAM,
+      },
+    },
+  });
+  api_oidc = new appsync.GraphQLApi(stack, 'api_oidc', {
+    name: 'api',
+    authorizationConfig: {
+      defaultAuthorization: {
+        authorizationType: appsync.AuthorizationType.OIDC,
+        openIdConnectConfig: { oidcProvider: 'test' },
+      },
+    },
+  });
+  api_auth = new appsync.GraphQLApi(stack, 'api_cognito_default', {
+    name: 'api',
+    authorizationConfig: {
+      defaultAuthorization: {
+        authorizationType: appsync.AuthorizationType.USER_POOL,
+        userPoolConfig: { userPool },
+      },
+    },
+  });
+  api_cognito = new appsync.GraphQLApi(stack, 'api_cognito_additional', {
+    name: 'api',
+    authorizationConfig: {
+      additionalAuthorizationModes: [
+        {
+          authorizationType: appsync.AuthorizationType.USER_POOL,
+          userPoolConfig: { userPool },
+        },
+      ],
+    },
   });
 });
 
@@ -65,35 +106,35 @@ const testInterfaceType = (IApi: appsync.GraphQLApi, directives: appsync.Directi
 };
 
 describe('Basic Testing of Directives for Code-First', () => {
-  test('Iam directive configures in Object Type', () => { testObjectType(api, iam, '@aws_iam'); });
+  test('Iam directive configures in Object Type', () => { testObjectType(api_iam, iam, '@aws_iam'); });
 
-  test('Iam directive configures in Interface Type', () => { testInterfaceType(api, iam, '@aws_iam'); });
+  test('Iam directive configures in Interface Type', () => { testInterfaceType(api_iam, iam, '@aws_iam'); });
 
-  test('Api Key directive configures in Object Type', () => { testObjectType(api, apiKey, '@aws_api_key'); });
+  test('Api Key directive configures in Object Type', () => { testObjectType(api_apiKey, apiKey, '@aws_api_key'); });
 
-  test('Api Key directive configures in Interface Type', () => { testInterfaceType(api, apiKey, '@aws_api_key'); });
+  test('Api Key directive configures in Interface Type', () => { testInterfaceType(api_apiKey, apiKey, '@aws_api_key'); });
 
-  test('OIDC directive configures in Object Type', () => { testObjectType(api, oidc, '@aws_oidc'); });
+  test('OIDC directive configures in Object Type', () => { testObjectType(api_oidc, oidc, '@aws_oidc'); });
 
-  test('OIDC directive configures in Interface Type', () => { testInterfaceType(api, oidc, '@aws_oidc'); });
+  test('OIDC directive configures in Interface Type', () => { testInterfaceType(api_oidc, oidc, '@aws_oidc'); });
 
   test('Cognito as default directive configures in Object Type', () => {
-    testObjectType(api, cognito_default, '@aws_auth(cognito_groups: ["test", "test2"])');
+    testObjectType(api_auth, cognito_default, '@aws_auth(cognito_groups: ["test", "test2"])');
   });
 
   test('Cognito as default directive configures in Interface Type', () => {
-    testInterfaceType(api, cognito_default, '@aws_auth(cognito_groups: ["test", "test2"])');
+    testInterfaceType(api_auth, cognito_default, '@aws_auth(cognito_groups: ["test", "test2"])');
   });
 
   test('Cognito as additional directive configures in Object Type', () => {
-    testObjectType(api, cognito_additional, '@aws_cognito_user_pools(cognito_groups: ["test", "test2"])');
+    testObjectType(api_cognito, cognito_additional, '@aws_cognito_user_pools(cognito_groups: ["test", "test2"])');
   });
 
   test('Custom directive configures in Object Type', () => {
-    testObjectType(api, custom, 'custom');
+    testObjectType(api_cognito, custom, 'custom');
   });
 
   test('Custom directive configures in Interface Type', () => {
-    testInterfaceType(api, custom, 'custom');
+    testInterfaceType(api_cognito, custom, 'custom');
   });
 });
