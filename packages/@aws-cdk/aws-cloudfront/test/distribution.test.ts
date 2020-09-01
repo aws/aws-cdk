@@ -468,6 +468,7 @@ describe('with Lambda@Edge functions', () => {
           {
             functionVersion: lambdaFunction.currentVersion,
             eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+            includeBody: true,
           },
         ],
       },
@@ -479,12 +480,49 @@ describe('with Lambda@Edge functions', () => {
           LambdaFunctionAssociations: [
             {
               EventType: 'origin-request',
+              IncludeBody: true,
               LambdaFunctionARN: {
                 Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
               },
             },
           ],
         },
+      },
+    });
+  });
+
+  test('edgelambda.amazonaws.com is added to the trust policy of lambda', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: lambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+          },
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'edgelambda.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
       },
     });
   });
@@ -591,6 +629,42 @@ describe('with Lambda@Edge functions', () => {
     });
 
     expect(() => app.synth()).toThrow(/KEY/);
+  });
+
+  test('with singleton function', () => {
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: 'singleton-for-cloudfront',
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromInline('code'),
+      handler: 'index.handler',
+    });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: singleton.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          LambdaFunctionAssociations: [
+            {
+              EventType: 'origin-request',
+              LambdaFunctionARN: {
+                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion0078406348a0962a52448a200cd0dbc0e22edb2a',
+              },
+            },
+          ],
+        },
+      },
+    });
   });
 });
 

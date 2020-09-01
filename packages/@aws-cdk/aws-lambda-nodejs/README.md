@@ -104,21 +104,21 @@ same version will be used for installation. If a lock file is detected (`package
 `yarn.lock`) it will be used along with the right installer (`npm` or `yarn`).
 
 ### Local bundling
-If Parcel v2 is available it will be used to bundle your code in your environment. Otherwise,
+If Parcel v2.0.0-beta.1 is available it will be used to bundle your code in your environment. Otherwise,
 bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
 
 For macOS the recommendend approach is to install Parcel as Docker volume performance is really poor.
 
-Parcel v2 can be installed with:
+Parcel v2.0.0-beta.1 can be installed with:
 
 ```bash
-$ npm install --save-dev parcel@next
+$ npm install --save-dev --save-exact parcel@2.0.0-beta.1
 ```
 
 OR
 
 ```bash
-$ yarn add --dev @parcel@next
+$ yarn add --dev --exact parcel@2.0.0-beta.1
 ```
 
 To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This

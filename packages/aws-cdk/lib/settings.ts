@@ -204,6 +204,7 @@ export class Settings {
       versionReporting: argv.versionReporting,
       staging: argv.staging,
       output: argv.output,
+      progress: argv.progress,
     });
   }
 
