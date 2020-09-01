@@ -122,7 +122,6 @@
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.OPENX_JSON",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.ORC",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.PARQUET",
-      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.XML",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.REGEXP",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.className",
       "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.AVRO",

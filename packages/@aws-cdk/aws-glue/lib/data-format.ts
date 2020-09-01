@@ -40,13 +40,6 @@ export class InputFormat {
    */
   public static readonly TEXT = new InputFormat('org.apache.hadoop.mapred.TextInputFormat');
 
-  /**
-   * InputFormat for XML files.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-xml
-   */
-  public static readonly XML = new InputFormat('com.ibm.spss.hive.serde2.xml.XmlInputFormat');
-
   constructor(public readonly className: string) {}
 }
 
@@ -140,11 +133,6 @@ export class SerializationLibrary {
    * @see https://hive.apache.org/javadocs/r1.2.2/api/org/apache/hadoop/hive/serde2/RegexSerDe.html
    */
   public static readonly REGEXP = new SerializationLibrary('org.apache.hadoop.hive.serde2.RegexSerDe');
-
-  /**
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-xml
-   */
-  public static readonly XML = new SerializationLibrary('com.ibm.spss.hive.serde2.xml.XmlSerDe');
 
   constructor(public readonly className: string) {}
 }
@@ -319,17 +307,6 @@ export class DataFormat {
    * @see https://docs.aws.amazon.com/athena/latest/ug/lazy-simple-serde.html
    */
   public static readonly TSV = new DataFormat({
-    inputFormat: InputFormat.TEXT,
-    outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.LAZY_SIMPLE,
-  });
-
-  /**
-   * DataFormat for XML
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-xml
-   */
-  public static readonly XML = new DataFormat({
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
     serializationLibrary: SerializationLibrary.LAZY_SIMPLE,
