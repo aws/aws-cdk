@@ -65,13 +65,15 @@ export class KubectlProvider extends NestedStack {
       throw new Error('"kubectlSecurityGroup" is required if "kubectlSubnets" is specified');
     }
 
+    const layer = cluster.kubectlLayer ?? KubectlLayer.getOrCreate(this);
+
     const handler = new lambda.Function(this, 'Handler', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'kubectl-handler')),
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
       description: 'onEvent handler for EKS kubectl resource provider',
-      layers: [KubectlLayer.getOrCreate(this, { version: '2.0.0' })],
+      layers: [layer],
       memorySize: 256,
       environment: cluster.kubectlEnvironment,
 

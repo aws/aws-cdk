@@ -4,16 +4,22 @@ import { CfnResource, Construct, Stack, Token } from '@aws-cdk/core';
 
 const KUBECTL_APP_ARN = 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl';
 const KUBECTL_APP_CN_ARN = 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl';
-
-const KUBECTL_APP_VERSION = '1.13.7';
+const KUBECTL_APP_VERSION = '2.0.0';
 
 export interface KubectlLayerProps {
   /**
    * The semantic version of the kubectl AWS Lambda Layer SAR app to use.
    *
-   * @default '1.13.7'
+   * @default '2.0.0'
    */
   readonly version?: string;
+
+  /**
+   * The Serverless Application Repository application ID which contains the kubectl layer.
+   * @default - The ARN for the `lambda-layer-kubectl` SAR app.
+   * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
+   */
+  readonly applicationId?: string;
 }
 
 /**
@@ -51,14 +57,15 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
     super(scope, id);
 
     const uniqueId = crypto.createHash('md5').update(this.node.path).digest('hex');
-    const version = props.version || KUBECTL_APP_VERSION;
+    const version = props.version ?? KUBECTL_APP_VERSION;
+    const applictionId = props.applicationId ?? (this.isChina() ? KUBECTL_APP_CN_ARN : KUBECTL_APP_ARN);
 
     this.stack.templateOptions.transforms = ['AWS::Serverless-2016-10-31']; // required for AWS::Serverless
     const resource = new CfnResource(this, 'Resource', {
       type: 'AWS::Serverless::Application',
       properties: {
         Location: {
-          ApplicationId: this.isChina() ? KUBECTL_APP_CN_ARN : KUBECTL_APP_ARN,
+          ApplicationId: applictionId,
           SemanticVersion: version,
         },
         Parameters: {

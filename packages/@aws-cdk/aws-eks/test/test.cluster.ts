@@ -3,6 +3,7 @@ import * as path from 'path';
 import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
@@ -1848,6 +1849,57 @@ export = {
 
     // make sure the attribute points to the expected custom resource and extracts the correct attribute
     test.deepEqual(rawTemplate.Outputs.LoadBalancerAddress.Value, { 'Fn::GetAtt': [expectedKubernetesGetId, 'Value'] });
+    test.done();
+  },
+
+  'custom kubectl layer can be provided'(test: Test) {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    const layer = lambda.LayerVersion.fromLayerVersionArn(stack, 'MyLayer', 'arn:of:layer');
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: layer,
+    });
+
+    // THEN
+    const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    expect(providerStack).to(haveResource('AWS::Lambda::Function', {
+      Layers: ['arn:of:layer'],
+    }));
+
+    test.done();
+  },
+
+  'SAR-based kubectl layer can be customized'(test: Test) {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    const layer = new eks.KubectlLayer(stack, 'Kubectl', {
+      applicationId: 'custom:app:id',
+      version: '2.3.4',
+    });
+
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: layer,
+    });
+
+    // THEN
+    const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    expect(providerStack).to(haveResource('AWS::Lambda::Function', {
+      Layers: [{ Ref: 'referencetoStackKubectl7F29063EOutputsLayerVersionArn' }],
+    }));
+
+    expect(stack).to(haveResource('AWS::Serverless::Application', {
+      Location: {
+        ApplicationId: 'custom:app:id',
+        SemanticVersion: '2.3.4',
+      },
+    }));
+
     test.done();
   },
 };
