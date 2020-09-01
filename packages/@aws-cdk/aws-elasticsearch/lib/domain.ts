@@ -1321,7 +1321,7 @@ export class Domain extends DomainBase implements IDomain {
     // Only R3 and I3 support instance storage, per
     // https://aws.amazon.com/elasticsearch-service/pricing/
     if (!ebsEnabled && !isEveryInstanceType('r3', 'i3')) {
-      throw new Error('EBS volumes are required for all instance types except R3 and I3.');
+      throw new Error('EBS volumes are required when using instance types other than r3 or i3.');
     }
 
     // Fine-grained access control requires node-to-node encryption, encryption at rest,
