@@ -65,7 +65,7 @@ Your cluster will be empty by default. To add a default database upon constructi
 ### Starting an instance database
 
 To set up a instance database, define a `DatabaseInstance`. You must
-always launch a database in a VPC. Use the `vpcPlacement` attribute to control whether
+always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
 ```ts
@@ -75,7 +75,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
   masterUsername: 'syscdk',
   vpc,
-  vpcPlacement: {
+  vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE
   }
 });

@@ -317,9 +317,17 @@ export interface DatabaseInstanceNewProps {
   /**
    * The type of subnets to add to the created DB subnet group.
    *
+   * @deprecated use `vpcSubnets`
    * @default - private subnets
    */
   readonly vpcPlacement?: ec2.SubnetSelection;
+
+  /**
+   * The type of subnets to add to the created DB subnet group.
+   *
+   * @default - private subnets
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * The security groups to assign to the DB instance.
@@ -537,9 +545,12 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     super(scope, id);
 
     this.vpc = props.vpc;
-    this.vpcPlacement = props.vpcPlacement;
+    if (props.vpcSubnets && props.vpcPlacement) {
+      throw new Error('Only one of `vpcSubnets` or `vpcPlacement` can be specified');
+    }
+    this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcPlacement);
+    const { subnetIds } = props.vpc.selectSubnets(this.vpcPlacement);
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'SubnetGroup', {
       dbSubnetGroupDescription: `Subnet group for ${this.node.id} database`,
@@ -611,7 +622,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
+      publiclyAccessible: this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
       storageType,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
