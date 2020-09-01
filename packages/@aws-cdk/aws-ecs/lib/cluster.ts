@@ -185,7 +185,7 @@ export class Cluster extends Resource implements ICluster {
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
    */
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
-    if ((options.machineImage && options.machineImageType) || (!options.machineImage && !options.machineImageType)) {
+    if ((options.machineImage && options.machineImageType) || (options.machineImage === undefined && options.machineImageType === undefined)) {
       throw new Error('You must specify either a machineImage or machineImageType, at least one, not both.');
     }
 
@@ -222,26 +222,33 @@ export class Cluster extends Resource implements ICluster {
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
 
     // Tie instances to cluster
+    // Bottlerocket AMI
     if(options.machineImageType===MachineImageType.BOTTLEROCKET) {
       autoScalingGroup.addUserData(
         '[settings.ecs]',
         `cluster = "${this.clusterName}"`
       )
+      // Enabling SSM
+      // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#enabling-ssm
+      autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'))
+      // required managed policy
+      autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'))
     } else  {
+      // Amazon ECS-optimized AMI for Amazon Linux 2
       autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
-    }
+    
+      if (!options.canContainersAccessInstanceRole) {
+        // Deny containers access to instance metadata service
+        // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
+        autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+        autoScalingGroup.addUserData('sudo service iptables save');
+        // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
+        autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+      }
 
-    if (!options.canContainersAccessInstanceRole) {
-      // Deny containers access to instance metadata service
-      // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-      autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-      autoScalingGroup.addUserData('sudo service iptables save');
-      // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
-      autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
-    }
-
-    if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
-      autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
+      if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
+        autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
+      }
     }
 
     // ECS instances must be able to do these things
