@@ -30,7 +30,7 @@ export enum NodegroupAmiType {
    */
   AL2_X86_64_GPU = 'AL2_x86_64_GPU',
   /**
-   * Amazon Linux 2(ARM_64)
+   * Amazon Linux 2 (ARM-64)
    */
   AL2_ARM_64 = 'AL2_ARM_64'
 }
