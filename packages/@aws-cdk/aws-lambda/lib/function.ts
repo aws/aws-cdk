@@ -264,6 +264,22 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - default options as described in `VersionOptions`
    */
   readonly currentVersionOptions?: VersionOptions;
+
+  /**
+   * The filesystem configuration for the lambda function
+   *
+   * @default - will not mount any filesystem
+   */
+  readonly filesystem?: FileSystem;
+
+  /**
+   * Lambda Functions in a public subnet can NOT access the internet.
+   * Use this property to acknowledge this limitation and still place the function in a public subnet.
+   * @see https://stackoverflow.com/questions/52992085/why-cant-an-aws-lambda-function-inside-a-public-subnet-in-a-vpc-connect-to-the/52994841#52994841
+   *
+   * @default false
+   */
+  readonly allowPublicSubnet?: boolean;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -292,22 +308,6 @@ export interface FunctionProps extends FunctionOptions {
    * the handler.
    */
   readonly handler: string;
-
-  /**
-   * The filesystem configuration for the lambda function
-   *
-   * @default - will not mount any filesystem
-   */
-  readonly filesystem?: FileSystem;
-
-  /**
-   * Lambda Functions in a public subnet can NOT access the internet.
-   * Use this property to acknowledge this limitation and still place the function in a public subnet.
-   * @see https://stackoverflow.com/questions/52992085/why-cant-an-aws-lambda-function-inside-a-public-subnet-in-a-vpc-connect-to-the/52994841#52994841
-   *
-   * @default false
-   */
-  readonly allowPublicSubnet?: boolean;
 }
 
 /**
