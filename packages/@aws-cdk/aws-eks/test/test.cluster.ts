@@ -482,7 +482,7 @@ export = {
             },
             Manifest: '[{\"foo\":\"bar\"}]',
             ClusterName: { 'Fn::ImportValue': 'Stack:ExportsOutputRefclusterC5B25D0D98D553F5' },
-            RoleArn: { 'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttclusterCreationRole2B3B5002ArnF05122FC' },
+            RoleArn: { 'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttclusterCreationRoleCDBEDA99Arn147C2F4D' },
           },
           UpdateReplacePolicy: 'Delete',
           DeletionPolicy: 'Delete',
@@ -1189,7 +1189,7 @@ export = {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Resource: {
-                Ref: 'referencetoStackMyClusterCreationRoleA67486E4Arn',
+                Ref: 'referencetoStackMyClusterCreationRoleF6C97649Arn',
               },
             },
           ],
@@ -1227,7 +1227,7 @@ export = {
         },
         RoleArn: {
           'Fn::GetAtt': [
-            'MyClusterCreationRoleB5FA4FF3',
+            'MyClusterCreationRole93BAC2B5',
             'Arn',
           ],
         },
@@ -1319,8 +1319,6 @@ export = {
         'Clusterfargateprofileprofile3D06F3076',
         'Clusterfargateprofileprofile4PodExecutionRole086057FB',
         'Clusterfargateprofileprofile4A0E3BBE8',
-        'ClusterCreationRoleDefaultPolicyE8BDFC7B',
-        'ClusterCreationRole360249B6',
         'Cluster9EE0221C',
       ]);
 
@@ -1361,7 +1359,7 @@ export = {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Resource: {
-                Ref: 'referencetoStackCluster1CreationRoleEF7C9BBCArn',
+                Ref: 'referencetoStackCluster1CreationRole97A9C8ACArn',
               },
             },
           ],
@@ -1814,7 +1812,7 @@ export = {
       },
       RoleArn: {
         'Fn::GetAtt': [
-          'Cluster1CreationRoleA231BE8D',
+          'Cluster1CreationRole1CE09E77',
           'Arn',
         ],
       },
