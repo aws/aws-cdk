@@ -156,7 +156,7 @@ export class SerializationLibrary {
  */
 export class ClassificationString {
   /**
-   * @see https://hive.apache.org/javadocs/r1.2.2/api/org/apache/hadoop/hive/serde2/avro/AvroSerDe.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-avro
    */
   public static readonly AVRO = new ClassificationString('avro');
 
