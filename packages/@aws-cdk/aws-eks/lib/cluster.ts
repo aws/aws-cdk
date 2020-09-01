@@ -1230,12 +1230,7 @@ export class Cluster extends ClusterBase {
       throw new Error('Only a single EKS cluster can be defined within a CloudFormation stack');
     }
 
-    const provider = new KubectlProvider(this.stack, uid, { cluster: this });
-
-    // allow the kubectl provider to assume the cluster creation role.
-    // this._clusterResource.addTrustedRole(provider.handlerRole);
-
-    return provider;
+    return new KubectlProvider(this.stack, uid, { cluster: this });
   }
 
   private selectPrivateSubnets(): ec2.ISubnet[] {
