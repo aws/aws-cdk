@@ -186,8 +186,6 @@ Amazon Linux 2 AMI for ARM64 will be automatically selected.
 cluster = new eks.Cluster(this, 'Cluster', {
   vpc,
   mastersRole,
-  defaultCapacity: 2,
-  defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
   version: eks.KubernetesVersion.V1_17,
 });
 
