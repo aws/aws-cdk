@@ -1441,7 +1441,7 @@ export interface EksOptimizedImageProps {
   readonly nodeType?: NodeType;
 
   /**
-   * What cpu architcture to retrieve the image for (arm64 or x86_64)
+   * What cpu architecture to retrieve the image for (arm64 or x86_64)
    *
    * @default CpuArch.X86_64
    */
