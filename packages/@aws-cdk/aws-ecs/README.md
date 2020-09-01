@@ -146,6 +146,26 @@ cluster.addCapacity('AsgSpot', {
 });
 ```
 
+### Bottlerocket
+
+[Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open source operating system that is
+purpose-built by AWS for running containers. You can launch Amazon ECS container instances with the Bottlerocket AMI.
+
+> **NOTICE**: The Bottlerocket AMI is in developer preview release for Amazon ECS and is subject to change.
+
+The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `c5.large` Linux instances running with `Bottlerocket` AMI.
+
+Note that you must specify either a `machineImage` or `machineImageType`, at least one, not both.
+
+
+```ts
+cluster.addCapacity('bottlerocket-asg', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c5.large'),
+  machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+});
+```
+
 ### SNS Topic Encryption
 
 When the `ecs.AddCapacityOptions` that you provide has a non-zero `taskDrainTime` (the default) then an SNS topic and Lambda are created to ensure that the
