@@ -101,7 +101,7 @@ api.addMutation('addPlanet', new appsync.ResolvableField({
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 }));
 
-api.addType(new appsync.InputType('input', {
+api.addType(new appsync.InputType('AwesomeInput', {
   definition: { awesomeInput: ScalarType.string },
 }));
 

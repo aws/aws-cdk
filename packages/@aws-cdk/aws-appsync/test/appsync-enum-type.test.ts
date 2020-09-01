@@ -35,7 +35,7 @@ describe('testing Enum Type properties', () => {
       definition: ['test1', 'test2'],
     });
     api.addType(test);
-    test.addField('test3', t.string);
+    test.addField({ fieldName: 'test3' });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
@@ -78,7 +78,29 @@ describe('testing Enum Type properties', () => {
     });
     // THEN
     expect(() => {
-      test.addField(' ', t.string);
+      test.addField({ fieldName: ' ' });
     }).toThrowError('Enum fields cannot contain white space.');
+  });
+
+  test('appsync errors when enum type is configured with field options', () => {
+    // WHEN
+    const test = new appsync.EnumType('Test', {
+      definition: [],
+    });
+    // THEN
+    expect(() => {
+      test.addField({ fieldName: 'test', field: t.string });
+    }).toThrowError('Enum Types does not support IField properties. Use the fieldName option.');
+  });
+
+  test('appsync errors when enum type is missing fieldName option', () => {
+    // WHEN
+    const test = new appsync.EnumType('Test', {
+      definition: [],
+    });
+    // THEN
+    expect(() => {
+      test.addField({});
+    }).toThrowError('The Field option, fieldName, must be declared.');
   });
 });
