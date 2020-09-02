@@ -38,6 +38,11 @@ export interface ISubnet extends IResource {
   readonly internetConnectivityEstablished: IDependable;
 
   /**
+   * The IPv4 CIDR block for this subnet
+   */
+  readonly ipv4CidrBlock: string;
+
+  /**
    * The route table for this subnet
    */
   readonly routeTable: IRouteTable;
@@ -653,6 +658,7 @@ export interface VpcAttributes {
 }
 
 export interface SubnetAttributes {
+
   /**
    * The Availability Zone the subnet is located in
    *
@@ -661,9 +667,11 @@ export interface SubnetAttributes {
   readonly availabilityZone?: string;
 
   /**
-   * The subnetId for this particular subnet
+   * The IPv4 CIDR block associated with the subnet
+   *
+   * @default - No CIDR information, cannot use CIDR filter features
    */
-  readonly subnetId: string;
+  readonly ipv4CidrBlock?: string;
 
   /**
    * The ID of the route table for this particular subnet
@@ -671,6 +679,11 @@ export interface SubnetAttributes {
    * @default - No route table information, cannot create VPC endpoints
    */
   readonly routeTableId?: string;
+
+  /**
+   * The subnetId for this particular subnet
+   */
+  readonly subnetId: string;
 }
 
 /**
@@ -1442,6 +1455,11 @@ export class Subnet extends Resource implements ISubnet {
   public readonly availabilityZone: string;
 
   /**
+   * @attribute
+   */
+  public readonly ipv4CidrBlock: string;
+
+  /**
    * The subnetId for this particular subnet
    */
   public readonly subnetId: string;
@@ -1490,6 +1508,7 @@ export class Subnet extends Resource implements ISubnet {
     Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.availabilityZone = props.availabilityZone;
+    this.ipv4CidrBlock = props.cidrBlock;
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpcId,
       cidrBlock: props.cidrBlock,
@@ -1889,6 +1908,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;
   private readonly _availabilityZone?: string;
+  private readonly _ipv4CidrBlock?: string;
 
   constructor(scope: Construct, id: string, attrs: SubnetAttributes) {
     super(scope, id);
@@ -1901,6 +1921,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
+    this._ipv4CidrBlock = attrs.ipv4CidrBlock;
     this._availabilityZone = attrs.availabilityZone;
     this.subnetId = attrs.subnetId;
     this.routeTable = {
@@ -1915,6 +1936,14 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       throw new Error("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
     }
     return this._availabilityZone;
+  }
+
+  public get ipv4CidrBlock(): string {
+    if (!this._ipv4CidrBlock) {
+      // tslint:disable-next-line: max-line-length
+      throw new Error("You cannot reference an imported Subnet's IPv4 CIDR if it was not supplied. Add the ipv4CidrBlock when importing using Subnet.fromSubnetAttributes()");
+    }
+    return this._ipv4CidrBlock;
   }
 
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {

@@ -1,3 +1,4 @@
+import { CidrBlock, NetworkUtils } from './network-util';
 import { ISubnet } from './vpc';
 
 /**
@@ -52,6 +53,36 @@ export class OnePerAZSubnetSelector implements ISubnetSelector {
       if (azsSeen.has(subnet.availabilityZone)) { return false; }
       azsSeen.add(subnet.availabilityZone);
       return true;
+    });
+  }
+}
+
+/**
+ * Chooses subnets which contain any of the specified IP addresses.
+ */
+export class ContainsIpAddressesSubnetSelector implements ISubnetSelector {
+
+  private readonly ipAddresses: string[];
+
+  constructor(ipAddresses: string[]) {
+    this.ipAddresses = ipAddresses;
+  }
+
+  /**
+   * Executes the subnet filtering logic.
+   */
+  public selectSubnets(subnets: ISubnet[]): ISubnet[] {
+    return this.retainByIp(subnets, this.ipAddresses);
+  }
+
+  private retainByIp(subnets: ISubnet[], ips: string[]): ISubnet[] {
+    const cidrBlockObjs = ips.map(ip => {
+      const ipNum = NetworkUtils.ipToNum(ip);
+      return new CidrBlock(ipNum, 32);
+    });
+    return subnets.filter(s => {
+      const subnetCidrBlock = new CidrBlock(s.ipv4CidrBlock);
+      return cidrBlockObjs.some(cidr => subnetCidrBlock.containsCidr(cidr));
     });
   }
 }
