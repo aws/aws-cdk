@@ -16,17 +16,28 @@ beforeEach(() => {
 
 test('appsync should configure pipeline when pipelineConfig has contents', () => {
   // WHEN
-  new appsync.Resolver(stack, 'resolver', {
-    api: api,
+  const ds = api.addNoneDataSource('none');
+  const test1 = ds.createFunction({
+    name: 'test1',
+  });
+  const test2 = ds.createFunction({
+    name: 'test2',
+  });
+  ds.createResolver({
     typeName: 'test',
     fieldName: 'test2',
-    pipelineConfig: ['test', 'test'],
+    pipelineConfig: [test1, test2],
   });
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
     Kind: 'PIPELINE',
-    PipelineConfig: { Functions: ['test', 'test'] },
+    PipelineConfig: {
+      Functions: [
+        { 'Fn::GetAtt': ['apinonetest1FunctionEF63046F', 'Name'] },
+        { 'Fn::GetAtt': ['apinonetest2Function615111D0', 'Name'] },
+      ],
+    },
   });
 });
 

@@ -142,15 +142,22 @@ describe('testing Object Type properties', () => {
 
   test('Object Type can implement Resolvable Field for pipelineResolvers', () => {
     // WHEN
+    const ds = api.addNoneDataSource('none');
+    const test1 = ds.createFunction({
+      name: 'test1',
+    });
+    const test2 = ds.createFunction({
+      name: 'test2',
+    });
     const test = new appsync.ObjectType('Test', {
       definition: {
         resolve: new appsync.ResolvableField({
           returnType: t.string,
-          dataSource: api.addNoneDataSource('none'),
+          dataSource: ds,
           args: {
             arg: t.int,
           },
-          pipelineConfig: ['test', 'test'],
+          pipelineConfig: [test1, test2],
         }),
       },
     });
@@ -159,7 +166,12 @@ describe('testing Object Type properties', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
       Kind: 'PIPELINE',
-      PipelineConfig: { Functions: ['test', 'test'] },
+      PipelineConfig: {
+        Functions: [
+          { 'Fn::GetAtt': ['apinonetest1FunctionEF63046F', 'Name'] },
+          { 'Fn::GetAtt': ['apinonetest2Function615111D0', 'Name'] },
+        ],
+      },
     });
   });
 

@@ -2,10 +2,10 @@ import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Construct, IResolvable } from '@aws-cdk/core';
+import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
-import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 
 /**
  * Base properties for an AppSync datasource

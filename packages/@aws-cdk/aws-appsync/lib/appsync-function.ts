@@ -89,7 +89,7 @@ export class AppsyncFunction extends Resource {
 
   public constructor(scope: Construct, id: string, props: AppsyncFunctionProps) {
     super(scope, id);
-    this.function = new CfnFunctionConfiguration(scope, id, {
+    this.function = new CfnFunctionConfiguration(this, 'Resource', {
       name: props.name,
       description: props.description,
       apiId: props.api.apiId,

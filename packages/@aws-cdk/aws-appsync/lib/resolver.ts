@@ -1,4 +1,5 @@
 import { Construct } from '@aws-cdk/core';
+import { AppsyncFunction } from './appsync-function';
 import { CfnResolver } from './appsync.generated';
 import { BaseDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
@@ -17,12 +18,13 @@ export interface BaseResolverProps {
    */
   readonly fieldName: string;
   /**
+   * [disable-awslint:ref-via-interface]
    * configuration of the pipeline resolver
    *
    * @default - no pipeline resolver configuration
    * An empty array | undefined sets resolver to be of kind, unit
    */
-  readonly pipelineConfig?: string[];
+  readonly pipelineConfig?: AppsyncFunction[];
   /**
    * The request mapping template for this resolver
    *
@@ -67,7 +69,9 @@ export class Resolver extends Construct {
   constructor(scope: Construct, id: string, props: ResolverProps) {
     super(scope, id);
 
-    const pipelineConfig = props.pipelineConfig && props.pipelineConfig.length ? { functions: props.pipelineConfig } : undefined;
+    const pipelineConfig = props.pipelineConfig && props.pipelineConfig.length ?
+      { functions: props.pipelineConfig.map((func) => func.functionName) }
+      : undefined;
 
     this.resolver = new CfnResolver(this, 'Resource', {
       apiId: props.api.apiId,

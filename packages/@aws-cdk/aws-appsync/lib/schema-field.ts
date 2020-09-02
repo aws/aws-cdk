@@ -1,3 +1,4 @@
+import { AppsyncFunction } from './appsync-function';
 import { BaseDataSource } from './data-source';
 import { MappingTemplate } from './mapping-template';
 import { Type, IField, IIntermediateType } from './schema-base';
@@ -405,7 +406,7 @@ export interface ResolvableFieldOptions extends FieldOptions {
    * @default - no pipeline resolver configuration
    * An empty array or undefined prop will set resolver to be of type unit
    */
-  readonly pipelineConfig?: string[];
+  readonly pipelineConfig?: AppsyncFunction[];
   /**
    * The request mapping template for this resolver
    *
