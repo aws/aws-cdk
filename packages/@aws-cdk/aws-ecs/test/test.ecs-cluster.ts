@@ -1587,7 +1587,22 @@ export = {
       ],
     }),
     );
+    test.done();
+  },
+  'throws when machineImage and machineImageType both specified'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
+    // THEN
+    test.throws(() => {
+      cluster.addCapacity('bottlerocket-asg', {
+        instanceType: new ec2.InstanceType('c5.large'),
+        machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+        machineImage: new ecs.EcsOptimizedAmi(),
+      });
+    }, /You can only specify either machineImage or machineImageType, not both./);
     test.done();
   },
 };
