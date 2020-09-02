@@ -1104,12 +1104,12 @@ export class Cluster extends Resource implements ICluster {
 
         // when private access is enabled, its best to connect the provider to
         // the vpc so that it may work even when restricting public access.
-        // however, sometimes thats not possible.
 
         const privateSubents = this.selectPrivateSubnets().slice(0, 16);
-
         const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
         const publicAccessRestricted = this.endpointAccess._config.publicCidrs && this.endpointAccess._config.publicCidrs.length !== 0;
+
+        // however, sometimes thats not possible.
 
         if (privateSubents.length === 0 && publicAccessDisabled) {
           // no private subnets and no public access at all, no good.
