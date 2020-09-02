@@ -230,7 +230,7 @@ Adding an existing Lambda@Edge function created in a different stack to a CloudF
 ```ts
 const functionVersion = lambda.Version.fromVersionArn(this, 'Version', 'arn:aws:lambda:us-east-1:123456789012:function:functionName:1');
 
-const distro = new cloudfront.Distribution(this, "distro", {
+new cloudfront.Distribution(this, 'distro', {
   defaultBehavior: {
     origin: new origins.S3Origin(s3Bucket),
     edgeLambdas: [
@@ -240,7 +240,6 @@ const distro = new cloudfront.Distribution(this, "distro", {
        },
     ],
   },
-  ...
 });
 ```
 
