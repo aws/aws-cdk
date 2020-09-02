@@ -523,20 +523,6 @@ abstract class VpcBase extends Resource implements IVpc {
    */
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
 
-    // Establish which subnet filters are going to be used
-    let subnetFilters = placement.subnetFilters ?? [];
-
-    // Backwards compatibility with existing `availabilityZones` and `onePerAz` functionality
-    if (placement.availabilityZones !== undefined) { // Filter by AZs, if specified
-      subnetFilters.push(new AvailabilityZoneSubnetSelector(placement.availabilityZones));
-    }
-    if (!!placement.onePerAz) { // Ensure one per AZ if specified
-      subnetFilters.push(new OnePerAZSubnetSelector());
-    }
-
-    // Overwrite the provided placement filters
-    placement = { ...placement, subnetFilters: subnetFilters };
-
     if (placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
         throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');
@@ -557,6 +543,20 @@ abstract class VpcBase extends Resource implements IVpc {
       let subnetType = this.privateSubnets.length ? SubnetType.PRIVATE : this.isolatedSubnets.length ? SubnetType.ISOLATED : SubnetType.PUBLIC;
       placement = { ...placement, subnetType: subnetType };
     }
+
+    // Establish which subnet filters are going to be used
+    let subnetFilters = placement.subnetFilters ?? [];
+
+    // Backwards compatibility with existing `availabilityZones` and `onePerAz` functionality
+    if (placement.availabilityZones !== undefined) { // Filter by AZs, if specified
+      subnetFilters.push(new AvailabilityZoneSubnetSelector(placement.availabilityZones));
+    }
+    if (!!placement.onePerAz) { // Ensure one per AZ if specified
+      subnetFilters.push(new OnePerAZSubnetSelector());
+    }
+
+    // Overwrite the provided placement filters
+    placement = { ...placement, subnetFilters: subnetFilters };
 
     return placement;
   }
