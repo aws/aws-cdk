@@ -260,6 +260,7 @@ export class Table extends Resource implements ITable {
         partitionKeys: renderColumns(props.partitionKeys),
 
         parameters: {
+          classification: props.dataFormat.classificationString?.value,
           has_encrypted_data: this.encryption !== TableEncryption.UNENCRYPTED,
         },
         storageDescriptor: {
