@@ -6,7 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
+import { Annotations, CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
@@ -1352,7 +1352,7 @@ export class Cluster extends ClusterBase {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
-          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          Annotations.of(this).addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
 

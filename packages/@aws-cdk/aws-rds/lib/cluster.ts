@@ -4,7 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { CfnDeletionPolicy, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Annotations, CfnDeletionPolicy, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
@@ -374,7 +374,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnetIds.length < 2) {
-      this.node.addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
+      Annotations.of(this).addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
