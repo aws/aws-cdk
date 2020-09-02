@@ -352,6 +352,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('allows Conditions to reference Mappings', () => {
+    includeTestTemplate(stack, 'condition-using-mapping.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('condition-using-mapping.json'),
+    );
+  });
+
   test('correctly change references to Conditions when renaming them', () => {
     const cfnTemplate = includeTestTemplate(stack, 'condition-same-name-as-resource.json');
     const alwaysFalse = cfnTemplate.getCondition('AlwaysFalse');
