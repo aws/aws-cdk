@@ -201,7 +201,8 @@ function getCreateExportsScope(stack: Stack) {
 }
 
 function generateExportName(stackExports: Construct, id: string) {
-  const stackRelativeExports = stackExports.node.tryGetContext(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
+  const stackRelativeExports = stackExports.node.tryGetContext(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT) ??
+    cxapi.futureFlagDefault(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
   const stack = Stack.of(stackExports);
 
   const components = [

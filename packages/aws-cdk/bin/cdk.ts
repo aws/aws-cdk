@@ -224,13 +224,14 @@ async function initCommandLine() {
         return await cli.list(args.STACKS, { long: args.long });
 
       case 'diff':
+        const enableDiffNoFail = configuration.context.get(cxapi.ENABLE_DIFF_NO_FAIL) ?? cxapi.futureFlagDefault(cxapi.ENABLE_DIFF_NO_FAIL);
         return await cli.diff({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           templatePath: args.template,
           strict: args.strict,
           contextLines: args.contextLines,
-          fail: args.fail || !configuration.context.get(cxapi.ENABLE_DIFF_NO_FAIL),
+          fail: args.fail || !enableDiffNoFail,
         });
 
       case 'bootstrap':
