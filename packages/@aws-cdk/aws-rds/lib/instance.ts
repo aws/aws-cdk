@@ -2,7 +2,6 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CfnDeletionPolicy, Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
@@ -54,6 +53,11 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
   addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy;
 
   /**
+   * Grant the given identity connection access to the database.
+   */
+  grantConnect(grantee: iam.IGrantable): iam.Grant;
+
+  /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
@@ -103,6 +107,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
       public readonly dbInstanceEndpointPort = attrs.port.toString();
       public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
+      protected enableIamAuthentication = true;
     }
 
     return new Import(scope, id);
@@ -112,6 +117,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public abstract readonly dbInstanceEndpointAddress: string;
   public abstract readonly dbInstanceEndpointPort: string;
   public abstract readonly instanceEndpoint: Endpoint;
+  protected abstract enableIamAuthentication?: boolean;
 
   /**
    * Access to network connections.
@@ -125,6 +131,19 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     return new DatabaseProxy(this, id, {
       proxyTarget: ProxyTarget.fromInstance(this),
       ...options,
+    });
+  }
+
+  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+    if (this.enableIamAuthentication === false) {
+      throw new Error('Cannot grant connect when IAM authentication is disabled');
+    }
+
+    this.enableIamAuthentication = true;
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['rds-db:connect'],
+      resourceArns: [this.instanceArn],
     });
   }
 
@@ -298,9 +317,17 @@ export interface DatabaseInstanceNewProps {
   /**
    * The type of subnets to add to the created DB subnet group.
    *
+   * @deprecated use `vpcSubnets`
    * @default - private subnets
    */
   readonly vpcPlacement?: ec2.SubnetSelection;
+
+  /**
+   * The type of subnets to add to the created DB subnet group.
+   *
+   * @default - private subnets
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * The security groups to assign to the DB instance.
@@ -472,6 +499,21 @@ export interface DatabaseInstanceNewProps {
    * @default - No autoscaling of RDS instance
    */
   readonly maxAllocatedStorage?: number;
+
+  /**
+   * The Active Directory directory ID to create the DB instance in.
+   *
+   * @default - Do not join domain
+   */
+  readonly domain?: string;
+
+  /**
+   * The IAM role to be used when making API calls to the Directory Service. The role needs the AWS-managed policy
+   * AmazonRDSDirectoryServiceAccess or equivalent.
+   *
+   * @default - The role will be created for you if {@link DatabaseInstanceNewProps#domain} is specified
+   */
+  readonly domainRole?: iam.IRole;
 }
 
 /**
@@ -494,13 +536,21 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   private readonly cloudwatchLogsRetention?: logs.RetentionDays;
   private readonly cloudwatchLogsRetentionRole?: iam.IRole;
 
+  private readonly domainId?: string;
+  private readonly domainRole?: iam.IRole;
+
+  protected enableIamAuthentication?: boolean;
+
   constructor(scope: Construct, id: string, props: DatabaseInstanceNewProps) {
     super(scope, id);
 
     this.vpc = props.vpc;
-    this.vpcPlacement = props.vpcPlacement;
+    if (props.vpcSubnets && props.vpcPlacement) {
+      throw new Error('Only one of `vpcSubnets` or `vpcPlacement` can be specified');
+    }
+    this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcPlacement);
+    const { subnetIds } = props.vpc.selectSubnets(this.vpcPlacement);
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'SubnetGroup', {
       dbSubnetGroupDescription: `Subnet group for ${this.node.id} database`,
@@ -532,6 +582,17 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.cloudwatchLogsExports = props.cloudwatchLogsExports;
     this.cloudwatchLogsRetention = props.cloudwatchLogsRetention;
     this.cloudwatchLogsRetentionRole = props.cloudwatchLogsRetentionRole;
+    this.enableIamAuthentication = props.iamAuthentication;
+
+    if (props.domain) {
+      this.domainId = props.domain;
+      this.domainRole = props.domainRole || new iam.Role(this, 'RDSDirectoryServiceRole', {
+        assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
+        ],
+      });
+    }
 
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
@@ -544,7 +605,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection,
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
-      enableIamDatabaseAuthentication: props.iamAuthentication,
+      enableIamDatabaseAuthentication: Lazy.anyValue({ produce: () => this.enableIamAuthentication }),
       enablePerformanceInsights: props.enablePerformanceInsights,
       iops,
       monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
@@ -561,17 +622,19 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
+      publiclyAccessible: this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
       storageType,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
+      domain: this.domainId,
+      domainIamRoleName: this.domainRole?.roleName,
     };
   }
 
   protected setLogRetention() {
     if (this.cloudwatchLogsExports && this.cloudwatchLogsRetention) {
       for (const log of this.cloudwatchLogsExports) {
-        new lambda.LogRetention(this, `LogRetention${log}`, {
+        new logs.LogRetention(this, `LogRetention${log}`, {
           logGroupName: `/aws/rds/instance/${this.instanceIdentifier}/${log}`,
           retention: this.cloudwatchLogsRetention,
           role: this.cloudwatchLogsRetentionRole,

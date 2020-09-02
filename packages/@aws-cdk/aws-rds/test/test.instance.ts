@@ -1,19 +1,24 @@
-import { ABSENT, countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, countResources, expect, haveResource, ResourcePart, haveResourceLike, anything } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
-import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as rds from '../lib';
 
-export = {
-  'create a DB instance'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
+let stack: cdk.Stack;
+let vpc: ec2.Vpc;
 
+export = {
+  'setUp'(cb: () => void) {
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+    cb();
+  },
+
+  'create a DB instance'(test: Test) {
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
@@ -190,10 +195,6 @@ export = {
   },
 
   'instance with option and parameter group'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
       engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
       configurations: [
@@ -236,11 +237,40 @@ export = {
     test.done();
   },
 
-  'create an instance from snapshot'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
+  'can specify subnet type'(test: Test) {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      masterUsername: 'syscdk',
+      vpc,
+      vpcPlacement: {
+        subnetType: ec2.SubnetType.PRIVATE,
+      },
+    });
 
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      DBSubnetGroupName: {
+        Ref: 'InstanceSubnetGroupF2CBA54F',
+      },
+      PubliclyAccessible: false,
+    }));
+    expect(stack).to(haveResource('AWS::RDS::DBSubnetGroup', {
+      DBSubnetGroupDescription: 'Subnet group for Instance database',
+      SubnetIds: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'create an instance from snapshot'(test: Test) {
     // WHEN
     new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
@@ -257,10 +287,6 @@ export = {
   },
 
   'throws when trying to generate a new password from snapshot without username'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
     // THEN
     test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
@@ -274,10 +300,6 @@ export = {
   },
 
   'throws when specifying user name without asking to generate a new password'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
     // THEN
     test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
@@ -291,10 +313,6 @@ export = {
   },
 
   'throws when password and generate password ar both specified'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
     // THEN
     test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
@@ -309,9 +327,6 @@ export = {
   },
 
   'create a read replica in the same region - with the subnet group name'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
     const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -349,9 +364,6 @@ export = {
   },
 
   'on event'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -416,9 +428,6 @@ export = {
   },
 
   'on event without target'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -467,10 +476,6 @@ export = {
   },
 
   'can use metricCPUUtilization'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
@@ -492,10 +497,6 @@ export = {
   },
 
   'can resolve endpoint port and socket address'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
@@ -523,10 +524,6 @@ export = {
   },
 
   'can deactivate backup'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
@@ -545,9 +542,6 @@ export = {
   },
 
   'imported instance with imported security group with allowAllOutbound set to false'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     const instance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'Database', {
       instanceEndpointAddress: 'address',
       instanceIdentifier: 'identifier',
@@ -569,10 +563,6 @@ export = {
   },
 
   'create an instance with imported monitoring role'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
     const monitoringRole = new Role(stack, 'MonitoringRole', {
       assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
       managedPolicies: [
@@ -602,9 +592,6 @@ export = {
   },
 
   'create an instance with an existing security group'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
     const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
       allowAllOutbound: false,
     });
@@ -644,9 +631,6 @@ export = {
   },
 
   'throws when trying to add rotation to an instance without secret'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -662,9 +646,6 @@ export = {
   },
 
   'throws when trying to add single user rotation multiple times'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -682,9 +663,6 @@ export = {
   },
 
   'throws when timezone is set for non-sqlserver database engine'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'vpc');
     const tzSupportedEngines = [rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
       rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB];
     const tzUnsupportedEngines = [rds.DatabaseInstanceEngine.MYSQL, rds.DatabaseInstanceEngine.POSTGRES,
@@ -715,10 +693,6 @@ export = {
   },
 
   'create an instance from snapshot with maximum allocated storage'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
     // WHEN
     new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
@@ -737,10 +711,6 @@ export = {
   },
 
   'create a DB instance with maximum allocated storage'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
@@ -756,6 +726,188 @@ export = {
       BackupRetentionPeriod: 0,
       MaxAllocatedStorage: 250,
     }));
+
+    test.done();
+  },
+
+  'iam authentication - off by default'(test: Test) {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+      masterUsername: 'admin',
+      vpc,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      EnableIAMDatabaseAuthentication: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'createGrant - creates IAM policy and enables IAM auth'(test: Test) {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+      masterUsername: 'admin',
+      vpc,
+    });
+    const role = new Role(stack, 'DBRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+    instance.grantConnect(role);
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      EnableIAMDatabaseAuthentication: true,
+    }));
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'rds-db:connect',
+          Resource: {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':rds:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':db:', { Ref: 'InstanceC1063A87' }]],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    }));
+
+    test.done();
+  },
+
+  'createGrant - throws if IAM auth disabled'(test: Test) {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+      masterUsername: 'admin',
+      vpc,
+      iamAuthentication: false,
+    });
+    const role = new Role(stack, 'DBRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+
+    test.throws(() => { instance.grantConnect(role); }, /Cannot grant connect when IAM authentication is disabled/);
+
+    test.done();
+  },
+
+  'domain - sets domain property'(test: Test) {
+    const domain = 'd-90670a8d36';
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+      vpc,
+      masterUsername: 'admin',
+      domain: domain,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      Domain: domain,
+    }));
+
+    test.done();
+  },
+
+  'domain - uses role if provided'(test: Test) {
+    const domain = 'd-90670a8d36';
+
+    // WHEN
+    const role = new Role(stack, 'DomainRole', { assumedBy: new ServicePrincipal('rds.amazonaws.com') });
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+      vpc,
+      masterUsername: 'admin',
+      domain: domain,
+      domainRole: role,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      Domain: domain,
+      DomainIAMRoleName: stack.resolve(role.roleName),
+    }));
+
+    test.done();
+  },
+
+  'domain - creates role if not provided'(test: Test) {
+    const domain = 'd-90670a8d36';
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+      vpc,
+      masterUsername: 'admin',
+      domain: domain,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      Domain: domain,
+      DomainIAMRoleName: anything(),
+    }));
+
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'rds.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess',
+            ],
+          ],
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'throws when domain is set for mariadb database engine'(test: Test) {
+    const domainSupportedEngines = [rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
+      rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB, rds.DatabaseInstanceEngine.MYSQL,
+      rds.DatabaseInstanceEngine.POSTGRES, rds.DatabaseInstanceEngine.ORACLE_EE];
+    const domainUnsupportedEngines = [rds.DatabaseInstanceEngine.MARIADB];
+
+    // THEN
+    domainSupportedEngines.forEach((engine) => {
+      test.ok(new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+        engine,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
+        masterUsername: 'master',
+        domain: 'd-90670a8d36',
+        vpc,
+      }));
+    });
+
+    domainUnsupportedEngines.forEach((engine) => {
+      const expectedError = new RegExp(`domain property cannot be configured for ${engine.engineType}`);
+
+      test.throws(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+        engine,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
+        masterUsername: 'master',
+        domain: 'd-90670a8d36',
+        vpc,
+      }), expectedError);
+    });
 
     test.done();
   },
