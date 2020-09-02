@@ -1,13 +1,13 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'Artifacts in CodePipeline': {
     'cannot be created with an empty name'(test: Test) {
       test.throws(() => new codepipeline.Artifact(''), /Artifact name must match regular expression/);
@@ -283,7 +283,7 @@ export = {
       test.done();
     },
   },
-};
+});
 
 function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
   cdk.ConstructNode.prepare(construct.node);
