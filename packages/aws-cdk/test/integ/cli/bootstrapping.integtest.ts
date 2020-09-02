@@ -207,11 +207,10 @@ integTest('can dump the template, modify and use it to deploy a custom bootstrap
 
 integTest('switch on termination protection, switch is left alone on re-bootstrap', async () => {
   const bootstrapStackName = fullStackName('bootstrap-stack');
-  const qualifier = randomString();
 
   await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName,
     '--termination-protection', 'true',
-    '--qualifier', qualifier], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
+    '--qualifier', QUALIFIER], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
   await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--force'], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
 
   const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName });
@@ -220,11 +219,10 @@ integTest('switch on termination protection, switch is left alone on re-bootstra
 
 integTest('add tags, left alone on re-bootstrap', async () => {
   const bootstrapStackName = fullStackName('bootstrap-stack');
-  const qualifier = randomString();
 
   await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName,
     '--tags', 'Foo=Bar',
-    '--qualifier', qualifier], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
+    '--qualifier', QUALIFIER], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
   await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--force'], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
 
   const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName });
