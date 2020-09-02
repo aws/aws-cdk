@@ -32,18 +32,19 @@ retention period (including infinite retention).
 
 [retention example](test/example.retention.lit.ts)
 
-#### LogRetention
+### LogRetention
 
-The `LogRetention` construct is a way to manage retention on the log groups that are implicitly created by services upon the first execution.
+The `LogRetention` construct is a way to control the retention period of log groups that are created outside of the CDK. The construct is usually
+used on log groups that are auto created by AWS services, such as [AWS
+lambda](https://docs.aws.amazon.com/lambda/latest/dg/monitoring-cloudwatchlogs.html).
 
-When using `LogRetention` to configure retention for the log group,
- a [CloudFormation custom resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html)
-  is added
-to the stack that pre-creates the log group as part of the stack deployment,
- if it already doesn't exist, and sets the specified log retention period (never expire, by default).
+This is implemented using a [CloudFormation custom
+resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html)
+which pre-creates the log group if it doesn't exist, and sets the specified log retention period (never expire, by default).
  
- **Note** `LogRetention` can also be used to configure a retention for the log group which is in the different region than the stack itself by specifying `logGroupRegion`.
-  A typical use case for it is when using global services that publish their logs to `us-east-1` and the stack itself is created in non `us-east-1` region.
+By default, the log group will be created in the same region as the stack. The `logGroupRegion` property can be used to configure
+log groups in other regions. This is typically useful when controlling retention for log groups auto-created by global services that
+publish their log group to a specific region, such as AWS Chatbot creating a log group in `us-east-1`.
  
 ### Subscriptions and Destinations
 
