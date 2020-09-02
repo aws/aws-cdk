@@ -48,14 +48,14 @@ export class Expiration {
   /**
    * Exipration Value in a formatted Unix Epoch Time in seconds
    */
-  public asEpoch(): number {
-    return Math.round( this.date.getTime() / 1000);
+  public toEpoch(): number {
+    return Math.round(this.date.getTime() / 1000);
   }
   /**
    * Check if Exipiration expires before input
    * @param t the duration to check against
    */
-  public isBefore( t: Duration ): boolean {
+  public isBefore(t: Duration): boolean {
     return this.date < new Date(Date.now() + t.toMilliseconds());
   }
 

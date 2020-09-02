@@ -553,7 +553,7 @@ export class GraphQLApi extends GraphqlApiBase {
     if (config?.expires?.isBefore(Duration.days(1)) || config?.expires?.isAfter(Duration.days(365))) {
       throw Error('API key expiration must be between 1 and 365 days.');
     }
-    const expires = config?.expires ? config?.expires.asEpoch() : undefined;
+    const expires = config?.expires ? config?.expires.toEpoch() : undefined;
     return new CfnApiKey(this, `${config?.name || 'Default'}ApiKey`, {
       expires,
       description: config?.description,

@@ -89,7 +89,7 @@ describe('AppSync API Key Authorization', () => {
   });
 
   test('apiKeyConfig creates default with valid expiration date', () => {
-    const expirationDate: number = cdk.Expiration.after(cdk.Duration.days(10)).asEpoch();
+    const expirationDate: number = cdk.Expiration.after(cdk.Duration.days(10)).toEpoch();
 
     // WHEN
     new appsync.GraphQLApi(stack, 'API', {
