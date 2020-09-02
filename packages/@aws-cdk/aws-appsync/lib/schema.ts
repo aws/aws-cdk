@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { Lazy } from '@aws-cdk/core';
 import { CfnGraphQLSchema } from './appsync.generated';
-import { GraphQLApi } from './graphqlapi';
+import { GraphqlApi } from './graphqlapi';
 import { SchemaMode, shapeAddition } from './private';
 import { IIntermediateType } from './schema-base';
 import { ResolvableField } from './schema-field';
@@ -72,7 +72,7 @@ export class Schema {
    *
    * @param api The binding GraphQL Api
    */
-  public bind(api: GraphQLApi): CfnGraphQLSchema {
+  public bind(api: GraphqlApi): CfnGraphQLSchema {
     if (!this.schema) {
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
@@ -119,7 +119,7 @@ export class Schema {
       this.query = new ObjectType('Query', { definition: {} });
       this.addType(this.query);
     };
-    this.query.addField(fieldName, field);
+    this.query.addField({ fieldName, field });
     return this.query;
   }
 
@@ -142,7 +142,7 @@ export class Schema {
       this.mutation = new ObjectType('Mutation', { definition: {} });
       this.addType(this.mutation);
     };
-    this.mutation.addField(fieldName, field);
+    this.mutation.addField({ fieldName, field });
     return this.mutation;
   }
 
