@@ -45,10 +45,9 @@ CDK stack file `app-stack.ts`:
 import * as appsync from '@aws-cdk/aws-appsync';
 import * as db from '@aws-cdk/aws-dynamodb';
 
-const api = new appsync.GraphQLApi(stack, 'Api', {
+const api = new appsync.GraphqlApi(stack, 'Api', {
   name: 'demo',
-  schemaDefinition: appsync.SchemaDefinition.FILE,
-  schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+  schema: appsync.Schema.fromAsset(join(__dirname, 'schema.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: appsync.AuthorizationType.IAM
@@ -83,14 +82,60 @@ demoDS.createResolver({
 });
 ```
 
-## Imports
+### Schema
+
+Every GraphQL Api needs a schema to define the Api. CDK offers `appsync.Schema`
+for static convenience methods for various types of schema declaration: code-first
+or schema-first.
+
+#### Code-First
+
+When declaring your GraphQL Api, CDK defaults to a code-first approach if the
+`schema` property is not configured. 
+
+```ts
+const api = new appsync.GraphqlApi(stack, 'api', { name: 'myApi' });
+```
+
+CDK will declare a `Schema` class that will give your Api access functions to
+define your schema code-first: `addType`, `addObjectType`, `addToSchema`, etc.
+
+You can also declare your `Schema` class outside of your CDK stack, to define
+your schema externally.
+
+```ts
+const schema = new appsync.Schema();
+schema.addObjectType('demo', {
+  definition: { id: appsync.GraphqlType.id() },
+});
+const api = new appsync.GraphqlApi(stack, 'api', {
+  name: 'myApi',
+  schema
+});
+```
+
+See the [code-first schema](#Code-First-Schema) section for more details.
+
+#### Schema-First
+
+You can define your GraphQL Schema from a file on disk. For convenience, use
+the `appsync.Schema.fromAsset` to specify the file representing your schema.
+
+```ts
+const api = appsync.GraphqlApi(stack, 'api', {
+  name: 'myApi',
+  schema: appsync.Schema.fromAsset(join(__dirname, 'schema.graphl')),
+});
+```
+
+### Imports
 
 Any GraphQL Api that has been created outside the stack can be imported from 
 another stack into your CDK app. Utilizing the `fromXxx` function, you have 
-the ability to add data sources and resolvers through a `IGraphQLApi` interface.
+the ability to add data sources and resolvers through a `IGraphqlApi` interface.
 
 ```ts
-const importedApi = appsync.GraphQLApi.fromGraphQLApiAttributes(stack, 'IApi', {
+const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'IApi', {
   graphqlApiId: api.apiId,
   graphqlArn: api.arn,
 });
@@ -101,7 +146,7 @@ If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
 the expected `arn` for the imported api, given the `apiId`. For creating data 
 sources and resolvers, an `apiId` is sufficient.
 
-## Permissions
+### Permissions
 
 When using `AWS_IAM` as the authorization type for GraphQL API, an IAM Role
 with correct permissions must be used for access to API.
@@ -146,14 +191,14 @@ Use the `grant` function for more granular authorization.
 const role = new iam.Role(stack, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
-const api = new appsync.GraphQLApi(stack, 'API', {
+const api = new appsync.GraphqlApi(stack, 'API', {
   definition
 });
 
 api.grant(role, appsync.IamResource.custom('types/Mutation/fields/updateExample'), 'appsync:GraphQL')
 ```
 
-### IamResource
+#### IamResource
 
 In order to use the `grant` functions, you need to use the class `IamResource`.
 
@@ -163,7 +208,7 @@ In order to use the `grant` functions, you need to use the class `IamResource`.
 
 - `IamResource.all()` permits ALL resources.
 
-### Generic Permissions
+#### Generic Permissions
 
 Alternatively, you can use more generic `grant` functions to accomplish the same usage.
 
@@ -180,7 +225,7 @@ api.grantMutation(role, 'updateExample');
 api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```
 
-## Code-First Schema
+### Code-First Schema
 
 CDK offers the ability to generate your schema in a code-first approach. 
 A code-first approach offers a developer workflow with:
@@ -190,7 +235,7 @@ A code-first approach offers a developer workflow with:
 
 The code-first approach allows for **dynamic** schema generation. You can generate your schema based on variables and templates to reduce code duplication.
 
-### Code-First Example
+#### Code-First Example
 
 To showcase the code-first approach. Let's try to model the following schema segment.
 
@@ -278,29 +323,25 @@ to generate our schema.
 import * as appsync from '@aws-cdk/aws-appsync';
 import * as schema from './object-types';
 
-const api = new appsync.GraphQLApi(stack, 'Api', {
+const api = new appsync.GraphqlApi(stack, 'Api', {
   name: 'demo',
-  schemaDefinition: appsync.SchemaDefinition.CODE,
 });
 
 this.objectTypes = [ schema.Node, schema.Film ];
 
 const filmConnections = schema.generateEdgeAndConnection(schema.Film);
 
-api.addType('Query', {
-  definition: {
-    allFilms: new appsync.ResolvableField(dummyDataSource, {
-      returnType: filmConnections.connection.attribute(),
-      args: schema.args,
-      requestMappingTemplate: dummyRequest,
-      responseMappingTemplate: dummyResponse,
-    },
-  }
-  });
-})
+api.addQuery('allFilms', new appsync.ResolvableField({
+    returnType: filmConnections.connection.attribute(),
+    args: schema.args,
+    dataSource: dummyDataSource,
+    requestMappingTemplate: dummyRequest,
+    responseMappingTemplate: dummyResponse,
+  }),
+});
 
-this.objectTypes.map((t) => api.appendToSchema(t));
-Object.keys(filmConnections).forEach((key) => api.appendToSchema(filmConnections[key]));
+this.objectTypes.map((t) => api.addType(t));
+Object.keys(filmConnections).forEach((key) => api.addType(filmConnections[key]));
 ```
 
 Notice how we can utilize the `generateEdgeAndConnection` function to generate
@@ -310,7 +351,7 @@ create the base Object Type (i.e. Film) and from there we can generate its respe
 
 Check out a more in-depth example [here](https://github.com/BryanPan342/starwars-code-first).
 
-### GraphQL Types
+#### GraphQL Types
 
 One of the benefits of GraphQL is its strongly typed nature. We define the 
 types within an object, query, mutation, interface, etc. as **GraphQL Types**. 
@@ -326,12 +367,12 @@ More concretely, GraphQL Types are simply the types appended to variables.
 Referencing the object type `Demo` in the previous example, the GraphQL Types 
 is `String!` and is applied to both the names `id` and `version`.
 
-### Field and Resolvable Fields
+#### Field and Resolvable Fields
 
 While `GraphqlType` is a base implementation for GraphQL fields, we have abstractions
 on top of `GraphqlType` that provide finer grain support.
 
-#### Field
+##### Field
 
 `Field` extends `GraphqlType` and will allow you to define arguments. [**Interface Types**](#Interface-Types) are not resolvable and this class will allow you to define arguments,
 but not its resolvers.
@@ -358,7 +399,7 @@ const type = new appsync.InterfaceType('Node', {
 });
 ```
 
-#### Resolvable Fields
+##### Resolvable Fields
 
 `ResolvableField` extends `Field` and will allow you to define arguments and its resolvers.
 [**Object Types**](#Object-Types) can have fields that resolve and perform operations on
@@ -420,7 +461,7 @@ const query = new appsync.ObjectType('Query', {
 
 Learn more about fields and resolvers [here](https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-overview.html).
 
-### Intermediate Types
+#### Intermediate Types
 
 Intermediate Types are defined by Graphql Types and Fields. They have a set of defined 
 fields, where each field corresponds to another type in the system. Intermediate 
@@ -429,8 +470,9 @@ Types will be the meat of your GraphQL Schema as they are the types defined by y
 Intermediate Types include:
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
+- [**Input Types**](#Input-Types)
 
-### Interface Types
+##### Interface Types
 
 **Interface Types** are abstract types that define the implementation of other
 intermediate types. They are useful for eliminating duplication and can be used
@@ -445,7 +487,7 @@ const node = new appsync.InterfaceType('Node', {
 });
 ```
 
-### Object Types
+##### Object Types
 
 **Object Types** are types that you declare. For example, in the [code-first example](#code-first-example)
 the `demo` variable is an **Object Type**. **Object Types** are defined by 
@@ -455,9 +497,8 @@ You can create Object Types in three ways:
 
 1. Object Types can be created ***externally***.
     ```ts
-    const api = new appsync.GraphQLApi(stack, 'Api', {
+    const api = new appsync.GraphqlApi(stack, 'Api', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
     });
     const demo = new appsync.ObjectType('Demo', {
       defintion: {
@@ -466,7 +507,7 @@ You can create Object Types in three ways:
       },
     });
 
-    api.appendToSchema(object.toString());
+    api.addType(object);
     ```
     > This method allows for reusability and modularity, ideal for larger projects. 
     For example, imagine moving all Object Type definition outside the stack.
@@ -490,7 +531,7 @@ You can create Object Types in three ways:
     `cdk-stack.ts` - a file containing our cdk stack
     ```ts
     import { demo } from './object-types';
-    api.appendToSchema(demo.toString());
+    api.addType(demo);
     ```
 
 2. Object Types can be created ***externally*** from an Interface Type.
@@ -511,9 +552,8 @@ You can create Object Types in three ways:
 
 3. Object Types can be created ***internally*** within the GraphQL API.
     ```ts
-    const api = new appsync.GraphQLApi(stack, 'Api', {
+    const api = new appsync.GraphqlApi(stack, 'Api', {
       name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
     });
     api.addType('Demo', {
       defintion: {
@@ -524,3 +564,74 @@ You can create Object Types in three ways:
     ```
     > This method provides easy use and is ideal for smaller projects.
 
+##### Input Types
+
+**Input Types** are special types of Intermediate Types. They give users an
+easy way to pass complex objects for top level Mutation and Queries.
+
+```gql
+input Review {
+  stars: Int!
+  commentary: String
+}
+```
+
+The above GraphQL Input Type can be expressed in CDK as the following:
+
+```ts
+const review = new appsync.InputType('Review', {
+  definition: {
+    stars: GraphqlType.int({ isRequired: true }),
+    commentary: GraphqlType.string(),
+  },
+}); 
+api.addType(review);
+```
+
+To learn more about **Input Types**, read the docs [here](https://graphql.org/learn/schema/#input-types).
+
+#### Query
+
+Every schema requires a top level Query type. By default, the schema will look
+for the `Object Type` named `Query`. The top level `Query` is the **only** exposed
+type that users can access to perform `GET` operations on your Api.
+
+To add fields for these queries, we can simply run the `addQuery` function to add
+to the schema's `Query` type.
+
+```ts
+const string = appsync.GraphqlType.string();
+const int = appsync.GraphqlType.int();
+api.addQuery('allFilms', new appsync.ResolvableField({
+  returnType: filmConnection.attribute(),
+  args: { after: string, first: int, before: string, last: int},
+  dataSource: api.addNoneDataSource('none'),
+  requestMappingTemplate: dummyRequest,
+  responseMappingTemplate: dummyResponse,
+}));
+```
+
+To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html). 
+
+#### Mutation
+
+Every schema **can** have a top level Mutation type. By default, the schema will look
+for the `Object Type` named `Mutation`. The top level `Mutation` Type is the only exposed
+type that users can access to perform `mutable` operations on your Api.
+
+To add fields for these mutations, we can simply run the `addMutation` function to add
+to the schema's `Mutation` type.
+
+```ts
+const string = appsync.GraphqlType.string();
+const int = appsync.GraphqlType.int();
+api.addMutation('addFilm', new appsync.ResolvableField({
+  returnType: film.attribute(),
+  args: { name: string, film_number: int },
+  dataSource: api.addNoneDataSource('none'),
+  requestMappingTemplate: dummyRequest,
+  responseMappingTemplate: dummyResponse,
+}));
+```
+
+To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html). 
