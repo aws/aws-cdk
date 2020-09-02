@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Stack, Tag } from '@aws-cdk/core';
+import { Stack, Tags } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
 
@@ -85,8 +85,8 @@ export = {
       selectors: [{ namespace: 'default' }],
     });
 
-    Tag.add(stack, 'aspectTag', 'hello');
-    Tag.add(cluster, 'propTag', '123');
+    Tags.of(stack).add('aspectTag', 'hello');
+    Tags.of(cluster).add('propTag', '123');
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-FargateProfile', {
@@ -285,7 +285,7 @@ export = {
             'Outputs.awscdkawseksClusterResourceProviderframeworkonEventEA97AA31Arn',
           ],
         },
-        AssumeRoleArn: { 'Fn::GetAtt': ['MyClusterCreationRoleB5FA4FF3', 'Arn'] },
+        AssumeRoleArn: { 'Fn::GetAtt': ['MyClusterCreationRole93BAC2B5', 'Arn'] },
         Config: {
           clusterName: { Ref: 'MyCluster8AD82BF8' },
           podExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfile2PodExecutionRoleD1151CCF', 'Arn'] },

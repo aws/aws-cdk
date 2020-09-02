@@ -4,6 +4,7 @@ import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
@@ -482,7 +483,7 @@ export = {
             },
             Manifest: '[{\"foo\":\"bar\"}]',
             ClusterName: { 'Fn::ImportValue': 'Stack:ExportsOutputRefclusterC5B25D0D98D553F5' },
-            RoleArn: { 'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttclusterCreationRole2B3B5002ArnF05122FC' },
+            RoleArn: { 'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttclusterCreationRoleCDBEDA99Arn147C2F4D' },
           },
           UpdateReplacePolicy: 'Delete',
           DeletionPolicy: 'Delete',
@@ -924,30 +925,10 @@ export = {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                AWS: [
-                  {
-                    'Fn::GetAtt': [
-                      'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
-                      'Outputs.StackawscdkawseksClusterResourceProviderOnEventHandlerServiceRole3AEE0A43Arn',
-                    ],
-                  },
-                  {
-                    'Fn::GetAtt': [
-                      'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
-                      'Outputs.StackawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8E7F1C11Arn',
-                    ],
-                  },
-                ],
-              },
-            },
-            {
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
                 AWS: {
-                  'Fn::GetAtt': [
-                    'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-                    'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
+                  'Fn::Join': [
+                    '',
+                    ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root'],
                   ],
                 },
               },
@@ -1179,7 +1160,7 @@ export = {
       test.done();
     },
 
-    'if helm charts are used, its resource provider is allowed to assume the creation role'(test: Test) {
+    'if helm charts are used, the provider role is allowed to assume the creation role'(test: Test) {
       // GIVEN
       const { stack } = testFixture();
       const cluster = new eks.Cluster(stack, 'MyCluster', {
@@ -1194,47 +1175,35 @@ export = {
 
       // THEN
 
-      // role can be assumed by 4 principals: two for the cluster resource, one
-      // for kubernetes resource and one for the helm resource.
-      expect(stack).to(haveResource('AWS::IAM::Role', {
-        AssumeRolePolicyDocument: {
+      const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      expect(providerStack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
           Statement: [
             {
-              Action: 'sts:AssumeRole',
+              Action: 'eks:DescribeCluster',
               Effect: 'Allow',
-              Principal: {
-                AWS: [
-                  {
-                    'Fn::GetAtt': [
-                      'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
-                      'Outputs.StackawscdkawseksClusterResourceProviderOnEventHandlerServiceRole3AEE0A43Arn',
-                    ],
-                  },
-                  {
-                    'Fn::GetAtt': [
-                      'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
-                      'Outputs.StackawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8E7F1C11Arn',
-                    ],
-                  },
-                ],
+              Resource: {
+                Ref: 'referencetoStackMyClusterD33CAEABArn',
               },
             },
             {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::GetAtt': [
-                    'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-                    'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
-                  ],
-                },
+              Resource: {
+                Ref: 'referencetoStackMyClusterCreationRoleF6C97649Arn',
               },
             },
           ],
           Version: '2012-10-17',
         },
+        PolicyName: 'HandlerServiceRoleDefaultPolicyCBD0CC91',
+        Roles: [
+          {
+            Ref: 'HandlerServiceRoleFCDC14AE',
+          },
+        ],
       }));
+
       test.done();
     },
 
@@ -1259,7 +1228,7 @@ export = {
         },
         RoleArn: {
           'Fn::GetAtt': [
-            'MyClusterCreationRoleB5FA4FF3',
+            'MyClusterCreationRole93BAC2B5',
             'Arn',
           ],
         },
@@ -1351,8 +1320,6 @@ export = {
         'Clusterfargateprofileprofile3D06F3076',
         'Clusterfargateprofileprofile4PodExecutionRole086057FB',
         'Clusterfargateprofileprofile4A0E3BBE8',
-        'ClusterCreationRoleDefaultPolicyE8BDFC7B',
-        'ClusterCreationRole360249B6',
         'Cluster9EE0221C',
       ]);
 
@@ -1366,9 +1333,9 @@ export = {
       test.done();
     },
 
-    'kubectl provider role is trusted to assume cluster creation role'(test: Test) {
+    'kubectl provider role can assume creation role'(test: Test) {
       // GIVEN
-      const { stack, app } = testFixture();
+      const { stack } = testFixture();
       const c1 = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION });
 
       // WHEN
@@ -1378,18 +1345,28 @@ export = {
       c1.addManifest('c1b', { foo: 123 });
 
       // THEN
-      const template = app.synth().getStackArtifact(stack.artifactId).template;
-
-      const creationRoleToKubectlRole = {
-        Cluster1CreationRoleA231BE8D: 'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
-      };
-
-      // verify that the kubectl role appears as the 2nd IAM trust policy statement
-      for (const [creationRole, kubectlRole] of Object.entries(creationRoleToKubectlRole)) {
-        const trustPolicy = template.Resources[creationRole].Properties.AssumeRolePolicyDocument.Statement;
-        test.equal(trustPolicy.length, 2, 'expecting the creation role\'s trust policy to include two statements');
-        test.deepEqual(trustPolicy[1].Principal.AWS['Fn::GetAtt'][1], kubectlRole);
-      }
+      const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      expect(providerStack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'eks:DescribeCluster',
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'referencetoStackCluster18DFEAC17Arn',
+              },
+            },
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'referencetoStackCluster1CreationRole97A9C8ACArn',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
       test.done();
     },
 
@@ -1836,7 +1813,7 @@ export = {
       },
       RoleArn: {
         'Fn::GetAtt': [
-          'Cluster1CreationRoleA231BE8D',
+          'Cluster1CreationRole1CE09E77',
           'Arn',
         ],
       },
@@ -1900,6 +1877,33 @@ export = {
       },
     }));
 
+  'create a cluster using custom resource with secrets encryption using KMS CMK'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      version: CLUSTER_VERSION,
+      secretsEncryptionKey: new kms.Key(stack, 'Key'),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        encryptionConfig: [{
+          provider: {
+            keyArn: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          },
+          resources: ['secrets'],
+        }],
+      },
+    }));
     test.done();
   },
 };

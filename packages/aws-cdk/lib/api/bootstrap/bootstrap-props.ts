@@ -8,6 +8,8 @@ export const REPOSITORY_NAME_OUTPUT = 'RepositoryName';
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 /** @experimental */
 export const BOOTSTRAP_VERSION_OUTPUT = 'BootstrapVersion';
+/** @experimental */
+export const BOOTSTRAP_VERSION_RESOURCE = 'CdkBootstrapVersion';
 
 /**
  * Options for the bootstrapEnvironment operation(s)
@@ -17,6 +19,26 @@ export interface BootstrapEnvironmentOptions {
   readonly roleArn?: string;
   readonly parameters?: BootstrappingParameters;
   readonly force?: boolean;
+
+  /**
+   * Whether to execute the changeset or only create it and leave it in review.
+   * @default true
+   */
+  readonly execute?: boolean;
+
+  /**
+   * Tags for cdktoolkit stack.
+   *
+   * @default - None.
+   */
+  readonly tags?: Tag[];
+
+  /**
+   * Whether the stacks created by the bootstrap process should be protected from termination.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-protect-stacks.html
+   * @default true
+   */
+  readonly terminationProtection?: boolean;
 }
 
 /**
@@ -36,17 +58,6 @@ export interface BootstrappingParameters {
    * @default - the default KMS key for S3 will be used.
    */
   readonly kmsKeyId?: string;
-  /**
-   * Tags for cdktoolkit stack.
-   *
-   * @default - None.
-   */
-  readonly tags?: Tag[];
-  /**
-   * Whether to execute the changeset or only create it and leave it in review.
-   * @default true
-   */
-  readonly execute?: boolean;
 
   /**
    * The list of AWS account IDs that are trusted to deploy into the environment being bootstrapped.
@@ -78,10 +89,4 @@ export interface BootstrappingParameters {
    */
   readonly publicAccessBlockConfiguration?: boolean;
 
-  /**
-   * Whether the stacks created by the bootstrap process should be protected from termination.
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-protect-stacks.html
-   * @default true
-   */
-  readonly terminationProtection?: boolean;
 }
