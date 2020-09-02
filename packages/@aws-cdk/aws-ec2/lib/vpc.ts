@@ -553,19 +553,9 @@ abstract class VpcBase extends Resource implements IVpc {
     }
 
     if (placement.subnetType === undefined && placement.subnetGroupName === undefined && placement.subnets === undefined) {
-      let subnetType;
       // Return default subnet type based on subnets that actually exist
-      if (this.privateSubnets.length > 0) {
-        subnetType = SubnetType.PRIVATE;
-      } else if (this.isolatedSubnets.length > 0) {
-        subnetType = SubnetType.ISOLATED;
-      } else {
-        subnetType = SubnetType.PUBLIC;
-      }
-      return {
-        subnetType: subnetType,
-        subnetFilters: placement.subnetFilters,
-      };
+      let subnetType = this.privateSubnets.length ? SubnetType.PRIVATE : this.isolatedSubnets.length ? SubnetType.ISOLATED : SubnetType.PUBLIC;
+      placement = { ...placement, subnetType: subnetType };
     }
 
     return placement;
