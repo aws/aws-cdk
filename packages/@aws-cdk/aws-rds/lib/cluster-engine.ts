@@ -49,6 +49,36 @@ export interface ClusterEngineConfig {
    * @default - use the default port for clusters (3306)
    */
   readonly port?: number;
+
+  /**
+   * Features supported by the database engine.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_DBEngineVersion.html
+   *
+   * @default - no features
+   */
+  readonly features?: EngineFeatures;
+}
+
+/**
+ * Represents Database Engine features
+ */
+export interface EngineFeatures {
+  /**
+   * Feature for the DB instance that the IAM role to access the S3 bucket for import
+   * is to be associated with.
+   *
+   * @default - no s3Import feature
+   */
+  readonly s3Import?: string;
+
+  /**
+   * Feature for the DB instance that the IAM role to export to S3 bucket is to be
+   * associated with.
+   *
+   * @default - no s3Export feature
+   */
+  readonly s3Export?: string;
 }
 
 /**
@@ -76,11 +106,13 @@ interface ClusterEngineBaseProps {
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly defaultPort?: number;
   readonly engineVersion?: EngineVersion;
+  readonly features?: EngineFeatures;
 }
 
 abstract class ClusterEngineBase implements IClusterEngine {
   public readonly engineType: string;
   public readonly engineVersion?: EngineVersion;
+  public readonly features?: EngineFeatures;
   public readonly parameterGroupFamily?: string;
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
@@ -90,6 +122,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
 
   constructor(props: ClusterEngineBaseProps) {
     this.engineType = props.engineType;
+    this.features = props.features;
     this.singleUserRotationApplication = props.singleUserRotationApplication;
     this.multiUserRotationApplication = props.multiUserRotationApplication;
     this.defaultPort = props.defaultPort;
@@ -102,6 +135,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
     return {
       parameterGroup,
       port: this.defaultPort,
+      features: this.features,
     };
   }
 
@@ -369,17 +403,17 @@ export class AuroraPostgresEngineVersion {
   /** Version "10.6". */
   public static readonly VER_10_6 = AuroraPostgresEngineVersion.of('10.6', '10');
   /** Version "10.7". */
-  public static readonly VER_10_7 = AuroraPostgresEngineVersion.of('10.7', '10');
+  public static readonly VER_10_7 = AuroraPostgresEngineVersion.of('10.7', '10', { s3Import: 's3Import' });
   /** Version "10.11". */
-  public static readonly VER_10_11 = AuroraPostgresEngineVersion.of('10.11', '10');
+  public static readonly VER_10_11 = AuroraPostgresEngineVersion.of('10.11', '10', { s3Import: 's3Import', s3Export: 's3Export' });
   /** Version "10.12". */
-  public static readonly VER_10_12 = AuroraPostgresEngineVersion.of('10.12', '10');
+  public static readonly VER_10_12 = AuroraPostgresEngineVersion.of('10.12', '10', { s3Import: 's3Import', s3Export: 's3Export' });
   /** Version "11.4". */
-  public static readonly VER_11_4 = AuroraPostgresEngineVersion.of('11.4', '11');
+  public static readonly VER_11_4 = AuroraPostgresEngineVersion.of('11.4', '11', { s3Import: 's3Import' });
   /** Version "11.6". */
-  public static readonly VER_11_6 = AuroraPostgresEngineVersion.of('11.6', '11');
+  public static readonly VER_11_6 = AuroraPostgresEngineVersion.of('11.6', '11', { s3Import: 's3Import', s3Export: 's3Export' });
   /** Version "11.7". */
-  public static readonly VER_11_7 = AuroraPostgresEngineVersion.of('11.7', '11');
+  public static readonly VER_11_7 = AuroraPostgresEngineVersion.of('11.7', '11', { s3Import: 's3Import', s3Export: 's3Export' });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.
@@ -389,18 +423,22 @@ export class AuroraPostgresEngineVersion {
    * @param auroraPostgresMajorVersion the major version of the engine,
    *   for example "9.6"
    */
-  public static of(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string): AuroraPostgresEngineVersion {
-    return new AuroraPostgresEngineVersion(auroraPostgresFullVersion, auroraPostgresMajorVersion);
+  public static of(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string,
+    auroraPostgresFeatures?: EngineFeatures): AuroraPostgresEngineVersion {
+    return new AuroraPostgresEngineVersion(auroraPostgresFullVersion, auroraPostgresMajorVersion, auroraPostgresFeatures);
   }
 
   /** The full version string, for example, "9.6.25.1". */
   public readonly auroraPostgresFullVersion: string;
   /** The major version of the engine, for example, "9.6". */
   public readonly auroraPostgresMajorVersion: string;
+  /** The supported features for the DB engine */
+  public readonly auroraPostgresFeatures?: EngineFeatures;
 
-  private constructor(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string) {
+  private constructor(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string, auroraPostgresFeatures?: EngineFeatures) {
     this.auroraPostgresFullVersion = auroraPostgresFullVersion;
     this.auroraPostgresMajorVersion = auroraPostgresMajorVersion;
+    this.auroraPostgresFeatures = auroraPostgresFeatures;
   }
 }
 
@@ -428,6 +466,7 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
           majorVersion: version.auroraPostgresMajorVersion,
         }
         : undefined,
+      features: version?.auroraPostgresFeatures,
     });
   }
 

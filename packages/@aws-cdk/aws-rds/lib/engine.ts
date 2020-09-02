@@ -1,3 +1,4 @@
+import { EngineFeatures } from './cluster-engine';
 import { EngineVersion } from './engine-version';
 
 /**
@@ -28,4 +29,11 @@ export interface IEngine {
    *   (which means the major version of the engine is also not known)
    */
   readonly parameterGroupFamily?: string;
+
+  /**
+   * Supported Features by the database engine
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_DBEngineVersion.html
+   */
+  readonly features?: EngineFeatures;
 }
