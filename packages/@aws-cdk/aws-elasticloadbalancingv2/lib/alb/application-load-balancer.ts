@@ -2,8 +2,9 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
-import { IpAddressType } from '../shared/enums';
+import { IpAddressType, ApplicationProtocol } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
+import { ListenerAction } from './application-listener-action';
 
 /**
  * Properties for defining an Application Load Balancer
@@ -85,6 +86,24 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     return new ApplicationListener(this, id, {
       loadBalancer: this,
       ...props,
+    });
+  }
+
+  /**
+   * Add a redirection listener to this load balancer
+   */
+  public addRedirect(props: ApplicationLoadBalancerRedirectConfig = {}): ApplicationListener {
+    const sourcePort = props.sourcePort ?? 80;
+    const targetPort = (props.targetPort ?? 443).toString();
+    return this.addListener(`Redirect${sourcePort}To${targetPort}`, {
+      protocol: props.sourceProtocol ?? ApplicationProtocol.HTTP,
+      port: sourcePort,
+      open: true,
+      defaultAction: ListenerAction.redirect({
+        port: targetPort,
+        protocol: props.targetProtocol ?? ApplicationProtocol.HTTPS,
+        permanent: true,
+      }),
     });
   }
 
@@ -570,4 +589,39 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
     // eslint-disable-next-line max-len
     throw new Error(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
   }
+}
+
+/**
+ * Properties for a redirection config
+ */
+export interface ApplicationLoadBalancerRedirectConfig {
+
+  /**
+   * The protocol of the listener being created
+   *
+   * @default HTTP
+   */
+  readonly sourceProtocol?: ApplicationProtocol;
+
+  /**
+   * The port number to listen to
+   *
+   * @default 80
+   */
+  readonly sourcePort?: number;
+
+  /**
+   * The protocol of the redirection target
+   *
+   * @default HTTPS
+   */
+  readonly targetProtocol?: ApplicationProtocol;
+
+  /**
+   * The port number to redirect to
+   *
+   * @default 443
+   */
+  readonly targetPort?: number;
+
 }
