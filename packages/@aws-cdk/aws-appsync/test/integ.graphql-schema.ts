@@ -29,7 +29,7 @@ const node = schema.addType(new appsync.InterfaceType('Node', {
   },
 }));
 
-const api = new appsync.GraphQLApi(stack, 'code-first-api', {
+const api = new appsync.GraphqlApi(stack, 'code-first-api', {
   name: 'api',
   schema: schema,
 });
@@ -99,6 +99,10 @@ api.addMutation('addPlanet', new appsync.ResolvableField({
     ),
   ),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
+}));
+
+api.addType(new appsync.InputType('input', {
+  definition: { awesomeInput: ScalarType.string },
 }));
 
 app.synth();
