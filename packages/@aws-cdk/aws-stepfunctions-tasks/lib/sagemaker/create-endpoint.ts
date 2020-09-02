@@ -1,0 +1,91 @@
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { Construct, Stack } from '@aws-cdk/core';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+
+/**
+ * Properties for creating an Amazon SageMaker endpoint
+ *
+ * @experimental
+ */
+export interface SageMakerCreateEndpointProps extends sfn.TaskStateBaseProps {
+  /**
+   * The name of an endpoint configuration.
+   */
+  readonly endpointConfigName: string;
+  /**
+   * The name of the endpoint. The name must be unique within an AWS Region in your AWS account.
+   */
+  readonly endpointName: string;
+  /**
+   * Tags to be applied to the endpoint.
+   *
+   * @default - No tags
+   */
+  readonly tags?: { [key: string]: string };
+}
+
+/**
+ * A Step Functions Task to create a SageMaker endpoint
+ *
+ * @experimental
+ */
+export class SageMakerCreateEndpoint extends sfn.TaskStateBase {
+  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
+    sfn.IntegrationPattern.REQUEST_RESPONSE,
+  ];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+  private readonly integrationPattern: sfn.IntegrationPattern;
+
+  constructor(scope: Construct, id: string, private readonly props: SageMakerCreateEndpointProps) {
+    super(scope, id, props);
+    this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
+    validatePatternSupported(this.integrationPattern, SageMakerCreateEndpoint.SUPPORTED_INTEGRATION_PATTERNS);
+    this.taskPolicies = this.makePolicyStatements();
+  }
+
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
+    return {
+      Resource: integrationResourceArn('sagemaker', 'createEndpoint', this.integrationPattern),
+      Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
+    };
+  }
+
+  private renderParameters(): { [key: string]: any } {
+    return {
+      EndpointConfigName: this.props.endpointConfigName,
+      EndpointName: this.props.endpointName,
+      ...(this.renderTags(this.props.tags)),
+    };
+  }
+
+  private makePolicyStatements(): iam.PolicyStatement[] {
+    const stack = Stack.of(this);
+    return [
+      new iam.PolicyStatement({
+        actions: ['sagemaker:createEndpoint'],
+        resources: [
+          stack.formatArn({
+            service: 'sagemaker',
+            resource: 'endpoint',
+            // If the endpoint name comes from input, we cannot target the policy to a particular ARN prefix reliably.
+            // SageMaker uses lowercase for resource name in the arn
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointName) ? '*' : `${this.props.endpointName.toLowerCase()}`,
+          }),
+        ],
+      }),
+      new iam.PolicyStatement({
+        actions: ['sagemaker:ListTags'],
+        resources: ['*'],
+      }),
+    ];
+  }
+
+  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
+    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
+  }
+}

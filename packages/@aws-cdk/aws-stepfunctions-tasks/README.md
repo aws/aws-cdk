@@ -52,6 +52,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [SageMaker](#sagemaker)
   - [Create Training Job](#create-training-job)
   - [Create Transform Job](#create-transform-job)
+  - [Create Endpoint](#create-endpoint)
 - [SNS](#sns)
 - [Step Functions](#step-functions)
   - [Start Execution](#start-execution)
@@ -766,6 +767,17 @@ new sfn.SagemakerTransformTask(this, 'Batch Inference', {
   }
 });
 
+```
+
+### Create Endpoint
+
+You can call the [`CreateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateEndpoint.html) API from a `Task` state.
+
+```ts
+new sfn.SageMakerCreateEndpoint(this, 'SagemakerEndpoint', {
+  endpointName: sfn.JsonPath.stringAt('$.EndpointName'),
+  endpointConfigName: sfn.JsonPath.stringAt('$.EndpointConfigName'),
+});
 ```
 
 ## SNS
