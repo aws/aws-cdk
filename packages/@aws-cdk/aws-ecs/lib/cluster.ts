@@ -186,20 +186,17 @@ export class Cluster extends Resource implements ICluster {
    */
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImage && options.machineImageType) {
-      throw new Error('You can only specify either a machineImage or machineImageType, not both.');
+      throw new Error('You can only specify either machineImage or machineImageType, not both.');
     }
 
-    let machineImage: ec2.IMachineImage;
-
-    machineImage = options.machineImage ?? options.machineImageType === MachineImageType.BOTTLEROCKET ?
+    const machineImage = options.machineImage ?? options.machineImageType === MachineImageType.BOTTLEROCKET ?
       new BottleRocketImage() : new EcsOptimizedAmi();
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
-      ...options,
       vpc: this.vpc,
       machineImage,
       updateType: options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
-      instanceType: options.instanceType,
+      ...options,
     });
 
     this.addAutoScalingGroup(autoScalingGroup, {
@@ -222,33 +219,37 @@ export class Cluster extends Resource implements ICluster {
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
 
     // Tie instances to cluster
-    // Bottlerocket AMI
-    if (options.machineImageType===MachineImageType.BOTTLEROCKET) {
-      autoScalingGroup.addUserData(
-        '[settings.ecs]',
-        `cluster = "${this.clusterName}"`,
-      );
-      // Enabling SSM
-      // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#enabling-ssm
-      autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
-      // required managed policy
-      autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'));
-    } else {
-      // Amazon ECS-optimized AMI for Amazon Linux 2
-      autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
-
-      if (!options.canContainersAccessInstanceRole) {
-        // Deny containers access to instance metadata service
-        // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-        autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-        autoScalingGroup.addUserData('sudo service iptables save');
-        // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
-        autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+    switch (options.machineImageType) {
+      // Bottlerocket AMI
+      case MachineImageType.BOTTLEROCKET: {
+        autoScalingGroup.addUserData(
+          // Connect to the cluster
+          // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#connecting-to-your-cluster
+          '[settings.ecs]',
+          `cluster = "${this.clusterName}"`,
+        );
+        // Enabling SSM
+        // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#enabling-ssm
+        autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
+        // required managed policy
+        autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'));
+        break;
       }
+      default:
+        // Amazon ECS-optimized AMI for Amazon Linux 2
+        autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
+        if (!options.canContainersAccessInstanceRole) {
+          // Deny containers access to instance metadata service
+          // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
+          autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+          autoScalingGroup.addUserData('sudo service iptables save');
+          // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
+          autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+        }
 
-      if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
-        autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
-      }
+        if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
+          autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
+        }
     }
 
     // ECS instances must be able to do these things
@@ -530,7 +531,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
 /**
  * Construct an Bottlerocket image from the latest AMI published in SSM
  */
-class BottleRocketImage implements ec2.IMachineImage {
+export class BottleRocketImage implements ec2.IMachineImage {
   private readonly amiParameterName: string;
   /**
    * Bottlerocket AMI variant
@@ -754,6 +755,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    */
   readonly topicEncryptionKey?: kms.IKey;
 
+
   /**
    * Specify the machine image type.
    *
@@ -772,16 +774,9 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
   readonly instanceType: ec2.InstanceType;
 
   /**
-     * Machine image type. Ignored if `machineImage` is defined.
-     *
-     * @default MachineImageType.AMAZON_LINUX_2
-     */
-  readonly machineImageType?: MachineImageType;
-
-  /**
    * The ECS-optimized AMI variant to use. For more information, see
    * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
-   * Ignored if `MachineImageType` is defined.
+   * You must define either `machineImage` or `machineImageType`, not both.
    *
    * @default - Amazon Linux 2
    */
