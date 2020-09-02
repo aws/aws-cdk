@@ -1,5 +1,7 @@
 import '@aws-cdk/assert/jest';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as chatbot from '../lib';
@@ -136,6 +138,47 @@ describe('SlackChannelConfiguration', () => {
         Version: '2012-10-17',
       },
     });
+  });
+
+  test('specifying log retention', () => {
+    new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackWorkspaceId: 'ABC123',
+      slackChannelId: 'DEF456',
+      slackChannelConfigurationName: 'ConfigurationName',
+      logRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    expect(stack).toHaveResourceLike('Custom::LogRetention', {
+      LogGroupName: '/aws/chatbot/ConfigurationName',
+      RetentionInDays: 30,
+      LogGroupRegion: 'us-east-1',
+    });
+  });
+
+  test('getting configuration metric', () => {
+    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackWorkspaceId: 'ABC123',
+      slackChannelId: 'DEF456',
+      slackChannelConfigurationName: 'ConfigurationName',
+      logRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    expect(slackChannel.metric('MetricName')).toEqual(new cloudwatch.Metric({
+      namespace: 'AWS/Chatbot',
+      region: 'us-east-1',
+      dimensions: {
+        ConfigurationName: 'ConfigurationName',
+      },
+      metricName: 'MetricName',
+    }));
+  });
+
+  test('getting all configurations metric', () => {
+    expect(chatbot.SlackChannelConfiguration.metricAll('MetricName')).toEqual(new cloudwatch.Metric({
+      namespace: 'AWS/Chatbot',
+      region: 'us-east-1',
+      metricName: 'MetricName',
+    }));
   });
 
   test('added a iam policy to a from slack channel configuration ARN will nothing to do', () => {

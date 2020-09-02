@@ -1,4 +1,6 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { CfnSlackChannelConfiguration } from './chatbot.generated';
@@ -52,6 +54,31 @@ export interface SlackChannelConfigurationProps {
    * @default LoggingLevel.NONE
    */
   readonly loggingLevel?: LoggingLevel;
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs. When updating
+   * this property, unsetting it doesn't remove the log retention policy. To
+   * remove the retention policy, set the value to `INFINITE`.
+   *
+   * @default logs.RetentionDays.INFINITE
+   */
+  readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - A new role is created.
+   */
+  readonly logRetentionRole?: iam.IRole;
+
+  /**
+   * When log retention is specified, a custom resource attempts to create the CloudWatch log group.
+   * These options control the retry policy when interacting with CloudWatch APIs.
+   *
+   * @default - Default AWS SDK retry options.
+   */
+  readonly logRetentionRetryOptions?: logs.LogRetentionRetryOptions;
 }
 
 /**
@@ -104,6 +131,11 @@ export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantabl
    * Adds a statement to the IAM role.
    */
   addToRolePolicy(statement: iam.PolicyStatement): void;
+
+  /**
+   * Return the given named metric for this SlackChannelConfiguration
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -128,6 +160,23 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
     }
 
     this.role.addToPrincipalPolicy(statement);
+  }
+
+  /**
+   * Return the given named metric for this SlackChannelConfiguration
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    // AWS Chatbot publishes metrics to us-east-1 regardless of stack region
+    // https://docs.aws.amazon.com/chatbot/latest/adminguide/monitoring-cloudwatch.html
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Chatbot',
+      region: 'us-east-1',
+      dimensions: {
+        ConfigurationName: this.slackChannelConfigurationName,
+      },
+      metricName,
+      ...props,
+    });
   }
 }
 
@@ -180,6 +229,20 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
     return new Import(scope, id);
   }
 
+  /**
+   * Return the given named metric for All SlackChannelConfigurations
+   */
+  public static metricAll(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    // AWS Chatbot publishes metrics to us-east-1 regardless of stack region
+    // https://docs.aws.amazon.com/chatbot/latest/adminguide/monitoring-cloudwatch.html
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Chatbot',
+      region: 'us-east-1',
+      metricName,
+      ...props,
+    });
+  }
+
   readonly slackChannelConfigurationArn: string;
 
   readonly slackChannelConfigurationName: string;
@@ -207,6 +270,18 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       snsTopicArns: props.notificationTopics?.map(topic => topic.topicArn),
       loggingLevel: props.loggingLevel?.toString(),
     });
+
+    // Log retention
+    // AWS Chatbot publishes logs to us-east-1 regardless of stack region https://docs.aws.amazon.com/chatbot/latest/adminguide/cloudwatch-logs.html
+    if (props.logRetention) {
+      new logs.LogRetention(this, 'LogRetention', {
+        logGroupName: `/aws/chatbot/${props.slackChannelConfigurationName}`,
+        retention: props.logRetention,
+        role: props.logRetentionRole,
+        logGroupRegion: 'us-east-1',
+        logRetentionRetryOptions: props.logRetentionRetryOptions,
+      });
+    }
 
     this.slackChannelConfigurationArn = configuration.ref;
     this.slackChannelConfigurationName = props.slackChannelConfigurationName;

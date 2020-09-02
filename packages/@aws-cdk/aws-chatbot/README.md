@@ -35,3 +35,21 @@ slackChannel.addToPrincipalPolicy(new iam.PolicyStatement({
   resources: ['arn:aws:s3:::abc/xyz/123.txt'],
 }));
 ```
+
+### Log Group
+
+Slack channel configuration automatically create a log group with the name `/aws/chatbot/<configuration-name>` in `us-east-1` upon first execution with
+log data set to never expire.
+
+The `logRetention` property can be used to set a different expiration period.
+
+By default, CDK uses the AWS SDK retry options when creating a log group. The `logRetentionRetryOptions` property
+allows you to customize the maximum number of retries and base backoff duration.
+
+*Note* that, if `logRetention` is set, a [CloudFormation custom
+resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html) is added
+to the stack that pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the
+correct log retention period (never expire, by default).
+
+*Further note* that, if the log group already exists and the `logRetention` is not set, the custom resource will reset
+the log retention to never expire even if it was configured with a different value.
