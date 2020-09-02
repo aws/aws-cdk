@@ -1,5 +1,6 @@
 import { Construct, CustomResource, Stack } from '@aws-cdk/core';
-import { Cluster } from './cluster';
+import { ICluster } from './cluster';
+import { KubectlProvider } from './kubectl-provider';
 
 /**
  * Properties for KubernetesManifest
@@ -10,7 +11,7 @@ export interface KubernetesManifestProps {
    *
    * [disable-awslint:ref-via-interface]
    */
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
 
   /**
    * The manifest to apply.
@@ -54,7 +55,7 @@ export class KubernetesManifest extends Construct {
     super(scope, id);
 
     const stack = Stack.of(this);
-    const provider = props.cluster._attachKubectlResourceScope(this);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
@@ -65,7 +66,7 @@ export class KubernetesManifest extends Construct {
         // StepFunctions, CloudWatch Dashboards etc).
         Manifest: stack.toJsonString(props.manifest),
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._kubectlCreationRole.roleArn,
+        RoleArn: provider.roleArn, // TODO: bake into provider's environment
       },
     });
   }
