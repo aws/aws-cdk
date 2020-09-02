@@ -188,7 +188,7 @@ export interface ClusterAttributes {
    * @default - no additional variables
    */
   readonly kubectlEnvironment?: { [name: string]: string };
-
+  
   /**
    * A security group to use for `kubectl` execution. If not specified, the k8s
    * endpoint is expected to be accessible publicly.
