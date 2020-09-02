@@ -4,14 +4,14 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'Pipeline': {
     'can be passed an IAM role during pipeline creation'(test: Test) {
       const stack = new cdk.Stack();
@@ -391,4 +391,4 @@ export = {
       },
     },
   },
-};
+});
