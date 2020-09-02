@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, RemovalPolicy, Stack, Expiration } from '@aws-cdk/core';
-import { AuthorizationType, GraphQLApi, MappingTemplate, PrimaryKey, Schema, Values } from '../lib';
+import { AuthorizationType, GraphqlApi, MappingTemplate, PrimaryKey, Schema, Values } from '../lib';
 
 /*
  * Creates an Appsync GraphQL API with API_KEY authorization.
@@ -21,7 +21,7 @@ import { AuthorizationType, GraphQLApi, MappingTemplate, PrimaryKey, Schema, Val
 const app = new App();
 const stack = new Stack(app, 'aws-appsync-integ');
 
-const api = new GraphQLApi(stack, 'Api', {
+const api = new GraphqlApi(stack, 'Api', {
   name: 'Integ_Test_APIKey',
   schema: Schema.fromAsset(join(__dirname, 'appsync.auth.graphql')),
   authorizationConfig: {

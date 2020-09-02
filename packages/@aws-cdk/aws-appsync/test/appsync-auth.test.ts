@@ -92,7 +92,7 @@ describe('AppSync API Key Authorization', () => {
     const expirationDate: number = cdk.Expiration.after(cdk.Duration.days(10)).toEpoch();
 
     // WHEN
-    new appsync.GraphQLApi(stack, 'API', {
+    new appsync.GraphqlApi(stack, 'API', {
       name: 'apiKeyUnitTest',
       schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.auth.graphql')),
       authorizationConfig: {
@@ -114,7 +114,7 @@ describe('AppSync API Key Authorization', () => {
   test('apiKeyConfig fails if expire argument less than a day', () => {
     // WHEN
     const when = () => {
-      new appsync.GraphQLApi(stack, 'API', {
+      new appsync.GraphqlApi(stack, 'API', {
         name: 'apiKeyUnitTest',
         schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.auth.graphql')),
         authorizationConfig: {
@@ -135,7 +135,7 @@ describe('AppSync API Key Authorization', () => {
   test('apiKeyConfig fails if expire argument greater than 365 day', () => {
     // WHEN
     const when = () => {
-      new appsync.GraphQLApi(stack, 'API', {
+      new appsync.GraphqlApi(stack, 'API', {
         name: 'apiKeyUnitTest',
         schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.auth.graphql')),
         authorizationConfig: {
