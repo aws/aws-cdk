@@ -3,13 +3,13 @@ import * as path from 'path';
 import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
-import { KubectlLayer } from '../lib/kubectl-layer';
+import { getOrCreateKubectlLayer } from '../lib/kubectl-provider';
 import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
@@ -53,7 +53,7 @@ export = {
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
     new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
-    const layer = KubectlLayer.getOrCreate(stack, {});
+    getOrCreateKubectlLayer(stack);
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
@@ -62,7 +62,6 @@ export = {
         ApplicationId: 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl',
       },
     }));
-    test.equal(layer.isChina(), false);
     test.done();
   },
 
@@ -74,8 +73,7 @@ export = {
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
     new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
-    new KubectlLayer(stack, 'NewLayer');
-    const layer = KubectlLayer.getOrCreate(stack);
+    getOrCreateKubectlLayer(stack);
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
@@ -84,7 +82,6 @@ export = {
         ApplicationId: 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl',
       },
     }));
-    test.equal(layer.isChina(), true);
     test.done();
   },
 
@@ -1876,6 +1873,9 @@ export = {
         SemanticVersion: '2.3.4',
       },
     }));
+
+    test.done();
+  },
 
   'create a cluster using custom resource with secrets encryption using KMS CMK'(test: Test) {
     // GIVEN

@@ -4,7 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Stack, NestedStack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { ICluster, Cluster } from './cluster';
-import { KubectlLayer } from './kubectl-layer';
+import { KubectlLayer, KubectlLayerProps } from './kubectl-layer';
 
 export interface KubectlProviderProps {
   /**
@@ -14,6 +14,7 @@ export interface KubectlProviderProps {
 }
 
 export class KubectlProvider extends NestedStack {
+
   public static getOrCreate(scope: Construct, cluster: ICluster) {
 
     // if this is an "owned" cluster, it has a provider associated with it
@@ -65,7 +66,7 @@ export class KubectlProvider extends NestedStack {
       throw new Error('"kubectlSecurityGroup" is required if "kubectlSubnets" is specified');
     }
 
-    const layer = cluster.kubectlLayer ?? KubectlLayer.getOrCreate(this);
+    const layer = cluster.kubectlLayer ?? getOrCreateKubectlLayer(this);
 
     const handler = new lambda.Function(this, 'Handler', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'kubectl-handler')),
@@ -100,5 +101,21 @@ export class KubectlProvider extends NestedStack {
     this.serviceToken = provider.serviceToken;
     this.roleArn = cluster.kubectlRole.roleArn;
   }
+
 }
 
+/**
+ * Gets or create a singleton instance of KubectlLayer.
+ *
+ * (exported for unit tests).
+ */
+export function getOrCreateKubectlLayer(scope: Construct, props: KubectlLayerProps = {}): KubectlLayer {
+  const stack = Stack.of(scope);
+  const id = 'kubectl-layer-' + (props.version ? props.version : '8C2542BC-BF2B-4DFE-B765-E181FD30A9A0');
+  const exists = stack.node.tryFindChild(id) as KubectlLayer;
+  if (exists) {
+    return exists;
+  }
+
+  return new KubectlLayer(stack, id, props);
+}
