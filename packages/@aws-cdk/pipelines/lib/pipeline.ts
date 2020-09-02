@@ -107,6 +107,16 @@ export class CdkPipeline extends Construct {
   }
 
   /**
+   * The underlying CodePipeline object
+   *
+   * You can use this to add more Stages to the pipeline, or Actions
+   * to Stages.
+   */
+  public get pipeline(): codepipeline.Pipeline {
+    return this._pipeline;
+  }
+
+  /**
    * Add pipeline stage that will deploy the given application stage
    *
    * The application construct should subclass `Stage` and can contain any
