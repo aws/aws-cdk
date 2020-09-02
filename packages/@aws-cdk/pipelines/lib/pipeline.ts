@@ -117,13 +117,6 @@ export class CdkPipeline extends Construct {
   }
 
   /**
-   * Access one of the pipeline's stages by stage name
-   */
-  public stage(stageName: string): codepipeline.IStage {
-    return this._pipeline.stage(stageName);
-  }
-
-  /**
    * Add pipeline stage that will deploy the given application stage
    *
    * The application construct should subclass `Stage` and can contain any

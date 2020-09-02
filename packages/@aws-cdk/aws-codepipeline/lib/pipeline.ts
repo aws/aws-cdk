@@ -337,18 +337,6 @@ export class Pipeline extends PipelineBase {
   }
 
   /**
-   * Access one of the pipeline's stages by stage name
-   */
-  public stage(stageName: string): IStage {
-    for (const stage of this._stages) {
-      if (stage.stageName === stageName) {
-        return stage;
-      }
-    }
-    throw new Error(`Pipeline does not contain a stage named '${stageName}'. Available stages: ${this._stages.map(s => s.stageName).join(', ')}`);
-  }
-
-  /**
    * Returns all of the {@link CrossRegionSupportStack}s that were generated automatically
    * when dealing with Actions that reside in a different region than the Pipeline itself.
    *
