@@ -322,56 +322,6 @@ new KubernetesManifest(this, 'hello-kub', {
 cluster.addManifest('hello-kub', service, deployment);
 ```
 
-#### Kubernetes Resources in Existing Clusters
-
-The Amazon EKS library allows defining Kubernetes resources such as Kubernetes
-manifests and [Helm charts](#helm-charts) on clusters that are not defined as
-part of your CDK app.
-
-First, you'll need to "import" a cluster to your CDK app. To do that, use the
-`eks.Cluster.fromClusterAttributes()` static method:
-
-```ts
-const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
-  clusterName: 'my-cluster-name',
-  kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
-});
-```
-
-Then, you can use `addManifest` or `addHelmChart` to define resources inside
-your Kubernetes cluster. For example:
-
-```ts
-cluster.addManifest('Test', {
-  apiVersion: 'v1',
-  kind: 'ConfigMap',
-  metadata: {
-    name: 'myconfigmap',
-  },
-  data: {
-    Key: 'value',
-    Another: '123454',
-  },
-});
-```
-
-At the minimum, when importing clusters for `kubectl` management, you will need
-to specify:
-
-- `clusterName` - the name of the cluster.
-- `kubectlRoleArn` - the ARN of an IAM role mapped to the `system:masters` RBAC
-  role. If the cluster you are importing was created using the AWS CDK, the
-  CloudFormation stack has an output that includes an IAM role that can be used.
-  Otherwise, you can create an IAM role and map it to `system:masters` manually.
-
-If the cluster is configured with private-only Kubernetes [endpoint
-access](#endpoint-access), you must also specify:
-
-- `kubectlSecurityGroupId` - the ID of an EC2 security group that is allowed
-  connections to the cluster's control security group.
-- `kubectlPrivateSubnetId` - a list of private VPC subnets IDs that will be used
-  to access the Kubernetes endpoint.
-
 #### Kubectl Layer and Environment
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can useful in order to configure an http proxy:
