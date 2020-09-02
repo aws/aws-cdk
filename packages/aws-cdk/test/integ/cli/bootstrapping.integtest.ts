@@ -6,7 +6,7 @@ import { integTest } from './test-helpers';
 
 jest.setTimeout(600_000);
 
-const QUALIFIER = randomString();
+const QUALIFIER = randomString().substr(0, 10);
 
 beforeAll(async () => {
   await prepareAppFixture();
