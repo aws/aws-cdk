@@ -4,22 +4,14 @@ jest.mock('../../lib/api/deploy-stack', () => ({
   deployStack: mockDeployStack,
 }));
 
-let mockToolkitInfo: any;
+let mockTheToolkitInfo: any;
 
-jest.mock('../../lib/api/toolkit-info', () => ({
-  // Pretend there's no toolkit deployed yet
-  DEFAULT_TOOLKIT_STACK_NAME: 'CDKToolkit',
-  ToolkitInfo: {
-    lookup: () => mockToolkitInfo,
-  },
-}));
-
-import { Bootstrapper } from '../../lib/api/bootstrap';
-import { DeployStackOptions } from '../../lib/api/deploy-stack';
-import { MockSdkProvider } from '../util/mock-sdk';
+import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
+import { MockSdkProvider, mockToolkitInfo } from '../util/mock-sdk';
 
 let bootstrapper: Bootstrapper;
 beforeEach(() => {
+  (ToolkitInfo as any).lookup = jest.fn().mockImplementation(() => Promise.resolve(mockTheToolkitInfo));
   bootstrapper = new Bootstrapper({ source: 'default' });
 });
 
@@ -32,8 +24,8 @@ describe('Bootstrapping v2', () => {
 
   let sdk: MockSdkProvider;
   beforeEach(() => {
-    sdk = new MockSdkProvider();
-    mockToolkitInfo = undefined;
+    sdk = new MockSdkProvider({ realSdk: false });
+    mockTheToolkitInfo = undefined;
   });
 
   test('passes the bucket name as a CFN parameter', async () => {
@@ -44,10 +36,10 @@ describe('Bootstrapping v2', () => {
     });
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: {
+      parameters: expect.objectContaining({
         FileAssetsBucketName: 'my-bucket-name',
         PublicAccessBlockConfiguration: 'true',
-      },
+      }),
     }));
   });
 
@@ -59,10 +51,10 @@ describe('Bootstrapping v2', () => {
     });
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: {
+      parameters: expect.objectContaining({
         FileAssetsBucketKmsKeyId: 'my-kms-key-id',
         PublicAccessBlockConfiguration: 'true',
-      },
+      }),
     }));
   });
 
@@ -74,9 +66,9 @@ describe('Bootstrapping v2', () => {
     });
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: {
+      parameters: expect.objectContaining({
         PublicAccessBlockConfiguration: 'false',
-      },
+      }),
     }));
   });
 
@@ -87,12 +79,28 @@ describe('Bootstrapping v2', () => {
       },
     }))
       .rejects
-      .toThrow('--cloudformation-execution-policies are required if --trust has been passed!');
+      .toThrow(/--cloudformation-execution-policies.*--trust/);
+  });
+
+  test('allow adding trusted account if there was already a policy on the stack', async () => {
+    // GIVEN
+    mockTheToolkitInfo = {
+      parameters: {
+        CloudFormationExecutionPolicies: 'arn:aws:something',
+      },
+    };
+
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        trustedAccounts: ['123456789012'],
+      },
+    });
+    // Did not throw
   });
 
   test('Do not allow downgrading bootstrap stack version', async () => {
     // GIVEN
-    mockToolkitInfo = {
+    mockTheToolkitInfo = {
       version: 999,
     };
 
@@ -136,6 +144,36 @@ describe('Bootstrapping v2', () => {
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
       stack: expect.objectContaining({
         terminationProtection: true,
+      }),
+    }));
+  });
+
+  test('termination protection is left alone when option is not given', async () => {
+    mockTheToolkitInfo = mockToolkitInfo({
+      EnableTerminationProtection: true,
+    });
+
+    await bootstrapper.bootstrapEnvironment(env, sdk, {});
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      stack: expect.objectContaining({
+        terminationProtection: true,
+      }),
+    }));
+  });
+
+  test('termination protection can be switched off', async () => {
+    mockTheToolkitInfo = mockToolkitInfo({
+      EnableTerminationProtection: true,
+    });
+
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      terminationProtection: false,
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      stack: expect.objectContaining({
+        terminationProtection: false,
       }),
     }));
   });
