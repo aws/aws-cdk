@@ -66,7 +66,7 @@ export class ToolkitInfo {
     if (!this.sdk) {
       throw new Error('ToolkitInfo needs to have been initialized with an sdk to call prepareEcrRepository');
     }
-    const ecr = this.sdk?.ecr();
+    const ecr = this.sdk.ecr();
 
     // check if repo already exists
     try {
