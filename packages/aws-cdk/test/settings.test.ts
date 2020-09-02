@@ -80,37 +80,34 @@ test('can parse string context from command line arguments with equals sign in v
   expect(settings2.get(['context']).foo).toEqual( 'bar=');
 });
 
-test('custom default for bundling in case of deploy', () => {
-  // GIVEN
-  const settings = Settings.fromCommandLineArguments({
-    _: ['deploy'],
-    exclusively: true,
-    STACKS: ['cool-stack'],
-  });
-
-  // THEN
-  expect(settings.get(['bundling'])).toEqual(['cool-stack']);
-});
-
-test('bundling defaults to *', () => {
+test('bundling stacks defaults to an empty list', () => {
   // GIVEN
   const settings = Settings.fromCommandLineArguments({
     _: ['command'],
   });
 
   // THEN
-  expect(settings.get(['bundling'])).toEqual(['*']);
+  expect(settings.get(['bundlingStacks'])).toEqual([]);
 });
 
-test('deploy with bundling specified', () => {
+test('bundling stacks defaults to * for deploy', () => {
+  // GIVEN
+  const settings = Settings.fromCommandLineArguments({
+    _: ['deploy'],
+  });
+
+  // THEN
+  expect(settings.get(['bundlingStacks'])).toEqual(['*']);
+});
+
+test('bundling stacks with deploy exclusively', () => {
   // GIVEN
   const settings = Settings.fromCommandLineArguments({
     _: ['deploy'],
     exclusively: true,
     STACKS: ['cool-stack'],
-    bundling: ['other-stack', 'cool-stack'],
   });
 
   // THEN
-  expect(settings.get(['bundling'])).toEqual(['other-stack', 'cool-stack']);
+  expect(settings.get(['bundlingStacks'])).toEqual(['cool-stack']);
 });

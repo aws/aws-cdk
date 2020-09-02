@@ -18,7 +18,7 @@ export const TRANSIENT_CONTEXT_KEY = '$dontSaveContext';
 
 const CONTEXT_KEY = 'context';
 
-const CUSTOM_BUNDLING_DEFAULT_COMMANDS = ['deploy', 'diff', 'synth', 'synthesize'];
+const BUNDLING_COMMANDS = ['deploy', 'diff', 'synth', 'synthesize'];
 
 export type Arguments = { readonly [name: string]: unknown, readonly _: string[] };
 
@@ -187,15 +187,16 @@ export class Settings {
     const context = this.parseStringContextListToObject(argv);
     const tags = this.parseStringTagsListToObject(argv);
 
-    // Custom `bundling` default. If we deploy, diff or synth a list of stacks
-    // exclusively we skip bundling for all other stacks.
-    let bundling = argv.bundling;
-    if (!bundling) {
-      if (CUSTOM_BUNDLING_DEFAULT_COMMANDS.includes(argv._[0]) && argv.exclusively) {
-        bundling = argv.STACKS ?? [];
-      } else {
-        bundling = ['*'];
-      }
+    // Determine bundling stacks
+    let bundlingStacks: string[];
+    if (BUNDLING_COMMANDS.includes(argv._[0])) {
+    // If we deploy, diff or synth a list of stacks exclusively we skip
+    // bundling for all other stacks.
+      bundlingStacks = argv.exclusively
+        ? argv.STACKS as string[] ?? ['*']
+        : ['*'];
+    } else { // Skip bundling for all stacks
+      bundlingStacks = [];
     }
 
     return new Settings({
@@ -218,7 +219,7 @@ export class Settings {
       staging: argv.staging,
       output: argv.output,
       progress: argv.progress,
-      bundling,
+      bundlingStacks,
     });
   }
 
