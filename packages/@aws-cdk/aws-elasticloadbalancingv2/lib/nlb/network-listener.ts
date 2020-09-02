@@ -195,7 +195,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
       port: props.port,
-      protocol: this.protocol,
+      protocol: props.protocol ?? this.protocol,
       proxyProtocolV2: props.proxyProtocolV2,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
@@ -247,6 +247,13 @@ export interface AddNetworkTargetsProps {
    * @default Determined from protocol if known
    */
   readonly port: number;
+
+  /**
+   * Protocol for target group, expects TCP, TLS, UDP, or TCP_UDP.
+   *
+   * @default - inherits the protocol of the listener
+   */
+  readonly protocol?: Protocol;
 
   /**
    * The targets to add to this target group.
