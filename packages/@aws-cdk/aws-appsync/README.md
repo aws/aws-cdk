@@ -225,6 +225,38 @@ api.grantMutation(role, 'updateExample');
 api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```
 
+### Pipeline Resolvers and AppSync Functions
+
+AppSync Functions are local functions that perform certain operations onto a
+backend data source. Developers can compose operations (Functions) and execute
+them in sequence with Pipeline Resolvers.
+
+```ts
+const appsyncFunction = new appsync.AppsyncFunction(stack, 'function', {
+  name: 'appsync_function',
+  api: api,
+  dataSource: apiDataSource,
+  requestMappingTemplate: appsync.MappingTemplate.fromFile('request.vtl'),
+  responseMappingTemplate: appsync.MappingTemplate.fromFile('response.vtl'),
+});
+```
+
+AppSync Functions are used in tandem with pipeline resolvers to compose multiple
+operations.
+
+```ts
+const pipelineResolver = new appsync.Resolver(stack, 'pipeline', {
+  name: 'pipeline_resolver',
+  api: api,
+  dataSource: apiDataSource,
+  requestMappingTemplate: appsync.MappingTemplate.fromFile('beforeRequest.vtl'),
+  pipelineConfig: [appsyncFunction],
+  responseMappingTemplate: appsync.MappingTemplate.fromFile('afterResponse.vtl'),
+});
+```
+
+Learn more about Pipeline Resolvers and AppSync Functions [here](https://docs.aws.amazon.com/appsync/latest/devguide/pipeline-resolvers.html).
+
 ### Code-First Schema
 
 CDK offers the ability to generate your schema in a code-first approach. 
@@ -372,7 +404,7 @@ is `String!` and is applied to both the names `id` and `version`.
 While `GraphqlType` is a base implementation for GraphQL fields, we have abstractions
 on top of `GraphqlType` that provide finer grain support.
 
-##### Field
+#### Field
 
 `Field` extends `GraphqlType` and will allow you to define arguments. [**Interface Types**](#Interface-Types) are not resolvable and this class will allow you to define arguments,
 but not its resolvers.
@@ -399,7 +431,7 @@ const type = new appsync.InterfaceType('Node', {
 });
 ```
 
-##### Resolvable Fields
+#### Resolvable Fields
 
 `ResolvableField` extends `Field` and will allow you to define arguments and its resolvers.
 [**Object Types**](#Object-Types) can have fields that resolve and perform operations on
@@ -472,7 +504,7 @@ Intermediate Types include:
 - [**Object Types**](#Object-Types)
 - [**Input Types**](#Input-Types)
 
-##### Interface Types
+#### Interface Types
 
 **Interface Types** are abstract types that define the implementation of other
 intermediate types. They are useful for eliminating duplication and can be used
@@ -487,7 +519,7 @@ const node = new appsync.InterfaceType('Node', {
 });
 ```
 
-##### Object Types
+#### Object Types
 
 **Object Types** are types that you declare. For example, in the [code-first example](#code-first-example)
 the `demo` variable is an **Object Type**. **Object Types** are defined by 
@@ -548,23 +580,9 @@ You can create Object Types in three ways:
       },
     });
     ```
-    > This method allows for reusability and modularity, ideal for reducing code duplication. 
+    > This method allows for reusability and modularity, ideal for reducing code duplication.
 
-3. Object Types can be created ***internally*** within the GraphQL API.
-    ```ts
-    const api = new appsync.GraphqlApi(stack, 'Api', {
-      name: 'demo',
-    });
-    api.addType('Demo', {
-      defintion: {
-        id: appsync.GraphqlType.string({ isRequired: true }),
-        version: appsync.GraphqlType.string({ isRequired: true }),
-      },
-    });
-    ```
-    > This method provides easy use and is ideal for smaller projects.
-
-##### Input Types
+#### Input Types
 
 **Input Types** are special types of Intermediate Types. They give users an
 easy way to pass complex objects for top level Mutation and Queries.
