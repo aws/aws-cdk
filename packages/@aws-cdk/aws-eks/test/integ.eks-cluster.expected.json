@@ -2798,32 +2798,7 @@
         }
       }
     },
-    "ClusterOpenIdConnectProviderE7EB0530": {
-      "Type": "Custom::AWSCDKOpenIdConnectProvider",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0",
-            "Arn"
-          ]
-        },
-        "ClientIDList": [
-          "sts.amazonaws.com"
-        ],
-        "ThumbprintList": [
-          "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
-        ],
-        "Url": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "OpenIdConnectIssuerUrl"
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "ClustermanifestMyServiceAccountServiceAccountResource0EC03615": {
+    "ClusterMyServiceAccountmanifestMyServiceAccountServiceAccountResource67018F11": {
       "Type": "Custom::AWSCDK-EKS-KubernetesResource",
       "Properties": {
         "ServiceToken": {
@@ -2860,6 +2835,31 @@
       "DependsOn": [
         "ClusterKubectlReadyBarrier200052AF"
       ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ClusterOpenIdConnectProviderE7EB0530": {
+      "Type": "Custom::AWSCDKOpenIdConnectProvider",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0",
+            "Arn"
+          ]
+        },
+        "ClientIDList": [
+          "sts.amazonaws.com"
+        ],
+        "ThumbprintList": [
+          "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
+        ],
+        "Url": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "OpenIdConnectIssuerUrl"
+          ]
+        }
+      },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
