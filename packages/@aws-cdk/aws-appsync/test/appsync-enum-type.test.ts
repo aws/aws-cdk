@@ -5,11 +5,11 @@ import * as t from './scalar-type-defintions';
 
 const out = 'enum Test {\n  test1\n  test2\n  test3\n}\n';
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'api', {
+  api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
   });
 });
@@ -68,7 +68,7 @@ describe('testing Enum Type properties', () => {
       new appsync.EnumType('Test', {
         definition: ['test 1', 'test2', 'test3'],
       });
-    }).toThrowError('Enum fields cannot contain white space.');
+    }).toThrowError('The allowed values of an Enum Type must not have white space. Remove the spaces in "test 1"');
   });
 
   test('appsync errors on enum type when the fieldName in addField has white space', () => {
@@ -79,7 +79,7 @@ describe('testing Enum Type properties', () => {
     // THEN
     expect(() => {
       test.addField({ fieldName: ' ' });
-    }).toThrowError('Enum fields cannot contain white space.');
+    }).toThrowError('The allowed values of an Enum Type must not have white space. Remove the spaces in " "');
   });
 
   test('appsync errors when enum type is configured with field options', () => {
@@ -90,7 +90,7 @@ describe('testing Enum Type properties', () => {
     // THEN
     expect(() => {
       test.addField({ fieldName: 'test', field: t.string });
-    }).toThrowError('Enum Types does not support IField properties. Use the fieldName option.');
+    }).toThrowError('Enum Types do not support IField properties. Use the fieldName option.');
   });
 
   test('appsync errors when enum type is missing fieldName option', () => {
@@ -101,6 +101,6 @@ describe('testing Enum Type properties', () => {
     // THEN
     expect(() => {
       test.addField({});
-    }).toThrowError('The Field option, fieldName, must be declared.');
+    }).toThrowError('When adding a field to an Enum Type, you must configure the fieldName option.');
   });
 });

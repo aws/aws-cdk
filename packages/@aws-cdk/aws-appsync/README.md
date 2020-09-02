@@ -470,7 +470,7 @@ Types will be the meat of your GraphQL Schema as they are the types defined by y
 Intermediate Types include:
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
-- [**Enum Type**](#Enum-Types)
+- [**Enum Types**](#Enum-Types)
 - [**Input Types**](#Input-Types)
 
 ##### Interface Types
@@ -558,7 +558,7 @@ To learn more about **Object Types**, read the docs [here](https://graphql.org/l
 ### Enum Types
 
 **Enum Types** are a special type of Intermediate Type. They restrict a particular
-set of values for other Intermediate Types.
+set of allowed values for other Intermediate Types.
 
 ```gql
 enum Episode {
@@ -567,6 +567,9 @@ enum Episode {
   JEDI
 }
 ```
+
+> This means that wherever we use the type Episode in our schema, we expect it to
+> be exactly one of NEWHOPE, EMPIRE, or JEDI.
 
 The above GraphQL Enumeration Type can be expressed in CDK as the following:
 

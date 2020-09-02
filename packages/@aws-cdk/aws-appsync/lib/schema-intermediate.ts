@@ -11,7 +11,7 @@ import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-f
  *
  * @experimental
  */
-export interface IntermediateTypeProps {
+export interface IntermediateTypeOptions {
   /**
    * the attributes of this type
    */
@@ -34,7 +34,7 @@ export class InterfaceType implements IIntermediateType {
    */
   public readonly definition: { [key: string]: IField };
 
-  public constructor(name: string, props: IntermediateTypeProps) {
+  public constructor(name: string, props: IntermediateTypeOptions) {
     this.name = name;
     this.definition = props.definition;
   }
@@ -93,7 +93,7 @@ export class InterfaceType implements IIntermediateType {
  *
  * @experimental
  */
-export interface ObjectTypeProps extends IntermediateTypeProps {
+export interface ObjectTypeOptions extends IntermediateTypeOptions {
   /**
    * The Interface Types this Object Type implements
    *
@@ -131,7 +131,7 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
    */
   public resolvers?: Resolver[];
 
-  public constructor(name: string, props: ObjectTypeProps) {
+  public constructor(name: string, props: ObjectTypeOptions) {
     const options = {
       definition: props.interfaceTypes?.reduce((def, interfaceType) => {
         return Object.assign({}, def, interfaceType.definition);
@@ -210,7 +210,7 @@ export class InputType implements IIntermediateType {
    */
   public readonly definition: { [key: string]: IField };
 
-  public constructor(name: string, props: IntermediateTypeProps) {
+  public constructor(name: string, props: IntermediateTypeOptions) {
     this.name = name;
     this.definition = props.definition;
   }
@@ -266,7 +266,7 @@ export class InputType implements IIntermediateType {
  *
  * @experimental
  */
-export interface EnumTypeProps {
+export interface EnumTypeOptions {
   /**
    * the attributes of this type
    */
@@ -289,7 +289,7 @@ export class EnumType implements IIntermediateType {
    */
   public readonly definition: { [key: string]: IField };
 
-  public constructor(name: string, props: EnumTypeProps) {
+  public constructor(name: string, props: EnumTypeOptions) {
     this.name = name;
     this.definition = {};
     props.definition.map((fieldName: string) => this.addField({ fieldName }));
@@ -326,19 +326,20 @@ export class EnumType implements IIntermediateType {
   /**
    * Add a field to this Enum Type
    *
-   * Enum Types must have fieldName options.
+   * To add a field to this Enum Type, you must only configure
+   * addField with the fieldName options.
    *
    * @param options the options to add a field
    */
   public addField(options: AddFieldOptions): void {
     if (options.field) {
-      throw new Error('Enum Types does not support IField properties. Use the fieldName option.');
+      throw new Error('Enum Types do not support IField properties. Use the fieldName option.');
     }
     if (!options.fieldName) {
-      throw new Error('The Field option, fieldName, must be declared.');
+      throw new Error('When adding a field to an Enum Type, you must configure the fieldName option.');
     }
     if (options.fieldName.indexOf(' ') > -1) {
-      throw new Error('Enum fields cannot contain white space.');
+      throw new Error(`The allowed values of an Enum Type must not have white space. Remove the spaces in "${options.fieldName}"`);
     }
     this.definition[options.fieldName] = GraphqlType.string();
   }
