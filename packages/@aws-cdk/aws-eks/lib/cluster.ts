@@ -106,7 +106,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    *
    * @param id logical id of this manifest
    * @param manifest a list of Kubernetes resource specifications
-   * @returns a `KubernetesResource` object.
+   * @returns a `KubernetesManifest` object.
    */
   addManifest(id: string, ...manifest: any[]): KubernetesManifest;
 

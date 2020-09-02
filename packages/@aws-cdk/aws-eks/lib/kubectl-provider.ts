@@ -21,10 +21,6 @@ export class KubectlProvider extends NestedStack {
       return cluster._attachKubectlResourceScope(scope);
     }
 
-    if (!cluster.kubectlRole) {
-      throw new Error('cluster does not have "kubectlRole" defined, so "kubectl" commands cannot be issued against it');
-    }
-
     // if this is an imported cluster, we need to provision a custom resource provider in this stack
     // we will define one per stack for each cluster based on the cluster uniqueid
     const uid = `${cluster.node.uniqueId}-KubectlProvider`;
