@@ -914,7 +914,7 @@ export = {
   },
 
   'performance insights': {
-    'cluster with all performance insights properties'(test: Test) {
+    'instance with all performance insights properties'(test: Test) {
       new rds.DatabaseInstance(stack, 'Instance', {
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         masterUsername: 'admin',
