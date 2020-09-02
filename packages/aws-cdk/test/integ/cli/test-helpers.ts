@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { corkShellOutput, uncorkShellOutput, flushCorkedOutput } from './corking';
 
 const SKIP_TESTS = fs.readFileSync(path.join(__dirname, 'skip-tests.txt'), { encoding: 'utf-8' }).split('\n');
 
@@ -9,12 +10,20 @@ const SKIP_TESTS = fs.readFileSync(path.join(__dirname, 'skip-tests.txt'), { enc
 export function integTest<A>(name: string, callback: () => A | Promise<A>) {
   const runner = shouldSkip(name) ? test.skip : test;
 
-  runner(name, () => {
+  runner(name, async () => {
     process.stdout.write('================================================================\n');
     process.stdout.write(`${name}\n`);
     process.stdout.write('================================================================\n');
 
-    return callback();
+    try {
+      corkShellOutput();
+      return await callback();
+    } catch (e) {
+      await flushCorkedOutput();
+      throw e;
+    } finally {
+      uncorkShellOutput();
+    }
   });
 }
 
