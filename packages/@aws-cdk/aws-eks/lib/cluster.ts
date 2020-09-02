@@ -1100,26 +1100,24 @@ export class Cluster extends Resource implements ICluster {
         env: this.kubectlProviderEnv,
       };
 
-      if (this.endpointAccess._config.privateAccess) {
+      const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+      const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
+      const publicAccessRestricted = this.endpointAccess._config.publicCidrs && this.endpointAccess._config.publicCidrs.length !== 0;
 
-        // when private access is enabled, its best to connect the provider to
-        // the vpc so that it may work even when restricting public access.
+      if (privateSubents.length === 0 && publicAccessDisabled) {
+        // no private subnets and no public access at all, no good.
+        throw new Error('Vpc must contain private subnets to configure private only access');
+      }
 
-        const privateSubents = this.selectPrivateSubnets().slice(0, 16);
-        const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
-        const publicAccessRestricted = this.endpointAccess._config.publicCidrs && this.endpointAccess._config.publicCidrs.length !== 0;
+      if (privateSubents.length === 0 && publicAccessRestricted) {
+        // no private subents and public access is restricted, no good.
+        throw new Error('Vpc must contain private subnets to configure restricted public access');
+      }
 
-        // however, sometimes thats not possible.
+      if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
 
-        if (privateSubents.length === 0 && publicAccessDisabled) {
-          // no private subnets and no public access at all, no good.
-          throw new Error('Vpc must contain private subnets to configure private only access');
-        }
-
-        if (privateSubents.length === 0 && publicAccessRestricted) {
-          // no private subents and public access is restricted, no good.
-          throw new Error('Vpc must contain private subnets to configure restricted public access');
-        }
+        // when private access is enabled and the vpc has private subnets, lets connect
+        // the provider to the vpc so that it will work even when restricting public access.
 
         providerProps = {
           ...providerProps,

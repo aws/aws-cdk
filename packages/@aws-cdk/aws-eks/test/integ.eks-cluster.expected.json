@@ -3047,7 +3047,7 @@
               },
               "/",
               {
-                "Ref": "AssetParametersc5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892S3Bucket55EC5E2E"
+                "Ref": "AssetParameterse2ff0abbb9bc206716cc917879e308999a7a55eec28ba63868960ca5e4a70adbS3Bucket2433627B"
               },
               "/",
               {
@@ -3057,7 +3057,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersc5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892S3VersionKey4D11177E"
+                        "Ref": "AssetParameterse2ff0abbb9bc206716cc917879e308999a7a55eec28ba63868960ca5e4a70adbS3VersionKey9378C510"
                       }
                     ]
                   }
@@ -3070,7 +3070,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersc5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892S3VersionKey4D11177E"
+                        "Ref": "AssetParameterse2ff0abbb9bc206716cc917879e308999a7a55eec28ba63868960ca5e4a70adbS3VersionKey9378C510"
                       }
                     ]
                   }
@@ -3085,6 +3085,21 @@
           },
           "referencetoawscdkeksclustertestAssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2S3VersionKey901D947ARef": {
             "Ref": "AssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2S3VersionKey40FF2C4A"
+          },
+          "referencetoawscdkeksclustertestVpcPrivateSubnet1Subnet32A4EC2ARef": {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A"
+          },
+          "referencetoawscdkeksclustertestVpcPrivateSubnet2Subnet5CC53627Ref": {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+          },
+          "referencetoawscdkeksclustertestVpcPrivateSubnet3Subnet7F5D6918Ref": {
+            "Ref": "VpcPrivateSubnet3SubnetF258B56E"
+          },
+          "referencetoawscdkeksclustertestClusterKubectlProviderSecurityGroupD167EE6BGroupId": {
+            "Fn::GetAtt": [
+              "ClusterKubectlProviderSecurityGroup2D90691C",
+              "GroupId"
+            ]
           },
           "referencetoawscdkeksclustertestAssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3Bucket85526CA7Ref": {
             "Ref": "AssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3BucketD25BCC90"
@@ -3761,17 +3776,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"6ecca35abf6e120e05482cd9c32ba6b63ca36c403162c80cac6aa3af3f69d5df\""
     },
-    "AssetParametersc5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892S3Bucket55EC5E2E": {
+    "AssetParameterse2ff0abbb9bc206716cc917879e308999a7a55eec28ba63868960ca5e4a70adbS3Bucket2433627B": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"c5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892\""
+      "Description": "S3 bucket for asset \"e2ff0abbb9bc206716cc917879e308999a7a55eec28ba63868960ca5e4a70adb\""
     },
-    "AssetParametersc5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892S3VersionKey4D11177E": {
+    "AssetParameterse2ff0abbb9bc206716cc917879e308999a7a55eec28ba63868960ca5e4a70adbS3VersionKey9378C510": {
       "Type": "String",
-      "Description": "S3 key for asset version \"c5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892\""
+      "Description": "S3 key for asset version \"e2ff0abbb9bc206716cc917879e308999a7a55eec28ba63868960ca5e4a70adb\""
     },
-    "AssetParametersc5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892ArtifactHash1733F1C4": {
+    "AssetParameterse2ff0abbb9bc206716cc917879e308999a7a55eec28ba63868960ca5e4a70adbArtifactHashD4E076C3": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"c5632c43ffe4f4e631b88fb1e6ba409c43088afcd9a566a1d2d59fcbb6a13892\""
+      "Description": "Artifact hash for asset \"e2ff0abbb9bc206716cc917879e308999a7a55eec28ba63868960ca5e4a70adb\""
     },
     "SsmParameterValueawsserviceeksoptimizedami116amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",

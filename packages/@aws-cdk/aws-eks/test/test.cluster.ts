@@ -1657,18 +1657,55 @@ export = {
 
     },
 
-    'works if no private subnets but public access is not restricted'(test: Test) {
+    'does not attach private subnets if endpoint access is public only'(test: Test) {
 
-      const { stack, app } = testFixture();
+      const { stack } = testFixture();
 
       new eks.Cluster(stack, 'Cluster', {
         version: CLUSTER_VERSION,
-        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom(),
+        endpointAccess: eks.EndpointAccess.PUBLIC,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
       });
 
-      app.synth();
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
 
+      test.equal(template.Resources.Handler886CB40B.Properties.VpcConfig, undefined);
+      test.done();
+
+    },
+
+    'does not attach private subnets if no private subnets and public access is not restricted'(test: Test) {
+
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig, undefined);
+      test.done();
+
+    },
+
+    'attaches private subnets if public access is restricted but private access is enabled and private subnets exist'(test: Test) {
+
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/5'),
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length !== 0);
       test.done();
 
     },
