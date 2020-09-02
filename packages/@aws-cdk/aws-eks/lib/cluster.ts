@@ -4,6 +4,7 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
 import * as YAML from 'yaml';
@@ -97,6 +98,13 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * publicly.
    */
   readonly kubectlPrivateSubnets?: ec2.ISubnet[];
+
+  /**
+   * An AWS Lambda layer that includes `kubectl`, `helm` and the `aws` CLI.
+   *
+   * If not defined, a default layer will be used.
+   */
+  readonly kubectlLayer?: lambda.ILayerVersion;
 
   /**
    * Defines a Kubernetes resource in this cluster.
@@ -194,6 +202,36 @@ export interface ClusterAttributes {
    * @default - k8s endpoint is expected to be accessible publicly
    */
   readonly kubectlPrivateSubnetIds?: string[];
+
+  /**
+   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
+   *
+   * By default, the provider will use the layer included in the
+   * "aws-lambda-layer-kubectl" SAR application which is available in all
+   * commercial regions.
+   *
+   * To deploy the layer locally, visit
+   * https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md
+   * for instructions on how to prepare the .zip file and then define it in your
+   * app as follows:
+   *
+   * ```ts
+   * const layer = new lambda.LayerVersion(this, 'kubectl-layer', {
+   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
+   *   compatibleRuntimes: [lambda.Runtime.PROVIDED]
+   * });
+   *
+   * Or you can use the standard layer like this (with options
+   * to customize the version and SAR application ID):
+   *
+   * ```ts
+   * const layer = new eks.KubectlLayer(this, 'KubectlLayer');
+   * ```
+   *
+   * @default - the layer provided by the `aws-lambda-layer-kubectl` SAR app.
+   * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
+   */
+  readonly kubectlLayer?: lambda.ILayerVersion;
 }
 
 /**
@@ -315,6 +353,30 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - No environment variables.
    */
   readonly kubectlEnvironment?: { [key: string]: string };
+
+  /**
+   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
+   *
+   * By default, the provider will use the layer included in the
+   * "aws-lambda-layer-kubectl" SAR application which is available in all
+   * commercial regions.
+   *
+   * To deploy the layer locally, visit
+   * https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md
+   * for instructions on how to prepare the .zip file and then define it in your
+   * app as follows:
+   *
+   * ```ts
+   * const layer = new lambda.LayerVersion(this, 'kubectl-layer', {
+   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
+   *   compatibleRuntimes: [lambda.Runtime.PROVIDED]
+   * })
+   * ```
+   *
+   * @default - the layer provided by the `aws-lambda-layer-kubectl` SAR app.
+   * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
+   */
+  readonly kubectlLayer?: lambda.ILayerVersion;
 }
 
 /**
@@ -694,6 +756,12 @@ export class Cluster extends ClusterBase {
   private readonly _fargateProfiles: FargateProfile[] = [];
 
   /**
+   * The AWS Lambda layer that contains `kubectl`, `helm` and the AWS CLI. If
+   * undefined, a SAR app that contains this layer will be used.
+   */
+  public readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
    * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
@@ -786,6 +854,7 @@ export class Cluster extends ClusterBase {
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
+    this.kubectlLayer = props.kubectlLayer;
 
     if (this.endpointAccess._config.privateAccess && this.vpc instanceof ec2.Vpc) {
       // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
@@ -1482,6 +1551,7 @@ class ImportedCluster extends ClusterBase implements ICluster {
   public readonly kubectlEnvironment?: { [key: string]: string; } | undefined;
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
+  public readonly kubectlLayer?: lambda.ILayerVersion;
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
@@ -1492,6 +1562,7 @@ class ImportedCluster extends ClusterBase implements ICluster {
     this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map(subnetid => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${subnetid}`, subnetid)) : undefined;
+    this.kubectlLayer = props.kubectlLayer;
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
