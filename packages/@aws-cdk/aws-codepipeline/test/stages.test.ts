@@ -1,12 +1,12 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
 import { Stage } from '../lib/stage';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'Pipeline Stages': {
     'can be inserted before another Stage'(test: Test) {
       const stack = new cdk.Stack();
@@ -105,9 +105,7 @@ export = {
         });
       // incredibly, an arrow function below causes nodeunit to crap out with:
       // "TypeError: Function has non-object prototype 'undefined' in instanceof check"
-      }, function(e: any) {
-        return /rightBefore/.test(e) && /justAfter/.test(e);
-      });
+      }, /(rightBefore.*justAfter)|(justAfter.*rightBefore)/);
 
       test.done();
     },
@@ -137,4 +135,4 @@ export = {
       test.done();
     },
   },
-};
+});

@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
 import * as validations from '../lib/validation';
 import { FakeBuildAction } from './fake-build-action';
@@ -9,7 +9,7 @@ import { FakeSourceAction } from './fake-source-action';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'artifact bounds validation': {
 
     'artifacts count exceed maximum'(test: Test) {
@@ -403,7 +403,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {
   const artifacts: codepipeline.Artifact[] = [];

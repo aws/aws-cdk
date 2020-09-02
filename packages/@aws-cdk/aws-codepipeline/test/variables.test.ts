@@ -1,13 +1,13 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'Pipeline Variables': {
     'uses the passed namespace when its passed when constructing the Action'(test: Test) {
       const stack = new cdk.Stack();
@@ -141,4 +141,4 @@ export = {
       test.done();
     },
   },
-};
+});

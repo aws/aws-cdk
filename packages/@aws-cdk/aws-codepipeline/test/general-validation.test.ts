@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { IStage } from '../lib/action';
 import { Artifact } from '../lib/artifact';
 import { Pipeline } from '../lib/pipeline';
@@ -12,7 +12,7 @@ interface NameValidationTestCase {
   explanation: string;
 }
 
-export = {
+nodeunitShim({
   'name validation'(test: Test) {
     const cases: NameValidationTestCase[] = [
       { name: 'BlahBleep123.@-_', shouldPassValidation: true, explanation: 'should be valid' },
@@ -73,7 +73,7 @@ export = {
       test.done();
     },
   },
-};
+});
 
 function stageForTesting(): IStage {
   const stack = new cdk.Stack();
