@@ -6,7 +6,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
+import { AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseCluster, DatabaseClusterEngine, ParameterGroup, DatabaseClusterFromSnapshot, AuroraEngineVersion } from '../lib';
 
 export = {
   'creating a Cluster also creates 2 DB Instances'(test: Test) {
@@ -1230,6 +1230,37 @@ export = {
     const art = SynthUtils.synthesize(stack);
     const meta = art.findMetadataByType('aws:cdk:error');
     test.equal(meta[0].data, 'Cluster requires at least 2 subnets, got 0');
+
+    test.done();
+  },
+
+  'create a cluster from a snapshot'(test: Test) {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      Properties: {
+        Engine: 'aurora',
+        EngineVersion: '5.6.mysql_aurora.1.22.2',
+        DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+        SnapshotIdentifier: 'mySnapshot',
+      },
+      DeletionPolicy: ABSENT,
+      UpdateReplacePolicy: 'Snapshot',
+    }, ResourcePart.CompleteDefinition));
+
+    expect(stack).to(countResources('AWS::RDS::DBInstance', 2));
 
     test.done();
   },
