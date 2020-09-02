@@ -591,13 +591,14 @@ export = {
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
+      assetHashType: AssetHashType.BUNDLE,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
 
-    test.throws(() => readDockerStubInput());
+    test.throws(() => readDockerStubInput()); // Bundling did not run
     test.equal(asset.assetHash, '3d96e735e26b857743a7c44523c9160c285c2d3ccf273d80fa38a1e674c32cb3'); // hash of MyStack/Asset
     test.equal(asset.sourcePath, directory);
     test.equal(stack.resolve(asset.stagedPath), directory);

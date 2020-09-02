@@ -113,7 +113,9 @@ export class AssetStaging extends Construct {
         this.relativePath = renderAssetFilename(this.assetHash);
         this.stagedPath = this.relativePath;
       } else { // Bundling is skipped
-        this.assetHash = this.calculateHash(AssetHashType.CUSTOM, this.node.path); // Use node path as dummy hash
+        this.assetHash = props.assetHashType === AssetHashType.BUNDLE
+          ? this.calculateHash(AssetHashType.CUSTOM, this.node.path) // Use node path as dummy hash because we're not bundling
+          : this.calculateHash(hashType, props.assetHash);
         this.stagedPath = this.sourcePath;
       }
     } else {
