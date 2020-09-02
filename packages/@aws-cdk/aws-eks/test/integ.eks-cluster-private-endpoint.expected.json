@@ -618,7 +618,7 @@
         }
       }
     },
-    "ClusterCreationRole06A2B684": {
+    "ClusterCreationRole360249B6": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -732,7 +732,7 @@
         "PolicyName": "ClusterCreationRoleDefaultPolicy88243952",
         "Roles": [
           {
-            "Ref": "ClusterCreationRole06A2B684"
+            "Ref": "ClusterCreationRole360249B6"
           }
         ]
       }
@@ -789,7 +789,7 @@
         },
         "AssumeRoleArn": {
           "Fn::GetAtt": [
-            "ClusterCreationRole06A2B684",
+            "ClusterCreationRole360249B6",
             "Arn"
           ]
         },
@@ -797,7 +797,7 @@
       },
       "DependsOn": [
         "ClusterCreationRoleDefaultPolicy88243952",
-        "ClusterCreationRole06A2B684",
+        "ClusterCreationRole360249B6",
         "ClusterKubectlProviderSecurityGroup2D90691C",
         "VpcIGWD7BA715C",
         "VpcPrivateSubnet1DefaultRouteBE02A9ED",
@@ -885,7 +885,7 @@
         },
         "RoleArn": {
           "Fn::GetAtt": [
-            "ClusterCreationRole06A2B684",
+            "ClusterCreationRole360249B6",
             "Arn"
           ]
         }
@@ -1010,7 +1010,7 @@
         },
         "RoleArn": {
           "Fn::GetAtt": [
-            "ClusterCreationRole06A2B684",
+            "ClusterCreationRole360249B6",
             "Arn"
           ]
         }
@@ -1069,7 +1069,7 @@
         "Parameters": {
           "referencetoawscdkeksclusterprivateendpointtestClusterCreationRoleA7815A6EArn": {
             "Fn::GetAtt": [
-              "ClusterCreationRole06A2B684",
+              "ClusterCreationRole360249B6",
               "Arn"
             ]
           },
@@ -1142,7 +1142,7 @@
           },
           "referencetoawscdkeksclusterprivateendpointtestClusterCreationRoleA7815A6EArn": {
             "Fn::GetAtt": [
-              "ClusterCreationRole06A2B684",
+              "ClusterCreationRole360249B6",
               "Arn"
             ]
           },

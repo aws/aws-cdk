@@ -5,11 +5,10 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration, Lazy } from '@aws-cdk/core';
+import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
-import { CfnClusterProps } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesManifest } from './k8s-manifest';
@@ -115,7 +114,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    *
    * @param id logical id of this chart.
    * @param options options of this chart.
-   * @returns a `HelmChart` object
+   * @returns a `HelmChart` construct
    */
   addChart(id: string, options: HelmChartOptions): HelmChart;
 }
@@ -539,7 +538,7 @@ abstract class ClusterBase extends Resource implements ICluster {
    *
    * @param id logical id of this chart.
    * @param options options of this chart.
-   * @returns a `HelmChart` object
+   * @returns a `HelmChart` construct
    */
   public addChart(id: string, options: HelmChartOptions): HelmChart {
     return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
@@ -784,23 +783,6 @@ export class Cluster extends ClusterBase {
     // Get subnetIds for all selected subnets
     const subnetIds = [...new Set(Array().concat(...this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds)))];
 
-    const clusterProps: CfnClusterProps = {
-      name: this.physicalName,
-      roleArn: this.role.roleArn,
-      version: props.version.version,
-      resourcesVpcConfig: {
-        securityGroupIds: [securityGroup.securityGroupId],
-        subnetIds,
-      },
-      ...(props.secretsEncryptionKey ? {
-        encryptionConfig: [{
-          provider: {
-            keyArn: props.secretsEncryptionKey.keyArn,
-          },
-          resources: ['secrets'],
-        }],
-      } : {} ),
-    };
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
@@ -820,20 +802,30 @@ export class Cluster extends ClusterBase {
     // grant the kubectl provider access to the cluster control plane.
     this.connections.allowFrom(this.kubectlSecurityGroup, this.connections.defaultPort!);
 
-    this.adminRole = createAdminRole(this, {
-      clusterName: this.physicalName,
+    const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
+      name: this.physicalName,
       roleArn: this.role.roleArn,
+      version: props.version.version,
+      resourcesVpcConfig: {
+        securityGroupIds: [securityGroup.securityGroupId],
+        subnetIds,
+      },
+      ...(props.secretsEncryptionKey ? {
+        encryptionConfig: [{
+          provider: {
+            keyArn: props.secretsEncryptionKey.keyArn,
+          },
+          resources: ['secrets'],
+        }],
+      } : {} ),
+      endpointPrivateAccess: this.endpointAccess._config.privateAccess,
+      endpointPublicAccess: this.endpointAccess._config.publicAccess,
+      publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       secretsEncryptionKey: props.secretsEncryptionKey,
       vpc: this.vpc,
     });
 
-    const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
-      ...clusterProps,
-      endpointPrivateAccess: this.endpointAccess._config.privateAccess,
-      endpointPublicAccess: this.endpointAccess._config.publicAccess,
-      publicAccessCidrs: this.endpointAccess._config.publicCidrs,
-      adminRole: this.adminRole,
-    });
+    this.adminRole = resource.adminRole;
 
     // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
     // this ensures that.
@@ -1707,110 +1699,3 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
       NodeType.STANDARD;
 }
 
-interface CreateAdminRoleProps {
-  readonly clusterName: string;
-  readonly roleArn: string;
-  readonly secretsEncryptionKey?: kms.IKey;
-  readonly vpc: ec2.IVpc;
-}
-
-function createAdminRole(scope: Construct, props: CreateAdminRoleProps) {
-  const stack = Stack.of(scope);
-
-  // the role used to create the cluster. this becomes the administrator role
-  // of the cluster.
-  const creationRole = new iam.Role(scope, 'CreationRole', {
-    assumedBy: new iam.AccountRootPrincipal(),
-  });
-
-  // the CreateCluster API will allow the cluster to assume this role, so we
-  // need to allow the lambda execution role to pass it.
-  creationRole.addToPolicy(new iam.PolicyStatement({
-    actions: ['iam:PassRole'],
-    resources: [props.roleArn],
-  }));
-
-  // if we know the cluster name, restrict the policy to only allow
-  // interacting with this specific cluster otherwise, we will have to grant
-  // this role to manage all clusters in the account. this must be lazy since
-  // `props.name` may contain a lazy value that conditionally resolves to a
-  // physical name.
-  const resourceArns = Lazy.listValue({
-    produce: () => {
-      const arn = stack.formatArn(clusterArnComponents(stack.resolve(props.clusterName)));
-      return stack.resolve(props.clusterName)
-        ? [arn, `${arn}/*`] // see https://github.com/aws/aws-cdk/issues/6060
-        : ['*'];
-    },
-  });
-
-  const fargateProfileResourceArn = Lazy.stringValue({
-    produce: () => stack.resolve(props.clusterName)
-      ? stack.formatArn({ service: 'eks', resource: 'fargateprofile', resourceName: stack.resolve(props.clusterName) + '/*' })
-      : '*',
-  });
-
-  creationRole.addToPolicy(new iam.PolicyStatement({
-    actions: [
-      'ec2:DescribeSubnets',
-      'ec2:DescribeRouteTables',
-    ],
-    resources: ['*'],
-  }));
-
-  creationRole.addToPolicy(new iam.PolicyStatement({
-    actions: [
-      'eks:CreateCluster',
-      'eks:DescribeCluster',
-      'eks:DescribeUpdate',
-      'eks:DeleteCluster',
-      'eks:UpdateClusterVersion',
-      'eks:UpdateClusterConfig',
-      'eks:CreateFargateProfile',
-      'eks:TagResource',
-      'eks:UntagResource',
-    ],
-    resources: resourceArns,
-  }));
-
-  creationRole.addToPolicy(new iam.PolicyStatement({
-    actions: ['eks:DescribeFargateProfile', 'eks:DeleteFargateProfile'],
-    resources: [fargateProfileResourceArn],
-  }));
-
-  creationRole.addToPolicy(new iam.PolicyStatement({
-    actions: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
-    resources: ['*'],
-  }));
-
-  creationRole.addToPolicy(new iam.PolicyStatement({
-    actions: ['iam:CreateServiceLinkedRole'],
-    resources: ['*'],
-  }));
-
-  // see https://github.com/aws/aws-cdk/issues/9027
-  creationRole.addToPolicy(new iam.PolicyStatement({
-    actions: ['ec2:DescribeVpcs'],
-    resources: [stack.formatArn({
-      service: 'ec2',
-      resource: 'vpc',
-      resourceName: props.vpc.vpcId,
-    })],
-  }));
-
-  // grant cluster creation role sufficient permission to access the specified key
-  // see https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html
-  if (props.secretsEncryptionKey) {
-    creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [
-        'kms:Encrypt',
-        'kms:Decrypt',
-        'kms:DescribeKey',
-        'kms:CreateGrant',
-      ],
-      resources: [props.secretsEncryptionKey.keyArn],
-    }));
-  }
-
-  return creationRole;
-}
