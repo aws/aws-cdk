@@ -1475,6 +1475,28 @@ export = {
 
     test.done();
   },
+  'BottleRocketImage() returns correct AMI'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // WHEN
+    new ecs.BottleRocketImage().getImage(stack);
+
+    // THEN
+    const assembly = app.synth();
+    const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+    test.ok(Object.entries(parameters).some(
+      ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
+        (v as any).Default.includes('/bottlerocket/'),
+    ), 'Bottlerocket AMI should be in ssm parameters');
+    test.ok(Object.entries(parameters).some(
+      ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
+        (v as any).Default.includes('/aws-ecs-1/'),
+    ), 'ecs variant should be in ssm parameters');
+    test.done();
+  },
+
   'cluster capacity with bottlerocket AMI'(test: Test) {
     // GIVEN
     const app = new cdk.App();
@@ -1489,6 +1511,25 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECS::Cluster'));
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup'));
+    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+      ImageId: {
+        Ref: 'SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
+      UserData: {
+        'Fn::Base64': {
+          'Fn::Join': [
+            '',
+            [
+              '\n[settings.ecs]\ncluster = "',
+              {
+                Ref: 'EcsCluster97242B84',
+              },
+              '"',
+            ],
+          ],
+        },
+      },
+    }));
     expect(stack).to(haveResourceLike('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [

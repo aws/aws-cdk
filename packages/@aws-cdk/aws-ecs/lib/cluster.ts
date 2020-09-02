@@ -529,22 +529,44 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
 }
 
 /**
+ * Amazon ECS variant
+ */
+export enum BottlerocketEcsVariant {
+  /**
+   * aws-ecs-1 variant
+   */
+  AWS_ECS_1 = 'aws-ecs-1'
+
+}
+
+/**
+ * Properties for BottleRocketImage
+ */
+export interface BottleRocketImageProps {
+  /**
+   * The Amazon ECS variant to use.
+   * Only `aws-ecs-1` is currently available
+   *
+   * @default - BottlerocketEcsVariant.AWS_ECS_1
+   */
+  readonly variant?: BottlerocketEcsVariant;
+}
+
+/**
  * Construct an Bottlerocket image from the latest AMI published in SSM
  */
 export class BottleRocketImage implements ec2.IMachineImage {
   private readonly amiParameterName: string;
   /**
-   * Bottlerocket AMI variant
-   * @default - `aws-ecs-1`
+   * Amazon ECS variant for Bottlerocket AMI
    */
-  private readonly variant?: string;
+  private readonly variant: string;
 
   /**
    * Constructs a new instance of the BottleRocketImage class.
    */
-  public constructor() {
-    // only `aws-ecs-1` is currently available
-    this.variant = 'aws-ecs-1';
+  public constructor(props: BottleRocketImageProps = {}) {
+    this.variant = props.variant ?? BottlerocketEcsVariant.AWS_ECS_1;
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/bottlerocket/${this.variant}/x86_64/latest/image_id`;
