@@ -4,11 +4,11 @@ import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
 
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'api', {
+  api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
   });
 });
@@ -177,9 +177,9 @@ describe('testing Object Type properties', () => {
         test: t.string,
       },
     });
-    test.addField('resolve', field);
+    test.addField({ fieldName: 'resolve', field });
     // test.addField('resolve', field);
-    test.addField('dynamic', t.string);
+    test.addField({ fieldName: 'dynamic', field: t.string });
 
     api.addToSchema(test.toString());
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n  dynamic: String\n}\n';
@@ -210,9 +210,9 @@ describe('testing Object Type properties', () => {
         arg: garbage.attribute(),
       },
     });
-    test.addField('resolve', field);
+    test.addField({ fieldName: 'resolve', field });
     // test.addField('resolve', field);
-    test.addField('dynamic', garbage.attribute());
+    test.addField({ fieldName: 'dynamic', field: garbage.attribute() });
 
     api.addToSchema(test.toString());
     const out = 'type Test {\n  test: String\n  resolve(arg: Garbage): Garbage\n  dynamic: Garbage\n}\n';
@@ -222,5 +222,38 @@ describe('testing Object Type properties', () => {
       Definition: `${out}`,
     });
     expect(stack).toHaveResource('AWS::AppSync::Resolver');
+  });
+
+  test('appsync fails addField with ObjectType missing fieldName', () => {
+    // WHEN
+    const test = new appsync.ObjectType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({ fieldName: 'test' });
+    }).toThrowError('Object Types must have both fieldName and field options.');
+  });
+
+  test('appsync fails addField with ObjectType missing field', () => {
+    // WHEN
+    const test = new appsync.ObjectType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({ field: t.string });
+    }).toThrowError('Object Types must have both fieldName and field options.');
+  });
+
+  test('appsync fails addField with ObjectType missing both fieldName and field options', () => {
+    // WHEN
+    const test = new appsync.ObjectType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({});
+    }).toThrowError('Object Types must have both fieldName and field options.');
   });
 });
