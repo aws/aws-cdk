@@ -269,6 +269,10 @@ the capacity.
 The `KubernetesManifest` construct or `cluster.addManifest` method can be used
 to apply Kubernetes resource manifests to this cluster.
 
+> When using `cluster.addManifest`, the manifest construct is defined within the cluster's stack scope. If the manifest contains
+> attributes from a different stack which depend on the cluster stack, a circular dependency will be created and you will get a synth time error.
+> To avoid this, directly use `new KubernetesManifest` to create the manifest in the scope of the other stack.
+
 The following examples will deploy the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes)
 service on the cluster:
 
@@ -518,9 +522,9 @@ const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
 
 ### Kubernetes Resources in Existing Clusters
 
-The Amazon EKS library allows defining Kubernetes resources such as Kubernetes
-manifests and [Helm charts](#helm-charts) on clusters that are not defined as
-part of your CDK app.
+The Amazon EKS library allows defining Kubernetes resources such as [Kubernetes
+manifests](#kubernetes-resources) and [Helm charts](#helm-charts) on clusters
+that are not defined as part of your CDK app.
 
 First, you'll need to "import" a cluster to your CDK app. To do that, use the
 `eks.Cluster.fromClusterAttributes()` static method:
@@ -557,9 +561,12 @@ to specify:
   role. If the cluster you are importing was created using the AWS CDK, the
   CloudFormation stack has an output that includes an IAM role that can be used.
   Otherwise, you can create an IAM role and map it to `system:masters` manually.
+  The trust policy of this role should include the the
+  `arn:aws::iam::${accountId}:root` principal in order to allow the execution
+  role of the kubectl resource to assume it.
 
-If the cluster is configured with private-only Kubernetes [endpoint
-access](#endpoint-access), you must also specify:
+If the cluster is configured with private-only or private and restricted public
+Kubernetes [endpoint access](#endpoint-access), you must also specify:
 
 - `kubectlSecurityGroupId` - the ID of an EC2 security group that is allowed
   connections to the cluster's control security group.
@@ -652,8 +659,12 @@ unfortunately beyond the scope of this documentation.
 The `HelmChart` construct or `cluster.addChart` method can be used
 to add Kubernetes resources to this cluster using Helm.
 
+> When using `cluster.addChart`, the manifest construct is defined within the cluster's stack scope. If the manifest contains
+> attributes from a different stack which depend on the cluster stack, a circular dependency will be created and you will get a synth time error.
+> To avoid this, directly use `new HelmChart` to create the chart in the scope of the other stack.
+
 The following example will install the [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)
-to you cluster using Helm.
+to your cluster using Helm.
 
 ```ts
 // option 1: use a construct

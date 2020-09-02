@@ -285,7 +285,7 @@ export = {
             'Outputs.awscdkawseksClusterResourceProviderframeworkonEventEA97AA31Arn',
           ],
         },
-        AssumeRoleArn: { 'Fn::GetAtt': ['MyClusterCreationRole93BAC2B5', 'Arn'] },
+        AssumeRoleArn: { 'Fn::GetAtt': ['MyClusterCreationRoleB5FA4FF3', 'Arn'] },
         Config: {
           clusterName: { Ref: 'MyCluster8AD82BF8' },
           podExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfile2PodExecutionRoleD1151CCF', 'Arn'] },

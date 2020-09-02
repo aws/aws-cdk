@@ -1,30 +1,22 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnComponents, Construct, CustomResource, Token } from '@aws-cdk/core';
+import * as kms from '@aws-cdk/aws-kms';
+import { ArnComponents, Construct, CustomResource, Token, Stack, Lazy } from '@aws-cdk/core';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
-import { CfnClusterProps, CfnCluster } from './eks.generated';
+import { CfnCluster } from './eks.generated';
 
-export interface ClusterResourceProps extends CfnClusterProps {
-
-  /**
-   * Enable private endpoint access to the cluster.
-   */
+export interface ClusterResourceProps {
+  readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
+  readonly roleArn: string;
+  readonly encryptionConfig?: Array<CfnCluster.EncryptionConfigProperty>;
+  readonly name: string;
+  readonly version?: string;
   readonly endpointPrivateAccess: boolean;
-
-  /**
-   * Enable public endpoint access to the cluster.
-   */
   readonly endpointPublicAccess: boolean;
-
-  /**
-   * Limit public address with CIDR blocks.
-   */
   readonly publicAccessCidrs?: string[];
-
-  /**
-   * The role that has administrative privilages on the cluster.
-   */
-  readonly adminRole: iam.IRole;
+  readonly vpc: ec2.IVpc;
+  readonly secretsEncryptionKey?: kms.IKey;
 }
 
 /**
@@ -47,6 +39,8 @@ export class ClusterResource extends Construct {
   public readonly attrOpenIdConnectIssuer: string;
   public readonly ref: string;
 
+  public readonly adminRole: iam.Role;
+
   constructor(scope: Construct, id: string, props: ClusterResourceProps) {
     super(scope, id);
 
@@ -54,8 +48,10 @@ export class ClusterResource extends Construct {
       throw new Error('"roleArn" is required');
     }
 
+    this.adminRole = this.createAdminRole(props);
+
     const provider = ClusterResourceProvider.getOrCreate(this, {
-      adminRole: props.adminRole,
+      adminRole: this.adminRole,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -77,7 +73,7 @@ export class ClusterResource extends Construct {
             publicAccessCidrs: props.publicAccessCidrs,
           },
         },
-        AssumeRoleArn: props.adminRole.roleArn,
+        AssumeRoleArn: this.adminRole.roleArn,
 
         // IMPORTANT: increment this number when you add new attributes to the
         // resource. Otherwise, CloudFormation will error with "Vendor response
@@ -88,7 +84,7 @@ export class ClusterResource extends Construct {
       },
     });
 
-    resource.node.addDependency(props.adminRole);
+    resource.node.addDependency(this.adminRole);
 
     this.ref = resource.ref;
     this.attrEndpoint = Token.asString(resource.getAtt('Endpoint'));
@@ -98,6 +94,107 @@ export class ClusterResource extends Construct {
     this.attrEncryptionConfigKeyArn = Token.asString(resource.getAtt('EncryptionConfigKeyArn'));
     this.attrOpenIdConnectIssuerUrl = Token.asString(resource.getAtt('OpenIdConnectIssuerUrl'));
     this.attrOpenIdConnectIssuer = Token.asString(resource.getAtt('OpenIdConnectIssuer'));
+  }
+
+  private createAdminRole(props: ClusterResourceProps) {
+    const stack = Stack.of(this);
+
+    // the role used to create the cluster. this becomes the administrator role
+    // of the cluster.
+    const creationRole = new iam.Role(this, 'CreationRole', {
+      assumedBy: new iam.AccountRootPrincipal(),
+    });
+
+    // the CreateCluster API will allow the cluster to assume this role, so we
+    // need to allow the lambda execution role to pass it.
+    creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['iam:PassRole'],
+      resources: [props.roleArn],
+    }));
+
+    // if we know the cluster name, restrict the policy to only allow
+    // interacting with this specific cluster otherwise, we will have to grant
+    // this role to manage all clusters in the account. this must be lazy since
+    // `props.name` may contain a lazy value that conditionally resolves to a
+    // physical name.
+    const resourceArns = Lazy.listValue({
+      produce: () => {
+        const arn = stack.formatArn(clusterArnComponents(stack.resolve(props.name)));
+        return stack.resolve(props.name)
+          ? [arn, `${arn}/*`] // see https://github.com/aws/aws-cdk/issues/6060
+          : ['*'];
+      },
+    });
+
+    const fargateProfileResourceArn = Lazy.stringValue({
+      produce: () => stack.resolve(props.name)
+        ? stack.formatArn({ service: 'eks', resource: 'fargateprofile', resourceName: stack.resolve(props.name) + '/*' })
+        : '*',
+    });
+
+    creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [
+        'ec2:DescribeSubnets',
+        'ec2:DescribeRouteTables',
+      ],
+      resources: ['*'],
+    }));
+
+    creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [
+        'eks:CreateCluster',
+        'eks:DescribeCluster',
+        'eks:DescribeUpdate',
+        'eks:DeleteCluster',
+        'eks:UpdateClusterVersion',
+        'eks:UpdateClusterConfig',
+        'eks:CreateFargateProfile',
+        'eks:TagResource',
+        'eks:UntagResource',
+      ],
+      resources: resourceArns,
+    }));
+
+    creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['eks:DescribeFargateProfile', 'eks:DeleteFargateProfile'],
+      resources: [fargateProfileResourceArn],
+    }));
+
+    creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
+      resources: ['*'],
+    }));
+
+    creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['iam:CreateServiceLinkedRole'],
+      resources: ['*'],
+    }));
+
+    // see https://github.com/aws/aws-cdk/issues/9027
+    creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['ec2:DescribeVpcs'],
+      resources: [stack.formatArn({
+        service: 'ec2',
+        resource: 'vpc',
+        resourceName: props.vpc.vpcId,
+      })],
+    }));
+
+    // grant cluster creation role sufficient permission to access the specified key
+    // see https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html
+    if (props.secretsEncryptionKey) {
+      creationRole.addToPolicy(new iam.PolicyStatement({
+        actions: [
+          'kms:Encrypt',
+          'kms:Decrypt',
+          'kms:DescribeKey',
+          'kms:CreateGrant',
+        ],
+        resources: [props.secretsEncryptionKey.keyArn],
+      }));
+    }
+
+    return creationRole;
   }
 }
 

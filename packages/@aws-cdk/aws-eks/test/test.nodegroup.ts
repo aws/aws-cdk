@@ -102,7 +102,7 @@ export = {
       },
       RoleArn: {
         'Fn::GetAtt': [
-          'ClusterCreationRole06A2B684',
+          'ClusterCreationRole360249B6',
           'Arn',
         ],
       },
