@@ -46,7 +46,7 @@ export interface InstanceProps {
   /**
    * Whether to enable Performance Insights for the DB instance.
    *
-   * @default false
+   * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
    */
   readonly enablePerformanceInsights?: boolean;
 

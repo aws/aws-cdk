@@ -2,6 +2,7 @@ import { ABSENT, countResources, expect, haveResource, ResourcePart, haveResourc
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -755,6 +756,57 @@ export = {
     test.throws(() => { instance.grantConnect(role); }, /Cannot grant connect when IAM authentication is disabled/);
 
     test.done();
+  },
+
+  'performance insights': {
+    'cluster with all performance insights properties'(test: Test) {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        masterUsername: 'admin',
+        vpc,
+        enablePerformanceInsights: true,
+        performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+        performanceInsightEncryptionKey: new kms.Key(stack, 'Key'),
+      });
+
+      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: true,
+        PerformanceInsightsRetentionPeriod: 731,
+        PerformanceInsightsKMSKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }));
+
+      test.done();
+    },
+
+    'setting performance insights fields enables performance insights'(test: Test) {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        masterUsername: 'admin',
+        vpc,
+        performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+      });
+
+      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: true,
+        PerformanceInsightsRetentionPeriod: 731,
+      }));
+
+      test.done();
+    },
+
+    'throws if performance insights fields are set but performance insights is disabled'(test: Test) {
+      test.throws(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          masterUsername: 'admin',
+          vpc,
+          enablePerformanceInsights: false,
+          performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
+        });
+      }, /`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+
+      test.done();
+    },
   },
 
 };

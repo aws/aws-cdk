@@ -577,6 +577,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
       });
     }
 
+    const enablePerformanceInsights = instanceProps.enablePerformanceInsights
+      || instanceProps.performanceInsightRetention !== undefined || instanceProps.performanceInsightEncryptionKey !== undefined;
+    if (enablePerformanceInsights && instanceProps.enablePerformanceInsights === false) {
+      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+    }
+
     const instanceType = instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
     const instanceParameterGroupConfig = instanceProps.parameterGroup?.bindToInstance({});
     for (let i = 0; i < instanceCount; i++) {
@@ -596,11 +602,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
         // Instance properties
         dbInstanceClass: databaseInstanceType(instanceType),
         publiclyAccessible,
-        enablePerformanceInsights: instanceProps.enablePerformanceInsights,
-        performanceInsightsKmsKeyId: instanceProps.enablePerformanceInsights
-          ? instanceProps.performanceInsightEncryptionKey?.keyArn
-          : undefined,
-        performanceInsightsRetentionPeriod: instanceProps.enablePerformanceInsights
+        enablePerformanceInsights: enablePerformanceInsights || instanceProps.enablePerformanceInsights, // fall back to undefined if not set
+        performanceInsightsKmsKeyId: instanceProps.performanceInsightEncryptionKey?.keyArn,
+        performanceInsightsRetentionPeriod: enablePerformanceInsights
           ? (instanceProps.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
           : undefined,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
