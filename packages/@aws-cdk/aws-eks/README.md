@@ -322,7 +322,7 @@ new KubernetesManifest(this, 'hello-kub', {
 cluster.addManifest('hello-kub', service, deployment);
 ```
 
-#### Kubectl Environment
+#### Kubectl Layer and Environment
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can useful in order to configure an http proxy:
 
@@ -334,6 +334,45 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
   }
 });
 ```
+
+By default, the `kubectl`, `helm` and `aws` commands used to operate the cluster
+are provided by an AWS Lambda Layer from the AWS Serverless Application
+in [aws-lambda-layer-kubectl]. In most cases this should be sufficient.
+
+You can provide a custom layer in case the default layer does not meet your
+needs or if the SAR app is not available in your region.
+
+```ts
+// custom build:
+const layer = new lambda.LayerVersion(this, 'KubectlLayer', {
+  code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
+  compatibleRuntimes: [lambda.Runtime.PROVIDED]
+});
+
+// or, a specific version or appid of aws-lambda-layer-kubectl:
+const layer = new eks.KubectlLayer(this, 'KubectlLayer', {
+  version: '2.0.0',    // optional
+  applicationId: '...' // optional
+});
+```
+
+Pass it to `kubectlLayer` when you create or import a cluster:
+
+```ts
+const cluster = new eks.Cluster(this, 'MyCluster', {
+  kubectlLayer: layer,
+});
+
+// or
+const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
+  kubectlLayer: layer,
+});
+```
+
+> Instructions on how to build `layer.zip` can be found
+> [here](https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md).
+
+[aws-lambda-layer-kubectl]: https://github.com/aws-samples/aws-lambda-layer-kubectl
 
 #### Adding resources from a URL
 
