@@ -218,6 +218,25 @@ and any changes you make to it will be reflected in the resulting template:
 output.value = cfnBucket.attrArn;
 ```
 
+## Hooks
+
+If your template uses [Hooks for blue-green deployments](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/blue-green.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const hook: core.CfnHook = cfnTemplate.getHook('MyOutput');
+```
+
+The `CfnHook` can be mutated,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+const codeDeployHook = hook as core.CfnCodeDeployBlueGreenHook;
+codeDeployHook.serviceRole = myRole.roleArn;
+```
+
 ## Nested Stacks
 
 This module also support templates that use [nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html).
