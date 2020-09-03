@@ -602,22 +602,6 @@
         "ToPort": 443
       }
     },
-    "ClusterKubectlProviderSecurityGroup2D90691C": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "Comminication between KubectlProvider and EKS Control Plane",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
-    },
     "ClusterCreationRole360249B6": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -627,30 +611,16 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "AWS": [
-                  {
-                    "Fn::GetAtt": [
-                      "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-                      "Outputs.awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole4392FD6EArn"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-                      "Outputs.awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole956A78E2Arn"
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
                 "AWS": {
-                  "Fn::GetAtt": [
-                    "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-                    "Outputs.awscdkeksclusterprivateendpointtestawscdkawseksKubectlProviderHandlerServiceRole5505C312Arn"
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::12345678:root"
+                    ]
                   ]
                 }
               }
@@ -910,6 +880,22 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
+    "ClusterKubectlProviderSecurityGroup2D90691C": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Comminication between KubectlProvider and EKS Control Plane",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
     "ClusterKubectlReadyBarrier200052AF": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
@@ -1126,6 +1112,7 @@
                       "||",
                       {
                         "Ref": "AssetParametersf832e03a9944eb55e9c1cc2026f2ac53f6852e474a93960fd321b1812e89017eS3VersionKeyC46FBB7E"
+
                       }
                     ]
                   }
@@ -1209,6 +1196,18 @@
           ]
         },
         "Parameters": {
+          "referencetoawscdkeksclusterprivateendpointtestClusterF4CF4FE8Arn": {
+            "Fn::GetAtt": [
+              "Cluster9EE0221C",
+              "Arn"
+            ]
+          },
+          "referencetoawscdkeksclusterprivateendpointtestClusterCreationRole990BAAEAArn": {
+            "Fn::GetAtt": [
+              "ClusterCreationRole360249B6",
+              "Arn"
+            ]
+          },
           "referencetoawscdkeksclusterprivateendpointtestAssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2S3Bucket59F91893Ref": {
             "Ref": "AssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2S3Bucket9ABBD5A2"
           },

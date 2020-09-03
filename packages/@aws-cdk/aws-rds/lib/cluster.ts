@@ -1,7 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
@@ -11,7 +10,7 @@ import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { BackupProps, InstanceProps, Login, RotationMultiUserOptions } from './props';
+import { BackupProps, InstanceProps, Login, PerformanceInsightRetention, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
@@ -83,6 +82,13 @@ export interface DatabaseClusterProps {
    * @default - Database is not created in cluster.
    */
   readonly defaultDatabaseName?: string;
+
+  /**
+   * Indicates whether the DB cluster should have deletion protection enabled.
+   *
+   * @default false
+   */
+  readonly deletionProtection?: boolean;
 
   /**
    * Whether to enable storage encryption.
@@ -425,6 +431,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       port: props.port ?? clusterEngineBindConfig.port,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
+      deletionProtection: props.deletionProtection,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret
@@ -556,8 +563,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       throw new Error('At least one instance is required');
     }
 
+    const instanceProps = props.instanceProps;
     // Get the actual subnet objects so we can depend on internet connectivity.
-    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectivityEstablished;
+    const internetConnected = instanceProps.vpc.selectSubnets(instanceProps.vpcSubnets).internetConnectivityEstablished;
 
     let monitoringRole;
     if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
@@ -569,15 +577,21 @@ export class DatabaseCluster extends DatabaseClusterBase {
       });
     }
 
-    const instanceType = props.instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
-    const instanceParameterGroupConfig = props.instanceProps.parameterGroup?.bindToInstance({});
+    const enablePerformanceInsights = instanceProps.enablePerformanceInsights
+      || instanceProps.performanceInsightRetention !== undefined || instanceProps.performanceInsightEncryptionKey !== undefined;
+    if (enablePerformanceInsights && instanceProps.enablePerformanceInsights === false) {
+      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+    }
+
+    const instanceType = instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
+    const instanceParameterGroupConfig = instanceProps.parameterGroup?.bindToInstance({});
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
       const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}` :
         props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
           undefined;
 
-      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
+      const publiclyAccessible = instanceProps.vpcSubnets && instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
@@ -588,6 +602,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
         // Instance properties
         dbInstanceClass: databaseInstanceType(instanceType),
         publiclyAccessible,
+        enablePerformanceInsights: enablePerformanceInsights || instanceProps.enablePerformanceInsights, // fall back to undefined if not set
+        performanceInsightsKmsKeyId: instanceProps.performanceInsightEncryptionKey?.keyArn,
+        performanceInsightsRetentionPeriod: enablePerformanceInsights
+          ? (instanceProps.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
+          : undefined,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
         dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
@@ -621,7 +640,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       if (props.cloudwatchLogsRetention) {
         for (const log of props.cloudwatchLogsExports) {
-          new lambda.LogRetention(this, `LogRetention${log}`, {
+          new logs.LogRetention(this, `LogRetention${log}`, {
             logGroupName: `/aws/rds/cluster/${this.clusterIdentifier}/${log}`,
             retention: props.cloudwatchLogsRetention,
             role: props.cloudwatchLogsRetentionRole,

@@ -60,7 +60,7 @@ test('Parcel bundling', () => {
   });
 
   // Correctly updates package.json
-  const call = writeFileSyncMock.mock.calls[0];
+  const call: any = writeFileSyncMock.mock.calls[0];
   expect(call[0]).toMatch('package.json');
   expect(JSON.parse(call[1])).toEqual(expect.objectContaining({
     targets: {
@@ -96,6 +96,28 @@ test('Parcel bundling with handler named index.ts', () => {
       command: [
         'bash', '-c',
         '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/index.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
+      ],
+    }),
+  });
+});
+
+test('Parcel bundling with tsx handler', () => {
+  Bundling.parcel({
+    entry: '/project/folder/handler.tsx',
+    runtime: Runtime.NODEJS_12_X,
+    projectRoot: '/project',
+  });
+
+  // Correctly bundles with parcel
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.BUNDLE,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/handler.tsx --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
+          'mv /asset-output/handler.js /asset-output/index.js',
+        ].join(' && '),
       ],
     }),
   });
@@ -144,7 +166,7 @@ test('Parcel bundling with externals and dependencies', () => {
   });
 
   // Correctly updates package.json
-  const call = writeFileSyncMock.mock.calls[0];
+  const call: any = writeFileSyncMock.mock.calls[0];
   expect(call[0]).toMatch('package.json');
   expect(JSON.parse(call[1])).toEqual(expect.objectContaining({
     targets: expect.objectContaining({
@@ -241,9 +263,43 @@ test('Local bundling', () => {
     ],
     expect.objectContaining({
       env: expect.objectContaining({ KEY: 'value' }),
+      cwd: '/project/folder',
     }),
   );
 
   // Docker image is not built
   expect(fromAssetMock).not.toHaveBeenCalled();
+});
+
+test('LocalBundler.runsLocally checks parcel version and caches results', () => {
+  LocalBundler._runsLocally = undefined;
+
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('2.0.0-beta.1'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  expect(LocalBundler.runsLocally).toBe(true);
+  expect(LocalBundler.runsLocally).toBe(true);
+  expect(spawnSyncMock).toHaveBeenCalledTimes(1);
+  expect(spawnSyncMock).toHaveBeenCalledWith(expect.stringContaining('parcel'), ['--version']);
+});
+
+test('LocalBundler.runsLocally with incorrect parcel version', () => {
+  LocalBundler._runsLocally = undefined;
+
+  jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('3.5.1'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  expect(LocalBundler.runsLocally).toBe(false);
 });
