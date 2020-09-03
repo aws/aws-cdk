@@ -233,5 +233,5 @@ function generateDirectives(options: generateDirectivesOptions): string {
   // reduce over all directives and get string version of the directive
   // pass in the auth modes for checks to happen on compile time
   return options.directives.reduce((acc, directive) =>
-    `${acc}${directive.bindToGraphqlApi(options.modes).toString()}${options.delimiter ?? ' '}`, ' ').slice(0, -1);
+    `${acc}${directive.bindToAuthModes(options.modes).toString()}${options.delimiter ?? ' '}`, ' ').slice(0, -1);
 }

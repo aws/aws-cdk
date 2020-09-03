@@ -243,7 +243,7 @@ export class Directive {
    *
    * @param modes the authorization modes
    */
-  public bindToGraphqlApi(modes?: AuthorizationType[]): Directive {
+  public bindToAuthModes(modes?: AuthorizationType[]): Directive {
     this.modes = modes;
     return this;
   }

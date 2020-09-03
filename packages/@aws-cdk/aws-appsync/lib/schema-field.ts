@@ -399,7 +399,7 @@ export class Field extends GraphqlType implements IField {
   public directivesToString(modes?: AuthorizationType[]): string {
     if (!this.fieldOptions || !this.fieldOptions.directives) { return ''; }
     return this.fieldOptions.directives.reduce((acc, directive) =>
-      `${acc}${directive.bindToGraphqlApi(modes).toString()} `, '\n  ').slice(0, -1);
+      `${acc}${directive.bindToAuthModes(modes).toString()} `, '\n  ').slice(0, -1);
   }
 }
 
