@@ -101,6 +101,28 @@ test('Parcel bundling with handler named index.ts', () => {
   });
 });
 
+test('Parcel bundling with tsx handler', () => {
+  Bundling.parcel({
+    entry: '/project/folder/handler.tsx',
+    runtime: Runtime.NODEJS_12_X,
+    projectRoot: '/project',
+  });
+
+  // Correctly bundles with parcel
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.BUNDLE,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/handler.tsx --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
+          'mv /asset-output/handler.js /asset-output/index.js',
+        ].join(' && '),
+      ],
+    }),
+  });
+});
+
 test('Parcel with Windows paths', () => {
   Bundling.parcel({
     entry: 'C:\\my-project\\lib\\entry.ts',
@@ -247,4 +269,37 @@ test('Local bundling', () => {
 
   // Docker image is not built
   expect(fromAssetMock).not.toHaveBeenCalled();
+});
+
+test('LocalBundler.runsLocally checks parcel version and caches results', () => {
+  LocalBundler._runsLocally = undefined;
+
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('2.0.0-beta.1'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  expect(LocalBundler.runsLocally).toBe(true);
+  expect(LocalBundler.runsLocally).toBe(true);
+  expect(spawnSyncMock).toHaveBeenCalledTimes(1);
+  expect(spawnSyncMock).toHaveBeenCalledWith(expect.stringContaining('parcel'), ['--version']);
+});
+
+test('LocalBundler.runsLocally with incorrect parcel version', () => {
+  LocalBundler._runsLocally = undefined;
+
+  jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('3.5.1'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  expect(LocalBundler.runsLocally).toBe(false);
 });

@@ -1,5 +1,6 @@
+import { shapeAddition } from './private';
 import { Resolver } from './resolver';
-import { Directive, IField, IIntermediateType } from './schema-base';
+import { Directive, IField, IIntermediateType, AddFieldOptions } from './schema-base';
 import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-field';
 
 /**
@@ -59,23 +60,26 @@ export class InterfaceType implements IIntermediateType {
    * Generate the string of this object type
    */
   public toString(): string {
-    let schemaAddition = `interface ${this.name} {\n`;
-    Object.keys(this.definition).forEach( (key) => {
-      const attribute = this.definition[key];
-      const args = attribute.argsToString();
-      schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
+    return shapeAddition({
+      prefix: 'interface',
+      name: this.name,
+      fields: Object.keys(this.definition).map((key) =>
+        `${key}${this.definition[key].argsToString()}: ${this.definition[key].toString()}`),
     });
-    return `${schemaAddition}}`;
   }
 
   /**
-   * Add a field to this Object Type
+   * Add a field to this Interface Type.
    *
-   * @param fieldName - The name of the field
-   * @param field - the field to add
+   * Interface Types must have both fieldName and field options.
+   *
+   * @param options the options to add a field
    */
-  public addField(fieldName: string, field: IField): void {
-    this.definition[fieldName] = field;
+  public addField(options: AddFieldOptions): void {
+    if (!options.fieldName || !options.field) {
+      throw new Error('Interface Types must have both fieldName and field options.');
+    }
+    this.definition[options.fieldName] = options.field;
   }
 }
 
@@ -144,53 +148,34 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
     });
   }
 
+
   /**
-   * Add a field to this Object Type
+   * Add a field to this Object Type.
    *
-   * @param fieldName - The name of the field
-   * @param field - the resolvable field to add
+   * Object Types must have both fieldName and field options.
+   *
+   * @param options the options to add a field
    */
-  public addField(fieldName: string, field: IField): void {
-    this.generateResolver(fieldName, field.fieldOptions);
-    this.definition[fieldName] = field;
+  public addField(options: AddFieldOptions): void {
+    if (!options.fieldName || !options.field) {
+      throw new Error('Object Types must have both fieldName and field options.');
+    }
+    this.generateResolver(options.fieldName, options.field.fieldOptions);
+    this.definition[options.fieldName] = options.field;
   }
 
   /**
    * Generate the string of this object type
    */
   public toString(): string {
-    let title = this.name;
-    if (this.interfaceTypes && this.interfaceTypes.length) {
-      title = `${title} implements`;
-      this.interfaceTypes.map((interfaceType) => {
-        title = `${title} ${interfaceType.name},`;
-      });
-      title = title.slice(0, -1);
-    }
-    const directives = this.generateDirectives(this.directives);
-    let schemaAddition = `type ${title} ${directives}{\n`;
-    Object.keys(this.definition).forEach( (key) => {
-      const attribute = this.definition[key];
-      const args = attribute.argsToString();
-      schemaAddition = `${schemaAddition}  ${key}${args}: ${attribute.toString()}\n`;
+    return shapeAddition({
+      prefix: 'type',
+      name: this.name,
+      interfaceTypes: this.interfaceTypes,
+      directives: this.directives,
+      fields: Object.keys(this.definition).map((key) =>
+        `${key}${this.definition[key].argsToString()}: ${this.definition[key].toString()}`),
     });
-    return `${schemaAddition}}`;
-  }
-
-  /**
-   * Utility function to generate directives
-   *
-   * @param directives the directives of a given type
-   * @param delimiter the separator betweeen directives
-   * @default - ' '
-   */
-  private generateDirectives(directives?: Directive[], delimiter?: string): string {
-    let schemaAddition = '';
-    if (!directives) { return schemaAddition; }
-    directives.map((directive) => {
-      schemaAddition = `${schemaAddition}${directive.statement}${delimiter ?? ' '}`;
-    });
-    return schemaAddition;
   }
 
   /**
@@ -207,5 +192,70 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
         responseMappingTemplate: options.responseMappingTemplate,
       }));
     }
+  }
+}
+
+/**
+ * Input Types are abstract types that define complex objects.
+ * They are used in arguments to represent
+ *
+ * @experimental
+ */
+export class InputType implements IIntermediateType {
+  /**
+   * the name of this type
+   */
+  public readonly name: string;
+  /**
+   * the attributes of this type
+   */
+  public readonly definition: { [key: string]: IField };
+
+  public constructor(name: string, props: IntermediateTypeProps) {
+    this.name = name;
+    this.definition = props.definition;
+  }
+
+  /**
+   * Create an GraphQL Type representing this Input Type
+   *
+   * @param options the options to configure this attribute
+   * - isList
+   * - isRequired
+   * - isRequiredList
+   */
+  public attribute(options?: BaseTypeOptions): GraphqlType {
+    return GraphqlType.intermediate({
+      isList: options?.isList,
+      isRequired: options?.isRequired,
+      isRequiredList: options?.isRequiredList,
+      intermediateType: this,
+    });
+  }
+
+  /**
+   * Generate the string of this input type
+   */
+  public toString(): string {
+    return shapeAddition({
+      prefix: 'input',
+      name: this.name,
+      fields: Object.keys(this.definition).map((key) =>
+        `${key}${this.definition[key].argsToString()}: ${this.definition[key].toString()}`),
+    });
+  }
+
+  /**
+   * Add a field to this Input Type.
+   *
+   * Input Types must have both fieldName and field options.
+   *
+   * @param options the options to add a field
+   */
+  public addField(options: AddFieldOptions): void {
+    if (!options.fieldName || !options.field) {
+      throw new Error('Input Types must have both fieldName and field options.');
+    }
+    this.definition[options.fieldName] = options.field;
   }
 }
