@@ -89,7 +89,6 @@
   ],
   "dependencies": {
     "case": "1.6.3",
-    "constructs": "^3.0.4",
     "fs-extra": "^9.0.1",
     "jsonschema": "^1.2.5",
     "minimatch": "^3.0.4",
@@ -97,6 +96,7 @@
     "yaml": "1.10.0"
   },
   "devDependencies": {
+    "constructs": "^3.0.4",
     "@aws-cdk/alexa-ask": "0.0.0",
     "@aws-cdk/app-delivery": "0.0.0",
     "@aws-cdk/assets": "0.0.0",

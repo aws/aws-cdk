@@ -278,8 +278,6 @@
                 "ecs:Poll",
                 "ecs:StartTelemetrySession"
               ],
-              "Effect": "Allow",
-              "Resource": "*",
               "Condition": {
                 "ArnEquals": {
                   "ecs:cluster": {
@@ -289,7 +287,9 @@
                     ]
                   }
                 }
-              }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             },
             {
               "Action": [
@@ -300,7 +300,8 @@
               ],
               "Effect": "Allow",
               "Resource": "*"
-            }          ],
+            }
+          ],
           "Version": "2012-10-17"
         },
         "PolicyName": "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80",
@@ -473,8 +474,6 @@
                 "ecs:DescribeContainerInstances",
                 "ecs:DescribeTasks"
               ],
-              "Effect": "Allow",
-              "Resource": "*",
               "Condition": {
                 "ArnEquals": {
                   "ecs:cluster": {
@@ -484,7 +483,9 @@
                     ]
                   }
                 }
-              }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             },
             {
               "Action": [

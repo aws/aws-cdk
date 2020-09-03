@@ -5,6 +5,8 @@ import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated'
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { Schema } from './schema';
 import { IIntermediateType } from './schema-base';
+import { ResolvableField } from './schema-field';
+import { ObjectType } from './schema-intermediate';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -204,7 +206,7 @@ export interface LogConfig {
 /**
  * Properties for an AppSync GraphQL API
  */
-export interface GraphQLApiProps {
+export interface GraphqlApiProps {
   /**
    * the name of the GraphQL API
    */
@@ -291,7 +293,7 @@ export class IamResource {
    *
    * @param api The GraphQL API to give permissions
    */
-  public resourceArns(api: GraphQLApi): string[] {
+  public resourceArns(api: GraphqlApi): string[] {
     return this.arns.map((arn) => Stack.of(api).formatArn({
       service: 'appsync',
       resource: `apis/${api.apiId}`,
@@ -323,7 +325,7 @@ export interface GraphqlApiAttributes {
  *
  * @resource AWS::AppSync::GraphQLApi
  */
-export class GraphQLApi extends GraphqlApiBase {
+export class GraphqlApi extends GraphqlApiBase {
   /**
    * Import a GraphQL API through this function
    *
@@ -360,9 +362,9 @@ export class GraphQLApi extends GraphqlApiBase {
   /**
    * the URL of the endpoint created by AppSync
    *
-   * @attribute
+   * @attribute GraphQlUrl
    */
-  public readonly graphQlUrl: string;
+  public readonly graphqlUrl: string;
 
   /**
    * the name of the API
@@ -385,7 +387,7 @@ export class GraphQLApi extends GraphqlApiBase {
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
 
-  constructor(scope: Construct, id: string, props: GraphQLApiProps) {
+  constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
 
     const defaultMode = props.authorizationConfig?.defaultAuthorization ??
@@ -407,7 +409,7 @@ export class GraphQLApi extends GraphqlApiBase {
 
     this.apiId = this.api.attrApiId;
     this.arn = this.api.attrArn;
-    this.graphQlUrl = this.api.attrGraphQlUrl;
+    this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
     this.schema = props.schema ?? new Schema();
     this.schemaResource = this.schema.bind(this);
@@ -531,7 +533,7 @@ export class GraphQLApi extends GraphqlApiBase {
       userPoolId: config.userPool.userPoolId,
       awsRegion: config.userPool.stack.region,
       appIdClientRegex: config.appIdClientRegex,
-      defaultAction: config.defaultAction,
+      defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
     };
   }
 
@@ -587,5 +589,35 @@ export class GraphQLApi extends GraphqlApiBase {
    */
   public addType(type: IIntermediateType): IIntermediateType {
     return this.schema.addType(type);
+  }
+
+  /**
+   * Add a query field to the schema's Query. If one isn't set by
+   * the user, CDK will create an Object Type called 'Query'. For example,
+   *
+   * type Query {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the query
+   * @param field the resolvable field to for this query
+   */
+  public addQuery(fieldName: string, field: ResolvableField): ObjectType {
+    return this.schema.addQuery(fieldName, field);
+  }
+
+  /**
+   * Add a mutation field to the schema's Mutation. If one isn't set by
+   * the user, CDK will create an Object Type called 'Mutation'. For example,
+   *
+   * type Mutation {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the Mutation
+   * @param field the resolvable field to for this Mutation
+   */
+  public addMutation(fieldName: string, field: ResolvableField): ObjectType {
+    return this.schema.addMutation(fieldName, field);
   }
 }

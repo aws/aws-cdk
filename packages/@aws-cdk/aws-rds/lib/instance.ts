@@ -10,7 +10,7 @@ import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { RotationMultiUserOptions } from './props';
+import { PerformanceInsightRetention, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
 
@@ -244,21 +244,6 @@ export enum StorageType {
 }
 
 /**
- * The retention period for Performance Insight.
- */
-export enum PerformanceInsightRetention {
-  /**
-   * Default retention period of 7 days.
-   */
-  DEFAULT = 7,
-
-  /**
-   * Long term retention period of 2 years.
-   */
-  LONG_TERM = 731
-}
-
-/**
  * Construction properties for a DatabaseInstanceNew
  */
 export interface DatabaseInstanceNewProps {
@@ -317,9 +302,17 @@ export interface DatabaseInstanceNewProps {
   /**
    * The type of subnets to add to the created DB subnet group.
    *
+   * @deprecated use `vpcSubnets`
    * @default - private subnets
    */
   readonly vpcPlacement?: ec2.SubnetSelection;
+
+  /**
+   * The type of subnets to add to the created DB subnet group.
+   *
+   * @default - private subnets
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * The security groups to assign to the DB instance.
@@ -407,7 +400,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * Whether to enable Performance Insights for the DB instance.
    *
-   * @default false
+   * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
    */
   readonly enablePerformanceInsights?: boolean;
 
@@ -491,6 +484,21 @@ export interface DatabaseInstanceNewProps {
    * @default - No autoscaling of RDS instance
    */
   readonly maxAllocatedStorage?: number;
+
+  /**
+   * The Active Directory directory ID to create the DB instance in.
+   *
+   * @default - Do not join domain
+   */
+  readonly domain?: string;
+
+  /**
+   * The IAM role to be used when making API calls to the Directory Service. The role needs the AWS-managed policy
+   * AmazonRDSDirectoryServiceAccess or equivalent.
+   *
+   * @default - The role will be created for you if {@link DatabaseInstanceNewProps#domain} is specified
+   */
+  readonly domainRole?: iam.IRole;
 }
 
 /**
@@ -513,15 +521,21 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   private readonly cloudwatchLogsRetention?: logs.RetentionDays;
   private readonly cloudwatchLogsRetentionRole?: iam.IRole;
 
+  private readonly domainId?: string;
+  private readonly domainRole?: iam.IRole;
+
   protected enableIamAuthentication?: boolean;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceNewProps) {
     super(scope, id);
 
     this.vpc = props.vpc;
-    this.vpcPlacement = props.vpcPlacement;
+    if (props.vpcSubnets && props.vpcPlacement) {
+      throw new Error('Only one of `vpcSubnets` or `vpcPlacement` can be specified');
+    }
+    this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcPlacement);
+    const { subnetIds } = props.vpc.selectSubnets(this.vpcPlacement);
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'SubnetGroup', {
       dbSubnetGroupDescription: `Subnet group for ${this.node.id} database`,
@@ -555,6 +569,22 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.cloudwatchLogsRetentionRole = props.cloudwatchLogsRetentionRole;
     this.enableIamAuthentication = props.iamAuthentication;
 
+    const enablePerformanceInsights = props.enablePerformanceInsights
+      || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
+    if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
+      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+    }
+
+    if (props.domain) {
+      this.domainId = props.domain;
+      this.domainRole = props.domainRole || new iam.Role(this, 'RDSDirectoryServiceRole', {
+        assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
+        ],
+      });
+    }
+
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
@@ -567,26 +597,26 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       deletionProtection,
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
       enableIamDatabaseAuthentication: Lazy.anyValue({ produce: () => this.enableIamAuthentication }),
-      enablePerformanceInsights: props.enablePerformanceInsights,
+      enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
       iops,
       monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
       monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
       multiAz: props.multiAz,
       optionGroupName: props.optionGroup && props.optionGroup.optionGroupName,
-      performanceInsightsKmsKeyId: props.enablePerformanceInsights
-        ? props.performanceInsightEncryptionKey && props.performanceInsightEncryptionKey.keyArn
-        : undefined,
-      performanceInsightsRetentionPeriod: props.enablePerformanceInsights
+      performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
+      performanceInsightsRetentionPeriod: enablePerformanceInsights
         ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
         : undefined,
       port: props.port ? props.port.toString() : undefined,
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
+      publiclyAccessible: this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
       storageType,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
+      domain: this.domainId,
+      domainIamRoleName: this.domainRole?.roleName,
     };
   }
 
