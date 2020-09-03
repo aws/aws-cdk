@@ -66,6 +66,10 @@ export const FUTURE_FLAGS = {
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
 };
 
+/**
+ * The set of defaults that should be applied if the feature flag is not
+ * explicitly configured.
+ */
 const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: false,
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: false,
