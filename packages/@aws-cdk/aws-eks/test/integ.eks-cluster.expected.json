@@ -733,22 +733,6 @@
         "ToPort": 443
       }
     },
-    "ClusterKubectlProviderSecurityGroup2D90691C": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "Comminication between KubectlProvider and EKS Control Plane",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
-    },
     "ClusterCreationRole360249B6": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -1066,6 +1050,22 @@
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
+    },
+    "ClusterKubectlProviderSecurityGroup2D90691C": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Comminication between KubectlProvider and EKS Control Plane",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
     },
     "ClusterKubectlReadyBarrier200052AF": {
       "Type": "AWS::SSM::Parameter",
@@ -3039,7 +3039,7 @@
               },
               "/",
               {
-                "Ref": "AssetParameters2944b93098bcfadbe7d696c05bc208c5956fbd7bf8bd0bc43a58410cdcee569aS3BucketFEA73057"
+                "Ref": "AssetParametersa298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dcS3BucketCA7ADF01"
               },
               "/",
               {
@@ -3049,7 +3049,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParameters2944b93098bcfadbe7d696c05bc208c5956fbd7bf8bd0bc43a58410cdcee569aS3VersionKey00C85273"
+                        "Ref": "AssetParametersa298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dcS3VersionKey822F0346"
                       }
                     ]
                   }
@@ -3062,7 +3062,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParameters2944b93098bcfadbe7d696c05bc208c5956fbd7bf8bd0bc43a58410cdcee569aS3VersionKey00C85273"
+                        "Ref": "AssetParametersa298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dcS3VersionKey822F0346"
                       }
                     ]
                   }
@@ -3089,6 +3089,21 @@
           },
           "referencetoawscdkeksclustertestAssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2S3VersionKey901D947ARef": {
             "Ref": "AssetParametersb7d8a9750f8bfded8ac76be100e3bee1c3d4824df006766110d023f42952f5c2S3VersionKey40FF2C4A"
+          },
+          "referencetoawscdkeksclustertestVpcPrivateSubnet1Subnet32A4EC2ARef": {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A"
+          },
+          "referencetoawscdkeksclustertestVpcPrivateSubnet2Subnet5CC53627Ref": {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+          },
+          "referencetoawscdkeksclustertestVpcPrivateSubnet3Subnet7F5D6918Ref": {
+            "Ref": "VpcPrivateSubnet3SubnetF258B56E"
+          },
+          "referencetoawscdkeksclustertestClusterKubectlProviderSecurityGroupD167EE6BGroupId": {
+            "Fn::GetAtt": [
+              "ClusterKubectlProviderSecurityGroup2D90691C",
+              "GroupId"
+            ]
           },
           "referencetoawscdkeksclustertestAssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3Bucket85526CA7Ref": {
             "Ref": "AssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3BucketD25BCC90"
@@ -3765,17 +3780,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"04fa2d485a51abd8261468eb6fa053d3a72242fc068fa75683232a52960b30cf\""
     },
-    "AssetParameters2944b93098bcfadbe7d696c05bc208c5956fbd7bf8bd0bc43a58410cdcee569aS3BucketFEA73057": {
+    "AssetParametersa298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dcS3BucketCA7ADF01": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"2944b93098bcfadbe7d696c05bc208c5956fbd7bf8bd0bc43a58410cdcee569a\""
+      "Description": "S3 bucket for asset \"a298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dc\""
     },
-    "AssetParameters2944b93098bcfadbe7d696c05bc208c5956fbd7bf8bd0bc43a58410cdcee569aS3VersionKey00C85273": {
+    "AssetParametersa298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dcS3VersionKey822F0346": {
       "Type": "String",
-      "Description": "S3 key for asset version \"2944b93098bcfadbe7d696c05bc208c5956fbd7bf8bd0bc43a58410cdcee569a\""
+      "Description": "S3 key for asset version \"a298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dc\""
     },
-    "AssetParameters2944b93098bcfadbe7d696c05bc208c5956fbd7bf8bd0bc43a58410cdcee569aArtifactHashF20FF2C0": {
+    "AssetParametersa298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dcArtifactHashA688F4F0": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"2944b93098bcfadbe7d696c05bc208c5956fbd7bf8bd0bc43a58410cdcee569a\""
+      "Description": "Artifact hash for asset \"a298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dc\""
     },
     "SsmParameterValueawsserviceeksoptimizedami116amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",

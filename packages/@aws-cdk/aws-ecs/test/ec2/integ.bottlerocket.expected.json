@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc"
+            "Value": "aws-ecs-integ-bottlerocket/Vpc"
           }
         ]
       }
@@ -35,7 +35,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-bottlerocket/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-bottlerocket/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -87,7 +87,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-bottlerocket/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -107,7 +107,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-bottlerocket/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -132,7 +132,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-bottlerocket/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -146,7 +146,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-bottlerocket/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -177,38 +177,6 @@
         "VpcVPCGWBF912B6E"
       ]
     },
-    "VpcPublicSubnet2EIP3C605A87": {
-      "Type": "AWS::EC2::EIP",
-      "Properties": {
-        "Domain": "vpc",
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
-          }
-        ]
-      }
-    },
-    "VpcPublicSubnet2NATGateway9182C01D": {
-      "Type": "AWS::EC2::NatGateway",
-      "Properties": {
-        "AllocationId": {
-          "Fn::GetAtt": [
-            "VpcPublicSubnet2EIP3C605A87",
-            "AllocationId"
-          ]
-        },
-        "SubnetId": {
-          "Ref": "VpcPublicSubnet2Subnet691E08A3"
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
-          }
-        ]
-      }
-    },
     "VpcPrivateSubnet1Subnet536B997A": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
@@ -229,7 +197,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+            "Value": "aws-ecs-integ-bottlerocket/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -243,7 +211,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+            "Value": "aws-ecs-integ-bottlerocket/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -291,7 +259,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+            "Value": "aws-ecs-integ-bottlerocket/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -305,7 +273,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+            "Value": "aws-ecs-integ-bottlerocket/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -329,7 +297,7 @@
         },
         "DestinationCidrBlock": "0.0.0.0/0",
         "NatGatewayId": {
-          "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+          "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
         }
       }
     },
@@ -339,7 +307,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc"
+            "Value": "aws-ecs-integ-bottlerocket/Vpc"
           }
         ]
       }
@@ -355,13 +323,13 @@
         }
       }
     },
-    "ClusterEB0386A7": {
+    "EcsCluster97242B84": {
       "Type": "AWS::ECS::Cluster"
     },
-    "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A": {
+    "EcsClusterbottlerocketasgInstanceSecurityGroupD754BC23": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-ecs-integ/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
+        "GroupDescription": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -372,7 +340,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Cluster/DefaultAutoScalingGroup"
+            "Value": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg"
           }
         ],
         "VpcId": {
@@ -380,28 +348,7 @@
         }
       }
     },
-    "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegmyServiceLBSecurityGroupFA544FE5327686553555411E4C": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "IpProtocol": "tcp",
-        "Description": "Load balancer to target",
-        "FromPort": 32768,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A",
-            "GroupId"
-          ]
-        },
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "myServiceLBSecurityGroupFE0ED608",
-            "GroupId"
-          ]
-        },
-        "ToPort": 65535
-      }
-    },
-    "ClusterDefaultAutoScalingGroupInstanceRole9A14B384": {
+    "EcsClusterbottlerocketasgInstanceRole96AA2ACF": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -426,15 +373,41 @@
           ],
           "Version": "2012-10-17"
         },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonSSMManagedInstanceCore"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+              ]
+            ]
+          }
+        ],
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Cluster/DefaultAutoScalingGroup"
+            "Value": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg"
           }
         ]
       }
     },
-    "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81": {
+    "EcsClusterbottlerocketasgInstanceRoleDefaultPolicy8523C598": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -448,7 +421,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "ClusterEB0386A7",
+                  "EcsCluster97242B84",
                   "Arn"
                 ]
               }
@@ -462,7 +435,7 @@
                 "ArnEquals": {
                   "ecs:cluster": {
                     "Fn::GetAtt": [
-                      "ClusterEB0386A7",
+                      "EcsCluster97242B84",
                       "Arn"
                     ]
                   }
@@ -484,38 +457,38 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81",
+        "PolicyName": "EcsClusterbottlerocketasgInstanceRoleDefaultPolicy8523C598",
         "Roles": [
           {
-            "Ref": "ClusterDefaultAutoScalingGroupInstanceRole9A14B384"
+            "Ref": "EcsClusterbottlerocketasgInstanceRole96AA2ACF"
           }
         ]
       }
     },
-    "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55": {
+    "EcsClusterbottlerocketasgInstanceProfile22A89B9D": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Roles": [
           {
-            "Ref": "ClusterDefaultAutoScalingGroupInstanceRole9A14B384"
+            "Ref": "EcsClusterbottlerocketasgInstanceRole96AA2ACF"
           }
         ]
       }
     },
-    "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466": {
+    "EcsClusterbottlerocketasgLaunchConfig644AD24C": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
-        "InstanceType": "t2.micro",
+        "InstanceType": "c5.large",
         "IamInstanceProfile": {
-          "Ref": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
+          "Ref": "EcsClusterbottlerocketasgInstanceProfile22A89B9D"
         },
         "SecurityGroups": [
           {
             "Fn::GetAtt": [
-              "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A",
+              "EcsClusterbottlerocketasgInstanceSecurityGroupD754BC23",
               "GroupId"
             ]
           }
@@ -525,34 +498,34 @@
             "Fn::Join": [
               "",
               [
-                "#!/bin/bash\necho ECS_CLUSTER=",
+                "\n[settings.ecs]\ncluster = \"",
                 {
-                  "Ref": "ClusterEB0386A7"
+                  "Ref": "EcsCluster97242B84"
                 },
-                " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+                "\""
               ]
             ]
           }
         }
       },
       "DependsOn": [
-        "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81",
-        "ClusterDefaultAutoScalingGroupInstanceRole9A14B384"
+        "EcsClusterbottlerocketasgInstanceRoleDefaultPolicy8523C598",
+        "EcsClusterbottlerocketasgInstanceRole96AA2ACF"
       ]
     },
-    "ClusterDefaultAutoScalingGroupASG0F98E147": {
+    "EcsClusterbottlerocketasgASGCB222A6E": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
-        "MaxSize": "1",
-        "MinSize": "1",
+        "MaxSize": "2",
+        "MinSize": "2",
         "LaunchConfigurationName": {
-          "Ref": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
+          "Ref": "EcsClusterbottlerocketasgLaunchConfig644AD24C"
         },
         "Tags": [
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "aws-ecs-integ/Cluster/DefaultAutoScalingGroup"
+            "Value": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg"
           }
         ],
         "VPCZoneIdentifier": [
@@ -573,7 +546,7 @@
         }
       }
     },
-    "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1": {
+    "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -605,12 +578,12 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Cluster/DefaultAutoScalingGroup"
+            "Value": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg"
           }
         ]
       }
     },
-    "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E": {
+    "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyD5FBB46E": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -646,7 +619,7 @@
                     },
                     ":autoScalingGroup:*:autoScalingGroupName/",
                     {
-                      "Ref": "ClusterDefaultAutoScalingGroupASG0F98E147"
+                      "Ref": "EcsClusterbottlerocketasgASGCB222A6E"
                     }
                   ]
                 ]
@@ -661,7 +634,7 @@
                 "ArnEquals": {
                   "ecs:cluster": {
                     "Fn::GetAtt": [
-                      "ClusterEB0386A7",
+                      "EcsCluster97242B84",
                       "Arn"
                     ]
                   }
@@ -679,7 +652,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "ClusterEB0386A7",
+                  "EcsCluster97242B84",
                   "Arn"
                 ]
               }
@@ -693,7 +666,7 @@
                 "ArnEquals": {
                   "ecs:cluster": {
                     "Fn::GetAtt": [
-                      "ClusterEB0386A7",
+                      "EcsCluster97242B84",
                       "Arn"
                     ]
                   }
@@ -705,15 +678,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E",
+        "PolicyName": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyD5FBB46E",
         "Roles": [
           {
-            "Ref": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1"
+            "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
           }
         ]
       }
     },
-    "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865": {
+    "EcsClusterbottlerocketasgDrainECSHookFunction7A8CD0E4": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
@@ -722,7 +695,7 @@
         "Handler": "index.lambda_handler",
         "Role": {
           "Fn::GetAtt": [
-            "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1",
+            "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB",
             "Arn"
           ]
         },
@@ -730,55 +703,55 @@
         "Environment": {
           "Variables": {
             "CLUSTER": {
-              "Ref": "ClusterEB0386A7"
+              "Ref": "EcsCluster97242B84"
             }
           }
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Cluster/DefaultAutoScalingGroup"
+            "Value": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg"
           }
         ],
         "Timeout": 310
       },
       "DependsOn": [
-        "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E",
-        "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1"
+        "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyD5FBB46E",
+        "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
       ]
     },
-    "ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic2FBAAF9B4FDC19F0": {
+    "EcsClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicD05837A873EBB93D": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865",
+            "EcsClusterbottlerocketasgDrainECSHookFunction7A8CD0E4",
             "Arn"
           ]
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
-          "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
+          "Ref": "EcsClusterbottlerocketasgLifecycleHookDrainHookTopic64509A74"
         }
       }
     },
-    "ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic3B6438EC": {
+    "EcsClusterbottlerocketasgDrainECSHookFunctionTopic1953D6F0": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Protocol": "lambda",
         "TopicArn": {
-          "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
+          "Ref": "EcsClusterbottlerocketasgLifecycleHookDrainHookTopic64509A74"
         },
         "Endpoint": {
           "Fn::GetAtt": [
-            "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865",
+            "EcsClusterbottlerocketasgDrainECSHookFunction7A8CD0E4",
             "Arn"
           ]
         }
       }
     },
-    "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663": {
+    "EcsClusterbottlerocketasgLifecycleHookDrainHookRoleDE4D94EB": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -796,12 +769,12 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Cluster/DefaultAutoScalingGroup"
+            "Value": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg"
           }
         ]
       }
     },
-    "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyFFFD6EA5": {
+    "EcsClusterbottlerocketasgLifecycleHookDrainHookRoleDefaultPolicy95E06EDB": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -810,387 +783,60 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Resource": {
-                "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
+                "Ref": "EcsClusterbottlerocketasgLifecycleHookDrainHookTopic64509A74"
               }
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyFFFD6EA5",
+        "PolicyName": "EcsClusterbottlerocketasgLifecycleHookDrainHookRoleDefaultPolicy95E06EDB",
         "Roles": [
           {
-            "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663"
+            "Ref": "EcsClusterbottlerocketasgLifecycleHookDrainHookRoleDE4D94EB"
           }
         ]
       }
     },
-    "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB": {
+    "EcsClusterbottlerocketasgLifecycleHookDrainHookTopic64509A74": {
       "Type": "AWS::SNS::Topic",
       "Properties": {
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Cluster/DefaultAutoScalingGroup"
+            "Value": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg"
           }
         ]
       }
     },
-    "ClusterDefaultAutoScalingGroupLifecycleHookDrainHook4A9A4325": {
+    "EcsClusterbottlerocketasgLifecycleHookDrainHook59C31812": {
       "Type": "AWS::AutoScaling::LifecycleHook",
       "Properties": {
         "AutoScalingGroupName": {
-          "Ref": "ClusterDefaultAutoScalingGroupASG0F98E147"
+          "Ref": "EcsClusterbottlerocketasgASGCB222A6E"
         },
         "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
         "DefaultResult": "CONTINUE",
         "HeartbeatTimeout": 300,
         "NotificationTargetARN": {
-          "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
+          "Ref": "EcsClusterbottlerocketasgLifecycleHookDrainHookTopic64509A74"
         },
         "RoleARN": {
           "Fn::GetAtt": [
-            "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663",
+            "EcsClusterbottlerocketasgLifecycleHookDrainHookRoleDE4D94EB",
             "Arn"
           ]
         }
       },
       "DependsOn": [
-        "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyFFFD6EA5",
-        "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663"
-      ]
-    },
-    "myServiceLB168895E1": {
-      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
-      "Properties": {
-        "LoadBalancerAttributes": [
-          {
-            "Key": "deletion_protection.enabled",
-            "Value": "false"
-          }
-        ],
-        "Scheme": "internet-facing",
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "myServiceLBSecurityGroupFE0ED608",
-              "GroupId"
-            ]
-          }
-        ],
-        "Subnets": [
-          {
-            "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-          },
-          {
-            "Ref": "VpcPublicSubnet2Subnet691E08A3"
-          }
-        ],
-        "Type": "application"
-      },
-      "DependsOn": [
-        "VpcPublicSubnet1DefaultRoute3DA9E72A",
-        "VpcPublicSubnet2DefaultRoute97F91067"
-      ]
-    },
-    "myServiceLBSecurityGroupFE0ED608": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "Automatically created Security Group for ELB awsecsintegmyServiceLB1F7A535D",
-        "SecurityGroupIngress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow from anyone on port 80",
-            "FromPort": 80,
-            "IpProtocol": "tcp",
-            "ToPort": 80
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
-    },
-    "myServiceLBSecurityGrouptoawsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E64823276865535D7AE55C8": {
-      "Type": "AWS::EC2::SecurityGroupEgress",
-      "Properties": {
-        "GroupId": {
-          "Fn::GetAtt": [
-            "myServiceLBSecurityGroupFE0ED608",
-            "GroupId"
-          ]
-        },
-        "IpProtocol": "tcp",
-        "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A",
-            "GroupId"
-          ]
-        },
-        "FromPort": 32768,
-        "ToPort": 65535
-      }
-    },
-    "myServiceLBPublicListenerC78AE8A0": {
-      "Type": "AWS::ElasticLoadBalancingV2::Listener",
-      "Properties": {
-        "DefaultActions": [
-          {
-            "TargetGroupArn": {
-              "Ref": "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0"
-            },
-            "Type": "forward"
-          }
-        ],
-        "LoadBalancerArn": {
-          "Ref": "myServiceLB168895E1"
-        },
-        "Port": 80,
-        "Protocol": "HTTP"
-      }
-    },
-    "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0": {
-      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-      "Properties": {
-        "Port": 80,
-        "Protocol": "HTTP",
-        "TargetType": "instance",
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
-    },
-    "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5": {
-      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-      "Properties": {
-        "Port": 80,
-        "Protocol": "HTTP",
-        "TargetType": "instance",
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
-    },
-    "myServiceLBPublicListenerECSTargetGroupweb90Rule0CAA997D": {
-      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
-      "Properties": {
-        "Actions": [
-          {
-            "TargetGroupArn": {
-              "Ref": "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5"
-            },
-            "Type": "forward"
-          }
-        ],
-        "Conditions": [
-          {
-            "Field": "path-pattern",
-            "Values": [
-              "a/b/c"
-            ]
-          }
-        ],
-        "ListenerArn": {
-          "Ref": "myServiceLBPublicListenerC78AE8A0"
-        },
-        "Priority": 10
-      }
-    },
-    "myServiceTaskDefTaskRole1C1DE6CC": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "ecs-tasks.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "myServiceTaskDef7FB8322A": {
-      "Type": "AWS::ECS::TaskDefinition",
-      "Properties": {
-        "ContainerDefinitions": [
-          {
-            "Essential": true,
-            "Image": "amazon/amazon-ecs-sample",
-            "LogConfiguration": {
-              "LogDriver": "awslogs",
-              "Options": {
-                "awslogs-group": {
-                  "Ref": "myServiceTaskDefwebLogGroupA1767F2C"
-                },
-                "awslogs-stream-prefix": "myService",
-                "awslogs-region": {
-                  "Ref": "AWS::Region"
-                }
-              }
-            },
-            "Memory": 256,
-            "Name": "web",
-            "PortMappings": [
-              {
-                "ContainerPort": 80,
-                "HostPort": 0,
-                "Protocol": "tcp"
-              },
-              {
-                "ContainerPort": 90,
-                "HostPort": 0,
-                "Protocol": "tcp"
-              }
-            ]
-          }
-        ],
-        "ExecutionRoleArn": {
-          "Fn::GetAtt": [
-            "myServiceTaskDefExecutionRole618CD311",
-            "Arn"
-          ]
-        },
-        "Family": "awsecsintegmyServiceTaskDefA3A33D18",
-        "NetworkMode": "bridge",
-        "RequiresCompatibilities": [
-          "EC2"
-        ],
-        "TaskRoleArn": {
-          "Fn::GetAtt": [
-            "myServiceTaskDefTaskRole1C1DE6CC",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "myServiceTaskDefwebLogGroupA1767F2C": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "myServiceTaskDefExecutionRole618CD311": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "ecs-tasks.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "myServiceTaskDefExecutionRoleDefaultPolicyBDAEC571": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "myServiceTaskDefwebLogGroupA1767F2C",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "myServiceTaskDefExecutionRoleDefaultPolicyBDAEC571",
-        "Roles": [
-          {
-            "Ref": "myServiceTaskDefExecutionRole618CD311"
-          }
-        ]
-      }
-    },
-    "myServiceB0B6FAA0": {
-      "Type": "AWS::ECS::Service",
-      "Properties": {
-        "Cluster": {
-          "Ref": "ClusterEB0386A7"
-        },
-        "DeploymentConfiguration": {
-          "MaximumPercent": 200,
-          "MinimumHealthyPercent": 50
-        },
-        "DesiredCount": 1,
-        "EnableECSManagedTags": false,
-        "HealthCheckGracePeriodSeconds": 60,
-        "LaunchType": "EC2",
-        "LoadBalancers": [
-          {
-            "ContainerName": "web",
-            "ContainerPort": 80,
-            "TargetGroupArn": {
-              "Ref": "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0"
-            }
-          },
-          {
-            "ContainerName": "web",
-            "ContainerPort": 90,
-            "TargetGroupArn": {
-              "Ref": "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5"
-            }
-          }
-        ],
-        "SchedulingStrategy": "REPLICA",
-        "TaskDefinition": {
-          "Ref": "myServiceTaskDef7FB8322A"
-        }
-      },
-      "DependsOn": [
-        "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0",
-        "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5",
-        "myServiceLBPublicListenerECSTargetGroupweb90Rule0CAA997D",
-        "myServiceLBPublicListenerC78AE8A0"
+        "EcsClusterbottlerocketasgLifecycleHookDrainHookRoleDefaultPolicy95E06EDB",
+        "EcsClusterbottlerocketasgLifecycleHookDrainHookRoleDE4D94EB"
       ]
     }
   },
   "Parameters": {
-    "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-      "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
-    }
-  },
-  "Outputs": {
-    "myServiceLoadBalancerDNS3A083E9F": {
-      "Value": {
-        "Fn::GetAtt": [
-          "myServiceLB168895E1",
-          "DNSName"
-        ]
-      }
-    },
-    "myServiceServiceURL1258C56B": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "http://",
-            {
-              "Fn::GetAtt": [
-                "myServiceLB168895E1",
-                "DNSName"
-              ]
-            }
-          ]
-        ]
-      }
+    "SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/bottlerocket/aws-ecs-1/x86_64/latest/image_id"
     }
   }
 }
