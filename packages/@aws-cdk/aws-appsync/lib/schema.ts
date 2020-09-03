@@ -56,6 +56,8 @@ export class Schema {
 
   private mode: SchemaMode;
 
+  private types: IIntermediateType[];
+
   public constructor(options?: SchemaOptions) {
     if (options?.filePath) {
       this.mode = SchemaMode.FILE;
@@ -64,6 +66,7 @@ export class Schema {
       this.mode = SchemaMode.CODE;
       this.definition = '';
     }
+    this.types = [];
   }
 
   /**
@@ -76,7 +79,12 @@ export class Schema {
     if (!this.schema) {
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
-        definition: Lazy.stringValue({ produce: () => `${this.declareSchema()}${this.definition}` }),
+        definition: this.mode === SchemaMode.CODE ?
+          Lazy.stringValue({
+            produce: () => this.types.reduce((acc, type) => { return `${acc}${type.toString(api.modes)}\n`; },
+              `${this.declareSchema()}${this.definition}`),
+          })
+          : this.definition,
       });
     }
     return this.schema;
@@ -157,7 +165,7 @@ export class Schema {
     if (this.mode !== SchemaMode.CODE) {
       throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
     }
-    this.addToSchema(Lazy.stringValue({ produce: () => type.toString() }));
+    this.types.push(type);
     return type;
   }
 
