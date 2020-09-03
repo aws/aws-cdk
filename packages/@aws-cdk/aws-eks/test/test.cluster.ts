@@ -1616,18 +1616,153 @@ export = {
 
   'endpoint access': {
 
-    'private endpoint access fails if selected subnets are empty'(test: Test) {
+    'public restricted'(test: Test) {
 
+      test.throws(() => {
+        eks.EndpointAccess.PUBLIC.onlyFrom('1.2.3.4/32');
+      }, /Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom\(\) instead./);
+
+      test.done();
+    },
+
+    'public non restricted without private subnets'(test: Test) {
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      // we don't attach vpc config in case endpoint is public only, regardless of whether
+      // the vpc has private subnets or not.
+      test.equal(template.Resources.Handler886CB40B.Properties.VpcConfig, undefined);
+
+      test.done();
+    },
+
+    'public non restricted with private subnets'(test: Test) {
+
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC,
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      // we don't attach vpc config in case endpoint is public only, regardless of whether
+      // the vpc has private subnets or not.
+      test.equal(template.Resources.Handler886CB40B.Properties.VpcConfig, undefined);
+
+      test.done();
+
+    },
+
+    'private without private subnets'(test: Test) {
       const { stack } = testFixture();
 
       test.throws(() => {
         new eks.Cluster(stack, 'Cluster', {
-          vpc: new ec2.Vpc(stack, 'Vpc'),
           version: CLUSTER_VERSION,
           endpointAccess: eks.EndpointAccess.PRIVATE,
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         });
-      }, /Vpc must contain private subnets to configure private endpoint access/);
+      }, /Vpc must contain private subnets when public endpoint access is disabled/);
+
+      test.done();
+    },
+
+    'private with private subnets'(test: Test) {
+
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      // handler should have vpc config
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length !== 0);
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length !== 0);
+
+      test.done();
+
+    },
+
+    'private and non restricted public without private subnets'(test: Test) {
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      // we don't have private subnets, but we don't need them since public access
+      // is not restricted.
+      test.equal(template.Resources.Handler886CB40B.Properties.VpcConfig, undefined);
+
+      test.done();
+    },
+
+    'private and non restricted public with private subnets'(test: Test) {
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      // we have private subnets so we should use them.
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length !== 0);
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length !== 0);
+
+      test.done();
+    },
+
+    'private and restricted public without private subnets'(test: Test) {
+      const { stack } = testFixture();
+
+      test.throws(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+        });
+      }, /Vpc must contain private subnets when public endpoint access is restricted/);
+
+      test.done();
+    },
+
+    'private and restricted public with private subnets'(test: Test) {
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      // we have private subnets so we should use them.
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length !== 0);
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length !== 0);
 
       test.done();
     },
@@ -1726,15 +1861,6 @@ export = {
       test.equal(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPrivateAccess, true);
       test.equal(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPublicAccess, false);
 
-      test.done();
-    },
-
-    'can configure cidr blocks in public endpoint access'(test: Test) {
-      // GIVEN
-      const { stack } = testFixture();
-      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PUBLIC.onlyFrom('1.2.3.4/5') });
-
-      test.deepEqual(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.publicAccessCidrs, ['1.2.3.4/5']);
       test.done();
     },
 
