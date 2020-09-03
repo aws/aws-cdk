@@ -152,6 +152,29 @@ new MyPipelineStack(this, 'PipelineStack', {
 });
 ```
 
+If you prefer more control over the underlying CodePipeline object, you can
+create one yourself, including custom Source and Build stages:
+
+```ts
+const codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
+  stages: [
+    {
+      stageName: 'CustomSource',
+      actions: [...],
+    },
+    {
+      stageName: 'CustomBuild',
+      actions: [...],
+    },
+  ],
+});
+
+const cdkPipeline = new CdkPipeline(this, 'CdkPipeline', {
+  codePipeline,
+  cloudAssemblyArtifact,
+});
+```
+
 ## Initial pipeline deployment
 
 You provision this pipeline by making sure the target environment has been
