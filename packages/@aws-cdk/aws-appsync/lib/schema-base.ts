@@ -144,7 +144,7 @@ export interface IIntermediateType {
    *
    * @param api The binding GraphQL Api [disable-awslint:ref-via-interface]
    */
-  bindModes(api: GraphqlApi): IIntermediateType;
+  bindToGraphqlApi(api: GraphqlApi): IIntermediateType;
 
   /**
    * Create an GraphQL Type representing this Intermediate Type
@@ -243,7 +243,7 @@ export class Directive {
    *
    * @param modes the authorization modes
    */
-  public bindModes(modes?: AuthorizationType[]): Directive {
+  public bindToGraphqlApi(modes?: AuthorizationType[]): Directive {
     this.modes = modes;
     return this;
   }

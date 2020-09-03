@@ -63,7 +63,7 @@ export class InterfaceType implements IIntermediateType {
    *
    * @param api The binding GraphQL Api
    */
-  public bindModes(api: GraphqlApi): IIntermediateType {
+  public bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
     this.modes = api.modes;
     return this;
   }
@@ -262,7 +262,7 @@ export class InputType implements IIntermediateType {
   /**
    * Bind this Input Type to a GraphQL Api
    */
-  public bindModes(api: GraphqlApi): IIntermediateType {
+  public bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
     this.modes = api.modes;
     return this;
   }
