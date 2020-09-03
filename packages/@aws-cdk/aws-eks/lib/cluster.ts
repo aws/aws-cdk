@@ -1102,7 +1102,9 @@ export class Cluster extends Resource implements ICluster {
 
       const privateSubents = this.selectPrivateSubnets().slice(0, 16);
       const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
-      const publicAccessRestricted = this.endpointAccess._config.publicCidrs && this.endpointAccess._config.publicCidrs.length !== 0;
+      const publicAccessRestricted = !publicAccessDisabled
+          && this.endpointAccess._config.publicCidrs
+          && this.endpointAccess._config.publicCidrs.length !== 0;
 
       if (privateSubents.length === 0 && publicAccessDisabled) {
         // no private subnets and no public access at all, no good.
