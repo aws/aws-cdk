@@ -36,6 +36,12 @@ To run a single integ test in the source tree:
 $ test/integ/run-against-repo test/integ/cli/test.sh -t 'SUBSTRING OF THE TEST NAME'
 ```
 
+To run regression tests in the source tree:
+
+```
+$ test/integ/test-cli-regression-against-current-code.sh [-t '...']
+```
+
 ### CLI integration tests
 
 CLI tests will exercise a number of common CLI scenarios, and deploy actual
