@@ -199,8 +199,8 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
   synthAction: new SimpleSynthAction({
     sourceArtifact,
     cloudAssemblyArtifact,
-    installCommand: 'npm install -g aws-cdk',
-    buildCommand: 'mvn package',
+    installCommands: ['npm install -g aws-cdk'],
+    buildCommands: ['mvn package'],
     synthCommand: 'cdk synth',
   })
 });
@@ -402,7 +402,7 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
   synthAction: SimpleSynthAction.standardNpmSynth({
     sourceArtifact,
     cloudAssemblyArtifact,
-    buildCommand: 'npm run build',
+    buildCommands: ['npm run build'],
     additionalArtifacts: [
       {
         directory: 'test',
@@ -449,7 +449,10 @@ class MyPipelineStack extends Stack {
         // Then you can login to codeartifact repository
         // and npm will now pull packages from your repository
         // Note the codeartifact login command requires more params to work.
-        buildCommand: 'aws codeartifact login --tool npm && npm run build',
+        buildCommands: [
+          'aws codeartifact login --tool npm',
+          'npm run build',
+        ],
       }),
     });
   }
