@@ -261,11 +261,14 @@ on configuring users for each available database engine.
 
 ### Metrics
 
-Database instances expose metrics (`cloudwatch.Metric`):
+Database instances and clusters both expose metrics (`cloudwatch.Metric`):
 
 ```ts
 // The number of database connections in use (average over 5 minutes)
 const dbConnections = instance.metricDatabaseConnections();
+
+// Average CPU utilization over 5 minutes
+const cpuUtilization = cluster.metricCPUUtilization();
 
 // The average amount of time taken per disk I/O operation (average over 1 minute)
 const readLatency = instance.metric('ReadLatency', { statistic: 'Average', periodSec: 60 });
