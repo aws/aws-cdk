@@ -10,11 +10,20 @@ import { Construct } from '../lib/construct-compat';
  */
 export class FeatureFlags {
   /**
+   * Inspect feature flags on the construct node's context.
+   */
+  public static of(scope: Construct) {
+    return new FeatureFlags(scope);
+  }
+
+  private constructor(private readonly construct: Construct) {}
+
+  /**
    * Check whether a feature flag is enabled. If configured, the flag is present in
    * the construct node context. Falls back to the defaults defined in the `cx-api`
    * module.
    */
-  public static isEnabled(construct: Construct, featureFlag: string): boolean | undefined {
-    return construct.node.tryGetContext(featureFlag) ?? cxapi.futureFlagDefault(featureFlag);
+  public isEnabled(featureFlag: string): boolean | undefined {
+    return this.construct.node.tryGetContext(featureFlag) ?? cxapi.futureFlagDefault(featureFlag);
   }
 }

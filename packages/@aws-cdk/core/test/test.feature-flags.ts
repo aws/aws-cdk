@@ -8,7 +8,7 @@ export = {
       const stack = new Stack();
       stack.node.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, true);
 
-      const actual = FeatureFlags.isEnabled(stack, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
+      const actual = FeatureFlags.of(stack).isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
       test.equals(actual, true);
       test.done();
     },
@@ -16,7 +16,7 @@ export = {
     'falls back to the default'(test: Test) {
       const stack = new Stack();
 
-      test.equals(FeatureFlags.isEnabled(stack, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT),
+      test.equals(FeatureFlags.of(stack).isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT),
         cxapi.futureFlagDefault(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT));
       test.done();
     },
@@ -24,7 +24,7 @@ export = {
     'invalid flag'(test: Test) {
       const stack = new Stack();
 
-      test.equals(FeatureFlags.isEnabled(stack, 'non-existent-flag'), undefined);
+      test.equals(FeatureFlags.of(stack).isEnabled('non-existent-flag'), undefined);
       test.done();
     },
   },

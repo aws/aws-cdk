@@ -202,7 +202,7 @@ function getCreateExportsScope(stack: Stack) {
 }
 
 function generateExportName(stackExports: Construct, id: string) {
-  const stackRelativeExports = FeatureFlags.isEnabled(stackExports, cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
+  const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
   const stack = Stack.of(stackExports);
 
   const components = [
