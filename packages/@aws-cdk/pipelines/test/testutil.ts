@@ -40,14 +40,7 @@ export class TestGitHubNpmPipeline extends cdkp.CdkPipeline {
     const cloudAssemblyArtifact = props?.cloudAssemblyArtifact ?? new codepipeline.Artifact();
 
     super(scope, id, {
-      sourceAction: new codepipeline_actions.GitHubSourceAction({
-        actionName: 'GitHub',
-        output: sourceArtifact,
-        oauthToken: SecretValue.plainText('$3kr1t'),
-        owner: 'test',
-        repo: 'test',
-        trigger: codepipeline_actions.GitHubTrigger.POLL,
-      }),
+      sourceAction: new TestGitHubAction(sourceArtifact),
       synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
@@ -58,6 +51,20 @@ export class TestGitHubNpmPipeline extends cdkp.CdkPipeline {
 
     this.sourceArtifact = sourceArtifact;
     this.cloudAssemblyArtifact = cloudAssemblyArtifact;
+  }
+}
+
+
+export class TestGitHubAction extends codepipeline_actions.GitHubSourceAction {
+  constructor(sourceArtifact: codepipeline.Artifact) {
+    super({
+      actionName: 'GitHub',
+      output: sourceArtifact,
+      oauthToken: SecretValue.plainText('$3kr1t'),
+      owner: 'test',
+      repo: 'test',
+      trigger: codepipeline_actions.GitHubTrigger.POLL,
+    });
   }
 }
 

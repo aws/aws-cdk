@@ -21,6 +21,50 @@ afterEach(() => {
   app.cleanup();
 });
 
+test('SimpleSynthAction takes arrays of commands', () => {
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: new cdkp.SimpleSynthAction({
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      installCommands: ['install1', 'install2'],
+      buildCommands: ['build1', 'build2'],
+      testCommands: ['test1', 'test2'],
+      synthCommand: 'cdk synth',
+    }),
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
+    Source: {
+      BuildSpec: encodedJson(deepObjectLike({
+        phases: {
+          pre_build: {
+            commands: [
+              'install1',
+              'install2',
+            ],
+          },
+          build: {
+            commands: [
+              'build1',
+              'build2',
+              'test1',
+              'test2',
+              'cdk synth',
+            ],
+          },
+        },
+      })),
+    },
+  });
+});
+
 test.each([['npm'], ['yarn']])('%s build automatically determines artifact base-directory', (npmYarn) => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
