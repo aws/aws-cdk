@@ -75,7 +75,7 @@ export = {
       });
 
       expect(stack).to(haveResource('AWS::SNS::Topic', {
-        'KmsMasterKeyId': { 'Ref': 'CustomKey1E6D0D07' },
+        'KmsMasterKeyId': { 'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'] },
       }));
 
       test.done();
