@@ -81,7 +81,7 @@ export class Schema {
         apiId: api.apiId,
         definition: this.mode === SchemaMode.CODE ?
           Lazy.stringValue({
-            produce: () => this.types.reduce((acc, type) => { return `${acc}${type.toString(api.modes)}\n`; },
+            produce: () => this.types.reduce((acc, type) => { return `${acc}${type.bindModes(api).toString()}\n`; },
               `${this.declareSchema()}${this.definition}`),
           })
           : this.definition,

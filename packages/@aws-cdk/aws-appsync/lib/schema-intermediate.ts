@@ -1,4 +1,4 @@
-import { AuthorizationType } from './graphqlapi';
+import { AuthorizationType, GraphqlApi } from './graphqlapi';
 import { shapeAddition } from './private';
 import { Resolver } from './resolver';
 import { Directive, IField, IIntermediateType, AddFieldOptions } from './schema-base';
@@ -47,11 +47,25 @@ export class InterfaceType implements IIntermediateType {
    * @default - no directives
    */
   public readonly directives?: Directive[];
+  /**
+   * the authorization modes for this intermediate type
+   */
+  protected modes?: AuthorizationType[];
 
   public constructor(name: string, props: IntermediateTypeProps) {
     this.name = name;
     this.definition = props.definition;
     this.directives = props.directives;
+  }
+
+  /**
+   * Bind this Interface Type to a GraphQL Api
+   *
+   * @param api The binding GraphQL Api
+   */
+  public bindModes(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    return this;
   }
 
   /**
@@ -74,16 +88,16 @@ export class InterfaceType implements IIntermediateType {
   /**
    * Generate the string of this object type
    */
-  public toString(modes?: AuthorizationType[]): string {
+  public toString(): string {
     return shapeAddition({
       prefix: 'interface',
       name: this.name,
       directives: this.directives,
       fields: Object.keys(this.definition).map((key) => {
         const field = this.definition[key];
-        return `${key}${field.argsToString()}: ${field.toString()}${field.directivesToString(modes)}`;
+        return `${key}${field.argsToString()}: ${field.toString()}${field.directivesToString(this.modes)}`;
       }),
-      modes,
+      modes: this.modes,
     });
   }
 
@@ -155,7 +169,6 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
     });
   }
 
-
   /**
    * Add a field to this Object Type.
    *
@@ -174,7 +187,7 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
   /**
    * Generate the string of this object type
    */
-  public toString(modes?: AuthorizationType[]): string {
+  public toString(): string {
     return shapeAddition({
       prefix: 'type',
       name: this.name,
@@ -182,9 +195,9 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
       directives: this.directives,
       fields: Object.keys(this.definition).map((key) => {
         const field = this.definition[key];
-        return `${key}${field.argsToString()}: ${field.toString()}${field.directivesToString(modes)}`;
+        return `${key}${field.argsToString()}: ${field.toString()}${field.directivesToString(this.modes)}`;
       }),
-      modes,
+      modes: this.modes,
     });
   }
 
@@ -219,6 +232,10 @@ export class InputType implements IIntermediateType {
    * the attributes of this type
    */
   public readonly definition: { [key: string]: IField };
+  /**
+   * the authorization modes for this intermediate type
+   */
+  protected modes?: AuthorizationType[];
 
   public constructor(name: string, props: IntermediateTypeProps) {
     this.name = name;
@@ -243,14 +260,23 @@ export class InputType implements IIntermediateType {
   }
 
   /**
+   * Bind this Input Type to a GraphQL Api
+   */
+  public bindModes(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    return this;
+  }
+
+  /**
    * Generate the string of this input type
    */
-  public toString(_modes?: AuthorizationType[]): string {
+  public toString(): string {
     return shapeAddition({
       prefix: 'input',
       name: this.name,
       fields: Object.keys(this.definition).map((key) =>
         `${key}${this.definition[key].argsToString()}: ${this.definition[key].toString()}`),
+      modes: this.modes,
     });
   }
 

@@ -326,7 +326,8 @@ export class GraphqlType implements IField {
   /**
    * Generate the directives for this field
    */
-  public directivesToString(_modes?: AuthorizationType[]): string {
+  public directivesToString(modes?: AuthorizationType[]): string {
+    modes;
     return '';
   }
 }
@@ -399,7 +400,7 @@ export class Field extends GraphqlType implements IField {
   public directivesToString(modes?: AuthorizationType[]): string {
     if (!this.fieldOptions || !this.fieldOptions.directives) { return ''; }
     return this.fieldOptions.directives.reduce((acc, directive) =>
-      `${acc}${directive.toString(modes)} `, '\n  ').slice(0, -1);
+      `${acc}${directive.bindModes(modes).toString()} `, '\n  ').slice(0, -1);
   }
 }
 
