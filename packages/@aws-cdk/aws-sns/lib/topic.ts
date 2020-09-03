@@ -68,7 +68,7 @@ export class Topic extends TopicBase {
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
       topicName: this.physicalName,
-      kmsMasterKeyId: props.masterKey && props.masterKey.keyId,
+      kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

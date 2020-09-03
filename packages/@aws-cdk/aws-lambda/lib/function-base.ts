@@ -346,12 +346,24 @@ export abstract class FunctionBase extends Resource implements IFunction {
     return this.node;
   }
 
+  /**
+   * Translate IPrincipal to something we can pass to AWS::Lambda::Permissions
+   *
+   * Do some nasty things because `Permission` supports a subset of what the
+   * full IAM principal language supports, and we may not be able to parse strings
+   * outright because they may be tokens.
+   *
+   * Try to recognize some specific Principal classes first, then try a generic
+   * fallback.
+   */
   private parsePermissionPrincipal(principal?: iam.IPrincipal) {
     if (!principal) {
       return undefined;
     }
-    // use duck-typing, not instance of
 
+    // Try some specific common classes first.
+    // use duck-typing, not instance of
+    // @deprecated: after v2, we can change these to 'instanceof'
     if ('accountId' in principal) {
       return (principal as iam.AccountPrincipal).accountId;
     }
@@ -362,6 +374,19 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
     if ('arn' in principal) {
       return (principal as iam.ArnPrincipal).arn;
+    }
+
+    // Try a best-effort approach to support simple principals that are not any of the predefined
+    // classes, but are simple enough that they will fit into the Permission model. Main target
+    // here: imported Roles, Users, Groups.
+    //
+    // The principal cannot have conditions and must have a single { AWS: [arn] } entry.
+    const json = principal.policyFragment.principalJson;
+    if (Object.keys(principal.policyFragment.conditions).length === 0 && json.AWS) {
+      if (typeof json.AWS === 'string') { return json.AWS; }
+      if (Array.isArray(json.AWS) && json.AWS.length === 1 && typeof json.AWS[0] === 'string') {
+        return json.AWS[0];
+      }
     }
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +

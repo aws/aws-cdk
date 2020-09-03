@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
@@ -9,7 +9,7 @@ import * as futils from '../lib/file-utils';
 /* eslint-disable quote-props */
 /* eslint-disable quotes */
 
-describe('CDK Include', () => {
+describe('CDK Include for nested stacks', () => {
   let stack: core.Stack;
 
   beforeEach(() => {
@@ -610,6 +610,66 @@ describe('CDK Include', () => {
       expect(grandChild.stack).toMatchTemplate(
         loadTestFileToJsObject('grandchild-import-stack.json'),
       );
+    });
+  });
+
+  describe('for a parameter passed to the included child stack', () => {
+    let parentStack: core.Stack;
+    let childStack: core.Stack;
+
+    beforeAll(() => {
+      parentStack = new core.Stack();
+      const parentTemplate = new inc.CfnInclude(parentStack, 'ParentStack', {
+        templateFile: testTemplateFilePath('parent-two-parameters.json'),
+        nestedStacks: {
+          'ChildStack': {
+            templateFile: testTemplateFilePath('child-two-parameters.json'),
+            parameters: {
+              'FirstParameter': 'test-value',
+            },
+          },
+        },
+      });
+      childStack = parentTemplate.getNestedStack('ChildStack').stack;
+    });
+
+    test('correctly removes the parameter from the child stack', () => {
+      expect(childStack).toMatchTemplate({
+        "Parameters": {
+          "SecondParameter": {
+            "Type": "String",
+          },
+        },
+        "Resources": {
+          "BucketImport": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketName": "test-value",
+              "AccessControl": {
+                "Ref": "SecondParameter",
+              },
+            },
+          },
+          "GrandChildStack": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+              "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/grandchild-import-stack.json",
+              "Parameters": {
+                "FirstParameter": "test-value",
+              },
+            },
+          },
+        },
+      });
+    });
+
+    test('correctly removes the parameter from the parent stack', () => {
+      expect(parentStack).toHaveResourceLike('AWS::CloudFormation::Stack', {
+        "Parameters": {
+          "FirstParameter": ABSENT,
+          "SecondParameter": "second-value",
+        },
+      });
     });
   });
 });

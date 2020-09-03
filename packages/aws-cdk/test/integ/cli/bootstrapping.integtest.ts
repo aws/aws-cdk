@@ -1,10 +1,12 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { cloudFormation } from './aws-helpers';
-import { cdk, cdkDeploy, cleanup, fullStackName, prepareAppFixture, rememberToDeleteBucket } from './cdk-helpers';
+import { cdk, cdkDeploy, cleanup, fullStackName, prepareAppFixture, rememberToDeleteBucket, INTEG_TEST_DIR } from './cdk-helpers';
 import { integTest } from './test-helpers';
 
 jest.setTimeout(600_000);
 
-const QUALIFIER = randomString();
+const QUALIFIER = randomString().substr(0, 10);
 
 beforeAll(async () => {
   await prepareAppFixture();
@@ -170,6 +172,60 @@ integTest('can create multiple legacy bootstrap stacks', async () => {
   await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName2]);
 
   const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName1 });
+  expect(response.Stacks?.[0].Tags).toEqual([
+    { Key: 'Foo', Value: 'Bar' },
+  ]);
+});
+
+integTest('can dump the template, modify and use it to deploy a custom bootstrap stack', async () => {
+  let template = await cdk(['bootstrap', '--show-template'], {
+    captureStderr: false,
+    modEnv: {
+      CDK_NEW_BOOTSTRAP: '1',
+    },
+  });
+
+  expect(template).toContain('BootstrapVersion:');
+
+  template += '\n' + [
+    '  TwiddleDee:',
+    '    Value: Template got twiddled',
+  ].join('\n');
+
+  const filename = path.join(INTEG_TEST_DIR, `${QUALIFIER}-template.yaml`);
+  fs.writeFileSync(filename, template, { encoding: 'utf-8' });
+  await cdk(['bootstrap',
+    '--toolkit-stack-name', fullStackName('bootstrap-stack'),
+    '--qualifier', QUALIFIER,
+    '--template', filename,
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess'], {
+    modEnv: {
+      CDK_NEW_BOOTSTRAP: '1',
+    },
+  });
+});
+
+integTest('switch on termination protection, switch is left alone on re-bootstrap', async () => {
+  const bootstrapStackName = fullStackName('bootstrap-stack');
+
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName,
+    '--termination-protection', 'true',
+    '--qualifier', QUALIFIER], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--force'], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
+
+  const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  expect(response.Stacks?.[0].EnableTerminationProtection).toEqual(true);
+});
+
+integTest('add tags, left alone on re-bootstrap', async () => {
+  const bootstrapStackName = fullStackName('bootstrap-stack');
+
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName,
+    '--tags', 'Foo=Bar',
+    '--qualifier', QUALIFIER], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--force'], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
+
+  const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName });
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);

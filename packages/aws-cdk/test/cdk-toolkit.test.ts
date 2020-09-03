@@ -1,20 +1,18 @@
-const mockBootstrapEnvironment = jest.fn();
-jest.mock('../lib/api/bootstrap', () => {
-  return {
-    bootstrapEnvironment: mockBootstrapEnvironment,
-  };
-});
-
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
-import { MockCloudExecutable, TestStackArtifact } from './util';
+import { MockCloudExecutable, TestStackArtifact, instanceMockFrom } from './util';
 
 let cloudExecutable: MockCloudExecutable;
+let bootstrapper: jest.Mocked<Bootstrapper>;
 beforeEach(() => {
+  bootstrapper = instanceMockFrom(Bootstrapper);
+  bootstrapper.bootstrapEnvironment.mockResolvedValue({ noOp: false, outputs: {} } as any);
+
   cloudExecutable = new MockCloudExecutable({
     stacks: [
       MockStack.MOCK_STACK_A,
@@ -22,7 +20,6 @@ beforeEach(() => {
     ],
   });
 
-  mockBootstrapEnvironment.mockReset().mockResolvedValue({ noOp: false, outputs: {} });
 });
 
 function defaultToolkitSetup() {
@@ -72,15 +69,15 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.bootstrap(['aws://56789/south-pole'], undefined, undefined, false, false, {});
+      await toolkit.bootstrap(['aws://56789/south-pole'], bootstrapper, {});
 
       // THEN
-      expect(mockBootstrapEnvironment).toHaveBeenCalledWith({
+      expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith({
         account: '56789',
         region: 'south-pole',
         name: 'aws://56789/south-pole',
       }, expect.anything(), expect.anything());
-      expect(mockBootstrapEnvironment).toHaveBeenCalledTimes(1);
+      expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
     });
 
     test('globby bootstrap uses whats in the stacks', async () => {
@@ -89,15 +86,15 @@ describe('deploy', () => {
       cloudExecutable.configuration.settings.set(['app'], 'something');
 
       // WHEN
-      await toolkit.bootstrap(['aws://*/bermuda-triangle-1'], undefined, undefined, false, false, {});
+      await toolkit.bootstrap(['aws://*/bermuda-triangle-1'], bootstrapper, {});
 
       // THEN
-      expect(mockBootstrapEnvironment).toHaveBeenCalledWith({
+      expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith({
         account: '123456789012',
         region: 'bermuda-triangle-1',
         name: 'aws://123456789012/bermuda-triangle-1',
       }, expect.anything(), expect.anything());
-      expect(mockBootstrapEnvironment).toHaveBeenCalledTimes(1);
+      expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
     });
 
     test('bootstrap can be invoked without the --app argument', async () => {
@@ -109,15 +106,15 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.bootstrap(['aws://123456789012/west-pole'], undefined, undefined, false, false, {});
+      await toolkit.bootstrap(['aws://123456789012/west-pole'], bootstrapper, {});
 
       // THEN
-      expect(mockBootstrapEnvironment).toHaveBeenCalledWith({
+      expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith({
         account: '123456789012',
         region: 'west-pole',
         name: 'aws://123456789012/west-pole',
       }, expect.anything(), expect.anything());
-      expect(mockBootstrapEnvironment).toHaveBeenCalledTimes(1);
+      expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
 
       expect(cloudExecutable.hasApp).toEqual(false);
       expect(mockSynthesize).not.toHaveBeenCalled();

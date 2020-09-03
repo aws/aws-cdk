@@ -183,7 +183,7 @@ export class Settings {
    */
   public static fromCommandLineArguments(argv: Arguments): Settings {
     const context = this.parseStringContextListToObject(argv);
-    const tags = this.parseStringTagsListToObject(argv);
+    const tags = this.parseStringTagsListToObject(expectStringList(argv.tags));
 
     return new Settings({
       app: argv.app,
@@ -204,6 +204,7 @@ export class Settings {
       versionReporting: argv.versionReporting,
       staging: argv.staging,
       output: argv.output,
+      progress: argv.progress,
     });
   }
 
@@ -233,10 +234,21 @@ export class Settings {
     return context;
   }
 
-  private static parseStringTagsListToObject(argv: Arguments): Tag[] {
+  /**
+   * Parse tags out of arguments
+   *
+   * Return undefined if no tags were provided, return an empty array if only empty
+   * strings were provided
+   */
+  private static parseStringTagsListToObject(argTags: string[] | undefined): Tag[] | undefined {
+    if (argTags === undefined) { return undefined; }
+    if (argTags.length === 0) { return undefined; }
+    const nonEmptyTags = argTags.filter(t => t !== '');
+    if (nonEmptyTags.length === 0) { return []; }
+
     const tags: Tag[] = [];
 
-    for (const assignment of ((argv as any).tags || [])) {
+    for (const assignment of nonEmptyTags) {
       const parts = assignment.split('=', 2);
       if (parts.length === 2) {
         debug('CLI argument tags: %s=%s', parts[0], parts[1]);
@@ -248,7 +260,7 @@ export class Settings {
         warning('Tags argument is not an assignment (key=value): %s', assignment);
       }
     }
-    return tags;
+    return tags.length > 0 ? tags : undefined;
   }
 
   constructor(private settings: SettingsMap = {}, public readonly readOnly = false) {}
@@ -372,4 +384,16 @@ function stripTransientValues(obj: {[key: string]: any}) {
  */
 function isTransientValue(value: any) {
   return typeof value === 'object' && value !== null && (value as any)[TRANSIENT_CONTEXT_KEY];
+}
+
+function expectStringList(x: unknown): string[] | undefined {
+  if (x === undefined) { return undefined; }
+  if (!Array.isArray(x)) {
+    throw new Error(`Expected array, got '${x}'`);
+  }
+  const nonStrings = x.filter(e => typeof e !== 'string');
+  if (nonStrings.length > 0) {
+    throw new Error(`Expected list of strings, found ${nonStrings}`);
+  }
+  return x;
 }

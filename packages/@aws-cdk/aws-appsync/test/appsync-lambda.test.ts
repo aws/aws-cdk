@@ -6,10 +6,10 @@ import * as appsync from '../lib';
 
 // GLOBAL GIVEN
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'baseApi', {
+  api = new appsync.GraphqlApi(stack, 'baseApi', {
     name: 'api',
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
@@ -70,7 +70,7 @@ describe('Lambda Data Source configuration', () => {
     expect(() => {
       api.addLambdaDataSource('ds', func);
       api.addLambdaDataSource('ds', func);
-    }).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
+    }).toThrow("There is already a Construct with name 'ds' in GraphqlApi [baseApi]");
   });
 });
 
@@ -86,7 +86,7 @@ describe('adding lambda data source from imported api', () => {
 
   test('imported api can add LambdaDbDataSource from id', () => {
     // WHEN
-    const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
     });
     importedApi.addLambdaDataSource('ds', func);
@@ -100,7 +100,7 @@ describe('adding lambda data source from imported api', () => {
 
   test('imported api can add LambdaDataSource from attributes', () => {
     // WHEN
-    const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
       graphqlApiArn: api.arn,
     });

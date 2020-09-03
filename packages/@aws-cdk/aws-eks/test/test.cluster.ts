@@ -1,14 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import * as asg from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
-import { KubectlLayer } from '../lib/kubectl-layer';
+import { getOrCreateKubectlLayer } from '../lib/kubectl-provider';
 import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
@@ -16,6 +18,210 @@ import { testFixture, testFixtureNoVpc } from './util';
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
+
+  'can declare a manifest with a token from a different stack than the cluster that depends on the cluster stack'(test: Test) {
+
+    class ClusterStack extends cdk.Stack {
+      public eksCluster: eks.Cluster;
+
+      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+        this.eksCluster = new eks.Cluster(this, 'Cluster', {
+          version: eks.KubernetesVersion.V1_17,
+        });
+      }
+    }
+
+    class ManifestStack extends cdk.Stack {
+      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+        super(scope, id, props);
+
+        // this role creates a dependency between this stack and the cluster stack
+        const role = new iam.Role(this, 'CrossRole', {
+          assumedBy: new iam.ServicePrincipal('sqs.amazonaws.com'),
+          roleName: props.cluster.clusterArn,
+        });
+
+        // make sure this manifest doesn't create a dependency between the cluster stack
+        // and this stack
+        new eks.KubernetesManifest(this, 'cross-stack', {
+          manifest: [{
+            kind: 'ConfigMap',
+            apiVersion: 'v1',
+            metadata: {
+              name: 'config-map',
+            },
+            data: {
+              foo: role.roleArn,
+            },
+          }],
+          cluster: props.cluster,
+        });
+      }
+    }
+
+    const { app } = testFixture();
+    const clusterStack = new ClusterStack(app, 'ClusterStack');
+    new ManifestStack(app, 'ManifestStack', { cluster: clusterStack.eksCluster });
+
+    // make sure we can synth (no circular dependencies between the stacks)
+    app.synth();
+
+    test.done();
+  },
+
+  'can declare a chart with a token from a different stack than the cluster that depends on the cluster stack'(test: Test) {
+
+    class ClusterStack extends cdk.Stack {
+      public eksCluster: eks.Cluster;
+
+      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+        this.eksCluster = new eks.Cluster(this, 'Cluster', {
+          version: eks.KubernetesVersion.V1_17,
+        });
+      }
+    }
+
+    class ChartStack extends cdk.Stack {
+      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+        super(scope, id, props);
+
+        // this role creates a dependency between this stack and the cluster stack
+        const role = new iam.Role(this, 'CrossRole', {
+          assumedBy: new iam.ServicePrincipal('sqs.amazonaws.com'),
+          roleName: props.cluster.clusterArn,
+        });
+
+        // make sure this chart doesn't create a dependency between the cluster stack
+        // and this stack
+        new eks.HelmChart(this, 'cross-stack', {
+          chart: role.roleArn,
+          cluster: props.cluster,
+        });
+      }
+    }
+
+    const { app } = testFixture();
+    const clusterStack = new ClusterStack(app, 'ClusterStack');
+    new ChartStack(app, 'ChartStack', { cluster: clusterStack.eksCluster });
+
+    // make sure we can synth (no circular dependencies between the stacks)
+    app.synth();
+
+    test.done();
+  },
+
+  'can declare a HelmChart in a different stack than the cluster'(test: Test) {
+
+    class ClusterStack extends cdk.Stack {
+      public eksCluster: eks.Cluster;
+
+      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+        this.eksCluster = new eks.Cluster(this, 'Cluster', {
+          version: eks.KubernetesVersion.V1_17,
+        });
+      }
+    }
+
+    class ChartStack extends cdk.Stack {
+      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+        super(scope, id, props);
+
+        const resource = new cdk.CfnResource(this, 'resource', { type: 'MyType' });
+        new eks.HelmChart(this, `chart-${id}`, { cluster: props.cluster, chart: resource.ref });
+
+      }
+    }
+
+    const { app } = testFixture();
+    const clusterStack = new ClusterStack(app, 'ClusterStack');
+    new ChartStack(app, 'ChartStack', { cluster: clusterStack.eksCluster });
+
+    // make sure we can synth (no circular dependencies between the stacks)
+    app.synth();
+
+    test.done();
+  },
+
+  'throws when declaring an ASG role in a different stack than the cluster'(test: Test) {
+
+    class ClusterStack extends cdk.Stack {
+      public eksCluster: eks.Cluster;
+
+      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+        this.eksCluster = new eks.Cluster(this, 'Cluster', {
+          version: eks.KubernetesVersion.V1_17,
+        });
+      }
+    }
+
+    class CapacityStack extends cdk.Stack {
+
+      public group: asg.AutoScalingGroup;
+
+      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+        super(scope, id, props);
+
+        // the role is create in this stack implicitly by the ASG
+        this.group = new asg.AutoScalingGroup(this, 'autoScaling', {
+          instanceType: new ec2.InstanceType('t3.medium'),
+          vpc: props.cluster.vpc,
+          machineImage: new eks.EksOptimizedImage({
+            kubernetesVersion: eks.KubernetesVersion.V1_16.version,
+            nodeType: eks.NodeType.STANDARD,
+          }),
+        });
+
+      }
+    }
+
+    const { app } = testFixture();
+    const clusterStack = new ClusterStack(app, 'ClusterStack');
+    const capacityStack = new CapacityStack(app, 'CapacityStack', { cluster: clusterStack.eksCluster });
+
+    try {
+      clusterStack.eksCluster.addAutoScalingGroup(capacityStack.group, {});
+      test.ok(false, 'expected error');
+    } catch (err) {
+      test.equal(err.message, 'CapacityStackautoScalingInstanceRoleF041EB53 should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
+    }
+
+    test.done();
+  },
+
+  'can declare a ServiceAccount in a different stack than the cluster'(test: Test) {
+
+    class ClusterStack extends cdk.Stack {
+      public eksCluster: eks.Cluster;
+
+      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+        this.eksCluster = new eks.Cluster(this, 'EKSCluster', {
+          version: eks.KubernetesVersion.V1_17,
+        });
+      }
+    }
+
+    class AppStack extends cdk.Stack {
+      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+        super(scope, id, props);
+
+        new eks.ServiceAccount(this, 'testAccount', { cluster: props.cluster, name: 'test-account', namespace: 'test' });
+      }
+    }
+
+    const { app } = testFixture();
+    const clusterStack = new ClusterStack(app, 'EKSCluster');
+    new AppStack(app, 'KubeApp', { cluster: clusterStack.eksCluster });
+
+    // make sure we can synth (no circular dependencies between the stacks)
+    app.synth();
+
+    test.done();
+  },
 
   'a default cluster spans all subnets'(test: Test) {
     // GIVEN
@@ -52,7 +258,7 @@ export = {
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
     new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
-    const layer = KubectlLayer.getOrCreate(stack, {});
+    getOrCreateKubectlLayer(stack);
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
@@ -61,7 +267,6 @@ export = {
         ApplicationId: 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl',
       },
     }));
-    test.equal(layer.isChina(), false);
     test.done();
   },
 
@@ -73,8 +278,7 @@ export = {
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
     new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
-    new KubectlLayer(stack, 'NewLayer');
-    const layer = KubectlLayer.getOrCreate(stack);
+    getOrCreateKubectlLayer(stack);
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
@@ -83,7 +287,6 @@ export = {
         ApplicationId: 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl',
       },
     }));
-    test.equal(layer.isChina(), true);
     test.done();
   },
 
@@ -348,11 +551,10 @@ export = {
 
     // WHEN
     const imported = eks.Cluster.fromClusterAttributes(stack2, 'Imported', {
-      clusterArn: cluster.clusterArn,
       vpc: cluster.vpc,
       clusterEndpoint: cluster.clusterEndpoint,
       clusterName: cluster.clusterName,
-      securityGroups: cluster.connections.securityGroups,
+      securityGroupIds: cluster.connections.securityGroups.map(x => x.securityGroupId),
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
       clusterSecurityGroupId: cluster.clusterSecurityGroupId,
       clusterEncryptionConfigKeyArn: cluster.clusterEncryptionConfigKeyArn,
@@ -366,7 +568,23 @@ export = {
       Outputs: {
         ClusterARN: {
           Value: {
-            'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttCluster9EE0221CArn9E0B683E',
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':eks:us-east-1:',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':cluster/',
+                {
+                  'Fn::ImportValue': 'Stack:ExportsOutputRefCluster9EE0221C4853B4C3',
+                },
+              ],
+            ],
           },
         },
       },
@@ -888,7 +1106,9 @@ export = {
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
           version: '1.16',
           resourcesVpcConfig: {
-            securityGroupIds: [{ 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] }],
+            securityGroupIds: [
+              { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },
+            ],
             subnetIds: [
               { Ref: 'MyClusterDefaultVpcPublicSubnet1SubnetFAE5A9B6' },
               { Ref: 'MyClusterDefaultVpcPublicSubnet2SubnetF6D028A0' },
@@ -909,30 +1129,10 @@ export = {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                AWS: [
-                  {
-                    'Fn::GetAtt': [
-                      'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
-                      'Outputs.StackawscdkawseksClusterResourceProviderOnEventHandlerServiceRole3AEE0A43Arn',
-                    ],
-                  },
-                  {
-                    'Fn::GetAtt': [
-                      'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
-                      'Outputs.StackawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8E7F1C11Arn',
-                    ],
-                  },
-                ],
-              },
-            },
-            {
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
                 AWS: {
-                  'Fn::GetAtt': [
-                    'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-                    'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
+                  'Fn::Join': [
+                    '',
+                    ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root'],
                   ],
                 },
               },
@@ -1164,7 +1364,7 @@ export = {
       test.done();
     },
 
-    'if helm charts are used, its resource provider is allowed to assume the creation role'(test: Test) {
+    'if helm charts are used, the provider role is allowed to assume the creation role'(test: Test) {
       // GIVEN
       const { stack } = testFixture();
       const cluster = new eks.Cluster(stack, 'MyCluster', {
@@ -1179,47 +1379,35 @@ export = {
 
       // THEN
 
-      // role can be assumed by 4 principals: two for the cluster resource, one
-      // for kubernetes resource and one for the helm resource.
-      expect(stack).to(haveResource('AWS::IAM::Role', {
-        AssumeRolePolicyDocument: {
+      const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      expect(providerStack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
           Statement: [
             {
-              Action: 'sts:AssumeRole',
+              Action: 'eks:DescribeCluster',
               Effect: 'Allow',
-              Principal: {
-                AWS: [
-                  {
-                    'Fn::GetAtt': [
-                      'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
-                      'Outputs.StackawscdkawseksClusterResourceProviderOnEventHandlerServiceRole3AEE0A43Arn',
-                    ],
-                  },
-                  {
-                    'Fn::GetAtt': [
-                      'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
-                      'Outputs.StackawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8E7F1C11Arn',
-                    ],
-                  },
-                ],
+              Resource: {
+                Ref: 'referencetoStackMyClusterD33CAEABArn',
               },
             },
             {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::GetAtt': [
-                    'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-                    'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
-                  ],
-                },
+              Resource: {
+                Ref: 'referencetoStackMyClusterCreationRoleA67486E4Arn',
               },
             },
           ],
           Version: '2012-10-17',
         },
+        PolicyName: 'HandlerServiceRoleDefaultPolicyCBD0CC91',
+        Roles: [
+          {
+            Ref: 'HandlerServiceRoleFCDC14AE',
+          },
+        ],
       }));
+
       test.done();
     },
 
@@ -1351,33 +1539,40 @@ export = {
       test.done();
     },
 
-    'kubectl provider role is trusted to assume cluster creation role'(test: Test) {
+    'kubectl provider role can assume creation role'(test: Test) {
       // GIVEN
-      const { stack, app } = testFixture();
+      const { stack } = testFixture();
       const c1 = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION });
-      const c2 = new eks.Cluster(stack, 'Cluster2', { version: CLUSTER_VERSION });
 
       // WHEN
 
       // activate kubectl provider
       c1.addManifest('c1a', { foo: 123 });
       c1.addManifest('c1b', { foo: 123 });
-      c2.addManifest('c2', { foo: 123 });
 
       // THEN
-      const template = app.synth().getStackArtifact(stack.artifactId).template;
-
-      const creationRoleToKubectlRole = {
-        Cluster1CreationRoleA231BE8D: 'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
-        Cluster2CreationRole9254EAB6: 'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
-      };
-
-      // verify that the kubectl role appears as the 2nd IAM trust policy statement
-      for (const [creationRole, kubectlRole] of Object.entries(creationRoleToKubectlRole)) {
-        const trustPolicy = template.Resources[creationRole].Properties.AssumeRolePolicyDocument.Statement;
-        test.equal(trustPolicy.length, 2, 'expecting the creation role\'s trust policy to include two statements');
-        test.deepEqual(trustPolicy[1].Principal.AWS['Fn::GetAtt'][1], kubectlRole);
-      }
+      const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      expect(providerStack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'eks:DescribeCluster',
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'referencetoStackCluster18DFEAC17Arn',
+              },
+            },
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'referencetoStackCluster1CreationRoleEF7C9BBCArn',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
       test.done();
     },
 
@@ -1528,23 +1723,8 @@ export = {
       const { stack } = testFixture();
       new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE });
 
-      expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
-        Config: {
-          roleArn: { 'Fn::GetAtt': ['Cluster1RoleE88C32AD', 'Arn'] },
-          version: '1.16',
-          resourcesVpcConfig: {
-            securityGroupIds: [{ 'Fn::GetAtt': ['Cluster1ControlPlaneSecurityGroupF9C67C32', 'GroupId'] }],
-            subnetIds: [
-              { Ref: 'Cluster1DefaultVpcPublicSubnet1SubnetBEABA6ED' },
-              { Ref: 'Cluster1DefaultVpcPublicSubnet2Subnet947A5158' },
-              { Ref: 'Cluster1DefaultVpcPrivateSubnet1Subnet4E30ECA1' },
-              { Ref: 'Cluster1DefaultVpcPrivateSubnet2Subnet707FCD37' },
-            ],
-            endpointPrivateAccess: true,
-            endpointPublicAccess: false,
-          },
-        },
-      }));
+      test.equal(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPrivateAccess, true);
+      test.equal(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPublicAccess, false);
 
       test.done();
     },
@@ -1554,25 +1734,7 @@ export = {
       const { stack } = testFixture();
       new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PUBLIC.onlyFrom('1.2.3.4/5') });
 
-      expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
-        Config: {
-          roleArn: { 'Fn::GetAtt': ['Cluster1RoleE88C32AD', 'Arn'] },
-          version: '1.16',
-          resourcesVpcConfig: {
-            securityGroupIds: [{ 'Fn::GetAtt': ['Cluster1ControlPlaneSecurityGroupF9C67C32', 'GroupId'] }],
-            subnetIds: [
-              { Ref: 'Cluster1DefaultVpcPublicSubnet1SubnetBEABA6ED' },
-              { Ref: 'Cluster1DefaultVpcPublicSubnet2Subnet947A5158' },
-              { Ref: 'Cluster1DefaultVpcPrivateSubnet1Subnet4E30ECA1' },
-              { Ref: 'Cluster1DefaultVpcPrivateSubnet2Subnet707FCD37' },
-            ],
-            endpointPrivateAccess: false,
-            endpointPublicAccess: true,
-            publicAccessCidrs: ['1.2.3.4/5'],
-          },
-        },
-      }));
-
+      test.deepEqual(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.publicAccessCidrs, ['1.2.3.4/5']);
       test.done();
     },
 
@@ -1839,6 +2001,58 @@ export = {
     test.deepEqual(rawTemplate.Outputs.LoadBalancerAddress.Value, { 'Fn::GetAtt': [expectedKubernetesGetId, 'Value'] });
     test.done();
   },
+
+  'custom kubectl layer can be provided'(test: Test) {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    const layer = lambda.LayerVersion.fromLayerVersionArn(stack, 'MyLayer', 'arn:of:layer');
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: layer,
+    });
+
+    // THEN
+    const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    expect(providerStack).to(haveResource('AWS::Lambda::Function', {
+      Layers: ['arn:of:layer'],
+    }));
+
+    test.done();
+  },
+
+  'SAR-based kubectl layer can be customized'(test: Test) {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    const layer = new eks.KubectlLayer(stack, 'Kubectl', {
+      applicationId: 'custom:app:id',
+      version: '2.3.4',
+    });
+
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: layer,
+    });
+
+    // THEN
+    const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    expect(providerStack).to(haveResource('AWS::Lambda::Function', {
+      Layers: [{ Ref: 'referencetoStackKubectl7F29063EOutputsLayerVersionArn' }],
+    }));
+
+    expect(stack).to(haveResource('AWS::Serverless::Application', {
+      Location: {
+        ApplicationId: 'custom:app:id',
+        SemanticVersion: '2.3.4',
+      },
+    }));
+
+    test.done();
+  },
+
   'create a cluster using custom resource with secrets encryption using KMS CMK'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();

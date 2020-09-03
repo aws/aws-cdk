@@ -30,16 +30,16 @@ $ test/integ/run-against-dist test/integ/cli/test.sh
 $ test/integ/run-against-release test/integ/cli/test.sh
 ```
 
-You can switch out the test script to run the init tests:
+To run a single integ test in the source tree:
 
 ```
-$ test/integ/run-against-xxx test/integ/init/test-all.sh
+$ test/integ/run-against-repo test/integ/cli/test.sh -t 'SUBSTRING OF THE TEST NAME'
 ```
 
-Or even run a single integ test:
+To run regression tests in the source tree:
 
 ```
-$ test/integ/run-against-xxx test/integ/init/test-cdk-deploy-no-tty.sh
+$ test/integ/test-cli-regression-against-current-code.sh [-t '...']
 ```
 
 ### CLI integration tests

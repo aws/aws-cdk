@@ -1,9 +1,11 @@
 import { readFileSync } from 'fs';
 import { Lazy } from '@aws-cdk/core';
 import { CfnGraphQLSchema } from './appsync.generated';
-import { GraphQLApi } from './graphqlapi';
-import { SchemaMode } from './private';
+import { GraphqlApi } from './graphqlapi';
+import { SchemaMode, shapeAddition } from './private';
 import { IIntermediateType } from './schema-base';
+import { ResolvableField } from './schema-field';
+import { ObjectType } from './schema-intermediate';
 
 /**
  * The options for configuring a schema
@@ -44,7 +46,13 @@ export class Schema {
    */
   public definition: string;
 
-  protected schema?: CfnGraphQLSchema;
+  private query?: ObjectType;
+
+  private mutation?: ObjectType;
+
+  private subscription?: ObjectType;
+
+  private schema?: CfnGraphQLSchema;
 
   private mode: SchemaMode;
 
@@ -64,11 +72,11 @@ export class Schema {
    *
    * @param api The binding GraphQL Api
    */
-  public bind(api: GraphQLApi): CfnGraphQLSchema {
+  public bind(api: GraphqlApi): CfnGraphQLSchema {
     if (!this.schema) {
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
-        definition: Lazy.stringValue({ produce: () => this.definition }),
+        definition: Lazy.stringValue({ produce: () => `${this.declareSchema()}${this.definition}` }),
       });
     }
     return this.schema;
@@ -93,6 +101,52 @@ export class Schema {
   }
 
   /**
+   * Add a query field to the schema's Query. If one isn't set by
+   * the user, CDK will create an Object Type called 'Query'. For example,
+   *
+   * type Query {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the query
+   * @param field the resolvable field to for this query
+   */
+  public addQuery(fieldName: string, field: ResolvableField): ObjectType {
+    if (this.mode !== SchemaMode.CODE) {
+      throw new Error(`Unable to add query. Schema definition mode must be ${SchemaMode.CODE} Received: ${this.mode}`);
+    }
+    if (!this.query) {
+      this.query = new ObjectType('Query', { definition: {} });
+      this.addType(this.query);
+    };
+    this.query.addField({ fieldName, field });
+    return this.query;
+  }
+
+  /**
+   * Add a mutation field to the schema's Mutation. If one isn't set by
+   * the user, CDK will create an Object Type called 'Mutation'. For example,
+   *
+   * type Mutation {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the Mutation
+   * @param field the resolvable field to for this Mutation
+   */
+  public addMutation(fieldName: string, field: ResolvableField): ObjectType {
+    if (this.mode !== SchemaMode.CODE) {
+      throw new Error(`Unable to add mutation. Schema definition mode must be ${SchemaMode.CODE} Received: ${this.mode}`);
+    }
+    if (!this.mutation) {
+      this.mutation = new ObjectType('Mutation', { definition: {} });
+      this.addType(this.mutation);
+    };
+    this.mutation.addField({ fieldName, field });
+    return this.mutation;
+  }
+
+  /**
    * Add type to the schema
    *
    * @param type the intermediate type to add to the schema
@@ -105,5 +159,28 @@ export class Schema {
     }
     this.addToSchema(Lazy.stringValue({ produce: () => type.toString() }));
     return type;
+  }
+
+  /**
+   * Set the root types of this schema if they are defined.
+   *
+   * For example:
+   * schema {
+   *   query: Query
+   *   mutation: Mutation
+   *   subscription: Subscription
+   * }
+   */
+  private declareSchema(): string {
+    if (!this.query && !this.mutation && !this.subscription) {
+      return '';
+    }
+    type root = 'mutation' | 'query' | 'subscription';
+    const list: root[] = ['query', 'mutation', 'subscription'];
+    return shapeAddition({
+      prefix: 'schema',
+      fields: list.map((key: root) => this[key] ? `${key}: ${this[key]?.name}` : '')
+        .filter((field) => field != ''),
+    }) + '\n';
   }
 }

@@ -344,7 +344,7 @@ Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user
 
 Any user pool that has been created outside of this stack, can be imported into the CDK app. Importing a user pool
 allows for it to be used in other parts of the CDK app that reference an `IUserPool`. However, imported user pools have
-limited configurability. As a rule of thumb, none of the properties that is are part of the
+limited configurability. As a rule of thumb, none of the properties that are part of the
 [`AWS::Cognito::UserPool`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpool.html)
 CloudFormation resource can be configured.
 

@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Lazy, Stack } from '@aws-cdk/core';
+import { Construct, Lazy, Stack, IConstruct } from '@aws-cdk/core';
 import { AwsAuthMapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
@@ -73,6 +73,7 @@ export class AwsAuth extends Construct {
    * @param mapping Mapping to k8s user name and groups
    */
   public addRoleMapping(role: iam.IRole, mapping: AwsAuthMapping) {
+    this.assertSameStack(role);
     this.roleMappings.push({ role, mapping });
   }
 
@@ -83,6 +84,7 @@ export class AwsAuth extends Construct {
    * @param mapping Mapping to k8s user name and groups
    */
   public addUserMapping(user: iam.IUser, mapping: AwsAuthMapping) {
+    this.assertSameStack(user);
     this.userMappings.push({ user, mapping });
   }
 
@@ -92,6 +94,19 @@ export class AwsAuth extends Construct {
    */
   public addAccount(accountId: string) {
     this.accounts.push(accountId);
+  }
+
+  private assertSameStack(construct: IConstruct) {
+
+    const thisStack = Stack.of(this);
+
+    if (Stack.of(construct) !== thisStack) {
+      // aws-auth is always part of the cluster stack, and since resources commonly take
+      // a dependency on the cluster, allowing those resources to be in a different stack,
+      // will create a circular dependency. granted, it won't always be the case,
+      // but we opted for the more causious and restrictive approach for now.
+      throw new Error(`${construct.node.uniqueId} should be defined in the scope of the ${thisStack.stackName} stack to prevent circular dependencies`);
+    }
   }
 
   private synthesizeMapRoles() {

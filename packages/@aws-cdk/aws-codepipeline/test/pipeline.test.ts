@@ -1,17 +1,18 @@
-import { expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { expect as ourExpect, ResourcePart, arrayWith, objectLike, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'Pipeline': {
     'can be passed an IAM role during pipeline creation'(test: Test) {
       const stack = new cdk.Stack();
@@ -22,7 +23,7 @@ export = {
         role,
       });
 
-      expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      ourExpect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
         'RoleArn': {
           'Fn::GetAtt': [
             'Role1ABCC5F0',
@@ -109,7 +110,7 @@ export = {
           ],
         });
 
-        expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
           'ArtifactStores': [
             {
               'Region': replicationRegion,
@@ -136,9 +137,9 @@ export = {
               'Region': pipelineRegion,
             },
           ],
-        }));
+        });
 
-        expect(replicationStack).to(haveResourceLike('AWS::KMS::Key', {
+        expect(replicationStack).toHaveResourceLike('AWS::KMS::Key', {
           'KeyPolicy': {
             'Statement': [
               {
@@ -170,7 +171,7 @@ export = {
               },
             ],
           },
-        }));
+        });
 
         test.done();
       },
@@ -204,7 +205,7 @@ export = {
           ],
         });
 
-        expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
           'ArtifactStores': [
             {
               'Region': replicationRegion,
@@ -231,12 +232,12 @@ export = {
               'Region': pipelineRegion,
             },
           ],
-        }));
+        });
 
-        expect(pipeline.crossRegionSupport[replicationRegion].stack).to(haveResourceLike('AWS::KMS::Alias', {
+        expect(pipeline.crossRegionSupport[replicationRegion].stack).toHaveResourceLike('AWS::KMS::Alias', {
           'DeletionPolicy': 'Delete',
           'UpdateReplacePolicy': 'Delete',
-        }, ResourcePart.CompleteDefinition));
+        }, ResourcePart.CompleteDefinition);
 
         test.done();
       },
@@ -276,7 +277,7 @@ export = {
           ],
         });
 
-        expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
           'ArtifactStores': [
             {
               'Region': replicationRegion,
@@ -293,7 +294,7 @@ export = {
               'Region': pipelineRegion,
             },
           ],
-        }));
+        });
 
         test.done();
       },
@@ -391,4 +392,43 @@ export = {
       },
     },
   },
-};
+});
+
+describe('test with shared setup', () => {
+  let stack: cdk.Stack;
+  let sourceArtifact: codepipeline.Artifact;
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    sourceArtifact = new codepipeline.Artifact();
+  });
+
+  test('can add actions to stages after creation', () => {
+    // GIVEN
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [new FakeSourceAction({ actionName: 'Fetch', output: sourceArtifact })],
+        },
+        {
+          stageName: 'Build',
+          actions: [new FakeBuildAction({ actionName: 'Gcc', input: sourceArtifact })],
+        },
+      ],
+    });
+
+    // WHEN
+    pipeline.stage('Build').addAction(new FakeBuildAction({ actionName: 'debug.com', input: sourceArtifact }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: arrayWith({
+        Name: 'Build',
+        Actions: [
+          objectLike({ Name: 'Gcc' }),
+          objectLike({ Name: 'debug.com' }),
+        ],
+      }),
+    });
+  });
+});

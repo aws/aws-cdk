@@ -6,7 +6,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
+import { AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseCluster, DatabaseClusterEngine, ParameterGroup, PerformanceInsightRetention } from '../lib';
 
 export = {
   'creating a Cluster also creates 2 DB Instances'(test: Test) {
@@ -291,6 +291,83 @@ export = {
 
     test.done();
 
+  },
+
+  'performance insights': {
+    'cluster with all performance insights properties'(test: Test) {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceProps: {
+          vpc,
+          enablePerformanceInsights: true,
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+          performanceInsightEncryptionKey: new kms.Key(stack, 'Key'),
+        },
+      });
+
+      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: true,
+        PerformanceInsightsRetentionPeriod: 731,
+        PerformanceInsightsKMSKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }));
+
+      test.done();
+    },
+
+    'setting performance insights fields enables performance insights'(test: Test) {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceProps: {
+          vpc,
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+        },
+      });
+
+      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: true,
+        PerformanceInsightsRetentionPeriod: 731,
+      }));
+
+      test.done();
+    },
+
+    'throws if performance insights fields are set but performance insights is disabled'(test: Test) {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      test.throws(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          masterUser: {
+            username: 'admin',
+          },
+          instanceProps: {
+            vpc,
+            enablePerformanceInsights: false,
+            performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
+          },
+        });
+      }, /`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+
+      test.done();
+    },
   },
 
   'create a cluster using a specific version of MySQL'(test: Test) {
