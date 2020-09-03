@@ -224,7 +224,7 @@ async function initCommandLine() {
         return await cli.list(args.STACKS, { long: args.long });
 
       case 'diff':
-        const enableDiffNoFail = configuration.context.get(cxapi.ENABLE_DIFF_NO_FAIL) ?? cxapi.futureFlagDefault(cxapi.ENABLE_DIFF_NO_FAIL);
+        const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL);
         return await cli.diff({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
@@ -242,13 +242,14 @@ async function initCommandLine() {
         // anticipation of flipping the switch, in user messaging we still call it
         // "new" bootstrapping.
         let source: BootstrapSource = { source: 'legacy' };
+        const newStyleStackSynthesis = isFeatureEnabled(configuration, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
         if (args.template) {
           print(`Using bootstrapping template from ${args.template}`);
           source = { source: 'custom', templateFile: args.template };
         } else if (process.env.CDK_NEW_BOOTSTRAP) {
           print('CDK_NEW_BOOTSTRAP set, using new-style bootstrapping');
           source = { source: 'default' };
-        } else if (configuration.context.get(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)) {
+        } else if (newStyleStackSynthesis) {
           print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
           source = { source: 'default' };
         }
@@ -335,6 +336,10 @@ async function initCommandLine() {
   function toJsonOrYaml(object: any): string {
     return serializeStructure(object, argv.json);
   }
+}
+
+function isFeatureEnabled(configuration: Configuration, featureFlag: string) {
+  return configuration.context.get(featureFlag) ?? cxapi.futureFlagDefault(featureFlag);
 }
 
 initCommandLine()
