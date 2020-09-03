@@ -72,6 +72,12 @@ export class CdkStage extends Construct {
   public addApplication(appStage: Stage, options: AddStageOptions = {}) {
     const asm = appStage.synth();
 
+    if (asm.stacks.length === 0) {
+      // If we don't check here, a more puzzling "stage contains no actions"
+      // error will be thrown come deployment time.
+      throw new Error(`The given Stage construct ('${appStage.node.path}') should contain at least one Stack`);
+    }
+
     const sortedTranches = topologicalSort(asm.stacks,
       stack => stack.id,
       stack => stack.dependencies.map(d => d.id));
