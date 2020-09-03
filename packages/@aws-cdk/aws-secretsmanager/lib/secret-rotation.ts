@@ -197,7 +197,7 @@ export interface SecretRotationProps {
   /**
    * Characters which should not appear in the generated password
    *
-   * @default - do not pass any additional configuration to the Lambda rotation function
+   * @default - no additional characters are explicitly excluded
    */
   readonly excludeCharacters?: string;
 }
