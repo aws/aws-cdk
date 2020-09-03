@@ -720,6 +720,45 @@ export = {
     test.done();
   },
 
+  'cluster with s3 export bucket adds supported feature name to IAM role'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_10_12,
+      }),
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      s3ExportBuckets: [bucket],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      AssociatedRoles: [{
+        RoleArn: {
+          'Fn::GetAtt': [
+            'DatabaseS3ExportRole9E328562',
+            'Arn',
+          ],
+        },
+        FeatureName: 's3Export',
+      }],
+    }));
+
+    test.done();
+  },
+
   'create a cluster with s3 export role'(test: Test) {
     // GIVEN
     const stack = testStack();

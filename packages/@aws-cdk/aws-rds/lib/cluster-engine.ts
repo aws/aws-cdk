@@ -57,26 +57,26 @@ export interface ClusterEngineConfig {
    *
    * @default - no features
    */
-  readonly features?: EngineFeatures;
+  readonly features?: ClusterEngineFeatures;
 }
 
 /**
  * Represents Database Engine features
  */
-export interface EngineFeatures {
+export interface ClusterEngineFeatures {
   /**
-   * Feature for the DB instance that the IAM role to access the S3 bucket for import
+   * Feature name for the DB instance that the IAM role to access the S3 bucket for import
    * is to be associated with.
    *
-   * @default - no s3Import feature
+   * @default - no s3Import feature name
    */
   readonly s3Import?: string;
 
   /**
-   * Feature for the DB instance that the IAM role to export to S3 bucket is to be
+   * Feature name for the DB instance that the IAM role to export to S3 bucket is to be
    * associated with.
    *
-   * @default - no s3Export feature
+   * @default - no s3Export feature name
    */
   readonly s3Export?: string;
 }
@@ -106,19 +106,19 @@ interface ClusterEngineBaseProps {
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly defaultPort?: number;
   readonly engineVersion?: EngineVersion;
-  readonly features?: EngineFeatures;
+  readonly features?: ClusterEngineFeatures;
 }
 
 abstract class ClusterEngineBase implements IClusterEngine {
   public readonly engineType: string;
   public readonly engineVersion?: EngineVersion;
-  public readonly features?: EngineFeatures;
   public readonly parameterGroupFamily?: string;
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   public abstract readonly supportedLogTypes: string[];
 
   private readonly defaultPort?: number;
+  private readonly features?: ClusterEngineFeatures;
 
   constructor(props: ClusterEngineBaseProps) {
     this.engineType = props.engineType;
@@ -424,7 +424,7 @@ export class AuroraPostgresEngineVersion {
    *   for example "9.6"
    */
   public static of(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string,
-    auroraPostgresFeatures?: EngineFeatures): AuroraPostgresEngineVersion {
+    auroraPostgresFeatures?: ClusterEngineFeatures): AuroraPostgresEngineVersion {
     return new AuroraPostgresEngineVersion(auroraPostgresFullVersion, auroraPostgresMajorVersion, auroraPostgresFeatures);
   }
 
@@ -433,9 +433,9 @@ export class AuroraPostgresEngineVersion {
   /** The major version of the engine, for example, "9.6". */
   public readonly auroraPostgresMajorVersion: string;
   /** The supported features for the DB engine */
-  public readonly auroraPostgresFeatures?: EngineFeatures;
+  public readonly auroraPostgresFeatures?: ClusterEngineFeatures;
 
-  private constructor(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string, auroraPostgresFeatures?: EngineFeatures) {
+  private constructor(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string, auroraPostgresFeatures?: ClusterEngineFeatures) {
     this.auroraPostgresFullVersion = auroraPostgresFullVersion;
     this.auroraPostgresMajorVersion = auroraPostgresMajorVersion;
     this.auroraPostgresFeatures = auroraPostgresFeatures;

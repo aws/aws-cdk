@@ -403,7 +403,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
     let { s3ImportRole, s3ExportRole } = this.setupS3ImportExport(props);
     // bind the engine to the Cluster
     const clusterEngineBindConfig = props.engine.bindToCluster(this, {
@@ -412,6 +411,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       parameterGroup: props.parameterGroup,
     });
 
+    const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
     if (s3ImportRole) {
       clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: clusterEngineBindConfig.features?.s3Import });
     }
