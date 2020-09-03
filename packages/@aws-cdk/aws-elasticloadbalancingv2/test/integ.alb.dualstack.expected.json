@@ -442,6 +442,12 @@
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
         "IpAddressType": "dualstack",
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {

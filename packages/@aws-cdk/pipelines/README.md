@@ -152,6 +152,29 @@ new MyPipelineStack(this, 'PipelineStack', {
 });
 ```
 
+If you prefer more control over the underlying CodePipeline object, you can
+create one yourself, including custom Source and Build stages:
+
+```ts
+const codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
+  stages: [
+    {
+      stageName: 'CustomSource',
+      actions: [...],
+    },
+    {
+      stageName: 'CustomBuild',
+      actions: [...],
+    },
+  ],
+});
+
+const cdkPipeline = new CdkPipeline(this, 'CdkPipeline', {
+  codePipeline,
+  cloudAssemblyArtifact,
+});
+```
+
 ## Initial pipeline deployment
 
 You provision this pipeline by making sure the target environment has been
@@ -199,8 +222,8 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
   synthAction: new SimpleSynthAction({
     sourceArtifact,
     cloudAssemblyArtifact,
-    installCommand: 'npm install -g aws-cdk',
-    buildCommand: 'mvn package',
+    installCommands: ['npm install -g aws-cdk'],
+    buildCommands: ['mvn package'],
     synthCommand: 'cdk synth',
   })
 });
@@ -402,7 +425,7 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
   synthAction: SimpleSynthAction.standardNpmSynth({
     sourceArtifact,
     cloudAssemblyArtifact,
-    buildCommand: 'npm run build',
+    buildCommands: ['npm run build'],
     additionalArtifacts: [
       {
         directory: 'test',
@@ -449,7 +472,10 @@ class MyPipelineStack extends Stack {
         // Then you can login to codeartifact repository
         // and npm will now pull packages from your repository
         // Note the codeartifact login command requires more params to work.
-        buildCommand: 'aws codeartifact login --tool npm && npm run build',
+        buildCommands: [
+          'aws codeartifact login --tool npm',
+          'npm run build',
+        ],
       }),
     });
   }

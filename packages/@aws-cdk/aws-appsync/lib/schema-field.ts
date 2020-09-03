@@ -326,8 +326,7 @@ export class GraphqlType implements IField {
   /**
    * Generate the directives for this field
    */
-  public directivesToString(modes?: AuthorizationType[]): string {
-    modes;
+  public directivesToString(_modes?: AuthorizationType[]): string {
     return '';
   }
 }
