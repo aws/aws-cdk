@@ -275,6 +275,13 @@ class AssetPublishing extends Construct {
     // FIXME: this is silly, we need the relative path here but no easy way to get it
     const relativePath = path.relative(this.myCxAsmRoot, command.assetManifestPath);
 
+    // The path cannot be outside the asm root. I don't really understand how this could ever
+    // come to pass, but apparently it has (see https://github.com/aws/aws-cdk/issues/9766).
+    // Add a sanity check here so we can catch it more quickly next time.
+    if (relativePath.startsWith(`..${path.sep}`)) {
+      throw new Error(`The asset manifest (${command.assetManifestPath}) cannot be outside the Cloud Assembly directory (${this.myCxAsmRoot}). Please report this error at https://github.com/aws/aws-cdk/issues to help us debug why this is happening.`);
+    }
+
     // Late-binding here (rather than in the constructor) to prevent creating the role in cases where no asset actions are created.
     if (!this.assetRoles[command.assetType]) {
       this.generateAssetRole(command.assetType);
