@@ -868,36 +868,13 @@ export class Cluster extends ClusterBase {
       }
     }
 
-    const privateSubents = this.selectPrivateSubnets().slice(0, 16);
-    const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
-    const publicAccessRestricted = !publicAccessDisabled
-        && this.endpointAccess._config.publicCidrs
-        && this.endpointAccess._config.publicCidrs.length !== 0;
+    this.kubectlSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
+      vpc: this.vpc,
+      description: 'Comminication between KubectlProvider and EKS Control Plane',
+    });
 
-    if (privateSubents.length === 0 && publicAccessDisabled) {
-      // no private subnets and no public access at all, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
-    }
-
-    if (privateSubents.length === 0 && publicAccessRestricted) {
-      // no private subents and public access is restricted, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
-    }
-
-    if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
-
-      // when private access is enabled and the vpc has private subnets, lets connect
-      // the provider to the vpc so that it will work even when restricting public access.
-      this.kubectlPrivateSubnets = privateSubents;
-      this.kubectlSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
-        vpc: this.vpc,
-        description: 'Comminication between KubectlProvider and EKS Control Plane',
-      });
-
-      // grant the kubectl provider access to the cluster control plane.
-      this.connections.allowFrom(this.kubectlSecurityGroup, this.connections.defaultPort!);
-
-    }
+    // grant the kubectl provider access to the cluster control plane.
+    this.connections.allowFrom(this.kubectlSecurityGroup, this.connections.defaultPort!);
 
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
@@ -952,12 +929,27 @@ export class Cluster extends ClusterBase {
     // cluster is first created, that's the only role that has "system:masters" permissions
     this.kubectlRole = this.adminRole;
 
-    // specify private subnets for kubectl only if we don't have public k8s endpoint access
-    if (!this.endpointAccess._config.publicAccess) {
-      this.kubectlPrivateSubnets = this.selectPrivateSubnets().slice(0, 16);
-      if (this.kubectlPrivateSubnets.length === 0) {
-        throw new Error('Vpc must contain private subnets to configure private endpoint access');
-      }
+    const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+    const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
+    const publicAccessRestricted = !publicAccessDisabled
+        && this.endpointAccess._config.publicCidrs
+        && this.endpointAccess._config.publicCidrs.length !== 0;
+
+    if (privateSubents.length === 0 && publicAccessDisabled) {
+      // no private subnets and no public access at all, no good.
+      throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
+    }
+
+    if (privateSubents.length === 0 && publicAccessRestricted) {
+      // no private subents and public access is restricted, no good.
+      throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
+    }
+
+    if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
+
+      // when private access is enabled and the vpc has private subnets, lets connect
+      // the provider to the vpc so that it will work even when restricting public access.
+      this.kubectlPrivateSubnets = privateSubents;
     }
 
     this._kubectlResourceProvider = this.defineKubectlProvider();
