@@ -1651,7 +1651,7 @@ export = {
           endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         });
-      }, /Vpc must contain private subnets to configure restricted public access/);
+      }, /Vpc must contain private subnets when public endpoint access is restricted/);
 
       test.done();
 
@@ -1721,7 +1721,7 @@ export = {
           endpointAccess: eks.EndpointAccess.PRIVATE,
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         });
-      }, /Vpc must contain private subnets to configure private only access/);
+      }, /Vpc must contain private subnets when public endpoint access is disabled/);
 
       test.done();
     },

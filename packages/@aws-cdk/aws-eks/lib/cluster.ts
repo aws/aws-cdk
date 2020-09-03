@@ -1108,12 +1108,12 @@ export class Cluster extends Resource implements ICluster {
 
       if (privateSubents.length === 0 && publicAccessDisabled) {
         // no private subnets and no public access at all, no good.
-        throw new Error('Vpc must contain private subnets to configure private only access');
+        throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
       }
 
       if (privateSubents.length === 0 && publicAccessRestricted) {
         // no private subents and public access is restricted, no good.
-        throw new Error('Vpc must contain private subnets to configure restricted public access');
+        throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
       }
 
       if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
