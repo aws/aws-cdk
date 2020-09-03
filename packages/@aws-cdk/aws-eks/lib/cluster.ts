@@ -16,7 +16,7 @@ import { KubernetesManifest } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { KubectlProvider, KubectlProviderProps } from './kubectl-provider';
-import { Nodegroup, NodegroupOptions, InstanceInfo } from './managed-nodegroup';
+import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
@@ -815,7 +815,7 @@ export class Cluster extends Resource implements ICluster {
         new BottleRocketImage() :
         new EksOptimizedImage({
           nodeType: nodeTypeForInstanceType(options.instanceType),
-          cpuArch: new InstanceInfo().cpuArchForInstanceType(options.instanceType),
+          cpuArch: cpuArchForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
         }),
       updateType: options.updateType,
@@ -1607,11 +1607,19 @@ export enum MachineImageType {
   BOTTLEROCKET
 }
 
-const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
-const INFERENTIA_INSTANCETYPES = ['inf1'];
+export const GPU_INSTANCETYPES = ['p2', 'p3', 'g2', 'g3', 'g4'];
+export const INFERENTIA_INSTANCETYPES = ['inf1'];
+export const GRAVITON_INSTANCETYPES = ['a1'];
+export const GRAVITON2_INSTANCETYPES = ['c6g', 'm6g', 'r6g'];
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
   return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
     INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
       NodeType.STANDARD;
+}
+
+function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
+  return GRAVITON2_INSTANCETYPES.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
+    GRAVITON_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
+      CpuArch.X86_64;
 }

@@ -1,7 +1,10 @@
 import { InstanceType, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
-import { Cluster, ICluster, CpuArch } from './cluster';
+import {
+  Cluster, ICluster, GRAVITON2_INSTANCETYPES, GRAVITON_INSTANCETYPES, GPU_INSTANCETYPES,
+  INFERENTIA_INSTANCETYPES,
+} from './cluster';
 import { CfnNodegroup } from './eks.generated';
 
 /**
@@ -247,7 +250,7 @@ export class Nodegroup extends Resource implements INodegroup {
       nodegroupName: props.nodegroupName,
       nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
-      amiType: props.amiType ?? (props.instanceType ? new InstanceInfo().amiTypeForInstanceType(props.instanceType).toString() :
+      amiType: props.amiType ?? (props.instanceType ? getAmiTypeForInstanceType(props.instanceType).toString() :
         undefined),
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
@@ -289,33 +292,11 @@ export class Nodegroup extends Resource implements INodegroup {
   }
 }
 
-const GRAVITON_INSTANCETYPES = ['a1'];
-const GRAVITON2_INSTANCETYPES = ['c6g', 'm6g', 'r6g'];
-const GPU_INSTANCETYPES = ['p2', 'p3', 'g2', 'g3', 'g4'];
-const INFERENTIA_INSTANCETYPES = ['inf1'];
-
-/**
- * InstanceInfo provider class
- */
-export class InstanceInfo {
-  /**
-   * determine the AMI type from instance type
-   * @param instanceType the EC2 instance type
-   */
-  public amiTypeForInstanceType(instanceType: InstanceType) {
-    return GRAVITON2_INSTANCETYPES.includes(instanceType.toString().substring(0, 3)) ? NodegroupAmiType.AL2_ARM_64 :
-      GRAVITON_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_ARM_64 :
-        GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_X86_64_GPU :
-          INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodegroupAmiType.AL2_X86_64_GPU :
-            NodegroupAmiType.AL2_X86_64;
-  }
-  /**
-   * determine the cpu architecture from the instance type
-   * @param instanceType the EC2 instance type
-   */
-  public cpuArchForInstanceType(instanceType: InstanceType) {
-    return GRAVITON2_INSTANCETYPES.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-      GRAVITON_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
-        CpuArch.X86_64;
-  }
+function getAmiTypeForInstanceType(instanceType: InstanceType) {
+  return GRAVITON2_INSTANCETYPES.includes(instanceType.toString().substring(0, 3)) ? NodegroupAmiType.AL2_ARM_64 :
+    GRAVITON_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_ARM_64 :
+      GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_X86_64_GPU :
+        INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodegroupAmiType.AL2_X86_64_GPU :
+          NodegroupAmiType.AL2_X86_64;
 }
+
