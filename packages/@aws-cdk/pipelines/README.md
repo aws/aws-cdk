@@ -449,7 +449,10 @@ class MyPipelineStack extends Stack {
         // Then you can login to codeartifact repository
         // and npm will now pull packages from your repository
         // Note the codeartifact login command requires more params to work.
-        buildCommands: ['aws codeartifact login --tool npm && npm run build'],
+        buildCommands: [
+          'aws codeartifact login --tool npm',
+          'npm run build',
+        ],
       }),
     });
   }
