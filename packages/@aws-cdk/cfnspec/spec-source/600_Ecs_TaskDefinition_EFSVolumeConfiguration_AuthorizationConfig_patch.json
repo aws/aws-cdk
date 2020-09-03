@@ -1,0 +1,17 @@
+{
+    "PropertyTypes": {
+        "AWS::ECS::TaskDefinition.EFSVolumeConfiguration": {
+            "patch": {
+              "description": "Remove PrimtiveType = Json to from AWS::ECS::TaskDefinition.EFSVolumeConfiguration.Properties.AuthorizationConfig",
+              "operations": [
+                {
+                  "path": "/Properties/AuthorizationConfig/PrimitiveType",
+                  "op": "remove"
+                }
+              ]
+            }
+        }
+    }
+}
+
+
