@@ -30,9 +30,16 @@ export interface CdkPipelineProps {
   readonly cloudAssemblyArtifact: codepipeline.Artifact;
 
   /**
-   * Existing CodePipeline to modify
+   * Existing CodePipeline to add deployment stages to
    *
-   * The Pipeline should have been created with `restartExecutionOnUpdate: true`.
+   * Use this if you want more control over the CodePipeline that gets created.
+   * You can choose to not pass this value, in which case a new CodePipeline is
+   * created with default settings.
+   *
+   * If you pass an existing CodePipeline, it should should have been created
+   * with `restartExecutionOnUpdate: true`.
+   *
+   * [disable-awslint:ref-via-interface]
    *
    * @default - A new CodePipeline is automatically generated
    */
