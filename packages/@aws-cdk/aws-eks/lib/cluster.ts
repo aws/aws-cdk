@@ -1492,8 +1492,6 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 export interface BottleRocketImageProps {
   /**
    * The Kubernetes version to use
-   *
-   * @default - The latest version
    */
   readonly kubernetesVersion: string;
 }
