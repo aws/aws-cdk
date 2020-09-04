@@ -379,3 +379,17 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 });
 ```
 
+### Custom subnet configuration for ecs services
+
+```ts
+import { ApplicationLoadBalancedFargateService } from './application-load-balanced-fargate-service';
+
+const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  // defines which subnets are available for the service
+  // this does NOT impact loadbalancer subnet configuration
+  serviceVpcConfig: {
+    subnets: [subnet1, subnet2]
+  },
+  // other options
+});
+```
