@@ -652,6 +652,7 @@ to the schema's `Subscription` type.
 api.addSubscription('addedFilm', new appsync.ResolvableField({
   returnType: film.attribute(),
   args: { id: appsync.GraphqlType.id({ isRequired: true }) },
+  directive: [appsync.Directive.subscribe('addFilm')],
 }));
 ```
 
