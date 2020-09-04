@@ -460,6 +460,11 @@ export class EndpointAccess {
    * @param cidr CIDR blocks.
    */
   public onlyFrom(...cidr: string[]) {
+    if (!this._config.privateAccess) {
+      // when private access is disabled, we can't restric public
+      // access since it will render the kubectl provider unusable.
+      throw new Error('Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
+    }
     return new EndpointAccess({
       ...this._config,
       // override CIDR
@@ -856,20 +861,23 @@ export class Cluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlLayer = props.kubectlLayer;
 
-    if (this.endpointAccess._config.privateAccess && this.vpc instanceof ec2.Vpc) {
-      // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
-      if (!this.vpc.dnsHostnamesEnabled || !this.vpc.dnsSupportEnabled) {
-        throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
-      }
+    const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+    const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
+    const publicAccessRestricted = !publicAccessDisabled
+        && this.endpointAccess._config.publicCidrs
+        && this.endpointAccess._config.publicCidrs.length !== 0;
+
+    // validate endpoint access configuration
+
+    if (privateSubents.length === 0 && publicAccessDisabled) {
+      // no private subnets and no public access at all, no good.
+      throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
     }
 
-    this.kubectlSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
-      vpc: this.vpc,
-      description: 'Comminication between KubectlProvider and EKS Control Plane',
-    });
-
-    // grant the kubectl provider access to the cluster control plane.
-    this.connections.allowFrom(this.kubectlSecurityGroup, this.connections.defaultPort!);
+    if (privateSubents.length === 0 && publicAccessRestricted) {
+      // no private subents and public access is restricted, no good.
+      throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
+    }
 
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
@@ -894,11 +902,32 @@ export class Cluster extends ClusterBase {
       vpc: this.vpc,
     });
 
-    this.adminRole = resource.adminRole;
+    if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
 
-    // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
-    // this ensures that.
-    this._clusterResource.node.addDependency(this.kubectlSecurityGroup, this.vpc);
+      // when private access is enabled and the vpc has private subnets, lets connect
+      // the provider to the vpc so that it will work even when restricting public access.
+
+      // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
+      if (this.vpc instanceof ec2.Vpc && !(this.vpc.dnsHostnamesEnabled && this.vpc.dnsSupportEnabled)) {
+        throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
+      }
+
+      this.kubectlPrivateSubnets = privateSubents;
+
+      this.kubectlSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
+        vpc: this.vpc,
+        description: 'Comminication between KubectlProvider and EKS Control Plane',
+      });
+
+      // grant the kubectl provider access to the cluster control plane.
+      this.connections.allowFrom(this.kubectlSecurityGroup, this.connections.defaultPort!);
+
+      // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
+      // this ensures that.
+      this._clusterResource.node.addDependency(this.kubectlSecurityGroup, this.vpc);
+    }
+
+    this.adminRole = resource.adminRole;
 
     // we use an SSM parameter as a barrier because it's free and fast.
     this._kubectlReadyBarrier = new CfnResource(this, 'KubectlReadyBarrier', {
@@ -923,14 +952,6 @@ export class Cluster extends ClusterBase {
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
     this.kubectlRole = this.adminRole;
-
-    // specify private subnets for kubectl only if we don't have public k8s endpoint access
-    if (!this.endpointAccess._config.publicAccess) {
-      this.kubectlPrivateSubnets = this.selectPrivateSubnets().slice(0, 16);
-      if (this.kubectlPrivateSubnets.length === 0) {
-        throw new Error('Vpc must contain private subnets to configure private endpoint access');
-      }
-    }
 
     this._kubectlResourceProvider = this.defineKubectlProvider();
 
