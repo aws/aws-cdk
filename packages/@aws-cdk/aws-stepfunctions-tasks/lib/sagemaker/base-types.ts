@@ -626,6 +626,67 @@ export interface TransformResources {
 }
 
 /**
+ * Describes the container, as part of model definition.
+ *
+ *  @experimental
+ */
+export interface ContainerDefinition {
+  /**
+   * The Amazon EC2 Container Registry (Amazon ECR) path where inference code is stored.
+   *
+   * @default - None
+   */
+  readonly image?: DockerImage;
+  /**
+   * The environment variables to set in the Docker container
+   *
+   * @default - No variables
+   */
+  readonly environment?: {[key: string]: string};
+  /**
+   * The name or Amazon Resource Name (ARN) of the model package to use to create the model.
+   *
+   * @default - None
+   */
+  readonly modelPackageName?: string;
+  /**
+   * Whether the container hosts a single model or multiple models.
+   *
+   * @default - None
+   */
+  readonly mode?: Mode;
+  /**
+   * This parameter is ignored for models that contain only a PrimaryContainer.
+   *
+   * @default - None
+   */
+  readonly containerHostName?: string;
+  /**
+   * The S3 path where the model artifacts, which result from model training, are stored.
+   * This path must point to a single gzip compressed tar archive (.tar.gz suffix).
+   * The S3 path is required for Amazon SageMaker built-in algorithms, but not if you use your own algorithms.
+   *
+   * @default - None
+   */
+  readonly modelDataUrl?: string;
+}
+
+/**
+ * Specifies whether the container hosts a single model or multiple models.
+ * @experimental
+ */
+export enum Mode {
+  /**
+   * Container hosts a single model
+   */
+  SINGLE_MODEL = 'SingleModel',
+  /**
+   * Container hosts multiple models
+   */
+  MULTI_MODEL = 'MultiModel',
+}
+
+/**
  * Specifies the number of records to include in a mini-batch for an HTTP inference request.
  *
  * @experimental

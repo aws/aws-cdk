@@ -53,6 +53,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Create Training Job](#create-training-job)
   - [Create Transform Job](#create-transform-job)
   - [Create Endpoint](#create-endpoint)
+  - [Create Model](#create-model)
 - [SNS](#sns)
 - [Step Functions](#step-functions)
   - [Start Execution](#start-execution)
@@ -777,6 +778,21 @@ You can call the [`CreateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest
 new sfn.SageMakerCreateEndpoint(this, 'SagemakerEndpoint', {
   endpointName: sfn.JsonPath.stringAt('$.EndpointName'),
   endpointConfigName: sfn.JsonPath.stringAt('$.EndpointConfigName'),
+});
+```
+
+### Create Model
+
+You can call the [`CreateModel`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateModel.html) API from a `Task` state.
+
+```ts
+new sfn.SageMakerCreateModel(this, 'Sagemaker', {
+  modelName: 'MyModel',
+  primaryContainer: {
+   image: tasks.DockerImage.fromRegistry(sfn.JsonPath.stringAt('$.Model.imageName')),
+   mode: tasks.Mode.SINGLE_MODEL,
+   modelDataUrl: sfn.JsonPath.stringAt('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
+  },
 });
 ```
 
