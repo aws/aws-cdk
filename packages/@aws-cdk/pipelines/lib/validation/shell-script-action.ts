@@ -108,7 +108,7 @@ export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
   }
 
   /**
-   * The CodeBuild Project's prinicipal
+   * The CodeBuild Project's principal
    */
   public get grantPrincipal(): iam.IPrincipal {
     return this.project.grantPrincipal;

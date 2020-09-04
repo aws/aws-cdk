@@ -212,7 +212,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
   }
 
   /**
-   * Project generated to run the shell script in
+   * Project generated to run the synth command
    */
   public get project(): codebuild.IProject {
     if (!this._project) {
@@ -308,7 +308,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
   }
 
   /**
-   * The CodeBuild Project's prinicipal
+   * The CodeBuild Project's principal
    */
   public get grantPrincipal(): iam.IPrincipal {
     return this.project.grantPrincipal;
