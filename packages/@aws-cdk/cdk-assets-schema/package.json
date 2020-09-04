@@ -25,7 +25,8 @@
         "distName": "aws-cdk.cdk-assets-schema",
         "module": "aws_cdk.cdk_assets_schema"
       }
-    }
+    },
+    "projectReferences": true
   },
   "scripts": {
     "build": "cdk-build",
@@ -46,7 +47,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.4",
+    "@types/jest": "^26.0.10",
     "cdk-build-tools": "0.0.0",
     "jest": "^25.5.4",
     "pkglint": "0.0.0"

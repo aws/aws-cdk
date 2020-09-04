@@ -28,6 +28,10 @@ Parameters:
     Description: An identifier to distinguish multiple bootstrap stacks in the same environment
     Default: hnb659fds
     Type: String
+    # "cdk-(qualifier)-image-publishing-role-(account)-(region)" needs to be <= 64 chars
+    # account = 12, region <= 14, 10 chars for qualifier and 28 for rest of role name
+    AllowedPattern: "[A-Za-z0-9_-]{1,10}"
+    ConstraintDescription: Qualifier must be an alphanumeric identifier of at most 10 characters
   PublicAccessBlockConfiguration:
     Description: Whether or not to enable S3 Staging Bucket Public Access Block Configuration
     Default: 'true'
@@ -368,7 +372,7 @@ Resources:
     Properties:
       Type: String
       Name:
-        Fn::Sub: '/aws-cdk-bootstrap/${Qualifier}/version'
+        Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
       Value: 4
 Outputs:
   BucketName:

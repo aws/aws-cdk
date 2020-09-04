@@ -6,7 +6,10 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
+import {
+  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseCluster, DatabaseClusterEngine,
+  DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention,
+} from '../lib';
 
 export = {
   'creating a Cluster also creates 2 DB Instances'(test: Test) {
@@ -291,6 +294,83 @@ export = {
 
     test.done();
 
+  },
+
+  'performance insights': {
+    'cluster with all performance insights properties'(test: Test) {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceProps: {
+          vpc,
+          enablePerformanceInsights: true,
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+          performanceInsightEncryptionKey: new kms.Key(stack, 'Key'),
+        },
+      });
+
+      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: true,
+        PerformanceInsightsRetentionPeriod: 731,
+        PerformanceInsightsKMSKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }));
+
+      test.done();
+    },
+
+    'setting performance insights fields enables performance insights'(test: Test) {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceProps: {
+          vpc,
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+        },
+      });
+
+      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: true,
+        PerformanceInsightsRetentionPeriod: 731,
+      }));
+
+      test.done();
+    },
+
+    'throws if performance insights fields are set but performance insights is disabled'(test: Test) {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      test.throws(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          masterUser: {
+            username: 'admin',
+          },
+          instanceProps: {
+            vpc,
+            enablePerformanceInsights: false,
+            performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
+          },
+        });
+      }, /`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+
+      test.done();
+    },
   },
 
   'create a cluster using a specific version of MySQL'(test: Test) {
@@ -1178,6 +1258,33 @@ export = {
     test.done();
   },
 
+  'can set deletion protection'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.plainText('tooshort'),
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      deletionProtection: true,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+      DeletionProtection: true,
+    }));
+
+    test.done();
+  },
+
   'does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -1203,6 +1310,37 @@ export = {
     const art = SynthUtils.synthesize(stack);
     const meta = art.findMetadataByType('aws:cdk:error');
     test.equal(meta[0].data, 'Cluster requires at least 2 subnets, got 0');
+
+    test.done();
+  },
+
+  'create a cluster from a snapshot'(test: Test) {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      Properties: {
+        Engine: 'aurora',
+        EngineVersion: '5.6.mysql_aurora.1.22.2',
+        DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+        SnapshotIdentifier: 'mySnapshot',
+      },
+      DeletionPolicy: ABSENT,
+      UpdateReplacePolicy: 'Snapshot',
+    }, ResourcePart.CompleteDefinition));
+
+    expect(stack).to(countResources('AWS::RDS::DBInstance', 2));
 
     test.done();
   },

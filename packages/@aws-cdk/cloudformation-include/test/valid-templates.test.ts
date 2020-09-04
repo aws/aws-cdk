@@ -114,7 +114,7 @@ describe('CDK Include', () => {
     );
   });
 
-  xtest('correctly changes the logical IDs, including references, if imported with preserveLogicalIds=false', () => {
+  test('correctly changes the logical IDs, including references, if imported with preserveLogicalIds=false', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-encryption-key.json', {
       preserveLogicalIds: false,
     });
@@ -176,6 +176,11 @@ describe('CDK Include', () => {
                 },
               ],
             },
+          },
+          "Metadata": {
+            "Object1": "Location1",
+            "KeyRef": { "Ref": "MyScopeKey7673692F" },
+            "KeyArn": { "Fn::GetAtt": ["MyScopeKey7673692F", "Arn"] },
           },
           "DeletionPolicy": "Retain",
           "UpdateReplacePolicy": "Retain",
@@ -349,6 +354,14 @@ describe('CDK Include', () => {
     expect(cfnBucket.cfnOptions.condition).toBe(alwaysFalseCondition);
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('resource-attribute-condition.json'),
+    );
+  });
+
+  test('allows Conditions to reference Mappings', () => {
+    includeTestTemplate(stack, 'condition-using-mapping.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('condition-using-mapping.json'),
     );
   });
 
@@ -910,7 +923,7 @@ function includeTestTemplate(scope: core.Construct, testTemplate: string, props:
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
     parameters: props.parameters,
-    // preserveLogicalIds: props.preserveLogicalIds,
+    preserveLogicalIds: props.preserveLogicalIds,
   });
 }
 

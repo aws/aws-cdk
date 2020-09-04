@@ -127,6 +127,7 @@ export interface DefaultStackSynthesizerProps {
    * respectively.
    *
    * @default DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME
+   * @deprecated This property is not used anymore
    */
   readonly fileAssetKeyArnExportName?: string;
 
@@ -195,7 +196,6 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   private bucketName?: string;
   private repositoryName?: string;
   private _deployRoleArn?: string;
-  private _kmsKeyArnExportName?: string;
   private _cloudFormationExecutionRoleArn?: string;
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
@@ -233,7 +233,6 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     this._cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
     this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
-    this._kmsKeyArnExportName = specialize(this.props.fileAssetKeyArnExportName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME);
     /* eslint-enable max-len */
 
     addBootstrapVersionRule(stack, MIN_BOOTSTRAP_STACK_VERSION, qualifier);
@@ -242,7 +241,6 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stack);
     assertBound(this.bucketName);
-    assertBound(this._kmsKeyArnExportName);
 
     const objectKey = asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
 
@@ -476,7 +474,7 @@ function addBootstrapVersionRule(stack: Stack, requiredVersion: number, qualifie
   const param = new CfnParameter(stack, 'BootstrapVersion', {
     type: 'AWS::SSM::Parameter::Value<String>',
     description: 'Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store.',
-    default: `/aws-cdk-bootstrap/${qualifier}/version`,
+    default: `/cdk-bootstrap/${qualifier}/version`,
   });
 
   // There is no >= check in CloudFormation, so we have to check the number

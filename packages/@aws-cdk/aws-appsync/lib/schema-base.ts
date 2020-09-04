@@ -1,3 +1,271 @@
+import { AuthorizationType, GraphqlApi } from './graphqlapi';
+import { Resolver } from './resolver';
+import { ResolvableFieldOptions, BaseTypeOptions, GraphqlType } from './schema-field';
+import { InterfaceType } from './schema-intermediate';
+
+/**
+ * A Graphql Field
+ */
+export interface IField {
+  /**
+   * the type of attribute
+   */
+  readonly type: Type;
+
+  /**
+   * property determining if this attribute is a list
+   * i.e. if true, attribute would be `[Type]`
+   *
+   * @default false
+   */
+  readonly isList: boolean;
+
+  /**
+   * property determining if this attribute is non-nullable
+   * i.e. if true, attribute would be `Type!` and this attribute
+   * must always have a value
+   *
+   * @default false
+   */
+  readonly isRequired: boolean;
+
+  /**
+   * property determining if this attribute is a non-nullable list
+   * i.e. if true, attribute would be `[ Type ]!` and this attribute's
+   * list must always have a value
+   *
+   * @default false
+   */
+  readonly isRequiredList: boolean;
+
+  /**
+   * The options to make this field resolvable
+   *
+   * @default - not a resolvable field
+   */
+  readonly fieldOptions?: ResolvableFieldOptions;
+
+  /**
+   * the intermediate type linked to this attribute
+   * (i.e. an interface or an object)
+   *
+   * @default - no intermediate type
+   */
+  readonly intermediateType?: IIntermediateType;
+
+  /**
+   * Generate the string for this attribute
+   */
+  toString(): string;
+
+  /**
+   * Generate the arguments for this field
+   */
+  argsToString(): string;
+
+  /**
+   * Generate the directives for this field
+   *
+   * @param modes the authorization modes of the graphql api
+   *
+   * @default - no authorization modes
+   */
+  directivesToString(modes?: AuthorizationType[]): string
+}
+
+/**
+ * The options to add a field to an Intermediate Type
+ */
+export interface AddFieldOptions {
+  /**
+   * The name of the field
+   *
+   * This option must be configured for Object, Interface,
+   * Input and Enum Types.
+   *
+   * @default - no fieldName
+   */
+  readonly fieldName?: string;
+  /**
+   * The resolvable field to add
+   *
+   * This option must be configured for Object, Interface,
+   * Input and Union Types.
+   *
+   * @default - no IField
+   */
+  readonly field?: IField;
+}
+
+/**
+ * Intermediate Types are types that includes a certain set of fields
+ * that define the entirety of your schema
+ */
+export interface IIntermediateType {
+  /**
+   * the name of this type
+   */
+  readonly name: string;
+
+  /**
+   * the attributes of this type
+   */
+  readonly definition: { [key: string]: IField };
+
+  /**
+   * The Interface Types this Intermediate Type implements
+   *
+   * @default - no interface types
+   */
+  readonly interfaceTypes?: InterfaceType[];
+
+  /**
+   * the directives for this object type
+   *
+   * @default - no directives
+   */
+  readonly directives?: Directive[];
+
+  /**
+   * The resolvers linked to this data source
+   */
+  resolvers?: Resolver[];
+
+  /**
+   * the intermediate type linked to this attribute
+   * (i.e. an interface or an object)
+   *
+   * @default - no intermediate type
+   */
+  readonly intermediateType?: IIntermediateType;
+
+  /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @param api The binding GraphQL Api [disable-awslint:ref-via-interface]
+   *
+   * @internal
+   */
+  _bindToGraphqlApi(api: GraphqlApi): IIntermediateType;
+
+  /**
+   * Create an GraphQL Type representing this Intermediate Type
+   *
+   * @param options the options to configure this attribute
+   * - isList
+   * - isRequired
+   * - isRequiredList
+   */
+  attribute(options?: BaseTypeOptions): GraphqlType;
+
+  /**
+   * Generate the string of this object type
+   */
+  toString(): string;
+
+  /**
+   * Add a field to this Intermediate Type
+   */
+  addField(options: AddFieldOptions): void;
+}
+
+/**
+ * Directives for types
+ *
+ * i.e. @aws_iam or @aws_subscribe
+ *
+ * @experimental
+ */
+export class Directive {
+  /**
+   * Add the @aws_iam directive
+   */
+  public static iam(): Directive {
+    return new Directive('@aws_iam', AuthorizationType.IAM);
+  }
+
+  /**
+   * Add the @aws_oidc directive
+   */
+  public static oidc(): Directive {
+    return new Directive('@aws_oidc', AuthorizationType.OIDC);
+  }
+
+  /**
+   * Add the @aws_api_key directive
+   */
+  public static apiKey(): Directive {
+    return new Directive('@aws_api_key', AuthorizationType.API_KEY);
+  }
+
+  /**
+   * Add the @aws_auth or @aws_cognito_user_pools directive
+   *
+   * @param groups the groups to allow access to
+   */
+  public static cognito(...groups: string[]): Directive {
+    if (groups.length === 0) {
+      throw new Error(`Cognito authorization requires at least one Cognito group to be supplied. Received: ${groups.length}`);
+    }
+    // this function creates the cognito groups as a string (i.e. ["group1", "group2", "group3"])
+    const stringify = (array: string[]): string => {
+      return array.reduce((acc, element) => `${acc}"${element}", `, '[').slice(0, -2) + ']';
+    };
+    return new Directive(`@aws_auth(cognito_groups: ${stringify(groups)})`, AuthorizationType.USER_POOL);
+  }
+
+  /**
+   * Add a custom directive
+   *
+   * @param statement - the directive statement to append
+   */
+  public static custom(statement: string): Directive {
+    return new Directive(statement);
+  }
+
+  /**
+   * the directive statement
+   */
+  private statement: string;
+
+  /**
+   * the authorization modes for this intermediate type
+   */
+  protected modes?: AuthorizationType[];
+
+  private readonly mode?: AuthorizationType;
+
+  private constructor(statement: string, mode?: AuthorizationType) {
+    this.statement = statement;
+    this.mode = mode;
+  }
+
+  /**
+   * Method called when the stringifying Directive for schema generation
+   *
+   * @param modes the authorization modes
+   *
+   * @internal
+   */
+  public _bindToAuthModes(modes?: AuthorizationType[]): Directive {
+    this.modes = modes;
+    return this;
+  }
+
+  /**
+   * Generate the directive statement
+   */
+  public toString(): string {
+    if (this.modes && this.mode && !this.modes.some((mode) => mode === this.mode)) {
+      throw new Error(`No Authorization Type ${this.mode} declared in GraphQL Api.`);
+    }
+    if (this.mode === AuthorizationType.USER_POOL && this.modes && this.modes.length > 1) {
+      this.statement = this.statement.replace('@aws_auth', '@aws_cognito_user_pools');
+    }
+    return this.statement;
+  }
+}
+
 /**
  * Enum containing the Types that can be used to define ObjectTypes
  */
