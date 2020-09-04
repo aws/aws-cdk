@@ -812,7 +812,9 @@ export class Cluster extends Resource implements ICluster {
       ...options,
       vpc: this.vpc,
       machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        new BottleRocketImage() :
+        new BottleRocketImage({
+          kubernetesVersion: this.version.version,
+        }) :
         new EksOptimizedImage({
           nodeType: nodeTypeForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
@@ -1485,19 +1487,30 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 }
 
 /**
+ * Properties for BottleRocketImage
+ */
+export interface BottleRocketImageProps {
+  /**
+   * The Kubernetes version to use
+   *
+   * @default - The latest version
+   */
+  readonly kubernetesVersion: string;
+}
+
+/**
  * Construct an Bottlerocket image from the latest AMI published in SSM
  */
 class BottleRocketImage implements ec2.IMachineImage {
-  private readonly kubernetesVersion?: string;
+  private readonly kubernetesVersion: string;
 
   private readonly amiParameterName: string;
 
   /**
    * Constructs a new instance of the BottleRocketImage class.
    */
-  public constructor() {
-    // only 1.15 is currently available
-    this.kubernetesVersion = '1.15';
+  public constructor(props: BottleRocketImageProps) {
+    this.kubernetesVersion = props.kubernetesVersion
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/bottlerocket/aws-k8s-${this.kubernetesVersion}/x86_64/latest/image_id`;

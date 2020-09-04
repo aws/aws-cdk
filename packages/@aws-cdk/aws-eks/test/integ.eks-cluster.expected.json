@@ -1829,7 +1829,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsservicebottlerocketawsk8s115x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsservicebottlerocketawsk8s116x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "t3.small",
         "IamInstanceProfile": {
@@ -3777,9 +3777,9 @@
       "Type": "AWS::SSM::Parameter::Value<String>",
       "Default": "/aws/service/eks/optimized-ami/1.16/amazon-linux-2/recommended/image_id"
     },
-    "SsmParameterValueawsservicebottlerocketawsk8s115x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsservicebottlerocketawsk8s116x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/bottlerocket/aws-k8s-1.15/x86_64/latest/image_id"
+      "Default": "/aws/service/bottlerocket/aws-k8s-1.16/x86_64/latest/image_id"
     },
     "SsmParameterValueawsserviceeksoptimizedami116amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
