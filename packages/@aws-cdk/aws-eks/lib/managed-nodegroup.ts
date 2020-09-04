@@ -56,13 +56,25 @@ export interface NodegroupRemoteAccess {
 }
 
 /**
+ * Represents the LaunchTemplate.
+ */
+export interface ILaunchTemplate {
+  /**
+   * The ID of the launch template.
+   */
+  readonly launchTemplateId: string;
+
+}
+
+
+/**
  * Launch template property specification
  */
 export interface LaunchTemplateSpecification {
   /**
-   * The Launch template ID
+   * The Launch template
    */
-  readonly launchTemplateId: string;
+  readonly launchTemplate: ILaunchTemplate;
   /**
    * The launch template version to be used (optional).
    *
@@ -180,7 +192,7 @@ export interface NodegroupOptions {
    * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
    * @default - no launch template
    */
-  readonly launchTemplate?: LaunchTemplateSpecification;
+  readonly launchTemplateSpecification?: LaunchTemplateSpecification;
 }
 
 /**
@@ -288,7 +300,7 @@ export class Nodegroup extends Resource implements INodegroup {
       tags: props.tags,
     });
 
-    if (props.launchTemplate) {
+    if (props.launchTemplateSpecification) {
       if (props.diskSize) {
         throw new Error('diskSize must be specified within the launch template');
       }
@@ -297,10 +309,11 @@ export class Nodegroup extends Resource implements INodegroup {
       }
       // TODO: update this when the L1 resource spec is updated.
       resource.addPropertyOverride('LaunchTemplate', {
-        Id: props.launchTemplate.launchTemplateId,
-        Version: props.launchTemplate.version,
+        Id: props.launchTemplateSpecification.launchTemplate.launchTemplateId,
+        Version: props.launchTemplateSpecification.version,
       });
     }
+
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
     // its state for consistency.

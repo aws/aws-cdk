@@ -1,8 +1,8 @@
 /// !cdk-integ pragma:ignore-assets
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
 import * as kms from '@aws-cdk/aws-kms';
+import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { Pinger } from './pinger/pinger';
@@ -135,8 +135,10 @@ class EksClusterStack extends TestStack {
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultNodegroup?.role || this.cluster.defaultCapacity?.role,
-      launchTemplate: {
-        launchTemplateId: lt.ref,
+      launchTemplateSpecification: {
+        launchTemplate: {
+          launchTemplateId: lt.ref,
+        },
         version: lt.attrDefaultVersionNumber,
       },
     });

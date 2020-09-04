@@ -176,32 +176,32 @@ cluster.addNodegroup('nodegroup', {
 });
 ```
 
-### Custom AMI and Launch Template support
+#### Custom AMI and Launch Template support
 
 Specify the launch template for the nodegroup with your custom AMI. When using a custom AMI,
 Amazon EKS doesn't merge any user data. Rather, You are responsible for supplying the required
 bootstrap commands for nodes to join the cluster. In the following sample, `/ect/eks/bootstrap.sh` from the AMI will be used to bootstrap the node. See [Using a custom AMI](https://docs.aws.amazon.com/en_ca/eks/latest/userguide/launch-templates.html) for more details.
 
 ```ts
-    const userData = ec2.UserData.forLinux();
-    userData.addCommands(
-      'set -o xtrace',
-      `/etc/eks/bootstrap.sh ${this.cluster.clusterName}`,
-    );
-    const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
-      launchTemplateData: {
-        // specify your custom AMI below
-        imageId,
-        instanceType: new ec2.InstanceType('t3.small').toString(),
-        userData: Fn.base64(userData.render()),
-      },
-    });
-    this.cluster.addNodegroup('extra-ng', {
-      launchTemplate: {
-        launchTemplateId: lt.ref,
-        version: lt.attrDefaultVersionNumber,
-      },
-    });
+const userData = ec2.UserData.forLinux();
+userData.addCommands(
+  'set -o xtrace',
+  `/etc/eks/bootstrap.sh ${this.cluster.clusterName}`,
+);
+const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+  launchTemplateData: {
+    // specify your custom AMI below
+    imageId,
+    instanceType: new ec2.InstanceType('t3.small').toString(),
+    userData: Fn.base64(userData.render()),
+  },
+});
+this.cluster.addNodegroup('extra-ng', {
+  launchTemplate: {
+    launchTemplateId: lt.ref,
+    version: lt.attrDefaultVersionNumber,
+  },
+});
 ```
 
 

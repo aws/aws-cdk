@@ -352,8 +352,10 @@ export = {
       },
     });
     cluster.addNodegroup('ng-lt', {
-      launchTemplate: {
-        launchTemplateId: lt.ref,
+      launchTemplateSpecification: {
+        launchTemplate: {
+          launchTemplateId: lt.ref,
+        },
         version: lt.attrDefaultVersionNumber,
       },
     });
@@ -402,8 +404,10 @@ export = {
     test.throws(() =>
       cluster.addNodegroup('ng-lt', {
         diskSize: 100,
-        launchTemplate: {
-          launchTemplateId: lt.ref,
+        launchTemplateSpecification: {
+          launchTemplate: {
+            launchTemplateId: lt.ref,
+          },
           version: lt.attrDefaultVersionNumber,
         },
       }), /diskSize must be specified within the launch template/);
@@ -436,8 +440,10 @@ export = {
     test.throws(() =>
       cluster.addNodegroup('ng-lt', {
         instanceType: new ec2.InstanceType('c5.large'),
-        launchTemplate: {
-          launchTemplateId: lt.ref,
+        launchTemplateSpecification: {
+          launchTemplate: {
+            launchTemplateId: lt.ref,
+          },
           version: lt.attrDefaultVersionNumber,
         },
       }), /Instance types must be specified within the launch template/);
