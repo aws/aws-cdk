@@ -1,19 +1,18 @@
 {
-  "name": "monobuild",
+  "name": "ubergen",
   "private": true,
   "version": "0.0.0",
-  "description": "Scripts to build up a monolithic CDK package",
-  "main": "lib/index.js",
+  "description": "Generate an uber CDK package from all individual CDK construct libraries",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "tools/monobuild"
+    "directory": "tools/ubergen"
   },
   "bin": {
-    "monobuild": "bin/monobuild"
+    "ubergen": "bin/ubergen"
   },
   "scripts": {
-    "build": "tsc -b && chmod +x bin/monobuild && eslint . --ext=.ts",
+    "build": "tsc -b && chmod +x bin/ubergen && eslint . --ext=.ts",
     "watch": "tsc -b -w",
     "pkglint": "pkglint -f",
     "test": "echo success",
