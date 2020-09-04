@@ -380,6 +380,25 @@ class AuroraMysqlClusterEngine extends MySqlClusterEngineBase {
 }
 
 /**
+ * Features supported by Aurora Postgres database engine
+ */
+export interface AuroraPostgresEngineFeatures {
+  /**
+   * Whether the IAM role can access the S3 bucket for importing data
+   *
+   * @default false
+   */
+  readonly s3Import?: boolean;
+
+  /**
+   * Whether the IAM role can access the S3 bucket for exporting data
+   *
+   * @default false
+   */
+  readonly s3Export?: boolean;
+}
+
+/**
  * The versions for the Aurora PostgreSQL cluster engine
  * (those returned by {@link DatabaseClusterEngine.auroraPostgres}).
  */
@@ -403,17 +422,17 @@ export class AuroraPostgresEngineVersion {
   /** Version "10.6". */
   public static readonly VER_10_6 = AuroraPostgresEngineVersion.of('10.6', '10');
   /** Version "10.7". */
-  public static readonly VER_10_7 = AuroraPostgresEngineVersion.of('10.7', '10', { s3Import: 's3Import' });
+  public static readonly VER_10_7 = AuroraPostgresEngineVersion.of('10.7', '10', { s3Import: true });
   /** Version "10.11". */
-  public static readonly VER_10_11 = AuroraPostgresEngineVersion.of('10.11', '10', { s3Import: 's3Import', s3Export: 's3Export' });
+  public static readonly VER_10_11 = AuroraPostgresEngineVersion.of('10.11', '10', { s3Import: true, s3Export: true });
   /** Version "10.12". */
-  public static readonly VER_10_12 = AuroraPostgresEngineVersion.of('10.12', '10', { s3Import: 's3Import', s3Export: 's3Export' });
+  public static readonly VER_10_12 = AuroraPostgresEngineVersion.of('10.12', '10', { s3Import: true, s3Export: true });
   /** Version "11.4". */
-  public static readonly VER_11_4 = AuroraPostgresEngineVersion.of('11.4', '11', { s3Import: 's3Import' });
+  public static readonly VER_11_4 = AuroraPostgresEngineVersion.of('11.4', '11', { s3Import: true });
   /** Version "11.6". */
-  public static readonly VER_11_6 = AuroraPostgresEngineVersion.of('11.6', '11', { s3Import: 's3Import', s3Export: 's3Export' });
+  public static readonly VER_11_6 = AuroraPostgresEngineVersion.of('11.6', '11', { s3Import: true, s3Export: true });
   /** Version "11.7". */
-  public static readonly VER_11_7 = AuroraPostgresEngineVersion.of('11.7', '11', { s3Import: 's3Import', s3Export: 's3Export' });
+  public static readonly VER_11_7 = AuroraPostgresEngineVersion.of('11.7', '11', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.
@@ -424,7 +443,7 @@ export class AuroraPostgresEngineVersion {
    *   for example "9.6"
    */
   public static of(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string,
-    auroraPostgresFeatures?: ClusterEngineFeatures): AuroraPostgresEngineVersion {
+    auroraPostgresFeatures?: AuroraPostgresEngineFeatures): AuroraPostgresEngineVersion {
 
     return new AuroraPostgresEngineVersion(auroraPostgresFullVersion, auroraPostgresMajorVersion, auroraPostgresFeatures);
   }
@@ -433,13 +452,20 @@ export class AuroraPostgresEngineVersion {
   public readonly auroraPostgresFullVersion: string;
   /** The major version of the engine, for example, "9.6". */
   public readonly auroraPostgresMajorVersion: string;
-  /** The supported features for the DB engine */
-  public readonly auroraPostgresFeatures?: ClusterEngineFeatures;
+  /**
+   * The supported features for the DB engine
+   *
+   * @internal
+   */
+  public readonly _features?: ClusterEngineFeatures;
 
-  private constructor(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string, auroraPostgresFeatures?: ClusterEngineFeatures) {
+  private constructor(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string, auroraPostgresFeatures?: AuroraPostgresEngineFeatures) {
     this.auroraPostgresFullVersion = auroraPostgresFullVersion;
     this.auroraPostgresMajorVersion = auroraPostgresMajorVersion;
-    this.auroraPostgresFeatures = auroraPostgresFeatures;
+    this._features = {
+      s3Import: auroraPostgresFeatures?.s3Import ? 's3Import' : undefined,
+      s3Export: auroraPostgresFeatures?.s3Export ? 's3Export' : undefined,
+    };
   }
 }
 
@@ -467,7 +493,7 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
           majorVersion: version.auroraPostgresMajorVersion,
         }
         : undefined,
-      features: version?.auroraPostgresFeatures,
+      features: version?._features,
     });
   }
 
