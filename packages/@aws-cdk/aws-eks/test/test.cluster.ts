@@ -871,6 +871,27 @@ export = {
       test.done();
     },
 
+    'BottleRocketImage() with specific kubernetesVersion return correct AMI'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.BottleRocketImage({ kubernetesVersion: '1.17' }).getImage(stack);
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
+          (v as any).Default.includes('/bottlerocket/'),
+      ), 'BottleRocket AMI should be in ssm parameters');
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
+          (v as any).Default.includes('/aws-k8s-1.17/'),
+      ), 'kubernetesVersion should be in ssm parameters');
+      test.done();
+    },
+
     'when using custom resource a creation role & policy is defined'(test: Test) {
       // GIVEN
       const { stack } = testFixture();
