@@ -140,11 +140,13 @@ export interface IIntermediateType {
   readonly intermediateType?: IIntermediateType;
 
   /**
-   * Bind this Intermediate Type to a GraphQL Api
+   * Method called when the stringifying Intermediate Types for schema generation
    *
    * @param api The binding GraphQL Api [disable-awslint:ref-via-interface]
+   *
+   * @internal
    */
-  bindToGraphqlApi(api: GraphqlApi): IIntermediateType;
+  _bindToGraphqlApi(api: GraphqlApi): IIntermediateType;
 
   /**
    * Create an GraphQL Type representing this Intermediate Type
@@ -239,11 +241,13 @@ export class Directive {
   }
 
   /**
-   * Bind this Interface Type to a GraphQL Api
+   * Method called when the stringifying Directive for schema generation
    *
    * @param modes the authorization modes
+   *
+   * @internal
    */
-  public bindToAuthModes(modes?: AuthorizationType[]): Directive {
+  public _bindToAuthModes(modes?: AuthorizationType[]): Directive {
     this.modes = modes;
     return this;
   }
