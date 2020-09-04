@@ -687,6 +687,43 @@ export enum Mode {
 }
 
 /**
+ * Identifies a model that you want to host and the resources to deploy for hosting it.
+ * https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ProductionVariant.html
+ *
+ * @experimental
+ */
+export interface ProductionVariant {
+  /**
+   * The size of the Elastic Inference (EI) instance to use for the production variant.
+   *
+   * @default - None
+   */
+  readonly acceleratorType?: string;
+  /**
+   * Number of instances to launch initially.
+   */
+  readonly initialInstanceCount: number;
+  /**
+   * Determines initial traffic distribution among all of the models that you specify in the endpoint configuration.
+   *
+   * @default - 1.0
+   */
+  readonly initialVariantWeight?: number;
+  /**
+   * The ML compute instance type
+   */
+  readonly instanceType: ec2.InstanceType;
+  /**
+   * The name of the production variant.
+   */
+  readonly variantName: string;
+  /**
+   * The name of the model that you want to host. This is the name that you specified when creating the model.
+   */
+  readonly modelName: string;
+}
+
+/**
  * Specifies the number of records to include in a mini-batch for an HTTP inference request.
  *
  * @experimental

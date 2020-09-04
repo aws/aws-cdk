@@ -15,6 +15,7 @@ export * from './sagemaker/base-types';
 export * from './sagemaker/create-training-job';
 export * from './sagemaker/create-transform-job';
 export * from './sagemaker/create-endpoint';
+export * from './sagemaker/create-endpoint-config';
 export * from './sagemaker/create-model';
 export * from './start-execution';
 export * from './stepfunctions/start-execution';

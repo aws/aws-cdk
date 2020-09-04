@@ -53,6 +53,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Create Training Job](#create-training-job)
   - [Create Transform Job](#create-transform-job)
   - [Create Endpoint](#create-endpoint)
+  - [Create Endpoint Config](#create-endpoint-config)
   - [Create Model](#create-model)
 - [SNS](#sns)
 - [Step Functions](#step-functions)
@@ -778,6 +779,22 @@ You can call the [`CreateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest
 new sfn.SageMakerCreateEndpoint(this, 'SagemakerEndpoint', {
   endpointName: sfn.JsonPath.stringAt('$.EndpointName'),
   endpointConfigName: sfn.JsonPath.stringAt('$.EndpointConfigName'),
+});
+```
+
+### Create Endpoint Config
+
+You can call the [`CreateEndpointConfig`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateEndpointConfig.html) API from a `Task` state.
+
+```ts
+new sfn.SageMakerCreateEndpointConfig(this, 'SagemakerEndpointConfig', {
+  endpointConfigName: 'MyEndpointConfig',
+  productionVariants: [{
+  initialInstanceCount: 2,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+     modelName: 'MyModel',
+     variantName: 'awesome-variant',
+   }],
 });
 ```
 
