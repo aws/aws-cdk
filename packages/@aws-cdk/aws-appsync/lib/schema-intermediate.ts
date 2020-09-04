@@ -326,6 +326,10 @@ export class EnumType implements IIntermediateType {
    * the attributes of this type
    */
   public readonly definition: { [key: string]: IField };
+  /**
+   * the authorization modes for this intermediate type
+   */
+  protected modes?: AuthorizationType[];
 
   public constructor(name: string, props: EnumTypeOptions) {
     this.name = name;
@@ -351,6 +355,16 @@ export class EnumType implements IIntermediateType {
   }
 
   /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @internal
+   */
+  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    return this;
+  }
+
+  /**
    * Generate the string of this enum type
    */
   public toString(): string {
@@ -358,6 +372,7 @@ export class EnumType implements IIntermediateType {
       prefix: 'enum',
       name: this.name,
       fields: Object.keys(this.definition),
+      modes: this.modes,
     });
   }
 
