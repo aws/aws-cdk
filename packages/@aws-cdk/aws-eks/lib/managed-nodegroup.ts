@@ -1,11 +1,9 @@
 import { InstanceType, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
-import {
-  Cluster, ICluster, GRAVITON2_INSTANCETYPES, GRAVITON_INSTANCETYPES, GPU_INSTANCETYPES,
-  INFERENTIA_INSTANCETYPES,
-} from './cluster';
+import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
+import { GPU_INSTANCETYPES, INFERENTIA_INSTANCETYPES, GRAVITON_INSTANCETYPES, GRAVITON2_INSTANCETYPES } from './instance-types';
 
 /**
  * NodeGroup interface

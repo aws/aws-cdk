@@ -12,6 +12,7 @@ import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
+import { GPU_INSTANCETYPES, INFERENTIA_INSTANCETYPES, GRAVITON_INSTANCETYPES, GRAVITON2_INSTANCETYPES } from './instance-types';
 import { KubernetesManifest } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
@@ -1806,11 +1807,6 @@ export enum MachineImageType {
    */
   BOTTLEROCKET
 }
-
-export const GPU_INSTANCETYPES = ['p2', 'p3', 'g2', 'g3', 'g4'];
-export const INFERENTIA_INSTANCETYPES = ['inf1'];
-export const GRAVITON_INSTANCETYPES = ['a1'];
-export const GRAVITON2_INSTANCETYPES = ['c6g', 'm6g', 'r6g'];
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
   return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
