@@ -89,6 +89,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
 
   private makePolicyStatements(): iam.PolicyStatement[] {
     const stack = Stack.of(this);
+    // https://docs.aws.amazon.com/sagemaker/latest/dg/api-permissions-reference.html
     return [
       new iam.PolicyStatement({
         actions: ['sagemaker:CreateEndpointConfig'],
@@ -96,7 +97,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
           stack.formatArn({
             service: 'sagemaker',
             resource: 'endpoint-config',
-            // If the endpoint name comes from input, we cannot target the policy to a particular ARN prefix reliably.
+            // If the endpoint configuration name comes from input, we cannot target the policy to a particular ARN prefix reliably.
             // SageMaker uses lowercase for resource name in the arn
             resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointConfigName) ? '*' : `${this.props.endpointConfigName.toLowerCase()}`,
           }),

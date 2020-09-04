@@ -195,7 +195,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
       this.securityGroups.push(this.securityGroup);
     }
     const stack = Stack.of(this);
-
+    // https://docs.aws.amazon.com/sagemaker/latest/dg/api-permissions-reference.html
     return [
       new iam.PolicyStatement({
         actions: ['sagemaker:CreateModel'],
@@ -203,7 +203,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
           stack.formatArn({
             service: 'sagemaker',
             resource: 'model',
-            // If the endpoint name comes from input, we cannot target the policy to a particular ARN prefix reliably.
+            // If the model name comes from input, we cannot target the policy to a particular ARN prefix reliably.
             // SageMaker uses lowercase for resource name in the arn
             resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.modelName) ? '*' : `${this.props.modelName.toLowerCase()}*`,
           }),

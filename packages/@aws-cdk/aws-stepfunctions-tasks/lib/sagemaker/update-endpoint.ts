@@ -58,6 +58,7 @@ export class SageMakerUpdateEndpoint extends sfn.TaskStateBase {
 
   private makePolicyStatements(): iam.PolicyStatement[] {
     const stack = Stack.of(this);
+    // https://docs.aws.amazon.com/sagemaker/latest/dg/api-permissions-reference.html
     return [
       new iam.PolicyStatement({
         actions: ['sagemaker:updateEndpoint'],
