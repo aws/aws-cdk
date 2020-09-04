@@ -786,6 +786,24 @@ describe('CDK Include', () => {
     }).toThrow(/Rule with name 'DoesNotExist' was not found in the template/);
   });
 
+  test('can ingest a template that contains Hooks, and allows retrieving those Hooks', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'hook-code-deploy-blue-green-ecs.json');
+    const hook = cfnTemplate.getHook('EcsBlueGreenCodeDeployHook');
+
+    expect(hook).toBeDefined();
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('hook-code-deploy-blue-green-ecs.json'),
+    );
+  });
+
+  test("throws an exception when attempting to retrieve a Hook that doesn't exist in the template", () => {
+    const cfnTemplate = includeTestTemplate(stack, 'hook-code-deploy-blue-green-ecs.json');
+
+    expect(() => {
+      cfnTemplate.getHook('DoesNotExist');
+    }).toThrow(/Hook with logical ID 'DoesNotExist' was not found in the template/);
+  });
+
   test('replaces references to parameters with the user-specified values in Resources, Conditions, Metadata, and Options sections', () => {
     includeTestTemplate(stack, 'parameter-references.json', {
       parameters: {
