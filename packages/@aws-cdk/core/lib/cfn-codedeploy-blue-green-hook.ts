@@ -302,39 +302,7 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
     const hookProperties = options.parser.parseValue(hookAttributes.Properties);
     return new CfnCodeDeployBlueGreenHook(scope, id, {
       serviceRole: hookProperties?.ServiceRole,
-      applications: (hookProperties?.Applications ?? []).map((app: any) => {
-        const target = findResource(app?.Target?.LogicalID);
-        const taskDefinitions: Array<CfnResource | undefined> | undefined = app?.ECSAttributes?.TaskDefinitions?.map(
-          (td: any) => findResource(td));
-        const taskSets: Array<CfnResource | undefined> | undefined = app?.ECSAttributes?.TaskSets?.map(
-          (ts: any) => findResource(ts));
-        const prodTrafficRoute = findResource(app?.ECSAttributes?.TrafficRouting?.ProdTrafficRoute?.LogicalID);
-        const testTrafficRoute = findResource(app?.ECSAttributes?.TrafficRouting?.TestTrafficRoute?.LogicalID);
-        const targetGroups: Array<CfnResource | undefined> | undefined = app?.ECSAttributes?.TrafficRouting?.TargetGroups?.map(
-          (tg: any) => findResource(tg));
-
-        return {
-          target: {
-            type: app?.Target?.Type,
-            logicalId: target?.logicalId,
-          },
-          ecsAttributes: {
-            taskDefinitions: taskDefinitions?.map(td => td?.logicalId),
-            taskSets: taskSets?.map(ts => ts?.logicalId),
-            trafficRouting: {
-              prodTrafficRoute: {
-                type: app?.ECSAttributes?.TrafficRouting?.ProdTrafficRoute?.Type,
-                logicalId: prodTrafficRoute?.logicalId,
-              },
-              testTrafficRoute: {
-                type: app?.ECSAttributes?.TrafficRouting?.TestTrafficRoute?.Type,
-                logicalId: testTrafficRoute?.logicalId,
-              },
-              targetGroups: targetGroups?.map((tg) => tg?.logicalId),
-            },
-          },
-        };
-      }),
+      applications: hookProperties?.Applications?.map(applicationFromCloudFormation),
       trafficRoutingConfig: {
         type: hookProperties?.TrafficRoutingConfig?.Type,
         timeBasedCanary: {
@@ -357,6 +325,40 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
         afterAllowTraffic: hookProperties?.LifecycleEventHooks?.AfterAllowTraffic,
       },
     });
+
+    function applicationFromCloudFormation(app: any) {
+      const target = findResource(app?.Target?.LogicalID);
+      const taskDefinitions: Array<CfnResource | undefined> | undefined = app?.ECSAttributes?.TaskDefinitions?.map(
+        (td: any) => findResource(td));
+      const taskSets: Array<CfnResource | undefined> | undefined = app?.ECSAttributes?.TaskSets?.map(
+        (ts: any) => findResource(ts));
+      const prodTrafficRoute = findResource(app?.ECSAttributes?.TrafficRouting?.ProdTrafficRoute?.LogicalID);
+      const testTrafficRoute = findResource(app?.ECSAttributes?.TrafficRouting?.TestTrafficRoute?.LogicalID);
+      const targetGroups: Array<CfnResource | undefined> | undefined = app?.ECSAttributes?.TrafficRouting?.TargetGroups?.map(
+        (tg: any) => findResource(tg));
+
+      return {
+        target: {
+          type: app?.Target?.Type,
+          logicalId: target?.logicalId,
+        },
+        ecsAttributes: {
+          taskDefinitions: taskDefinitions?.map(td => td?.logicalId),
+          taskSets: taskSets?.map(ts => ts?.logicalId),
+          trafficRouting: {
+            prodTrafficRoute: {
+              type: app?.ECSAttributes?.TrafficRouting?.ProdTrafficRoute?.Type,
+              logicalId: prodTrafficRoute?.logicalId,
+            },
+            testTrafficRoute: {
+              type: app?.ECSAttributes?.TrafficRouting?.TestTrafficRoute?.Type,
+              logicalId: testTrafficRoute?.logicalId,
+            },
+            targetGroups: targetGroups?.map((tg) => tg?.logicalId),
+          },
+        },
+      };
+    }
 
     function findResource(logicalId: string | undefined): CfnResource | undefined {
       if (logicalId == null) {
