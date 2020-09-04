@@ -1,5 +1,8 @@
 import '@aws-cdk/assert/jest';
+import { ABSENT } from '@aws-cdk/assert';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as chatbot from '../lib';
@@ -135,6 +138,83 @@ describe('SlackChannelConfiguration', () => {
         ],
         Version: '2012-10-17',
       },
+    });
+  });
+
+  test('specifying log retention', () => {
+    new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackWorkspaceId: 'ABC123',
+      slackChannelId: 'DEF456',
+      slackChannelConfigurationName: 'ConfigurationName',
+      logRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    expect(stack).toHaveResourceLike('Custom::LogRetention', {
+      LogGroupName: '/aws/chatbot/ConfigurationName',
+      RetentionInDays: 30,
+      LogGroupRegion: 'us-east-1',
+    });
+  });
+
+  test('getting configuration metric', () => {
+    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackWorkspaceId: 'ABC123',
+      slackChannelId: 'DEF456',
+      slackChannelConfigurationName: 'ConfigurationName',
+      logRetention: logs.RetentionDays.ONE_MONTH,
+    });
+    const metric = slackChannel.metric('MetricName');
+    new cloudwatch.Alarm(stack, 'Alarm', {
+      evaluationPeriods: 1,
+      threshold: 0,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+      metric: metric,
+    });
+
+    expect(metric).toEqual(new cloudwatch.Metric({
+      namespace: 'AWS/Chatbot',
+      region: 'us-east-1',
+      dimensions: {
+        ConfigurationName: 'ConfigurationName',
+      },
+      metricName: 'MetricName',
+    }));
+    expect(stack).toHaveResourceLike('AWS::CloudWatch::Alarm', {
+      Namespace: 'AWS/Chatbot',
+      MetricName: 'MetricName',
+      Dimensions: [
+        {
+          Name: 'ConfigurationName',
+          Value: 'ConfigurationName',
+        },
+      ],
+      ComparisonOperator: 'GreaterThanThreshold',
+      EvaluationPeriods: 1,
+      Threshold: 0,
+    });
+  });
+
+  test('getting all configurations metric', () => {
+    const metric = chatbot.SlackChannelConfiguration.metricAll('MetricName');
+    new cloudwatch.Alarm(stack, 'Alarm', {
+      evaluationPeriods: 1,
+      threshold: 0,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+      metric: metric,
+    });
+
+    expect(metric).toEqual(new cloudwatch.Metric({
+      namespace: 'AWS/Chatbot',
+      region: 'us-east-1',
+      metricName: 'MetricName',
+    }));
+    expect(stack).toHaveResourceLike('AWS::CloudWatch::Alarm', {
+      Namespace: 'AWS/Chatbot',
+      MetricName: 'MetricName',
+      Dimensions: ABSENT,
+      ComparisonOperator: 'GreaterThanThreshold',
+      EvaluationPeriods: 1,
+      Threshold: 0,
     });
   });
 

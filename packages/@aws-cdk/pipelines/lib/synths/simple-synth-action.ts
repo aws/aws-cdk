@@ -101,21 +101,56 @@ export interface SimpleSynthActionProps extends SimpleSynthOptions {
   /**
    * The install command
    *
+   * If not provided by the build image or another dependency
+   * management tool, at least install the CDK CLI here using
+   * `npm install -g aws-cdk`.
+   *
    * @default - No install required
+   * @deprecated Use `installCommands` instead
    */
   readonly installCommand?: string;
 
   /**
    * The build command
    *
-   * By default, we assume NPM projects are either written in JavaScript or are
-   * using `ts-node`, so don't need a build command.
+   * If your programming language requires a compilation step, put the
+   * compilation command here.
    *
-   * Otherwise, put the build command here, for example `npm run build`.
+   * @default - No build required
+   * @deprecated Use `buildCommands` instead
+   */
+  readonly buildCommand?: string;
+
+  /**
+   * Install commands
+   *
+   * If not provided by the build image or another dependency
+   * management tool, at least install the CDK CLI here using
+   * `npm install -g aws-cdk`.
+   *
+   * @default - No install required
+   */
+  readonly installCommands?: string[];
+
+  /**
+   * The build commands
+   *
+   * If your programming language requires a compilation step, put the
+   * compilation command here.
    *
    * @default - No build required
    */
-  readonly buildCommand?: string;
+  readonly buildCommands?: string[];
+
+  /**
+   * Test commands
+   *
+   * These commands are run after the build commands but before the
+   * synth command.
+   *
+   * @default - No test commands
+   */
+  readonly testCommands?: string[];
 }
 
 /**
@@ -191,6 +226,14 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       outputs: [props.cloudAssemblyArtifact, ...(props.additionalArtifacts ?? []).map(a => a.artifact)],
     };
 
+    if (this.props.installCommand && this.props.installCommands) {
+      throw new Error('Pass either \'installCommand\' or \'installCommands\', but not both');
+    }
+
+    if (this.props.buildCommand && this.props.buildCommands) {
+      throw new Error('Pass either \'buildCommand\' or \'buildCommands\', but not both');
+    }
+
     const addls = props.additionalArtifacts ?? [];
     if (Object.keys(addls).length > 0) {
       if (!props.cloudAssemblyArtifact.artifactName) {
@@ -225,9 +268,10 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
    * Exists to implement IAction
    */
   public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
-    const buildCommand = this.props.buildCommand;
+    const buildCommands = this.props.buildCommands ?? [this.props.buildCommand];
+    const installCommands = this.props.installCommands ?? [this.props.installCommand];
+    const testCommands = this.props.testCommands ?? [];
     const synthCommand = this.props.synthCommand;
-    const installCommand = this.props.installCommand;
 
     const project = new codebuild.PipelineProject(scope, 'CdkBuildProject', {
       projectName: this.props.projectName ?? this.props.projectName,
@@ -238,12 +282,13 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
           pre_build: {
             commands: filterEmpty([
               this.props.subdirectory ? `cd ${this.props.subdirectory}` : '',
-              installCommand,
+              ...installCommands,
             ]),
           },
           build: {
             commands: filterEmpty([
-              buildCommand,
+              ...buildCommands,
+              ...testCommands,
               synthCommand,
             ]),
           },
