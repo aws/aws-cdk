@@ -116,8 +116,6 @@ export class CloudExecutable {
       for (const stack of assembly.stacks) {
         await processStack(stack);
       }
-      // eslint-disable-next-line no-console
-      console.log(assembly.nestedAssemblies);
       for (const nested of assembly.nestedAssemblies) {
         await processAssembly(nested.nestedAssembly);
       }
