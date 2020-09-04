@@ -180,7 +180,7 @@ export class CloudAssembly {
   }
 
   /**
-   * @returns all the nested assembly artifacts in this assembly
+   * The nested assembly artifacts in this assembly
    */
   public get nestedAssemblies(): NestedCloudAssemblyArtifact[] {
     return this.artifacts.filter(isNestedCloudAssemblyArtifact);
