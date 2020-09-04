@@ -1,4 +1,5 @@
 import '@aws-cdk/assert/jest';
+import { ABSENT } from '@aws-cdk/assert';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -162,8 +163,15 @@ describe('SlackChannelConfiguration', () => {
       slackChannelConfigurationName: 'ConfigurationName',
       logRetention: logs.RetentionDays.ONE_MONTH,
     });
+    const metric = slackChannel.metric('MetricName');
+    new cloudwatch.Alarm(stack, 'Alarm', {
+      evaluationPeriods: 1,
+      threshold: 0,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+      metric: metric,
+    });
 
-    expect(slackChannel.metric('MetricName')).toEqual(new cloudwatch.Metric({
+    expect(metric).toEqual(new cloudwatch.Metric({
       namespace: 'AWS/Chatbot',
       region: 'us-east-1',
       dimensions: {
@@ -171,14 +179,43 @@ describe('SlackChannelConfiguration', () => {
       },
       metricName: 'MetricName',
     }));
+    expect(stack).toHaveResourceLike('AWS::CloudWatch::Alarm', {
+      Namespace: 'AWS/Chatbot',
+      MetricName: 'MetricName',
+      Dimensions: [
+        {
+          Name: 'ConfigurationName',
+          Value: 'ConfigurationName',
+        },
+      ],
+      ComparisonOperator: 'GreaterThanThreshold',
+      EvaluationPeriods: 1,
+      Threshold: 0,
+    });
   });
 
   test('getting all configurations metric', () => {
-    expect(chatbot.SlackChannelConfiguration.metricAll('MetricName')).toEqual(new cloudwatch.Metric({
+    const metric = chatbot.SlackChannelConfiguration.metricAll('MetricName');
+    new cloudwatch.Alarm(stack, 'Alarm', {
+      evaluationPeriods: 1,
+      threshold: 0,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+      metric: metric,
+    });
+
+    expect(metric).toEqual(new cloudwatch.Metric({
       namespace: 'AWS/Chatbot',
       region: 'us-east-1',
       metricName: 'MetricName',
     }));
+    expect(stack).toHaveResourceLike('AWS::CloudWatch::Alarm', {
+      Namespace: 'AWS/Chatbot',
+      MetricName: 'MetricName',
+      Dimensions: ABSENT,
+      ComparisonOperator: 'GreaterThanThreshold',
+      EvaluationPeriods: 1,
+      Threshold: 0,
+    });
   });
 
   test('added a iam policy to a from slack channel configuration ARN will nothing to do', () => {
