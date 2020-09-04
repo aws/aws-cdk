@@ -134,8 +134,8 @@ param.default = 'MyDefault';
 You can also provide values for them when including the template:
 
 ```typescript
-new inc.CfnInclude(stack, 'includeTemplate', {
-  templateFile: 'path/to/my/template'
+new inc.CfnInclude(this, 'includeTemplate', {
+  templateFile: 'path/to/my/template',
   parameters: {
     'MyParam': 'my-value',
   },
@@ -229,7 +229,7 @@ import * as core from '@aws-cdk/core';
 const hook: core.CfnHook = cfnTemplate.getHook('MyOutput');
 ```
 
-The `CfnHook` can be mutated,
+The `CfnHook` object can be mutated,
 and any changes you make to it will be reflected in the resulting template:
 
 ```typescript
@@ -268,10 +268,11 @@ where the child template pointed to by `https://my-s3-template-source.s3.amazona
 }
 ```
 
-You can include both the parent stack and the nested stack in your CDK application as follows:
+You can include both the parent stack,
+and the nested stack in your CDK application as follows:
 
 ```typescript
-const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+const parentTemplate = new inc.CfnInclude(this, 'ParentStack', {
   templateFile: 'path/to/my-parent-template.json',
   nestedStacks: {
     'ChildStack': {
@@ -289,7 +290,8 @@ const childStack: core.NestedStack = includedChildStack.stack;
 const childTemplate: cfn_inc.CfnInclude = includedChildStack.includedTemplate;
 ```
 
-Now you can reference resources from `ChildStack` and modify them like any other included template:
+Now you can reference resources from `ChildStack`,
+and modify them like any other included template:
 
 ```typescript
 const cfnBucket = childTemplate.getResource('MyBucket') as s3.CfnBucket;
@@ -314,7 +316,7 @@ role.addToPolicy(new iam.PolicyStatement({
 In many cases, there are existing CloudFormation templates that are not entire applications,
 but more like specialized fragments, implementing a particular pattern or best practice.
 If you have templates like that,
-you can use the `CfnInclude` class to vend them as a CDK Constructs:
+you can use the `CfnInclude` class to vend them as CDK Constructs:
 
 ```ts
 import * as path from 'path';
