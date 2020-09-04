@@ -63,9 +63,7 @@ export interface ILaunchTemplate {
    * The ID of the launch template.
    */
   readonly launchTemplateId: string;
-
 }
-
 
 /**
  * Launch template property specification
