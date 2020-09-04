@@ -1,4 +1,5 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { SubnetSelection } from '@aws-cdk/aws-ec2';
 import { Construct } from '@aws-cdk/core';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
@@ -6,6 +7,15 @@ import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../
  * The properties for the QueueProcessingEc2Service service.
  */
 export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBaseProps {
+  /**
+   * The subnets to associate with the service.
+   *
+   * This property is only used for tasks that use the awsvpc network mode.
+   *
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
+   */
+  readonly serviceVpcSubnets?: SubnetSelection;
+
   /**
    * The number of cpu units used by the task.
    *
@@ -100,6 +110,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       maxHealthyPercent: props.maxHealthyPercent,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
+      vpcSubnets: props.serviceVpcSubnets,
     });
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);

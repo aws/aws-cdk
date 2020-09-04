@@ -1,4 +1,5 @@
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { SubnetSelection } from '@aws-cdk/aws-ec2';
 import { NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Construct } from '@aws-cdk/core';
 import {
@@ -19,6 +20,13 @@ export interface NetworkMultipleTargetGroupsFargateServiceProps extends NetworkM
    * @default - none
    */
   readonly taskDefinition?: FargateTaskDefinition;
+
+  /**
+   * The subnets to associate with the service.
+   *
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
+   */
+  readonly serviceVpcSubnets?: SubnetSelection;
 
   /**
    * The number of cpu units used by the task.
@@ -179,6 +187,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
+      vpcSubnets: props.serviceVpcSubnets,
     });
   }
 }

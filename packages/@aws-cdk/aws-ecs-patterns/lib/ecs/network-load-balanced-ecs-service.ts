@@ -1,4 +1,5 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { SubnetSelection } from '@aws-cdk/aws-ec2';
 import { Construct } from '@aws-cdk/core';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
@@ -14,6 +15,15 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
    * @default - none
    */
   readonly taskDefinition?: Ec2TaskDefinition;
+
+  /**
+   * The subnets to associate with the service.
+   *
+   * This property is only used for tasks that use the awsvpc network mode.
+   *
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
+   */
+  readonly serviceVpcSubnets?: SubnetSelection;
 
   /**
    * The number of cpu units used by the task.
@@ -129,6 +139,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      vpcSubnets: props.serviceVpcSubnets,
     });
     this.addServiceAsTarget(this.service);
   }

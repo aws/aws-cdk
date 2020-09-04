@@ -1,4 +1,5 @@
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { SubnetSelection } from '@aws-cdk/aws-ec2';
 import { Construct } from '@aws-cdk/core';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
@@ -6,6 +7,13 @@ import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../
  * The properties for the QueueProcessingFargateService service.
  */
 export interface QueueProcessingFargateServiceProps extends QueueProcessingServiceBaseProps {
+  /**
+   * The subnets to associate with the service.
+   *
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
+   */
+  readonly serviceVpcSubnets?: SubnetSelection;
+
   /**
    * The number of cpu units used by the task.
    *
@@ -106,6 +114,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       platformVersion: props.platformVersion,
+      vpcSubnets: props.serviceVpcSubnets,
     });
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);

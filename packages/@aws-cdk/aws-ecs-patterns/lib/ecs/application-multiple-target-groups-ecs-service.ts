@@ -1,4 +1,5 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { SubnetSelection } from '@aws-cdk/aws-ec2';
 import { ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Construct } from '@aws-cdk/core';
 import {
@@ -19,6 +20,15 @@ export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends Applicat
    * @default - none
    */
   readonly taskDefinition?: Ec2TaskDefinition;
+
+  /**
+   * The subnets to associate with the service.
+   *
+   * This property is only used for tasks that use the awsvpc network mode.
+   *
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
+   */
+  readonly serviceVpcSubnets?: SubnetSelection;
 
   /**
    * The minimum number of CPU units to reserve for the container.
@@ -146,6 +156,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      vpcSubnets: props.serviceVpcSubnets,
     });
   }
 }
