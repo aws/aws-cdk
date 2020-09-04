@@ -15,6 +15,20 @@ export interface CfnIncludeProps {
   readonly templateFile: string;
 
   /**
+   * Whether the resources should have the same logical IDs in the resulting CDK template
+   * as they did in the original CloudFormation template file.
+   * If you're vending a Construct using an existing CloudFormation template,
+   * make sure to pass this as `false`.
+   *
+   * **Note**: regardless of whether this option is true or false,
+   * the {@link CfnInclude.getResource} and related methods always uses the original logical ID of the resource/element,
+   * as specified in the template file.
+   *
+   * @default true
+   */
+  readonly preserveLogicalIds?: boolean;
+
+  /**
    * Specifies the template files that define nested stacks that should be included.
    *
    * If your template specifies a stack that isn't included here, it won't be created as a NestedStack
@@ -86,8 +100,7 @@ export class CfnInclude extends core.CfnElement {
     // read the template into a JS object
     this.template = futils.readYamlSync(props.templateFile);
 
-    // ToDo implement preserveLogicalIds=false
-    this.preserveLogicalIds = true;
+    this.preserveLogicalIds = props.preserveLogicalIds ?? true;
 
     // check if all user specified parameter values exist in the template
     for (const logicalId of Object.keys(this.parametersToReplace)) {
@@ -326,7 +339,7 @@ export class CfnInclude extends core.CfnElement {
       mapping: cfnParser.parseValue(this.template.Mappings[mappingName]),
     });
     this.mappings[mappingName] = cfnMapping;
-    cfnMapping.overrideLogicalId(mappingName);
+    this.overrideLogicalIdIfNeeded(cfnMapping, mappingName);
   }
 
   private createParameter(logicalId: string): void {
@@ -357,7 +370,7 @@ export class CfnInclude extends core.CfnElement {
       noEcho: expression.NoEcho,
     });
 
-    cfnParameter.overrideLogicalId(logicalId);
+    this.overrideLogicalIdIfNeeded(cfnParameter, logicalId);
     this.parameters[logicalId] = cfnParameter;
   }
 
@@ -384,7 +397,7 @@ export class CfnInclude extends core.CfnElement {
       assertions: ruleProperties.Assertions,
     });
     this.rules[ruleName] = rule;
-    rule.overrideLogicalId(ruleName);
+    this.overrideLogicalIdIfNeeded(rule, ruleName);
   }
 
   private createOutput(logicalId: string, scope: core.Construct): void {
@@ -422,7 +435,7 @@ export class CfnInclude extends core.CfnElement {
       })(),
     });
 
-    cfnOutput.overrideLogicalId(logicalId);
+    this.overrideLogicalIdIfNeeded(cfnOutput, logicalId);
     this.outputs[logicalId] = cfnOutput;
   }
 
@@ -455,8 +468,7 @@ export class CfnInclude extends core.CfnElement {
       expression: cfnParser.parseValue(this.template.Conditions[conditionName]),
     });
 
-    // ToDo handle renaming of the logical IDs of the conditions
-    cfnCondition.overrideLogicalId(conditionName);
+    this.overrideLogicalIdIfNeeded(cfnCondition, conditionName);
     this.conditions[conditionName] = cfnCondition;
     return cfnCondition;
   }
@@ -533,11 +545,7 @@ export class CfnInclude extends core.CfnElement {
       }
     }
 
-    if (this.preserveLogicalIds) {
-      // override the logical ID to match the original template
-      l1Instance.overrideLogicalId(logicalId);
-    }
-
+    this.overrideLogicalIdIfNeeded(l1Instance, logicalId);
     this.resources[logicalId] = l1Instance;
     return l1Instance;
   }
@@ -584,5 +592,11 @@ export class CfnInclude extends core.CfnElement {
       }
     }
     return ret;
+  }
+
+  private overrideLogicalIdIfNeeded(element: core.CfnElement, id: string): void {
+    if (this.preserveLogicalIds) {
+      element.overrideLogicalId(id);
+    }
   }
 }
