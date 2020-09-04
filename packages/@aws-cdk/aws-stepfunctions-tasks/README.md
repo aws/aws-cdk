@@ -55,6 +55,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Create Endpoint](#create-endpoint)
   - [Create Endpoint Config](#create-endpoint-config)
   - [Create Model](#create-model)
+  - [Update Endpoint](#update-endpoint)
 - [SNS](#sns)
 - [Step Functions](#step-functions)
   - [Start Execution](#start-execution)
@@ -811,6 +812,17 @@ new sfn.SageMakerCreateModel(this, 'Sagemaker', {
    modelDataUrl: sfn.JsonPath.stringAt('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
   },
 });
+```
+
+### Update Endpoint
+
+You can call the [`UpdateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_UpdateEndpoint.html) API from a `Task` state.
+
+```ts
+new sfn.SageMakerUpdateEndpoint(this, 'SagemakerEndpoint', {
+    endpointName: sfn.JsonPath.stringAt('$.Endpoint.Name'),
+    endpointConfigName: sfn.JsonPath.stringAt('$.Endpoint.EndpointConfig'),
+  });
 ```
 
 ## SNS

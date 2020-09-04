@@ -17,6 +17,7 @@ export * from './sagemaker/create-transform-job';
 export * from './sagemaker/create-endpoint';
 export * from './sagemaker/create-endpoint-config';
 export * from './sagemaker/create-model';
+export * from './sagemaker/update-endpoint';
 export * from './start-execution';
 export * from './stepfunctions/start-execution';
 export * from './stepfunctions/invoke-activity';
