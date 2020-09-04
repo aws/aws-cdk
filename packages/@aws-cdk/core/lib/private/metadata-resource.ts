@@ -1,0 +1,74 @@
+import * as cxapi from '@aws-cdk/cx-api';
+import { RegionInfo } from '@aws-cdk/region-info';
+import { CfnCondition } from '../cfn-condition';
+import { Fn } from '../cfn-fn';
+import { Aws } from '../cfn-pseudo';
+import { CfnResource } from '../cfn-resource';
+import { Construct } from '../construct-compat';
+import { Lazy } from '../lazy';
+import { Stack } from '../stack';
+import { Token } from '../token';
+import { collectRuntimeInformation } from './runtime-info';
+
+/**
+ * Construct that will render the metadata resource
+ */
+export class MetadataResource extends Construct {
+  /**
+   * Calculate the modules property
+   */
+  private static modulesProperty(): string {
+    Array.isArray(formatModules);
+    Array.isArray(collectRuntimeInformation);
+    // return formatModules(collectRuntimeInformation());
+    return '';
+  }
+
+  constructor(scope: Stack, id: string) {
+    super(scope, id);
+
+    const metadataServiceExists = Token.isUnresolved(scope.region) || RegionInfo.get(scope.region).cdkMetadataResourceAvailable;
+    if (metadataServiceExists) {
+      const resource = new CfnResource(this, 'Default', {
+        type: 'AWS::CDK::Metadata',
+        properties: {
+          Modules: Lazy.stringValue({ produce: () => MetadataResource.modulesProperty() }),
+        },
+      });
+
+      // In case we don't actually know the region, add a condition to determine it at deploy time
+      if (Token.isUnresolved(scope.region)) {
+        const condition = new CfnCondition(this, 'Condition', {
+          expression: makeCdkMetadataAvailableCondition(),
+        });
+
+        // To not cause undue template changes
+        condition.overrideLogicalId('CDKMetadataAvailable');
+
+        resource.cfnOptions.condition = condition;
+      }
+    }
+  }
+}
+
+function makeCdkMetadataAvailableCondition() {
+  return Fn.conditionOr(...RegionInfo.regions
+    .filter(ri => ri.cdkMetadataResourceAvailable)
+    .map(ri => Fn.conditionEquals(Aws.REGION, ri.name)));
+}
+
+function formatModules(runtime: cxapi.RuntimeInfo): string {
+  const modules = new Array<string>();
+
+  // inject toolkit version to list of modules
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const cliVersion = process.env[cxapi.CLI_VERSION_ENV];
+  if (cliVersion) {
+    modules.push(`aws-cdk=${cliVersion}`);
+  }
+
+  for (const key of Object.keys(runtime.libraries).sort()) {
+    modules.push(`${key}=${runtime.libraries[key]}`);
+  }
+  return modules.join(',');
+}

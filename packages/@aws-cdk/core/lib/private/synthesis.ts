@@ -35,9 +35,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   // stacks to add themselves to the synthesized cloud assembly.
   synthesizeTree(root, builder);
 
-  return builder.buildAssembly({
-    runtimeInfo: options.runtimeInfo,
-  });
+  return builder.buildAssembly();
 }
 
 /**
