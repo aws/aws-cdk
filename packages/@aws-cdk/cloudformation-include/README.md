@@ -308,3 +308,32 @@ role.addToPolicy(new iam.PolicyStatement({
   resources: [cfnBucket.attrArn],
 }));
 ```
+
+## Vending CloudFormation templates as Constructs
+
+In many cases, there are existing CloudFormation templates that are not entire applications,
+but more like specialized fragments, implementing a particular pattern or best practice.
+If you have templates like that,
+you can use the `CfnInclude` class to vend them as a CDK Constructs:
+
+```ts
+import * as path from 'path';
+
+export class MyConstruct extends Construct {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    // include a template inside the Construct
+    new cfn_inc.CfnInclude(this, 'MyConstruct', {
+      templateFile: path.join(__dirname, 'my-template.json'),
+      preserveLogicalIds: false, // <--- !!!
+    });
+  }
+}
+```
+
+Notice the `preserveLogicalIds` parameter -
+it makes sure the logical IDs of all the included template elements are re-named using CDK's algorithm,
+guaranteeing they are unique within your application.
+Without that parameter passed,
+instantiating `MyConstruct` twice in the same Stack would result in duplicated logical IDs.
