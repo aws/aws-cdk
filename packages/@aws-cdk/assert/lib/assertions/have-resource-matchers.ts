@@ -322,7 +322,7 @@ export class Capture<T=any> {
     return new Capture(validator);
   }
 
-  private _value: T;
+  private _value?: T;
   private _didCapture = false;
   private _wasInvoked = false;
 
@@ -361,7 +361,7 @@ export class Capture<T=any> {
     if (!this.didCapture) {
       throw new Error(`Did not capture a value: ${this._wasInvoked ? 'inner matcher failed' : 'never invoked'}`);
     }
-    return this._value;
+    return this._value!;
   }
 }
 
