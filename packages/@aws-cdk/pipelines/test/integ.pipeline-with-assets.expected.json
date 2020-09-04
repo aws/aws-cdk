@@ -693,7 +693,8 @@
                 "Configuration": {
                   "ProjectName": {
                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-                  }
+                  },
+                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"d873ecc8cbe630b35dcb4ccac2c3cf50ba9b124cbc93858c7c3a3f4821e52c94\"}]"
                 },
                 "InputArtifacts": [
                   {

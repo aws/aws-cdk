@@ -281,6 +281,90 @@ export function notMatching(matcher: any): PropertyMatcher {
   });
 }
 
+export type TypeValidator<T> = (x: any) => x is T;
+
+/**
+ * Captures a value onto an object if it matches a given inner matcher
+ *
+ * @example
+ *
+ * const someValue = Capture.aString();
+ * expect(stack).toHaveResource({
+ *    // ...
+ *    Value: someValue.capture(stringMatching('*a*')),
+ * });
+ * console.log(someValue.capturedValue);
+ */
+export class Capture<T=any> {
+  /**
+   * A Capture object that captures any type
+   */
+  public static anyType(): Capture<any> {
+    return new Capture();
+  }
+
+  /**
+   * A Capture object that captures a custom type
+   */
+  public static aString(): Capture<string> {
+    return new Capture((x: any): x is string => {
+      if (typeof x !== 'string') {
+        throw new Error(`Expected to capture a string, got '${x}'`);
+      }
+      return true;
+    });
+  }
+
+  /**
+   * A Capture object that captures a custom type
+   */
+  public static a<T>(validator: TypeValidator<T>): Capture<T> {
+    return new Capture(validator);
+  }
+
+  private _value: T;
+  private _didCapture = false;
+  private _wasInvoked = false;
+
+  protected constructor(private readonly typeValidator?: TypeValidator<T>) {
+  }
+
+  /**
+   * Capture the value if the inner matcher successfully matches it
+   *
+   * If no matcher is given, `anything()` is assumed.
+   */
+  public capture(matcher?: any): PropertyMatcher {
+    if (matcher === undefined) {
+      matcher = anything();
+    }
+
+    return annotateMatcher({ $capture: matcher }, (value: any, failure: InspectionFailure) => {
+      this._wasInvoked = true;
+      const result = matcherFrom(matcher)(value, failure);
+      if (result) {
+        if (this.typeValidator && !this.typeValidator(value)) {
+          throw new Error(`Value not of the expected type: ${value}`);
+        }
+        this._didCapture = true;
+        this._value = value;
+      }
+      return result;
+    });
+  }
+
+  public get didCapture() {
+    return this._didCapture;
+  }
+
+  public get capturedValue(): T {
+    if (!this.didCapture) {
+      throw new Error(`Did not capture a value: ${this._wasInvoked ? 'inner matcher failed' : 'never invoked'}`);
+    }
+    return this._value;
+  }
+}
+
 /**
  * Match on the innards of a JSON string, instead of the complete string
  */
