@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Stack } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -38,7 +38,7 @@ export class SageMakerCreateEndpoint extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: SageMakerCreateEndpointProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: SageMakerCreateEndpointProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
     validatePatternSupported(this.integrationPattern, SageMakerCreateEndpoint.SUPPORTED_INTEGRATION_PATTERNS);
@@ -64,7 +64,7 @@ export class SageMakerCreateEndpoint extends sfn.TaskStateBase {
   }
 
   private makePolicyStatements(): iam.PolicyStatement[] {
-    const stack = Stack.of(this);
+    const stack = cdk.Stack.of(this);
     // https://docs.aws.amazon.com/sagemaker/latest/dg/api-permissions-reference.html
     return [
       new iam.PolicyStatement({

@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Lazy, Stack } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { ContainerDefinition, VpcConfig } from './base-types';
 
@@ -79,7 +79,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
   private _role?: iam.IRole;
   private _grantPrincipal?: iam.IPrincipal;
 
-  constructor(scope: Construct, id: string, private readonly props: SageMakerCreateModelProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: SageMakerCreateModelProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
     validatePatternSupported(this.integrationPattern, SageMakerCreateModel.SUPPORTED_INTEGRATION_PATTERNS);
@@ -194,7 +194,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
       this.connections.addSecurityGroup(this.securityGroup);
       this.securityGroups.push(this.securityGroup);
     }
-    const stack = Stack.of(this);
+    const stack = cdk.Stack.of(this);
     // https://docs.aws.amazon.com/sagemaker/latest/dg/api-permissions-reference.html
     return [
       new iam.PolicyStatement({
@@ -231,7 +231,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
     return config
       ? {
         VpcConfig: {
-          SecurityGroupIds: Lazy.listValue({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
+          SecurityGroupIds: cdk.Lazy.listValue({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
           Subnets: this.subnets,
         },
       }

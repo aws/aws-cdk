@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { SageMakerUpdateEndpoint } from '../../lib';
+import * as tasks from '../../lib';
 
 let stack: cdk.Stack;
 
@@ -12,7 +12,7 @@ beforeEach(() => {
 
 test('update endpoint', () => {
   // WHEN
-  const task = new SageMakerUpdateEndpoint(stack, 'SagemakerEndpoint', {
+  const task = new tasks.SageMakerUpdateEndpoint(stack, 'SagemakerEndpoint', {
     endpointName: 'MyEndpoint',
     endpointConfigName: 'MyEndpointConfig',
   });
@@ -42,7 +42,7 @@ test('update endpoint', () => {
 
 test('pass parameters to update endpoint', () => {
   // WHEN
-  const task = new SageMakerUpdateEndpoint(stack, 'SagemakerEndpoint', {
+  const task = new tasks.SageMakerUpdateEndpoint(stack, 'SagemakerEndpoint', {
     endpointName: sfn.JsonPath.stringAt('$.Endpoint.Name'),
     endpointConfigName: sfn.JsonPath.stringAt('$.Endpoint.Config'),
   });
@@ -73,7 +73,7 @@ test('pass parameters to update endpoint', () => {
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
-    new SageMakerUpdateEndpoint(stack, 'UpdateSagemaker', {
+    new tasks.SageMakerUpdateEndpoint(stack, 'UpdateSagemaker', {
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       endpointConfigName: 'MyEndpointConfig',
       endpointName: 'MyEndpoint',

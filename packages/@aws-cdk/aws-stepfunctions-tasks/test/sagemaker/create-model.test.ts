@@ -4,7 +4,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
-import { SageMakerCreateModel } from '../../lib/sagemaker/create-model';
 
 let stack: cdk.Stack;
 
@@ -15,7 +14,7 @@ beforeEach(() => {
 
 test('create basic model', () => {
   // WHEN
-  const task = new SageMakerCreateModel(stack, 'SagemakerModel', {
+  const task = new tasks.SageMakerCreateModel(stack, 'SagemakerModel', {
     modelName: 'MyModel',
     primaryContainer: {
       image: tasks.DockerImage.fromRegistry(sfn.JsonPath.stringAt('$.Model.imageName')),
@@ -65,7 +64,7 @@ test('create complex model', () => {
     ],
   });
 
-  const task = new SageMakerCreateModel(stack, 'SagemakerModel', {
+  const task = new tasks.SageMakerCreateModel(stack, 'SagemakerModel', {
     modelName: sfn.JsonPath.stringAt('$.ModelName'),
     primaryContainer: {
       image: tasks.DockerImage.fromRegistry(sfn.JsonPath.stringAt('$.Model.imageName')),
@@ -126,7 +125,7 @@ test('create complex model', () => {
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
-    new SageMakerCreateModel(stack, 'Sagemaker', {
+    new tasks.SageMakerCreateModel(stack, 'Sagemaker', {
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       modelName: 'MyModel',
       primaryContainer: {

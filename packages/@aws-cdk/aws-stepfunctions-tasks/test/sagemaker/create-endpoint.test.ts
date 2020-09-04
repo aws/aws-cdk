@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { SageMakerCreateEndpoint } from '../../lib/sagemaker/create-endpoint';
+import * as tasks from '../../lib';
 
 let stack: cdk.Stack;
 
@@ -12,7 +12,7 @@ beforeEach(() => {
 
 test('create endpoint', () => {
   // WHEN
-  const task = new SageMakerCreateEndpoint(stack, 'SagemakerEndpoint', {
+  const task = new tasks.SageMakerCreateEndpoint(stack, 'SagemakerEndpoint', {
     endpointName: 'MyEndpoint',
     endpointConfigName: 'MyEndpointConfig',
   });
@@ -42,7 +42,7 @@ test('create endpoint', () => {
 
 test('create endpoint with tags', () => {
   // WHEN
-  const task = new SageMakerCreateEndpoint(stack, 'SagemakerEndpoint', {
+  const task = new tasks.SageMakerCreateEndpoint(stack, 'SagemakerEndpoint', {
     endpointName: 'MyEndpoint',
     endpointConfigName: 'MyEndpointConfig',
     tags: {
@@ -78,7 +78,7 @@ test('create endpoint with tags', () => {
 
 test('create endpoint with input from task', () => {
   // WHEN
-  const task = new SageMakerCreateEndpoint(stack, 'SagemakerEndpoint', {
+  const task = new tasks.SageMakerCreateEndpoint(stack, 'SagemakerEndpoint', {
     endpointName: sfn.JsonPath.stringAt('$.EndpointName'),
     endpointConfigName: sfn.JsonPath.stringAt('$.EndpointConfig'),
   });
@@ -108,7 +108,7 @@ test('create endpoint with input from task', () => {
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
-    new SageMakerCreateEndpoint(stack, 'TrainSagemaker', {
+    new tasks.SageMakerCreateEndpoint(stack, 'TrainSagemaker', {
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       endpointConfigName: 'MyEndpointConfig',
       endpointName: 'MyEndpoint',

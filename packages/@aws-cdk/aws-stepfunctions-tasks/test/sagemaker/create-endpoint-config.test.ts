@@ -3,9 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-
-
-import { SageMakerCreateEndpointConfig } from '../../lib';
+import * as tasks from '../../lib';
 
 let stack: cdk.Stack;
 
@@ -16,7 +14,7 @@ beforeEach(() => {
 
 test('create basic endpoint config', () => {
   // WHEN
-  const task = new SageMakerCreateEndpointConfig(stack, 'SagemakerEndpointConfig', {
+  const task = new tasks.SageMakerCreateEndpointConfig(stack, 'SagemakerEndpointConfig', {
     endpointConfigName: 'MyEndpointConfig',
     productionVariants: [{
       initialInstanceCount: 2,
@@ -58,7 +56,7 @@ test('create complex endpoint config', () => {
   // WHEN
   const key = new kms.Key(stack, 'Key');
 
-  const task = new SageMakerCreateEndpointConfig(stack, 'SagemakerEndpointConfig', {
+  const task = new tasks.SageMakerCreateEndpointConfig(stack, 'SagemakerEndpointConfig', {
     endpointConfigName: sfn.JsonPath.stringAt('$.Endpoint.EndpointConfig'),
     kmsKeyId: key.keyId,
     productionVariants: [{
@@ -126,7 +124,7 @@ test('create complex endpoint config', () => {
 });
 
 test('Cannot create a SageMaker create enpoint config task with empty production variant', () => {
-  expect(() => new SageMakerCreateEndpointConfig(stack, 'EndpointConfig', {
+  expect(() => new tasks.SageMakerCreateEndpointConfig(stack, 'EndpointConfig', {
     endpointConfigName: 'MyEndpointConfig',
     productionVariants: [],
   }))
@@ -134,7 +132,7 @@ test('Cannot create a SageMaker create enpoint config task with empty production
 });
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
-  expect(() => new SageMakerCreateEndpointConfig(stack, 'EndpointConfig', {
+  expect(() => new tasks.SageMakerCreateEndpointConfig(stack, 'EndpointConfig', {
     endpointConfigName: 'MyEndpointConfig',
     integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     productionVariants: [{
