@@ -145,7 +145,7 @@ export abstract class BaseLoadBalancer extends Resource {
       resource.node.addDependency(internetConnectivityEstablished);
     }
 
-    if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }
+    this.setAttribute('deletion_protection.enabled', baseProps.deletionProtection ? 'true' : 'false');
 
     this.loadBalancerCanonicalHostedZoneId = resource.attrCanonicalHostedZoneId;
     this.loadBalancerDnsName = resource.attrDnsName;
