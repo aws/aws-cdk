@@ -44,6 +44,9 @@ new NetworkMultipleTargetGroupsFargateService(stack, 'myService', {
       listener: 'listener2',
     },
   ],
+  serviceVpcSubnets: {
+    subnetGroupName: 'fake-subnet-group'
+  },
 });
 
 app.synth();

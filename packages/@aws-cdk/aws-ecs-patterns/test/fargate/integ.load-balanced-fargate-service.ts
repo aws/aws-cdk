@@ -1,4 +1,5 @@
 import { Vpc } from '@aws-cdk/aws-ec2';
+import { SubnetType } from '@aws-cdk/aws-ec2';
 import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
 import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as route53 from '@aws-cdk/aws-route53';
@@ -26,6 +27,9 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
     zoneName: 'example.com.',
   }),
   redirectHTTP: true,
+  serviceVpcSubnets: {
+    subnetGroupName: 'fake-subnet-group'
+  },
 });
 
 app.synth();
