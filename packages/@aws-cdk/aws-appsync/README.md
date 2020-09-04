@@ -367,6 +367,21 @@ More concretely, GraphQL Types are simply the types appended to variables.
 Referencing the object type `Demo` in the previous example, the GraphQL Types 
 is `String!` and is applied to both the names `id` and `version`.
 
+#### Directives
+
+`Directives` are attached to a field or type and affect the execution of queries,
+mutations, and types. With AppSync, we use `Directives` to configure authorization.
+CDK provides static functions to add directives to your Schema.
+
+- `Directive.iam()` sets a type or field's authorization to be validated through `Iam`
+- `Directive.apiKey()` sets a type or field's authorization to be validated through a `Api Key`
+- `Directive.oidc()` sets a type or field's authorization to be validated through `OpenID Connect`
+- `Directive.cognito(...groups: string[])` sets a type or field's authorization to be validated
+through `Cognito User Pools`
+  - `groups` the name of the cognito groups to give access
+
+To learn more about authorization and directives, read these docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/security.html).
+
 #### Field and Resolvable Fields
 
 While `GraphqlType` is a base implementation for GraphQL fields, we have abstractions

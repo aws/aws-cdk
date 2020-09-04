@@ -71,13 +71,13 @@ async function parseCommandLineArguments() {
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined })
       .option('qualifier', { type: 'string', desc: 'Unique string to distinguish multiple bootstrap stacks', default: undefined })
-      .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: true })
+      .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
       .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false })
-      .option('termination-protection', { type: 'boolean', default: false, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
+      .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
       .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization.', default: false })
       .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example).' }),
     )
@@ -87,7 +87,7 @@ async function parseCommandLineArguments() {
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
       .option('ci', { type: 'boolean', desc: 'Force CI detection', default: process.env.CI !== undefined })
       .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
-      .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true })
+      .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly', nargs: 1, requiresArg: true })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
@@ -224,13 +224,14 @@ async function initCommandLine() {
         return await cli.list(args.STACKS, { long: args.long });
 
       case 'diff':
+        const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL);
         return await cli.diff({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           templatePath: args.template,
           strict: args.strict,
           contextLines: args.contextLines,
-          fail: args.fail || !configuration.context.get(cxapi.ENABLE_DIFF_NO_FAIL),
+          fail: args.fail || !enableDiffNoFail,
         });
 
       case 'bootstrap':
@@ -241,13 +242,14 @@ async function initCommandLine() {
         // anticipation of flipping the switch, in user messaging we still call it
         // "new" bootstrapping.
         let source: BootstrapSource = { source: 'legacy' };
+        const newStyleStackSynthesis = isFeatureEnabled(configuration, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
         if (args.template) {
           print(`Using bootstrapping template from ${args.template}`);
           source = { source: 'custom', templateFile: args.template };
         } else if (process.env.CDK_NEW_BOOTSTRAP) {
           print('CDK_NEW_BOOTSTRAP set, using new-style bootstrapping');
           source = { source: 'default' };
-        } else if (configuration.context.get(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)) {
+        } else if (newStyleStackSynthesis) {
           print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
           source = { source: 'default' };
         }
@@ -270,8 +272,8 @@ async function initCommandLine() {
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
             qualifier: args.qualifier,
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
-            trustedAccounts: args.trust,
-            cloudFormationExecutionPolicies: args.cloudformationExecutionPolicies,
+            trustedAccounts: arrayFromYargs(args.trust),
+            cloudFormationExecutionPolicies: arrayFromYargs(args.cloudformationExecutionPolicies),
           },
         });
 
@@ -334,6 +336,24 @@ async function initCommandLine() {
   function toJsonOrYaml(object: any): string {
     return serializeStructure(object, argv.json);
   }
+}
+
+function isFeatureEnabled(configuration: Configuration, featureFlag: string) {
+  return configuration.context.get(featureFlag) ?? cxapi.futureFlagDefault(featureFlag);
+}
+
+/**
+ * Translate a Yargs input array to something that makes more sense in a programming language
+ * model (telling the difference between absence and an empty array)
+ *
+ * - An empty array is the default case, meaning the user didn't pass any arguments. We return
+ *   undefined.
+ * - If the user passed a single empty string, they did something like `--array=`, which we'll
+ *   take to mean they passed an empty array.
+ */
+function arrayFromYargs(xs: string[]): string[] | undefined {
+  if (xs.length === 0) { return undefined; }
+  return xs.filter(x => x !== '');
 }
 
 initCommandLine()
