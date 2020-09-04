@@ -13,6 +13,8 @@ export * from './stack-synthesizers';
 export * from './reference';
 export * from './cfn-condition';
 export * from './cfn-fn';
+export * from './cfn-hook';
+export * from './cfn-codedeploy-blue-green-hook';
 export * from './cfn-include';
 export * from './cfn-mapping';
 export * from './cfn-output';

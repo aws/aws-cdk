@@ -86,6 +86,8 @@ export class CfnInclude extends core.CfnElement {
   private readonly mappings: { [mappingName: string]: core.CfnMapping } = {};
   private readonly rules: { [ruleName: string]: core.CfnRule } = {};
   private readonly rulesScope: core.Construct;
+  private readonly hooks: { [hookName: string]: core.CfnHook } = {};
+  private readonly hooksScope: core.Construct;
   private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
   private readonly nestedStacks: { [logicalId: string]: IncludedNestedStack } = {};
   private readonly nestedStacksToInclude: { [name: string]: CfnIncludeProps };
@@ -142,6 +144,12 @@ export class CfnInclude extends core.CfnElement {
       if (!(nestedStackId in this.resources)) {
         throw new Error(`Nested Stack with logical ID '${nestedStackId}' was not found in the template`);
       }
+    }
+
+    // instantiate the Hooks
+    this.hooksScope = new core.Construct(this, '$Hooks');
+    for (const hookName of Object.keys(this.template.Hooks || {})) {
+      this.createHook(hookName);
     }
 
     const outputScope = new core.Construct(this, '$Ouputs');
@@ -264,6 +272,24 @@ export class CfnInclude extends core.CfnElement {
   }
 
   /**
+   * Returns the CfnHook object from the 'Hooks'
+   * section of the included CloudFormation template with the given logical ID.
+   * Any modifications performed on the returned object will be reflected in the resulting CDK template.
+   *
+   * If a Hook with the given logical ID is not present in the template,
+   * an exception will be thrown.
+   *
+   * @param hookLogicalId the logical ID of the Hook in the included CloudFormation template's 'Hooks' section
+   */
+  public getHook(hookLogicalId: string): core.CfnHook {
+    const ret = this.hooks[hookLogicalId];
+    if (!ret) {
+      throw new Error(`Hook with logical ID '${hookLogicalId}' was not found in the template`);
+    }
+    return ret;
+  }
+
+  /**
    * Returns the NestedStack with name logicalId.
    * For a nested stack to be returned by this method, it must be specified in the {@link CfnIncludeProps.nestedStacks}
    * property.
@@ -314,6 +340,7 @@ export class CfnInclude extends core.CfnElement {
         case 'Resources':
         case 'Parameters':
         case 'Rules':
+        case 'Hooks':
         case 'Outputs':
           // these are rendered as a side effect of instantiating the L1s
           break;
@@ -398,6 +425,46 @@ export class CfnInclude extends core.CfnElement {
     });
     this.rules[ruleName] = rule;
     this.overrideLogicalIdIfNeeded(rule, ruleName);
+  }
+
+  private createHook(hookName: string): void {
+    const self = this;
+    const cfnParser = new cfn_parse.CfnParser({
+      finder: {
+        findResource(lId): core.CfnResource | undefined {
+          return self.resources[lId];
+        },
+        findRefTarget(elementName: string): core.CfnElement | undefined {
+          return self.resources[elementName] ?? self.parameters[elementName];
+        },
+        findCondition(conditionName: string): core.CfnCondition | undefined {
+          return self.conditions[conditionName];
+        },
+        findMapping(mappingName): core.CfnMapping | undefined {
+          return self.mappings[mappingName];
+        },
+      },
+      parameters: this.parametersToReplace,
+    });
+    const hookAttributes = this.template.Hooks[hookName];
+
+    let hook: core.CfnHook;
+    switch (hookAttributes.Type) {
+      case 'AWS::CodeDeploy::BlueGreen':
+        hook = (core.CfnCodeDeployBlueGreenHook as any)._fromCloudFormation(this.hooksScope, hookName, hookAttributes, {
+          parser: cfnParser,
+        });
+        break;
+      default: {
+        const hookProperties = cfnParser.parseValue(hookAttributes.Properties) ?? {};
+        hook = new core.CfnHook(this.hooksScope, hookName, {
+          type: hookAttributes.Type,
+          properties: hookProperties,
+        });
+      }
+    }
+    this.hooks[hookName] = hook;
+    this.overrideLogicalIdIfNeeded(hook, hookName);
   }
 
   private createOutput(logicalId: string, scope: core.Construct): void {
