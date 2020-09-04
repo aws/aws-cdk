@@ -173,6 +173,10 @@ export class Schema {
       this.subscription = new ObjectType('Subscription', { definition: {} });
       this.addType(this.subscription);
     }
+    const directives = field.fieldOptions?.directives?.filter((directive) => directive.mutationFields);
+    if (directives && directives.length > 1) {
+      throw new Error(`Subscription fields must not have more than one @aws_subscribe directives. Received: ${directives.length}`);
+    }
     this.subscription.addField({ fieldName, field });
     return this.subscription;
   }

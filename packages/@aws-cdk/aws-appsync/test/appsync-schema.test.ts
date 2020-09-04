@@ -156,6 +156,24 @@ describe('basic testing schema definition mode `code`', () => {
       Definition: 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n}\n',
     });
   });
+
+  test('definition mode `code` addSubscription w/ @aws_subscribe', () => {
+    // WHE
+    const api = new appsync.GraphqlApi(stack, 'API', {
+      name: 'demo',
+    });
+    api.addSubscription('test', new appsync.ResolvableField({
+      returnType: t.string,
+      directives: [appsync.Directive.subscribe('test1')],
+    }));
+
+    const out = 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n  @aws_subscribe(mutations: ["test1"])\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: out,
+    });
+  });
 });
 
 describe('testing schema definition mode `file`', () => {
