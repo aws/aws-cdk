@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **eks:** when importing EKS clusters using `eks.Cluster.fromClusterAttributes`, the `clusterArn` attribute is not supported anymore, and will always be derived from `clusterName`.
 * **eks**: Only a single `eks.Cluster` is allowed per CloudFormation stack.
 * **eks**: The `securityGroups` attribute of `ClusterAttributes` is now `securityGroupIds`.
+* **cli**: `--qualifier` must be alphanumeric and not longer than 10 characters when bootstrapping using `newStyleStackSynthesis`.
 
 ### Features
 
