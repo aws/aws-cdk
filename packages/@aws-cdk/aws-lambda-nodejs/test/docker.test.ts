@@ -14,6 +14,15 @@ test('parcel is available', async () => {
   expect(proc.status).toEqual(0);
 });
 
+test('parcel is installed without a package-lock.json file', async () => {
+  const proc = spawnSync('docker', [
+    'run', 'parcel',
+    'sh', '-c',
+    'test ! -f /package-lock.json',
+  ]);
+  expect(proc.status).toEqual(0);
+});
+
 test('can npm install with non root user', async () => {
   const proc = spawnSync('docker', [
     'run', '-u', '1000:1000',
