@@ -480,7 +480,6 @@ export = {
   },
 
   'cluster supports metrics'(test: Test) {
-    // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
