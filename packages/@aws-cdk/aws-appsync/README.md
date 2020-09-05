@@ -18,7 +18,7 @@ APIs that use GraphQL.
 
 ### Example
 
-#### DynamoDB
+### DynamoDB
 
 Example of a GraphQL API with `AWS_IAM` authorization resolving into a DynamoDb
 backend data source.
