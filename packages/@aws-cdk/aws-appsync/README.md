@@ -207,7 +207,7 @@ const api = appsync.GraphqlApi(stack, 'api', {
 });
 ```
 
-## Imports
+### Imports
 Any GraphQL Api that has been created outside the stack can be imported from 
 another stack into your CDK app. Utilizing the `fromXxx` function, you have 
 the ability to add data sources and resolvers through a `IGraphqlApi` interface.
