@@ -122,7 +122,7 @@ GraphQL request mapping template `request.vtl`:
 }
 ```
 
-GraphQL request mapping template `response.vtl`:
+GraphQL response mapping template `response.vtl`:
 
 ```
 {
