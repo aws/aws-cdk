@@ -62,10 +62,22 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 
+Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
+
+```ts
+new DatabaseClusterFromSnapshot(stack, 'Database', {
+  engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+  instanceProps: {
+    vpc,
+  },
+  snapshotIdentifier: 'mySnapshot',
+});
+```
+
 ### Starting an instance database
 
 To set up a instance database, define a `DatabaseInstance`. You must
-always launch a database in a VPC. Use the `vpcPlacement` attribute to control whether
+always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
 ```ts
@@ -75,7 +87,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
   masterUsername: 'syscdk',
   vpc,
-  vpcPlacement: {
+  vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE
   }
 });
@@ -228,6 +240,37 @@ instance.grantConnect(role); // Grant the role connection access to the DB.
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
 See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html for setup instructions.
 
+### Kerberos Authentication
+
+You can also authenticate using Kerberos to a database instance using AWS Managed Microsoft AD for authentication;
+See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html for more information
+and a list of supported versions and limitations.
+
+The following example shows enabling domain support for a database instance and creating an IAM role to access
+Directory Services.
+
+```ts
+const role = new iam.Role(stack, 'RDSDirectoryServicesRole', {
+  assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
+  ],
+});
+const instance = new rds.DatabaseInstance(stack, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+  masterUsername: 'admin',
+  vpc,
+  domain: 'd-????????', // The ID of the domain for the instance to join.
+  domainRole: role, // Optional - will be create automatically if not provided.
+});
+```
+
+**Note**: In addition to the setup above, you need to make sure that the database instance has network connectivity
+to the domain controllers. This includes enabling cross-VPC traffic if in a different VPC and setting up the
+appropriate security groups/network ACL to allow traffic between the database instance and domain controllers.
+Once configured, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html for details
+on configuring users for each available database engine.
+
 ### Metrics
 
 Database instances expose metrics (`cloudwatch.Metric`):
@@ -322,5 +365,29 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   // ...
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
   // ...
+});
+```
+
+### Option Groups
+
+Some DB engines offer additional features that make it easier to manage data and databases, and to provide additional security for your database.
+Amazon RDS uses option groups to enable and configure these features. An option group can specify features, called options,
+that are available for a particular Amazon RDS DB instance.
+
+```ts
+const vpc: ec2.IVpc = ...;
+const securityGroup: ec2.ISecurityGroup = ...;
+new rds.OptionGroup(stack, 'Options', {
+  engine: DatabaseInstanceEngine.oracleSe({
+    version: OracleLegacyEngineVersion.VER_11_2,
+  }),
+  configurations: [
+    {
+      name: 'OEM',
+      port: 5500,
+      vpc,
+      securityGroups: [securityGroup], // Optional - a default group will be created if not provided.
+    },
+  ],
 });
 ```
