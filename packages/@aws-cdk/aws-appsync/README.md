@@ -135,7 +135,7 @@ CDK stack file `app-stack.ts`:
 ```ts
 import * as appsync from '@aws-cdk/aws-appsync';
 
-const api = new appsync.GraphQLApi(scope, 'id', {
+const api = new appsync.GraphqlApi(scope, 'api', {
   name: 'api',
   schema: appsync.Schema.fromFile(join(__dirname, 'schema.graphql')),
 });
