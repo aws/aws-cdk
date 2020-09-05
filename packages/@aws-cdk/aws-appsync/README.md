@@ -137,7 +137,7 @@ import * as appsync from '@aws-cdk/aws-appsync';
 
 const api = new appsync.GraphQLApi(scope, 'id', {
   name: 'api',
-  schema: appsync.Schema.fromFile(join(__dirname, 'schema.graphql))
+  schema: appsync.Schema.fromFile(join(__dirname, 'schema.graphql')),
 });
 
 const httpDs = api.addHttpDataSource(
