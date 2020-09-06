@@ -65,6 +65,8 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
     //
     // Solution: delegate call to the stack, but if the stack delegates back to us again
     // then do the actual logic.
+    //
+    // @deprecated: this can be removed for v2
     if (this.cycle) {
       return this.doAddFileAsset(asset);
     }
@@ -80,6 +82,7 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
     assertBound(this.stack);
 
     // See `addFileAsset` for explanation.
+    // @deprecated: this can be removed for v2
     if (this.cycle) {
       return this.doAddDockerImageAsset(asset);
     }

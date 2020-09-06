@@ -10,13 +10,12 @@ function joined(str: string): string {
 
 // GLOBAL GIVEN
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'baseApi', {
+  api = new appsync.GraphqlApi(stack, 'baseApi', {
     name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.FILE,
-    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
 });
 
@@ -72,14 +71,11 @@ describe('DynamoDb Data Source configuration', () => {
   });
 
   test('appsync errors when creating multiple dynamo db data sources with no configuration', () => {
-    // WHEN
-    const when = () => {
-      api.addDynamoDbDataSource('ds', table);
-      api.addDynamoDbDataSource('ds', table);
-    };
-
     // THEN
-    expect(when).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
+    expect(() => {
+      api.addDynamoDbDataSource('ds', table);
+      api.addDynamoDbDataSource('ds', table);
+    }).toThrow("There is already a Construct with name 'ds' in GraphqlApi [baseApi]");
   });
 });
 
@@ -164,7 +160,7 @@ describe('adding DynamoDb data source from imported api', () => {
 
   test('imported api can add DynamoDbDataSource from id', () => {
     // WHEN
-    const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
     });
     importedApi.addDynamoDbDataSource('ds', table);
@@ -178,7 +174,7 @@ describe('adding DynamoDb data source from imported api', () => {
 
   test('imported api can add DynamoDbDataSource from attributes', () => {
     // WHEN
-    const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
       graphqlApiArn: api.arn,
     });

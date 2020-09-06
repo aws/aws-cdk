@@ -13,11 +13,12 @@ export function flatten(object: object): { [key: string]: string } {
     {},
     ...function _flatten(child: any, path: string[] = []): any {
       return [].concat(...Object.keys(child)
-        .map(key =>
-          typeof child[key] === 'object' && child[key] !== null
-            ? _flatten(child[key], path.concat([key]))
-            : ({ [path.concat([key]).join('.')]: child[key] }),
-        ));
+        .map(key => {
+          const childKey = Buffer.isBuffer(child[key]) ? child[key].toString('utf8') : child[key];
+          return typeof childKey === 'object' && childKey !== null
+            ? _flatten(childKey, path.concat([key]))
+            : ({ [path.concat([key]).join('.')]: childKey });
+        }));
     }(object),
   );
 }

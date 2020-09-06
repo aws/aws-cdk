@@ -7,6 +7,11 @@ import { AwsSdkCall, PhysicalResourceId } from '../../lib';
 import { EncodedAwsSdkCall } from '../../lib/aws-custom-resource/lambda-handler-types';
 import { flatten, handler, forceSdkInstallation } from '../../lib/aws-custom-resource/runtime';
 
+
+// This test performs an 'npm install' which may take longer than the default
+// 5s timeout
+jest.setTimeout(60_000);
+
 /* eslint-disable no-console */
 
 console.log = jest.fn();
@@ -412,6 +417,24 @@ test('flatten correctly flattens a nested object', () => {
   });
 });
 
+test('flatten correctly flattens an object with buffers', () => {
+  expect(flatten({
+    body: Buffer.from('body'),
+    nested: {
+      buffer: Buffer.from('buffer'),
+      array: [
+        Buffer.from('array.0'),
+        Buffer.from('array.1'),
+      ],
+    },
+  })).toEqual({
+    'body': 'body',
+    'nested.buffer': 'buffer',
+    'nested.array.0': 'array.0',
+    'nested.array.1': 'array.1',
+  });
+});
+
 test('installs the latest SDK', async () => {
   const tmpPath = '/tmp/node_modules/aws-sdk';
 
@@ -456,6 +479,9 @@ test('installs the latest SDK', async () => {
   expect(request.isDone()).toBeTruthy();
 
   expect(() => require.resolve(tmpPath)).not.toThrow();
+
+  // clean up aws-sdk install
+  await fs.remove(tmpPath);
 });
 
 test('can specify assumedRole', async () => {

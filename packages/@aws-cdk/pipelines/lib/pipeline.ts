@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput, Construct, PhysicalName, Stack, Stage } from '@aws-cdk/core';
+import { App, CfnOutput, Construct, PhysicalName, Stack, Stage, Aspects } from '@aws-cdk/core';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
@@ -12,13 +12,17 @@ import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from '
 export interface CdkPipelineProps {
   /**
    * The CodePipeline action used to retrieve the CDK app's source
+   *
+   * @default - Required unless `codePipeline` is given
    */
-  readonly sourceAction: codepipeline.IAction;
+  readonly sourceAction?: codepipeline.IAction;
 
   /**
    * The CodePipeline action build and synthesis step of the CDK app
+   *
+   * @default - Required unless `codePipeline` or `sourceAction` is given
    */
-  readonly synthAction: codepipeline.IAction;
+  readonly synthAction?: codepipeline.IAction;
 
   /**
    * The artifact you have defined to be the artifact to hold the cloudAssemblyArtifact for the synth action
@@ -26,7 +30,25 @@ export interface CdkPipelineProps {
   readonly cloudAssemblyArtifact: codepipeline.Artifact;
 
   /**
+   * Existing CodePipeline to add deployment stages to
+   *
+   * Use this if you want more control over the CodePipeline that gets created.
+   * You can choose to not pass this value, in which case a new CodePipeline is
+   * created with default settings.
+   *
+   * If you pass an existing CodePipeline, it should should have been created
+   * with `restartExecutionOnUpdate: true`.
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - A new CodePipeline is automatically generated
+   */
+  readonly codePipeline?: codepipeline.Pipeline;
+
+  /**
    * Name of the pipeline
+   *
+   * Can only be set if `codePipeline` is not set.
    *
    * @default - A name is automatically generated
    */
@@ -72,28 +94,58 @@ export class CdkPipeline extends Construct {
     this._cloudAssemblyArtifact = props.cloudAssemblyArtifact;
     const pipelineStack = Stack.of(this);
 
-    this._pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
-      ...props,
-      restartExecutionOnUpdate: true,
-      stages: [
-        {
-          stageName: 'Source',
-          actions: [props.sourceAction],
-        },
-        {
-          stageName: 'Build',
-          actions: [props.synthAction],
-        },
-        {
-          stageName: 'UpdatePipeline',
-          actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
-            cloudAssemblyInput: this._cloudAssemblyArtifact,
-            pipelineStackName: pipelineStack.stackName,
-            cdkCliVersion: props.cdkCliVersion,
-            projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
-          })],
-        },
-      ],
+    if (props.codePipeline) {
+      if (props.pipelineName) {
+        throw new Error('Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
+
+      this._pipeline = props.codePipeline;
+    } else {
+      this._pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
+        pipelineName: props.pipelineName,
+        restartExecutionOnUpdate: true,
+      });
+    }
+
+    if (props.sourceAction && !props.synthAction) {
+      // Because of ordering limitations, you can: bring your own Source, bring your own
+      // Both, or bring your own Nothing. You cannot bring your own Build (which because of the
+      // current CodePipeline API must go BEFORE what we're adding) and then having us add a
+      // Source after it. That doesn't make any sense.
+      throw new Error('When passing a \'sourceAction\' you must also pass a \'synthAction\' (or a \'codePipeline\' that already has both)');
+    }
+    if (!props.sourceAction && (!props.codePipeline || props.codePipeline.stages.length < 1)) {
+      throw new Error('You must pass a \'sourceAction\' (or a \'codePipeline\' that already has a Source stage)');
+    }
+    if (!props.synthAction && (!props.codePipeline || props.codePipeline.stages.length < 2)) {
+      // This looks like a weirdly specific requirement, but actually the underlying CodePipeline
+      // requires that a Pipeline has at least 2 stages. We're just hitching onto upstream
+      // requirements to do this check.
+      throw new Error('You must pass a \'synthAction\' (or a \'codePipeline\' that already has a Build stage)');
+    }
+
+    if (props.sourceAction) {
+      this._pipeline.addStage({
+        stageName: 'Source',
+        actions: [props.sourceAction],
+      });
+    }
+
+    if (props.synthAction) {
+      this._pipeline.addStage({
+        stageName: 'Build',
+        actions: [props.synthAction],
+      });
+    }
+
+    this._pipeline.addStage({
+      stageName: 'UpdatePipeline',
+      actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
+        cloudAssemblyInput: this._cloudAssemblyArtifact,
+        pipelineStackName: pipelineStack.stackName,
+        cdkCliVersion: props.cdkCliVersion,
+        projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
+      })],
     });
 
     this._assets = new AssetPublishing(this, 'Assets', {
@@ -103,7 +155,26 @@ export class CdkPipeline extends Construct {
       projectName: maybeSuffix(props.pipelineName, '-publish'),
     });
 
-    this.node.applyAspect({ visit: () => this._assets.removeAssetsStageIfEmpty() });
+    Aspects.of(this).add({ visit: () => this._assets.removeAssetsStageIfEmpty() });
+  }
+
+  /**
+   * The underlying CodePipeline object
+   *
+   * You can use this to add more Stages to the pipeline, or Actions
+   * to Stages.
+   */
+  public get codePipeline(): codepipeline.Pipeline {
+    return this._pipeline;
+  }
+
+  /**
+   * Access one of the pipeline's stages by stage name
+   *
+   * You can use this to add more Actions to a stage.
+   */
+  public stage(stageName: string): codepipeline.IStage {
+    return this._pipeline.stage(stageName);
   }
 
   /**

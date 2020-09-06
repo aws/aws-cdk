@@ -6,17 +6,16 @@ import * as appsync from '../lib';
 
 let stack: cdk.Stack;
 let role: iam.Role;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
   role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   });
-  api = new appsync.GraphQLApi(stack, 'API', {
+  api = new appsync.GraphqlApi(stack, 'API', {
     name: 'demo',
-    schemaDefinition: appsync.SchemaDefinition.FILE,
-    schemaDefinitionFile: join(__dirname, 'appsync.test.graphql'),
+    schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     authorizationConfig: {
       defaultAuthorization: {
         authorizationType: appsync.AuthorizationType.IAM,
@@ -28,13 +27,10 @@ beforeEach(() => {
 describe('grant Permissions', () => {
 
   test('IamResource throws error when custom is called with no arguments', () => {
-    // WHEN
-    const when = () => {
-      api.grant(role, appsync.IamResource.custom(), 'appsync:GraphQL');
-    };
-
     //THEN
-    expect(when).toThrowError('At least 1 custom ARN must be provided.');
+    expect(() => {
+      api.grant(role, appsync.IamResource.custom(), 'appsync:GraphQL');
+    }).toThrowError('At least 1 custom ARN must be provided.');
   });
 
   test('grant provides custom permissions when called with `custom` argument', () => {

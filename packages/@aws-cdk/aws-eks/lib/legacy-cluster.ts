@@ -1,11 +1,14 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, Construct, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import { CfnOutput, Construct, Resource, Stack, Token, Tags } from '@aws-cdk/core';
 import { ICluster, ClusterAttributes, KubernetesVersion, NodeType, DefaultCapacityType, EksOptimizedImage, CapacityOptions, MachineImageType, AutoScalingGroupOptions, CommonClusterOptions } from './cluster';
 import { clusterArnComponents } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
+import { HelmChartOptions, HelmChart } from './helm-chart';
+import { KubernetesManifest } from './k8s-manifest';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
@@ -43,6 +46,15 @@ export interface LegacyClusterProps extends CommonClusterOptions {
    * @default NODEGROUP
    */
   readonly defaultCapacityType?: DefaultCapacityType;
+
+  /**
+   * KMS secret for envelope encryption for Kubernetes secrets.
+   *
+   * @default - By default, Kubernetes stores all secret object data within etcd and
+   *            all etcd volumes used by Amazon EKS are encrypted at the disk-level
+   *            using AWS-Managed encryption keys.
+   */
+  readonly secretsEncryptionKey?: kms.IKey;
 }
 
 /**
@@ -184,6 +196,14 @@ export class LegacyCluster extends Resource implements ICluster {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
       },
+      ...(props.secretsEncryptionKey ? {
+        encryptionConfig: [{
+          provider: {
+            keyArn: props.secretsEncryptionKey.keyArn,
+          },
+          resources: ['secrets'],
+        }],
+      } : {} ),
     };
 
     const resource = new CfnCluster(this, 'Resource', clusterProps);
@@ -327,7 +347,7 @@ export class LegacyCluster extends Resource implements ICluster {
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
-    Tag.add(autoScalingGroup, `kubernetes.io/cluster/${this.clusterName}`, 'owned', {
+    Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
       applyToLaunchedInstances: true,
     });
 
@@ -340,6 +360,14 @@ export class LegacyCluster extends Resource implements ICluster {
     new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
       value: autoScalingGroup.role.roleArn,
     });
+  }
+
+  public addManifest(_id: string, ..._manifest: any[]): KubernetesManifest {
+    throw new Error('legacy cluster does not support adding kubernetes manifests');
+  }
+
+  public addChart(_id: string, _options: HelmChartOptions): HelmChart {
+    throw new Error('legacy cluster does not support adding helm charts');
   }
 
   /**
@@ -361,7 +389,7 @@ export class LegacyCluster extends Resource implements ICluster {
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, '1'));
+        Tags.of(subnet).add(tag, '1');
       }
     };
 
@@ -375,32 +403,66 @@ export class LegacyCluster extends Resource implements ICluster {
  * Import a cluster to use in another stack
  */
 class ImportedCluster extends Resource implements ICluster {
-  public readonly vpc: ec2.IVpc;
-  public readonly clusterCertificateAuthorityData: string;
-  public readonly clusterSecurityGroupId: string;
-  public readonly clusterEncryptionConfigKeyArn: string;
   public readonly clusterName: string;
   public readonly clusterArn: string;
-  public readonly clusterEndpoint: string;
   public readonly connections = new ec2.Connections();
 
-  constructor(scope: Construct, id: string, props: ClusterAttributes) {
+  constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
 
-    this.vpc = ec2.Vpc.fromVpcAttributes(this, 'VPC', props.vpc);
     this.clusterName = props.clusterName;
-    this.clusterEndpoint = props.clusterEndpoint;
-    this.clusterArn = props.clusterArn;
-    this.clusterCertificateAuthorityData = props.clusterCertificateAuthorityData;
-    this.clusterSecurityGroupId = props.clusterSecurityGroupId;
-    this.clusterEncryptionConfigKeyArn = props.clusterEncryptionConfigKeyArn;
+    this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
 
     let i = 1;
-    for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));
+    for (const sgid of props.securityGroupIds ?? []) {
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgid));
       i++;
     }
   }
+
+  public addManifest(_id: string, ..._manifest: any[]): KubernetesManifest {
+    throw new Error('legacy cluster does not support adding kubernetes manifests');
+  }
+
+  public addChart(_id: string, _options: HelmChartOptions): HelmChart {
+    throw new Error('legacy cluster does not support adding helm charts');
+  }
+
+  public get vpc() {
+    if (!this.props.vpc) {
+      throw new Error('"vpc" is not defined for this imported cluster');
+    }
+    return this.props.vpc;
+  }
+
+  public get clusterSecurityGroupId(): string {
+    if (!this.props.clusterSecurityGroupId) {
+      throw new Error('"clusterSecurityGroupId" is not defined for this imported cluster');
+    }
+    return this.props.clusterSecurityGroupId;
+  }
+
+  public get clusterEndpoint(): string {
+    if (!this.props.clusterEndpoint) {
+      throw new Error('"clusterEndpoint" is not defined for this imported cluster');
+    }
+    return this.props.clusterEndpoint;
+  }
+
+  public get clusterCertificateAuthorityData(): string {
+    if (!this.props.clusterCertificateAuthorityData) {
+      throw new Error('"clusterCertificateAuthorityData" is not defined for this imported cluster');
+    }
+    return this.props.clusterCertificateAuthorityData;
+  }
+
+  public get clusterEncryptionConfigKeyArn(): string {
+    if (!this.props.clusterEncryptionConfigKeyArn) {
+      throw new Error('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
+    }
+    return this.props.clusterEncryptionConfigKeyArn;
+  }
+
 }
 
 /**
