@@ -1,4 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert';
+import { ResourcePart, arrayWith } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -60,12 +60,12 @@ describe('tests', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      LoadBalancerAttributes: [
+      LoadBalancerAttributes: arrayWith(
         {
           Key: 'load_balancing.cross_zone.enabled',
           Value: 'true',
         },
-      ],
+      ),
     });
   });
 
@@ -83,7 +83,7 @@ describe('tests', () => {
 
     // verify that the LB attributes reference the bucket
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      LoadBalancerAttributes: [
+      LoadBalancerAttributes: arrayWith(
         {
           Key: 'access_logs.s3.enabled',
           Value: 'true',
@@ -92,7 +92,7 @@ describe('tests', () => {
           Key: 'access_logs.s3.bucket',
           Value: { Ref: 'AccessLoggingBucketA6D88F29' },
         },
-      ],
+      ),
     });
 
     // verify the bucket policy allows the ALB to put objects in the bucket
@@ -150,7 +150,7 @@ describe('tests', () => {
     // THEN
     // verify that the LB attributes reference the bucket
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      LoadBalancerAttributes: [
+      LoadBalancerAttributes: arrayWith(
         {
           Key: 'access_logs.s3.enabled',
           Value: 'true',
@@ -163,7 +163,7 @@ describe('tests', () => {
           Key: 'access_logs.s3.prefix',
           Value: 'prefix-of-access-logs',
         },
-      ],
+      ),
     });
 
     // verify the bucket policy allows the ALB to put objects in the bucket
