@@ -440,7 +440,7 @@ function encodeBooleans(object: object) {
 }
 
 function formatCall(call?: AwsSdkCall): EncodedAwsSdkCall | undefined {
-  if(!call){
+  if (!call) {
     return undefined;
   }
 
