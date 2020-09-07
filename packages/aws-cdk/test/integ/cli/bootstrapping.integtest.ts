@@ -1,5 +1,5 @@
 import { cloudFormation } from './aws-helpers';
-import { cdk, cleanup, fullStackName, prepareAppFixture, shell } from './cdk-helpers';
+import { cdk, cleanup, fullStackName, prepareAppFixture } from './cdk-helpers';
 import { integTest } from './test-helpers';
 
 jest.setTimeout(600_000 * 9);
