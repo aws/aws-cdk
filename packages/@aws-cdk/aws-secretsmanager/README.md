@@ -43,7 +43,7 @@ A secret can set `RemovalPolicy`. If it set to `RETAIN`, that removing a secret 
 
 ### Grant permission to use the secret to a role
 
-You must grant permission to a resource for that resource to be allowed to 
+You must grant permission to a resource for that resource to be allowed to
 use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.grantUpdate`
  method, depending on your need:
 
@@ -86,6 +86,7 @@ new SecretRotation(this, 'SecretRotation', {
   secret: mySecret,
   target: myDatabase, // a Connectable
   vpc: myVpc, // The VPC where the secret rotation application will be deployed
+  excludeCharacters: ` ;+%{}` + `@'"\`/\\#`, // A string of characters to never use when generating new passwords. Example is a superset of the characters which will break DMS endpoints and characters which cause problems in BASH scripts.
 });
 ```
 

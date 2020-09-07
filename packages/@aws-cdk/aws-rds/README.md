@@ -62,6 +62,18 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 
+Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
+
+```ts
+new DatabaseClusterFromSnapshot(stack, 'Database', {
+  engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+  instanceProps: {
+    vpc,
+  },
+  snapshotIdentifier: 'mySnapshot',
+});
+```
+
 ### Starting an instance database
 
 To set up a instance database, define a `DatabaseInstance`. You must
