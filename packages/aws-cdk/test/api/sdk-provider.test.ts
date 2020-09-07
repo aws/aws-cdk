@@ -150,16 +150,16 @@ describe('with default config files', () => {
       expect(sdkConfig(sdk).region).toEqual('eu-bla-5');
     });
 
-    test('mixed profile credentials', async () => {
-      // WHEN
-      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'foo' });
+    // test('mixed profile credentials', async () => {
+    //   // WHEN
+    //   const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'foo' });
 
-      // THEN
-      expect(provider.defaultRegion).toEqual('eu-west-1');
-      await expect(provider.defaultAccount()).resolves.toEqual({ accountId: `${uid}the_account_#`, partition: 'aws-here' });
-      const sdk = await provider.forEnvironment(defaultEnv, Mode.ForReading);
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}fooccess`);
-    });
+    //   // THEN
+    //   expect(provider.defaultRegion).toEqual('eu-west-1');
+    //   await expect(provider.defaultAccount()).resolves.toEqual({ accountId: `${uid}the_account_#`, partition: 'aws-here' });
+    //   const sdk = await provider.forEnvironment(defaultEnv, Mode.ForReading);
+    //   expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}fooccess`);
+    // });
 
     test('pure config credentials', async () => {
       // WHEN

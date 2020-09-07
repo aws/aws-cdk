@@ -85,6 +85,8 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
 
     if (sourceProfileName) {
 
+      print(`Using source_profile = ${sourceProfileName}`);
+
       var sourceProfileExistanceTest = creds[sourceProfileName];
 
       if (typeof sourceProfileExistanceTest !== 'object') {
