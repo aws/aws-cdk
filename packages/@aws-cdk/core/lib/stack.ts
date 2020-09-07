@@ -13,6 +13,7 @@ import { CfnResource, TagType } from './cfn-resource';
 import { Construct, IConstruct, ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
+import { FeatureFlags } from './feature-flags';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
@@ -358,14 +359,16 @@ export class Stack extends Construct implements ITaggable {
     //
     // Also use the new behavior if we are using the new CI/CD-ready synthesizer; that way
     // people only have to flip one flag.
-    // eslint-disable-next-line max-len
-    this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT) || this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+    const featureFlags = FeatureFlags.of(this);
+    const stackNameDupeContext = featureFlags.isEnabled(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT);
+    const newStyleSynthesisContext = featureFlags.isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
+    this.artifactId = (stackNameDupeContext || newStyleSynthesisContext)
       ? this.generateStackArtifactId()
       : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
 
-    this.synthesizer = props.synthesizer ?? (this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+    this.synthesizer = props.synthesizer ?? (newStyleSynthesisContext
       ? new DefaultStackSynthesizer()
       : new LegacyStackSynthesizer());
     this.synthesizer.bind(this);
