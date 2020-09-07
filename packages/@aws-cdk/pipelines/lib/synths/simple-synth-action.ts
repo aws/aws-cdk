@@ -3,7 +3,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
-import { PolicyStatement } from '@aws-cdk/aws-iam';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
@@ -86,7 +86,7 @@ export interface SimpleSynthOptions {
    *
    * @default - No policy statements added to CodeBuild Project Role
    */
-  readonly rolePolicyStatements?: PolicyStatement[];
+  readonly rolePolicyStatements?: iam.PolicyStatement[];
 }
 
 /**
@@ -171,7 +171,7 @@ export interface AdditionalArtifact {
 /**
  * A standard synth with a generated buildspec
  */
-export class SimpleSynthAction implements codepipeline.IAction {
+export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
 
   /**
    * Create a standard NPM synth action
@@ -205,6 +205,7 @@ export class SimpleSynthAction implements codepipeline.IAction {
 
   private _action?: codepipeline_actions.CodeBuildAction;
   private _actionProperties: codepipeline.ActionProperties;
+  private _project?: codebuild.IProject;
 
   constructor(private readonly props: SimpleSynthActionProps) {
     // A number of actionProperties get read before bind() is even called (so before we
@@ -254,6 +255,16 @@ export class SimpleSynthAction implements codepipeline.IAction {
   }
 
   /**
+   * Project generated to run the synth command
+   */
+  public get project(): codebuild.IProject {
+    if (!this._project) {
+      throw new Error('Project becomes available after SimpleSynthAction has been bound to a stage');
+    }
+    return this._project;
+  }
+
+  /**
    * Exists to implement IAction
    */
   public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
@@ -296,6 +307,8 @@ export class SimpleSynthAction implements codepipeline.IAction {
       });
     }
 
+    this._project = project;
+
     this._action = new codepipeline_actions.CodeBuildAction({
       actionName: this.actionProperties.actionName,
       input: this.props.sourceArtifact,
@@ -337,6 +350,13 @@ export class SimpleSynthAction implements codepipeline.IAction {
 
       return cloudAsmArtifactSpec;
     }
+  }
+
+  /**
+   * The CodeBuild Project's principal
+   */
+  public get grantPrincipal(): iam.IPrincipal {
+    return this.project.grantPrincipal;
   }
 
   /**
