@@ -54,7 +54,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // unsupported: stacks are not in the same environment
   if (producer.environment !== consumer.environment) {
     throw new Error(
-      `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
+      `Stack "${consumer.node.path}" (environment '${consumer.environment}') cannot consume a cross reference from stack "${producer.node.path} (environment '${producer.environment}')". ` +
       'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack');
   }
 

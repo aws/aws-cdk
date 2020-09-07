@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, IResource, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -230,12 +230,7 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!(Construct.isConstruct(grantee))) {
-      return false;
-    }
-    const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee);
-    return bucketStack.account !== identityStack.account;
+    return [TokenComparison.DIFFERENT, TokenComparison.ONE_UNRESOLVED].includes(Token.compareStrings(this.env.account, grantee.grantPrincipal.principalAccount ?? ''));
   }
 }
 
