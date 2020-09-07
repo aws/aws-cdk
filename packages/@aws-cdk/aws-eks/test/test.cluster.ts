@@ -10,6 +10,7 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
+import { BottleRocketImage } from '../lib/bottlerocket';
 import { getOrCreateKubectlLayer } from '../lib/kubectl-provider';
 import { testFixture, testFixtureNoVpc } from './util';
 
@@ -1126,28 +1127,7 @@ export = {
       ), 'EKS AMI with GPU should be in ssm parameters');
       test.done();
     },
-      
-    'EKS-Optimized AMI with GPU support when addCapacity'(test: Test) {
-      // GIVEN
-      const { app, stack } = testFixtureNoVpc();
 
-      // WHEN
-      new eks.Cluster(stack, 'cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
-      }).addCapacity('GPUCapacity', {
-        instanceType: new ec2.InstanceType('g4dn.xlarge'),
-      });
-
-      // THEN
-      const assembly = app.synth();
-      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux-2-gpu'),
-      ), 'EKS AMI with GPU should be in ssm parameters');
-      test.done();
-    },
-      
     'EKS-Optimized AMI with ARM64 when addCapacity'(test: Test) {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
@@ -1172,9 +1152,9 @@ export = {
     'BottleRocketImage() with specific kubernetesVersion return correct AMI'(test: Test) {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
-      
+
       // WHEN
-      new eks.BottleRocketImage({ kubernetesVersion: '1.17' }).getImage(stack);
+      new BottleRocketImage({ kubernetesVersion: '1.17' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1189,7 +1169,7 @@ export = {
       ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
-      
+
     'when using custom resource a creation role & policy is defined'(test: Test) {
       // GIVEN
       const { stack } = testFixture();

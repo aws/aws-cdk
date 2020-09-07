@@ -4210,6 +4210,10 @@
       "Type": "AWS::SSM::Parameter::Value<String>",
       "Default": "/aws/service/eks/optimized-ami/1.16/amazon-linux-2/recommended/image_id"
     },
+    "SsmParameterValueawsserviceeksoptimizedami116amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/eks/optimized-ami/1.16/amazon-linux-2-arm64/recommended/image_id"
+    },
     "SsmParameterValueawsservicebottlerocketawsk8s116x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
       "Default": "/aws/service/bottlerocket/aws-k8s-1.16/x86_64/latest/image_id"
