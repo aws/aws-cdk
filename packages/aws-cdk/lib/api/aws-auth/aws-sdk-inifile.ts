@@ -20,7 +20,10 @@ import * as AWS from 'aws-sdk';
  *     `getProfilesFromSharedConfig` overwrites ALL `config` data with `credentials`
  *     data, so we also need to do extra work to fish the `region` out of the config.
  *
+ * 3.  The 'credential_source' option is not supported. This 
+ *
  * See https://github.com/aws/aws-sdk-js/issues/3418 for all the gory details.
+ * See https://github.com/aws/aws-sdk-js/issues/1916 for some more glory details.
  */
 export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredentials {
   declare private profile: string;
@@ -54,39 +57,78 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
     var externalId = roleProfile.external_id;
     var mfaSerial = roleProfile.mfa_serial;
     var sourceProfileName = roleProfile.source_profile;
+    var sourceCredentials = roleProfile.credential_source;
 
-    if (!sourceProfileName) {
+    if (sourceProfileName && sourceCredentials) {
       throw (AWS as any).util.error(
-        new Error('source_profile is not set using profile ' + this.profile),
+        new Error('source_profile and credential_source are both configured in profile ' + this.profile + '. please choose one or the other.'),
         { code: 'SharedIniFileCredentialsProviderFailure' },
       );
     }
 
-    var sourceProfileExistanceTest = creds[sourceProfileName];
-
-    if (typeof sourceProfileExistanceTest !== 'object') {
+    if (!sourceProfileName && !sourceCredentials) {
       throw (AWS as any).util.error(
-        new Error('source_profile ' + sourceProfileName + ' using profile '
-          + this.profile + ' does not exist'),
+        new Error('neither source_profile nor credential_source configured in profile ' + this.profile + '. please configure one or the other.'),
         { code: 'SharedIniFileCredentialsProviderFailure' },
       );
     }
-
-    var sourceCredentials = new AWS.SharedIniFileCredentials(
-      (AWS as any).util.merge(this.options || {}, {
-        profile: sourceProfileName,
-        preferStaticCredentials: true,
-      }),
-    );
 
     // --------- THIS IS NEW ----------------------
     const profiles = loadProfilesProper(this.filename);
     const region = profiles[this.profile]?.region ?? profiles.default?.region ?? 'us-east-1';
     // --------- /THIS IS NEW ----------------------
 
+    let stsCreds = undefined;
+
+    if (sourceProfileName) {
+
+      var sourceProfileExistanceTest = creds[sourceProfileName];
+
+      if (typeof sourceProfileExistanceTest !== 'object') {
+        throw (AWS as any).util.error(
+          new Error('source_profile ' + sourceProfileName + ' using profile '
+            + this.profile + ' does not exist'),
+          { code: 'SharedIniFileCredentialsProviderFailure' },
+        );
+      }
+
+      stsCreds = new AWS.SharedIniFileCredentials(
+        (AWS as any).util.merge(this.options || {}, {
+          profile: sourceProfileName,
+          preferStaticCredentials: true,
+        }),
+      );
+
+    }
+
+    // the aws-sdk for js does not support 'credential_source' (https://github.com/aws/aws-sdk-js/issues/1916)
+    // so unfortunately we need to implement this ourselves.
+    if (sourceCredentials) {
+
+      // see https://docs.aws.amazon.com/credref/latest/refdocs/setting-global-credential_source.html
+      switch (sourceCredentials) {
+        case 'Environment': {
+          stsCreds = new AWS.EnvironmentCredentials('AWS');
+          break;
+        }
+        case 'Ec2InstanceMetadata': {
+          stsCreds = new AWS.EC2MetadataCredentials();
+          break;
+        }
+        case 'EcsContainer': {
+          stsCreds = new AWS.ECSCredentials();
+          break;
+        }
+        default: {
+          throw new Error(`credential_source ${sourceCredentials} in profile ${this.profile} is unsupported. choose one of [Environment, Ec2InstanceMetadata, EcsContainer]`);
+        }
+      }
+
+    }
+
     this.roleArn = roleArn;
     var sts = new AWS.STS({
-      credentials: sourceCredentials,
+      credentials: stsCreds,
       region,
       httpOptions: this.httpOptions,
     });
