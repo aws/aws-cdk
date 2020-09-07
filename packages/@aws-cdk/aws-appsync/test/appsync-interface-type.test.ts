@@ -4,11 +4,11 @@ import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
 
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'api', {
+  api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
   });
 });
@@ -87,6 +87,56 @@ describe('testing InterfaceType properties', () => {
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
+  });
+
+  test('Interface Type can generate Fields with Directives', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', {
+      definition: {
+        test: t.string,
+      },
+    });
+    test.addField({
+      fieldName: 'resolve',
+      field: new appsync.Field({
+        returnType: t.string,
+        directives: [appsync.Directive.apiKey()],
+      }),
+    });
+
+    api.addType(test);
+    const out = 'interface Test {\n  test: String\n  resolve: String\n  @aws_api_key\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('Interface Type can generate ResolvableFields with Directives, but not the resolver', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', {
+      definition: {
+        test: t.string,
+      },
+    });
+    test.addField({
+      fieldName: 'resolve',
+      field: new appsync.ResolvableField({
+        returnType: t.string,
+        directives: [appsync.Directive.apiKey()],
+        dataSource: api.addNoneDataSource('none'),
+      }),
+    });
+
+    api.addType(test);
+    const out = 'interface Test {\n  test: String\n  resolve: String\n  @aws_api_key\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+    expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
   });
 
   test('appsync fails addField with InterfaceType missing fieldName', () => {

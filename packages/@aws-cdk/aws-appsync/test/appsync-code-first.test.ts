@@ -10,10 +10,10 @@ beforeEach(() => {
 });
 
 describe('code-first implementation through GraphQL Api functions`', () => {
-  let api: appsync.GraphQLApi;
+  let api: appsync.GraphqlApi;
   beforeEach(() => {
     // GIVEN
-    api = new appsync.GraphQLApi(stack, 'api', {
+    api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
     });
   });
@@ -164,7 +164,7 @@ describe('code-first implementation through Schema functions`', () => {
     schema.addType(test);
     test.addField({ fieldName: 'dupid', field: t.dup_id });
 
-    new appsync.GraphQLApi(stack, 'api', {
+    new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
       schema,
     });
@@ -190,7 +190,7 @@ describe('code-first implementation through Schema functions`', () => {
     schema.addType(test);
     test.addField({ fieldName: 'dupid', field: t.dup_id });
 
-    new appsync.GraphQLApi(stack, 'api', {
+    new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
       schema,
     });
@@ -215,7 +215,7 @@ describe('code-first implementation through Schema functions`', () => {
       },
     }));
 
-    new appsync.GraphQLApi(stack, 'api', {
+    new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
       schema,
     });
@@ -241,7 +241,7 @@ describe('code-first implementation through Schema functions`', () => {
     }));
 
     test.addField({ fieldName: 'dupid', field: t.dup_id });
-    new appsync.GraphQLApi(stack, 'api', {
+    new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
       schema,
     });
@@ -265,7 +265,7 @@ describe('code-first implementation through Schema functions`', () => {
         dupid: t.dup_id,
       },
     }));
-    new appsync.GraphQLApi(stack, 'api', {
+    new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
       schema,
     });
@@ -290,7 +290,7 @@ describe('code-first implementation through Schema functions`', () => {
     }));
 
     test.addField({ fieldName: 'dupid', field: t.dup_id });
-    new appsync.GraphQLApi(stack, 'api', {
+    new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
       schema,
     });

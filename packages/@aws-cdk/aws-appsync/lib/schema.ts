@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { Lazy } from '@aws-cdk/core';
 import { CfnGraphQLSchema } from './appsync.generated';
-import { GraphQLApi } from './graphqlapi';
+import { GraphqlApi } from './graphqlapi';
 import { SchemaMode, shapeAddition } from './private';
 import { IIntermediateType } from './schema-base';
 import { ResolvableField } from './schema-field';
@@ -56,6 +56,8 @@ export class Schema {
 
   private mode: SchemaMode;
 
+  private types: IIntermediateType[];
+
   public constructor(options?: SchemaOptions) {
     if (options?.filePath) {
       this.mode = SchemaMode.FILE;
@@ -64,6 +66,7 @@ export class Schema {
       this.mode = SchemaMode.CODE;
       this.definition = '';
     }
+    this.types = [];
   }
 
   /**
@@ -72,11 +75,16 @@ export class Schema {
    *
    * @param api The binding GraphQL Api
    */
-  public bind(api: GraphQLApi): CfnGraphQLSchema {
+  public bind(api: GraphqlApi): CfnGraphQLSchema {
     if (!this.schema) {
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
-        definition: Lazy.stringValue({ produce: () => `${this.declareSchema()}${this.definition}` }),
+        definition: this.mode === SchemaMode.CODE ?
+          Lazy.stringValue({
+            produce: () => this.types.reduce((acc, type) => { return `${acc}${type._bindToGraphqlApi(api).toString()}\n`; },
+              `${this.declareSchema()}${this.definition}`),
+          })
+          : this.definition,
       });
     }
     return this.schema;
@@ -157,7 +165,7 @@ export class Schema {
     if (this.mode !== SchemaMode.CODE) {
       throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
     }
-    this.addToSchema(Lazy.stringValue({ produce: () => type.toString() }));
+    this.types.push(type);
     return type;
   }
 
