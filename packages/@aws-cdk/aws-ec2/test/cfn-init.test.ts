@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { arrayWith, ResourcePart, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
@@ -13,7 +15,7 @@ let instanceRole: iam.Role;
 let resource: CfnResource;
 let linuxUserData: ec2.UserData;
 
-beforeEach(() => {
+function resetState() {
   app = new App();
   stack = new Stack(app, 'Stack', {
     env: { account: '1234', region: 'testregion' },
@@ -25,7 +27,9 @@ beforeEach(() => {
     type: 'CDK::Test::Resource',
   });
   linuxUserData = ec2.UserData.forLinux();
-});
+};
+
+beforeEach(resetState);
 
 test('whole config with restart handles', () => {
   // WHEN
@@ -471,6 +475,35 @@ describe('assets n buckets', () => {
         },
       },
     });
+  });
+
+  test('fingerprint data changes on asset hash update', () => {
+    function calculateFingerprint(assetFilePath: string): string | undefined {
+      resetState(); // Needed so the same resources/assets/filenames can be used.
+      const init = ec2.CloudFormationInit.fromElements(
+        ec2.InitFile.fromAsset('/etc/myFile', assetFilePath),
+      );
+      init._attach(resource, linuxOptions());
+
+      return linuxUserData.render().split('\n').find(line => line.match(/# fingerprint:/));
+    }
+
+    // Setup initial asset file
+    const assetFileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cfn-init-test'));
+    const assetFilePath = path.join(assetFileDir, 'fingerprint-test');
+    fs.writeFileSync(assetFilePath, 'hello');
+
+    const fingerprintOne = calculateFingerprint(assetFilePath);
+    const fingerprintOneAgain = calculateFingerprint(assetFilePath);
+    // Consistent without changes.
+    expect(fingerprintOneAgain).toEqual(fingerprintOne);
+
+    // Change asset file content/hash
+    fs.writeFileSync(assetFilePath, ' world');
+
+    const fingerprintTwo = calculateFingerprint(assetFilePath);
+
+    expect(fingerprintTwo).not.toEqual(fingerprintOne);
   });
 });
 

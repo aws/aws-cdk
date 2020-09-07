@@ -97,7 +97,9 @@ export class CloudFormationInit {
     // Note: This will not reflect mutations made after attaching.
     const bindResult = this.bind(attachedResource.stack, attachOptions);
     attachedResource.addMetadata('AWS::CloudFormation::Init', bindResult.configData);
-    const fingerprint = contentHash(JSON.stringify(bindResult.configData)).substr(0, 16);
+    // Need to resolve the various tokens from assets in the config so the fingerprint is accurate.
+    const resolvedConfig = attachedResource.stack.resolve(bindResult.configData);
+    const fingerprint = contentHash(JSON.stringify(resolvedConfig)).substr(0, 16);
 
     attachOptions.instanceRole.addToPolicy(new iam.PolicyStatement({
       actions: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
