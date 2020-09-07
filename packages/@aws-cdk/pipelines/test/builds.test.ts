@@ -1,6 +1,7 @@
 import { arrayWith, deepObjectLike, encodedJson } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../lib';
 import { PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
@@ -176,9 +177,6 @@ test.each([['npm'], ['yarn']])('%s can have its install command overridden', (np
 
 test('Standard (NPM) synth can output additional artifacts', () => {
   // WHEN
-  sourceArtifact = new codepipeline.Artifact();
-  cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');
-
   const addlArtifact = new codepipeline.Artifact('IntegTest');
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     sourceArtifact,
@@ -214,6 +212,32 @@ test('Standard (NPM) synth can output additional artifacts', () => {
             },
           },
         },
+      })),
+    },
+  });
+});
+
+test('SimpleSynthAction is IGrantable', () => {
+  // GIVEN
+  const synthAction = cdkp.SimpleSynthAction.standardNpmSynth({
+    sourceArtifact,
+    cloudAssemblyArtifact,
+  });
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction,
+  });
+  const bucket = new s3.Bucket(pipelineStack, 'Bucket');
+
+  // WHEN
+  bucket.grantRead(synthAction);
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: arrayWith(deepObjectLike({
+        Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
       })),
     },
   });
