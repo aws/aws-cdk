@@ -20,7 +20,7 @@ import * as AWS from 'aws-sdk';
  *     `getProfilesFromSharedConfig` overwrites ALL `config` data with `credentials`
  *     data, so we also need to do extra work to fish the `region` out of the config.
  *
- * 3.  The 'credential_source' option is not supported. This 
+ * 3.  The 'credential_source' option is not supported. This
  *
  * See https://github.com/aws/aws-sdk-js/issues/3418 for all the gory details.
  * See https://github.com/aws/aws-sdk-js/issues/1916 for some more glory details.
