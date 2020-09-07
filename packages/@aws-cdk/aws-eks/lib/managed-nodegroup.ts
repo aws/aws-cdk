@@ -3,7 +3,7 @@ import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
-import { GPU_INSTANCETYPES, INFERENTIA_INSTANCETYPES, GRAVITON_INSTANCETYPES, GRAVITON2_INSTANCETYPES } from './instance-types';
+import { INSTANCE_TYPES } from './instance-types';
 
 /**
  * NodeGroup interface
@@ -291,10 +291,10 @@ export class Nodegroup extends Resource implements INodegroup {
 }
 
 function getAmiTypeForInstanceType(instanceType: InstanceType) {
-  return GRAVITON2_INSTANCETYPES.includes(instanceType.toString().substring(0, 3)) ? NodegroupAmiType.AL2_ARM_64 :
-    GRAVITON_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_ARM_64 :
-      GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_X86_64_GPU :
-        INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodegroupAmiType.AL2_X86_64_GPU :
+  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? NodegroupAmiType.AL2_ARM_64 :
+    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_ARM_64 :
+      INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_X86_64_GPU :
+        INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? NodegroupAmiType.AL2_X86_64_GPU :
           NodegroupAmiType.AL2_X86_64;
 }
 

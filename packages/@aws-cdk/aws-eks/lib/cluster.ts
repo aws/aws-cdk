@@ -12,7 +12,7 @@ import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
-import { GPU_INSTANCETYPES, INFERENTIA_INSTANCETYPES, GRAVITON_INSTANCETYPES, GRAVITON2_INSTANCETYPES } from './instance-types';
+import { INSTANCE_TYPES } from './instance-types';
 import { KubernetesManifest } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
@@ -1809,14 +1809,14 @@ export enum MachineImageType {
 }
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
-  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
-    INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
+  return INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
+    INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
       NodeType.STANDARD;
 }
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
-  return GRAVITON2_INSTANCETYPES.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-    GRAVITON_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
+  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
+    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
       CpuArch.X86_64;
 }
 
