@@ -2,6 +2,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { StackOutput } from '../stage';
 
@@ -64,12 +65,19 @@ export interface ShellScriptActionProps {
    * @default 100
    */
   readonly runOrder?: number;
+
+  /**
+   * Additional policy statements to add to the execution role
+   *
+   * @default - No policy statements
+   */
+  readonly rolePolicyStatements?: iam.PolicyStatement[];
 }
 
 /**
  * Validate a revision using shell commands
  */
-export class ShellScriptAction implements codepipeline.IAction {
+export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
   private _project?: codebuild.IProject;
 
   private _action?: codepipeline_actions.CodeBuildAction;
@@ -97,6 +105,13 @@ export class ShellScriptAction implements codepipeline.IAction {
     if (Object.keys(props.useOutputs ?? {}).length + (props.additionalArtifacts ?? []).length === 0) {
       throw new Error('You must supply either \'useOutputs\' or \'additionalArtifacts\', since a CodeBuild Action must always have at least one input artifact.');
     }
+  }
+
+  /**
+   * The CodeBuild Project's principal
+   */
+  public get grantPrincipal(): iam.IPrincipal {
+    return this.project.grantPrincipal;
   }
 
   /**
@@ -147,6 +162,9 @@ export class ShellScriptAction implements codepipeline.IAction {
         },
       }),
     });
+    for (const statement of this.props.rolePolicyStatements ?? []) {
+      this._project.addToRolePolicy(statement);
+    }
 
     this._action = new codepipeline_actions.CodeBuildAction({
       actionName: this.props.actionName,
