@@ -64,6 +64,24 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
+### Project root
+The `NodejsFunction` tries to automatically determine your project root, that is
+the root of your node project. This is usually where the top level `node_modules`
+folder of your project is located. When bundling in a Docker container, the
+project root is used as the source (`/asset-input`) for the volume mounted in
+the container.
+
+The following folders are considered by walking up parent folders starting from
+the current working directory (order matters):
+* the folder containing your `.git` folder
+* the folder containing a `yarn.lock` file
+* the folder containing a `package-lock.json` file
+* the folder containing a `package.json` file
+
+Alternatively, you can specify the `projectRoot` prop manually. In this case you
+need to ensure that this path includes `entry` and any module/dependencies used
+by your function. Otherwise bundling will fail.
+
 ### Configuring Parcel
 The `NodejsFunction` construct exposes some [Parcel](https://parceljs.org/) options via properties: `minify`, `sourceMaps` and `cacheDir`.
 

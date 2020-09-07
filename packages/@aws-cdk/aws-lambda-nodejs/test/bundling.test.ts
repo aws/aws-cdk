@@ -303,3 +303,17 @@ test('LocalBundler.runsLocally with incorrect parcel version', () => {
 
   expect(LocalBundler.runsLocally).toBe(false);
 });
+
+test('Project root detection', () => {
+  findUpMock.mockImplementation(() => undefined);
+
+  expect(() => Bundling.parcel({
+    entry: '/project/folder/entry.ts',
+    runtime: Runtime.NODEJS_12_X,
+  })).toThrow(/Cannot find project root/);
+
+  expect(findUpMock).toHaveBeenNthCalledWith(1, `.git${path.sep}`);
+  expect(findUpMock).toHaveBeenNthCalledWith(2, LockFile.YARN);
+  expect(findUpMock).toHaveBeenNthCalledWith(3, LockFile.NPM);
+  expect(findUpMock).toHaveBeenNthCalledWith(4, 'package.json');
+});
