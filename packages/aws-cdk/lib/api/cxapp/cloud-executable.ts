@@ -1,3 +1,4 @@
+import { promises as fs } from 'fs';
 import * as cxapi from '@aws-cdk/cx-api';
 import { RegionInfo } from '@aws-cdk/region-info';
 import * as contextproviders from '../../context-providers';
@@ -89,54 +90,76 @@ export class CloudExecutable {
         }
       }
 
-      if (trackVersions && assembly.runtime) {
-        const modules = formatModules(assembly.runtime);
-        for (const stack of assembly.stacks) {
-          if (!stack.template.Resources) {
-            stack.template.Resources = {};
-          }
-          const resourcePresent = stack.environment.region === cxapi.UNKNOWN_REGION
-            || RegionInfo.get(stack.environment.region).cdkMetadataResourceAvailable;
-          if (resourcePresent) {
-            if (!stack.template.Resources.CDKMetadata) {
-              stack.template.Resources.CDKMetadata = {
-                Type: 'AWS::CDK::Metadata',
-                Properties: {
-                  Modules: modules,
-                },
-              };
-              if (stack.environment.region === cxapi.UNKNOWN_REGION) {
-                stack.template.Conditions = stack.template.Conditions || {};
-                const condName = 'CDKMetadataAvailable';
-                if (!stack.template.Conditions[condName]) {
-                  stack.template.Conditions[condName] = _makeCdkMetadataAvailableCondition();
-                  stack.template.Resources.CDKMetadata.Condition = condName;
-                } else {
-                  warning(`The stack ${stack.id} already includes a ${condName} condition`);
-                }
-              }
-            } else {
-              warning(`The stack ${stack.id} already includes a CDKMetadata resource`);
-            }
-          }
-        }
+      if (trackVersions) {
+        // @deprecated(v2): remove this 'if' block and all code referenced by it.
+        // This should honestly not be done here. The framework
+        // should (and will, shortly) synthesize this information directly into
+        // the template. However, in order to support old framework versions
+        // that don't synthesize this info yet, we can only remove this code
+        // once we break backwards compatibility.
+        await this.addMetadataResource(assembly);
       }
 
       return new CloudAssembly(assembly);
+    }
+  }
 
-      function formatModules(runtime: cxapi.RuntimeInfo): string {
-        const modules = new Array<string>();
+  /**
+   * Modify the templates in the assembly in-place to add metadata resource declarations
+   */
+  private async addMetadataResource(rootAssembly: cxapi.CloudAssembly) {
+    if (!rootAssembly.runtime) { return; }
 
-        // inject toolkit version to list of modules
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const toolkitVersion = require('../../../package.json').version;
-        modules.push(`aws-cdk=${toolkitVersion}`);
+    const modules = formatModules(rootAssembly.runtime);
+    await processAssembly(rootAssembly);
 
-        for (const key of Object.keys(runtime.libraries).sort()) {
-          modules.push(`${key}=${runtime.libraries[key]}`);
-        }
-        return modules.join(',');
+    async function processAssembly(assembly: cxapi.CloudAssembly) {
+      for (const stack of assembly.stacks) {
+        await processStack(stack);
       }
+      for (const nested of assembly.nestedAssemblies) {
+        await processAssembly(nested.nestedAssembly);
+      }
+    }
+
+    async function processStack(stack: cxapi.CloudFormationStackArtifact) {
+      const resourcePresent = stack.environment.region === cxapi.UNKNOWN_REGION
+        || RegionInfo.get(stack.environment.region).cdkMetadataResourceAvailable;
+      if (!resourcePresent) { return; }
+
+      if (!stack.template.Resources) {
+        stack.template.Resources = {};
+      }
+      if (stack.template.Resources.CDKMetadata) {
+        warning(`The stack ${stack.id} already includes a CDKMetadata resource`);
+        return;
+      }
+
+      stack.template.Resources.CDKMetadata = {
+        Type: 'AWS::CDK::Metadata',
+        Properties: {
+          Modules: modules,
+        },
+      };
+
+      if (stack.environment.region === cxapi.UNKNOWN_REGION) {
+        stack.template.Conditions = stack.template.Conditions || {};
+        const condName = 'CDKMetadataAvailable';
+        if (!stack.template.Conditions[condName]) {
+          stack.template.Conditions[condName] = _makeCdkMetadataAvailableCondition();
+          stack.template.Resources.CDKMetadata.Condition = condName;
+        } else {
+          warning(`The stack ${stack.id} already includes a ${condName} condition`);
+        }
+      }
+
+      // The template has changed in-memory, but the file on disk remains unchanged so far.
+      // The CLI *might* later on deploy the in-memory version (if it's <50kB) or use the
+      // on-disk version (if it's >50kB).
+      //
+      // Be sure to flush the changes we just made back to disk. The on-disk format is always
+      // JSON.
+      await fs.writeFile(stack.templateFullPath, JSON.stringify(stack.template, undefined, 2), { encoding: 'utf-8' });
     }
   }
 }
@@ -185,4 +208,18 @@ function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
     result.push(array.slice(i, i + maxGroup));
   }
   return result;
+}
+
+function formatModules(runtime: cxapi.RuntimeInfo): string {
+  const modules = new Array<string>();
+
+  // inject toolkit version to list of modules
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const toolkitVersion = require('../../../package.json').version;
+  modules.push(`aws-cdk=${toolkitVersion}`);
+
+  for (const key of Object.keys(runtime.libraries).sort()) {
+    modules.push(`${key}=${runtime.libraries[key]}`);
+  }
+  return modules.join(',');
 }
