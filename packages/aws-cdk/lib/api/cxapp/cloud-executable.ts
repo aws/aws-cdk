@@ -91,7 +91,8 @@ export class CloudExecutable {
       }
 
       if (trackVersions) {
-        // @deprecated(v2): this should honestly not be done here. The framework
+        // @deprecated(v2): remove this 'if' block and all code referenced by it.
+        // This should honestly not be done here. The framework
         // should (and will, shortly) synthesize this information directly into
         // the template. However, in order to support old framework versions
         // that don't synthesize this info yet, we can only remove this code
