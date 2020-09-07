@@ -77,7 +77,32 @@
         "InstallLatestAwsSdk": true
       },
       "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "RepoImageScanOnPushCustomResourcePolicy556E941E"
+      ]
+    },
+    "RepoImageScanOnPushCustomResourcePolicy556E941E": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action":"ecr:PutImageScanningConfiguration",
+              "Effect":"Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Repo02AC86CF",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "RepoImageScanOnPushCustomResourcePolicy556E941E",
+        "Roles": [{"Ref":"AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"}]
+      }
     },
     "RepoImageScanComplete7BC71935": {
       "Type": "AWS::Events::Rule",
@@ -134,32 +159,6 @@
         ]
       }
     },
-    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "ecr:PutImageScanningConfiguration",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Repo02AC86CF",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
-        "Roles": [
-          {
-            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-          }
-        ]
-      }
-    },
     "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -212,7 +211,6 @@
         "Timeout": 120
       },
       "DependsOn": [
-        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
       ]
     }
