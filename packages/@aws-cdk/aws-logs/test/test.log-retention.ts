@@ -109,6 +109,21 @@ export = {
     test.done();
   },
 
+  'with LogGroupRegion specified'(test: Test) {
+    const stack = new cdk.Stack();
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      logGroupRegion: 'us-east-1',
+      retention: RetentionDays.INFINITE,
+    });
+
+    expect(stack).to(haveResource('Custom::LogRetention', {
+      LogGroupRegion: 'us-east-1',
+    }));
+
+    test.done();
+  },
+
   'log group ARN is well formed and conforms'(test: Test) {
     const stack = new cdk.Stack();
     const group = new LogRetention(stack, 'MyLambda', {
@@ -117,6 +132,22 @@ export = {
     });
 
     const logGroupArn = group.logGroupArn;
+    test.ok(logGroupArn.indexOf('logs') > -1, 'log group ARN is not as expected');
+    test.ok(logGroupArn.indexOf('log-group') > -1, 'log group ARN is not as expected');
+    test.ok(logGroupArn.endsWith(':*'), 'log group ARN is not as expected');
+    test.done();
+  },
+
+  'log group ARN is well formed and conforms when region is specified'(test: Test) {
+    const stack = new cdk.Stack();
+    const group = new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      logGroupRegion: 'us-west-2',
+      retention: RetentionDays.ONE_MONTH,
+    });
+
+    const logGroupArn = group.logGroupArn;
+    test.ok(logGroupArn.indexOf('us-west-2') > -1, 'region of log group ARN is not as expected');
     test.ok(logGroupArn.indexOf('logs') > -1, 'log group ARN is not as expected');
     test.ok(logGroupArn.indexOf('log-group') > -1, 'log group ARN is not as expected');
     test.ok(logGroupArn.endsWith(':*'), 'log group ARN is not as expected');
