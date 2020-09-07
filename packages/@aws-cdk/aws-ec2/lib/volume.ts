@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 
 import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
-import { Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags } from '@aws-cdk/core';
+import { Annotations, Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags } from '@aws-cdk/core';
 import { CfnInstance, CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 
@@ -176,7 +176,7 @@ export function synthesizeBlockDeviceMappings(construct: Construct, blockDevices
           throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+        Annotations.of(construct).addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
       }
     }
 

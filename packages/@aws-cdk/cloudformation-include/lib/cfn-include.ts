@@ -15,6 +15,20 @@ export interface CfnIncludeProps {
   readonly templateFile: string;
 
   /**
+   * Whether the resources should have the same logical IDs in the resulting CDK template
+   * as they did in the original CloudFormation template file.
+   * If you're vending a Construct using an existing CloudFormation template,
+   * make sure to pass this as `false`.
+   *
+   * **Note**: regardless of whether this option is true or false,
+   * the {@link CfnInclude.getResource} and related methods always uses the original logical ID of the resource/element,
+   * as specified in the template file.
+   *
+   * @default true
+   */
+  readonly preserveLogicalIds?: boolean;
+
+  /**
    * Specifies the template files that define nested stacks that should be included.
    *
    * If your template specifies a stack that isn't included here, it won't be created as a NestedStack
@@ -72,6 +86,8 @@ export class CfnInclude extends core.CfnElement {
   private readonly mappings: { [mappingName: string]: core.CfnMapping } = {};
   private readonly rules: { [ruleName: string]: core.CfnRule } = {};
   private readonly rulesScope: core.Construct;
+  private readonly hooks: { [hookName: string]: core.CfnHook } = {};
+  private readonly hooksScope: core.Construct;
   private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
   private readonly nestedStacks: { [logicalId: string]: IncludedNestedStack } = {};
   private readonly nestedStacksToInclude: { [name: string]: CfnIncludeProps };
@@ -86,8 +102,7 @@ export class CfnInclude extends core.CfnElement {
     // read the template into a JS object
     this.template = futils.readYamlSync(props.templateFile);
 
-    // ToDo implement preserveLogicalIds=false
-    this.preserveLogicalIds = true;
+    this.preserveLogicalIds = props.preserveLogicalIds ?? true;
 
     // check if all user specified parameter values exist in the template
     for (const logicalId of Object.keys(this.parametersToReplace)) {
@@ -129,6 +144,12 @@ export class CfnInclude extends core.CfnElement {
       if (!(nestedStackId in this.resources)) {
         throw new Error(`Nested Stack with logical ID '${nestedStackId}' was not found in the template`);
       }
+    }
+
+    // instantiate the Hooks
+    this.hooksScope = new core.Construct(this, '$Hooks');
+    for (const hookName of Object.keys(this.template.Hooks || {})) {
+      this.createHook(hookName);
     }
 
     const outputScope = new core.Construct(this, '$Ouputs');
@@ -251,6 +272,24 @@ export class CfnInclude extends core.CfnElement {
   }
 
   /**
+   * Returns the CfnHook object from the 'Hooks'
+   * section of the included CloudFormation template with the given logical ID.
+   * Any modifications performed on the returned object will be reflected in the resulting CDK template.
+   *
+   * If a Hook with the given logical ID is not present in the template,
+   * an exception will be thrown.
+   *
+   * @param hookLogicalId the logical ID of the Hook in the included CloudFormation template's 'Hooks' section
+   */
+  public getHook(hookLogicalId: string): core.CfnHook {
+    const ret = this.hooks[hookLogicalId];
+    if (!ret) {
+      throw new Error(`Hook with logical ID '${hookLogicalId}' was not found in the template`);
+    }
+    return ret;
+  }
+
+  /**
    * Returns the NestedStack with name logicalId.
    * For a nested stack to be returned by this method, it must be specified in the {@link CfnIncludeProps.nestedStacks}
    * property.
@@ -301,6 +340,7 @@ export class CfnInclude extends core.CfnElement {
         case 'Resources':
         case 'Parameters':
         case 'Rules':
+        case 'Hooks':
         case 'Outputs':
           // these are rendered as a side effect of instantiating the L1s
           break;
@@ -326,7 +366,7 @@ export class CfnInclude extends core.CfnElement {
       mapping: cfnParser.parseValue(this.template.Mappings[mappingName]),
     });
     this.mappings[mappingName] = cfnMapping;
-    cfnMapping.overrideLogicalId(mappingName);
+    this.overrideLogicalIdIfNeeded(cfnMapping, mappingName);
   }
 
   private createParameter(logicalId: string): void {
@@ -357,7 +397,7 @@ export class CfnInclude extends core.CfnElement {
       noEcho: expression.NoEcho,
     });
 
-    cfnParameter.overrideLogicalId(logicalId);
+    this.overrideLogicalIdIfNeeded(cfnParameter, logicalId);
     this.parameters[logicalId] = cfnParameter;
   }
 
@@ -384,7 +424,47 @@ export class CfnInclude extends core.CfnElement {
       assertions: ruleProperties.Assertions,
     });
     this.rules[ruleName] = rule;
-    rule.overrideLogicalId(ruleName);
+    this.overrideLogicalIdIfNeeded(rule, ruleName);
+  }
+
+  private createHook(hookName: string): void {
+    const self = this;
+    const cfnParser = new cfn_parse.CfnParser({
+      finder: {
+        findResource(lId): core.CfnResource | undefined {
+          return self.resources[lId];
+        },
+        findRefTarget(elementName: string): core.CfnElement | undefined {
+          return self.resources[elementName] ?? self.parameters[elementName];
+        },
+        findCondition(conditionName: string): core.CfnCondition | undefined {
+          return self.conditions[conditionName];
+        },
+        findMapping(mappingName): core.CfnMapping | undefined {
+          return self.mappings[mappingName];
+        },
+      },
+      parameters: this.parametersToReplace,
+    });
+    const hookAttributes = this.template.Hooks[hookName];
+
+    let hook: core.CfnHook;
+    switch (hookAttributes.Type) {
+      case 'AWS::CodeDeploy::BlueGreen':
+        hook = (core.CfnCodeDeployBlueGreenHook as any)._fromCloudFormation(this.hooksScope, hookName, hookAttributes, {
+          parser: cfnParser,
+        });
+        break;
+      default: {
+        const hookProperties = cfnParser.parseValue(hookAttributes.Properties) ?? {};
+        hook = new core.CfnHook(this.hooksScope, hookName, {
+          type: hookAttributes.Type,
+          properties: hookProperties,
+        });
+      }
+    }
+    this.hooks[hookName] = hook;
+    this.overrideLogicalIdIfNeeded(hook, hookName);
   }
 
   private createOutput(logicalId: string, scope: core.Construct): void {
@@ -422,7 +502,7 @@ export class CfnInclude extends core.CfnElement {
       })(),
     });
 
-    cfnOutput.overrideLogicalId(logicalId);
+    this.overrideLogicalIdIfNeeded(cfnOutput, logicalId);
     this.outputs[logicalId] = cfnOutput;
   }
 
@@ -444,7 +524,9 @@ export class CfnInclude extends core.CfnElement {
             ? self.getOrCreateCondition(cName)
             : undefined;
         },
-        findMapping() { throw new Error('Using FindInMap in Condition definitions is not allowed'); },
+        findMapping(mappingName: string): core.CfnMapping | undefined {
+          return self.mappings[mappingName];
+        },
       },
       context: cfn_parse.CfnParsingContext.CONDITIONS,
       parameters: this.parametersToReplace,
@@ -453,8 +535,7 @@ export class CfnInclude extends core.CfnElement {
       expression: cfnParser.parseValue(this.template.Conditions[conditionName]),
     });
 
-    // ToDo handle renaming of the logical IDs of the conditions
-    cfnCondition.overrideLogicalId(conditionName);
+    this.overrideLogicalIdIfNeeded(cfnCondition, conditionName);
     this.conditions[conditionName] = cfnCondition;
     return cfnCondition;
   }
@@ -531,11 +612,7 @@ export class CfnInclude extends core.CfnElement {
       }
     }
 
-    if (this.preserveLogicalIds) {
-      // override the logical ID to match the original template
-      l1Instance.overrideLogicalId(logicalId);
-    }
-
+    this.overrideLogicalIdIfNeeded(l1Instance, logicalId);
     this.resources[logicalId] = l1Instance;
     return l1Instance;
   }
@@ -556,23 +633,37 @@ export class CfnInclude extends core.CfnElement {
 
     const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);
     const nestedStack = new core.NestedStack(this, nestedStackId, {
-      parameters: nestedStackProps.Parameters,
+      parameters: this.parametersForNestedStack(nestedStackProps.Parameters, nestedStackId),
       notificationArns: nestedStackProps.NotificationArns,
       timeout: nestedStackProps.Timeout,
     });
+    const template = new CfnInclude(nestedStack, nestedStackId, this.nestedStacksToInclude[nestedStackId]);
+    this.nestedStacks[nestedStackId] = { stack: nestedStack, includedTemplate: template };
 
     // we know this is never undefined for nested stacks
     const nestedStackResource: core.CfnResource = nestedStack.nestedStackResource!;
     cfnParser.handleAttributes(nestedStackResource, nestedStackAttributes, nestedStackId);
-
-    const propStack = this.nestedStacksToInclude[nestedStackId];
-    const template = new CfnInclude(nestedStack, nestedStackId, {
-      templateFile: propStack.templateFile,
-      nestedStacks: propStack.nestedStacks,
-    });
-    const includedStack: IncludedNestedStack = { stack: nestedStack, includedTemplate: template };
-    this.nestedStacks[nestedStackId] = includedStack;
-
     return nestedStackResource;
+  }
+
+  private parametersForNestedStack(parameters: any, nestedStackId: string): { [key: string]: any } | undefined {
+    if (parameters == null) {
+      return undefined;
+    }
+
+    const parametersToReplace = this.nestedStacksToInclude[nestedStackId].parameters ?? {};
+    const ret: { [key: string]: string } = {};
+    for (const paramName of Object.keys(parameters)) {
+      if (!(paramName in parametersToReplace)) {
+        ret[paramName] = parameters[paramName];
+      }
+    }
+    return ret;
+  }
+
+  private overrideLogicalIdIfNeeded(element: core.CfnElement, id: string): void {
+    if (this.preserveLogicalIds) {
+      element.overrideLogicalId(id);
+    }
   }
 }
