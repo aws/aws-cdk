@@ -90,9 +90,8 @@ export class AwsCliCompatible {
     // Defaults inside constructor
     const toCheck = [
       { filename: credentialsFileName(), profile },
-      { filename: credentialsFileName(), profile: 'default' },
-      { filename: configFileName(), profile },
-      { filename: configFileName(), profile: 'default' },
+      { isConfig: true, filename: configFileName(), profile },
+      { isConfig: true, filename: configFileName(), profile: 'default' },
     ];
 
     let region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
