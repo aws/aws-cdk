@@ -21,15 +21,17 @@ const stack = new cdk.Stack(app, 'code-first-schema');
 
 const schema = new appsync.Schema();
 
-const node = schema.addType(new appsync.InterfaceType('Node', {
+const node = new appsync.InterfaceType('Node', {
   definition: {
     created: ScalarType.string,
     edited: ScalarType.string,
     id: ScalarType.required_id,
   },
-}));
+});
 
-const api = new appsync.GraphQLApi(stack, 'code-first-api', {
+schema.addType(node);
+
+const api = new appsync.GraphqlApi(stack, 'code-first-api', {
   name: 'api',
   schema: schema,
 });
@@ -44,7 +46,7 @@ const table = new db.Table(stack, 'table', {
 const tableDS = api.addDynamoDbDataSource('planets', table);
 
 const planet = ObjectType.planet;
-schema.addToSchema(planet.toString());
+schema.addType(planet);
 
 api.addType(new appsync.ObjectType('Species', {
   interfaceTypes: [node],
