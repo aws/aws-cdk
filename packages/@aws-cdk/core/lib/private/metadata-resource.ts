@@ -15,13 +15,20 @@ import { collectRuntimeInformation } from './runtime-info';
  */
 export class MetadataResource extends Construct {
   /**
+   * Cached version of the _modulesProperty() accessor
+   *
+   * No point in calculating this fairly-expensive list more than once.
+   */
+  private static _modulesPropertyCache?: string;
+
+  /**
    * Calculate the modules property
    */
   private static modulesProperty(): string {
-    Array.isArray(formatModules);
-    Array.isArray(collectRuntimeInformation);
-    // return formatModules(collectRuntimeInformation());
-    return '';
+    if (this._modulesPropertyCache === undefined) {
+      this._modulesPropertyCache = formatModules(collectRuntimeInformation());
+    }
+    return this._modulesPropertyCache;
   }
 
   constructor(scope: Stack, id: string) {
