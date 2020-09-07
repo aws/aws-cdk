@@ -18,11 +18,6 @@ afterEach(async () => {
   await cleanup();
 });
 
-integTest('just sleep', async () => {
-  // sleep for an hour to force session expiration.
-  await shell(['sleep', '20']);
-});
-
 integTest('can bootstrap without execution', async () => {
   const bootstrapStackName = fullStackName('bootstrap-stack');
 

@@ -1,4 +1,5 @@
 import * as AWS from 'aws-sdk';
+import { print } from '../../logging';
 
 
 /**
@@ -59,6 +60,8 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
     var sourceProfileName = roleProfile.source_profile;
     var sourceCredentials = roleProfile.credential_source;
 
+    print(`loaded role profile: ${JSON.stringify(roleProfile)}`);
+
     if (sourceProfileName && sourceCredentials) {
       throw (AWS as any).util.error(
         new Error('source_profile and credential_source are both configured in profile ' + this.profile + '. please choose one or the other.'),
@@ -104,6 +107,8 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
     // the aws-sdk for js does not support 'credential_source' (https://github.com/aws/aws-sdk-js/issues/1916)
     // so unfortunately we need to implement this ourselves.
     if (sourceCredentials) {
+
+      print(`Using credential_source = ${sourceCredentials}`);
 
       // see https://docs.aws.amazon.com/credref/latest/refdocs/setting-global-credential_source.html
       switch (sourceCredentials) {
