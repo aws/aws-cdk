@@ -2,6 +2,7 @@ import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import { cloudFormation, deleteBucket, deleteImageRepository, deleteStacks, emptyBucket, outputFromStack, testEnv } from './aws-helpers';
+import { writeOutput } from './corking';
 
 export const INTEG_TEST_DIR = path.join(os.tmpdir(), 'cdk-integ-test2');
 
@@ -195,12 +196,12 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     const stderr = new Array<Buffer>();
 
     child.stdout!.on('data', chunk => {
-      process.stdout.write(chunk);
+      writeOutput('stdout', chunk);
       stdout.push(chunk);
     });
 
     child.stderr!.on('data', chunk => {
-      process.stderr.write(chunk);
+      writeOutput('stderr', chunk);
       if (options.captureStderr ?? true) {
         stderr.push(chunk);
       }

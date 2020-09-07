@@ -3,7 +3,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
-import { PolicyStatement } from '@aws-cdk/aws-iam';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
@@ -86,7 +86,7 @@ export interface SimpleSynthOptions {
    *
    * @default - No policy statements added to CodeBuild Project Role
    */
-  readonly rolePolicyStatements?: PolicyStatement[];
+  readonly rolePolicyStatements?: iam.PolicyStatement[];
 }
 
 /**
@@ -101,21 +101,56 @@ export interface SimpleSynthActionProps extends SimpleSynthOptions {
   /**
    * The install command
    *
+   * If not provided by the build image or another dependency
+   * management tool, at least install the CDK CLI here using
+   * `npm install -g aws-cdk`.
+   *
    * @default - No install required
+   * @deprecated Use `installCommands` instead
    */
   readonly installCommand?: string;
 
   /**
    * The build command
    *
-   * By default, we assume NPM projects are either written in JavaScript or are
-   * using `ts-node`, so don't need a build command.
+   * If your programming language requires a compilation step, put the
+   * compilation command here.
    *
-   * Otherwise, put the build command here, for example `npm run build`.
+   * @default - No build required
+   * @deprecated Use `buildCommands` instead
+   */
+  readonly buildCommand?: string;
+
+  /**
+   * Install commands
+   *
+   * If not provided by the build image or another dependency
+   * management tool, at least install the CDK CLI here using
+   * `npm install -g aws-cdk`.
+   *
+   * @default - No install required
+   */
+  readonly installCommands?: string[];
+
+  /**
+   * The build commands
+   *
+   * If your programming language requires a compilation step, put the
+   * compilation command here.
    *
    * @default - No build required
    */
-  readonly buildCommand?: string;
+  readonly buildCommands?: string[];
+
+  /**
+   * Test commands
+   *
+   * These commands are run after the build commands but before the
+   * synth command.
+   *
+   * @default - No test commands
+   */
+  readonly testCommands?: string[];
 }
 
 /**
@@ -136,7 +171,7 @@ export interface AdditionalArtifact {
 /**
  * A standard synth with a generated buildspec
  */
-export class SimpleSynthAction implements codepipeline.IAction {
+export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
 
   /**
    * Create a standard NPM synth action
@@ -170,6 +205,7 @@ export class SimpleSynthAction implements codepipeline.IAction {
 
   private _action?: codepipeline_actions.CodeBuildAction;
   private _actionProperties: codepipeline.ActionProperties;
+  private _project?: codebuild.IProject;
 
   constructor(private readonly props: SimpleSynthActionProps) {
     // A number of actionProperties get read before bind() is even called (so before we
@@ -189,6 +225,14 @@ export class SimpleSynthAction implements codepipeline.IAction {
       inputs: [props.sourceArtifact],
       outputs: [props.cloudAssemblyArtifact, ...(props.additionalArtifacts ?? []).map(a => a.artifact)],
     };
+
+    if (this.props.installCommand && this.props.installCommands) {
+      throw new Error('Pass either \'installCommand\' or \'installCommands\', but not both');
+    }
+
+    if (this.props.buildCommand && this.props.buildCommands) {
+      throw new Error('Pass either \'buildCommand\' or \'buildCommands\', but not both');
+    }
 
     const addls = props.additionalArtifacts ?? [];
     if (Object.keys(addls).length > 0) {
@@ -211,12 +255,23 @@ export class SimpleSynthAction implements codepipeline.IAction {
   }
 
   /**
+   * Project generated to run the synth command
+   */
+  public get project(): codebuild.IProject {
+    if (!this._project) {
+      throw new Error('Project becomes available after SimpleSynthAction has been bound to a stage');
+    }
+    return this._project;
+  }
+
+  /**
    * Exists to implement IAction
    */
   public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
-    const buildCommand = this.props.buildCommand;
+    const buildCommands = this.props.buildCommands ?? [this.props.buildCommand];
+    const installCommands = this.props.installCommands ?? [this.props.installCommand];
+    const testCommands = this.props.testCommands ?? [];
     const synthCommand = this.props.synthCommand;
-    const installCommand = this.props.installCommand;
 
     const project = new codebuild.PipelineProject(scope, 'CdkBuildProject', {
       projectName: this.props.projectName ?? this.props.projectName,
@@ -227,12 +282,13 @@ export class SimpleSynthAction implements codepipeline.IAction {
           pre_build: {
             commands: filterEmpty([
               this.props.subdirectory ? `cd ${this.props.subdirectory}` : '',
-              installCommand,
+              ...installCommands,
             ]),
           },
           build: {
             commands: filterEmpty([
-              buildCommand,
+              ...buildCommands,
+              ...testCommands,
               synthCommand,
             ]),
           },
@@ -250,6 +306,8 @@ export class SimpleSynthAction implements codepipeline.IAction {
         project.addToRolePolicy(policyStatement);
       });
     }
+
+    this._project = project;
 
     this._action = new codepipeline_actions.CodeBuildAction({
       actionName: this.actionProperties.actionName,
@@ -292,6 +350,13 @@ export class SimpleSynthAction implements codepipeline.IAction {
 
       return cloudAsmArtifactSpec;
     }
+  }
+
+  /**
+   * The CodeBuild Project's principal
+   */
+  public get grantPrincipal(): iam.IPrincipal {
+    return this.project.grantPrincipal;
   }
 
   /**
