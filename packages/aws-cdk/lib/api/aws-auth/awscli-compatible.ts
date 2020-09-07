@@ -36,22 +36,25 @@ export class AwsCliCompatible {
 
     const profile = options.profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
+    // Force reading the `config` file if it exists by setting the appropriate
+    // environment variable.
+    await forceSdkToReadConfigIfPresent();
+
+    function sourceSharedFile(filename: string): PatchedSharedIniFileCredentials {
+      return new PatchedSharedIniFileCredentials({
+        profile,
+        filename,
+        httpOptions: options.httpOptions,
+        tokenCodeFn,
+      });
+    }
+
     const sources = [
       () => new AWS.EnvironmentCredentials('AWS'),
       () => new AWS.EnvironmentCredentials('AMAZON'),
+      () => sourceSharedFile(credentialsFileName()),
+      () => sourceSharedFile(configFileName()),
     ];
-
-    if (await fs.pathExists(credentialsFileName())) {
-      // Force reading the `config` file if it exists by setting the appropriate
-      // environment variable.
-      await forceSdkToReadConfigIfPresent();
-      sources.push(() => new PatchedSharedIniFileCredentials({
-        profile,
-        filename: credentialsFileName(),
-        httpOptions: options.httpOptions,
-        tokenCodeFn,
-      }));
-    }
 
     if (options.containerCreds ?? hasEcsCredentials()) {
       sources.push(() => new AWS.ECSCredentials());
@@ -84,8 +87,9 @@ export class AwsCliCompatible {
     // Defaults inside constructor
     const toCheck = [
       { filename: credentialsFileName(), profile },
-      { isConfig: true, filename: configFileName(), profile },
-      { isConfig: true, filename: configFileName(), profile: 'default' },
+      { filename: credentialsFileName(), profile: 'default' },
+      { filename: configFileName(), profile },
+      { filename: configFileName(), profile: 'default' },
     ];
 
     let region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
