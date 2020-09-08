@@ -8,7 +8,7 @@ describe('tests', () => {
     const array = ['/u1', '/u2', '/u3', '/u4', '/u5'];
 
     //WHEN
-    elbv2.ListenerCondition.pathPatterns(array);
+    elbv2.ListenerCondition.pathPatterns(array); // Does not throw
     array.push('/u6');
 
     // THEN
