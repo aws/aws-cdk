@@ -23,4 +23,7 @@ if ! npx --no-install jest --version; then
   npm install --prefix . jest jest-junit aws-sdk
 fi
 
+export AWS_REGION=us-west-1
+export AWS_DEFAULT_REGION=us-west-1
+
 npx jest --verbose "$@"

@@ -89,4 +89,8 @@ fi
 
 echo "Running integration tests of version ${VERSION_UNDER_TEST} from ${integ_under_test}"
 set -x
+
+export AWS_REGION=us-west-1
+export AWS_DEFAULT_REGION=us-west-1
+
 VERSION_UNDER_TEST=${VERSION_UNDER_TEST} ${integ_under_test}/test.sh "$@"
