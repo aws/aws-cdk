@@ -13,12 +13,6 @@ export interface BaseAppsyncFunctionProps {
    */
   readonly name: string;
   /**
-   * the function version of this AppSync Function
-   *
-   * @default '1.0.0'
-   */
-  readonly functionVersion?: string;
-  /**
    * the description for this AppSync Function
    *
    * @default - no description
@@ -94,7 +88,7 @@ export class AppsyncFunction extends Resource {
       description: props.description,
       apiId: props.api.apiId,
       dataSourceName: props.dataSource.name,
-      functionVersion: props.functionVersion ?? '1.0.0',
+      functionVersion: '2018-05-29',
       requestMappingTemplate: props.requestMappingTemplate?.renderTemplate(),
       responseMappingTemplate: props.responseMappingTemplate?.renderTemplate(),
     });
