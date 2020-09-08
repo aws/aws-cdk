@@ -1,5 +1,4 @@
 import * as AWS from 'aws-sdk';
-import { log } from './cdk-helpers';
 
 interface Env {
   account: string;
@@ -36,7 +35,47 @@ async function awsCall<
   B extends keyof ServiceCalls<A>,
 >(ctor: new (config: any) => A, call: B, request: First<ServiceCalls<A>[B]>): Promise<Second<ServiceCalls<A>[B]>> {
   const env = await testEnv();
-  const cfn = new ctor({ region: env.region, maxRetries: 6, retryDelayOptions: { base: 500 } });
+
+  let creds = undefined;
+  if (process.env.CODEBUILD_BUILD_ARN) {
+
+    // in codebuild we must assume the role that the cdk uses
+    // otherwise credentials will just be picked up by the normal sdk
+    // heuristics.
+
+    const arn = process.env.SANDBOX_ARN;
+    const externalId = process.env.SANDBOX_EXTERNAL_ID;
+
+    if (!arn) {
+      throw new Error('SANDBOX_ARN env variable expected when running in CodeBuild');
+    }
+
+    if (!externalId) {
+      throw new Error('SANDBOX_EXTERNAL_ID env variable expected when running in CodeBuild');
+    }
+
+    creds = new AWS.ChainableTemporaryCredentials({
+      params: {
+        RoleArn: arn,
+        ExternalId: externalId,
+        RoleSessionName: 'integ-tests',
+      },
+      stsConfig: {
+        region: env.region,
+      },
+      masterCredentials: new AWS.ECSCredentials(),
+    });
+
+  }
+
+  const cfn = new ctor({
+    region: env.region,
+    credentials: creds,
+    maxRetries: 6,
+    retryDelayOptions: {
+      base: 500,
+    },
+  });
   const response = cfn[call](request);
   try {
     return await response.promise();
