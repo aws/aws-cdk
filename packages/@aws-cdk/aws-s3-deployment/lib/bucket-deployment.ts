@@ -270,7 +270,7 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   const res: { [key: string]: string } = {};
 
   if (metadata.cacheControl) { res['cache-control'] = metadata.cacheControl.map(c => c.value).join(', '); }
-  if (metadata.expires) { res.expires = metadata.expires.value; }
+  if (metadata.expires) { res.expires = metadata.expires.date.toUTCString(); }
   if (metadata.contentDisposition) { res['content-disposition'] = metadata.contentDisposition; }
   if (metadata.contentEncoding) { res['content-encoding'] = metadata.contentEncoding; }
   if (metadata.contentLanguage) { res['content-language'] = metadata.contentLanguage; }

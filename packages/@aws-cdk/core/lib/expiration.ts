@@ -9,7 +9,7 @@ export class Expiration {
    * Expire at the specified date
    * @param d date to expire at
    */
-  public static atDate(d: Date) { return new Expiration(d.toUTCString(), d); }
+  public static atDate(d: Date) { return new Expiration(d); }
 
   /**
    * Expire at the specified timestamp
@@ -28,20 +28,14 @@ export class Expiration {
    *
    * @param s the string that represents date to expire at
    */
-  public static fromString(s: string) { return new Expiration(s, new Date(s)); }
-
-  /**
-   * Expiration value as a string
-   */
-  public readonly value: string;
+  public static fromString(s: string) { return new Expiration(new Date(s)); }
 
   /**
    * Expiration value as a Date object
    */
   public readonly date: Date;
 
-  private constructor(value: string, date: Date) {
-    this.value = value;
+  private constructor(date: Date) {
     this.date = date;
   }
 
