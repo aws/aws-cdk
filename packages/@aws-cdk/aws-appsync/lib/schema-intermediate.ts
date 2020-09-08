@@ -69,12 +69,9 @@ export class InterfaceType implements IIntermediateType {
   }
 
   /**
-   * Create an GraphQL Type representing this Intermediate Type
+   * Create a GraphQL Type representing this Intermediate Type
    *
    * @param options the options to configure this attribute
-   * - isList
-   * - isRequired
-   * - isRequiredList
    */
   public attribute(options?: BaseTypeOptions): GraphqlType {
     return GraphqlType.intermediate({
@@ -243,12 +240,9 @@ export class InputType implements IIntermediateType {
   }
 
   /**
-   * Create an GraphQL Type representing this Input Type
+   * Create a GraphQL Type representing this Input Type
    *
    * @param options the options to configure this attribute
-   * - isList
-   * - isRequired
-   * - isRequiredList
    */
   public attribute(options?: BaseTypeOptions): GraphqlType {
     return GraphqlType.intermediate({
@@ -300,11 +294,11 @@ export class InputType implements IIntermediateType {
 /**
  * Properties for configuring an Union Type
  *
- * @props definition - the object types for this union type
+ * @param definition - the object types for this union type
  *
  * @experimental
  */
-export interface UnionTypeProps {
+export interface UnionTypeOptions {
   /**
    * the object types for this union type
    */
@@ -313,7 +307,7 @@ export interface UnionTypeProps {
 
 /**
  * Union Types are abstract types that are similar to Interface Types,
- * but they don't get to specify any common fields between types.
+ * but they cannot to specify any common fields between types.
  *
  * Note that fields of a union type need to be object types. In other words,
  * you can't create a union type out of interfaces, other unions, or inputs.
@@ -330,23 +324,20 @@ export class UnionType implements IIntermediateType {
    */
   public readonly definition: { [key: string]: IField };
   /**
-   * the authorization modes for this intermediate type
+   * the authorization modes supported by this intermediate type
    */
   protected modes?: AuthorizationType[];
 
-  public constructor(name: string, props: UnionTypeProps) {
+  public constructor(name: string, options: UnionTypeOptions) {
     this.name = name;
     this.definition = {};
-    props.definition.map((def) => this.addField({ field: def.attribute() }));
+    options.definition.map((def) => this.addField({ field: def.attribute() }));
   }
 
   /**
-   * Create an GraphQL Type representing this Union Type
+   * Create a GraphQL Type representing this Union Type
    *
    * @param options the options to configure this attribute
-   * - isList
-   * - isRequired
-   * - isRequiredList
    */
   public attribute(options?: BaseTypeOptions): GraphqlType {
     return GraphqlType.intermediate({
@@ -371,6 +362,8 @@ export class UnionType implements IIntermediateType {
    * Generate the string of this Union type
    */
   public toString(): string {
+    // Return a string that appends all Object Types for this Union Type
+    // i.e. 'union Example = example1 | example2'
     return Object.values(this.definition).reduce((acc, field) =>
       `${acc} ${field.toString()} |`, `union ${this.name} =`).slice(0, -2);
   }

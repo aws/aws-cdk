@@ -595,7 +595,7 @@ To learn more about **Input Types**, read the docs [here](https://graphql.org/le
 ### Union Types
 
 **Union Types** are a special type of Intermediate Type. They are similar to
-Interface Types, but they don't get to specify any common fields between types.
+Interface Types, but they cannot specify any common fields between types.
 
 **Note:** the fields of a union type need to be `Object Types`. In other words, you
 can't create a union type out of interfaces, other unions, or inputs.
@@ -604,7 +604,8 @@ can't create a union type out of interfaces, other unions, or inputs.
 union Search = Human | Droid | Starship
 ```
 
-The above GraphQL Union Type can be expressed in CDK as the following:
+The above GraphQL Union Type encompasses the Object Types of Human, Droid and Starship. It
+can be expressed in CDK as the following:
 
 ```ts
 const string = appsync.GraphqlType.string();
