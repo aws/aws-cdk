@@ -60,12 +60,12 @@ export interface CfnIncludeProps {
  */
 export interface IncludedNestedStack {
   /**
-   * The NestedStack object which respresents the scope of the template.
+   * The NestedStack object which represents the scope of the template.
    */
   readonly stack: core.NestedStack;
 
   /**
-   * The CfnInclude that respresents the template, which can
+   * The CfnInclude that represents the template, which can
    * be used to access Resources and other template elements.
    */
   readonly includedTemplate: CfnInclude;
