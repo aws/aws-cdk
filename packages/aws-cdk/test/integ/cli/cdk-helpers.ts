@@ -4,15 +4,15 @@ import * as path from 'path';
 import { cloudFormation, deleteBucket, deleteImageRepository, deleteStacks, emptyBucket, outputFromStack, testEnv } from './aws-helpers';
 import { writeOutput } from './corking';
 
-export const INTEG_TEST_DIR = path.join(os.tmpdir(), 'cdk-integ-test2');
-
 // create a unique stack name prefix for this test test run. this is passed
 // through an environment variable to app.js so that all stacks use this prefix.
 const timestamp = new Date().toISOString().replace(/[^0-9]/g, '');
 export const STACK_NAME_PREFIX = `cdktest-${timestamp}`;
+export const INTEG_TEST_DIR = path.join(os.tmpdir(), `cdk-integ-${timestamp}`);
 
 process.stdout.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
 process.stdout.write(` All stacks created by this test run will have the prefix: ${STACK_NAME_PREFIX}\n`);
+process.stdout.write(` All tests will run the following directory: ${INTEG_TEST_DIR}\n`);
 process.stdout.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
 
 export interface ShellOptions extends child_process.SpawnOptions {
