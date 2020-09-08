@@ -133,7 +133,7 @@ export = nodeunit.testCase({
       new core.CfnResource(app, 'Resource', {
         type: 'Some::Resource',
       });
-    }, /No stack could be identified for the construct/);
+    }, /should be created in the scope of a Stack, but no Stack found/);
 
 
     test.done();
@@ -150,7 +150,7 @@ export = nodeunit.testCase({
       new core.CfnResource(stage, 'Resource', {
         type: 'Some::Resource',
       });
-    }, /No stack could be identified for the construct/);
+    }, /should be created in the scope of a Stack, but no Stack found/);
 
 
     test.done();
