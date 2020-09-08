@@ -61,9 +61,9 @@ export interface NodegroupRemoteAccess {
  */
 export interface LaunchTemplate {
   /**
-   * The Launch template
+   * The Launch template ID
    */
-  readonly launchTemplateId: string;
+  readonly id: string;
   /**
    * The launch template version to be used (optional).
    *
@@ -303,7 +303,7 @@ export class Nodegroup extends Resource implements INodegroup {
       }
       // TODO: update this when the L1 resource spec is updated.
       resource.addPropertyOverride('LaunchTemplate', {
-        Id: props.launchTemplate.launchTemplateId,
+        Id: props.launchTemplate.id,
         Version: props.launchTemplate.version,
       });
     }
