@@ -133,7 +133,7 @@ const api = appsync.GraphqlApi(stack, 'api', {
 #### S3 Location
 
 You can define your GraphQL Schema from an s3 location. For convenience, use
-the `appsync.Schema.fromS3Location` to specify the file representing your schema.
+the `appsync.Schema.fromS3Location` to specify the s3 location representing your schema.
 
 ```ts
 const api = appsync.GraphqlApi(stack, 'api', {
