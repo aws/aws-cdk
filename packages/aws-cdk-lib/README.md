@@ -14,12 +14,13 @@ from your dependencies file and follow the rest of the sections.
 
 ### Installation
 
-Add a single entry in your dependencies list to this package.
+To use this package, you need to declare this package and the `constructs` package as
+dependencies.
 
-You also need to add a reference to the `constructs` library, according to the
-kind of project you are developing:
-- For libraries, model the dependency under `devDependencies` **and** `peerDependencies`
-- For apps, model the dependency under `dependencies` only
+According to the kind of project you are developing:
+- For projects that are CDK libraries, declare them both under the `devDependencies`
+  **and** `peerDependencies` sections.
+- For CDK apps, declare them under the `dependencies` section only.
 
 ### Use in your code
 
