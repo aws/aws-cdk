@@ -1,0 +1,215 @@
+{
+  "Parameters": {
+    "AssetParametersd915eeba150016e6e51f327f3d1f8a3701dfb7456e8dc17426c8960cecb2d9beS3BucketCB5CC368": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"d915eeba150016e6e51f327f3d1f8a3701dfb7456e8dc17426c8960cecb2d9be\""
+    },
+    "AssetParametersd915eeba150016e6e51f327f3d1f8a3701dfb7456e8dc17426c8960cecb2d9beS3VersionKeyB59D7BBD": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"d915eeba150016e6e51f327f3d1f8a3701dfb7456e8dc17426c8960cecb2d9be\""
+    },
+    "AssetParametersd915eeba150016e6e51f327f3d1f8a3701dfb7456e8dc17426c8960cecb2d9beArtifactHash793BA24A": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"d915eeba150016e6e51f327f3d1f8a3701dfb7456e8dc17426c8960cecb2d9be\""
+    }
+  },
+  "Resources": {
+    "ApiF70053CD": {
+      "Type": "AWS::AppSync::GraphQLApi",
+      "Properties": {
+        "AuthenticationType": "API_KEY",
+        "Name": "integ-test-s3"
+      }
+    },
+    "ApiSchema510EECD7": {
+      "Type": "AWS::AppSync::GraphQLSchema",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "DefinitionS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "AssetParametersd915eeba150016e6e51f327f3d1f8a3701dfb7456e8dc17426c8960cecb2d9beS3BucketCB5CC368"
+              },
+              "/",
+              {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "AssetParametersd915eeba150016e6e51f327f3d1f8a3701dfb7456e8dc17426c8960cecb2d9beS3VersionKeyB59D7BBD"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "AssetParametersd915eeba150016e6e51f327f3d1f8a3701dfb7456e8dc17426c8960cecb2d9beS3VersionKeyB59D7BBD"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "ApiDefaultApiKeyF991C37B": {
+      "Type": "AWS::AppSync::ApiKey",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApitestDataSourceServiceRoleACBC3F3D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "ApitestDataSourceServiceRoleDefaultPolicy897CD912": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TestTable5769773A",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "ApitestDataSourceServiceRoleDefaultPolicy897CD912",
+        "Roles": [
+          {
+            "Ref": "ApitestDataSourceServiceRoleACBC3F3D"
+          }
+        ]
+      }
+    },
+    "ApitestDataSource96AE54D5": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "Name": "testDataSource",
+        "Type": "AMAZON_DYNAMODB",
+        "DynamoDBConfig": {
+          "AwsRegion": {
+            "Ref": "AWS::Region"
+          },
+          "TableName": {
+            "Ref": "TestTable5769773A"
+          }
+        },
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "ApitestDataSourceServiceRoleACBC3F3D",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ApitestDataSourceQuerygetTestsResolverA3BBB672": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getTests",
+        "TypeName": "Query",
+        "DataSourceName": "testDataSource",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiSchema510EECD7",
+        "ApitestDataSource96AE54D5"
+      ]
+    },
+    "TestTable5769773A": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    }
+  }
+}

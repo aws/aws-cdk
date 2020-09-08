@@ -22,6 +22,15 @@ export interface SchemaOptions {
    * @default - schema not configured through disk asset
    */
   readonly filePath?: string,
+
+  /**
+   * The s3 location for the schema. When this option is
+   * configured, then the schema will be generated from an
+   * S3 location.
+   *
+   * @default - schema not configured through s3 location
+   */
+  readonly s3Location?: string,
 };
 
 /**
@@ -34,11 +43,21 @@ export class Schema {
   /**
    * Generate a Schema from file
    *
-   * @returns `SchemaAsset` with immutable schema defintion
+   * @returns `Schema` with immutable schema defintion
    * @param filePath the file path of the schema file
    */
   public static fromAsset(filePath: string): Schema {
     return new Schema({ filePath });
+  }
+
+  /**
+   * Point GraphQL Schema to a S3 Location
+   *
+   * @returns `Schema` with immutable schema defintion
+   * @param s3Location the s3 location of the schema
+   */
+  public static fromS3Location(s3Location: string): Schema {
+    return new Schema({ s3Location });
   }
 
   /**
@@ -59,9 +78,16 @@ export class Schema {
   private types: IIntermediateType[];
 
   public constructor(options?: SchemaOptions) {
+    if (options?.filePath && options?.s3Location) {
+      throw new Error('Schema can only be configured with either file path or s3 location, not both.');
+    }
+
     if (options?.filePath) {
       this.mode = SchemaMode.FILE;
       this.definition = readFileSync(options.filePath).toString('utf-8');
+    } else if (options?.s3Location) {
+      this.mode = SchemaMode.S3;
+      this.definition = options.s3Location;
     } else {
       this.mode = SchemaMode.CODE;
       this.definition = '';
@@ -77,14 +103,23 @@ export class Schema {
    */
   public bind(api: GraphqlApi): CfnGraphQLSchema {
     if (!this.schema) {
+      let definition;
+      let definitionS3Location;
+      if (this.mode === SchemaMode.FILE) {
+        definition = this.definition;
+      } else if (this.mode === SchemaMode.S3) {
+        definitionS3Location = this.definition;
+      } else {
+        definition = Lazy.stringValue({
+          produce: () => this.types.reduce((acc, type) => { return `${acc}${type._bindToGraphqlApi(api).toString()}\n`; },
+            `${this.declareSchema()}${this.definition}`),
+        });
+      }
+
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
-        definition: this.mode === SchemaMode.CODE ?
-          Lazy.stringValue({
-            produce: () => this.types.reduce((acc, type) => { return `${acc}${type._bindToGraphqlApi(api).toString()}\n`; },
-              `${this.declareSchema()}${this.definition}`),
-          })
-          : this.definition,
+        definition,
+        definitionS3Location,
       });
     }
     return this.schema;

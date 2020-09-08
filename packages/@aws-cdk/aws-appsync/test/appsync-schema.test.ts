@@ -1,5 +1,6 @@
 import { join } from 'path';
 import '@aws-cdk/assert/jest';
+import * as assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
@@ -30,6 +31,16 @@ let stack: cdk.Stack;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
+});
+
+test('appsync fails when both file path and s3 location are configured', () => {
+  // THEN
+  expect(() => {
+    new appsync.GraphqlApi(stack, 'API', {
+      name: 'demo',
+      schema: new appsync.Schema({ filePath: 'fail', s3Location: 'garbage' }),
+    });
+  }).toThrowError('Schema can only be configured with either file path or s3 location, not both.');
 });
 
 describe('basic testing schema definition mode `code`', () => {
@@ -208,5 +219,109 @@ describe('testing schema definition mode `file`', () => {
     expect(() => {
       api.addMutation('blah', new appsync.ResolvableField({ returnType: t.string }));
     }).toThrowError('Unable to add mutation. Schema definition mode must be CODE Received: FILE');
+  });
+});
+
+describe('testing schema definition mode `s3`', () => {
+
+  test('definition mode `s3` produces correct output', () => {
+    // GIVEN
+    const schemaAsset = new assets.Asset(stack, 'Schema', {
+      path: join(__dirname, 'appsync.test.graphql'),
+    });
+    // WHEN
+    new appsync.GraphqlApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromS3Location(schemaAsset.s3ObjectUrl),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      DefinitionS3Location: {
+        'Fn::Join': ['', ['s3://',
+          { Ref: 'AssetParametersd915eeba150016e6e51f327f3d1f8a3701dfb7456e8dc17426c8960cecb2d9beS3BucketCB5CC368' },
+          '/',
+          {
+            'Fn::Select': [0, {
+              'Fn::Split': ['||',
+                { Ref: 'AssetParametersd915eeba150016e6e51f327f3d1f8a3701dfb7456e8dc17426c8960cecb2d9beS3VersionKeyB59D7BBD' }],
+            }],
+          },
+          {
+            'Fn::Select': [1, {
+              'Fn::Split': ['||'],
+            }],
+          }]],
+      },
+    });
+  });
+
+  test('definition mode `s3` errors when addType for object is called', () => {
+    // WHEN
+    const api = new appsync.GraphqlApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromS3Location('garbage'),
+    });
+
+    // THEN
+    expect(() => {
+      api.addType(new appsync.ObjectType('blah', {
+        definition: { fail: t.id },
+      }));
+    }).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
+  });
+
+  test('definition mode `s3` errors when addType for interface is called', () => {
+    // WHEN
+    const api = new appsync.GraphqlApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromS3Location('garbage'),
+    });
+
+    // THEN
+    expect(() => {
+      api.addType(new appsync.InterfaceType('blah', {
+        definition: { fail: t.id },
+      }));
+    }).toThrowError('API cannot add type because schema definition mode is not configured as CODE.');
+  });
+
+  test('definition mode `s3` errors when addToSchema is called', () => {
+    // WHEN
+    const api = new appsync.GraphqlApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromS3Location('garbage'),
+    });
+
+    // THEN
+    expect(() => {
+      api.addToSchema('blah');
+    }).toThrowError('API cannot append to schema because schema definition mode is not configured as CODE.');
+  });
+
+  test('definition mode `s3` errors when addQuery is called', () => {
+    // WHEN
+    const api = new appsync.GraphqlApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromS3Location('garbage'),
+    });
+
+    // THEN
+    expect(() => {
+      api.addQuery('blah', new appsync.ResolvableField({ returnType: t.string }));
+    }).toThrowError('Unable to add query. Schema definition mode must be CODE Received: S3');
+  });
+
+  test('definition mode `s3` errors when addMutation is called', () => {
+    // WHEN
+    const api = new appsync.GraphqlApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromS3Location('garbage'),
+    });
+
+    // THEN
+    expect(() => {
+      api.addMutation('blah', new appsync.ResolvableField({ returnType: t.string }));
+    }).toThrowError('Unable to add mutation. Schema definition mode must be CODE Received: S3');
   });
 });

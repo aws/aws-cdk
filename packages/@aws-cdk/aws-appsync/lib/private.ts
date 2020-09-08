@@ -8,6 +8,7 @@ import { InterfaceType } from './schema-intermediate';
 export enum SchemaMode {
   FILE = 'FILE',
   CODE = 'CODE',
+  S3 = 'S3',
 };
 
 /**
