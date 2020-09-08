@@ -40,12 +40,17 @@ async function awsCall<
   let creds = undefined;
   if (process.env.CODEBUILD_BUILD_ARN) {
 
+    log('Running inside CodeBuild. Configuring ChainableTemporaryCredentials...');
+
     // in codebuild we must assume the role that the cdk uses
     // otherwise credentials will just be picked up by the normal sdk
     // heuristics.
 
     const arn = process.env.SANDBOX_ARN;
     const externalId = process.env.SANDBOX_EXTERNAL_ID;
+
+    log(`Arn: ${arn}`);
+    log(`ExternalId: ${externalId}`);
 
     if (!arn) {
       throw new Error('SANDBOX_ARN env variable expected when running in CodeBuild');

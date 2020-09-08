@@ -21,7 +21,8 @@ import { print } from '../../logging';
  *     `getProfilesFromSharedConfig` overwrites ALL `config` data with `credentials`
  *     data, so we also need to do extra work to fish the `region` out of the config.
  *
- * 3.  The 'credential_source' option is not supported. This
+ * 3.  The 'credential_source' option is not supported. Meaning credentials
+ *     for assume-role cannot be fetched using EC2/ESC metadata.
  *
  * See https://github.com/aws/aws-sdk-js/issues/3418 for all the gory details.
  * See https://github.com/aws/aws-sdk-js/issues/1916 for some more glory details.
@@ -168,11 +169,29 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
         }
 
         roleParams.TokenCode = token;
-        sts.assumeRole(roleParams, callback);
+        print(`Assuming role: ${roleParams.RoleArn}`);
+        sts.assumeRole(roleParams, (e: AWS.AWSError, data: AWS.STS.Types.AssumeRoleResponse) => {
+          if (e) {
+            print(`Error when assuming role ${roleParams.RoleArn}: ${e.message}`);
+          }
+          callback(e, data);
+          if (!e) {
+            print(`Successfully assumed role: ${roleParams.RoleArn}. Expires at ${data.Credentials?.Expiration.toISOString()}`);
+          }
+        });
       });
       return;
     }
-    sts.assumeRole(roleParams, callback);
+    print(`Assuming role: ${roleParams.RoleArn}`);
+    sts.assumeRole(roleParams, (e: AWS.AWSError, data: AWS.STS.Types.AssumeRoleResponse) => {
+      if (e) {
+        print(`Error when assuming role ${roleParams.RoleArn}: ${e.message}`);
+      }
+      callback(e, data);
+      if (!e) {
+        print(`Successfully assumed role: ${roleParams.RoleArn}. Expires at ${data.Credentials?.Expiration.toISOString()}`);
+      }
+    });
 
   }
 }
