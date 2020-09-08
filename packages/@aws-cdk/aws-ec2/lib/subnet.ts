@@ -6,22 +6,46 @@ import { ISubnet } from './vpc';
  * with SubnetSelection, to determine where to place AWS resources such as VPC
  * endpoints, EC2 instances, etc.
  */
-export interface ISubnetFilter {
+export abstract class SubnetFilter {
+
+  /**
+   * Chooses subnets which are in one of the given availability zones.
+  */
+  public static availabilityZones(availabilityZones: string[]): SubnetFilter {
+    return new AvailabilityZoneSubnetFilter(availabilityZones);
+  }
+
+  /**
+   * Chooses subnets such that there is at most one per availability zone.
+  */
+  public static onePerAz(): SubnetFilter {
+    return new OnePerAZSubnetFilter();
+  }
+
+  /**
+   * Chooses subnets which contain any of the specified IP addresses.
+  */
+  public static containsIpAddresses(ipv4addrs: string[]): SubnetFilter {
+    return new ContainsIpAddressesSubnetFilter(ipv4addrs);
+  }
 
   /**
    * Executes the subnet filtering logic, returning a filtered set of subnets.
    */
-  selectSubnets(subnets: ISubnet[]): ISubnet[];
+  public selectSubnets(_subnets: ISubnet[]): ISubnet[] {
+    throw new Error('Cannot select subnets with an abstract SubnetFilter. `selectSubnets` needs to be implmemented.');
+  }
 }
 
 /**
  * Chooses subnets which are in one of the given availability zones.
  */
-export class AvailabilityZoneSubnetFilter implements ISubnetFilter {
+class AvailabilityZoneSubnetFilter extends SubnetFilter {
 
   private readonly availabilityZones: string[];
 
   constructor(availabilityZones: string[]) {
+    super();
     this.availabilityZones = availabilityZones;
   }
 
@@ -36,9 +60,11 @@ export class AvailabilityZoneSubnetFilter implements ISubnetFilter {
 /**
  * Chooses subnets such that there is at most one per availability zone.
  */
-export class OnePerAZSubnetFilter implements ISubnetFilter {
+class OnePerAZSubnetFilter extends SubnetFilter {
 
-  constructor() {}
+  constructor() {
+    super();
+  }
 
   /**
    * Executes the subnet filtering logic.
@@ -60,11 +86,12 @@ export class OnePerAZSubnetFilter implements ISubnetFilter {
 /**
  * Chooses subnets which contain any of the specified IP addresses.
  */
-export class ContainsIpAddressesSubnetFilter implements ISubnetFilter {
+class ContainsIpAddressesSubnetFilter extends SubnetFilter {
 
   private readonly ipAddresses: string[];
 
   constructor(ipAddresses: string[]) {
+    super();
     this.ipAddresses = ipAddresses;
   }
 

@@ -11,7 +11,7 @@ import {
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
-import { AvailabilityZoneSubnetFilter, OnePerAZSubnetFilter, ISubnetFilter } from './subnet';
+import { SubnetFilter } from './subnet';
 import { allRouteTableIds, defaultSubnetName, flatten, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
@@ -247,7 +247,7 @@ export interface SubnetSelection {
    *
    * @default - none
    */
-  readonly subnetFilters?: ISubnetFilter[];
+  readonly subnetFilters?: SubnetFilter[];
 
   /**
    * Explicitly select individual subnets
@@ -479,7 +479,7 @@ abstract class VpcBase extends Resource implements IVpc {
     return subnets;
   }
 
-  private applySubnetFilters(subnets: ISubnet[], filters: ISubnetFilter[]): ISubnet[] {
+  private applySubnetFilters(subnets: ISubnet[], filters: SubnetFilter[]): ISubnet[] {
     let filtered = subnets;
     // Apply each filter in sequence
     for (const filter of filters) {
@@ -554,10 +554,10 @@ abstract class VpcBase extends Resource implements IVpc {
 
     // Backwards compatibility with existing `availabilityZones` and `onePerAz` functionality
     if (placement.availabilityZones !== undefined) { // Filter by AZs, if specified
-      subnetFilters.push(new AvailabilityZoneSubnetFilter(placement.availabilityZones));
+      subnetFilters.push(SubnetFilter.availabilityZones(placement.availabilityZones));
     }
     if (!!placement.onePerAz) { // Ensure one per AZ if specified
-      subnetFilters.push(new OnePerAZSubnetFilter());
+      subnetFilters.push(SubnetFilter.onePerAz());
     }
 
     // Overwrite the provided placement filters
