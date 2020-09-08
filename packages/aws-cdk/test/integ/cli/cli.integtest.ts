@@ -670,13 +670,20 @@ integTest('generating and loading assembly', async () => {
   // Deploy a Lambda from the copied asm
   await cdkDeploy('lambda', { options: ['-a', '.'], cwd: asmOutputDir });
 
-  // Remove the original custom docker file that was used during synth.
+  // Remove (rename) the original custom docker file that was used during synth.
   // this verifies that the assemly has a copy of it and that the manifest uses
   // relative paths to reference to it.
-  await fs.unlink(path.join(INTEG_TEST_DIR, 'docker', 'Dockerfile.Custom'));
+  const customDockerFile = path.join(INTEG_TEST_DIR, 'docker', 'Dockerfile.Custom');
+  await fs.rename(customDockerFile, `${customDockerFile}~`);
+  try {
 
-  // deploy a docker image with custom file without synth (uses assets)
-  await cdkDeploy('docker-with-custom-file', { options: ['-a', '.'], cwd: asmOutputDir });
+    // deploy a docker image with custom file without synth (uses assets)
+    await cdkDeploy('docker-with-custom-file', { options: ['-a', '.'], cwd: asmOutputDir });
+
+  } finally {
+    // Rename back to restore fixture to original state
+    await fs.rename(`${customDockerFile}~`, customDockerFile);
+  }
 });
 
 integTest('templates on disk contain metadata resource, also in nested assemblies', async () => {
