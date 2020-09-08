@@ -318,6 +318,55 @@ test('can assume role without a [default] profile', async () => {
   expect(account?.accountId).toEqual(`${uid}the_account_#`);
 });
 
+test('can assume role using credential_source', async () => {
+  // GIVEN
+  bockfs({
+    '/home/me/.bxt/credentials': dedent(`
+      [assumer]
+      aws_access_key_id=${uid}assumer
+      aws_secret_access_key=secret
+
+      [assumable]
+      role_arn=arn:aws:iam::12356789012:role/Assumable
+      source_profile=assumer
+    `),
+    '/home/me/.bxt/config': dedent(`
+      [profile assumable]
+      region=eu-bla-5
+      credential_source = EscContainer
+    `),
+  });
+
+  SDKMock.mock('STS', 'assumeRole', (_request: AWS.STS.AssumeRoleRequest, cb: AwsCallback<AWS.STS.AssumeRoleResponse>) => {
+    return cb(null, {
+      Credentials: {
+        AccessKeyId: `${uid}access`, // Needs UID in here otherwise key will be cached
+        Expiration: new Date(Date.now() + 10000),
+        SecretAccessKey: 'b',
+        SessionToken: 'c',
+      },
+    });
+  });
+
+  // Set environment variables that we want
+  process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
+  process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
+
+  // WHEN
+  const provider = await SdkProvider.withAwsCliCompatibleDefaults({
+    ...defaultCredOptions,
+    profile: 'assumable',
+    httpOptions: {
+      proxyAddress: 'http://DOESNTMATTER/',
+    },
+  });
+
+  const account = await provider.defaultAccount();
+
+  // THEN
+  expect(account?.accountId).toEqual(`${uid}the_account_#`);
+});
+
 /**
  * Strip shared whitespace from the start of lines
  */

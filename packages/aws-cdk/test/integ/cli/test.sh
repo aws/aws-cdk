@@ -23,7 +23,4 @@ if ! npx --no-install jest --version; then
   npm install --prefix . jest jest-junit aws-sdk
 fi
 
-# run all tests by default
-INTEG_TEST_FILE=${INTEG_TEST_FILE:-}
-
-npx jest --runInBand --verbose "$@" ${INTEG_TEST_FILE}
+npx jest --runInBand --verbose "$@"
