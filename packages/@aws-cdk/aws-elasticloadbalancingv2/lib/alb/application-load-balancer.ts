@@ -58,22 +58,22 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
   public readonly connections: ec2.Connections;
   public readonly ipAddressType?: IpAddressType;
-  private readonly securityGroup: ec2.ISecurityGroup;
+  private readonly securityGroups: ec2.ISecurityGroup[] = [];
 
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
       type: 'application',
-      securityGroups: Lazy.listValue({ produce: () => [this.securityGroup.securityGroupId] }),
+      securityGroups: Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) }),
       ipAddressType: props.ipAddressType,
     });
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
-    this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
+    this.securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
       description: `Automatically created Security Group for ELB ${this.node.uniqueId}`,
       allowAllOutbound: false,
-    });
-    this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
+    })];
+    this.connections = new ec2.Connections({ securityGroups: this.securityGroups });
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
@@ -105,6 +105,13 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
         permanent: true,
       }),
     });
+  }
+
+  /**
+   * Add a security group to this load balancer
+   */
+  public addSecurityGroup(securityGroup: ec2.ISecurityGroup) {
+    this.securityGroups.push(securityGroup);
   }
 
   /**
