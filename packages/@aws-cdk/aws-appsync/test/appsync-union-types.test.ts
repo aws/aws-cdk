@@ -11,11 +11,11 @@ const test2 = new appsync.ObjectType('Test2', {
   definition: { test2: t.string },
 });
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'api', {
+  api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
   });
   api.addType(test1);
@@ -42,7 +42,7 @@ describe('testing Union Type properties', () => {
       definition: [test1],
     });
     api.addType(union);
-    union.addField('test2', test2.attribute());
+    union.addField({ field: test2.attribute() });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
@@ -76,7 +76,7 @@ describe('testing Union Type properties', () => {
     });
     // THEN
     expect(() => {
-      test.addField('', t.string);
+      test.addField({ field: t.string });
     }).toThrowError('Fields for Union Types must be Object Types.');
   });
 
@@ -87,7 +87,7 @@ describe('testing Union Type properties', () => {
     });
     // THEN
     expect(() => {
-      test.addField('', new appsync.Field({ returnType: t.string }));
+      test.addField({ field: new appsync.Field({ returnType: t.string }) });
     }).toThrowError('Fields for Union Types must be Object Types.');
   });
 
@@ -98,7 +98,7 @@ describe('testing Union Type properties', () => {
     });
     // THEN
     expect(() => {
-      test.addField('', new appsync.ResolvableField({ returnType: t.string }));
+      test.addField({ field: new appsync.ResolvableField({ returnType: t.string }) });
     }).toThrowError('Fields for Union Types must be Object Types.');
   });
 
@@ -109,7 +109,7 @@ describe('testing Union Type properties', () => {
     });
     // THEN
     expect(() => {
-      test.addField('', new appsync.InterfaceType('break', { definition: {} }).attribute());
+      test.addField({ field: new appsync.InterfaceType('break', { definition: {} }).attribute() });
     }).toThrowError('Fields for Union Types must be Object Types.');
   });
 
@@ -120,7 +120,7 @@ describe('testing Union Type properties', () => {
     });
     // THEN
     expect(() => {
-      test.addField('', test.attribute());
+      test.addField({ field: test.attribute() });
     }).toThrowError('Fields for Union Types must be Object Types.');
   });
 });

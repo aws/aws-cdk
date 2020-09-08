@@ -337,7 +337,7 @@ export class UnionType implements IIntermediateType {
   public constructor(name: string, props: UnionTypeProps) {
     this.name = name;
     this.definition = {};
-    props.definition.map((def) => this.addField(def.name, def.attribute()));
+    props.definition.map((def) => this.addField({ field: def.attribute() }));
   }
 
   /**
@@ -383,7 +383,7 @@ export class UnionType implements IIntermediateType {
    * @param options the options to add a field
    */
   public addField(options: AddFieldOptions): void {
-    if (!options.fieldName) {
+    if (options.fieldName) {
       throw new Error('Union Types cannot be configured with the fieldName option. Use the field option instead.');
     }
     if (!options.field) {
