@@ -368,11 +368,6 @@ export class Stack extends Construct implements ITaggable {
 
     this.templateFile = `${this.artifactId}.template.json`;
 
-    // Add metadata resource, but only on top-level stacks and unless disabled
-    if (!this.parentStack && !this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING)) {
-      new MetadataResource(this, 'CDKMetadata');
-    }
-
     this.synthesizer = props.synthesizer ?? (newStyleSynthesisContext
       ? new DefaultStackSynthesizer()
       : new LegacyStackSynthesizer());
@@ -1106,7 +1101,6 @@ import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 import { FileSystem } from './fs';
-import { MetadataResource } from './private/metadata-resource';
 
 interface StackDependency {
   stack: Stack;

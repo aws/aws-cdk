@@ -31,8 +31,8 @@ export class MetadataResource extends Construct {
     return this._modulesPropertyCache;
   }
 
-  constructor(scope: Stack, id: string) {
-    super(scope, id);
+  constructor(scope: Stack) {
+    super(scope, 'CDKMetadata');
 
     const metadataServiceExists = Token.isUnresolved(scope.region) || RegionInfo.get(scope.region).cdkMetadataResourceAvailable;
     if (metadataServiceExists) {

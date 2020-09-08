@@ -5,6 +5,7 @@ import { Aspects, IAspect } from '../aspect';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
 import { Stack } from '../stack';
 import { Stage, StageSynthesisOptions } from '../stage';
+import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
 
@@ -13,6 +14,8 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   synthNestedAssemblies(root, options);
 
   invokeAspects(root);
+
+  injectMetadataResources(root);
 
   // This is mostly here for legacy purposes as the framework itself does not use prepare anymore.
   prepareTree(root);
@@ -106,6 +109,24 @@ function invokeAspects(root: IConstruct) {
  */
 function prepareTree(root: IConstruct) {
   visit(root, 'post', construct => construct.onPrepare());
+}
+
+/**
+ * Find all stacks and add Metadata Resources to all of them
+ *
+ * There is no good generic place to do this. Can't do it in the constructor
+ * (because adding a child construct makes it impossible to set context on the
+ * node), and the generic prepare phase is deprecated.
+ *
+ * Stop at Assembly boundaries.
+ */
+function injectMetadataResources(root: IConstruct) {
+  visit(root, 'post', construct => {
+    // Only on top-level stacks and unless disabled
+    if (!Stack.isStack(construct) || construct.parentStack || construct.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING)) { return; }
+
+    new MetadataResource(construct);
+  });
 }
 
 /**
