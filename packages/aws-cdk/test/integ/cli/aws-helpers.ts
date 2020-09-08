@@ -1,4 +1,5 @@
 import * as AWS from 'aws-sdk';
+import { log } from './cdk-helpers';
 
 interface Env {
   account: string;
