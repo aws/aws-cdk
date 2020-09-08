@@ -50,6 +50,32 @@ describe('testing Union Type properties', () => {
     });
   });
 
+  test('UnionType errors when addField is configured with fieldName option', () => {
+    // WHEN
+    const union = new appsync.UnionType('UnionTest', {
+      definition: [test1],
+    });
+    api.addType(union);
+
+    // THEN
+    expect(() => {
+      union.addField({ fieldName: 'fail', field: test2.attribute() });
+    }).toThrowError('Union Types cannot be configured with the fieldName option. Use the field option instead.');
+  });
+
+  test('UnionType errors when addField is not configured with field option', () => {
+    // WHEN
+    const union = new appsync.UnionType('UnionTest', {
+      definition: [test1],
+    });
+    api.addType(union);
+
+    // THEN
+    expect(() => {
+      union.addField({});
+    }).toThrowError('Union Types must be configured with the field option.');
+  });
+
   test('UnionType can be a GraphqlType', () => {
     // WHEN
     const union = new appsync.UnionType('UnionTest', {
