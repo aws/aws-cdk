@@ -118,6 +118,8 @@ See the [code-first schema](#Code-First-Schema) section for more details.
 
 #### Schema-First
 
+#### File
+
 You can define your GraphQL Schema from a file on disk. For convenience, use
 the `appsync.Schema.fromAsset` to specify the file representing your schema.
 
@@ -125,6 +127,18 @@ the `appsync.Schema.fromAsset` to specify the file representing your schema.
 const api = appsync.GraphqlApi(stack, 'api', {
   name: 'myApi',
   schema: appsync.Schema.fromAsset(join(__dirname, 'schema.graphl')),
+});
+```
+
+#### S3 Location
+
+You can define your GraphQL Schema from an s3 location. For convenience, use
+the `appsync.Schema.fromS3Location` to specify the file representing your schema.
+
+```ts
+const api = appsync.GraphqlApi(stack, 'api', {
+  name: 'myApi',
+  schema: appsync.Schema.fromS3Location('s3://example-url'),
 });
 ```
 
