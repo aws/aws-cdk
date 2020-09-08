@@ -136,9 +136,7 @@ class EksClusterStack extends TestStack {
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultNodegroup?.role || this.cluster.defaultCapacity?.role,
       launchTemplateSpecification: {
-        launchTemplate: {
-          launchTemplateId: lt.ref,
-        },
+        launchTemplateId: lt.ref,
         version: lt.attrDefaultVersionNumber,
       },
     });

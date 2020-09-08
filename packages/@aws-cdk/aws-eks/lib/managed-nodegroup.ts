@@ -56,23 +56,13 @@ export interface NodegroupRemoteAccess {
 }
 
 /**
- * Represents the LaunchTemplate.
- */
-export interface ILaunchTemplate {
-  /**
-   * The ID of the launch template.
-   */
-  readonly launchTemplateId: string;
-}
-
-/**
  * Launch template property specification
  */
 export interface LaunchTemplateSpecification {
   /**
    * The Launch template
    */
-  readonly launchTemplate: ILaunchTemplate;
+  readonly launchTemplateId: string;
   /**
    * The launch template version to be used (optional).
    *
@@ -300,14 +290,18 @@ export class Nodegroup extends Resource implements INodegroup {
 
     if (props.launchTemplateSpecification) {
       if (props.diskSize) {
+        // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+        // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
         throw new Error('diskSize must be specified within the launch template');
       }
       if (props.instanceType) {
+        // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+        // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
         throw new Error('Instance types must be specified within the launch template');
       }
       // TODO: update this when the L1 resource spec is updated.
       resource.addPropertyOverride('LaunchTemplate', {
-        Id: props.launchTemplateSpecification.launchTemplate.launchTemplateId,
+        Id: props.launchTemplateSpecification.launchTemplateId,
         Version: props.launchTemplateSpecification.version,
       });
     }
