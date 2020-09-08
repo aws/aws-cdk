@@ -41,7 +41,7 @@ const shortForms: yaml_types.Schema.CustomTag[] = [
 
     let value: any;
     if (typeof parsedArguments === 'string') {
-      // if the arguments to Fn::GetAtt are a string,
+      // if the arguments to !GetAtt are a string,
       // the part before the first '.' is the logical ID,
       // and the rest is the attribute name
       // (which can contain '.')
