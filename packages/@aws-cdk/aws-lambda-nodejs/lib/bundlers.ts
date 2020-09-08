@@ -128,7 +128,7 @@ interface BundlingCommandOptions extends LocalBundlerProps {
  */
 function createBundlingCommand(options: BundlingCommandOptions): string {
   const entryPath = path.join(options.projectRoot, options.relativeEntryPath);
-  const distFile = path.basename(options.relativeEntryPath).replace(/\.ts$/, '.js');
+  const distFile = path.basename(options.relativeEntryPath).replace(/\.(jsx|tsx?)$/, '.js');
   const parcelCommand: string = chain([
     [
       '$(node -p "require.resolve(\'parcel\')")', // Parcel is not globally installed, find its "bin"

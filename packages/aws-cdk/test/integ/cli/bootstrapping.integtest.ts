@@ -6,7 +6,7 @@ import { integTest } from './test-helpers';
 
 jest.setTimeout(600_000);
 
-const QUALIFIER = randomString();
+const QUALIFIER = randomString().substr(0, 10);
 
 beforeAll(async () => {
   await prepareAppFixture();
@@ -203,6 +203,32 @@ integTest('can dump the template, modify and use it to deploy a custom bootstrap
       CDK_NEW_BOOTSTRAP: '1',
     },
   });
+});
+
+integTest('switch on termination protection, switch is left alone on re-bootstrap', async () => {
+  const bootstrapStackName = fullStackName('bootstrap-stack');
+
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName,
+    '--termination-protection', 'true',
+    '--qualifier', QUALIFIER], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--force'], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
+
+  const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  expect(response.Stacks?.[0].EnableTerminationProtection).toEqual(true);
+});
+
+integTest('add tags, left alone on re-bootstrap', async () => {
+  const bootstrapStackName = fullStackName('bootstrap-stack');
+
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName,
+    '--tags', 'Foo=Bar',
+    '--qualifier', QUALIFIER], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--force'], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
+
+  const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  expect(response.Stacks?.[0].Tags).toEqual([
+    { Key: 'Foo', Value: 'Bar' },
+  ]);
 });
 
 function randomString() {
