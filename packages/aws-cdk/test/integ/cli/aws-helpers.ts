@@ -37,28 +37,42 @@ async function awsCall<
 >(ctor: new (config: any) => A, call: B, request: First<ServiceCalls<A>[B]>): Promise<Second<ServiceCalls<A>[B]>> {
   const env = await testEnv();
 
+  const profileName = process.env.AWS_PROFILE;
   let creds = undefined;
-  if (process.env.CODEBUILD_BUILD_ARN) {
-
-    log('Running inside CodeBuild. Configuring ChainableTemporaryCredentials...');
+  if (process.env.CODEBUILD_BUILD_ARN && profileName) {
 
     // in codebuild we must assume the role that the cdk uses
     // otherwise credentials will just be picked up by the normal sdk
-    // heuristics.
+    // heuristics and expire after an hour.
 
-    const arn = process.env.SANDBOX_ARN;
-    const externalId = process.env.SANDBOX_EXTERNAL_ID;
+    log(`Running inside CodeBuild with profile: ${profileName}`);
 
-    log(`Arn: ${arn}`);
-    log(`ExternalId: ${externalId}`);
+    // can't use '~' since the SDK doesn't seem to expand it...?
+    const configPath = `${process.env.HOME}/.aws/config`;
+    const ini = new AWS.IniLoader().loadFrom({
+      filename: configPath,
+      isConfig: true,
+    });
+
+    const profile = ini[profileName];
+
+    if (!profile) {
+      throw new Error(`Profile '${profileName}' does not exist in config file (${configPath})`);
+    }
+
+    const arn = profile.role_arn;
+    const externalId = profile.external_id;
 
     if (!arn) {
-      throw new Error('SANDBOX_ARN env variable expected when running in CodeBuild');
+      throw new Error(`role_arn does not exist in profile ${profileName}`);
     }
 
     if (!externalId) {
-      throw new Error('SANDBOX_EXTERNAL_ID env variable expected when running in CodeBuild');
+      throw new Error(`external_id does not exist in profile ${externalId}`);
     }
+
+    log(`Arn: ${arn}`);
+    log(`ExternalId: ${externalId}`);
 
     creds = new AWS.ChainableTemporaryCredentials({
       params: {
