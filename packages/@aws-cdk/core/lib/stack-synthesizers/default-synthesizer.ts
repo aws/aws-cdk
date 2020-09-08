@@ -127,6 +127,7 @@ export interface DefaultStackSynthesizerProps {
    * respectively.
    *
    * @default DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME
+   * @deprecated This property is not used anymore
    */
   readonly fileAssetKeyArnExportName?: string;
 
@@ -139,6 +140,16 @@ export interface DefaultStackSynthesizerProps {
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DefaultStackSynthesizer.DEFAULT_QUALIFIER`
    */
   readonly qualifier?: string;
+
+  /**
+   * Whether to add a Rule to the stack template verifying the bootstrap stack version
+   *
+   * This generally should be left set to `true`, unless you explicitly
+   * want to be able to deploy to an unbootstrapped environment.
+   *
+   * @default true
+   */
+  readonly generateBootstrapVersionRule?: boolean;
 }
 
 /**
@@ -195,7 +206,6 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   private bucketName?: string;
   private repositoryName?: string;
   private _deployRoleArn?: string;
-  private _kmsKeyArnExportName?: string;
   private _cloudFormationExecutionRoleArn?: string;
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
@@ -233,16 +243,16 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     this._cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
     this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
-    this._kmsKeyArnExportName = specialize(this.props.fileAssetKeyArnExportName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME);
     /* eslint-enable max-len */
 
-    addBootstrapVersionRule(stack, MIN_BOOTSTRAP_STACK_VERSION, qualifier);
+    if (this.props.generateBootstrapVersionRule ?? true) {
+      addBootstrapVersionRule(stack, MIN_BOOTSTRAP_STACK_VERSION, qualifier);
+    }
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stack);
     assertBound(this.bucketName);
-    assertBound(this._kmsKeyArnExportName);
 
     const objectKey = asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
 

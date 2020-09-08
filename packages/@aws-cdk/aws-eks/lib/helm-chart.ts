@@ -1,5 +1,6 @@
 import { Construct, CustomResource, Duration, Stack } from '@aws-cdk/core';
-import { Cluster } from './cluster';
+import { ICluster } from './cluster';
+import { KubectlProvider } from './kubectl-provider';
 
 /**
  * Helm Chart options.
@@ -70,7 +71,7 @@ export interface HelmChartProps extends HelmChartOptions {
    *
    * [disable-awslint:ref-via-interface]
    */
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
 }
 
 /**
@@ -89,7 +90,7 @@ export class HelmChart extends Construct {
 
     const stack = Stack.of(this);
 
-    const provider = props.cluster._attachKubectlResourceScope(this);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
@@ -106,7 +107,7 @@ export class HelmChart extends Construct {
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._kubectlCreationRole.roleArn,
+        RoleArn: provider.roleArn, // TODO: bake into the provider's environment
         Release: props.release ?? this.node.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
         Version: props.version,
