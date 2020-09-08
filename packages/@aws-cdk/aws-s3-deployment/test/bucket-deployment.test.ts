@@ -304,6 +304,7 @@ test('system metadata is correctly transformed', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
+  const expiration = cdk.Expiration.after(cdk.Duration.hours(12));
 
   // WHEN
   new s3deploy.BucketDeployment(stack, 'Deploy', {
@@ -318,7 +319,7 @@ test('system metadata is correctly transformed', () => {
     serverSideEncryptionCustomerAlgorithm: 'rot13',
     websiteRedirectLocation: 'example',
     cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
-    expires: cdk.Expiration.after(cdk.Duration.hours(12)),
+    expires: expiration,
   });
 
   // THEN
@@ -331,7 +332,7 @@ test('system metadata is correctly transformed', () => {
       'sse': 'aws:kms',
       'sse-kms-key-id': 'mykey',
       'cache-control': 'public, max-age=3600',
-      'expires': cdk.Expiration.after(cdk.Duration.hours(12)).date.toUTCString(),
+      'expires': expiration.date.toUTCString(),
       'sse-c-copy-source': 'rot13',
       'website-redirect': 'example',
     },
