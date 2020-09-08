@@ -410,7 +410,7 @@ export class CfnParser {
     if (typeof cfnValue === 'object') {
       // an object can be either a CFN intrinsic, or an actual object
       const cfnIntrinsic = this.parseIfCfnIntrinsic(cfnValue);
-      if (cfnIntrinsic) {
+      if (cfnIntrinsic !== undefined) {
         return cfnIntrinsic;
       }
       const ret: any = {};
@@ -435,7 +435,7 @@ export class CfnParser {
       case 'Ref': {
         const refTarget = object[key];
         const specialRef = this.specialCaseRefs(refTarget);
-        if (specialRef) {
+        if (specialRef !== undefined) {
           return specialRef;
         } else {
           const refElement = this.finder.findRefTarget(refTarget);
@@ -596,7 +596,7 @@ export class CfnParser {
 
     // since it's not in the map, check if it's a pseudo parameter
     const specialRef = this.specialCaseSubRefs(refTarget);
-    if (specialRef) {
+    if (specialRef !== undefined) {
       return leftHalf + specialRef + this.parseFnSubString(rightHalf, map);
     }
 

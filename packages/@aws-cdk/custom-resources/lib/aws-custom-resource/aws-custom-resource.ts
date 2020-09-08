@@ -324,24 +324,31 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     });
     this.grantPrincipal = provider.grantPrincipal;
 
+    // Create the policy statements for the custom resource function role, or use the user-provided ones
+    const statements = [];
     if (props.policy.statements.length !== 0) {
       // Use custom statements provided by the user
       for (const statement of props.policy.statements) {
-        provider.addToRolePolicy(statement);
+        statements.push(statement);
       }
     } else {
       // Derive statements from AWS SDK calls
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
         if (call) {
-          provider.addToRolePolicy(new iam.PolicyStatement({
+          const statement = new iam.PolicyStatement({
             actions: [awsSdkToIamAction(call.service, call.action)],
             resources: props.policy.resources,
-          }));
+          });
+          statements.push(statement);
         }
       }
-
     }
-
+    const policy = new iam.Policy(this, 'CustomResourcePolicy', {
+      statements: statements,
+    });
+    if (provider.role !== undefined) {
+      policy.attachToRole(provider.role);
+    }
     const create = props.onCreate || props.onUpdate;
     this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
@@ -354,6 +361,10 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
         installLatestAwsSdk: props.installLatestAwsSdk ?? true,
       },
     });
+
+    // If the policy was deleted first, then the function might lose permissions to delete the custom resource
+    // This is here so that the policy doesn't get removed before onDelete is called
+    this.customResource.node.addDependency(policy);
   }
 
   /**
