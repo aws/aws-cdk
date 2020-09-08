@@ -65,7 +65,7 @@ test('in a cross-account/cross-region setup, artifact bucket can be read by depl
   });
 });
 
-xtest('in a cross-account/same-region setup, artifact bucket can be read by deploy role', () => {
+test('in a cross-account/same-region setup, artifact bucket can be read by deploy role', () => {
   // WHEN
   pipeline.addApplicationStage(new TestApplication(app, 'MyApp', {
     env: { account: '321elsewhere', region: PIPELINE_ENV.region },
