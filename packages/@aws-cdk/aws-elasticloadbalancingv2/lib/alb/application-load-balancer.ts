@@ -58,22 +58,21 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
   public readonly connections: ec2.Connections;
   public readonly ipAddressType?: IpAddressType;
-  private readonly securityGroups: ec2.ISecurityGroup[] = [];
 
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
       type: 'application',
-      securityGroups: Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) }),
+      securityGroups: Lazy.listValue({ produce: () => this.connections.securityGroups.map(sg => sg.securityGroupId) }),
       ipAddressType: props.ipAddressType,
     });
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
-    this.securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
+    const securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
       description: `Automatically created Security Group for ELB ${this.node.uniqueId}`,
       allowAllOutbound: false,
     })];
-    this.connections = new ec2.Connections({ securityGroups: this.securityGroups });
+    this.connections = new ec2.Connections({ securityGroups });
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
@@ -111,7 +110,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * Add a security group to this load balancer
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup) {
-    this.securityGroups.push(securityGroup);
+    this.connections.addSecurityGroup(securityGroup);
   }
 
   /**
