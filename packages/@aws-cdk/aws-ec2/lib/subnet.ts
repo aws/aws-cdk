@@ -6,7 +6,7 @@ import { ISubnet } from './vpc';
  * with SubnetSelection, to determine where to place AWS resources such as VPC
  * endpoints, EC2 instances, etc.
  */
-export interface ISubnetSelector {
+export interface ISubnetFilter {
 
   /**
    * Executes the subnet filtering logic, returning a filtered set of subnets.
@@ -17,7 +17,7 @@ export interface ISubnetSelector {
 /**
  * Chooses subnets which are in one of the given availability zones.
  */
-export class AvailabilityZoneSubnetSelector implements ISubnetSelector {
+export class AvailabilityZoneSubnetFilter implements ISubnetFilter {
 
   private readonly availabilityZones: string[];
 
@@ -36,7 +36,7 @@ export class AvailabilityZoneSubnetSelector implements ISubnetSelector {
 /**
  * Chooses subnets such that there is at most one per availability zone.
  */
-export class OnePerAZSubnetSelector implements ISubnetSelector {
+export class OnePerAZSubnetFilter implements ISubnetFilter {
 
   constructor() {}
 
@@ -60,7 +60,7 @@ export class OnePerAZSubnetSelector implements ISubnetSelector {
 /**
  * Chooses subnets which contain any of the specified IP addresses.
  */
-export class ContainsIpAddressesSubnetSelector implements ISubnetSelector {
+export class ContainsIpAddressesSubnetFilter implements ISubnetFilter {
 
   private readonly ipAddresses: string[];
 

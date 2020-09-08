@@ -2,7 +2,7 @@ import { countResources, expect, haveResource, haveResourceLike, isSuperObject, 
 import { CfnOutput, Lazy, Stack, Tags } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
-  AclCidr, AclTraffic, BastionHostLinux, CfnSubnet, CfnVPC, ContainsIpAddressesSubnetSelector, DefaultInstanceTenancy, GenericLinuxImage,
+  AclCidr, AclTraffic, BastionHostLinux, CfnSubnet, CfnVPC, ContainsIpAddressesSubnetFilter, DefaultInstanceTenancy, GenericLinuxImage,
   InstanceType, InterfaceVpcEndpoint, InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, Peer, Port, PrivateSubnet,
   PublicSubnet, RouterType, Subnet, SubnetType, TrafficDirection, Vpc,
 } from '../lib';
@@ -1398,7 +1398,7 @@ nodeunitShim({
       new BastionHostLinux(stack, 'Bastion', {
         vpc,
         subnetSelection: {
-          subnetFilters: [new ContainsIpAddressesSubnetSelector(['10.0.160.0'])],
+          subnetFilters: [new ContainsIpAddressesSubnetFilter(['10.0.160.0'])],
         },
       });
 
@@ -1431,7 +1431,7 @@ nodeunitShim({
         vpc,
         service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
         subnets: {
-          subnetFilters: [new ContainsIpAddressesSubnetSelector(['10.0.96.0', '10.0.160.0'])],
+          subnetFilters: [new ContainsIpAddressesSubnetFilter(['10.0.96.0', '10.0.160.0'])],
         },
       });
 

@@ -11,7 +11,7 @@ import {
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
-import { AvailabilityZoneSubnetSelector, OnePerAZSubnetSelector, ISubnetSelector } from './subnet';
+import { AvailabilityZoneSubnetFilter, OnePerAZSubnetFilter, ISubnetFilter } from './subnet';
 import { allRouteTableIds, defaultSubnetName, flatten, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
@@ -247,7 +247,7 @@ export interface SubnetSelection {
    *
    * @default - none
    */
-  readonly subnetFilters?: ISubnetSelector[];
+  readonly subnetFilters?: ISubnetFilter[];
 
   /**
    * Explicitly select individual subnets
@@ -479,7 +479,7 @@ abstract class VpcBase extends Resource implements IVpc {
     return subnets;
   }
 
-  private applySubnetFilters(subnets: ISubnet[], filters: ISubnetSelector[]): ISubnet[] {
+  private applySubnetFilters(subnets: ISubnet[], filters: ISubnetFilter[]): ISubnet[] {
     let filtered = subnets;
     // Apply each filter in sequence
     for (const filter of filters) {
@@ -554,10 +554,10 @@ abstract class VpcBase extends Resource implements IVpc {
 
     // Backwards compatibility with existing `availabilityZones` and `onePerAz` functionality
     if (placement.availabilityZones !== undefined) { // Filter by AZs, if specified
-      subnetFilters.push(new AvailabilityZoneSubnetSelector(placement.availabilityZones));
+      subnetFilters.push(new AvailabilityZoneSubnetFilter(placement.availabilityZones));
     }
     if (!!placement.onePerAz) { // Ensure one per AZ if specified
-      subnetFilters.push(new OnePerAZSubnetSelector());
+      subnetFilters.push(new OnePerAZSubnetFilter());
     }
 
     // Overwrite the provided placement filters
