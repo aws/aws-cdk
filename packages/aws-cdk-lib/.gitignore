@@ -1,0 +1,19 @@
+*.js
+*.d.ts
+!deps.js
+!gen.js
+lib/
+tsconfig.json
+.jsii
+*.tsbuildinfo
+
+dist
+.LAST_PACKAGE
+.LAST_BUILD
+*.snk
+!.eslintrc.js
+
+# Ignore barrel import entry points
+/*.ts
+
+junit.xml

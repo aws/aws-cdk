@@ -1,13 +1,14 @@
 {
-  "name": "monocdk-experiment",
+  "name": "aws-cdk-lib",
+  "private": "true",
   "version": "0.0.0",
-  "description": "An experiment to bundle the entire CDK into a single module",
+  "description": "The AWS Cloud Development Kit library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/monocdk-experiment"
+    "directory": "packages/aws-cdk-lib"
   },
   "stability": "experimental",
   "maturity": "developer-preview",
@@ -51,24 +52,24 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK",
-        "packageId": "Amazon.CDK.MonoCDK.Experiment",
+        "namespace": "Amazon.CDK.Lib",
+        "packageId": "Amazon.CDK.Lib",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
         "versionSuffix": "-devpreview",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "java": {
-        "package": "software.amazon.awscdk.core",
+        "package": "software.amazon.awscdk.lib",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "monocdk-experiment",
+          "artifactId": "lib",
           "versionSuffix": ".DEVPREVIEW"
         }
       },
       "python": {
-        "distName": "monocdk.experiment",
-        "module": "monocdk_experiment"
+        "distName": "aws-cdk.lib",
+        "module": "aws_cdk.lib"
       }
     },
     "projectReferences": false
