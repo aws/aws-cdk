@@ -747,7 +747,7 @@ export = {
   'Stack.of() throws when there is no parent Stack'(test: Test) {
     const root = new Construct(undefined as any, 'Root');
     const construct = new Construct(root, 'Construct');
-    test.throws(() => Stack.of(construct), /No stack could be identified for the construct at path/);
+    test.throws(() => Stack.of(construct), /should be created in the scope of a Stack, but no Stack found/);
     test.done();
   },
 
