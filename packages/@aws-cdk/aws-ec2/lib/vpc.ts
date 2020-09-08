@@ -1933,7 +1933,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public get availabilityZone(): string {
     if (!this._availabilityZone) {
       // eslint-disable-next-line max-len
-      throw new Error("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
+      throw new Error('You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()');
     }
     return this._availabilityZone;
   }
@@ -1941,7 +1941,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public get ipv4CidrBlock(): string {
     if (!this._ipv4CidrBlock) {
       // tslint:disable-next-line: max-line-length
-      throw new Error("You cannot reference an imported Subnet's IPv4 CIDR if it was not supplied. Add the ipv4CidrBlock when importing using Subnet.fromSubnetAttributes()");
+      throw new Error('You cannot reference an imported Subnet's IPv4 CIDR if it was not supplied. Add the ipv4CidrBlock when importing using Subnet.fromSubnetAttributes()');
     }
     return this._ipv4CidrBlock;
   }
