@@ -5,11 +5,12 @@ import * as asg from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
-import { KubectlLayer } from '../lib/kubectl-layer';
+import { getOrCreateKubectlLayer } from '../lib/kubectl-provider';
 import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
@@ -257,7 +258,7 @@ export = {
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
     new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
-    const layer = KubectlLayer.getOrCreate(stack, {});
+    getOrCreateKubectlLayer(stack);
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
@@ -266,7 +267,6 @@ export = {
         ApplicationId: 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl',
       },
     }));
-    test.equal(layer.isChina(), false);
     test.done();
   },
 
@@ -278,8 +278,7 @@ export = {
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
     new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
-    new KubectlLayer(stack, 'NewLayer');
-    const layer = KubectlLayer.getOrCreate(stack);
+    getOrCreateKubectlLayer(stack);
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
@@ -288,7 +287,6 @@ export = {
         ApplicationId: 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl',
       },
     }));
-    test.equal(layer.isChina(), true);
     test.done();
   },
 
@@ -1070,6 +1068,44 @@ export = {
       test.done();
     },
 
+    'default cluster capacity with ARM64 instance type comes with nodegroup with correct AmiType'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 1,
+        version: CLUSTER_VERSION,
+        defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2_ARM_64',
+      }));
+      test.done();
+    },
+
+    'addNodegroup with ARM64 instance type comes with nodegroup with correct AmiType'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
+      }).addNodegroup('ng', {
+        instanceType: new ec2.InstanceType('m6g.medium'),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2_ARM_64',
+      }));
+      test.done();
+    },
+
     'EKS-Optimized AMI with GPU support when addCapacity'(test: Test) {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
@@ -1087,6 +1123,27 @@ export = {
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux-2-gpu'),
+      ), 'EKS AMI with GPU should be in ssm parameters');
+      test.done();
+    },
+
+    'EKS-Optimized AMI with ARM64 when addCapacity'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+      }).addCapacity('ARMCapacity', {
+        instanceType: new ec2.InstanceType('m6g.medium'),
+      });
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('/amazon-linux-2-arm64/'),
       ), 'EKS AMI with GPU should be in ssm parameters');
       test.done();
     },
@@ -1618,18 +1675,153 @@ export = {
 
   'endpoint access': {
 
-    'private endpoint access fails if selected subnets are empty'(test: Test) {
+    'public restricted'(test: Test) {
 
+      test.throws(() => {
+        eks.EndpointAccess.PUBLIC.onlyFrom('1.2.3.4/32');
+      }, /Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom\(\) instead./);
+
+      test.done();
+    },
+
+    'public non restricted without private subnets'(test: Test) {
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      // we don't attach vpc config in case endpoint is public only, regardless of whether
+      // the vpc has private subnets or not.
+      test.equal(template.Resources.Handler886CB40B.Properties.VpcConfig, undefined);
+
+      test.done();
+    },
+
+    'public non restricted with private subnets'(test: Test) {
+
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC,
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      // we don't attach vpc config in case endpoint is public only, regardless of whether
+      // the vpc has private subnets or not.
+      test.equal(template.Resources.Handler886CB40B.Properties.VpcConfig, undefined);
+
+      test.done();
+
+    },
+
+    'private without private subnets'(test: Test) {
       const { stack } = testFixture();
 
       test.throws(() => {
         new eks.Cluster(stack, 'Cluster', {
-          vpc: new ec2.Vpc(stack, 'Vpc'),
           version: CLUSTER_VERSION,
           endpointAccess: eks.EndpointAccess.PRIVATE,
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         });
-      }, /Vpc must contain private subnets to configure private endpoint access/);
+      }, /Vpc must contain private subnets when public endpoint access is disabled/);
+
+      test.done();
+    },
+
+    'private with private subnets'(test: Test) {
+
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      // handler should have vpc config
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length !== 0);
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length !== 0);
+
+      test.done();
+
+    },
+
+    'private and non restricted public without private subnets'(test: Test) {
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      // we don't have private subnets, but we don't need them since public access
+      // is not restricted.
+      test.equal(template.Resources.Handler886CB40B.Properties.VpcConfig, undefined);
+
+      test.done();
+    },
+
+    'private and non restricted public with private subnets'(test: Test) {
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      // we have private subnets so we should use them.
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length !== 0);
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length !== 0);
+
+      test.done();
+    },
+
+    'private and restricted public without private subnets'(test: Test) {
+      const { stack } = testFixture();
+
+      test.throws(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+        });
+      }, /Vpc must contain private subnets when public endpoint access is restricted/);
+
+      test.done();
+    },
+
+    'private and restricted public with private subnets'(test: Test) {
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      // we have private subnets so we should use them.
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length !== 0);
+      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length !== 0);
 
       test.done();
     },
@@ -1728,15 +1920,6 @@ export = {
       test.equal(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPrivateAccess, true);
       test.equal(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPublicAccess, false);
 
-      test.done();
-    },
-
-    'can configure cidr blocks in public endpoint access'(test: Test) {
-      // GIVEN
-      const { stack } = testFixture();
-      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PUBLIC.onlyFrom('1.2.3.4/5') });
-
-      test.deepEqual(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.publicAccessCidrs, ['1.2.3.4/5']);
       test.done();
     },
 
@@ -2003,6 +2186,58 @@ export = {
     test.deepEqual(rawTemplate.Outputs.LoadBalancerAddress.Value, { 'Fn::GetAtt': [expectedKubernetesGetId, 'Value'] });
     test.done();
   },
+
+  'custom kubectl layer can be provided'(test: Test) {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    const layer = lambda.LayerVersion.fromLayerVersionArn(stack, 'MyLayer', 'arn:of:layer');
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: layer,
+    });
+
+    // THEN
+    const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    expect(providerStack).to(haveResource('AWS::Lambda::Function', {
+      Layers: ['arn:of:layer'],
+    }));
+
+    test.done();
+  },
+
+  'SAR-based kubectl layer can be customized'(test: Test) {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    const layer = new eks.KubectlLayer(stack, 'Kubectl', {
+      applicationId: 'custom:app:id',
+      version: '2.3.4',
+    });
+
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: layer,
+    });
+
+    // THEN
+    const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    expect(providerStack).to(haveResource('AWS::Lambda::Function', {
+      Layers: [{ Ref: 'referencetoStackKubectl7F29063EOutputsLayerVersionArn' }],
+    }));
+
+    expect(stack).to(haveResource('AWS::Serverless::Application', {
+      Location: {
+        ApplicationId: 'custom:app:id',
+        SemanticVersion: '2.3.4',
+      },
+    }));
+
+    test.done();
+  },
+
   'create a cluster using custom resource with secrets encryption using KMS CMK'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
