@@ -1,4 +1,4 @@
-import { AuthorizationType } from './graphqlapi';
+import { AuthorizationType, GraphqlApi } from './graphqlapi';
 import { Resolver } from './resolver';
 import { ResolvableFieldOptions, BaseTypeOptions, GraphqlType } from './schema-field';
 import { InterfaceType } from './schema-intermediate';
@@ -67,6 +67,8 @@ export interface IField {
    * Generate the directives for this field
    *
    * @param modes the authorization modes of the graphql api
+   *
+   * @default - no authorization modes
    */
   directivesToString(modes?: AuthorizationType[]): string
 }
@@ -135,7 +137,16 @@ export interface IIntermediateType {
    *
    * @default - no intermediate type
    */
-  readonly intermediateType?: InterfaceType;
+  readonly intermediateType?: IIntermediateType;
+
+  /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @param api The binding GraphQL Api [disable-awslint:ref-via-interface]
+   *
+   * @internal
+   */
+  _bindToGraphqlApi(api: GraphqlApi): IIntermediateType;
 
   /**
    * Create an GraphQL Type representing this Intermediate Type
@@ -149,15 +160,11 @@ export interface IIntermediateType {
 
   /**
    * Generate the string of this object type
-   *
-   * @param modes the authorization modes for the graphql api
    */
-  toString(modes?: AuthorizationType[]): string;
+  toString(): string;
 
   /**
    * Add a field to this Intermediate Type
-   *
-   * @param options - the options to add a field
    */
   addField(options: AddFieldOptions): void;
 }
@@ -221,6 +228,11 @@ export class Directive {
    */
   private statement: string;
 
+  /**
+   * the authorization modes for this intermediate type
+   */
+  protected modes?: AuthorizationType[];
+
   private readonly mode?: AuthorizationType;
 
   private constructor(statement: string, mode?: AuthorizationType) {
@@ -229,14 +241,25 @@ export class Directive {
   }
 
   /**
-   * Generate the directive statement
-   * @param modes the authorization modes of the graphql api
+   * Method called when the stringifying Directive for schema generation
+   *
+   * @param modes the authorization modes
+   *
+   * @internal
    */
-  public toString(modes?: AuthorizationType[]): string {
-    if (modes && this.mode && !modes.some((mode) => mode === this.mode)) {
+  public _bindToAuthModes(modes?: AuthorizationType[]): Directive {
+    this.modes = modes;
+    return this;
+  }
+
+  /**
+   * Generate the directive statement
+   */
+  public toString(): string {
+    if (this.modes && this.mode && !this.modes.some((mode) => mode === this.mode)) {
       throw new Error(`No Authorization Type ${this.mode} declared in GraphQL Api.`);
     }
-    if (this.mode === AuthorizationType.USER_POOL && modes && modes.length > 1) {
+    if (this.mode === AuthorizationType.USER_POOL && this.modes && this.modes.length > 1) {
       this.statement = this.statement.replace('@aws_auth', '@aws_cognito_user_pools');
     }
     return this.statement;
