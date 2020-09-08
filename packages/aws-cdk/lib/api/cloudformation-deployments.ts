@@ -7,6 +7,7 @@ import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
+import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
 export interface DeployStackOptions {
   /**
@@ -88,6 +89,21 @@ export interface DeployStackOptions {
    * @default true
    */
   usePreviousParameters?: boolean;
+
+  /**
+   * Display mode for stack deployment progress.
+   *
+   * @default - StackActivityProgress.Bar - stack events will be displayed for
+   *   the resource currently being deployed.
+   */
+  progress?: StackActivityProgress;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -156,6 +172,8 @@ export class CloudFormationDeployments {
       force: options.force,
       parameters: options.parameters,
       usePreviousParameters: options.usePreviousParameters,
+      progress: options.progress,
+      ci: options.ci,
     });
   }
 

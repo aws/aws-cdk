@@ -1,6 +1,8 @@
 import { anything, arrayWith, deepObjectLike, encodedJson, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
+import * as cp from '@aws-cdk/aws-codepipeline';
+import * as cpa from '@aws-cdk/aws-codepipeline-actions';
+import { Construct, Stack, Stage, StageProps, SecretValue } from '@aws-cdk/core';
 import * as cdkp from '../lib';
 import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, TestGitHubNpmPipeline } from './testutil';
 
@@ -40,6 +42,13 @@ test('references stack template in subassembly', () => {
   });
 });
 
+test('obvious error is thrown when stage contains no stacks', () => {
+  // WHEN
+  expect(() => {
+    pipeline.addApplicationStage(new Stage(app, 'EmptyStage'));
+  }).toThrow(/should contain at least one Stack/);
+});
+
 test('action has right settings for same-env deployment', () => {
   // WHEN
   pipeline.addApplicationStage(new OneStackApp(app, 'Same'));
@@ -51,15 +60,48 @@ test('action has right settings for same-env deployment', () => {
       Actions: [
         objectLike({
           Name: 'Stack.Prepare',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::',
+              { Ref: 'AWS::AccountId' },
+              ':role/cdk-hnb659fds-deploy-role-',
+              { Ref: 'AWS::AccountId' },
+              '-',
+              { Ref: 'AWS::Region' },
+            ]],
+          },
           Configuration: objectLike({
             StackName: 'Same-Stack',
-            RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}' },
+            RoleArn: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::',
+                { Ref: 'AWS::AccountId' },
+                ':role/cdk-hnb659fds-cfn-exec-role-',
+                { Ref: 'AWS::AccountId' },
+                '-',
+                { Ref: 'AWS::Region' },
+              ]],
+            },
           }),
         }),
         objectLike({
           Name: 'Stack.Deploy',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::',
+              { Ref: 'AWS::AccountId' },
+              ':role/cdk-hnb659fds-deploy-role-',
+              { Ref: 'AWS::AccountId' },
+              '-',
+              { Ref: 'AWS::Region' },
+            ]],
+          },
           Configuration: objectLike({
             StackName: 'Same-Stack',
           }),
@@ -80,15 +122,36 @@ test('action has right settings for cross-account deployment', () => {
       Actions: [
         objectLike({
           Name: 'Stack.Prepare',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::you:role/cdk-hnb659fds-deploy-role-you-${AWS::Region}' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::you:role/cdk-hnb659fds-deploy-role-you-',
+              { Ref: 'AWS::Region' },
+            ]],
+          },
           Configuration: objectLike({
             StackName: 'CrossAccount-Stack',
-            RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::you:role/cdk-hnb659fds-cfn-exec-role-you-${AWS::Region}' },
+            RoleArn: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::you:role/cdk-hnb659fds-cfn-exec-role-you-',
+                { Ref: 'AWS::Region' },
+              ]],
+            },
           }),
         }),
         objectLike({
           Name: 'Stack.Deploy',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::you:role/cdk-hnb659fds-deploy-role-you-${AWS::Region}' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::you:role/cdk-hnb659fds-deploy-role-you-',
+              { Ref: 'AWS::Region' },
+            ]],
+          },
           Configuration: objectLike({
             StackName: 'CrossAccount-Stack',
           }),
@@ -109,16 +172,46 @@ test('action has right settings for cross-region deployment', () => {
       Actions: [
         objectLike({
           Name: 'Stack.Prepare',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-elsewhere' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::',
+              { Ref: 'AWS::AccountId' },
+              ':role/cdk-hnb659fds-deploy-role-',
+              { Ref: 'AWS::AccountId' },
+              '-elsewhere',
+            ]],
+          },
           Region: 'elsewhere',
           Configuration: objectLike({
             StackName: 'CrossRegion-Stack',
-            RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-elsewhere' },
+            RoleArn: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::',
+                { Ref: 'AWS::AccountId' },
+                ':role/cdk-hnb659fds-cfn-exec-role-',
+                { Ref: 'AWS::AccountId' },
+                '-elsewhere',
+              ]],
+            },
           }),
         }),
         objectLike({
           Name: 'Stack.Deploy',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-elsewhere' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::',
+              { Ref: 'AWS::AccountId' },
+              ':role/cdk-hnb659fds-deploy-role-',
+              { Ref: 'AWS::AccountId' },
+              '-elsewhere',
+            ]],
+          },
           Region: 'elsewhere',
           Configuration: objectLike({
             StackName: 'CrossRegion-Stack',
@@ -140,16 +233,34 @@ test('action has right settings for cross-account/cross-region deployment', () =
       Actions: [
         objectLike({
           Name: 'Stack.Prepare',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::you:role/cdk-hnb659fds-deploy-role-you-elsewhere' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::you:role/cdk-hnb659fds-deploy-role-you-elsewhere',
+            ]],
+          },
           Region: 'elsewhere',
           Configuration: objectLike({
             StackName: 'CrossBoth-Stack',
-            RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::you:role/cdk-hnb659fds-cfn-exec-role-you-elsewhere' },
+            RoleArn: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::you:role/cdk-hnb659fds-cfn-exec-role-you-elsewhere',
+              ]],
+            },
           }),
         }),
         objectLike({
           Name: 'Stack.Deploy',
-          RoleArn: { 'Fn::Sub': 'arn:${AWS::Partition}:iam::you:role/cdk-hnb659fds-deploy-role-you-elsewhere' },
+          RoleArn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::you:role/cdk-hnb659fds-deploy-role-you-elsewhere',
+            ]],
+          },
           Region: 'elsewhere',
           Configuration: objectLike({
             StackName: 'CrossBoth-Stack',
@@ -268,6 +379,28 @@ test('can control fix/CLI version used in pipeline selfupdate', () => {
         },
       })),
     },
+  });
+});
+
+test('add another action to an existing stage', () => {
+  // WHEN
+  pipeline.stage('Source').addAction(new cpa.GitHubSourceAction({
+    actionName: 'GitHub2',
+    oauthToken: SecretValue.plainText('oops'),
+    output: new cp.Artifact(),
+    owner: 'OWNER',
+    repo: 'REPO',
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Source',
+      Actions: [
+        objectLike({ Name: 'GitHub' }),
+        objectLike({ Name: 'GitHub2' }),
+      ],
+    }),
   });
 });
 

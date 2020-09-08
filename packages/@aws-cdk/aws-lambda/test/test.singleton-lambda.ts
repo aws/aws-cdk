@@ -141,4 +141,47 @@ export = {
     }]);
     test.done();
   },
+
+  'check edge compatibility'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
+      code: new lambda.InlineCode('def hello(): pass'),
+      runtime: lambda.Runtime.PYTHON_2_7,
+      handler: 'index.hello',
+      environment: {
+        KEY: 'value',
+      },
+    });
+
+    // THEN
+    test.throws(() => singleton._checkEdgeCompatibility(), /The function Default\/SingletonLambda84c0de93353f42179b0b45b6c993251a contains environment variables \[KEY\] and is not compatible with Lambda@Edge/);
+
+    test.done();
+  },
+
+  'current version of a singleton function'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
+      code: new lambda.InlineCode('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    const version = singleton.currentVersion;
+    version.addAlias('foo');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Version', {
+      FunctionName: {
+        Ref: 'SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38',
+      },
+    }));
+
+    test.done();
+  },
 };

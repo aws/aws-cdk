@@ -571,6 +571,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
       // New rule
       new ApplicationListenerRule(this, id, {
         listener: this,
+        conditions: props.conditions,
         hostHeader: props.hostHeader,
         pathPattern: props.pathPattern,
         pathPatterns: props.pathPatterns,

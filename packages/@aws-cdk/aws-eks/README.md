@@ -176,6 +176,31 @@ cluster.addNodegroup('nodegroup', {
 });
 ```
 
+### ARM64 Support
+
+Instance types with `ARM64` architecture are supported in both managed nodegroup and self-managed capacity. Simply specify an ARM64 `instanceType` (such as `m6g.medium`), and the latest 
+Amazon Linux 2 AMI for ARM64 will be automatically selected.
+
+```ts
+// create a cluster with a default managed nodegroup 
+cluster = new eks.Cluster(this, 'Cluster', {
+  vpc,
+  mastersRole,
+  version: eks.KubernetesVersion.V1_17,
+});
+
+// add a managed ARM64 nodegroup
+cluster.addNodegroup('extra-ng-arm', {
+  instanceType: new ec2.InstanceType('m6g.medium'),
+  minSize: 2,
+});
+
+// add a self-managed ARM64 nodegroup
+cluster.addCapacity('self-ng-arm', {
+  instanceType: new ec2.InstanceType('m6g.medium'),
+  minCapacity: 2,
+})
+```
 
 ### Fargate
 
@@ -269,6 +294,10 @@ the capacity.
 The `KubernetesManifest` construct or `cluster.addManifest` method can be used
 to apply Kubernetes resource manifests to this cluster.
 
+> When using `cluster.addManifest`, the manifest construct is defined within the cluster's stack scope. If the manifest contains
+> attributes from a different stack which depend on the cluster stack, a circular dependency will be created and you will get a synth time error.
+> To avoid this, directly use `new KubernetesManifest` to create the manifest in the scope of the other stack.
+
 The following examples will deploy the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes)
 service on the cluster:
 
@@ -318,7 +347,7 @@ new KubernetesManifest(this, 'hello-kub', {
 cluster.addManifest('hello-kub', service, deployment);
 ```
 
-##### Kubectl Environment
+#### Kubectl Layer and Environment
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can useful in order to configure an http proxy:
 
@@ -329,8 +358,46 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
     'http_proxy': 'http://proxy.myproxy.com'
   }
 });
-
 ```
+
+By default, the `kubectl`, `helm` and `aws` commands used to operate the cluster
+are provided by an AWS Lambda Layer from the AWS Serverless Application
+in [aws-lambda-layer-kubectl]. In most cases this should be sufficient.
+
+You can provide a custom layer in case the default layer does not meet your
+needs or if the SAR app is not available in your region.
+
+```ts
+// custom build:
+const layer = new lambda.LayerVersion(this, 'KubectlLayer', {
+  code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
+  compatibleRuntimes: [lambda.Runtime.PROVIDED]
+});
+
+// or, a specific version or appid of aws-lambda-layer-kubectl:
+const layer = new eks.KubectlLayer(this, 'KubectlLayer', {
+  version: '2.0.0',    // optional
+  applicationId: '...' // optional
+});
+```
+
+Pass it to `kubectlLayer` when you create or import a cluster:
+
+```ts
+const cluster = new eks.Cluster(this, 'MyCluster', {
+  kubectlLayer: layer,
+});
+
+// or
+const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
+  kubectlLayer: layer,
+});
+```
+
+> Instructions on how to build `layer.zip` can be found
+> [here](https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md).
+
+[aws-lambda-layer-kubectl]: https://github.com/aws-samples/aws-lambda-layer-kubectl
 
 #### Adding resources from a URL
 
@@ -428,6 +495,59 @@ Specifically, since the above use-case is quite common, there is an easier way t
 const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
 ```
 
+### Kubernetes Resources in Existing Clusters
+
+The Amazon EKS library allows defining Kubernetes resources such as [Kubernetes
+manifests](#kubernetes-resources) and [Helm charts](#helm-charts) on clusters
+that are not defined as part of your CDK app.
+
+First, you'll need to "import" a cluster to your CDK app. To do that, use the
+`eks.Cluster.fromClusterAttributes()` static method:
+
+```ts
+const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
+  clusterName: 'my-cluster-name',
+  kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+});
+```
+
+Then, you can use `addManifest` or `addHelmChart` to define resources inside
+your Kubernetes cluster. For example:
+
+```ts
+cluster.addManifest('Test', {
+  apiVersion: 'v1',
+  kind: 'ConfigMap',
+  metadata: {
+    name: 'myconfigmap',
+  },
+  data: {
+    Key: 'value',
+    Another: '123454',
+  },
+});
+```
+
+At the minimum, when importing clusters for `kubectl` management, you will need
+to specify:
+
+- `clusterName` - the name of the cluster.
+- `kubectlRoleArn` - the ARN of an IAM role mapped to the `system:masters` RBAC
+  role. If the cluster you are importing was created using the AWS CDK, the
+  CloudFormation stack has an output that includes an IAM role that can be used.
+  Otherwise, you can create an IAM role and map it to `system:masters` manually.
+  The trust policy of this role should include the the
+  `arn:aws::iam::${accountId}:root` principal in order to allow the execution
+  role of the kubectl resource to assume it.
+
+If the cluster is configured with private-only or private and restricted public
+Kubernetes [endpoint access](#endpoint-access), you must also specify:
+
+- `kubectlSecurityGroupId` - the ID of an EC2 security group that is allowed
+  connections to the cluster's control security group.
+- `kubectlPrivateSubnetIds` - a list of private VPC subnets IDs that will be used
+  to access the Kubernetes endpoint.
+
 ### AWS IAM Mapping
 
 As described in the [Amazon EKS User Guide](https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html),
@@ -477,6 +597,19 @@ Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled
 on [creating a cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
 can provide more details about the customer master key (CMK) that can be used for the encryption.
 
+You can use the `secretsEncryptionKey` to configure which key the cluster will use to encrypt Kubernetes secrets. By default, an AWS Managed key will be used.
+
+> This setting can only be specified when the cluster is created and cannot be updated.
+
+
+```ts
+const secretsKey = new kms.Key(this, 'SecretsKey');
+const cluster = new eks.Cluster(this, 'MyCluster', {
+  secretsEncryptionKey: secretsKey,
+  // ...
+});
+```
+
 The Amazon Resource Name (ARN) for that CMK can be retrieved.
 
 ```ts
@@ -501,8 +634,12 @@ unfortunately beyond the scope of this documentation.
 The `HelmChart` construct or `cluster.addChart` method can be used
 to add Kubernetes resources to this cluster using Helm.
 
+> When using `cluster.addChart`, the manifest construct is defined within the cluster's stack scope. If the manifest contains
+> attributes from a different stack which depend on the cluster stack, a circular dependency will be created and you will get a synth time error.
+> To avoid this, directly use `new HelmChart` to create the chart in the scope of the other stack.
+
 The following example will install the [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)
-to you cluster using Helm.
+to your cluster using Helm.
 
 ```ts
 // option 1: use a construct
@@ -602,7 +739,3 @@ mypod.node.addDependency(sa);
 // print the IAM role arn for this service account
 new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
 ```
-
-### Roadmap
-
-- [ ] AutoScaling (combine EC2 and Kubernetes scaling)

@@ -132,7 +132,7 @@ export interface DistributionProps {
   /**
    * Enable access logging for the distribution.
    *
-   * @default - false, unless `loggingBucket` is specified.
+   * @default - false, unless `logBucket` is specified.
    */
   readonly enableLogging?: boolean;
 
@@ -284,6 +284,7 @@ export class Distribution extends Resource implements IDistribution {
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
+        webAclId: props.webAclId,
       },
     });
 
@@ -430,7 +431,7 @@ export class Distribution extends Resource implements IDistribution {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
-      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2018,
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
     };
   }
 }
@@ -510,7 +511,8 @@ export enum SecurityPolicyProtocol {
   TLS_V1 = 'TLSv1',
   TLS_V1_2016 = 'TLSv1_2016',
   TLS_V1_1_2016 = 'TLSv1.1_2016',
-  TLS_V1_2_2018 = 'TLSv1.2_2018'
+  TLS_V1_2_2018 = 'TLSv1.2_2018',
+  TLS_V1_2_2019 = 'TLSv1.2_2019'
 }
 
 /**
@@ -619,6 +621,15 @@ export interface EdgeLambda {
 
   /** The type of event in response to which should the function be invoked. */
   readonly eventType: LambdaEdgeEventType;
+
+  /**
+   * Allows a Lambda function to have read access to the body content.
+   * Only valid for "request" event types (`ORIGIN_REQUEST` or `VIEWER_REQUEST`).
+   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
+   *
+   * @default false
+   */
+  readonly includeBody?: boolean;
 }
 
 /**

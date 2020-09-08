@@ -64,6 +64,24 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
+### Project root
+The `NodejsFunction` tries to automatically determine your project root, that is
+the root of your node project. This is usually where the top level `node_modules`
+folder of your project is located. When bundling in a Docker container, the
+project root is used as the source (`/asset-input`) for the volume mounted in
+the container.
+
+The following folders are considered by walking up parent folders starting from
+the current working directory (order matters):
+* the folder containing your `.git` folder
+* the folder containing a `yarn.lock` file
+* the folder containing a `package-lock.json` file
+* the folder containing a `package.json` file
+
+Alternatively, you can specify the `projectRoot` prop manually. In this case you
+need to ensure that this path includes `entry` and any module/dependencies used
+by your function. Otherwise bundling will fail.
+
 ### Configuring Parcel
 The `NodejsFunction` construct exposes some [Parcel](https://parceljs.org/) options via properties: `minify`, `sourceMaps` and `cacheDir`.
 
@@ -101,5 +119,26 @@ new lambda.NodejsFunction(this, 'my-handler', {
 
 The modules listed in `nodeModules` must be present in the `package.json`'s dependencies. The
 same version will be used for installation. If a lock file is detected (`package-lock.json` or
-`yarn.lock`) it will be used along with the right installer (`npm` or `yarn`). The modules are
-installed in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
+`yarn.lock`) it will be used along with the right installer (`npm` or `yarn`).
+
+### Local bundling
+If Parcel v2.0.0-beta.1 is available it will be used to bundle your code in your environment. Otherwise,
+bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
+
+For macOS the recommendend approach is to install Parcel as Docker volume performance is really poor.
+
+Parcel v2.0.0-beta.1 can be installed with:
+
+```bash
+$ npm install --save-dev --save-exact parcel@2.0.0-beta.1
+```
+
+OR
+
+```bash
+$ yarn add --dev --exact parcel@2.0.0-beta.1
+```
+
+To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This
+is useful if your function relies on node modules that should be installed (`nodeModules` prop, see [above](#install-modules)) in a Lambda compatible environment. This is usually the
+case with modules using native dependencies.

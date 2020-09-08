@@ -1,5 +1,5 @@
 import { IPrincipal, IRole, PolicyStatement } from '@aws-cdk/aws-iam';
-import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { CfnOutput, Construct, Resource, Stack } from '@aws-cdk/core';
 import { AmazonLinuxGeneration, InstanceClass, InstanceSize, InstanceType } from '.';
 import { Connections } from './connections';
 import { IInstance, Instance } from './instance';
@@ -90,8 +90,9 @@ export interface BastionHostLinuxProps {
  * You can also configure this bastion host to allow connections via SSH
  *
  * @experimental
+ * @resource AWS::EC2::Instance
  */
-export class BastionHostLinux extends Construct implements IInstance {
+export class BastionHostLinux extends Resource implements IInstance {
   public readonly stack: Stack;
 
   /**

@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
-  ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-  IDependable, IResource, Lazy, Resource, Stack, Tag, Token,
+  Annotations, ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
+  IDependable, IResource, Lazy, Resource, Stack, Token, Tags,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
@@ -380,7 +380,7 @@ abstract class VpcBase extends Resource implements IVpc {
     const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => this.selectSubnets(s).subnets)));
 
     if (routeTableIds.length === 0) {
-      this.node.addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+      Annotations.of(this).addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
     }
 
     const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
@@ -1182,7 +1182,7 @@ export class Vpc extends VpcBase {
     this.vpcDefaultSecurityGroup = this.resource.attrDefaultSecurityGroup;
     this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
 
-    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
+    Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.availabilityZones = stack.availabilityZones;
 
@@ -1369,8 +1369,8 @@ export class Vpc extends VpcBase {
 
       // These values will be used to recover the config upon provider import
       const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
-      subnet.node.applyAspect(new Tag(SUBNETNAME_TAG, subnetConfig.name, { includeResourceTypes }));
-      subnet.node.applyAspect(new Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { includeResourceTypes }));
+      Tags.of(subnet).add(SUBNETNAME_TAG, subnetConfig.name, { includeResourceTypes });
+      Tags.of(subnet).add(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { includeResourceTypes });
     });
   }
 }
@@ -1488,7 +1488,7 @@ export class Subnet extends Resource implements ISubnet {
 
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
-    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
+    Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -1790,7 +1790,6 @@ class ImportedVpc extends VpcBase {
 
 class LookedUpVpc extends VpcBase {
   public readonly vpcId: string;
-  public readonly vpnGatewayId: string | undefined;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   public readonly availabilityZones: string[];
   public readonly publicSubnets: ISubnet[];
@@ -1900,7 +1899,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
         ? `at '${scope.node.path}/${id}'`
         : `'${attrs.subnetId}'`;
       // eslint-disable-next-line max-len
-      scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
+      Annotations.of(this).addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
     this._availabilityZone = attrs.availabilityZone;

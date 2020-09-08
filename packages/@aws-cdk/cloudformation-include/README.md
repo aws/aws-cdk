@@ -134,8 +134,8 @@ param.default = 'MyDefault';
 You can also provide values for them when including the template:
 
 ```typescript
-new inc.CfnInclude(stack, 'includeTemplate', {
-  templateFile: 'path/to/my/template'
+new inc.CfnInclude(this, 'includeTemplate', {
+  templateFile: 'path/to/my/template',
   parameters: {
     'MyParam': 'my-value',
   },
@@ -163,6 +163,43 @@ and any changes you make to it will be reflected in the resulting template:
 condition.expression = core.Fn.conditionEquals(1, 2);
 ```
 
+## Mappings
+
+If your template uses [CloudFormation Mappings](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const mapping: core.CfnMapping = cfnTemplate.getMapping('MyMapping');
+```
+
+The `CfnMapping` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+mapping.setValue('my-region', 'AMI', 'ami-04681a1dbd79675a5');
+```
+
+## Rules
+
+If your template uses [Service Catalog template Rules](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const rule: core.CfnRule = cfnTemplate.getRule('MyRule');
+```
+
+The `CfnRule` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+rule.addAssertion(core.Fn.conditionContains(['m1.small'], myParameter.value),
+  'MyParameter has to be m1.small');
+```
+
 ## Outputs
 
 If your template uses [CloudFormation Outputs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html),
@@ -179,6 +216,25 @@ and any changes you make to it will be reflected in the resulting template:
 
 ```typescript
 output.value = cfnBucket.attrArn;
+```
+
+## Hooks
+
+If your template uses [Hooks for blue-green deployments](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/blue-green.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const hook: core.CfnHook = cfnTemplate.getHook('MyOutput');
+```
+
+The `CfnHook` object can be mutated,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+const codeDeployHook = hook as core.CfnCodeDeployBlueGreenHook;
+codeDeployHook.serviceRole = myRole.roleArn;
 ```
 
 ## Nested Stacks
@@ -212,10 +268,11 @@ where the child template pointed to by `https://my-s3-template-source.s3.amazona
 }
 ```
 
-You can include both the parent stack and the nested stack in your CDK application as follows:
+You can include both the parent stack,
+and the nested stack in your CDK application as follows:
 
 ```typescript
-const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+const parentTemplate = new inc.CfnInclude(this, 'ParentStack', {
   templateFile: 'path/to/my-parent-template.json',
   nestedStacks: {
     'ChildStack': {
@@ -233,7 +290,8 @@ const childStack: core.NestedStack = includedChildStack.stack;
 const childTemplate: cfn_inc.CfnInclude = includedChildStack.includedTemplate;
 ```
 
-Now you can reference resources from `ChildStack` and modify them like any other included template:
+Now you can reference resources from `ChildStack`,
+and modify them like any other included template:
 
 ```typescript
 const cfnBucket = childTemplate.getResource('MyBucket') as s3.CfnBucket;
@@ -252,3 +310,32 @@ role.addToPolicy(new iam.PolicyStatement({
   resources: [cfnBucket.attrArn],
 }));
 ```
+
+## Vending CloudFormation templates as Constructs
+
+In many cases, there are existing CloudFormation templates that are not entire applications,
+but more like specialized fragments, implementing a particular pattern or best practice.
+If you have templates like that,
+you can use the `CfnInclude` class to vend them as CDK Constructs:
+
+```ts
+import * as path from 'path';
+
+export class MyConstruct extends Construct {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    // include a template inside the Construct
+    new cfn_inc.CfnInclude(this, 'MyConstruct', {
+      templateFile: path.join(__dirname, 'my-template.json'),
+      preserveLogicalIds: false, // <--- !!!
+    });
+  }
+}
+```
+
+Notice the `preserveLogicalIds` parameter -
+it makes sure the logical IDs of all the included template elements are re-named using CDK's algorithm,
+guaranteeing they are unique within your application.
+Without that parameter passed,
+instantiating `MyConstruct` twice in the same Stack would result in duplicated logical IDs.

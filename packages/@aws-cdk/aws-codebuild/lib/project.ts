@@ -1443,6 +1443,21 @@ export class LinuxBuildImage implements IBuildImage {
 }
 
 /**
+ * Environment type for Windows Docker images
+ */
+export enum WindowsImageType {
+  /**
+   * The standard environment type, WINDOWS_CONTAINER
+   */
+  STANDARD = 'WINDOWS_CONTAINER',
+
+  /**
+   * The WINDOWS_SERVER_2019_CONTAINER environment type
+   */
+  SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER'
+}
+
+/**
  * Construction properties of {@link WindowsBuildImage}.
  * Module-private, as the constructor of {@link WindowsBuildImage} is private.
  */
@@ -1451,6 +1466,7 @@ interface WindowsBuildImageProps {
   readonly imagePullPrincipalType?: ImagePullPrincipalType;
   readonly secretsManagerCredentials?: secretsmanager.ISecret;
   readonly repository?: ecr.IRepository;
+  readonly imageType?: WindowsImageType;
 }
 
 /**
@@ -1460,9 +1476,9 @@ interface WindowsBuildImageProps {
  *
  * You can also specify a custom image using one of the static methods:
  *
- * - WindowsBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])
- * - WindowsBuildImage.fromEcrRepository(repo[, tag])
- * - WindowsBuildImage.fromAsset(parent, id, props)
+ * - WindowsBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }, imageType])
+ * - WindowsBuildImage.fromEcrRepository(repo[, tag, imageType])
+ * - WindowsBuildImage.fromAsset(parent, id, props, [, imageType])
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
@@ -1487,13 +1503,28 @@ export class WindowsBuildImage implements IBuildImage {
   });
 
   /**
+   * The standard CodeBuild image `aws/codebuild/windows-base:2019-1.0`, which is
+   * based off Windows Server Core 2019.
+   */
+  public static readonly WIN_SERVER_CORE_2019_BASE: IBuildImage = new WindowsBuildImage({
+    imageId: 'aws/codebuild/windows-base:2019-1.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    imageType: WindowsImageType.SERVER_2019,
+  });
+
+  /**
    * @returns a Windows build image from a Docker Hub image.
    */
-  public static fromDockerRegistry(name: string, options: DockerImageOptions): IBuildImage {
+  public static fromDockerRegistry(
+    name: string,
+    options: DockerImageOptions = {},
+    imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
+
     return new WindowsBuildImage({
       ...options,
       imageId: name,
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      imageType,
     });
   }
 
@@ -1508,10 +1539,15 @@ export class WindowsBuildImage implements IBuildImage {
    * @param repository The ECR repository
    * @param tag Image tag (default "latest")
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+  public static fromEcrRepository(
+    repository: ecr.IRepository,
+    tag: string = 'latest',
+    imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
+
     return new WindowsBuildImage({
       imageId: repository.repositoryUriForTag(tag),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      imageType,
       repository,
     });
   }
@@ -1519,16 +1555,22 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Uses an Docker image asset as a Windows build image.
    */
-  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
+  public static fromAsset(
+    scope: Construct,
+    id: string,
+    props: DockerImageAssetProps,
+    imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
+
     const asset = new DockerImageAsset(scope, id, props);
     return new WindowsBuildImage({
       imageId: asset.imageUri,
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      imageType,
       repository: asset.repository,
     });
   }
 
-  public readonly type = 'WINDOWS_CONTAINER';
+  public readonly type: string;
   public readonly defaultComputeType = ComputeType.MEDIUM;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType;
@@ -1536,6 +1578,7 @@ export class WindowsBuildImage implements IBuildImage {
   public readonly repository?: ecr.IRepository;
 
   private constructor(props: WindowsBuildImageProps) {
+    this.type = (props.imageType ?? WindowsImageType.STANDARD).toString();
     this.imageId = props.imageId;
     this.imagePullPrincipalType = props.imagePullPrincipalType;
     this.secretsManagerCredentials = props.secretsManagerCredentials;
