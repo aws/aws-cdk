@@ -10,8 +10,8 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
-import { BottleRocketImage } from '../lib/bottlerocket';
 import { getOrCreateKubectlLayer } from '../lib/kubectl-provider';
+import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
