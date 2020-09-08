@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
-  Annotations, ConcreteDependable, Construct, ContextProvider, DependableTrait,
-  IConstruct, IDependable, IResource, Lazy, Resource, Stack, Token, Tags,
+  Annotations, ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
+  IDependable, IResource, Lazy, Resource, Stack, Token, Tags,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
