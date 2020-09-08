@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput, Construct, PhysicalName, Stack, Stage, Aspects } from '@aws-cdk/core';
+import { Annotations, App, CfnOutput, Construct, PhysicalName, Stack, Stage, Aspects } from '@aws-cdk/core';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
@@ -266,7 +266,7 @@ export class CdkPipeline extends Construct {
         const depAction = stackActions.find(s => s.stackArtifactId === depId);
 
         if (depAction === undefined) {
-          this.node.addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
+          Annotations.of(this).addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
               `'${depId}', but that dependency is not deployed through the pipeline!`);
         } else if (!(depAction.executeRunOrder < stackAction.prepareRunOrder)) {
           yield `Stack '${stackAction.stackName}' depends on stack ` +
@@ -335,6 +335,13 @@ class AssetPublishing extends Construct {
   public addPublishAssetAction(command: AssetPublishingCommand) {
     // FIXME: this is silly, we need the relative path here but no easy way to get it
     const relativePath = path.relative(this.myCxAsmRoot, command.assetManifestPath);
+
+    // The path cannot be outside the asm root. I don't really understand how this could ever
+    // come to pass, but apparently it has (see https://github.com/aws/aws-cdk/issues/9766).
+    // Add a sanity check here so we can catch it more quickly next time.
+    if (relativePath.startsWith(`..${path.sep}`)) {
+      throw new Error(`The asset manifest (${command.assetManifestPath}) cannot be outside the Cloud Assembly directory (${this.myCxAsmRoot}). Please report this error at https://github.com/aws/aws-cdk/issues to help us debug why this is happening.`);
+    }
 
     // Late-binding here (rather than in the constructor) to prevent creating the role in cases where no asset actions are created.
     if (!this.assetRoles[command.assetType]) {
