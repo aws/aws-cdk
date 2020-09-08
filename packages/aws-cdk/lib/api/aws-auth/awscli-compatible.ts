@@ -36,27 +36,21 @@ export class AwsCliCompatible {
 
     const profile = options.profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
-    function sourceSharedFile(filename: string): PatchedSharedIniFileCredentials {
-      return new PatchedSharedIniFileCredentials({
-        profile,
-        filename,
-        httpOptions: options.httpOptions,
-        tokenCodeFn,
-      });
-    }
-
     const sources = [
       () => new AWS.EnvironmentCredentials('AWS'),
       () => new AWS.EnvironmentCredentials('AMAZON'),
     ];
 
     if (await fs.pathExists(credentialsFileName())) {
-      sources.push(() => sourceSharedFile(credentialsFileName()));
-    }
-
-    if (await fs.pathExists(configFileName())) {
-      forceSdkToReadConfig();
-      sources.push(() => sourceSharedFile(configFileName()));
+      // Force reading the `config` file if it exists by setting the appropriate
+      // environment variable.
+      await forceSdkToReadConfigIfPresent();
+      sources.push(() => new PatchedSharedIniFileCredentials({
+        profile,
+        filename: credentialsFileName(),
+        httpOptions: options.httpOptions,
+        tokenCodeFn,
+      }));
     }
 
     if (options.containerCreds ?? hasEcsCredentials()) {
@@ -261,8 +255,10 @@ function configFileName() {
  *
  * The SDK crashes if the variable is set but the file does not exist, so conditionally set it.
  */
-function forceSdkToReadConfig() {
-  process.env.AWS_SDK_LOAD_CONFIG = '1';
+async function forceSdkToReadConfigIfPresent() {
+  if (await fs.pathExists(configFileName())) {
+    process.env.AWS_SDK_LOAD_CONFIG = '1';
+  }
 }
 
 function matchesRegex(re: RegExp, s: string | undefined) {
