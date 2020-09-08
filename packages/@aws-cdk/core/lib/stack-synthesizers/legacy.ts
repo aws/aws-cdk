@@ -94,8 +94,13 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
     }
   }
 
-  public synthesizeStackArtifacts(session: ISynthesisSession): void {
+  /**
+   * Synthesize the associated stack to the session
+   */
+  public synthesize(session: ISynthesisSession): void {
     assertBound(this.stack);
+
+    this.stack._synthesizeTemplate(session);
 
     // Just do the default stuff, nothing special
     addStackArtifactToAssembly(session, this.stack, {}, []);

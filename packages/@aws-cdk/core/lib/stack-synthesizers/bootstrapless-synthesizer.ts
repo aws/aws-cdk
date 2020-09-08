@@ -46,8 +46,10 @@ export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
     throw new Error('Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
   }
 
-  public synthesizeStackArtifacts(session: ISynthesisSession): void {
+  public synthesize(session: ISynthesisSession): void {
     assertBound(this.stack);
+
+    this.stack._synthesizeTemplate(session);
 
     // do _not_ treat the template as an asset,
     // because this synthesizer doesn't have a bootstrap bucket to put it in

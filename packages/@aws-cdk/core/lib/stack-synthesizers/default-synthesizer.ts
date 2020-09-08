@@ -199,6 +199,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   private _cloudFormationExecutionRoleArn?: string;
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
+  private qualifier?: string;
 
   private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
   private readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
@@ -210,6 +211,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     this._stack = stack;
 
     const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+    this.qualifier = qualifier;
 
     // Function to replace placeholders in the input string as much as possible
     //
@@ -234,8 +236,6 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
     /* eslint-enable max-len */
-
-    addBootstrapVersionRule(stack, MIN_BOOTSTRAP_STACK_VERSION, qualifier);
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
@@ -309,8 +309,21 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     };
   }
 
-  public synthesizeStackArtifacts(session: ISynthesisSession): void {
+  /**
+   * Synthesize the associated stack to the session
+   */
+  public synthesize(session: ISynthesisSession): void {
     assertBound(this.stack);
+    assertBound(this.qualifier);
+
+    // Must be done here -- if it's done in bind() (called in the Stack's constructor)
+    // then it will become impossible to set context after that.
+    //
+    // If it's done AFTER _synthesizeTemplate(), then the template won't contain the
+    // right constructs.
+    addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, this.qualifier);
+
+    this.stack._synthesizeTemplate(session);
 
     // Add the stack's template to the artifact manifest
     const templateManifestUrl = this.addStackTemplateToAssetManifest(session);
