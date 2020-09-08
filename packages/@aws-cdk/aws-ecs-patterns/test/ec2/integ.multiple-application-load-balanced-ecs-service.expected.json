@@ -458,8 +458,6 @@
                 "ecs:Poll",
                 "ecs:StartTelemetrySession"
               ],
-              "Effect": "Allow",
-              "Resource": "*",
               "Condition": {
                 "ArnEquals": {
                   "ecs:cluster": {
@@ -469,7 +467,9 @@
                     ]
                   }
                 }
-              }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             },
             {
               "Action": [
@@ -657,8 +657,6 @@
                 "ecs:DescribeContainerInstances",
                 "ecs:DescribeTasks"
               ],
-              "Effect": "Allow",
-              "Resource": "*",
               "Condition": {
                 "ArnEquals": {
                   "ecs:cluster": {
@@ -668,7 +666,9 @@
                     ]
                   }
                 }
-              }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             },
             {
               "Action": [
@@ -862,6 +862,12 @@
     "myServiceLB168895E1": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
