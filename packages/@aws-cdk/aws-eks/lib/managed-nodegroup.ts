@@ -59,7 +59,7 @@ export interface NodegroupRemoteAccess {
 /**
  * Launch template property specification
  */
-export interface LaunchTemplateSpecification {
+export interface LaunchTemplate {
   /**
    * The Launch template
    */
@@ -181,7 +181,7 @@ export interface NodegroupOptions {
    * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
    * @default - no launch template
    */
-  readonly launchTemplateSpecification?: LaunchTemplateSpecification;
+  readonly launchTemplate?: LaunchTemplate;
 }
 
 /**
@@ -290,7 +290,7 @@ export class Nodegroup extends Resource implements INodegroup {
       tags: props.tags,
     });
 
-    if (props.launchTemplateSpecification) {
+    if (props.launchTemplate) {
       if (props.diskSize) {
         // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
         // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
@@ -303,8 +303,8 @@ export class Nodegroup extends Resource implements INodegroup {
       }
       // TODO: update this when the L1 resource spec is updated.
       resource.addPropertyOverride('LaunchTemplate', {
-        Id: props.launchTemplateSpecification.launchTemplateId,
-        Version: props.launchTemplateSpecification.version,
+        Id: props.launchTemplate.launchTemplateId,
+        Version: props.launchTemplate.version,
       });
     }
 
