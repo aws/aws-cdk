@@ -3,6 +3,7 @@ import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
+import { INSTANCE_TYPES } from './instance-types';
 
 /**
  * NodeGroup interface
@@ -22,7 +23,7 @@ export interface INodegroup extends IResource {
  */
 export enum NodegroupAmiType {
   /**
-   * Amazon Linux 2(X86_64)
+   * Amazon Linux 2 (x86-64)
    */
   AL2_X86_64 = 'AL2_x86_64',
   /**
@@ -30,7 +31,7 @@ export enum NodegroupAmiType {
    */
   AL2_X86_64_GPU = 'AL2_x86_64_GPU',
   /**
-   * Amazon Linux 2(ARM_64)
+   * Amazon Linux 2 (ARM-64)
    */
   AL2_ARM_64 = 'AL2_ARM_64'
 }
@@ -93,7 +94,7 @@ export interface NodegroupOptions {
   /**
    * The AMI type for your node group.
    *
-   * @default AL2_x86_64
+   * @default - auto-determined from the instanceType property.
    */
   readonly amiType?: NodegroupAmiType;
   /**
@@ -269,7 +270,8 @@ export class Nodegroup extends Resource implements INodegroup {
       nodegroupName: props.nodegroupName,
       nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
-      amiType: props.amiType,
+      amiType: props.amiType ?? (props.instanceType ? getAmiTypeForInstanceType(props.instanceType).toString() :
+        undefined),
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
       instanceTypes: props.instanceType ? [props.instanceType.toString()] : undefined,
@@ -327,5 +329,13 @@ export class Nodegroup extends Resource implements INodegroup {
     });
     this.nodegroupName = this.getResourceNameAttribute(resource.ref);
   }
-
 }
+
+function getAmiTypeForInstanceType(instanceType: InstanceType) {
+  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? NodegroupAmiType.AL2_ARM_64 :
+    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_ARM_64 :
+      INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_X86_64_GPU :
+        INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? NodegroupAmiType.AL2_X86_64_GPU :
+          NodegroupAmiType.AL2_X86_64;
+}
+

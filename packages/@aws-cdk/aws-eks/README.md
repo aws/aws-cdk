@@ -204,6 +204,31 @@ this.cluster.addNodegroup('extra-ng', {
 });
 ```
 
+### ARM64 Support
+
+Instance types with `ARM64` architecture are supported in both managed nodegroup and self-managed capacity. Simply specify an ARM64 `instanceType` (such as `m6g.medium`), and the latest 
+Amazon Linux 2 AMI for ARM64 will be automatically selected.
+
+```ts
+// create a cluster with a default managed nodegroup 
+cluster = new eks.Cluster(this, 'Cluster', {
+  vpc,
+  mastersRole,
+  version: eks.KubernetesVersion.V1_17,
+});
+
+// add a managed ARM64 nodegroup
+cluster.addNodegroup('extra-ng-arm', {
+  instanceType: new ec2.InstanceType('m6g.medium'),
+  minSize: 2,
+});
+
+// add a self-managed ARM64 nodegroup
+cluster.addCapacity('self-ng-arm', {
+  instanceType: new ec2.InstanceType('m6g.medium'),
+  minCapacity: 2,
+})
+```
 
 ### Fargate
 

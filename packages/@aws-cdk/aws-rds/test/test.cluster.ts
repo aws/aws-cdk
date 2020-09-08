@@ -482,6 +482,34 @@ export = {
     test.done();
   },
 
+  'cluster supports metrics'(test: Test) {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_5_7_12 }),
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.plainText('tooshort'),
+      },
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    test.deepEqual(stack.resolve(cluster.metricCPUUtilization()), {
+      dimensions: { DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' } },
+      namespace: 'AWS/RDS',
+      metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+      account: '12345',
+      region: 'us-test-1',
+    });
+
+    test.done();
+  },
+
   'cluster with enabled monitoring'(test: Test) {
     // GIVEN
     const stack = testStack();
