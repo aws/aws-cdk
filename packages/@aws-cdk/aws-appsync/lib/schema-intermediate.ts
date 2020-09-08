@@ -69,12 +69,9 @@ export class InterfaceType implements IIntermediateType {
   }
 
   /**
-   * Create an GraphQL Type representing this Intermediate Type
+   * Create a GraphQL Type representing this Intermediate Type
    *
    * @param options the options to configure this attribute
-   * - isList
-   * - isRequired
-   * - isRequiredList
    */
   public attribute(options?: BaseTypeOptions): GraphqlType {
     return GraphqlType.intermediate({
@@ -243,12 +240,9 @@ export class InputType implements IIntermediateType {
   }
 
   /**
-   * Create an GraphQL Type representing this Input Type
+   * Create a GraphQL Type representing this Input Type
    *
    * @param options the options to configure this attribute
-   * - isList
-   * - isRequired
-   * - isRequiredList
    */
   public attribute(options?: BaseTypeOptions): GraphqlType {
     return GraphqlType.intermediate({
@@ -294,5 +288,103 @@ export class InputType implements IIntermediateType {
       throw new Error('Input Types must have both fieldName and field options.');
     }
     this.definition[options.fieldName] = options.field;
+  }
+}
+
+/**
+ * Properties for configuring an Union Type
+ *
+ * @param definition - the object types for this union type
+ *
+ * @experimental
+ */
+export interface UnionTypeOptions {
+  /**
+   * the object types for this union type
+   */
+  readonly definition: IIntermediateType[];
+}
+
+/**
+ * Union Types are abstract types that are similar to Interface Types,
+ * but they cannot to specify any common fields between types.
+ *
+ * Note that fields of a union type need to be object types. In other words,
+ * you can't create a union type out of interfaces, other unions, or inputs.
+ *
+ * @experimental
+ */
+export class UnionType implements IIntermediateType {
+  /**
+   * the name of this type
+   */
+  public readonly name: string;
+  /**
+   * the attributes of this type
+   */
+  public readonly definition: { [key: string]: IField };
+  /**
+   * the authorization modes supported by this intermediate type
+   */
+  protected modes?: AuthorizationType[];
+
+  public constructor(name: string, options: UnionTypeOptions) {
+    this.name = name;
+    this.definition = {};
+    options.definition.map((def) => this.addField({ field: def.attribute() }));
+  }
+
+  /**
+   * Create a GraphQL Type representing this Union Type
+   *
+   * @param options the options to configure this attribute
+   */
+  public attribute(options?: BaseTypeOptions): GraphqlType {
+    return GraphqlType.intermediate({
+      isList: options?.isList,
+      isRequired: options?.isRequired,
+      isRequiredList: options?.isRequiredList,
+      intermediateType: this,
+    });
+  }
+
+  /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @internal
+   */
+  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    return this;
+  }
+
+  /**
+   * Generate the string of this Union type
+   */
+  public toString(): string {
+    // Return a string that appends all Object Types for this Union Type
+    // i.e. 'union Example = example1 | example2'
+    return Object.values(this.definition).reduce((acc, field) =>
+      `${acc} ${field.toString()} |`, `union ${this.name} =`).slice(0, -2);
+  }
+
+  /**
+   * Add a field to this Union Type
+   *
+   * Input Types must have field options and the IField must be an Object Type.
+   *
+   * @param options the options to add a field
+   */
+  public addField(options: AddFieldOptions): void {
+    if (options.fieldName) {
+      throw new Error('Union Types cannot be configured with the fieldName option. Use the field option instead.');
+    }
+    if (!options.field) {
+      throw new Error('Union Types must be configured with the field option.');
+    }
+    if (options.field && !(options.field.intermediateType instanceof ObjectType)) {
+      throw new Error('Fields for Union Types must be Object Types.');
+    }
+    this.definition[options.field?.toString() + 'id'] = options.field;
   }
 }

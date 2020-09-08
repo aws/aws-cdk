@@ -564,6 +564,7 @@ Intermediate Types include:
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
 - [**Input Types**](#Input-Types)
+- [**Union Types**](#Union-Types)
 
 ##### Interface Types
 
@@ -668,6 +669,34 @@ api.addType(review);
 ```
 
 To learn more about **Input Types**, read the docs [here](https://graphql.org/learn/schema/#input-types).
+
+### Union Types
+
+**Union Types** are a special type of Intermediate Type. They are similar to
+Interface Types, but they cannot specify any common fields between types.
+
+**Note:** the fields of a union type need to be `Object Types`. In other words, you
+can't create a union type out of interfaces, other unions, or inputs.
+
+```gql
+union Search = Human | Droid | Starship
+```
+
+The above GraphQL Union Type encompasses the Object Types of Human, Droid and Starship. It
+can be expressed in CDK as the following:
+
+```ts
+const string = appsync.GraphqlType.string();
+const human = new appsync.ObjectType('Human', { definition: { name: string } });
+const droid = new appsync.ObjectType('Droid', { definition: { name: string } });
+const starship = new appsync.ObjectType('Starship', { definition: { name: string } }););
+const search = new appsync.UnionType('Search', {
+  definition: [ human, droid, starship ],
+}); 
+api.addType(search);
+```
+
+To learn more about **Union Types**, read the docs [here](https://graphql.org/learn/schema/#union-types).
 
 #### Query
 
