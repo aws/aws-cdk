@@ -140,6 +140,16 @@ export interface DefaultStackSynthesizerProps {
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DefaultStackSynthesizer.DEFAULT_QUALIFIER`
    */
   readonly qualifier?: string;
+
+  /**
+   * Whether to add a Rule to the stack template verifying the bootstrap stack version
+   *
+   * This generally should be left set to `true`, unless you explicitly
+   * want to be able to deploy to an unbootstrapped environment.
+   *
+   * @default true
+   */
+  readonly generateBootstrapVersionRule?: boolean;
 }
 
 /**
@@ -235,7 +245,9 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
     /* eslint-enable max-len */
 
-    addBootstrapVersionRule(stack, MIN_BOOTSTRAP_STACK_VERSION, qualifier);
+    if (this.props.generateBootstrapVersionRule ?? true) {
+      addBootstrapVersionRule(stack, MIN_BOOTSTRAP_STACK_VERSION, qualifier);
+    }
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {

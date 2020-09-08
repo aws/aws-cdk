@@ -35,6 +35,7 @@ export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
     super({
       deployRoleArn: props.deployRoleArn,
       cloudFormationExecutionRole: props.cloudFormationExecutionRoleArn,
+      generateBootstrapVersionRule: false,
     });
   }
 
