@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { cloudFormation } from './aws-helpers';
-import { cdk, cdkDeploy, cleanup, fullStackName, prepareAppFixture, rememberToDeleteBucket, INTEG_TEST_DIR } from './cdk-helpers';
+import { cdk, shell, cdkDeploy, cleanup, fullStackName, prepareAppFixture, rememberToDeleteBucket, INTEG_TEST_DIR } from './cdk-helpers';
 import { integTest } from './test-helpers';
 
 jest.setTimeout(600_000);
@@ -32,6 +32,10 @@ integTest('can bootstrap without execution', async () => {
   });
 
   expect(resp.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
+});
+
+integTest('sleep to trigger credentials refresh', async () => {
+  await shell(['sleep', '1800']);
 });
 
 integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', async () => {
