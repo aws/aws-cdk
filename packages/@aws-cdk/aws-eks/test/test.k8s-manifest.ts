@@ -139,7 +139,7 @@ function legalMetadataName(stack: Stack, cluster: Cluster, name: string) {
       metadata: {
         name,
       },
-    },],
+    }],
   });
 };
 
@@ -151,7 +151,7 @@ function illegalMetadataName(test: Test, stack: Stack, cluster: Cluster, name: s
         metadata: {
           name,
         },
-      },],
+      }],
     });
   }, name + ' is invalid. Please refer to the URL: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names');
 };

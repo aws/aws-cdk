@@ -83,12 +83,12 @@ export class KubernetesManifest extends Construct {
       let i: any;
       for (i in manifests) {
         if (this.existsButNotLegalMetadataName(manifests[i])) {
-          return <string>manifests[i]['metadata']['name'];
+          return <string>manifests[i].metadata.name;
         }
       }
     }
 
-    return "";
+    return '';
   }
 
   private existsButNotLegalMetadataName(manifest: any): Boolean {
@@ -97,10 +97,10 @@ export class KubernetesManifest extends Construct {
 
     if (manifest && // manifest is 'exist'
       manifest instanceof Object && // manifest is Object
-      manifest['metadata'] && // manifest['metadata'] is 'exist'
-      manifest['metadata']['name'] && // manifest['metadata']['name'] is 'exist'
-      (<string>manifest['metadata']['name']).length < 254 && // no more than 253 characters
-      !regex.test(<string>manifest['metadata']['name'])) { // manifest['metadata']['name'] IS NOT legitimacy
+      manifest.metadata && // manifest['metadata'] is 'exist'
+      manifest.metadata.name && // manifest['metadata']['name'] is 'exist'
+      (<string>manifest.metadata.name).length < 254 && // no more than 253 characters
+      !regex.test(<string>manifest.metadata.name)) { // manifest['metadata']['name'] IS NOT legitimacy
       return true;
     } else {
       return false;
