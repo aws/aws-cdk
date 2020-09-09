@@ -45,8 +45,6 @@ async function awsCall<
     // otherwise credentials will just be picked up by the normal sdk
     // heuristics and expire after an hour.
 
-    log(`Running inside CodeBuild with profile: ${profileName}`);
-
     // can't use '~' since the SDK doesn't seem to expand it...?
     const configPath = `${process.env.HOME}/.aws/config`;
     const ini = new AWS.IniLoader().loadFrom({
@@ -70,9 +68,6 @@ async function awsCall<
     if (!externalId) {
       throw new Error(`external_id does not exist in profile ${externalId}`);
     }
-
-    log(`Arn: ${arn}`);
-    log(`ExternalId: ${externalId}`);
 
     creds = new AWS.ChainableTemporaryCredentials({
       params: {
