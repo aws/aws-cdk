@@ -57,6 +57,11 @@ export class KubernetesManifest extends Construct {
     const stack = Stack.of(this);
     const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
+    const illegalMetadataName = this.illegalMetadataName(props.manifest);
+    if (illegalMetadataName) {
+      throw new Error(illegalMetadataName + ' is invalid. Please refer to the URL: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names');
+    }
+
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: KubernetesManifest.RESOURCE_TYPE,
@@ -70,4 +75,37 @@ export class KubernetesManifest extends Construct {
       },
     });
   }
+
+  // Reference: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
+  private illegalMetadataName(manifests: any[]): string {
+
+    if (manifests) {
+      let i: any;
+      for (i in manifests) {
+        if (this.existsButNotLegalMetadataName(manifests[i])) {
+          return <string>manifests[i]['metadata']['name'];
+        }
+      }
+    }
+
+    return "";
+  }
+
+  private existsButNotLegalMetadataName(manifest: any): Boolean {
+
+    const regex = RegExp('^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$', 'g');
+
+    if (manifest && // manifest is 'exist'
+      manifest instanceof Object && // manifest is Object
+      manifest['metadata'] && // manifest['metadata'] is 'exist'
+      manifest['metadata']['name'] && // manifest['metadata']['name'] is 'exist'
+      (<string>manifest['metadata']['name']).length < 254 && // no more than 253 characters
+      !regex.test(<string>manifest['metadata']['name'])) { // manifest['metadata']['name'] IS NOT legitimacy
+      return true;
+    } else {
+      return false;
+    }
+
+  }
+
 }
