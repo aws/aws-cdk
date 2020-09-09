@@ -3,7 +3,7 @@ import * as path from 'path';
 import { prepareAppFixture, rememberToDeleteBucket, randomString } from './cdk-helpers';
 import { integTest } from './test-helpers';
 
-jest.setTimeout(600_000 * 8);
+jest.setTimeout(600_000);
 
 integTest('can bootstrap without execution', prepareAppFixture, async (fixture) => {
   const bootstrapStackName = fixture.fullStackName('bootstrap-stack');
@@ -17,11 +17,6 @@ integTest('can bootstrap without execution', prepareAppFixture, async (fixture) 
   });
 
   expect(resp.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
-});
-
-integTest('sleep test', prepareAppFixture, async (fixture) => {
-  fixture.log('Sleeping for 30 minutes...');
-  await fixture.shell(['sleep', '1800']);
 });
 
 integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', prepareAppFixture, async (fixture) => {
