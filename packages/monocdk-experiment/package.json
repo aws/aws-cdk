@@ -12,7 +12,7 @@
   "stability": "experimental",
   "maturity": "developer-preview",
   "scripts": {
-    "gen": "npx ts-node build-tools/gen.ts",
+    "gen": "ubergen",
     "build": "cdk-build",
     "lint": "cdk-lint",
     "test": "echo done",
@@ -255,7 +255,8 @@
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
     "ts-node": "^8.10.2",
-    "typescript": "~3.8.3"
+    "typescript": "~3.8.3",
+    "ubergen": "0.0.0"
   },
   "peerDependencies": {
     "constructs": "^3.0.4"
