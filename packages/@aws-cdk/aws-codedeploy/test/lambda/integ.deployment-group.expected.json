@@ -468,7 +468,7 @@
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+                ":iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited"
               ]
             ]
           }
