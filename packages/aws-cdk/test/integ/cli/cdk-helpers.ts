@@ -61,9 +61,9 @@ export class TestFixture {
 
   public async shell(command: string[], options: Omit<ShellOptions, 'cwd'|'output'> = {}): Promise<string> {
     return await shell(command, {
-      ...options,
-      output: this.output,
       cwd: this.integTestDir,
+      output: this.output,
+      ...options,
     });
   }
 

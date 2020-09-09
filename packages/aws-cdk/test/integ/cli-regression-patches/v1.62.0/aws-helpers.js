@@ -3,16 +3,64 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.outputFromStack = exports.deleteBucket = exports.deleteImageRepository = exports.emptyBucket = exports.sleep = exports.retry = exports.isBucketMissingError = exports.isStackMissingError = exports.stackStatus = exports.deleteStacks = exports.sts = exports.lambda = exports.iam = exports.sns = exports.ecr = exports.s3 = exports.cloudFormation = exports.testEnv = void 0;
 const AWS = require("aws-sdk");
 const cdk_helpers_1 = require("./cdk-helpers");
+
+function chainableCredentials(region) {
+  const profileName = process.env.AWS_PROFILE;
+  if (process.env.CODEBUILD_BUILD_ARN && profileName) {
+      // in codebuild we must assume the role that the cdk uses
+      // otherwise credentials will just be picked up by the normal sdk
+      // heuristics and expire after an hour.
+      // can't use '~' since the SDK doesn't seem to expand it...?
+      const configPath = `${process.env.HOME}/.aws/config`;
+      const ini = new AWS.IniLoader().loadFrom({
+          filename: configPath,
+          isConfig: true,
+      });
+      const profile = ini[profileName];
+      if (!profile) {
+          throw new Error(`Profile '${profileName}' does not exist in config file (${configPath})`);
+      }
+      const arn = profile.role_arn;
+      const externalId = profile.external_id;
+      if (!arn) {
+          throw new Error(`role_arn does not exist in profile ${profileName}`);
+      }
+      if (!externalId) {
+          throw new Error(`external_id does not exist in profile ${externalId}`);
+      }
+      return new AWS.ChainableTemporaryCredentials({
+          params: {
+              RoleArn: arn,
+              ExternalId: externalId,
+              RoleSessionName: 'integ-tests',
+          },
+          stsConfig: {
+              region,
+          },
+          masterCredentials: new AWS.ECSCredentials(),
+      });
+  }
+  return undefined;
+}
+
 exports.testEnv = async () => {
-    var _a, _b;
-    const response = await new AWS.STS().getCallerIdentity().promise();
-    const ret = {
-        account: response.Account,
-        region: (_b = (_a = process.env.AWS_REGION) !== null && _a !== void 0 ? _a : process.env.AWS_DEFAULT_REGION) !== null && _b !== void 0 ? _b : 'us-east-1',
-    };
-    exports.testEnv = () => Promise.resolve(ret);
-    return ret;
+  var _a, _b;
+  const region = (_b = (_a = process.env.AWS_REGION) !== null && _a !== void 0 ? _a : process.env.AWS_DEFAULT_REGION) !== null && _b !== void 0 ? _b : 'us-east-1';
+  const sts = new AWS.STS({
+      region: region,
+      credentials: chainableCredentials(region),
+      maxRetries: 8,
+      retryDelayOptions: { base: 500 },
+  });
+  const response = await sts.getCallerIdentity().promise();
+  const ret = {
+      account: response.Account,
+      region,
+  };
+  exports.testEnv = () => Promise.resolve(ret);
+  return ret;
 };
+
 exports.cloudFormation = makeAwsCaller(AWS.CloudFormation);
 exports.s3 = makeAwsCaller(AWS.S3);
 exports.ecr = makeAwsCaller(AWS.ECR);
@@ -27,45 +75,9 @@ exports.sts = makeAwsCaller(AWS.STS);
  */
 async function awsCall(ctor, call, request) {
     const env = await exports.testEnv();
-    const profileName = process.env.AWS_PROFILE;
-    let creds = undefined;
-    if (process.env.CODEBUILD_BUILD_ARN && profileName) {
-        // in codebuild we must assume the role that the cdk uses
-        // otherwise credentials will just be picked up by the normal sdk
-        // heuristics and expire after an hour.
-        // can't use '~' since the SDK doesn't seem to expand it...?
-        const configPath = `${process.env.HOME}/.aws/config`;
-        const ini = new AWS.IniLoader().loadFrom({
-            filename: configPath,
-            isConfig: true,
-        });
-        const profile = ini[profileName];
-        if (!profile) {
-            throw new Error(`Profile '${profileName}' does not exist in config file (${configPath})`);
-        }
-        const arn = profile.role_arn;
-        const externalId = profile.external_id;
-        if (!arn) {
-            throw new Error(`role_arn does not exist in profile ${profileName}`);
-        }
-        if (!externalId) {
-            throw new Error(`external_id does not exist in profile ${externalId}`);
-        }
-        creds = new AWS.ChainableTemporaryCredentials({
-            params: {
-                RoleArn: arn,
-                ExternalId: externalId,
-                RoleSessionName: 'integ-tests',
-            },
-            stsConfig: {
-                region: env.region,
-            },
-            masterCredentials: new AWS.ECSCredentials(),
-        });
-    }
     const cfn = new ctor({
         region: env.region,
-        credentials: creds,
+        credentials: chainableCredentials(env.region),
         maxRetries: 6,
         retryDelayOptions: {
             base: 500,
