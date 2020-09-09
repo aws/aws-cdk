@@ -83,6 +83,24 @@ export = {
     test.done();
   },
 
+  'version check is not added to template if disabled'(test: Test) {
+    // GIVEN
+    stack = new Stack(app, 'Stack2', {
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false,
+      }),
+    });
+    new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // THEN
+    const template = app.synth().getStackByName('Stack2').template;
+    test.equal(template?.Rules?.CheckBootstrapVersion, undefined);
+
+    test.done();
+  },
+
   'add file asset'(test: Test) {
     // WHEN
     const location = stack.synthesizer.addFileAsset({
