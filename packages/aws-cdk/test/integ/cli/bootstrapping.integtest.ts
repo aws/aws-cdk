@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as fs from 'fs';
 import * as path from 'path';
 import { prepareAppFixture, rememberToDeleteBucket, randomString } from './cdk-helpers';
 import { integTest } from './test-helpers';
