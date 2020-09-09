@@ -107,7 +107,7 @@ api.addType(new appsync.InputType('AwesomeInput', {
   definition: { awesomeInput: ScalarType.string },
 }));
 
-api.addType(new appsync.EnumType('Films', {
+api.addType(new appsync.EnumType('Episodes', {
   definition: [
     'The_Phantom_Menace',
     'Attack_of_the_Clones',
