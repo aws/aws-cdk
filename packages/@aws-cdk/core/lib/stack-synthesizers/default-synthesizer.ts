@@ -140,6 +140,16 @@ export interface DefaultStackSynthesizerProps {
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DefaultStackSynthesizer.DEFAULT_QUALIFIER`
    */
   readonly qualifier?: string;
+
+  /**
+   * Whether to add a Rule to the stack template verifying the bootstrap stack version
+   *
+   * This generally should be left set to `true`, unless you explicitly
+   * want to be able to deploy to an unbootstrapped environment.
+   *
+   * @default true
+   */
+  readonly generateBootstrapVersionRule?: boolean;
 }
 
 /**
@@ -321,7 +331,9 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     //
     // If it's done AFTER _synthesizeTemplate(), then the template won't contain the
     // right constructs.
-    addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, this.qualifier);
+    if (this.props.generateBootstrapVersionRule ?? true) {
+      addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, this.qualifier);
+    }
 
     this.stack._synthesizeTemplate(session);
 
