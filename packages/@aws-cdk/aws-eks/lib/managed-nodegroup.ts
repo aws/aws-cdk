@@ -57,6 +57,22 @@ export interface NodegroupRemoteAccess {
 }
 
 /**
+ * Launch template property specification
+ */
+export interface LaunchTemplate {
+  /**
+   * The Launch template ID
+   */
+  readonly id: string;
+  /**
+   * The launch template version to be used (optional).
+   *
+   * @default - the default version of the launch template
+   */
+  readonly version?: string;
+}
+
+/**
  * The Nodegroup Options for addNodeGroup() method
  */
 export interface NodegroupOptions {
@@ -160,6 +176,12 @@ export interface NodegroupOptions {
    * @default - None
    */
   readonly tags?: { [name: string]: string };
+  /**
+   * Launch template used for the nodegroup
+   * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+   * @default - no launch template
+   */
+  readonly launchTemplate?: LaunchTemplate;
 }
 
 /**
@@ -267,6 +289,25 @@ export class Nodegroup extends Resource implements INodegroup {
       },
       tags: props.tags,
     });
+
+    if (props.launchTemplate) {
+      if (props.diskSize) {
+        // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+        // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
+        throw new Error('diskSize must be specified within the launch template');
+      }
+      if (props.instanceType) {
+        // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+        // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
+        throw new Error('Instance types must be specified within the launch template');
+      }
+      // TODO: update this when the L1 resource spec is updated.
+      resource.addPropertyOverride('LaunchTemplate', {
+        Id: props.launchTemplate.id,
+        Version: props.launchTemplate.version,
+      });
+    }
+
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
     // its state for consistency.

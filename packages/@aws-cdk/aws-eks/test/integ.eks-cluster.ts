@@ -2,16 +2,17 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, CfnOutput, Duration, Token } from '@aws-cdk/core';
+import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { Pinger } from './pinger/pinger';
 import { TestStack } from './util';
 
+
 class EksClusterStack extends TestStack {
 
   private cluster: eks.Cluster;
-  private vpc: ec2.Vpc;
+  private vpc: ec2.IVpc;
 
   constructor(scope: App, id: string) {
     super(scope, id);
@@ -31,7 +32,7 @@ class EksClusterStack extends TestStack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_16,
+      version: eks.KubernetesVersion.V1_17,
       secretsEncryptionKey,
     });
 
@@ -50,6 +51,8 @@ class EksClusterStack extends TestStack {
     this.assertNodeGroupX86();
 
     this.assertNodeGroupArm();
+
+    this.assertNodeGroupCustomAmi();
 
     this.assertSimpleManifest();
 
@@ -116,6 +119,30 @@ class EksClusterStack extends TestStack {
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+    });
+  }
+  private assertNodeGroupCustomAmi() {
+    // add a extra nodegroup
+    const userData = ec2.UserData.forLinux();
+    userData.addCommands(
+      'set -o xtrace',
+      `/etc/eks/bootstrap.sh ${this.cluster.clusterName}`,
+    );
+    const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+      launchTemplateData: {
+        imageId: new eks.EksOptimizedImage().getImage(this).imageId,
+        instanceType: new ec2.InstanceType('t3.small').toString(),
+        userData: Fn.base64(userData.render()),
+      },
+    });
+    this.cluster.addNodegroup('extra-ng2', {
+      minSize: 1,
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: this.cluster.defaultNodegroup?.role || this.cluster.defaultCapacity?.role,
+      launchTemplate: {
+        id: lt.ref,
+        version: lt.attrDefaultVersionNumber,
+      },
     });
   }
   private assertNodeGroupArm() {
