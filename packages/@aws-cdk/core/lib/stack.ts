@@ -728,9 +728,6 @@ export class Stack extends Construct implements ITaggable {
     for (const ctx of this._missingContext) {
       builder.addMissing(ctx);
     }
-
-    // Delegate adding artifacts to the Synthesizer
-    this.synthesizer.synthesizeStackArtifacts(session);
   }
 
   /**

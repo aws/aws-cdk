@@ -36,7 +36,7 @@ export = {
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack');
 
-    const templateHash = '040a6374d4c48c0db867f1d4f95c69b12d28e69c3b8a9903a1db1ec651dcf480';
+    const templateHash = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
 
     test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateHash}`);
 
@@ -238,4 +238,8 @@ function readAssetManifest(asm: cxapi.CloudAssembly): cxschema.AssetManifest {
   if (!manifestArtifact) { throw new Error('no asset manifest in assembly'); }
 
   return JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+}
+
+function last<A>(xs?: A[]): A | undefined {
+  return xs ? xs[xs.length - 1] : undefined;
 }
