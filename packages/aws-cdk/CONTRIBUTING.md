@@ -49,6 +49,10 @@ environment variable to a comma-separate list of regions:
 $ env AWS_REGIONS=us-west-2,us-west-1,eu-central-1,eu-west-2,eu-west-3 test/integ/run-against-repo test/integ/cli/test.sh
 ```
 
+No two tests will run in the same region at the same time. Tests parallelize
+up to the concurrency limit imposed by jest (default of 5) and the available
+number of regions.
+
 ### CLI integration tests
 
 CLI tests will exercise a number of common CLI scenarios, and deploy actual
