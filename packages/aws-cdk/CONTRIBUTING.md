@@ -42,6 +42,13 @@ To run regression tests in the source tree:
 $ test/integ/test-cli-regression-against-current-code.sh [-t '...']
 ```
 
+Integ tests can run in parallel across multiple regions. Set the `AWS_REGIONS`
+environment variable to a comma-separate list of regions:
+
+```
+$ env AWS_REGIONS=us-west-2,us-west-1,eu-central-1,eu-west-2,eu-west-3 test/integ/run-against-repo test/integ/cli/test.sh
+```
+
 ### CLI integration tests
 
 CLI tests will exercise a number of common CLI scenarios, and deploy actual

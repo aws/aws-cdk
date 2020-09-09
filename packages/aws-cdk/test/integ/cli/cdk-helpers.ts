@@ -2,9 +2,17 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { outputFromStack, testEnv, AwsClients } from './aws-helpers';
+import { outputFromStack, AwsClients } from './aws-helpers';
+import { ResourcePool, ILease } from './resource-pool';
 import { TestEnvironment } from './test-helpers';
 
+const REGIONS = process.env.AWS_REGIONS
+  ? process.env.AWS_REGIONS.split(',')
+  : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
+
+process.stdout.write(`Using regions: ${REGIONS}\n`);
+
+const REGION_POOL = new ResourcePool(REGIONS);
 export interface ShellOptions extends child_process.SpawnOptions {
   /**
    * Properties to add to 'env'
@@ -52,6 +60,7 @@ export class TestFixture {
     public readonly integTestDir: string,
     public readonly stackNamePrefix: string,
     public readonly output: NodeJS.WritableStream,
+    private readonly regionLease: ILease<String>,
     public readonly aws: AwsClients) {
   }
 
@@ -91,8 +100,8 @@ export class TestFixture {
     return await this.shell(['cdk', ...args], {
       ...options,
       modEnv: {
-        AWS_REGION: (await testEnv()).region,
-        AWS_DEFAULT_REGION: (await testEnv()).region,
+        AWS_REGION: this.aws.region,
+        AWS_DEFAULT_REGION: this.aws.region,
         STACK_NAME_PREFIX: this.stackNamePrefix,
         ...options.modEnv,
       },
@@ -113,29 +122,34 @@ export class TestFixture {
    * Cleanup leftover stacks and buckets
    */
   public async dispose(success: boolean) {
-    const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
+    try {
+      const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
 
-    // Bootstrap stacks have buckets that need to be cleaned
-    const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
-    await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
+      // Bootstrap stacks have buckets that need to be cleaned
+      const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
+      await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
 
-    // Bootstrap stacks have ECR repositories with images which should be deleted
-    const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
-    await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
+      // Bootstrap stacks have ECR repositories with images which should be deleted
+      const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
+      await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
 
-    await this.aws.deleteStacks(...stacksToDelete.map(s => s.StackName));
+      await this.aws.deleteStacks(...stacksToDelete.map(s => s.StackName));
 
-    // We might have leaked some buckets by upgrading the bootstrap stack. Be
-    // sure to clean everything.
-    for (const bucket of bucketsToDelete) {
-      await this.aws.deleteBucket(bucket);
-    }
-    bucketsToDelete = [];
+      // We might have leaked some buckets by upgrading the bootstrap stack. Be
+      // sure to clean everything.
+      for (const bucket of bucketsToDelete) {
+        await this.aws.deleteBucket(bucket);
+      }
+      bucketsToDelete = [];
 
-    // If the tests completed successfully, happily delete the fixture
-    // (otherwise leave it for humans to inspect)
-    if (success) {
-      rimraf(this.integTestDir);
+      // If the tests completed successfully, happily delete the fixture
+      // (otherwise leave it for humans to inspect)
+      if (success) {
+        rimraf(this.integTestDir);
+      }
+
+    } finally {
+      this.regionLease.dispose();
     }
   }
 
@@ -176,13 +190,23 @@ export async function prepareAppFixture(env: TestEnvironment): Promise<TestFixtu
   const randy = randomString();
   const stackNamePrefix = `cdktest-${randy}`;
   const integTestDir = path.join(os.tmpdir(), `cdk-integ-${randy}`);
+  const regionLease = await REGION_POOL.take();
 
-  env.output.write(` Stack prefixes: ${stackNamePrefix}\n`);
+  env.output.write(` Stack prefix:   ${stackNamePrefix}\n`);
   env.output.write(` Test directory: ${integTestDir}\n`);
+  env.output.write(` Region:         ${regionLease.value}\n`);
+
+  const aws = await AwsClients.forRegion(regionLease.value, env.output);
+  await sanityCheck(aws);
 
   await cloneDirectory(path.join(__dirname, 'app'), integTestDir, env.output);
 
-  const fixture = new TestFixture(integTestDir, stackNamePrefix, env.output, await AwsClients.default(env.output));
+  const fixture = new TestFixture(
+    integTestDir,
+    stackNamePrefix,
+    env.output,
+    regionLease,
+    aws);
 
   await fixture.shell(['npm', 'install',
     '@aws-cdk/core',
@@ -196,6 +220,33 @@ export async function prepareAppFixture(env: TestEnvironment): Promise<TestFixtu
 
   return fixture;
 }
+
+/**
+ * Perform a one-time quick sanity check that the AWS clients has properly configured credentials
+ *
+ * If we don't do this, calls are going to fail and they'll be retried and everything will take
+ * forever before the user notices a simple misconfiguration.
+ *
+ * We can't check for the presence of environment variables since credentials could come from
+ * anywyere, so do simple account retrieval.
+ *
+ * Only do it once per process.
+ */
+async function sanityCheck(aws: AwsClients) {
+  if (sanityChecked === undefined) {
+    try {
+      await aws.account();
+      sanityChecked = true;
+    } catch (e) {
+      sanityChecked = false;
+      throw new Error(`AWS credentials probably not configured, got error: ${e.message}`);
+    }
+  }
+  if (!sanityChecked) {
+    throw new Error('AWS credentials probably not configured, see previous error');
+  }
+}
+let sanityChecked: boolean | undefined;
 
 /**
  * A shell command that does what you want

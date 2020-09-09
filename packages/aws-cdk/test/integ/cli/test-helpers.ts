@@ -15,7 +15,8 @@ export function integTest<F extends { dispose: (success: boolean) => Promise<voi
   before: (env: TestEnvironment) => Promise<F>,
   callback: (fixture: F) => Promise<void>) {
 
-  const runner = shouldSkip(name) ? test.skip : test;
+  // Integ tests can run concurrently, and are responsible for blocking themselves if they cannot.
+  const runner = shouldSkip(name) ? test.skip : test.concurrent;
 
   runner(name, async () => {
     const output = new MemoryStream();
@@ -29,12 +30,16 @@ export function integTest<F extends { dispose: (success: boolean) => Promise<voi
     try {
       return await callback(fixture);
     } catch (e) {
-      process.stderr.write(output.buffer().toString('utf-8'));
-      process.stderr.write(`${e.toString()}\n`);
+      await output.flushTo(process.stderr);
+      process.stderr.write(`❌ ${e.toString()}\n`);
       success = false;
       throw e;
     } finally {
       await fixture.dispose(success);
+      if (success) {
+        // Show people there's progress
+        process.stderr.write('✅');
+      }
     }
   });
 }

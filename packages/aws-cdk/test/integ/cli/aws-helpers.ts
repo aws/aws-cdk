@@ -1,28 +1,16 @@
 import * as AWS from 'aws-sdk';
 
-interface Env {
-  account: string;
-  region: string;
-}
-
-export let testEnv = async (): Promise<Env> => {
-  const response = await new AWS.STS().getCallerIdentity().promise();
-
-  const ret: Env = {
-    account: response.Account!,
-    region: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1',
-  };
-
-  testEnv = () => Promise.resolve(ret);
-  return ret;
-};
-
 export class AwsClients {
   public static async default(output: NodeJS.WritableStream) {
-    return new AwsClients(await testEnv(), output);
+    const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
+    return AwsClients.forRegion(region, output);
   }
 
-  private readonly config = { region: this.env.region, maxRetries: 8, retryDelayOptions: { base: 500 } };
+  public static async forRegion(region: string, output: NodeJS.WritableStream) {
+    return new AwsClients(region, output);
+  }
+
+  private readonly config = { region: this.region, maxRetries: 8, retryDelayOptions: { base: 500 } };
   public readonly cloudFormation = makeAwsCaller(AWS.CloudFormation, this.config);
   public readonly s3 = makeAwsCaller(AWS.S3, this.config);
   public readonly ecr = makeAwsCaller(AWS.ECR, this.config);
@@ -31,7 +19,11 @@ export class AwsClients {
   public readonly lambda = makeAwsCaller(AWS.Lambda, this.config);
   public readonly sts = makeAwsCaller(AWS.STS, this.config);
 
-  constructor(private readonly env: Env, private readonly output: NodeJS.WritableStream) {
+  constructor(public readonly region: string, private readonly output: NodeJS.WritableStream) {
+  }
+
+  public async account(): Promise<string> {
+    return (await new AWS.STS({ region: this.region, maxRetries: 1, stsRegionalEndpoints: 'regional' }).getCallerIdentity().promise()).Account!;
   }
 
   public async deleteStacks(...stackNames: string[]) {

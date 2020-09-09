@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { retry, sleep, testEnv } from './aws-helpers';
+import { retry, sleep } from './aws-helpers';
 import { cloneDirectory, prepareAppFixture, shell } from './cdk-helpers';
 import { integTest } from './test-helpers';
 
@@ -603,8 +603,8 @@ integTest('can still load old assemblies', prepareAppFixture, async (fixture) =>
         cwd: cxAsmDir,
         output: fixture.output,
         modEnv: {
-          TEST_ACCOUNT: (await testEnv()).account,
-          TEST_REGION: (await testEnv()).region,
+          TEST_ACCOUNT: await fixture.aws.account(),
+          TEST_REGION: fixture.aws.region,
         },
       });
     }
