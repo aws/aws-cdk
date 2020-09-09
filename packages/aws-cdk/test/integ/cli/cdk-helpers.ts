@@ -117,6 +117,10 @@ export async function prepareAppFixture() {
     '@aws-cdk/aws-ec2'], {
     cwd: INTEG_TEST_DIR,
   });
+
+  // if already bootstrapped this should be a no-op.
+  await cdk(['bootstrap']);
+
 }
 
 /**
