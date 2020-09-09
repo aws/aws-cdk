@@ -640,8 +640,9 @@ To learn more about top level operations, check out the docs [here](https://docs
 #### Subscription
 
 Every schema **can** have a top level Subscription type. The top level `Subscription` Type
-is the only exposed type that users can access to invoke a response to a mutation. This means
-you can make any data source real time by specificy a GraphQL Schema directive on a mutation. 
+is the only exposed type that users can access to invoke a response to a mutation. `Subscriptions`
+notify users when a mutation specific mutation is called. This means you can make any data source
+real time by specificy a GraphQL Schema directive on a mutation. 
 
 **Note**: The AWS AppSync client SDK automatically handles subscription connection management.
 
