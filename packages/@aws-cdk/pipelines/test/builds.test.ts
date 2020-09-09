@@ -1,6 +1,7 @@
 import { arrayWith, deepObjectLike, encodedJson } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../lib';
 import { PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
@@ -19,6 +20,50 @@ beforeEach(() => {
 
 afterEach(() => {
   app.cleanup();
+});
+
+test('SimpleSynthAction takes arrays of commands', () => {
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: new cdkp.SimpleSynthAction({
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      installCommands: ['install1', 'install2'],
+      buildCommands: ['build1', 'build2'],
+      testCommands: ['test1', 'test2'],
+      synthCommand: 'cdk synth',
+    }),
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
+    Source: {
+      BuildSpec: encodedJson(deepObjectLike({
+        phases: {
+          pre_build: {
+            commands: [
+              'install1',
+              'install2',
+            ],
+          },
+          build: {
+            commands: [
+              'build1',
+              'build2',
+              'test1',
+              'test2',
+              'cdk synth',
+            ],
+          },
+        },
+      })),
+    },
+  });
 });
 
 test.each([['npm'], ['yarn']])('%s build automatically determines artifact base-directory', (npmYarn) => {
@@ -132,9 +177,6 @@ test.each([['npm'], ['yarn']])('%s can have its install command overridden', (np
 
 test('Standard (NPM) synth can output additional artifacts', () => {
   // WHEN
-  sourceArtifact = new codepipeline.Artifact();
-  cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');
-
   const addlArtifact = new codepipeline.Artifact('IntegTest');
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     sourceArtifact,
@@ -170,6 +212,32 @@ test('Standard (NPM) synth can output additional artifacts', () => {
             },
           },
         },
+      })),
+    },
+  });
+});
+
+test('SimpleSynthAction is IGrantable', () => {
+  // GIVEN
+  const synthAction = cdkp.SimpleSynthAction.standardNpmSynth({
+    sourceArtifact,
+    cloudAssemblyArtifact,
+  });
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction,
+  });
+  const bucket = new s3.Bucket(pipelineStack, 'Bucket');
+
+  // WHEN
+  bucket.grantRead(synthAction);
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: arrayWith(deepObjectLike({
+        Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
       })),
     },
   });

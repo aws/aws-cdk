@@ -507,6 +507,8 @@ class PostgresInstanceEngine extends InstanceEngineBase {
  * (those returned by {@link DatabaseInstanceEngine.oracleSe}
  * and {@link DatabaseInstanceEngine.oracleSe1}).
  * Note: RDS will stop allowing creating new databases with this version in August 2020.
+ *
+ * @deprecated instances can no longer be created with these engine versions. See https://forums.aws.amazon.com/ann.jspa?annID=7341
  */
 export class OracleLegacyEngineVersion {
   /** Version "11.2" (only a major version, without a specific minor version). */
@@ -710,12 +712,15 @@ interface OracleInstanceEngineProps {
 /**
  * Properties for Oracle Standard Edition instance engines.
  * Used in {@link DatabaseInstanceEngine.oracleSe}.
+ *
+ * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
  */
 export interface OracleSeInstanceEngineProps {
   /** The exact version of the engine to use. */
   readonly version: OracleLegacyEngineVersion;
 }
 
+/** @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341 */
 class OracleSeInstanceEngine extends OracleInstanceEngineBase {
   constructor(version?: OracleLegacyEngineVersion) {
     super({
@@ -735,12 +740,15 @@ class OracleSeInstanceEngine extends OracleInstanceEngineBase {
 /**
  * Properties for Oracle Standard Edition 1 instance engines.
  * Used in {@link DatabaseInstanceEngine.oracleSe1}.
+ *
+ * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
  */
 export interface OracleSe1InstanceEngineProps {
   /** The exact version of the engine to use. */
   readonly version: OracleLegacyEngineVersion;
 }
 
+/** @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341 */
 class OracleSe1InstanceEngine extends OracleInstanceEngineBase {
   constructor(version?: OracleLegacyEngineVersion) {
     super({
@@ -1033,16 +1041,14 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'oracle-se1' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link oracleSe1()} method
+   * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
    */
   public static readonly ORACLE_SE1: IInstanceEngine = new OracleSe1InstanceEngine();
 
   /**
    * The unversioned 'oracle-se' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link oracleSe()} method
+   * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
    */
   public static readonly ORACLE_SE: IInstanceEngine = new OracleSeInstanceEngine();
 
@@ -1101,12 +1107,18 @@ export class DatabaseInstanceEngine {
     return new PostgresInstanceEngine(props.version);
   }
 
-  /** Creates a new Oracle Standard Edition instance engine. */
+  /**
+   * Creates a new Oracle Standard Edition instance engine.
+   * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
+   */
   public static oracleSe(props: OracleSeInstanceEngineProps): IInstanceEngine {
     return new OracleSeInstanceEngine(props.version);
   }
 
-  /** Creates a new Oracle Standard Edition 1 instance engine. */
+  /**
+   * Creates a new Oracle Standard Edition 1 instance engine.
+   * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
+   */
   public static oracleSe1(props: OracleSe1InstanceEngineProps): IInstanceEngine {
     return new OracleSe1InstanceEngine(props.version);
   }

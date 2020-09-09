@@ -1,5 +1,4 @@
 import * as AWS from 'aws-sdk';
-import { log } from './cdk-helpers';
 
 interface Env {
   account: string;
@@ -18,13 +17,89 @@ export let testEnv = async (): Promise<Env> => {
   return ret;
 };
 
-export const cloudFormation = makeAwsCaller(AWS.CloudFormation);
-export const s3 = makeAwsCaller(AWS.S3);
-export const ecr = makeAwsCaller(AWS.ECR);
-export const sns = makeAwsCaller(AWS.SNS);
-export const iam = makeAwsCaller(AWS.IAM);
-export const lambda = makeAwsCaller(AWS.Lambda);
-export const sts = makeAwsCaller(AWS.STS);
+export class AwsClients {
+  public static async default(output: NodeJS.WritableStream) {
+    return new AwsClients(await testEnv(), output);
+  }
+
+  private readonly config = { region: this.env.region, maxRetries: 8, retryDelayOptions: { base: 500 } };
+  public readonly cloudFormation = makeAwsCaller(AWS.CloudFormation, this.config);
+  public readonly s3 = makeAwsCaller(AWS.S3, this.config);
+  public readonly ecr = makeAwsCaller(AWS.ECR, this.config);
+  public readonly sns = makeAwsCaller(AWS.SNS, this.config);
+  public readonly iam = makeAwsCaller(AWS.IAM, this.config);
+  public readonly lambda = makeAwsCaller(AWS.Lambda, this.config);
+  public readonly sts = makeAwsCaller(AWS.STS, this.config);
+
+  constructor(private readonly env: Env, private readonly output: NodeJS.WritableStream) {
+  }
+
+  public async deleteStacks(...stackNames: string[]) {
+    if (stackNames.length === 0) { return; }
+
+    for (const stackName of stackNames) {
+      await this.cloudFormation('updateTerminationProtection', {
+        EnableTerminationProtection: false,
+        StackName: stackName,
+      });
+      await this.cloudFormation('deleteStack', {
+        StackName: stackName,
+      });
+    }
+
+    await retry(this.output, `Deleting ${stackNames}`, retry.forSeconds(600), async () => {
+      for (const stackName of stackNames) {
+        const status = await this.stackStatus(stackName);
+        if (status !== undefined && status.endsWith('_FAILED')) {
+          throw retry.abort(new Error(`'${stackName}' is in state '${status}'`));
+        }
+        if (status !== undefined) {
+          throw new Error(`Delete of '${stackName}' not complete yet`);
+        }
+      }
+    });
+  }
+
+  public async stackStatus(stackName: string): Promise<string | undefined> {
+    try {
+      return (await this.cloudFormation('describeStacks', { StackName: stackName })).Stacks?.[0].StackStatus;
+    } catch (e) {
+      if (isStackMissingError(e)) { return undefined; }
+      throw e;
+    }
+  }
+
+  public async emptyBucket(bucketName: string) {
+    const objects = await this.s3('listObjects', { Bucket: bucketName });
+    const deletes = (objects.Contents || []).map(obj => obj.Key || '').filter(d => !!d);
+    if (deletes.length === 0) {
+      return Promise.resolve();
+    }
+    return this.s3('deleteObjects', {
+      Bucket: bucketName,
+      Delete: {
+        Objects: deletes.map(d => ({ Key: d })),
+        Quiet: false,
+      },
+    });
+  }
+
+  public async deleteImageRepository(repositoryName: string) {
+    await this.ecr('deleteRepository', { repositoryName, force: true });
+  }
+
+  public async deleteBucket(bucketName: string) {
+    try {
+      await this.emptyBucket(bucketName);
+      await this.s3('deleteBucket', {
+        Bucket: bucketName,
+      });
+    } catch (e) {
+      if (isBucketMissingError(e)) { return; }
+      throw e;
+    }
+  }
+}
 
 /**
  * Perform an AWS call from nothing
@@ -34,9 +109,8 @@ export const sts = makeAwsCaller(AWS.STS);
 async function awsCall<
   A extends AWS.Service,
   B extends keyof ServiceCalls<A>,
->(ctor: new (config: any) => A, call: B, request: First<ServiceCalls<A>[B]>): Promise<Second<ServiceCalls<A>[B]>> {
-  const env = await testEnv();
-  const cfn = new ctor({ region: env.region, maxRetries: 6, retryDelayOptions: { base: 500 } });
+>(ctor: new (config: any) => A, config: any, call: B, request: First<ServiceCalls<A>[B]>): Promise<Second<ServiceCalls<A>[B]>> {
+  const cfn = new ctor(config);
   const response = cfn[call](request);
   try {
     return await response.promise();
@@ -60,9 +134,9 @@ async function awsCall<
  * }
  * ```
  */
-function makeAwsCaller<A extends AWS.Service>(ctor: new (config: any) => A) {
+function makeAwsCaller<A extends AWS.Service>(ctor: new (config: any) => A, config: any) {
   return <B extends keyof ServiceCalls<A>>(call: B, request: First<ServiceCalls<A>[B]>): Promise<Second<ServiceCalls<A>[B]>> => {
-    return awsCall(ctor, call, request);
+    return awsCall(ctor, config, call, request);
   };
 }
 
@@ -89,40 +163,6 @@ type AwsCallIO<T> =
 type First<T> = T extends [any, any] ? T[0] : never;
 type Second<T> = T extends [any, any] ? T[1] : never;
 
-export async function deleteStacks(...stackNames: string[]) {
-  if (stackNames.length === 0) { return; }
-
-  for (const stackName of stackNames) {
-    await cloudFormation('updateTerminationProtection', {
-      EnableTerminationProtection: false,
-      StackName: stackName,
-    });
-    await cloudFormation('deleteStack', {
-      StackName: stackName,
-    });
-  }
-
-  await retry(`Deleting ${stackNames}`, retry.forSeconds(600), async () => {
-    for (const stackName of stackNames) {
-      const status = await stackStatus(stackName);
-      if (status !== undefined && status.endsWith('_FAILED')) {
-        throw retry.abort(new Error(`'${stackName}' is in state '${status}'`));
-      }
-      if (status !== undefined) {
-        throw new Error(`Delete of '${stackName}' not complete yet`);
-      }
-    }
-  });
-}
-
-export async function stackStatus(stackName: string): Promise<string | undefined> {
-  try {
-    return (await cloudFormation('describeStacks', { StackName: stackName })).Stacks?.[0].StackStatus;
-  } catch (e) {
-    if (isStackMissingError(e)) { return undefined; }
-    throw e;
-  }
-}
 
 export function isStackMissingError(e: Error) {
   return e.message.indexOf('does not exist') > -1;
@@ -140,20 +180,20 @@ export function isBucketMissingError(e: Error) {
  * Exceptions will cause the operation to retry. Use `retry.abort` to annotate an exception
  * to stop the retry and end in a failure.
  */
-export async function retry<A>(operation: string, deadline: Date, block: () => Promise<A>): Promise<A> {
+export async function retry<A>(output: NodeJS.WritableStream, operation: string, deadline: Date, block: () => Promise<A>): Promise<A> {
   let i = 0;
-  log(`💈 ${operation}`);
+  output.write(`💈 ${operation}\n`);
   while (true) {
     try {
       i++;
       const ret = await block();
-      log(`💈 ${operation}: succeeded after ${i} attempts`);
+      output.write(`💈 ${operation}: succeeded after ${i} attempts\n`);
       return ret;
     } catch (e) {
       if (e.abort || Date.now() > deadline.getTime( )) {
         throw new Error(`${operation}: did not succeed after ${i} attempts: ${e}`);
       }
-      log(`⏳ ${operation} (${e.message})`);
+      output.write(`⏳ ${operation} (${e.message})\n`);
       await sleep(5000);
     }
   }
@@ -176,37 +216,6 @@ retry.abort = (e: Error): Error => {
 
 export async function sleep(ms: number) {
   return new Promise(ok => setTimeout(ok, ms));
-}
-
-export async function emptyBucket(bucketName: string) {
-  const objects = await s3('listObjects', { Bucket: bucketName });
-  const deletes = (objects.Contents || []).map(obj => obj.Key || '').filter(d => !!d);
-  if (deletes.length === 0) {
-    return Promise.resolve();
-  }
-  return s3('deleteObjects', {
-    Bucket: bucketName,
-    Delete: {
-      Objects: deletes.map(d => ({ Key: d })),
-      Quiet: false,
-    },
-  });
-}
-
-export async function deleteImageRepository(repositoryName: string) {
-  await ecr('deleteRepository', { repositoryName, force: true });
-}
-
-export async function deleteBucket(bucketName: string) {
-  try {
-    await emptyBucket(bucketName);
-    await s3('deleteBucket', {
-      Bucket: bucketName,
-    });
-  } catch (e) {
-    if (isBucketMissingError(e)) { return; }
-    throw e;
-  }
 }
 
 export function outputFromStack(key: string, stack: AWS.CloudFormation.Stack): string | undefined {

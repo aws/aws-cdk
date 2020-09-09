@@ -87,7 +87,8 @@ async function parseCommandLineArguments() {
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
       .option('ci', { type: 'boolean', desc: 'Force CI detection', default: process.env.CI !== undefined })
       .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
-      .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly', nargs: 1, requiresArg: true })
+      // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
+      .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
@@ -224,13 +225,14 @@ async function initCommandLine() {
         return await cli.list(args.STACKS, { long: args.long });
 
       case 'diff':
+        const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL);
         return await cli.diff({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           templatePath: args.template,
           strict: args.strict,
           contextLines: args.contextLines,
-          fail: args.fail || !configuration.context.get(cxapi.ENABLE_DIFF_NO_FAIL),
+          fail: args.fail || !enableDiffNoFail,
         });
 
       case 'bootstrap':
@@ -241,13 +243,14 @@ async function initCommandLine() {
         // anticipation of flipping the switch, in user messaging we still call it
         // "new" bootstrapping.
         let source: BootstrapSource = { source: 'legacy' };
+        const newStyleStackSynthesis = isFeatureEnabled(configuration, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
         if (args.template) {
           print(`Using bootstrapping template from ${args.template}`);
           source = { source: 'custom', templateFile: args.template };
         } else if (process.env.CDK_NEW_BOOTSTRAP) {
           print('CDK_NEW_BOOTSTRAP set, using new-style bootstrapping');
           source = { source: 'default' };
-        } else if (configuration.context.get(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)) {
+        } else if (newStyleStackSynthesis) {
           print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
           source = { source: 'default' };
         }
@@ -334,6 +337,10 @@ async function initCommandLine() {
   function toJsonOrYaml(object: any): string {
     return serializeStructure(object, argv.json);
   }
+}
+
+function isFeatureEnabled(configuration: Configuration, featureFlag: string) {
+  return configuration.context.get(featureFlag) ?? cxapi.futureFlagDefault(featureFlag);
 }
 
 /**
