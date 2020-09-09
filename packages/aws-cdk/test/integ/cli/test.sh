@@ -23,4 +23,4 @@ if ! npx --no-install jest --version; then
   npm install --prefix . jest jest-junit aws-sdk
 fi
 
-npx jest --runInBand --verbose "$@"
+npx jest --verbose "$@"
