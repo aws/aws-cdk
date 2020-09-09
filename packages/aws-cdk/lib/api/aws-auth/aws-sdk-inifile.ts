@@ -61,8 +61,6 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
     var sourceProfileName = roleProfile.source_profile;
     var sourceCredentials = roleProfile.credential_source;
 
-    print(`loaded role profile: ${JSON.stringify(roleProfile)}`);
-
     if (sourceProfileName && sourceCredentials) {
       throw (AWS as any).util.error(
         new Error('source_profile and credential_source are both configured in profile ' + this.profile + '. please choose one or the other.'),
