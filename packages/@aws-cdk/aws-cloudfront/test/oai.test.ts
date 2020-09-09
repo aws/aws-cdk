@@ -1,69 +1,69 @@
-import { expect } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { OriginAccessIdentity } from '../lib';
 
-/* eslint-disable quote-props */
+test('Origin Access Identity with automatic comment', () => {
+  const stack = new cdk.Stack();
 
-nodeunitShim({
-  'Origin Access Identity with automatic comment'(test: Test) {
-    const stack = new cdk.Stack();
+  new OriginAccessIdentity(stack, 'OAI');
 
-    new OriginAccessIdentity(stack, 'OAI');
-
-    expect(stack).toMatch(
-      {
-        'Resources': {
-          'OAIE1EFC67F': {
-            'Type': 'AWS::CloudFront::CloudFrontOriginAccessIdentity',
-            'Properties': {
-              'CloudFrontOriginAccessIdentityConfig': {
-                'Comment': 'Allows CloudFront to reach the bucket',
-              },
+  expect(stack).toMatchTemplate(
+    {
+      Resources: {
+        OAIE1EFC67F: {
+          Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity',
+          Properties: {
+            CloudFrontOriginAccessIdentityConfig: {
+              Comment: 'Allows CloudFront to reach the bucket',
             },
           },
         },
       },
-    );
+    },
+  );
+});
 
-    test.done();
-  },
-  'Origin Access Identity with comment'(test: Test) {
-    const stack = new cdk.Stack();
+test('Origin Access Identity with comment', () => {
+  const stack = new cdk.Stack();
 
-    new OriginAccessIdentity(stack, 'OAI', {
-      comment: 'test comment',
-    });
+  new OriginAccessIdentity(stack, 'OAI', {
+    comment: 'test comment',
+  });
 
-    expect(stack).toMatch(
-      {
-        'Resources': {
-          'OAIE1EFC67F': {
-            'Type': 'AWS::CloudFront::CloudFrontOriginAccessIdentity',
-            'Properties': {
-              'CloudFrontOriginAccessIdentityConfig': {
-                'Comment': 'test comment',
-              },
+  expect(stack).toMatchTemplate(
+    {
+      Resources: {
+        OAIE1EFC67F: {
+          Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity',
+          Properties: {
+            CloudFrontOriginAccessIdentityConfig: {
+              Comment: 'test comment',
             },
           },
         },
       },
-    );
+    },
+  );
+});
 
-    test.done();
-  },
+test('Truncates long comments', () => {
+  const stack = new cdk.Stack();
 
-  'Builds ARN of CloudFront user'(test: Test) {
-    const stack = new cdk.Stack();
+  new OriginAccessIdentity(stack, 'OAI', {
+    comment: 'This is a really long comment. Auto-generated comments based on ids of origins might sometimes be this long or even longer and that will break',
+  });
 
-    const oai = OriginAccessIdentity.fromOriginAccessIdentityName(stack, 'OAI', 'OAITest');
+  expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
+    CloudFrontOriginAccessIdentityConfig: {
+      Comment: 'This is a really long comment. Auto-generated comments based on ids of origins might sometimes be this long or even longer and t',
+    },
+  });
+});
 
-    test.ok(
-      oai.grantPrincipal.policyFragment.principalJson.AWS[0].endsWith(
-        ':iam::cloudfront:user/CloudFront Origin Access Identity OAITest',
-      ),
-    );
+test('Builds ARN of CloudFront user', () => {
+  const stack = new cdk.Stack();
 
-    test.done();
-  },
+  const oai = OriginAccessIdentity.fromOriginAccessIdentityName(stack, 'OAI', 'OAITest');
+
+  expect(oai.grantPrincipal.policyFragment.principalJson.AWS[0]).toMatch(/:iam::cloudfront:user\/CloudFront Origin Access Identity OAITest$/);
 });
