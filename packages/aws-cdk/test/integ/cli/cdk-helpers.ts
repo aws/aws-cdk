@@ -70,9 +70,9 @@ export class TestFixture {
 
   public async shell(command: string[], options: Omit<ShellOptions, 'cwd'|'output'> = {}): Promise<string> {
     return await shell(command, {
-      ...options,
       output: this.output,
       cwd: this.integTestDir,
+      ...options,
     });
   }
 
@@ -208,6 +208,8 @@ export async function prepareAppFixture(env: TestEnvironment): Promise<TestFixtu
     regionLease,
     aws);
 
+  await ensureBootstrapped(fixture);
+
   await fixture.shell(['npm', 'install',
     '@aws-cdk/core',
     '@aws-cdk/aws-sns',
@@ -247,6 +249,19 @@ async function sanityCheck(aws: AwsClients) {
   }
 }
 let sanityChecked: boolean | undefined;
+
+/**
+ * Make sure that the given environment is bootstrapped
+ *
+ * Since we go striping across regions, it's going to suck doing this
+ * by hand so let's just mass-automate it.
+ */
+async function ensureBootstrapped(fixture: TestFixture) {
+  // Old-style bootstrap stack with default name
+  if (await fixture.aws.stackStatus('CDKToolkit') === undefined) {
+    await fixture.cdk(['bootstrap', `aws://${await fixture.aws.account()}/${fixture.aws.region}`]);
+  }
+}
 
 /**
  * A shell command that does what you want

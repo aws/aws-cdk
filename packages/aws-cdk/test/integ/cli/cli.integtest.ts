@@ -624,7 +624,7 @@ integTest('can still load old assemblies', prepareAppFixture, async (fixture) =>
 });
 
 integTest('generating and loading assembly', prepareAppFixture, async (fixture) => {
-  const asmOutputDir = path.join(os.tmpdir(), 'cdk-integ-asm');
+  const asmOutputDir = `${fixture.integTestDir}-cdk-integ-asm`;
   await fixture.shell(['rm', '-rf', asmOutputDir]);
 
   // Synthesize a Cloud Assembly tothe default directory (cdk.out) and a specific directory.
@@ -632,10 +632,7 @@ integTest('generating and loading assembly', prepareAppFixture, async (fixture) 
   await fixture.cdk(['synth', '--output', asmOutputDir]);
 
   // cdk.out in the current directory and the indicated --output should be the same
-  await shell(['diff', 'cdk.out', asmOutputDir], {
-    output: fixture.output,
-    cwd: fixture.integTestDir,
-  });
+  await fixture.shell(['diff', 'cdk.out', asmOutputDir]);
 
   // Check that we can 'ls' the synthesized asm.
   // Change to some random directory to make sure we're not accidentally loading cdk.json
