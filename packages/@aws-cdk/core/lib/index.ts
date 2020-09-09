@@ -13,6 +13,8 @@ export * from './stack-synthesizers';
 export * from './reference';
 export * from './cfn-condition';
 export * from './cfn-fn';
+export * from './cfn-hook';
+export * from './cfn-codedeploy-blue-green-hook';
 export * from './cfn-include';
 export * from './cfn-mapping';
 export * from './cfn-output';
@@ -30,6 +32,7 @@ export * from './cfn-json';
 export * from './removal-policy';
 export * from './arn';
 export * from './duration';
+export * from './expiration';
 export * from './size';
 export * from './stack-trace';
 
@@ -57,6 +60,8 @@ export * from './custom-resource-provider';
 
 export * from './cfn-capabilities';
 export * from './cloudformation.generated';
+
+export * from './feature-flags';
 
 // WARNING: Should not be exported, but currently is because of a bug. See the
 // class description for more information.

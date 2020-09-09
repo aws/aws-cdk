@@ -62,6 +62,18 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 
+Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
+
+```ts
+new DatabaseClusterFromSnapshot(stack, 'Database', {
+  engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+  instanceProps: {
+    vpc,
+  },
+  snapshotIdentifier: 'mySnapshot',
+});
+```
+
 ### Starting an instance database
 
 To set up a instance database, define a `DatabaseInstance`. You must
@@ -261,11 +273,14 @@ on configuring users for each available database engine.
 
 ### Metrics
 
-Database instances expose metrics (`cloudwatch.Metric`):
+Database instances and clusters both expose metrics (`cloudwatch.Metric`):
 
 ```ts
 // The number of database connections in use (average over 5 minutes)
 const dbConnections = instance.metricDatabaseConnections();
+
+// Average CPU utilization over 5 minutes
+const cpuUtilization = cluster.metricCPUUtilization();
 
 // The average amount of time taken per disk I/O operation (average over 1 minute)
 const readLatency = instance.metric('ReadLatency', { statistic: 'Average', periodSec: 60 });
