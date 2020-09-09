@@ -851,6 +851,31 @@ describe('CDK Include', () => {
     });
   });
 
+  test('replaces parameters with falsey values in Ref expressions', () => {
+    includeTestTemplate(stack, 'resource-attribute-creation-policy.json', {
+      parameters: {
+        'CountParameter': 0,
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "CreationPolicy": {
+            "AutoScalingCreationPolicy": {
+              "MinSuccessfulInstancesPercent": 50,
+            },
+            "ResourceSignal": {
+              "Count": 0,
+              "Timeout": "PT5H4M3S",
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('replaces parameters in Fn::Sub expressions', () => {
     includeTestTemplate(stack, 'fn-sub-parameters.json', {
       parameters: {
@@ -892,6 +917,25 @@ describe('CDK Include', () => {
                 },
               ],
             },
+          },
+        },
+      },
+    });
+  });
+
+  test('replaces parameters with falsey values in Fn::Sub expressions', () => {
+    includeTestTemplate(stack, 'fn-sub-parameters.json', {
+      parameters: {
+        'MyParam': '',
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": { "Fn::Sub": "" },
           },
         },
       },

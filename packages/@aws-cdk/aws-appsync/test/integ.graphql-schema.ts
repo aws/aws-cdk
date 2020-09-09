@@ -48,7 +48,7 @@ const tableDS = api.addDynamoDbDataSource('planets', table);
 const planet = ObjectType.planet;
 schema.addType(planet);
 
-api.addType(new appsync.ObjectType('Species', {
+const species = api.addType(new appsync.ObjectType('Species', {
   interfaceTypes: [node],
   definition: {
     name: ScalarType.string,
@@ -119,6 +119,10 @@ api.addType(new appsync.EnumType('Films', {
     'The_Last_Jedi',
     'The_Rise_of_Skywalker',
   ],
+}));
+
+api.addType(new appsync.UnionType('Union', {
+  definition: [species, planet],
 }));
 
 app.synth();
