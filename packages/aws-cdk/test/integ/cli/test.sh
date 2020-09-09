@@ -26,4 +26,4 @@ fi
 export AWS_REGION=us-west-1
 export AWS_DEFAULT_REGION=us-west-1
 
-npx jest --verbose "$@"
+npx jest --runInBand --verbose "$@"

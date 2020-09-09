@@ -1,5 +1,4 @@
 import * as AWS from 'aws-sdk';
-import { print } from '../../logging';
 
 
 /**
@@ -84,8 +83,6 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
 
     if (sourceProfileName) {
 
-      print(`Using source_profile = ${sourceProfileName}`);
-
       var sourceProfileExistanceTest = creds[sourceProfileName];
 
       if (typeof sourceProfileExistanceTest !== 'object') {
@@ -165,15 +162,11 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
         }
 
         roleParams.TokenCode = token;
-        sts.assumeRole(roleParams, (e: AWS.AWSError, data: AWS.STS.Types.AssumeRoleResponse) => {
-          callback(e, data);
-        });
+        sts.assumeRole(roleParams, callback);
       });
       return;
     }
-    sts.assumeRole(roleParams, (e: AWS.AWSError, data: AWS.STS.Types.AssumeRoleResponse) => {
-      callback(e, data);
-    });
+    sts.assumeRole(roleParams, callback);
 
   }
 }
