@@ -314,4 +314,24 @@ describe('tests', () => {
     const listener = alb.addListener('Listener', { port: 80 });
     expect(() => listener.addTargets('Targets', { port: 8080 })).not.toThrow();
   });
+
+  test.only('can add secondary security groups', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', { vpc }),
+    });
+    alb.addSecurityGroup(new ec2.SecurityGroup(stack, 'SecurityGroup2', { vpc }));
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      SecurityGroups: [
+        { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
+        { 'Fn::GetAtt': ['SecurityGroup23BE86BB7', 'GroupId'] },
+      ],
+      Type: 'application',
+    });
+  });
 });
