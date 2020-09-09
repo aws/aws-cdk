@@ -304,7 +304,7 @@ export class Capture<T=any> {
   }
 
   /**
-   * A Capture object that captures a custom type
+   * A Capture object that captures a string type
    */
   public static aString(): Capture<string> {
     return new Capture((x: any): x is string => {
@@ -333,6 +333,10 @@ export class Capture<T=any> {
    * Capture the value if the inner matcher successfully matches it
    *
    * If no matcher is given, `anything()` is assumed.
+   *
+   * And exception will be thrown if the inner matcher returns `true` and
+   * the value turns out to be of a different type than the `Capture` object
+   * is expecting.
    */
   public capture(matcher?: any): PropertyMatcher {
     if (matcher === undefined) {
@@ -353,11 +357,21 @@ export class Capture<T=any> {
     });
   }
 
+  /**
+   * Whether a value was successfully captured
+   */
   public get didCapture() {
     return this._didCapture;
   }
 
+  /**
+   * Return the value that was captured
+   *
+   * Throws an exception if now value was captured
+   */
   public get capturedValue(): T {
+    // When this module is ported to jsii, the type parameter will obviously
+    // have to be dropped and this will have to turn into an `any`.
     if (!this.didCapture) {
       throw new Error(`Did not capture a value: ${this._wasInvoked ? 'inner matcher failed' : 'never invoked'}`);
     }

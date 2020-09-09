@@ -300,7 +300,7 @@ export class SimpleSynthAction implements codepipeline.IAction {
     });
 
     const project = new codebuild.PipelineProject(scope, 'CdkBuildProject', {
-      projectName: this.props.projectName ?? this.props.projectName,
+      projectName: this.props.projectName,
       environment,
       buildSpec,
       environmentVariables,
@@ -317,9 +317,10 @@ export class SimpleSynthAction implements codepipeline.IAction {
       input: this.props.sourceArtifact,
       outputs: [this.props.cloudAssemblyArtifact, ...(this.props.additionalArtifacts ?? []).map(a => a.artifact)],
 
-      // Inclusion of the hash here will lead to the pipeline structure changing if the
-      // buildspec changes, and hence the pipeline being restarted. This is necessary if
-      // the users adds (for example) build or test commands to the buildspec.
+      // Inclusion of the hash here will lead to the pipeline structure for any changes
+      // made the config of the underlying CodeBuild Project.
+      // Hence, the pipeline will be restarted. This is necessary if the users
+      // adds (for example) build or test commands to the buildspec.
       environmentVariables: {
         _PROJECT_CONFIG_HASH: { value: projectConfigHash },
       },

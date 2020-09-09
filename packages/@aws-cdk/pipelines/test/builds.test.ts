@@ -225,6 +225,13 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
     sourceArtifact: sa,
     cloudAssemblyArtifact: cxa,
   }));
+
+  // To make sure the hash is not just random :)
+  const hash1prime = synthWithAction((sa, cxa) => cdkp.SimpleSynthAction.standardNpmSynth({
+    sourceArtifact: sa,
+    cloudAssemblyArtifact: cxa,
+  }));
+
   const hash2 = synthWithAction((sa, cxa) => cdkp.SimpleSynthAction.standardNpmSynth({
     sourceArtifact: sa,
     cloudAssemblyArtifact: cxa,
@@ -244,6 +251,8 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
       xyz: { value: 'SOME-VALUE' },
     },
   }));
+
+  expect(hash1).toEqual(hash1prime);
 
   expect(hash1).not.toEqual(hash2);
   expect(hash1).not.toEqual(hash3);
