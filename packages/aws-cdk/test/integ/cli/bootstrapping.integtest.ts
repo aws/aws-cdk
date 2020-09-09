@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { prepareAppFixture, rememberToDeleteBucket, randomString } from './cdk-helpers';
+import { prepareAppFixture, randomString } from './cdk-helpers';
 import { integTest } from './test-helpers';
 
 jest.setTimeout(600_000);
@@ -24,8 +24,8 @@ integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', 
 
   const legacyBootstrapBucketName = `aws-cdk-bootstrap-integ-test-legacy-bckt-${randomString()}`;
   const newBootstrapBucketName = `aws-cdk-bootstrap-integ-test-v2-bckt-${randomString()}`;
-  rememberToDeleteBucket(legacyBootstrapBucketName); // This one will leak
-  rememberToDeleteBucket(newBootstrapBucketName); // This one shouldn't leak if the test succeeds, but let's be safe in case it doesn't
+  fixture.rememberToDeleteBucket(legacyBootstrapBucketName); // This one will leak
+  fixture.rememberToDeleteBucket(newBootstrapBucketName); // This one shouldn't leak if the test succeeds, but let's be safe in case it doesn't
 
   // Legacy bootstrap
   await fixture.cdk(['bootstrap',

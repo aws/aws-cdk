@@ -55,6 +55,7 @@ export async function cloneDirectory(source: string, target: string, output?: No
 
 export class TestFixture {
   public readonly qualifier = randomString().substr(0, 10);
+  private readonly bucketsToDelete = new Array<string>();
 
   constructor(
     public readonly integTestDir: string,
@@ -119,6 +120,16 @@ export class TestFixture {
   }
 
   /**
+   * Append this to the list of buckets to potentially delete
+   *
+   * At the end of a test, we clean up buckets that may not have gotten destroyed
+   * (for whatever reason).
+   */
+  public rememberToDeleteBucket(bucketName: string) {
+    this.bucketsToDelete.push(bucketName);
+  }
+
+  /**
    * Cleanup leftover stacks and buckets
    */
   public async dispose(success: boolean) {
@@ -137,10 +148,9 @@ export class TestFixture {
 
       // We might have leaked some buckets by upgrading the bootstrap stack. Be
       // sure to clean everything.
-      for (const bucket of bucketsToDelete) {
+      for (const bucket of this.bucketsToDelete) {
         await this.aws.deleteBucket(bucket);
       }
-      bucketsToDelete = [];
 
       // If the tests completed successfully, happily delete the fixture
       // (otherwise leave it for humans to inspect)
@@ -307,22 +317,10 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
       if (code === 0 || options.allowErrExit) {
         resolve((Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim());
       } else {
-        reject(new Error(`'${command.join(' ')}' exited with error code ${code}: ${Buffer.concat(stderr).toString('utf-8').trim()}`));
+        reject(new Error(`'${command.join(' ')}' exited with error code ${code}`));
       }
     });
   });
-}
-
-let bucketsToDelete = new Array<string>();
-
-/**
- * Append this to the list of buckets to potentially delete
- *
- * At the end of a test, we clean up buckets that may not have gotten destroyed
- * (for whatever reason).
- */
-export function rememberToDeleteBucket(bucketName: string) {
-  bucketsToDelete.push(bucketName);
 }
 
 function defined<A>(x: A): x is NonNullable<A> {
