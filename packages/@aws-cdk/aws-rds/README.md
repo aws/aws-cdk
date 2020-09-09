@@ -73,7 +73,7 @@ your instances will be launched privately or publicly:
 
 ```ts
 const instance = new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+  engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
   masterUsername: 'syscdk',
@@ -88,7 +88,7 @@ If there isn't a constant for the exact engine version you want to use,
 all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
 
 ```ts
-const customEngineVersion = rds.PostgresEngineVersion.of('12.4', '12');
+const customEngineVersion = rds.OracleEngineVersion.of('19.0.0.0.ru-2020-04.rur-2020-04.r1', '19');
 ```
 
 By default, the master password will be generated and stored in AWS Secrets Manager.
