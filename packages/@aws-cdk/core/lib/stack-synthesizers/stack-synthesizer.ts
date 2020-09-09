@@ -9,7 +9,7 @@ import { IStackSynthesizer } from './types';
  *
  * This class needs to exist to provide public surface area for external
  * implementations of stack synthesizers. The protected methods give
- * access to functions that are otherwise @internal to the framework
+ * access to functions that are otherwise @_internal to the framework
  * and could not be accessed by external implementors.
  */
 export abstract class StackSynthesizer implements IStackSynthesizer {
