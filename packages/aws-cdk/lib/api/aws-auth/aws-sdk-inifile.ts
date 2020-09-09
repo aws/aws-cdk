@@ -111,8 +111,6 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
     // so unfortunately we need to implement this ourselves.
     if (sourceCredentials) {
 
-      print(`Using credential_source = ${sourceCredentials}`);
-
       // see https://docs.aws.amazon.com/credref/latest/refdocs/setting-global-credential_source.html
       switch (sourceCredentials) {
         case 'Environment': {
@@ -169,28 +167,14 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
         }
 
         roleParams.TokenCode = token;
-        print(`Assuming role: ${roleParams.RoleArn}`);
         sts.assumeRole(roleParams, (e: AWS.AWSError, data: AWS.STS.Types.AssumeRoleResponse) => {
-          if (e) {
-            print(`Error when assuming role ${roleParams.RoleArn}: ${e.message}`);
-          }
           callback(e, data);
-          if (!e) {
-            print(`Successfully assumed role: ${roleParams.RoleArn}. Expires at ${data.Credentials?.Expiration.toISOString()}`);
-          }
         });
       });
       return;
     }
-    print(`Assuming role: ${roleParams.RoleArn}`);
     sts.assumeRole(roleParams, (e: AWS.AWSError, data: AWS.STS.Types.AssumeRoleResponse) => {
-      if (e) {
-        print(`Error when assuming role ${roleParams.RoleArn}: ${e.message}`);
-      }
       callback(e, data);
-      if (!e) {
-        print(`Successfully assumed role: ${roleParams.RoleArn}. Expires at ${data.Credentials?.Expiration.toISOString()}`);
-      }
     });
 
   }
