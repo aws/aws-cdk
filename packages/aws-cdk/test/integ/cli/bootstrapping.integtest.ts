@@ -20,6 +20,7 @@ integTest('can bootstrap without execution', prepareAppFixture, async (fixture) 
 });
 
 integTest('sleep test', prepareAppFixture, async (fixture) => {
+  fixture.log('Sleeping for 30 minutes...');
   await fixture.shell(['sleep', '1800']);
 });
 
