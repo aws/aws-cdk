@@ -2,6 +2,7 @@ import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, Fi
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { assertBound } from './_shared';
+import { StackSynthesizer } from './stack-synthesizer';
 import { IStackSynthesizer } from './types';
 
 /**
@@ -9,10 +10,11 @@ import { IStackSynthesizer } from './types';
  *
  * Interoperates with the StackSynthesizer of the parent stack.
  */
-export class NestedStackSynthesizer implements IStackSynthesizer {
+export class NestedStackSynthesizer extends StackSynthesizer {
   private stack?: Stack;
 
   constructor(private readonly parentDeployment: IStackSynthesizer) {
+    super();
   }
 
   public bind(stack: Stack): void {
@@ -35,6 +37,6 @@ export class NestedStackSynthesizer implements IStackSynthesizer {
     assertBound(this.stack);
     // Synthesize the template, but don't emit as a cloud assembly artifact.
     // It will be registered as an S3 asset of its parent instead.
-    this.stack._synthesizeTemplate(session);
+    this.synthesizeStackTemplate(this.stack, session);
   }
 }

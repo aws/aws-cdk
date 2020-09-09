@@ -1,6 +1,6 @@
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { ISynthesisSession } from '../construct-compat';
-import { addStackArtifactToAssembly, assertBound } from './_shared';
+import { assertBound } from './_shared';
 import { DefaultStackSynthesizer } from './default-synthesizer';
 
 /**
@@ -50,14 +50,14 @@ export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
   public synthesize(session: ISynthesisSession): void {
     assertBound(this.stack);
 
-    this.stack._synthesizeTemplate(session);
+    this.synthesizeStackTemplate(this.stack, session);
 
     // do _not_ treat the template as an asset,
     // because this synthesizer doesn't have a bootstrap bucket to put it in
-    addStackArtifactToAssembly(session, this.stack, {
+    this.emitStackArtifact(this.stack, session, {
       assumeRoleArn: this.deployRoleArn,
       cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
       requiresBootstrapStackVersion: 1,
-    }, []);
+    });
   }
 }

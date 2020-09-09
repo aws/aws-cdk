@@ -29,8 +29,6 @@ export interface IStackSynthesizer {
 
   /**
    * Synthesize the associated stack to the session
-   *
-   * @experimental
    */
   synthesize(session: ISynthesisSession): void;
 }

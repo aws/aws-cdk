@@ -9,8 +9,8 @@ import { CfnRule } from '../cfn-rule';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { addStackArtifactToAssembly, assertBound, contentHash } from './_shared';
-import { IStackSynthesizer } from './types';
+import { assertBound, contentHash } from './_shared';
+import { StackSynthesizer } from './stack-synthesizer';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -161,7 +161,7 @@ export interface DefaultStackSynthesizerProps {
  *
  * Requires the environment to have been bootstrapped with Bootstrap Stack V2.
  */
-export class DefaultStackSynthesizer implements IStackSynthesizer {
+export class DefaultStackSynthesizer extends StackSynthesizer {
   /**
    * Default ARN qualifier
    */
@@ -215,6 +215,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   private readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
 
   constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
+    super();
   }
 
   public bind(stack: Stack): void {
@@ -335,19 +336,20 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, this.qualifier);
     }
 
-    this.stack._synthesizeTemplate(session);
+    this.synthesizeStackTemplate(this.stack, session);
 
     // Add the stack's template to the artifact manifest
     const templateManifestUrl = this.addStackTemplateToAssetManifest(session);
 
     const artifactId = this.writeAssetManifest(session);
 
-    addStackArtifactToAssembly(session, this.stack, {
+    this.emitStackArtifact(this.stack, session, {
       assumeRoleArn: this._deployRoleArn,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
-    }, [artifactId]);
+      additionalDependencies: [artifactId],
+    });
   }
 
   /**
