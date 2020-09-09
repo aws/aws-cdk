@@ -24,13 +24,13 @@ export class AwsClients {
 
   private readonly config: any;
 
-  public readonly cloudFormation = makeAwsCaller(AWS.CloudFormation, this.config);
-  public readonly s3 = makeAwsCaller(AWS.S3, this.config);
-  public readonly ecr = makeAwsCaller(AWS.ECR, this.config);
-  public readonly sns = makeAwsCaller(AWS.SNS, this.config);
-  public readonly iam = makeAwsCaller(AWS.IAM, this.config);
-  public readonly lambda = makeAwsCaller(AWS.Lambda, this.config);
-  public readonly sts = makeAwsCaller(AWS.STS, this.config);
+  public readonly cloudFormation: AwsCaller<AWS.CloudFormation>;
+  public readonly s3: AwsCaller<AWS.S3>;
+  public readonly ecr: AwsCaller<AWS.ECR>;
+  public readonly sns: AwsCaller<AWS.SNS>;
+  public readonly iam: AwsCaller<AWS.IAM>;
+  public readonly lambda: AwsCaller<AWS.Lambda>;
+  public readonly sts: AwsCaller<AWS.STS>;
 
   constructor(private readonly env: Env, private readonly output: NodeJS.WritableStream) {
 
@@ -73,7 +73,7 @@ export class AwsClients {
           RoleSessionName: 'integ-tests',
         },
         stsConfig: {
-          region: env.region,
+          region: this.env.region,
         },
         masterCredentials: new AWS.ECSCredentials(),
       });
@@ -81,6 +81,14 @@ export class AwsClients {
     }
 
     this.config = { credentials: creds, region: this.env.region, maxRetries: 8, retryDelayOptions: { base: 500 } };
+    this.cloudFormation = makeAwsCaller(AWS.CloudFormation, this.config);
+    this.s3 = makeAwsCaller(AWS.S3, this.config);
+    this.ecr = makeAwsCaller(AWS.ECR, this.config);
+    this.sns = makeAwsCaller(AWS.SNS, this.config);
+    this.iam = makeAwsCaller(AWS.IAM, this.config);
+    this.lambda = makeAwsCaller(AWS.Lambda, this.config);
+    this.sts = makeAwsCaller(AWS.STS, this.config);
+
 
   }
 
@@ -171,6 +179,8 @@ async function awsCall<
   }
 }
 
+type AwsCaller<A> = <B extends keyof ServiceCalls<A>>(call: B, request: First<ServiceCalls<A>[B]>) => Promise<Second<ServiceCalls<A>[B]>>;
+
 /**
  * Factory function to invoke 'awsCall' for specific services.
  *
@@ -184,7 +194,7 @@ async function awsCall<
  * }
  * ```
  */
-function makeAwsCaller<A extends AWS.Service>(ctor: new (config: any) => A, config: any) {
+function makeAwsCaller<A extends AWS.Service>(ctor: new (config: any) => A, config: any): AwsCaller<A> {
   return <B extends keyof ServiceCalls<A>>(call: B, request: First<ServiceCalls<A>[B]>): Promise<Second<ServiceCalls<A>[B]>> => {
     return awsCall(ctor, config, call, request);
   };

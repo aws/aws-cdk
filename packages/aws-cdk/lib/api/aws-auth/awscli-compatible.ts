@@ -41,20 +41,13 @@ export class AwsCliCompatible {
       () => new AWS.EnvironmentCredentials('AMAZON'),
     ];
 
-    const configExists = await fs.pathExists(configFileName());
-    const credsExists = await fs.pathExists(credentialsFileName());
-
-    if (credsExists || configExists) {
+    if (await fs.pathExists(credentialsFileName())) {
       // Force reading the `config` file if it exists by setting the appropriate
       // environment variable.
       await forceSdkToReadConfigIfPresent();
       sources.push(() => new PatchedSharedIniFileCredentials({
         profile,
-
-        // just need to pass credentials file, the config is merged automatically.
-        // but creds might not exist when using credential_source, in which case
-        // we pass the config file which will be merged with itself (yeah).
-        filename: credsExists ? credentialsFileName() : configFileName(),
+        filename: credentialsFileName(),
         httpOptions: options.httpOptions,
         tokenCodeFn,
       }));
