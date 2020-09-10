@@ -5,7 +5,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Construct, Stack } from '@aws-cdk/core';
 import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
 
@@ -304,11 +304,12 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
     // A hash over the values that make the CodeBuild Project unique (and necessary
     // to restart the pipeline if one of them changes). projectName is not necessary to include
     // here because the pipeline will definitely restart if projectName changes.
-    const projectConfigHash = hash({
+    // (Resolve tokens)
+    const projectConfigHash = hash(Stack.of(scope).resolve({
       environment,
       buildSpecString: buildSpec.toBuildSpec(),
       environmentVariables,
-    });
+    }));
 
     const project = new codebuild.PipelineProject(scope, 'CdkBuildProject', {
       projectName: this.props.projectName,
