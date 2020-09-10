@@ -49,9 +49,11 @@ environment variable to a comma-separate list of regions:
 $ env AWS_REGIONS=us-west-2,us-west-1,eu-central-1,eu-west-2,eu-west-3 test/integ/run-against-repo test/integ/cli/test.sh
 ```
 
-No two tests will run in the same region at the same time. Tests parallelize
-up to the concurrency limit imposed by jest (default of 5, controllable
-by `--maxConcurrency`) and the available number of regions.
+Elements from the list of region will be exclusively allocated to one test at
+a time. The tests will run in parallel up to the concurrency limit imposed by
+jest (default of 5, controllable by `--maxConcurrency`) and the available
+number of elements. Regions may be repeated in the list in which case more
+than one test will run at a time in that region.
 
 If `AWS_REGIONS` is not set, all tests will sequentially run in the one
 region set in `AWS_REGION`.
