@@ -78,7 +78,7 @@ export function itemTypeNames(spec: schema.CollectionProperty): string[] {
 }
 
 function complexItemTypeNames(spec: schema.CollectionProperty): string[] {
-  if (schema.isComplexListProperty(spec) || schema.isComplexMapProperty(spec)) {
+  if (schema.isComplexListProperty(spec) || schema.isMapOfStructsProperty(spec)) {
     return [spec.ItemType];
   } else if (schema.isUnionProperty(spec)) {
     return spec.ItemTypes || [];
