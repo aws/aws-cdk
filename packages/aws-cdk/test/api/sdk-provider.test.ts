@@ -7,6 +7,7 @@ import { PluginHost } from '../../lib';
 import { ISDK, Mode, SdkProvider } from '../../lib/api/aws-auth';
 import * as logging from '../../lib/logging';
 import * as bockfs from '../bockfs';
+import { withMocked } from '../util';
 
 // Mock promptly prompt to test MFA support
 jest.mock('promptly', () => ({
@@ -316,6 +317,160 @@ test('can assume role without a [default] profile', async () => {
 
   // THEN
   expect(account?.accountId).toEqual(`${uid}the_account_#`);
+});
+
+test('can assume role with ecs credentials', async () => {
+
+  return withMocked(AWS.ECSCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
+
+    // GIVEN
+    bockfs({
+      '/home/me/.bxt/credentials': dedent(`
+    `),
+      '/home/me/.bxt/config': dedent(`
+      [profile ecs]
+      role_arn=arn:aws:iam::12356789012:role/Assumable
+      credential_source = EcsContainer
+    `),
+    });
+
+    // Set environment variables that we want
+    process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
+    process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
+
+    // WHEN
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({
+      ...defaultCredOptions,
+      profile: 'ecs',
+      httpOptions: {
+        proxyAddress: 'http://DOESNTMATTER/',
+      },
+    });
+
+    await provider.defaultAccount();
+
+    // THEN
+    // expect(account?.accountId).toEqual(`${uid}the_account_#`);
+    expect(needsRefresh).toHaveBeenCalled();
+
+  });
+
+});
+
+test('can assume role with ec2 credentials', async () => {
+
+  return withMocked(AWS.EC2MetadataCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
+
+    // GIVEN
+    bockfs({
+      '/home/me/.bxt/credentials': dedent(`
+    `),
+      '/home/me/.bxt/config': dedent(`
+      [profile ecs]
+      role_arn=arn:aws:iam::12356789012:role/Assumable
+      credential_source = Ec2InstanceMetadata
+    `),
+    });
+
+    // Set environment variables that we want
+    process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
+    process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
+
+    // WHEN
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({
+      ...defaultCredOptions,
+      profile: 'ecs',
+      httpOptions: {
+        proxyAddress: 'http://DOESNTMATTER/',
+      },
+    });
+
+    await provider.defaultAccount();
+
+    // THEN
+    // expect(account?.accountId).toEqual(`${uid}the_account_#`);
+    expect(needsRefresh).toHaveBeenCalled();
+
+  });
+
+});
+
+test('can assume role with env credentials', async () => {
+
+  return withMocked(AWS.EnvironmentCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
+
+    // GIVEN
+    bockfs({
+      '/home/me/.bxt/credentials': dedent(`
+    `),
+      '/home/me/.bxt/config': dedent(`
+      [profile ecs]
+      role_arn=arn:aws:iam::12356789012:role/Assumable
+      credential_source = Environment
+    `),
+    });
+
+    // Set environment variables that we want
+    process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
+    process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
+
+    // WHEN
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({
+      ...defaultCredOptions,
+      profile: 'ecs',
+      httpOptions: {
+        proxyAddress: 'http://DOESNTMATTER/',
+      },
+    });
+
+    await provider.defaultAccount();
+
+    // THEN
+    // expect(account?.accountId).toEqual(`${uid}the_account_#`);
+    expect(needsRefresh).toHaveBeenCalled();
+
+  });
+
+});
+
+test('assume fails with unsupported credential_source', async () => {
+  // GIVEN
+  bockfs({
+    '/home/me/.bxt/config': dedent(`
+      [profile assumable]
+      role_arn=arn:aws:iam::12356789012:role/Assumable
+      credential_source = unsupported
+    `),
+  });
+
+  SDKMock.mock('STS', 'assumeRole', (_request: AWS.STS.AssumeRoleRequest, cb: AwsCallback<AWS.STS.AssumeRoleResponse>) => {
+    return cb(null, {
+      Credentials: {
+        AccessKeyId: `${uid}access`, // Needs UID in here otherwise key will be cached
+        Expiration: new Date(Date.now() + 10000),
+        SecretAccessKey: 'b',
+        SessionToken: 'c',
+      },
+    });
+  });
+
+  // Set environment variables that we want
+  process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
+  process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
+
+  // WHEN
+  const provider = await SdkProvider.withAwsCliCompatibleDefaults({
+    ...defaultCredOptions,
+    profile: 'assumable',
+    httpOptions: {
+      proxyAddress: 'http://DOESNTMATTER/',
+    },
+  });
+
+  const account = await provider.defaultAccount();
+
+  // THEN
+  expect(account?.accountId).toEqual(undefined);
 });
 
 /**
