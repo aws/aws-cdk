@@ -62,6 +62,17 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
   readonly project: codebuild.IProject;
 
   /**
+   * The AWS region the given Action resides in.
+   * Note that a cross-region Pipeline requires replication buckets to function correctly.
+   * You can provide their names with the {@link PipelineProps#crossRegionReplicationBuckets} property.
+   * If you don't, the CodePipeline Construct will create new Stacks in your CDK app containing those buckets,
+   * that you will need to `cdk deploy` before deploying the main, Pipeline-containing Stack.
+   *
+   * @default the Action resides in the same region as the Pipeline
+   */
+  readonly region?: string;
+
+  /**
    * The type of the action that determines its CodePipeline Category -
    * Build, or Test.
    *

@@ -202,5 +202,72 @@ export = {
 
       test.done();
     },
+
+    'supports cross-region actions'(test: Test) {
+      const app = new App();
+      const regionPrimary = 'us-west-2';
+      const regionSecondary = 'ap-southeast-2';
+
+      const stack = new Stack(app, 'ProjectStack', {
+        env: {
+          region: regionPrimary,
+        },
+      });
+
+      const codeBuildProject = new codebuild.PipelineProject(stack, 'Project');
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.S3SourceAction({
+                actionName: 'S3_Source',
+                bucket: new s3.Bucket(stack, 'Bucket'),
+                bucketKey: 'key',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'CodeBuild',
+                input: sourceOutput,
+                project: codeBuildProject,
+              }),
+              new cpactions.CodeBuildAction({
+                actionName: 'CodeBuildCrossRegion',
+                input: sourceOutput,
+                region: regionSecondary,
+                project: codeBuildProject,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Name': 'Source',
+          },
+          {
+            'Name': 'Build',
+            'Actions': [
+              {
+                'Name': 'CodeBuild',
+              },
+              {
+                'Name': 'CodeBuildCrossRegion',
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 };
