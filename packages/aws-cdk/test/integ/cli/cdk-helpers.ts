@@ -44,11 +44,10 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
     const randy = randomString();
     const stackNamePrefix = `cdktest-${randy}`;
     const integTestDir = path.join(os.tmpdir(), `cdk-integ-${randy}`);
-    const regionLease = await REGION_POOL.take();
 
     context.output.write(` Stack prefix:   ${stackNamePrefix}\n`);
     context.output.write(` Test directory: ${integTestDir}\n`);
-    context.output.write(` Region:         ${regionLease.value}\n`);
+    context.output.write(` Region:         ${context.aws.region}\n`);
 
     await cloneDirectory(path.join(__dirname, 'app'), integTestDir, context.output);
     const fixture = new TestFixture(
