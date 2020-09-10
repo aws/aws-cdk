@@ -57,27 +57,26 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
     var roleSessionName = roleProfile.role_session_name;
     var externalId = roleProfile.external_id;
     var mfaSerial = roleProfile.mfa_serial;
-    var sourceProfileName = roleProfile.source_profile;
-    var sourceCredential = roleProfile.credential_source;
+    var sourceProfile = roleProfile.source_profile;
+    var credentialSource = roleProfile.credential_source;
 
-    if (sourceProfileName && sourceCredential) {
-      throw (AWS as any).util.error(
-        new Error(`When using a profile (${this.profile}) for credentials, only one of 'source_profile' and 'credential_source' is allowed in the profile configuration. Please choose one or the other.`),
-        { code: 'SharedIniFileCredentialsProviderFailure' },
-      );
+    const credentialError = (AWS as any).util.error(
+      new Error(`When using 'role_arn' in profile ('${this.profile}'), you must also configure exactly one of 'source_profile' or 'credential_source'`),
+      { code: 'SharedIniFileCredentialsProviderFailure' },
+    );
+
+    if (sourceProfile && credentialSource) {
+      throw credentialError;
     }
 
-    if (!sourceProfileName && !sourceCredential) {
-      throw (AWS as any).util.error(
-        new Error(`When using a profile (${this.profile}) for credentials, either 'source_profile' or 'credential_source' is required in the profile configuration. Please choose one or the other.`),
-        { code: 'SharedIniFileCredentialsProviderFailure' },
-      );
+    if (!sourceProfile && !credentialSource) {
+      throw credentialError;
     }
 
     const profiles = loadProfilesProper(this.filename);
     const region = profiles[this.profile]?.region ?? profiles.default?.region ?? 'us-east-1';
 
-    const stsCreds = sourceProfileName ? this.sourceProfileCredentials(sourceProfileName, creds) : this.credentailSourceCredentials(sourceCredential);
+    const stsCreds = sourceProfile ? this.sourceProfileCredentials(sourceProfile, creds) : this.credentialSourceCredentials(credentialSource);
 
     this.roleArn = roleArn;
     var sts = new AWS.STS({
@@ -122,9 +121,9 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
 
   }
 
-  private sourceProfileCredentials(sourceProfile: string, creds: Record<string, Record<string, string>>) {
+  private sourceProfileCredentials(sourceProfile: string, profiles: Record<string, Record<string, string>>) {
 
-    var sourceProfileExistanceTest = creds[sourceProfile];
+    var sourceProfileExistanceTest = profiles[sourceProfile];
 
     if (typeof sourceProfileExistanceTest !== 'object') {
       throw (AWS as any).util.error(
@@ -145,7 +144,7 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
 
   // the aws-sdk for js does not support 'credential_source' (https://github.com/aws/aws-sdk-js/issues/1916)
   // so unfortunately we need to implement this ourselves.
-  private credentailSourceCredentials(sourceCredential: string) {
+  private credentialSourceCredentials(sourceCredential: string) {
 
     // see https://docs.aws.amazon.com/credref/latest/refdocs/setting-global-credential_source.html
     switch (sourceCredential) {
