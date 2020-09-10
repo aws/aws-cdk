@@ -135,7 +135,3 @@ async function validatePr(number) {
 // node runtime doesn't seem to support ES6.
 // TODO need to verify this.
 module.exports.validatePr = validatePr
-
-require('make-runnable/custom')({
-    printOutputFrame: false
-})

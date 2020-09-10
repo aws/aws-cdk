@@ -27,9 +27,12 @@ npm install
 
 # Usage
 
-```console
-node tools/prlint/index.js mandatoryChanges
+```javascript
+const linter = require('prlint')
+await linter.validatePr(8892);
+```
 
+```console
 Creating un-authenticated GitHub Client
 ⌛  Fetching PR number 5857
 ⌛  Fetching files for PR number 5857
