@@ -17,7 +17,6 @@ pull_request_rules:
         method: squash
         strict_method: merge
         commit_message: title+body
-      delete_head_branch: {}
     conditions:
       - base!=release
       - -title~=(WIP|wip)
@@ -41,7 +40,6 @@ pull_request_rules:
         method: squash
         strict_method: merge
         commit_message: title+body
-      delete_head_branch: {}
     conditions:
       - base!=release
       - -title~=(WIP|wip)
@@ -67,7 +65,6 @@ pull_request_rules:
         method: merge
         strict_method: merge
         commit_message: title+body
-      delete_head_branch: {}
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
@@ -115,7 +112,6 @@ pull_request_rules:
         # It's not dangerous: GitHub branch protection settings prevent merging stale branches.
         strict: false
         method: squash
-      delete_head_branch: {}
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)

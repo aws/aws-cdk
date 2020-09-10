@@ -44,7 +44,7 @@ class BucketVersioningChecker implements cdk.IAspect {
     if (node instanceof s3.CfnBucket) {
       if (!node.versioningConfiguration ||
         (!cdk.Tokenization.isResolvable(node.versioningConfiguration) && node.versioningConfiguration.status !== 'Enabled')) {
-        node.node.addError('Bucket versioning is not enabled');
+        cdk.Annotations.of(node).addError('Bucket versioning is not enabled');
       }
     }
   }

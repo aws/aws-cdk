@@ -169,8 +169,8 @@ export class Stack extends Construct implements ITaggable {
         return c;
       }
 
-      if (!c.node.scope) {
-        throw new Error(`No stack could be identified for the construct at path ${construct.node.path}`);
+      if (Stage.isStage(c) || !c.node.scope) {
+        throw new Error(`${construct.constructor?.name ?? 'Construct'} at '${construct.node.path}' should be created in the scope of a Stack, but no Stack found`);
       }
 
       return _lookup(c.node.scope);
@@ -728,9 +728,6 @@ export class Stack extends Construct implements ITaggable {
     for (const ctx of this._missingContext) {
       builder.addMissing(ctx);
     }
-
-    // Delegate adding artifacts to the Synthesizer
-    this.synthesizer.synthesizeStackArtifacts(session);
   }
 
   /**
