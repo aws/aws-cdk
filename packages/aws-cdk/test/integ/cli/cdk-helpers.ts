@@ -58,8 +58,6 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
 
     let success = true;
     try {
-      await ensureBootstrapped(fixture);
-
       await fixture.shell(['npm', 'install',
         '@aws-cdk/core',
         '@aws-cdk/aws-sns',
@@ -69,6 +67,8 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
         '@aws-cdk/aws-ecr-assets',
         '@aws-cdk/aws-cloudformation',
         '@aws-cdk/aws-ec2']);
+
+      await ensureBootstrapped(fixture);
 
       await block(fixture);
     } catch (e) {
