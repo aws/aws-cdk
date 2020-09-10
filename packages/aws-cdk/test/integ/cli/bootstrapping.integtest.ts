@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { prepareAppFixture, randomString } from './cdk-helpers';
+import { randomString, withDefaultFixture } from './cdk-helpers';
 import { integTest } from './test-helpers';
 
 jest.setTimeout(600_000);
 
-integTest('can bootstrap without execution', prepareAppFixture, async (fixture) => {
+integTest('can bootstrap without execution', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.fullStackName('bootstrap-stack');
 
   await fixture.cdk(['bootstrap',
@@ -17,9 +17,9 @@ integTest('can bootstrap without execution', prepareAppFixture, async (fixture) 
   });
 
   expect(resp.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
-});
+}));
 
-integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', prepareAppFixture, async (fixture) => {
+integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.fullStackName('bootstrap-stack');
 
   const legacyBootstrapBucketName = `aws-cdk-bootstrap-integ-test-legacy-bckt-${randomString()}`;
@@ -55,9 +55,9 @@ integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', 
       '--force',
     ],
   });
-});
+}));
 
-integTest('deploy new style synthesis to new style bootstrap', prepareAppFixture, async (fixture) => {
+integTest('deploy new style synthesis to new style bootstrap', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.fullStackName('bootstrap-stack');
 
   await fixture.cdk(['bootstrap',
@@ -77,9 +77,9 @@ integTest('deploy new style synthesis to new style bootstrap', prepareAppFixture
       '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
     ],
   });
-});
+}));
 
-integTest('deploy new style synthesis to new style bootstrap (with docker image)', prepareAppFixture, async (fixture) => {
+integTest('deploy new style synthesis to new style bootstrap (with docker image)', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.fullStackName('bootstrap-stack');
 
   await fixture.cdk(['bootstrap',
@@ -99,9 +99,9 @@ integTest('deploy new style synthesis to new style bootstrap (with docker image)
       '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
     ],
   });
-});
+}));
 
-integTest('deploy old style synthesis to new style bootstrap', prepareAppFixture, async (fixture) => {
+integTest('deploy old style synthesis to new style bootstrap', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.fullStackName('bootstrap-stack');
 
   await fixture.cdk(['bootstrap',
@@ -119,9 +119,9 @@ integTest('deploy old style synthesis to new style bootstrap', prepareAppFixture
       '--toolkit-stack-name', bootstrapStackName,
     ],
   });
-});
+}));
 
-integTest('deploying new style synthesis to old style bootstrap fails', prepareAppFixture, async (fixture) => {
+integTest('deploying new style synthesis to old style bootstrap fails', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.fullStackName('bootstrap-stack');
 
   await fixture.cdk(['bootstrap', '--toolkit-stack-name', bootstrapStackName]);
@@ -134,9 +134,9 @@ integTest('deploying new style synthesis to old style bootstrap fails', prepareA
       '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
     ],
   })).rejects.toThrow('exited with error');
-});
+}));
 
-integTest('can create a legacy bootstrap stack with --public-access-block-configuration=false', prepareAppFixture, async (fixture) => {
+integTest('can create a legacy bootstrap stack with --public-access-block-configuration=false', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.fullStackName('bootstrap-stack-1');
 
   await fixture.cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--public-access-block-configuration', 'false', '--tags', 'Foo=Bar']);
@@ -145,9 +145,9 @@ integTest('can create a legacy bootstrap stack with --public-access-block-config
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
-});
+}));
 
-integTest('can create multiple legacy bootstrap stacks', prepareAppFixture, async (fixture) => {
+integTest('can create multiple legacy bootstrap stacks', withDefaultFixture(async (fixture) => {
   const bootstrapStackName1 = fixture.fullStackName('bootstrap-stack-1');
   const bootstrapStackName2 = fixture.fullStackName('bootstrap-stack-2');
 
@@ -160,9 +160,9 @@ integTest('can create multiple legacy bootstrap stacks', prepareAppFixture, asyn
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
-});
+}));
 
-integTest('can dump the template, modify and use it to deploy a custom bootstrap stack', prepareAppFixture, async (fixture) => {
+integTest('can dump the template, modify and use it to deploy a custom bootstrap stack', withDefaultFixture(async (fixture) => {
   let template = await fixture.cdk(['bootstrap', '--show-template'], {
     captureStderr: false,
     modEnv: {
@@ -188,9 +188,9 @@ integTest('can dump the template, modify and use it to deploy a custom bootstrap
       CDK_NEW_BOOTSTRAP: '1',
     },
   });
-});
+}));
 
-integTest('switch on termination protection, switch is left alone on re-bootstrap', prepareAppFixture, async (fixture) => {
+integTest('switch on termination protection, switch is left alone on re-bootstrap', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.fullStackName('bootstrap-stack');
 
   await fixture.cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName,
@@ -200,9 +200,9 @@ integTest('switch on termination protection, switch is left alone on re-bootstra
 
   const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
   expect(response.Stacks?.[0].EnableTerminationProtection).toEqual(true);
-});
+}));
 
-integTest('add tags, left alone on re-bootstrap', prepareAppFixture, async (fixture) => {
+integTest('add tags, left alone on re-bootstrap', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.fullStackName('bootstrap-stack');
 
   await fixture.cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName,
@@ -214,4 +214,4 @@ integTest('add tags, left alone on re-bootstrap', prepareAppFixture, async (fixt
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
-});
+}));

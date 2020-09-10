@@ -4,7 +4,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { outputFromStack, AwsClients } from './aws-helpers';
 import { ResourcePool, ILease } from './resource-pool';
-import { TestEnvironment } from './test-helpers';
+import { TestContext } from './test-helpers';
 
 const REGIONS = process.env.AWS_REGIONS
   ? process.env.AWS_REGIONS.split(',')
@@ -13,6 +13,89 @@ const REGIONS = process.env.AWS_REGIONS
 process.stdout.write(`Using regions: ${REGIONS}\n`);
 
 const REGION_POOL = new ResourcePool(REGIONS);
+
+
+export type AwsContext = { readonly aws: AwsClients };
+
+/**
+ * Higher order function to execute a block with an AWS client setup
+ *
+ * Allocate the next region from the REGION pool and dispose it afterwards.
+ */
+export function withAws<A extends TestContext>(block: (context: A & AwsContext) => Promise<void>) {
+  return (context: A) => REGION_POOL.using(async (region) => {
+    const aws = await AwsClients.forRegion(region, context.output);
+    await sanityCheck(aws);
+
+    return block({ ...context, aws });
+  });
+}
+
+/**
+ * Higher order function to execute a block with a CDK app fixture
+ *
+ * Requires an AWS client to be passed in.
+ *
+ * For backwards compatibility with existing tests (so we don't have to change
+ * too much) the inner block is expecte to take a `TestFixture` object.
+ */
+export function withCdkApp<A extends TestContext & AwsContext>(block: (context: TestFixture) => Promise<void>) {
+  return async (context: A) => {
+    const randy = randomString();
+    const stackNamePrefix = `cdktest-${randy}`;
+    const integTestDir = path.join(os.tmpdir(), `cdk-integ-${randy}`);
+    const regionLease = await REGION_POOL.take();
+
+    context.output.write(` Stack prefix:   ${stackNamePrefix}\n`);
+    context.output.write(` Test directory: ${integTestDir}\n`);
+    context.output.write(` Region:         ${regionLease.value}\n`);
+
+    await cloneDirectory(path.join(__dirname, 'app'), integTestDir, context.output);
+    const fixture = new TestFixture(
+      integTestDir,
+      stackNamePrefix,
+      context.output,
+      regionLease,
+      context.aws);
+
+    let success = true;
+    try {
+      await ensureBootstrapped(fixture);
+
+      await fixture.shell(['npm', 'install',
+        '@aws-cdk/core',
+        '@aws-cdk/aws-sns',
+        '@aws-cdk/aws-iam',
+        '@aws-cdk/aws-lambda',
+        '@aws-cdk/aws-ssm',
+        '@aws-cdk/aws-ecr-assets',
+        '@aws-cdk/aws-cloudformation',
+        '@aws-cdk/aws-ec2']);
+
+      await block(fixture);
+    } catch (e) {
+      success = false;
+      throw e;
+    } finally {
+      await fixture.dispose(success);
+    }
+  };
+}
+
+/**
+ * Default test fixture for most (all?) integ tests
+ *
+ * It's a composition of withAws/withCdkApp, expecting the test block to take a `TestFixture`
+ * object.
+ *
+ * We could have put `withAws(withCdkApp(fixture => { /... actual test here.../ }))` in every
+ * test declaration but centralizing it is going to make it convenient to modify in the future.
+ */
+export function withDefaultFixture(block: (context: TestFixture) => Promise<void>) {
+  return withAws<TestContext>(withCdkApp(block));
+  //              ^~~~~~ this is disappointing TypeScript! Feels like you should have been able to derive this.
+}
+
 export interface ShellOptions extends child_process.SpawnOptions {
   /**
    * Properties to add to 'env'
@@ -188,49 +271,6 @@ export class TestFixture {
       .filter(s => statusFilter.includes(s.StackStatus))
       .filter(s => s.RootId === undefined); // Only delete parent stacks. Nested stacks are deleted in the process
   }
-}
-
-/**
- * Prepare the app fixture
- *
- * If this is done in the main test script, it will be skipped
- * in the subprocess scripts since the app fixture can just be reused.
- */
-export async function prepareAppFixture(env: TestEnvironment): Promise<TestFixture> {
-  const randy = randomString();
-  const stackNamePrefix = `cdktest-${randy}`;
-  const integTestDir = path.join(os.tmpdir(), `cdk-integ-${randy}`);
-  const regionLease = await REGION_POOL.take();
-
-  env.output.write(` Stack prefix:   ${stackNamePrefix}\n`);
-  env.output.write(` Test directory: ${integTestDir}\n`);
-  env.output.write(` Region:         ${regionLease.value}\n`);
-
-  const aws = await AwsClients.forRegion(regionLease.value, env.output);
-  await sanityCheck(aws);
-
-  await cloneDirectory(path.join(__dirname, 'app'), integTestDir, env.output);
-
-  const fixture = new TestFixture(
-    integTestDir,
-    stackNamePrefix,
-    env.output,
-    regionLease,
-    aws);
-
-  await ensureBootstrapped(fixture);
-
-  await fixture.shell(['npm', 'install',
-    '@aws-cdk/core',
-    '@aws-cdk/aws-sns',
-    '@aws-cdk/aws-iam',
-    '@aws-cdk/aws-lambda',
-    '@aws-cdk/aws-ssm',
-    '@aws-cdk/aws-ecr-assets',
-    '@aws-cdk/aws-cloudformation',
-    '@aws-cdk/aws-ec2']);
-
-  return fixture;
 }
 
 /**

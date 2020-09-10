@@ -38,8 +38,7 @@ export class ResourcePool<A> {
   /**
    * Execute a block using a single resource from the pool
    */
-  public async using<B>(block: (x: A) => B): Promise<B>;
-  public async using<B>(block: (x: A) => Promise<B>): Promise<B> {
+  public async using<B>(block: (x: A) => B | Promise<B>): Promise<B> {
     const lease = await this.take();
     try {
       return await block(lease.value);
