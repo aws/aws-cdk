@@ -332,7 +332,7 @@
   },
   "awslint": {
     "exclude": [
-      "props-no-cfn-types:@aws-cdk/cloudformation-include.CfnIncludeProps.nestedStacks"
+      "props-no-cfn-types:@aws-cdk/cloudformation-include.CfnIncludeProps.loadNestedStacks"
     ]
   },
   "stability": "experimental",
