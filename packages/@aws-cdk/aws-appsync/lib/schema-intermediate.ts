@@ -2,7 +2,7 @@ import { AuthorizationType, GraphqlApi } from './graphqlapi';
 import { shapeAddition } from './private';
 import { Resolver } from './resolver';
 import { Directive, IField, IIntermediateType, AddFieldOptions } from './schema-base';
-import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-field';
+import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions, ResolvableField } from './schema-field';
 import { IGraphqlApi } from './graphqlapi-base';
 
 /**
@@ -153,8 +153,6 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
    */
   public resolvers?: Resolver[];
 
-  protected api?: GraphqlApi;
-
   public constructor(name: string, props: ObjectTypeProps) {
     const options = {
       definition: props.interfaceTypes?.reduce((def, interfaceType) => {
@@ -174,9 +172,16 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
    */
   public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
     this.modes = api.modes;
+    // If the resolvers have been generated, skip the bind
+    if (this.resolvers && this.resolvers.length > 0) {
+      return this;
+    }
     Object.keys(this.definition).forEach((fieldName) => {
       const field = this.definition[fieldName];
-      this.generateResolver(api, fieldName, field.fieldOptions);
+      if (field instanceof ResolvableField) {
+        if (!this.resolvers) this.resolvers = [];
+        this.resolvers.push(this.generateResolver(api, fieldName, field.fieldOptions));
+      }
     });
     return this;
   }
