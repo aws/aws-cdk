@@ -465,7 +465,7 @@ export class EnumType implements IIntermediateType {
       throw new Error('When adding a field to an Enum Type, you must configure the fieldName option.');
     }
     if (options.fieldName.indexOf(' ') > -1) {
-      throw new Error(`Enum Type values cannot have whitespace. Received: "${options.fieldName}"`);
+      throw new Error(`Enum Type values cannot have whitespace. Received: ${options.fieldName}`);
     }
     this.definition[options.fieldName] = GraphqlType.string();
   }

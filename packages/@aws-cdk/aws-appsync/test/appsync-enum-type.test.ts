@@ -68,7 +68,7 @@ describe('testing Enum Type properties', () => {
       new appsync.EnumType('Test', {
         definition: ['test 1', 'test2', 'test3'],
       });
-    }).toThrowError('The allowed values of an Enum Type must not have white space. Remove the spaces in "test 1"');
+    }).toThrowError('Enum Type values cannot have whitespace. Received: test 1');
   });
 
   test('errors when the fieldName in addField has white space', () => {
@@ -79,7 +79,7 @@ describe('testing Enum Type properties', () => {
     // THEN
     expect(() => {
       test.addField({ fieldName: ' ' });
-    }).toThrowError('The allowed values of an Enum Type must not have white space. Remove the spaces in " "');
+    }).toThrowError('Enum Type values cannot have whitespace. Received:  ');
   });
 
   test('errors when enum type is configured with field options', () => {
