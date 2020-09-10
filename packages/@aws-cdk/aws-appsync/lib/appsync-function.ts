@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Construct, Resource, IResource, Lazy, Fn } from '@aws-cdk/core';
 import { CfnFunctionConfiguration } from './appsync.generated';
 import { BaseDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
@@ -47,13 +47,57 @@ export interface AppsyncFunctionProps extends BaseAppsyncFunctionProps {
 }
 
 /**
+ * The attributes for imported AppSync Functions
+ */
+export interface AppsyncFunctionAttributes {
+  /**
+   * the ARN of the AppSync function
+   */
+  readonly functionArn: string;
+}
+
+/**
+ * Interface for AppSync Functions
+ */
+export interface IAppsyncFunction extends IResource {
+  /**
+   * the name of this AppSync Function
+   *
+   * @attribute
+   */
+  readonly functionId: string;
+  /**
+   * the ARN of the AppSync function
+   *
+   * @attribute
+   */
+  readonly functionArn: string;
+}
+
+/**
  * AppSync Functions are local functions that perform certain operations
  * onto a backend data source. Developers can compose operations (Functions)
  * and execute them in sequence with Pipeline Resolvers.
  *
  * @resource AWS::AppSync::FunctionConfiguration
  */
-export class AppsyncFunction extends Resource {
+export class AppsyncFunction extends Resource implements IAppsyncFunction {
+  /**
+   * Import Appsync Function from arn
+   */
+  public static fromAppsyncFunctionAttributes(scope: Construct, id: string, attrs: AppsyncFunctionAttributes): IAppsyncFunction {
+    class Import extends Resource {
+      public readonly functionId = Lazy.stringValue({
+        produce: () => Fn.select(3, Fn.split('/', attrs.functionArn)),
+      });
+      public readonly functionArn = attrs.functionArn;
+      constructor (s: Construct, i: string) {
+        super(s, i);
+      }
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * the name of this AppSync Function
    *
@@ -97,6 +141,7 @@ export class AppsyncFunction extends Resource {
     this.functionId = this.function.attrFunctionId;
     this.dataSource = props.dataSource;
 
+    this.function.addDependsOn(this.dataSource.ds);
     props.api.addSchemaDependency(this.function);
   }
 }

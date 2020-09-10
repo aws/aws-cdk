@@ -2,6 +2,7 @@ import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { CfnResource, IResource, Resource } from '@aws-cdk/core';
 import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
+import { Resolver, ExtendedResolverProps } from './resolver';
 
 /**
  * Optional configuration for data sources
@@ -77,6 +78,11 @@ export interface IGraphqlApi extends IResource {
    * @param options The optional configuration for this data source
    */
   addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource;
+
+  /**
+   * creates a new resolver for this datasource and API using the given properties
+   */
+  createResolver(props: ExtendedResolverProps): Resolver;
 
   /**
    * Add schema dependency if not imported
@@ -162,6 +168,16 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       lambdaFunction,
       name: options?.name,
       description: options?.description,
+    });
+  }
+
+  /**
+   * creates a new resolver for this datasource and API using the given properties
+   */
+  public createResolver(props: ExtendedResolverProps): Resolver {
+    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+      api: this,
+      ...props,
     });
   }
 

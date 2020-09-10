@@ -119,11 +119,7 @@ export abstract class BaseDataSource extends Construct {
    * creates a new resolver for this datasource and API using the given properties
    */
   public createResolver(props: BaseResolverProps): Resolver {
-    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
-      api: this.api,
-      dataSource: this,
-      ...props,
-    });
+    return this.api.createResolver({ dataSource: this, ...props });
   }
 
   /**
@@ -177,7 +173,6 @@ export class NoneDataSource extends BaseDataSource {
 export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
   /**
    * The DynamoDB table backing this data source
-   * [disable-awslint:ref-via-interface]
    */
   readonly table: ITable;
   /**

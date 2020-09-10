@@ -100,6 +100,12 @@ describe('testing Object Type properties', () => {
       args: {
         arg: t.int,
       },
+      requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+        version: '2017-02-28',
+      })),
+      responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+        version: 'v1',
+      })),
     });
     const test = new appsync.ObjectType('Test', {
       definition: {
@@ -124,6 +130,12 @@ describe('testing Object Type properties', () => {
       args: {
         arg: t.int,
       },
+      requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+        version: '2017-02-28',
+      })),
+      responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+        version: 'v1',
+      })),
     });
     const test = new appsync.ObjectType('Test', {
       definition: {
@@ -153,11 +165,16 @@ describe('testing Object Type properties', () => {
       definition: {
         resolve: new appsync.ResolvableField({
           returnType: t.string,
-          dataSource: ds,
           args: {
             arg: t.int,
           },
           pipelineConfig: [test1, test2],
+          requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+            version: '2017-02-28',
+          })),
+          responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+            version: 'v1',
+          })),
         }),
       },
     });
@@ -168,8 +185,8 @@ describe('testing Object Type properties', () => {
       Kind: 'PIPELINE',
       PipelineConfig: {
         Functions: [
-          { 'Fn::GetAtt': ['apinonetest1FunctionEF63046F', 'Name'] },
-          { 'Fn::GetAtt': ['apinonetest2Function615111D0', 'Name'] },
+          { 'Fn::GetAtt': ['apinonetest1FunctionEF63046F', 'FunctionId'] },
+          { 'Fn::GetAtt': ['apinonetest2Function615111D0', 'FunctionId'] },
         ],
       },
     });
@@ -181,6 +198,12 @@ describe('testing Object Type properties', () => {
       returnType: t.string,
       dataSource: api.addNoneDataSource('none'),
       args: { arg: t.int },
+      requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+        version: '2017-02-28',
+      })),
+      responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+        version: 'v1',
+      })),
     });
     const test = new appsync.ObjectType('Test', {
       definition: {
@@ -239,6 +262,12 @@ describe('testing Object Type properties', () => {
       args: {
         arg: t.string,
       },
+      requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+        version: '2017-02-28',
+      })),
+      responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+        version: 'v1',
+      })),
     });
     test.addField({ fieldName: 'resolve', field });
 
