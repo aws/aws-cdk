@@ -321,6 +321,24 @@ const testAction = new codepipeline_actions.CodeBuildAction({
 });
 ```
 
+#### Cross-Region CodeBuild Actions
+
+If you have CodeBuild workloads that span multiple regions you can [add a cross-Region action in CodePipeline](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-cross-region.html).
+
+```typescript
+const buildAction = new codepipeline_actions.CodeBuildAction({
+  actionName: 'CodeBuild',
+  project: PipelineProject.fromProjectName(this, 'CrossRegionBuildProject',
+    this.node.tryGetContext('cross-region-build-project-arn'),
+  ),
+  input: sourceOutput,
+  region: 'ap-southeast-2',
+});
+```
+
+In the code above, context `cross-region-build-project-arn` is passed to provide the stack
+a reference to a CodeBuild Project in another region.
+
 #### Multiple inputs and outputs
 
 When you want to have multiple inputs and/or outputs for a Project used in a
