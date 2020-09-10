@@ -48,7 +48,7 @@ const tableDS = api.addDynamoDbDataSource('planets', table);
 const planet = ObjectType.planet;
 schema.addType(planet);
 
-api.addType(new appsync.ObjectType('Species', {
+const species = api.addType(new appsync.ObjectType('Species', {
   interfaceTypes: [node],
   definition: {
     name: ScalarType.string,
@@ -105,6 +105,10 @@ api.addMutation('addPlanet', new appsync.ResolvableField({
 
 api.addType(new appsync.InputType('input', {
   definition: { awesomeInput: ScalarType.string },
+}));
+
+api.addType(new appsync.UnionType('Union', {
+  definition: [species, planet],
 }));
 
 app.synth();
