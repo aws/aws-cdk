@@ -5,12 +5,72 @@ interface Env {
   region: string;
 }
 
+function chainableCredentials(region: string): AWS.Credentials | undefined {
+
+  const profileName = process.env.AWS_PROFILE;
+  if (process.env.CODEBUILD_BUILD_ARN && profileName) {
+
+    // in codebuild we must assume the role that the cdk uses
+    // otherwise credentials will just be picked up by the normal sdk
+    // heuristics and expire after an hour.
+
+    // can't use '~' since the SDK doesn't seem to expand it...?
+    const configPath = `${process.env.HOME}/.aws/config`;
+    const ini = new AWS.IniLoader().loadFrom({
+      filename: configPath,
+      isConfig: true,
+    });
+
+    const profile = ini[profileName];
+
+    if (!profile) {
+      throw new Error(`Profile '${profileName}' does not exist in config file (${configPath})`);
+    }
+
+    const arn = profile.role_arn;
+    const externalId = profile.external_id;
+
+    if (!arn) {
+      throw new Error(`role_arn does not exist in profile ${profileName}`);
+    }
+
+    if (!externalId) {
+      throw new Error(`external_id does not exist in profile ${externalId}`);
+    }
+
+    return new AWS.ChainableTemporaryCredentials({
+      params: {
+        RoleArn: arn,
+        ExternalId: externalId,
+        RoleSessionName: 'integ-tests',
+      },
+      stsConfig: {
+        region,
+      },
+      masterCredentials: new AWS.ECSCredentials(),
+    });
+  }
+
+  return undefined;
+
+}
+
 export let testEnv = async (): Promise<Env> => {
-  const response = await new AWS.STS().getCallerIdentity().promise();
+
+  const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
+
+  const sts = new AWS.STS({
+    region: region,
+    credentials: chainableCredentials(region),
+    maxRetries: 8,
+    retryDelayOptions: { base: 500 },
+  });
+
+  const response = await sts.getCallerIdentity().promise();
 
   const ret: Env = {
     account: response.Account!,
-    region: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1',
+    region,
   };
 
   testEnv = () => Promise.resolve(ret);
@@ -22,16 +82,29 @@ export class AwsClients {
     return new AwsClients(await testEnv(), output);
   }
 
-  private readonly config = { region: this.env.region, maxRetries: 8, retryDelayOptions: { base: 500 } };
-  public readonly cloudFormation = makeAwsCaller(AWS.CloudFormation, this.config);
-  public readonly s3 = makeAwsCaller(AWS.S3, this.config);
-  public readonly ecr = makeAwsCaller(AWS.ECR, this.config);
-  public readonly sns = makeAwsCaller(AWS.SNS, this.config);
-  public readonly iam = makeAwsCaller(AWS.IAM, this.config);
-  public readonly lambda = makeAwsCaller(AWS.Lambda, this.config);
-  public readonly sts = makeAwsCaller(AWS.STS, this.config);
+  private readonly config: any;
+
+  public readonly cloudFormation: AwsCaller<AWS.CloudFormation>;
+  public readonly s3: AwsCaller<AWS.S3>;
+  public readonly ecr: AwsCaller<AWS.ECR>;
+  public readonly sns: AwsCaller<AWS.SNS>;
+  public readonly iam: AwsCaller<AWS.IAM>;
+  public readonly lambda: AwsCaller<AWS.Lambda>;
+  public readonly sts: AwsCaller<AWS.STS>;
 
   constructor(private readonly env: Env, private readonly output: NodeJS.WritableStream) {
+
+    const creds = chainableCredentials(this.env.region);
+    this.config = { credentials: creds, region: this.env.region, maxRetries: 8, retryDelayOptions: { base: 500 } };
+    this.cloudFormation = makeAwsCaller(AWS.CloudFormation, this.config);
+    this.s3 = makeAwsCaller(AWS.S3, this.config);
+    this.ecr = makeAwsCaller(AWS.ECR, this.config);
+    this.sns = makeAwsCaller(AWS.SNS, this.config);
+    this.iam = makeAwsCaller(AWS.IAM, this.config);
+    this.lambda = makeAwsCaller(AWS.Lambda, this.config);
+    this.sts = makeAwsCaller(AWS.STS, this.config);
+
+
   }
 
   public async deleteStacks(...stackNames: string[]) {
@@ -121,6 +194,8 @@ async function awsCall<
   }
 }
 
+type AwsCaller<A> = <B extends keyof ServiceCalls<A>>(call: B, request: First<ServiceCalls<A>[B]>) => Promise<Second<ServiceCalls<A>[B]>>;
+
 /**
  * Factory function to invoke 'awsCall' for specific services.
  *
@@ -134,7 +209,7 @@ async function awsCall<
  * }
  * ```
  */
-function makeAwsCaller<A extends AWS.Service>(ctor: new (config: any) => A, config: any) {
+function makeAwsCaller<A extends AWS.Service>(ctor: new (config: any) => A, config: any): AwsCaller<A> {
   return <B extends keyof ServiceCalls<A>>(call: B, request: First<ServiceCalls<A>[B]>): Promise<Second<ServiceCalls<A>[B]>> => {
     return awsCall(ctor, config, call, request);
   };
