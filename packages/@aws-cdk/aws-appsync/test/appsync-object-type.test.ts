@@ -100,12 +100,7 @@ describe('testing Object Type properties', () => {
       args: {
         arg: t.int,
       },
-      requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-        version: '2017-02-28',
-      })),
-      responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-        version: 'v1',
-      })),
+
     });
     const test = new appsync.ObjectType('Test', {
       definition: {
@@ -130,12 +125,7 @@ describe('testing Object Type properties', () => {
       args: {
         arg: t.int,
       },
-      requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-        version: '2017-02-28',
-      })),
-      responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-        version: 'v1',
-      })),
+
     });
     const test = new appsync.ObjectType('Test', {
       definition: {
@@ -198,12 +188,7 @@ describe('testing Object Type properties', () => {
       returnType: t.string,
       dataSource: api.addNoneDataSource('none'),
       args: { arg: t.int },
-      requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-        version: '2017-02-28',
-      })),
-      responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-        version: 'v1',
-      })),
+
     });
     const test = new appsync.ObjectType('Test', {
       definition: {
@@ -262,12 +247,7 @@ describe('testing Object Type properties', () => {
       args: {
         arg: t.string,
       },
-      requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-        version: '2017-02-28',
-      })),
-      responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-        version: 'v1',
-      })),
+
     });
     test.addField({ fieldName: 'resolve', field });
 

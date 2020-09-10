@@ -27,12 +27,6 @@ test('appsync should configure pipeline when pipelineConfig has contents', () =>
     typeName: 'test',
     fieldName: 'test2',
     pipelineConfig: [test1, test2],
-    requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-      version: '2017-02-28',
-    })),
-    responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-      version: 'v1',
-    })),
   });
 
   // THEN
@@ -76,12 +70,6 @@ test('appsync should configure resolver as unit when pipelineConfig is empty', (
     dataSource: ds,
     typeName: 'test',
     fieldName: 'test2',
-    requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-      version: '2017-02-28',
-    })),
-    responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-      version: 'v1',
-    })),
   });
 
   // THEN
@@ -96,12 +84,6 @@ test('appsync should configure resolver as unit when pipelineConfig is empty arr
     typeName: 'test',
     fieldName: 'test2',
     pipelineConfig: [],
-    requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-      version: '2017-02-28',
-    })),
-    responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
-      version: 'v1',
-    })),
   });
 
   // THEN
