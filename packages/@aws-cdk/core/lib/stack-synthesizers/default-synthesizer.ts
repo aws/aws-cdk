@@ -9,8 +9,8 @@ import { CfnRule } from '../cfn-rule';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { addStackArtifactToAssembly, assertBound, contentHash } from './_shared';
-import { IStackSynthesizer } from './types';
+import { assertBound, contentHash } from './_shared';
+import { StackSynthesizer } from './stack-synthesizer';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -161,7 +161,7 @@ export interface DefaultStackSynthesizerProps {
  *
  * Requires the environment to have been bootstrapped with Bootstrap Stack V2.
  */
-export class DefaultStackSynthesizer implements IStackSynthesizer {
+export class DefaultStackSynthesizer extends StackSynthesizer {
   /**
    * Default ARN qualifier
    */
@@ -209,17 +209,20 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   private _cloudFormationExecutionRoleArn?: string;
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
+  private qualifier?: string;
 
   private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
   private readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
 
   constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
+    super();
   }
 
   public bind(stack: Stack): void {
     this._stack = stack;
 
     const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+    this.qualifier = qualifier;
 
     // Function to replace placeholders in the input string as much as possible
     //
@@ -244,10 +247,6 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
     /* eslint-enable max-len */
-
-    if (this.props.generateBootstrapVersionRule ?? true) {
-      addBootstrapVersionRule(stack, MIN_BOOTSTRAP_STACK_VERSION, qualifier);
-    }
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
@@ -321,20 +320,36 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     };
   }
 
-  public synthesizeStackArtifacts(session: ISynthesisSession): void {
+  /**
+   * Synthesize the associated stack to the session
+   */
+  public synthesize(session: ISynthesisSession): void {
     assertBound(this.stack);
+    assertBound(this.qualifier);
+
+    // Must be done here -- if it's done in bind() (called in the Stack's constructor)
+    // then it will become impossible to set context after that.
+    //
+    // If it's done AFTER _synthesizeTemplate(), then the template won't contain the
+    // right constructs.
+    if (this.props.generateBootstrapVersionRule ?? true) {
+      addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, this.qualifier);
+    }
+
+    this.synthesizeStackTemplate(this.stack, session);
 
     // Add the stack's template to the artifact manifest
     const templateManifestUrl = this.addStackTemplateToAssetManifest(session);
 
     const artifactId = this.writeAssetManifest(session);
 
-    addStackArtifactToAssembly(session, this.stack, {
+    this.emitStackArtifact(this.stack, session, {
       assumeRoleArn: this._deployRoleArn,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
-    }, [artifactId]);
+      additionalDependencies: [artifactId],
+    });
   }
 
   /**
@@ -483,6 +498,11 @@ function stackLocationOrInstrinsics(stack: Stack) {
  * so we encode this rule into the template in a way that CloudFormation will check it.
  */
 function addBootstrapVersionRule(stack: Stack, requiredVersion: number, qualifier: string) {
+  // Because of https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/assert/lib/synth-utils.ts#L74
+  // synthesize() may be called more than once on a stack in unit tests, and the below would break
+  // if we execute it a second time. Guard against the constructs already existing.
+  if (stack.node.tryFindChild('BootstrapVersion')) { return; }
+
   const param = new CfnParameter(stack, 'BootstrapVersion', {
     type: 'AWS::SSM::Parameter::Value<String>',
     description: 'Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store.',
