@@ -90,7 +90,7 @@ describe('testing Enum Type properties', () => {
     // THEN
     expect(() => {
       test.addField({ fieldName: 'test', field: t.string });
-    }).toThrowError('Enum Types do not support IField properties. Use the fieldName option instead of the field option.');
+    }).toThrowError('Enum Type fields consist of strings. Use the fieldName option instead of the field option.');
   });
 
   test('errors when enum type is missing fieldName option', () => {

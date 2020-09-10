@@ -459,7 +459,7 @@ export class EnumType implements IIntermediateType {
    */
   public addField(options: AddFieldOptions): void {
     if (options.field) {
-      throw new Error('Enum Types do not support IField properties. Use the fieldName option instead of the field option.');
+      throw new Error('Enum Type fields consist of strings. Use the fieldName option instead of the field option.');
     }
     if (!options.fieldName) {
       throw new Error('When adding a field to an Enum Type, you must configure the fieldName option.');
