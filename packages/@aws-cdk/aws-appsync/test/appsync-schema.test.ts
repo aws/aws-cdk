@@ -244,7 +244,7 @@ describe('testing schema definition mode `file`', () => {
     // THEN
     expect(() => {
       api.addQuery('blah', new appsync.ResolvableField({ returnType: t.string }));
-    }).toThrowError('Unable to add query. Schema definition mode must be CODE Received: FILE');
+    }).toThrowError('Unable to add query. Schema definition mode must be CODE. Received: FILE');
   });
 
   test('definition mode `file` errors when addMutation is called', () => {
@@ -257,7 +257,7 @@ describe('testing schema definition mode `file`', () => {
     // THEN
     expect(() => {
       api.addMutation('blah', new appsync.ResolvableField({ returnType: t.string }));
-    }).toThrowError('Unable to add mutation. Schema definition mode must be CODE Received: FILE');
+    }).toThrowError('Unable to add mutation. Schema definition mode must be CODE. Received: FILE');
   });
 
   test('definition mode `file` errors when addSubscription is called', () => {
@@ -270,6 +270,6 @@ describe('testing schema definition mode `file`', () => {
     // THEN
     expect(() => {
       api.addSubscription('blah', new appsync.ResolvableField({ returnType: t.string }));
-    }).toThrowError('Unable to add subscription. Schema definition mode must be CODE Received: FILE');
+    }).toThrowError('Unable to add subscription. Schema definition mode must be CODE. Received: FILE');
   });
 });

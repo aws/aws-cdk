@@ -121,7 +121,7 @@ export class Schema {
    */
   public addQuery(fieldName: string, field: ResolvableField): ObjectType {
     if (this.mode !== SchemaMode.CODE) {
-      throw new Error(`Unable to add query. Schema definition mode must be ${SchemaMode.CODE} Received: ${this.mode}`);
+      throw new Error(`Unable to add query. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this.mode}`);
     }
     if (!this.query) {
       this.query = new ObjectType('Query', { definition: {} });
@@ -144,7 +144,7 @@ export class Schema {
    */
   public addMutation(fieldName: string, field: ResolvableField): ObjectType {
     if (this.mode !== SchemaMode.CODE) {
-      throw new Error(`Unable to add mutation. Schema definition mode must be ${SchemaMode.CODE} Received: ${this.mode}`);
+      throw new Error(`Unable to add mutation. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this.mode}`);
     }
     if (!this.mutation) {
       this.mutation = new ObjectType('Mutation', { definition: {} });
@@ -167,7 +167,7 @@ export class Schema {
    */
   public addSubscription(fieldName: string, field: ResolvableField): ObjectType {
     if (this.mode !== SchemaMode.CODE) {
-      throw new Error(`Unable to add subscription. Schema definition mode must be ${SchemaMode.CODE} Received: ${this.mode}`);
+      throw new Error(`Unable to add subscription. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this.mode}`);
     }
     if (!this.subscription) {
       this.subscription = new ObjectType('Subscription', { definition: {} });
