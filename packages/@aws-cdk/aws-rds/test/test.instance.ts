@@ -22,7 +22,7 @@ export = {
   'create a DB instance'(test: Test) {
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
@@ -64,7 +64,8 @@ export = {
           'listener',
         ],
         EnablePerformanceInsights: true,
-        Engine: 'oracle-se1',
+        Engine: 'oracle-se2',
+        EngineVersion: '19.0.0.0.ru-2020-04.rur-2020-04.r1',
         Iops: 1000,
         LicenseModel: 'bring-your-own-license',
         MasterUsername: {
@@ -197,7 +198,7 @@ export = {
 
   'instance with option and parameter group'(test: Test) {
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       configurations: [
         {
           name: 'XMLDB',
