@@ -18,8 +18,10 @@ APIs that use GraphQL.
 
 ### Example
 
+### DynamoDB
+
 Example of a GraphQL API with `AWS_IAM` authorization resolving into a DynamoDb
-backend data source. 
+backend data source.
 
 GraphQL schema file `schema.graphql`:
 
@@ -82,6 +84,83 @@ demoDS.createResolver({
 });
 ```
 
+#### HTTP Endpoints
+GraphQL schema file `schema.graphql`:
+
+```gql
+type job {
+  id: String!
+  version: String!
+}
+
+input DemoInput {
+  version: String!
+}
+
+type Mutation {
+  callStepFunction(input: DemoInput!): job
+}
+```
+
+GraphQL request mapping template `request.vtl`:
+
+```
+{
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "/",
+  "params": {
+    "headers": {
+      "content-type": "application/x-amz-json-1.0",
+      "x-amz-target":"AWSStepFunctions.StartExecution"
+    },
+    "body": {
+      "stateMachineArn": "<your step functions arn>",
+      "input": "{ \"id\": \"$context.arguments.id\" }"
+    }
+  }
+}
+```
+
+GraphQL response mapping template `response.vtl`:
+
+```
+{
+  "id": "${context.result.id}"
+}
+```
+
+CDK stack file `app-stack.ts`:
+
+```ts
+import * as appsync from '@aws-cdk/aws-appsync';
+
+const api = new appsync.GraphqlApi(scope, 'api', {
+  name: 'api',
+  schema: appsync.Schema.fromFile(join(__dirname, 'schema.graphql')),
+});
+
+const httpDs = api.addHttpDataSource(
+  'ds', 
+  'https://states.amazonaws.com', 
+  {
+    name: 'httpDsWithStepF',
+    description: 'from appsync to StepFunctions Workflow',
+    authorizationConfig: {
+      signingRegion: 'us-east-1',
+      signingServiceName: 'states'
+    }
+  }
+);
+
+httpDs.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'callStepFunction',
+  requestMappingTemplate: MappingTemplate.fromFile('request.vtl'),
+  responseMappingTemplate: MappingTemplate.fromFile('response.vtl')
+});
+```
+
 ### Schema
 
 Every GraphQL Api needs a schema to define the Api. CDK offers `appsync.Schema`
@@ -129,7 +208,6 @@ const api = appsync.GraphqlApi(stack, 'api', {
 ```
 
 ### Imports
-
 Any GraphQL Api that has been created outside the stack can be imported from 
 another stack into your CDK app. Utilizing the `fromXxx` function, you have 
 the ability to add data sources and resolvers through a `IGraphqlApi` interface.
@@ -486,6 +564,7 @@ Intermediate Types include:
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
 - [**Input Types**](#Input-Types)
+- [**Union Types**](#Union-Types)
 
 ##### Interface Types
 
@@ -590,6 +669,34 @@ api.addType(review);
 ```
 
 To learn more about **Input Types**, read the docs [here](https://graphql.org/learn/schema/#input-types).
+
+### Union Types
+
+**Union Types** are a special type of Intermediate Type. They are similar to
+Interface Types, but they cannot specify any common fields between types.
+
+**Note:** the fields of a union type need to be `Object Types`. In other words, you
+can't create a union type out of interfaces, other unions, or inputs.
+
+```gql
+union Search = Human | Droid | Starship
+```
+
+The above GraphQL Union Type encompasses the Object Types of Human, Droid and Starship. It
+can be expressed in CDK as the following:
+
+```ts
+const string = appsync.GraphqlType.string();
+const human = new appsync.ObjectType('Human', { definition: { name: string } });
+const droid = new appsync.ObjectType('Droid', { definition: { name: string } });
+const starship = new appsync.ObjectType('Starship', { definition: { name: string } }););
+const search = new appsync.UnionType('Search', {
+  definition: [ human, droid, starship ],
+}); 
+api.addType(search);
+```
+
+To learn more about **Union Types**, read the docs [here](https://graphql.org/learn/schema/#union-types).
 
 #### Query
 

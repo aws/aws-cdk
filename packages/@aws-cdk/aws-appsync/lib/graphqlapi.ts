@@ -1,6 +1,6 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
-import { CfnResource, Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
+import { CfnResource, Construct, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { Schema } from './schema';
@@ -111,12 +111,13 @@ export interface ApiKeyConfig {
   readonly description?: string;
 
   /**
-   * The time from creation time after which the API key expires, using RFC3339 representation.
+   * The time from creation time after which the API key expires.
    * It must be a minimum of 1 day and a maximum of 365 days from date of creation.
    * Rounded down to the nearest hour.
-   * @default - 7 days from creation time
+   *
+   * @default - 7 days rounded down to nearest hour
    */
-  readonly expires?: string;
+  readonly expires?: Expiration;
 }
 
 /**
@@ -556,16 +557,10 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   private createAPIKey(config?: ApiKeyConfig) {
-    let expires: number | undefined;
-    if (config?.expires) {
-      expires = new Date(config.expires).valueOf();
-      const days = (d: number) =>
-        Date.now() + Duration.days(d).toMilliseconds();
-      if (expires < days(1) || expires > days(365)) {
-        throw Error('API key expiration must be between 1 and 365 days.');
-      }
-      expires = Math.round(expires / 1000);
+    if (config?.expires?.isBefore(Duration.days(1)) || config?.expires?.isAfter(Duration.days(365))) {
+      throw Error('API key expiration must be between 1 and 365 days.');
     }
+    const expires = config?.expires ? config?.expires.toEpoch() : undefined;
     return new CfnApiKey(this, `${config?.name || 'Default'}ApiKey`, {
       expires,
       description: config?.description,
