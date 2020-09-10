@@ -27,7 +27,7 @@ test('double dispose throws', async () => {
   const lease = await pool.take();
 
   lease.dispose();
-  expect(() => lease.dispose).toThrow();
+  expect(() => lease.dispose()).toThrow();
 });
 
 test('more consumers than values', async () => {
