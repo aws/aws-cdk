@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { outputFromStack, AwsClients } from './aws-helpers';
-import { ResourcePool, ILease } from './resource-pool';
+import { ResourcePool } from './resource-pool';
 import { TestContext } from './test-helpers';
 
 const REGIONS = process.env.AWS_REGIONS
@@ -55,7 +55,6 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
       integTestDir,
       stackNamePrefix,
       context.output,
-      regionLease,
       context.aws);
 
     let success = true;
@@ -144,7 +143,6 @@ export class TestFixture {
     public readonly integTestDir: string,
     public readonly stackNamePrefix: string,
     public readonly output: NodeJS.WritableStream,
-    private readonly regionLease: ILease<String>,
     public readonly aws: AwsClients) {
   }
 
@@ -216,33 +214,28 @@ export class TestFixture {
    * Cleanup leftover stacks and buckets
    */
   public async dispose(success: boolean) {
-    try {
-      const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
+    const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
 
-      // Bootstrap stacks have buckets that need to be cleaned
-      const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
-      await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
+    // Bootstrap stacks have buckets that need to be cleaned
+    const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
+    await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
 
-      // Bootstrap stacks have ECR repositories with images which should be deleted
-      const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
-      await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
+    // Bootstrap stacks have ECR repositories with images which should be deleted
+    const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
+    await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
 
-      await this.aws.deleteStacks(...stacksToDelete.map(s => s.StackName));
+    await this.aws.deleteStacks(...stacksToDelete.map(s => s.StackName));
 
-      // We might have leaked some buckets by upgrading the bootstrap stack. Be
-      // sure to clean everything.
-      for (const bucket of this.bucketsToDelete) {
-        await this.aws.deleteBucket(bucket);
-      }
+    // We might have leaked some buckets by upgrading the bootstrap stack. Be
+    // sure to clean everything.
+    for (const bucket of this.bucketsToDelete) {
+      await this.aws.deleteBucket(bucket);
+    }
 
-      // If the tests completed successfully, happily delete the fixture
-      // (otherwise leave it for humans to inspect)
-      if (success) {
-        rimraf(this.integTestDir);
-      }
-
-    } finally {
-      this.regionLease.dispose();
+    // If the tests completed successfully, happily delete the fixture
+    // (otherwise leave it for humans to inspect)
+    if (success) {
+      rimraf(this.integTestDir);
     }
   }
 

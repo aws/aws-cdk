@@ -48,9 +48,16 @@ export class ResourcePool<A> {
   }
 
   private makeLease(value: A): ILease<A> {
+    let disposed = false;
     return {
       value,
-      dispose: () => this.returnValue(value),
+      dispose: () => {
+        if (disposed) {
+          throw new Error('Calling dispose() on an already-disposed lease.');
+        }
+        disposed = true;
+        this.returnValue(value);
+      },
     };
   }
 

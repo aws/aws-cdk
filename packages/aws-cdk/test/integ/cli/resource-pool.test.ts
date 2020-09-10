@@ -22,6 +22,14 @@ test('take and dispose', async () => {
   expect(released).toEqual(true);
 });
 
+test('double dispose throws', async () => {
+  const pool = new ResourcePool(['a']);
+  const lease = await pool.take();
+
+  lease.dispose();
+  expect(() => lease.dispose).toThrow();
+});
+
 test('more consumers than values', async () => {
   const pool = new ResourcePool(['a', 'b']);
 
