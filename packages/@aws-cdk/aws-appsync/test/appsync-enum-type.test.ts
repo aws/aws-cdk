@@ -62,7 +62,7 @@ describe('testing Enum Type properties', () => {
     });
   });
 
-  test('appsync errors when enum type is configured with white space', () => {
+  test('errors when enum type is configured with white space', () => {
     // THEN
     expect(() => {
       new appsync.EnumType('Test', {
@@ -71,7 +71,7 @@ describe('testing Enum Type properties', () => {
     }).toThrowError('The allowed values of an Enum Type must not have white space. Remove the spaces in "test 1"');
   });
 
-  test('appsync errors on enum type when the fieldName in addField has white space', () => {
+  test('errors when the fieldName in addField has white space', () => {
     // WHEN
     const test = new appsync.EnumType('Test', {
       definition: [],
@@ -82,7 +82,7 @@ describe('testing Enum Type properties', () => {
     }).toThrowError('The allowed values of an Enum Type must not have white space. Remove the spaces in " "');
   });
 
-  test('appsync errors when enum type is configured with field options', () => {
+  test('errors when enum type is configured with field options', () => {
     // WHEN
     const test = new appsync.EnumType('Test', {
       definition: [],
@@ -93,7 +93,7 @@ describe('testing Enum Type properties', () => {
     }).toThrowError('Enum Types do not support IField properties. Use the fieldName option instead of the field option.');
   });
 
-  test('appsync errors when enum type is missing fieldName option', () => {
+  test('errors when enum type is missing fieldName option', () => {
     // WHEN
     const test = new appsync.EnumType('Test', {
       definition: [],

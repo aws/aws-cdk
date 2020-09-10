@@ -59,16 +59,6 @@ export class InterfaceType implements IIntermediateType {
   }
 
   /**
-   * Method called when the stringifying Intermediate Types for schema generation
-   *
-   * @internal
-   */
-  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
-    this.modes = api.modes;
-    return this;
-  }
-
-  /**
    * Create a GraphQL Type representing this Intermediate Type
    *
    * @param options the options to configure this attribute
@@ -110,6 +100,16 @@ export class InterfaceType implements IIntermediateType {
       throw new Error('Interface Types must have both fieldName and field options.');
     }
     this.definition[options.fieldName] = options.field;
+  }
+
+  /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @internal
+   */
+  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    return this;
   }
 }
 
@@ -254,16 +254,6 @@ export class InputType implements IIntermediateType {
   }
 
   /**
-   * Method called when the stringifying Intermediate Types for schema generation
-   *
-   * @internal
-   */
-  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
-    this.modes = api.modes;
-    return this;
-  }
-
-  /**
    * Generate the string of this input type
    */
   public toString(): string {
@@ -288,6 +278,16 @@ export class InputType implements IIntermediateType {
       throw new Error('Input Types must have both fieldName and field options.');
     }
     this.definition[options.fieldName] = options.field;
+  }
+
+  /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @internal
+   */
+  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    return this;
   }
 }
 
@@ -347,16 +347,6 @@ export class UnionType implements IIntermediateType {
   }
 
   /**
-   * Method called when the stringifying Intermediate Types for schema generation
-   *
-   * @internal
-   */
-  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
-    this.modes = api.modes;
-    return this;
-  }
-
-  /**
    * Generate the string of this Union type
    */
   public toString(): string {
@@ -384,6 +374,16 @@ export class UnionType implements IIntermediateType {
       throw new Error('Fields for Union Types must be Object Types.');
     }
     this.definition[options.field?.toString() + 'id'] = options.field;
+  }
+
+  /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @internal
+   */
+  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    return this;
   }
 }
 
@@ -438,16 +438,6 @@ export class EnumType implements IIntermediateType {
   }
 
   /**
-   * Method called when the stringifying Intermediate Types for schema generation
-   *
-   * @internal
-   */
-  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
-    this.modes = api.modes;
-    return this;
-  }
-
-  /**
    * Generate the string of this enum type
    */
   public toString(): string {
@@ -475,8 +465,18 @@ export class EnumType implements IIntermediateType {
       throw new Error('When adding a field to an Enum Type, you must configure the fieldName option.');
     }
     if (options.fieldName.indexOf(' ') > -1) {
-      throw new Error(`The allowed values of an Enum Type must not have white space. Remove the spaces in "${options.fieldName}"`);
+      throw new Error(`Enum Type values cannot have whitespace. Received: "${options.fieldName}"`);
     }
     this.definition[options.fieldName] = GraphqlType.string();
+  }
+
+  /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @internal
+   */
+  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    return this;
   }
 }
