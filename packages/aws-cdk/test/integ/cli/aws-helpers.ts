@@ -1,85 +1,13 @@
 import * as AWS from 'aws-sdk';
 
-interface Env {
-  account: string;
-  region: string;
-}
-
-function chainableCredentials(region: string): AWS.Credentials | undefined {
-
-  const profileName = process.env.AWS_PROFILE;
-  if (process.env.CODEBUILD_BUILD_ARN && profileName) {
-
-    // in codebuild we must assume the role that the cdk uses
-    // otherwise credentials will just be picked up by the normal sdk
-    // heuristics and expire after an hour.
-
-    // can't use '~' since the SDK doesn't seem to expand it...?
-    const configPath = `${process.env.HOME}/.aws/config`;
-    const ini = new AWS.IniLoader().loadFrom({
-      filename: configPath,
-      isConfig: true,
-    });
-
-    const profile = ini[profileName];
-
-    if (!profile) {
-      throw new Error(`Profile '${profileName}' does not exist in config file (${configPath})`);
-    }
-
-    const arn = profile.role_arn;
-    const externalId = profile.external_id;
-
-    if (!arn) {
-      throw new Error(`role_arn does not exist in profile ${profileName}`);
-    }
-
-    if (!externalId) {
-      throw new Error(`external_id does not exist in profile ${externalId}`);
-    }
-
-    return new AWS.ChainableTemporaryCredentials({
-      params: {
-        RoleArn: arn,
-        ExternalId: externalId,
-        RoleSessionName: 'integ-tests',
-      },
-      stsConfig: {
-        region,
-      },
-      masterCredentials: new AWS.ECSCredentials(),
-    });
-  }
-
-  return undefined;
-
-}
-
-export let testEnv = async (): Promise<Env> => {
-
-  const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
-
-  const sts = new AWS.STS({
-    region: region,
-    credentials: chainableCredentials(region),
-    maxRetries: 8,
-    retryDelayOptions: { base: 500 },
-  });
-
-  const response = await sts.getCallerIdentity().promise();
-
-  const ret: Env = {
-    account: response.Account!,
-    region,
-  };
-
-  testEnv = () => Promise.resolve(ret);
-  return ret;
-};
-
 export class AwsClients {
   public static async default(output: NodeJS.WritableStream) {
-    return new AwsClients(await testEnv(), output);
+    const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
+    return AwsClients.forRegion(region, output);
+  }
+
+  public static async forRegion(region: string, output: NodeJS.WritableStream) {
+    return new AwsClients(region, output);
   }
 
   private readonly config: any;
@@ -92,10 +20,14 @@ export class AwsClients {
   public readonly lambda: AwsCaller<AWS.Lambda>;
   public readonly sts: AwsCaller<AWS.STS>;
 
-  constructor(private readonly env: Env, private readonly output: NodeJS.WritableStream) {
-
-    const creds = chainableCredentials(this.env.region);
-    this.config = { credentials: creds, region: this.env.region, maxRetries: 8, retryDelayOptions: { base: 500 } };
+  constructor(public readonly region: string, private readonly output: NodeJS.WritableStream) {
+    this.config = {
+      credentials: chainableCredentials(this.region),
+      region: this.region,
+      maxRetries: 8,
+      retryDelayOptions: { base: 500 },
+      stsRegionalEndpoints: 'regional',
+    };
     this.cloudFormation = makeAwsCaller(AWS.CloudFormation, this.config);
     this.s3 = makeAwsCaller(AWS.S3, this.config);
     this.ecr = makeAwsCaller(AWS.ECR, this.config);
@@ -103,8 +35,11 @@ export class AwsClients {
     this.iam = makeAwsCaller(AWS.IAM, this.config);
     this.lambda = makeAwsCaller(AWS.Lambda, this.config);
     this.sts = makeAwsCaller(AWS.STS, this.config);
+  }
 
-
+  public async account(): Promise<string> {
+    // Reduce # of retries, we use this as a circuit breaker for detecting no-config
+    return (await new AWS.STS({ ...this.config, maxRetries: 1 }).getCallerIdentity().promise()).Account!;
   }
 
   public async deleteStacks(...stackNames: string[]) {
@@ -295,4 +230,54 @@ export async function sleep(ms: number) {
 
 export function outputFromStack(key: string, stack: AWS.CloudFormation.Stack): string | undefined {
   return (stack.Outputs ?? []).find(o => o.OutputKey === key)?.OutputValue;
+}
+
+function chainableCredentials(region: string): AWS.Credentials | undefined {
+
+  const profileName = process.env.AWS_PROFILE;
+  if (process.env.CODEBUILD_BUILD_ARN && profileName) {
+
+    // in codebuild we must assume the role that the cdk uses
+    // otherwise credentials will just be picked up by the normal sdk
+    // heuristics and expire after an hour.
+
+    // can't use '~' since the SDK doesn't seem to expand it...?
+    const configPath = `${process.env.HOME}/.aws/config`;
+    const ini = new AWS.IniLoader().loadFrom({
+      filename: configPath,
+      isConfig: true,
+    });
+
+    const profile = ini[profileName];
+
+    if (!profile) {
+      throw new Error(`Profile '${profileName}' does not exist in config file (${configPath})`);
+    }
+
+    const arn = profile.role_arn;
+    const externalId = profile.external_id;
+
+    if (!arn) {
+      throw new Error(`role_arn does not exist in profile ${profileName}`);
+    }
+
+    if (!externalId) {
+      throw new Error(`external_id does not exist in profile ${externalId}`);
+    }
+
+    return new AWS.ChainableTemporaryCredentials({
+      params: {
+        RoleArn: arn,
+        ExternalId: externalId,
+        RoleSessionName: 'integ-tests',
+      },
+      stsConfig: {
+        region,
+      },
+      masterCredentials: new AWS.ECSCredentials(),
+    });
+  }
+
+  return undefined;
+
 }
