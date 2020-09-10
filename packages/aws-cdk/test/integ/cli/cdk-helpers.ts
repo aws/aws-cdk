@@ -240,7 +240,7 @@ export async function prepareAppFixture(env: TestEnvironment): Promise<TestFixtu
  * forever before the user notices a simple misconfiguration.
  *
  * We can't check for the presence of environment variables since credentials could come from
- * anywyere, so do simple account retrieval.
+ * anywhere, so do simple account retrieval.
  *
  * Only do it once per process.
  */

@@ -50,8 +50,11 @@ $ env AWS_REGIONS=us-west-2,us-west-1,eu-central-1,eu-west-2,eu-west-3 test/inte
 ```
 
 No two tests will run in the same region at the same time. Tests parallelize
-up to the concurrency limit imposed by jest (default of 5) and the available
-number of regions.
+up to the concurrency limit imposed by jest (default of 5, controllable
+by `--maxConcurrency`) and the available number of regions.
+
+If `AWS_REGIONS` is not set, all tests will sequentially run in the one
+region set in `AWS_REGION`.
 
 ### CLI integration tests
 
