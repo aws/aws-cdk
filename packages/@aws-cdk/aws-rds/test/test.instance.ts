@@ -2,6 +2,7 @@ import { ABSENT, countResources, expect, haveResource, ResourcePart, haveResourc
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -21,7 +22,7 @@ export = {
   'create a DB instance'(test: Test) {
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
@@ -63,7 +64,8 @@ export = {
           'listener',
         ],
         EnablePerformanceInsights: true,
-        Engine: 'oracle-se1',
+        Engine: 'oracle-se2',
+        EngineVersion: '19.0.0.0.ru-2020-04.rur-2020-04.r1',
         Iops: 1000,
         LicenseModel: 'bring-your-own-license',
         MasterUsername: {
@@ -196,7 +198,7 @@ export = {
 
   'instance with option and parameter group'(test: Test) {
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       configurations: [
         {
           name: 'XMLDB',
@@ -910,5 +912,56 @@ export = {
     });
 
     test.done();
+  },
+
+  'performance insights': {
+    'instance with all performance insights properties'(test: Test) {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        masterUsername: 'admin',
+        vpc,
+        enablePerformanceInsights: true,
+        performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+        performanceInsightEncryptionKey: new kms.Key(stack, 'Key'),
+      });
+
+      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: true,
+        PerformanceInsightsRetentionPeriod: 731,
+        PerformanceInsightsKMSKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }));
+
+      test.done();
+    },
+
+    'setting performance insights fields enables performance insights'(test: Test) {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        masterUsername: 'admin',
+        vpc,
+        performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+      });
+
+      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: true,
+        PerformanceInsightsRetentionPeriod: 731,
+      }));
+
+      test.done();
+    },
+
+    'throws if performance insights fields are set but performance insights is disabled'(test: Test) {
+      test.throws(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          masterUsername: 'admin',
+          vpc,
+          enablePerformanceInsights: false,
+          performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
+        });
+      }, /`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+
+      test.done();
+    },
   },
 };

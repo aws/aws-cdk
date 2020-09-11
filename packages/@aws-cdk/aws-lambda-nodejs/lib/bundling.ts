@@ -115,7 +115,11 @@ export class Bundling {
    */
   public static parcel(options: ParcelOptions): lambda.AssetCode {
     // Find project root
-    const projectRoot = options.projectRoot ?? findUp(`.git${path.sep}`);
+    const projectRoot = options.projectRoot
+      ?? findUp(`.git${path.sep}`)
+      ?? findUp(LockFile.YARN)
+      ?? findUp(LockFile.NPM)
+      ?? findUp('package.json');
     if (!projectRoot) {
       throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }
