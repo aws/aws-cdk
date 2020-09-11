@@ -147,6 +147,13 @@ export interface RotationMultiUserOptions {
    * @default Duration.days(30)
    */
   readonly automaticallyAfter?: Duration;
+
+  /**
+   * Specifies characters to not include in generated passwords.
+   *
+   * @default -
+   */
+  readonly excludedCharacters?: string;
 }
 
 /**

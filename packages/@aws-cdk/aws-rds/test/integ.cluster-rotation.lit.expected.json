@@ -807,7 +807,8 @@
               "DatabaseRotationSingleUserSecurityGroupAC6E0E73",
               "GroupId"
             ]
-          }
+          },
+          "excludeCharacters": " ;+%{}@'\"`/\\#"
         }
       }
     }

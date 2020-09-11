@@ -560,8 +560,11 @@ export class DatabaseCluster extends DatabaseClusterNew {
    *
    * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
    * before Secrets Manager triggers the next automatic rotation.
+   *
+   * @param [excludeCharacters=' ;+%{}`/"\\#\'@'] Specifies characters to not include in generated passwords.
+   * Defaults to the superset of characters which will break DMS endpoints and characters which cause problems in shell scripts.
    */
-  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
+  public addRotationSingleUser(automaticallyAfter?: Duration, excludedCharacters?: string): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
@@ -572,6 +575,10 @@ export class DatabaseCluster extends DatabaseClusterNew {
       throw new Error('A single user rotation was already added to this cluster.');
     }
 
+    const xc = excludedCharacters === undefined ? // empty string is legit input
+      ' ;+%{}' + '@\'"`/\\#' : // DMS + shell breakers
+      excludedCharacters;
+
     return new secretsmanager.SecretRotation(this, id, {
       secret: this.secret,
       automaticallyAfter,
@@ -579,6 +586,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
+      excludeCharacters: xc,
     });
   }
 
@@ -590,9 +598,8 @@ export class DatabaseCluster extends DatabaseClusterNew {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
     return new secretsmanager.SecretRotation(this, id, {
-      secret: options.secret,
+      ...options,
       masterSecret: this.secret,
-      automaticallyAfter: options.automaticallyAfter,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
