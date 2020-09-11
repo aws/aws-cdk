@@ -682,25 +682,6 @@ integTest('templates on disk contain metadata resource, also in nested assemblie
   expect(JSON.parse(nestedTemplateContents).Resources.CDKMetadata).toBeTruthy();
 }));
 
-integTest('templates on disk contain metadata resource, also in nested assemblies', async () => {
-  // Synth first, and switch on version reporting because cdk.json is disabling it
-  await cdk(['synth', '--version-reporting=true']);
-
-  // Load template from disk from root assembly
-  const templateContents = await shell(['cat', 'cdk.out/*-lambda.template.json'], {
-    cwd: INTEG_TEST_DIR,
-  });
-
-  expect(JSON.parse(templateContents).Resources.CDKMetadata).toBeTruthy();
-
-  // Load template from nested assembly
-  const nestedTemplateContents = await shell(['cat', 'cdk.out/assembly-*-stage/*-stage-StackInStage.template.json'], {
-    cwd: INTEG_TEST_DIR,
-  });
-
-  expect(JSON.parse(nestedTemplateContents).Resources.CDKMetadata).toBeTruthy();
-});
-
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
   const ret = new Array<string>();
   for (const child of await fs.readdir(parent, { encoding: 'utf-8' })) {
