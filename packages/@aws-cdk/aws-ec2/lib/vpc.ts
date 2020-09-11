@@ -560,10 +560,11 @@ abstract class VpcBase extends Resource implements IVpc {
       subnetFilters.push(SubnetFilter.onePerAz());
     }
 
-    // Overwrite the provided placement filters
-    placement = { ...placement, subnetFilters: subnetFilters };
+    // Overwrite the provided placement filters and remove the availabilityZones and onePerAz properties
+    placement = { ...placement, subnetFilters: subnetFilters, availabilityZones: undefined, onePerAz: undefined };
+    const { availabilityZones, onePerAz, ...rest } = placement;
 
-    return placement;
+    return rest;
   }
 }
 
