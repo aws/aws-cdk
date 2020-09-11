@@ -115,6 +115,18 @@ const bbSource = codebuild.Source.bitBucket({
 });
 ```
 
+### For all Git sources
+
+For all Git sources, you can fetch submodules while cloing git repo.
+
+```typescript
+const gitHubSource = codebuild.Source.gitHub({
+  owner: 'awslabs',
+  repo: 'aws-cdk',
+  fetchSubmodules: true,
+});
+```
+
 ## Artifacts
 
 CodeBuild Projects can produce Artifacts and upload them to S3. For example:
