@@ -103,8 +103,22 @@ api.addMutation('addPlanet', new appsync.ResolvableField({
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 }));
 
-api.addType(new appsync.InputType('input', {
+api.addType(new appsync.InputType('AwesomeInput', {
   definition: { awesomeInput: ScalarType.string },
+}));
+
+api.addType(new appsync.EnumType('Episodes', {
+  definition: [
+    'The_Phantom_Menace',
+    'Attack_of_the_Clones',
+    'Revenge_of_the_Sith',
+    'A_New_Hope',
+    'The_Empire_Strikes_Back',
+    'Return_of_the_Jedi',
+    'The_Force_Awakens',
+    'The_Last_Jedi',
+    'The_Rise_of_Skywalker',
+  ],
 }));
 
 api.addType(new appsync.UnionType('Union', {

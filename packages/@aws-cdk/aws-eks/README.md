@@ -296,8 +296,18 @@ Spot instance nodes will be labeled with `lifecycle=Ec2Spot` and tainted with `P
 The [AWS Node Termination Handler](https://github.com/aws/aws-node-termination-handler)
 DaemonSet will be installed from [
 Amazon EKS Helm chart repository
-](https://github.com/aws/eks-charts/tree/master/stable/aws-node-termination-handler) on these nodes. The termination handler ensures that the Kubernetes control plane responds appropriately to events that can cause your EC2 instance to become unavailable, such as [EC2 maintenance events](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-instances-status-check_sched.html) and [EC2 Spot interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html) and helps gracefully stop all pods running on spot nodes that are about to be
+](https://github.com/aws/eks-charts/tree/master/stable/aws-node-termination-handler) on these nodes.
+The termination handler ensures that the Kubernetes control plane responds appropriately to events that
+can cause your EC2 instance to become unavailable, such as [EC2 maintenance events](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-instances-status-check_sched.html)
+and [EC2 Spot interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html) and helps gracefully stop all pods running on spot nodes that are about to be
 terminated.
+
+Current version:
+
+| name       | version |
+|------------|---------|
+| Helm Chart | 0.9.5  |
+| App        | 1.7.0  |
 
 ### Bootstrapping
 
