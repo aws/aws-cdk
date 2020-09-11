@@ -106,7 +106,8 @@
   },
   "awslint": {
     "exclude": [
-      "props-no-arn-refs:@aws-cdk/aws-eks-next.ClusterProps.outputMastersRoleArn"
+      "props-no-arn-refs:@aws-cdk/aws-eks-next.ClusterProps.outputMastersRoleArn",
+      "module-name:@aws-cdk/aws-eks-next"
     ]
   },
   "stability": "experimental",

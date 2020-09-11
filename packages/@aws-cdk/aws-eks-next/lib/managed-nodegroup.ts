@@ -169,6 +169,8 @@ export interface NodegroupProps extends NodegroupOptions {
 
 /**
  * The Nodegroup resource class
+ *
+ * @resource AWS::EKS::Nodegroup
  */
 export class Nodegroup extends Resource implements INodegroup {
   /**
