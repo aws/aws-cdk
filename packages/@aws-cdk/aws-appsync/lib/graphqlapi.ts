@@ -594,8 +594,8 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   /**
-   * Add a query field to the schema's Query. If one isn't set by
-   * the user, CDK will create an Object Type called 'Query'. For example,
+   * Add a query field to the schema's Query. CDK will create an
+   * Object Type called 'Query'. For example,
    *
    * type Query {
    *   fieldName: Field.returnType
@@ -609,8 +609,8 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   /**
-   * Add a mutation field to the schema's Mutation. If one isn't set by
-   * the user, CDK will create an Object Type called 'Mutation'. For example,
+   * Add a mutation field to the schema's Mutation. CDK will create an
+   * Object Type called 'Mutation'. For example,
    *
    * type Mutation {
    *   fieldName: Field.returnType
@@ -621,5 +621,20 @@ export class GraphqlApi extends GraphqlApiBase {
    */
   public addMutation(fieldName: string, field: ResolvableField): ObjectType {
     return this.schema.addMutation(fieldName, field);
+  }
+
+  /**
+   * Add a subscription field to the schema's Subscription. CDK will create an
+   * Object Type called 'Subscription'. For example,
+   *
+   * type Subscription {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the Subscription
+   * @param field the resolvable field to for this Subscription
+   */
+  public addSubscription(fieldName: string, field: ResolvableField): ObjectType {
+    return this.schema.addSubscription(fieldName, field);
   }
 }

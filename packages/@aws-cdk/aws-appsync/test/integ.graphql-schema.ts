@@ -103,6 +103,11 @@ api.addMutation('addPlanet', new appsync.ResolvableField({
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 }));
 
+api.addSubscription('addedPlanets', new appsync.ResolvableField({
+  returnType: planet.attribute(),
+  args: { id: ScalarType.required_id },
+  directives: [appsync.Directive.subscribe('addPlanet')],
+}));
 api.addType(new appsync.InputType('AwesomeInput', {
   definition: { awesomeInput: ScalarType.string },
 }));
