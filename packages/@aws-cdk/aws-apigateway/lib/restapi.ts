@@ -1,6 +1,6 @@
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack, Lazy } from '@aws-cdk/core';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
@@ -298,6 +298,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    */
   public deploymentStage!: Stage;
 
+  protected resourcePolicyDocument?: iam.PolicyDocument;
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
@@ -307,6 +308,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     });
 
     Object.defineProperty(this, RESTAPI_SYMBOL, { value: true });
+    this.resourcePolicyDocument = props.policy;
   }
 
   /**
@@ -485,7 +487,7 @@ export class SpecRestApi extends RestApiBase {
     const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
-      policy: props.policy,
+      policy: Lazy.anyValue({ produce: () => this.resourcePolicyDocument }),
       failOnWarnings: props.failOnWarnings,
       body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
@@ -588,7 +590,7 @@ export class RestApi extends RestApiBase {
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
-      policy: props.policy,
+      policy: Lazy.anyValue({ produce: () => this.resourcePolicyDocument }),
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
@@ -693,6 +695,20 @@ export class RestApi extends RestApiBase {
     }
 
     return [];
+  }
+
+  /**
+   * Adds a statement to the resource policy document of the REST API.
+   * The statement must have a Principal.
+   *
+   * @param statement the IAM statement to add
+   */
+  public addToPolicy(statement: iam.PolicyStatement): void {
+    if (!this.resourcePolicyDocument) {
+      this.resourcePolicyDocument = new iam.PolicyDocument();
+    }
+
+    this.resourcePolicyDocument.addStatements(statement);
   }
 }
 
