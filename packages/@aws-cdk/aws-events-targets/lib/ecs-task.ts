@@ -69,6 +69,19 @@ export interface EcsTaskProps {
    * @default A new IAM role is created
    */
   readonly role?: iam.IRole;
+
+  /**
+   * The platform version on which to run your task
+   *
+   * Unless you have specific compatibility requirements, you don't need to specify this.
+   *
+   * More Information:
+   * https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
+   *
+   * @default A default fargate platform version managed by ECS
+
+   */
+  readonly platformVersion?: ecs.FargatePlatformVersion;
 }
 
 /**
@@ -95,6 +108,7 @@ export class EcsTask implements events.IRuleTarget {
   private readonly taskDefinition: ecs.TaskDefinition;
   private readonly taskCount: number;
   private readonly role: iam.IRole;
+  private readonly platformVersion: ecs.FargatePlatformVersion|undefined;
 
   constructor(private readonly props: EcsTaskProps) {
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
@@ -104,6 +118,7 @@ export class EcsTask implements events.IRuleTarget {
     this.cluster = props.cluster;
     this.taskDefinition = props.taskDefinition;
     this.taskCount = props.taskCount !== undefined ? props.taskCount : 1;
+    this.platformVersion = props.platformVersion;
 
     if (props.role) {
       const role = props.role;
@@ -151,6 +166,7 @@ export class EcsTask implements events.IRuleTarget {
       ? {
         ...baseEcsParameters,
         launchType: this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE',
+        platformVersion: this.platformVersion,
         networkConfiguration: {
           awsVpcConfiguration: {
             subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
