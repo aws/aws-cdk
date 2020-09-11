@@ -60,7 +60,7 @@
       "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
       "Properties": {
         "CloudFrontOriginAccessIdentityConfig": {
-          "Comment": "Access identity for cloudfronts3originDistributionOrigin1741C4E95"
+          "Comment": "Identity for cloudfronts3originDistributionOrigin1741C4E95"
         }
       }
     },
