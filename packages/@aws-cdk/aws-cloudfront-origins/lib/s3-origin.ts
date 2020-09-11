@@ -59,7 +59,7 @@ class S3BucketOrigin extends cloudfront.OriginBase {
   public bind(scope: cdk.Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     if (!this.originAccessIdentity) {
       this.originAccessIdentity = new cloudfront.OriginAccessIdentity(scope, 'S3Origin', {
-        comment: `Access identity for ${options.originId}`,
+        comment: `Identity for ${options.originId}`,
       });
       this.bucket.grantRead(this.originAccessIdentity);
     }
