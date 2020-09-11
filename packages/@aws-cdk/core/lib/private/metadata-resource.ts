@@ -15,9 +15,21 @@ import { collectRuntimeInformation } from './runtime-info';
  */
 export class MetadataResource extends Construct {
   /**
+   * Clear the modules cache
+   *
+   * The next time the MetadataResource is rendered, it will do a lookup of the
+   * modules from the NodeJS module cache again.
+   *
+   * Used only for unit tests.
+   */
+  public static clearModulesCache() {
+    this._modulesPropertyCache = undefined;
+  }
+
+  /**
    * Cached version of the _modulesProperty() accessor
    *
-   * No point in calculating this fairly-expensive list more than once.
+   * No point in calculating this fairly expensive list more than once.
    */
   private static _modulesPropertyCache?: string;
 
@@ -31,8 +43,8 @@ export class MetadataResource extends Construct {
     return this._modulesPropertyCache;
   }
 
-  constructor(scope: Stack) {
-    super(scope, 'CDKMetadata');
+  constructor(scope: Stack, id: string) {
+    super(scope, id);
 
     const metadataServiceExists = Token.isUnresolved(scope.region) || RegionInfo.get(scope.region).cdkMetadataResourceAvailable;
     if (metadataServiceExists) {

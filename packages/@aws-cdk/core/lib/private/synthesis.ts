@@ -118,14 +118,31 @@ function prepareTree(root: IConstruct) {
  * (because adding a child construct makes it impossible to set context on the
  * node), and the generic prepare phase is deprecated.
  *
+ * Only do this on [parent] stacks (not nested stacks), don't do this when
+ * disabled by the user.
+ *
+ * Also, only when running via the CLI. If we do it unconditionally,
+ * all unit tests everywhere are going to break massively. I've spent a day
+ * fixing our own, but downstream users would be affected just as badly.
+ *
  * Stop at Assembly boundaries.
  */
 function injectMetadataResources(root: IConstruct) {
   visit(root, 'post', construct => {
-    // Only on top-level stacks and unless disabled
-    if (!Stack.isStack(construct) || construct.parentStack || construct.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING)) { return; }
+    // Only on top-level stacks
+    if (!Stack.isStack(construct)
+      || construct.parentStack
+      // Unless disabled
+      || construct.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING)
+      // While running via CLI
+      || !process.env[cxapi.CLI_VERSION_ENV]) { return; }
 
-    new MetadataResource(construct);
+    // Because of https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/assert/lib/synth-utils.ts#L74
+    // synthesize() may be called more than once on a stack in unit tests, and the below would break
+    // if we execute it a second time. Guard against the constructs already existing.
+    if (construct.node.tryFindChild('CDKMetadata')) { return; }
+
+    new MetadataResource(construct, 'CDKMetadata');
   });
 }
 
