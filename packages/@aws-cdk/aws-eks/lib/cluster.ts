@@ -1334,7 +1334,7 @@ export class Cluster extends ClusterBase {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.7.3',
+        version: '0.9.5',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
