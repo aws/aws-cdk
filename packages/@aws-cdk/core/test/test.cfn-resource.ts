@@ -126,4 +126,33 @@ export = nodeunit.testCase({
 
     test.done();
   },
+
+  'CfnResource cannot be created outside Stack'(test: nodeunit.Test) {
+    const app = new core.App();
+    test.throws(() => {
+      new core.CfnResource(app, 'Resource', {
+        type: 'Some::Resource',
+      });
+    }, /should be created in the scope of a Stack, but no Stack found/);
+
+
+    test.done();
+  },
+
+  /**
+   * Stages start a new scope, which does not count as a Stack anymore
+   */
+  'CfnResource cannot be in Stage in Stack'(test: nodeunit.Test) {
+    const app = new core.App();
+    const stack = new core.Stack(app, 'Stack');
+    const stage = new core.Stage(stack, 'Stage');
+    test.throws(() => {
+      new core.CfnResource(stage, 'Resource', {
+        type: 'Some::Resource',
+      });
+    }, /should be created in the scope of a Stack, but no Stack found/);
+
+
+    test.done();
+  },
 });

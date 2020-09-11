@@ -6,12 +6,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
+import { Annotations, CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
+import { INSTANCE_TYPES } from './instance-types';
 import { KubernetesManifest } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
@@ -1047,6 +1048,7 @@ export class Cluster extends ClusterBase {
         new BottleRocketImage() :
         new EksOptimizedImage({
           nodeType: nodeTypeForInstanceType(options.instanceType),
+          cpuArch: cpuArchForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
         }),
       updateType: options.updateType,
@@ -1373,7 +1375,7 @@ export class Cluster extends ClusterBase {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
-          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          Annotations.of(this).addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
 
@@ -1640,6 +1642,13 @@ export interface EksOptimizedImageProps {
   readonly nodeType?: NodeType;
 
   /**
+   * What cpu architecture to retrieve the image for (arm64 or x86_64)
+   *
+   * @default CpuArch.X86_64
+   */
+  readonly cpuArch?: CpuArch;
+
+  /**
    * The Kubernetes version to use
    *
    * @default - The latest version
@@ -1652,8 +1661,8 @@ export interface EksOptimizedImageProps {
  */
 export class EksOptimizedImage implements ec2.IMachineImage {
   private readonly nodeType?: NodeType;
+  private readonly cpuArch?: CpuArch;
   private readonly kubernetesVersion?: string;
-
   private readonly amiParameterName: string;
 
   /**
@@ -1661,11 +1670,13 @@ export class EksOptimizedImage implements ec2.IMachineImage {
    */
   public constructor(props: EksOptimizedImageProps = {}) {
     this.nodeType = props.nodeType ?? NodeType.STANDARD;
+    this.cpuArch = props.cpuArch ?? CpuArch.X86_64;
     this.kubernetesVersion = props.kubernetesVersion ?? LATEST_KUBERNETES_VERSION;
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
-      + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
+      + ( this.nodeType === NodeType.STANDARD ? this.cpuArch === CpuArch.X86_64 ?
+        'amazon-linux-2/' : 'amazon-linux-2-arm64/' :'' )
       + ( this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '' )
       + (this.nodeType === NodeType.INFERENTIA ? 'amazon-linux-2-gpu/' : '')
       + 'recommended/image_id';
@@ -1740,6 +1751,21 @@ export enum NodeType {
 }
 
 /**
+ * CPU architecture
+ */
+export enum CpuArch {
+  /**
+   * arm64 CPU type
+   */
+  ARM_64 = 'arm64',
+
+  /**
+   * x86_64 CPU type
+   */
+  X86_64 = 'x86_64',
+}
+
+/**
  * The type of compute resources to use for CoreDNS.
  */
 export enum CoreDnsComputeType {
@@ -1782,12 +1808,15 @@ export enum MachineImageType {
   BOTTLEROCKET
 }
 
-const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
-const INFERENTIA_INSTANCETYPES = ['inf1'];
-
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
-  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
-    INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
+  return INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
+    INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
       NodeType.STANDARD;
+}
+
+function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
+  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
+    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
+      CpuArch.X86_64;
 }
 
