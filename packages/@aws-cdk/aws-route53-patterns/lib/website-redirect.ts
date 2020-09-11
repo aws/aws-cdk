@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy } from '@aws-cdk/aws-cloudfront';
-import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
+import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
 import { Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
 import { Construct, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
@@ -97,11 +97,13 @@ export class HttpsRedirect extends Construct {
 
     domainNames.forEach((domainName) => {
       const hash = crypto.createHash('md5').update(domainName).digest('hex').substr(0, 6);
-      new ARecord(this, `RedirectAliasRecord${hash}`, {
+      const aliasProps = {
         recordName: domainName,
         zone: props.zone,
         target: RecordTarget.fromAlias(new CloudFrontTarget(redirectDist)),
-      });
+      };
+      new ARecord(this, `RedirectAliasRecord${hash}`, aliasProps);
+      new AaaaRecord(this, `RedirectAliasRecordSix${hash}`, aliasProps);
     });
   }
 }

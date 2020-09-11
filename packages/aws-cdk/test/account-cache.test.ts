@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { AccountAccessKeyCache } from '../lib/api/aws-auth/account-cache';
+import { withMocked } from './util';
 
 async function makeCache() {
   const dir = await fs.mkdtemp('/tmp/account-cache-test');
@@ -110,28 +111,3 @@ test(`cache is nuked if it exceeds ${AccountAccessKeyCache.MAX_ENTRIES} entries`
     await nukeCache(cacheDir);
   }
 });
-
-function withMocked<A extends object, K extends keyof A, B>(obj: A, key: K, block: (fn: jest.Mocked<A>[K]) => B): B {
-  const original = obj[key];
-  const mockFn = jest.fn();
-  (obj as any)[key] = mockFn;
-
-  let ret;
-  try {
-    ret = block(mockFn as any);
-  } catch (e) {
-    obj[key] = original;
-    throw e;
-  }
-
-  if (!isPromise(ret)) {
-    obj[key] = original;
-    return ret;
-  }
-
-  return ret.finally(() => { obj[key] = original; }) as any;
-}
-
-function isPromise<A>(object: any): object is Promise<A> {
-  return Promise.resolve(object) === object;
-}
