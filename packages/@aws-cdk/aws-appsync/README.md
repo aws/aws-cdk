@@ -779,3 +779,25 @@ api.addMutation('addFilm', new appsync.ResolvableField({
 ```
 
 To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html). 
+
+#### Subscription
+
+Every schema **can** have a top level Subscription type. The top level `Subscription` Type
+is the only exposed type that users can access to invoke a response to a mutation. `Subscriptions`
+notify users when a mutation specific mutation is called. This means you can make any data source
+real time by specify a GraphQL Schema directive on a mutation. 
+
+**Note**: The AWS AppSync client SDK automatically handles subscription connection management.
+
+To add fields for these subscriptions, we can simply run the `addSubscription` function to add
+to the schema's `Subscription` type.
+
+```ts
+api.addSubscription('addedFilm', new appsync.ResolvableField({
+  returnType: film.attribute(),
+  args: { id: appsync.GraphqlType.id({ isRequired: true }) },
+  directive: [appsync.Directive.subscribe('addFilm')],
+}));
+```
+
+To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/real-time-data.html). 
