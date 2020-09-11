@@ -2,6 +2,10 @@
 
 # Store launch config in repo but not settings
 .vscode/settings.json
+
+# Store launch config in repo but not history
+**/.vscode/.history/**
+
 /.favorites.json
 
 # TypeScript incremental build states
