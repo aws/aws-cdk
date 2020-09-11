@@ -164,7 +164,7 @@ Which subnets are selected is evaluated as follows:
   * `onePerAz`: per availability zone, a maximum of one subnet will be returned (Useful for resource
     types that do not allow creating two ENIs in the same availability zone).
 * `subnetFilters`: additional filtering on subnets using any number of user-provided filters which
-  implement the ISubnetSelector interface.
+  extend the SubnetFilter class.
 
 ### Using NAT instances
 
