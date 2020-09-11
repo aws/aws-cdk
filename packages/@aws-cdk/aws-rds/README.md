@@ -168,7 +168,10 @@ const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 
 ```ts
-instance.addRotationSingleUser(); // Will rotate automatically after 30 days
+instance.addRotationSingleUser(
+  cdk.Duration.days(7), // automaticallyAfter defaults to 30 days
+  'abc', // excludedCharacters defaults to ' ;+%{}`/"\\#\'@', the combination of characters that break DMS and that cause problems in shell scripts.
+);
 ```
 
 [example of setting up master password rotation for a cluster](test/integ.cluster-rotation.lit.ts)
