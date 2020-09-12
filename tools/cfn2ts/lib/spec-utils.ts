@@ -87,7 +87,9 @@ function complexItemTypeNames(spec: schema.CollectionProperty): string[] {
 }
 
 function primitiveItemTypeNames(spec: schema.CollectionProperty): string[] {
-  if (schema.isPrimitiveListProperty(spec) || schema.isPrimitiveMapProperty(spec)) {
+  if (schema.isMapOfListsOfPrimitivesProperty(spec)) {
+    return [`${spec.PrimitiveItemItemType}[]`]; // <--- read in specTypeToCodeType()
+  } else if (schema.isPrimitiveListProperty(spec) || schema.isPrimitiveMapProperty(spec)) {
     return [spec.PrimitiveItemType];
   } else if (schema.isUnionProperty(spec)) {
     return spec.PrimitiveItemTypes || [];

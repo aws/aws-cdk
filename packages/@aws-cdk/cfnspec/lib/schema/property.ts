@@ -187,7 +187,9 @@ export function isPrimitiveMapProperty(prop: Property): prop is PrimitiveMapProp
 }
 
 export function isMapOfStructsProperty(prop: Property): prop is MapOfStructs {
-  return isMapProperty(prop) && !isMapOfListsOfPrimitivesProperty(prop);
+  return isMapProperty(prop) &&
+    !isPrimitiveMapProperty(prop) &&
+    !isMapOfListsOfPrimitivesProperty(prop);
 }
 
 // note: this (and the MapOfListsOfPrimitives type) are not actually valid in the CFN spec!
