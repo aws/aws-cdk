@@ -1422,7 +1422,11 @@ export = {
             'Fn::Join': [
               '',
               [
-                'https://s3.',
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-',
                 {
                   'Ref': 'AWS::Region',
                 },
@@ -1431,9 +1435,6 @@ export = {
                   'Ref': 'AWS::URLSuffix',
                 },
                 '/',
-                {
-                  'Ref': 'MyBucketF68F3FF0',
-                },
               ],
             ],
           },
@@ -1443,17 +1444,17 @@ export = {
             'Fn::Join': [
               '',
               [
-                'https://s3.',
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-',
                 {
                   'Ref': 'AWS::Region',
                 },
                 '.',
                 {
                   'Ref': 'AWS::URLSuffix',
-                },
-                '/',
-                {
-                  'Ref': 'MyBucketF68F3FF0',
                 },
                 '/my/file.txt',
               ],
@@ -1465,17 +1466,17 @@ export = {
             'Fn::Join': [
               '',
               [
-                'https://s3.',
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-',
                 {
                   'Ref': 'AWS::Region',
                 },
                 '.',
                 {
                   'Ref': 'AWS::URLSuffix',
-                },
-                '/',
-                {
-                  'Ref': 'MyBucketF68F3FF0',
                 },
                 '/your/file.txt',
               ],
