@@ -743,6 +743,9 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
       monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
+      autoMinorVersionUpgrade: props.instanceProps.autoMinorVersionUpgrade,
+      allowMajorVersionUpgrade: props.instanceProps.allowMajorVersionUpgrade,
+      deleteAutomatedBackups: props.instanceProps.deleteAutomatedBackups,
     });
 
     // If removalPolicy isn't explicitly set,

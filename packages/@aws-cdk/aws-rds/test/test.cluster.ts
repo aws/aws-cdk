@@ -373,6 +373,81 @@ export = {
     },
   },
 
+  'cluster with disable automatic upgrade of minor version'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        autoMinorVersionUpgrade: false,
+        vpc,
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      AutoMinorVersionUpgrade: false,
+    }));
+
+    test.done();
+  },
+
+  'cluster with disallow upgrade of major version'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        allowMajorVersionUpgrade: false,
+        vpc,
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      AllowMajorVersionUpgrade: false,
+    }));
+
+    test.done();
+  },
+
+  'cluster with disallow remove backups'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        deleteAutomatedBackups: false,
+        vpc,
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      DeleteAutomatedBackups: false,
+    }));
+
+    test.done();
+  },
+
   'create a cluster using a specific version of MySQL'(test: Test) {
     // GIVEN
     const stack = testStack();
