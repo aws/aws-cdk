@@ -267,6 +267,11 @@ export class Nodegroup extends Resource implements INodegroup {
       this.role = props.nodeRole;
     }
 
+    if (!this.cluster.vpc) {
+      // imported but `vpc` wasn't supplied
+      throw new Error('A vpc must be configured on the cluster to add a Nodegroup. Please specify the `vpc` property when importing the cluster.');
+    }
+
     const resource = new CfnNodegroup(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       nodegroupName: props.nodegroupName,

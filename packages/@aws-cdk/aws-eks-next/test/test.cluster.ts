@@ -223,6 +223,73 @@ export = {
     test.done();
   },
 
+  'additional securityg groups are added to connections on owned cluster'(test: Test) {
+
+    const { stack, vpc } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      additionalSecurityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'Additional', 'additional-sg')],
+    });
+
+    test.equal(cluster.connections.securityGroups.length, 2);
+    test.equal(cluster.connections.securityGroups.filter(sg => sg.securityGroupId === 'additional-sg').length, 1);
+    test.done();
+
+  },
+
+  'additional securityg groups are added to connections on imported cluster'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster-name',
+      additionalSecurityGroupIds: ['additional-sg'],
+      clusterSecurityGroupId: 'cluster-sg',
+    });
+
+    test.equal(cluster.connections.securityGroups.length, 2);
+    test.equal(cluster.connections.securityGroups.filter(sg => sg.securityGroupId === 'additional-sg').length, 1);
+    test.done();
+
+  },
+
+  'can configure additional seucurity groups to the cluster'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      additionalSecurityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'Additional', 'additional-sg')],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
+        version: '1.16',
+        resourcesVpcConfig: {
+          securityGroupIds: [
+            'additional-sg',
+          ],
+          subnetIds: [
+            { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+            { Ref: 'VPCPublicSubnet2Subnet74179F39' },
+            { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+            { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+          ],
+        },
+      },
+    }));
+
+    test.done();
+  },
+
   'a default cluster spans all subnets'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -236,7 +303,6 @@ export = {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
         version: '1.16',
         resourcesVpcConfig: {
-          securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
             { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
             { Ref: 'VPCPublicSubnet2Subnet74179F39' },
@@ -1165,9 +1231,6 @@ export = {
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
           version: '1.16',
           resourcesVpcConfig: {
-            securityGroupIds: [
-              { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },
-            ],
             subnetIds: [
               { Ref: 'MyClusterDefaultVpcPublicSubnet1SubnetFAE5A9B6' },
               { Ref: 'MyClusterDefaultVpcPublicSubnet2SubnetF6D028A0' },
@@ -1965,7 +2028,7 @@ export = {
         VpcConfig: {
           SecurityGroupIds: [
             {
-              Ref: 'referencetoStackCluster1KubectlProviderSecurityGroupDF05D03AGroupId',
+              Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId',
             },
           ],
           SubnetIds: [
@@ -2080,7 +2143,7 @@ export = {
         VpcConfig: {
           SecurityGroupIds: [
             {
-              Ref: 'referencetoStackCluster1KubectlProviderSecurityGroupDF05D03AGroupId',
+              Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId',
             },
           ],
           SubnetIds: [

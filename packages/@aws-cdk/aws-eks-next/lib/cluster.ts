@@ -29,10 +29,6 @@ const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.Inst
  * An EKS cluster
  */
 export interface ICluster extends IResource, ec2.IConnectable {
-  /**
-   * The VPC in which this Cluster was created
-   */
-  readonly vpc: ec2.IVpc;
 
   /**
    * The physical name of the Cluster
@@ -48,28 +44,33 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterArn: string;
 
   /**
+   * The VPC in which this Cluster was created
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
    * The API Server endpoint URL
    * @attribute
    */
-  readonly clusterEndpoint: string;
+  readonly clusterEndpoint?: string;
 
   /**
    * The certificate-authority-data for your cluster.
    * @attribute
    */
-  readonly clusterCertificateAuthorityData: string;
+  readonly clusterCertificateAuthorityData?: string;
 
   /**
    * The cluster security group that was created by Amazon EKS for the cluster.
    * @attribute
    */
-  readonly clusterSecurityGroupId: string;
+  readonly clusterSecurityGroupId?: string;
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
    * @attribute
    */
-  readonly clusterEncryptionConfigKeyArn: string;
+  readonly clusterEncryptionConfigKeyArn?: string;
 
   /**
    * An IAM role that can perform kubectl operations against this cluster.
@@ -124,16 +125,17 @@ export interface ICluster extends IResource, ec2.IConnectable {
  * Attributes for EKS clusters.
  */
 export interface ClusterAttributes {
-  /**
-   * The VPC in which this Cluster was created
-   * @default - if not specified `cluster.vpc` will throw an error
-   */
-  readonly vpc?: ec2.IVpc;
 
   /**
    * The physical name of the Cluster
    */
   readonly clusterName: string;
+
+  /**
+   * The VPC in which this Cluster was created
+   * @default - if not specified `cluster.vpc` will throw an error
+   */
+  readonly vpc?: ec2.IVpc;
 
   /**
    * The API Server endpoint URL
@@ -560,14 +562,16 @@ export class KubernetesVersion {
 }
 
 abstract class ClusterBase extends Resource implements ICluster {
+
   public abstract readonly connections: ec2.Connections;
-  public abstract readonly vpc: ec2.IVpc;
   public abstract readonly clusterName: string;
   public abstract readonly clusterArn: string;
-  public abstract readonly clusterEndpoint: string;
-  public abstract readonly clusterCertificateAuthorityData: string;
-  public abstract readonly clusterSecurityGroupId: string;
-  public abstract readonly clusterEncryptionConfigKeyArn: string;
+
+  public abstract readonly vpc?: ec2.IVpc;
+  public abstract readonly clusterEndpoint?: string;
+  public abstract readonly clusterCertificateAuthorityData?: string;
+  public abstract readonly clusterSecurityGroupId?: string;
+  public abstract readonly clusterEncryptionConfigKeyArn?: string;
   public abstract readonly kubectlRole?: iam.IRole;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
@@ -906,6 +910,13 @@ export class Cluster extends ClusterBase {
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
+    this.connections = new ec2.Connections({
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId)],
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
+    });
+
+    props.additionalSecurityGroups?.forEach(sg => this.connections.addSecurityGroup(sg));
+
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
     this.kubectlRole = this.adminRole;
@@ -956,12 +967,6 @@ export class Cluster extends ClusterBase {
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
 
-    this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId)],
-      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
-    });
-
-    props.additionalSecurityGroups?.forEach(sg => this.connections.addSecurityGroup(sg));
   }
 
   /**
@@ -1530,17 +1535,24 @@ export interface AutoScalingGroupOptions {
  * Import a cluster to use in another stack
  */
 class ImportedCluster extends ClusterBase implements ICluster {
+
   public readonly clusterName: string;
   public readonly clusterArn: string;
-  public readonly clusterSecurityGroup?: ec2.ISecurityGroup | undefined;
+
+  public readonly vpc?: ec2.IVpc;
+  public readonly clusterEndpoint?: string;
+  public readonly clusterCertificateAuthorityData?: string;
+  public readonly clusterSecurityGroupId?: string;
+  public readonly clusterEncryptionConfigKeyArn?: string;
+  public readonly clusterSecurityGroup?: ec2.ISecurityGroup;
   public readonly kubectlRole?: iam.IRole;
-  public readonly kubectlEnvironment?: { [key: string]: string; } | undefined;
-  public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
+  public readonly kubectlEnvironment?: { [key: string]: string; };
+  public readonly kubectlPrivateSubnets?: ec2.ISubnet[];
   public readonly kubectlLayer?: lambda.ILayerVersion;
 
   public readonly connections = new ec2.Connections();
 
-  constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
+  constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
 
     this.clusterName = props.clusterName;
@@ -1550,6 +1562,11 @@ class ImportedCluster extends ClusterBase implements ICluster {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map(subnetid => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${subnetid}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
+    this.vpc = props.vpc;
+    this.clusterEndpoint = props.clusterEndpoint;
+    this.clusterCertificateAuthorityData = props.clusterCertificateAuthorityData;
+    this.clusterSecurityGroupId = props.clusterSecurityGroupId;
+    this.clusterEncryptionConfigKeyArn = props.clusterEncryptionConfigKeyArn;
 
     if (props.clusterSecurityGroupId) {
       this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', props.clusterSecurityGroupId));
@@ -1562,40 +1579,6 @@ class ImportedCluster extends ClusterBase implements ICluster {
     }
   }
 
-  public get vpc() {
-    if (!this.props.vpc) {
-      throw new Error('"vpc" is not defined for this imported cluster');
-    }
-    return this.props.vpc;
-  }
-
-  public get clusterSecurityGroupId(): string {
-    if (!this.props.clusterSecurityGroupId) {
-      throw new Error('"clusterSecurityGroupId" is not defined for this imported cluster');
-    }
-    return this.props.clusterSecurityGroupId;
-  }
-
-  public get clusterEndpoint(): string {
-    if (!this.props.clusterEndpoint) {
-      throw new Error('"clusterEndpoint" is not defined for this imported cluster');
-    }
-    return this.props.clusterEndpoint;
-  }
-
-  public get clusterCertificateAuthorityData(): string {
-    if (!this.props.clusterCertificateAuthorityData) {
-      throw new Error('"clusterCertificateAuthorityData" is not defined for this imported cluster');
-    }
-    return this.props.clusterCertificateAuthorityData;
-  }
-
-  public get clusterEncryptionConfigKeyArn(): string {
-    if (!this.props.clusterEncryptionConfigKeyArn) {
-      throw new Error('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
-    }
-    return this.props.clusterEncryptionConfigKeyArn;
-  }
 }
 
 /**
