@@ -565,43 +565,6 @@
         ]
       }
     },
-    "ClusterControlPlaneSecurityGroupD274242C": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "EKS Control Plane Security Group",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
-    },
-    "ClusterControlPlaneSecurityGroupfromawscdkeksclusterprivateendpointtestClusterKubectlProviderSecurityGroup6A0B729C443DF3A2707": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "IpProtocol": "tcp",
-        "Description": "from awscdkeksclusterprivateendpointtestClusterKubectlProviderSecurityGroup6A0B729C:443",
-        "FromPort": 443,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
-        },
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterKubectlProviderSecurityGroup2D90691C",
-            "GroupId"
-          ]
-        },
-        "ToPort": 443
-      }
-    },
     "ClusterCreationRole360249B6": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -628,39 +591,7 @@
           ],
           "Version": "2012-10-17"
         }
-      },
-      "DependsOn": [
-        "ClusterKubectlProviderSecurityGroup2D90691C",
-        "VpcIGWD7BA715C",
-        "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-        "VpcPrivateSubnet1RouteTableB2C5B500",
-        "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-        "VpcPrivateSubnet1Subnet536B997A",
-        "VpcPrivateSubnet2DefaultRoute060D2087",
-        "VpcPrivateSubnet2RouteTableA678073B",
-        "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
-        "VpcPrivateSubnet2Subnet3788AAA1",
-        "VpcPrivateSubnet3DefaultRoute94B74F0D",
-        "VpcPrivateSubnet3RouteTableD98824C7",
-        "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
-        "VpcPrivateSubnet3SubnetF258B56E",
-        "VpcPublicSubnet1DefaultRoute3DA9E72A",
-        "VpcPublicSubnet1EIPD7E02669",
-        "VpcPublicSubnet1NATGateway4D7517AA",
-        "VpcPublicSubnet1RouteTable6C95E38E",
-        "VpcPublicSubnet1RouteTableAssociation97140677",
-        "VpcPublicSubnet1Subnet5C2D37C4",
-        "VpcPublicSubnet2DefaultRoute97F91067",
-        "VpcPublicSubnet2RouteTable94F7E489",
-        "VpcPublicSubnet2RouteTableAssociationDD5762D8",
-        "VpcPublicSubnet2Subnet691E08A3",
-        "VpcPublicSubnet3DefaultRoute4697774F",
-        "VpcPublicSubnet3RouteTable93458DBB",
-        "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
-        "VpcPublicSubnet3SubnetBE12F0B6",
-        "Vpc8378EB38",
-        "VpcVPCGWBF912B6E"
-      ]
+      }
     },
     "ClusterCreationRoleDefaultPolicyE8BDFC7B": {
       "Type": "AWS::IAM::Policy",
@@ -751,39 +682,7 @@
             "Ref": "ClusterCreationRole360249B6"
           }
         ]
-      },
-      "DependsOn": [
-        "ClusterKubectlProviderSecurityGroup2D90691C",
-        "VpcIGWD7BA715C",
-        "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-        "VpcPrivateSubnet1RouteTableB2C5B500",
-        "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-        "VpcPrivateSubnet1Subnet536B997A",
-        "VpcPrivateSubnet2DefaultRoute060D2087",
-        "VpcPrivateSubnet2RouteTableA678073B",
-        "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
-        "VpcPrivateSubnet2Subnet3788AAA1",
-        "VpcPrivateSubnet3DefaultRoute94B74F0D",
-        "VpcPrivateSubnet3RouteTableD98824C7",
-        "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
-        "VpcPrivateSubnet3SubnetF258B56E",
-        "VpcPublicSubnet1DefaultRoute3DA9E72A",
-        "VpcPublicSubnet1EIPD7E02669",
-        "VpcPublicSubnet1NATGateway4D7517AA",
-        "VpcPublicSubnet1RouteTable6C95E38E",
-        "VpcPublicSubnet1RouteTableAssociation97140677",
-        "VpcPublicSubnet1Subnet5C2D37C4",
-        "VpcPublicSubnet2DefaultRoute97F91067",
-        "VpcPublicSubnet2RouteTable94F7E489",
-        "VpcPublicSubnet2RouteTableAssociationDD5762D8",
-        "VpcPublicSubnet2Subnet691E08A3",
-        "VpcPublicSubnet3DefaultRoute4697774F",
-        "VpcPublicSubnet3RouteTable93458DBB",
-        "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
-        "VpcPublicSubnet3SubnetBE12F0B6",
-        "Vpc8378EB38",
-        "VpcVPCGWBF912B6E"
-      ]
+      }
     },
     "Cluster9EE0221C": {
       "Type": "Custom::AWSCDK-EKS-Cluster",
@@ -823,14 +722,6 @@
                 "Ref": "VpcPrivateSubnet3SubnetF258B56E"
               }
             ],
-            "securityGroupIds": [
-              {
-                "Fn::GetAtt": [
-                  "ClusterControlPlaneSecurityGroupD274242C",
-                  "GroupId"
-                ]
-              }
-            ],
             "endpointPublicAccess": false,
             "endpointPrivateAccess": true
           }
@@ -844,57 +735,11 @@
         "AttributesRevision": 2
       },
       "DependsOn": [
-        "ClusterKubectlProviderSecurityGroup2D90691C",
         "ClusterCreationRoleDefaultPolicyE8BDFC7B",
-        "ClusterCreationRole360249B6",
-        "VpcIGWD7BA715C",
-        "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-        "VpcPrivateSubnet1RouteTableB2C5B500",
-        "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-        "VpcPrivateSubnet1Subnet536B997A",
-        "VpcPrivateSubnet2DefaultRoute060D2087",
-        "VpcPrivateSubnet2RouteTableA678073B",
-        "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
-        "VpcPrivateSubnet2Subnet3788AAA1",
-        "VpcPrivateSubnet3DefaultRoute94B74F0D",
-        "VpcPrivateSubnet3RouteTableD98824C7",
-        "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
-        "VpcPrivateSubnet3SubnetF258B56E",
-        "VpcPublicSubnet1DefaultRoute3DA9E72A",
-        "VpcPublicSubnet1EIPD7E02669",
-        "VpcPublicSubnet1NATGateway4D7517AA",
-        "VpcPublicSubnet1RouteTable6C95E38E",
-        "VpcPublicSubnet1RouteTableAssociation97140677",
-        "VpcPublicSubnet1Subnet5C2D37C4",
-        "VpcPublicSubnet2DefaultRoute97F91067",
-        "VpcPublicSubnet2RouteTable94F7E489",
-        "VpcPublicSubnet2RouteTableAssociationDD5762D8",
-        "VpcPublicSubnet2Subnet691E08A3",
-        "VpcPublicSubnet3DefaultRoute4697774F",
-        "VpcPublicSubnet3RouteTable93458DBB",
-        "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
-        "VpcPublicSubnet3SubnetBE12F0B6",
-        "Vpc8378EB38",
-        "VpcVPCGWBF912B6E"
+        "ClusterCreationRole360249B6"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
-    },
-    "ClusterKubectlProviderSecurityGroup2D90691C": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "Comminication between KubectlProvider and EKS Control Plane",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
     },
     "ClusterKubectlReadyBarrier200052AF": {
       "Type": "AWS::SSM::Parameter",
@@ -1168,7 +1013,7 @@
               },
               "/",
               {
-                "Ref": "AssetParametersdaac37af2b50452c854a73ef7e2c57d5229667e390db39773ffb9dfb497bbd20S3Bucket12418C8C"
+                "Ref": "AssetParameterse843c57c7bcb07856b1680280dc9387725661764509856e890ae6e18a5e40796S3Bucket39E2BF35"
               },
               "/",
               {
@@ -1178,7 +1023,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersdaac37af2b50452c854a73ef7e2c57d5229667e390db39773ffb9dfb497bbd20S3VersionKey8C9B24CA"
+                        "Ref": "AssetParameterse843c57c7bcb07856b1680280dc9387725661764509856e890ae6e18a5e40796S3VersionKey0218A255"
                       }
                     ]
                   }
@@ -1191,7 +1036,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersdaac37af2b50452c854a73ef7e2c57d5229667e390db39773ffb9dfb497bbd20S3VersionKey8C9B24CA"
+                        "Ref": "AssetParameterse843c57c7bcb07856b1680280dc9387725661764509856e890ae6e18a5e40796S3VersionKey0218A255"
                       }
                     ]
                   }
@@ -1228,10 +1073,10 @@
           "referencetoawscdkeksclusterprivateendpointtestVpcPrivateSubnet3SubnetC47FD39ARef": {
             "Ref": "VpcPrivateSubnet3SubnetF258B56E"
           },
-          "referencetoawscdkeksclusterprivateendpointtestClusterKubectlProviderSecurityGroup67FA4325GroupId": {
+          "referencetoawscdkeksclusterprivateendpointtestClusterF4CF4FE8ClusterSecurityGroupId": {
             "Fn::GetAtt": [
-              "ClusterKubectlProviderSecurityGroup2D90691C",
-              "GroupId"
+              "Cluster9EE0221C",
+              "ClusterSecurityGroupId"
             ]
           },
           "referencetoawscdkeksclusterprivateendpointtestAssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3Bucket41FE7429Ref": {
@@ -1335,17 +1180,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"570f91ed45d0c45e8ff145969f7499419312e806c83f009b76539ce989960e51\""
     },
-    "AssetParametersdaac37af2b50452c854a73ef7e2c57d5229667e390db39773ffb9dfb497bbd20S3Bucket12418C8C": {
+    "AssetParameterse843c57c7bcb07856b1680280dc9387725661764509856e890ae6e18a5e40796S3Bucket39E2BF35": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"daac37af2b50452c854a73ef7e2c57d5229667e390db39773ffb9dfb497bbd20\""
+      "Description": "S3 bucket for asset \"e843c57c7bcb07856b1680280dc9387725661764509856e890ae6e18a5e40796\""
     },
-    "AssetParametersdaac37af2b50452c854a73ef7e2c57d5229667e390db39773ffb9dfb497bbd20S3VersionKey8C9B24CA": {
+    "AssetParameterse843c57c7bcb07856b1680280dc9387725661764509856e890ae6e18a5e40796S3VersionKey0218A255": {
       "Type": "String",
-      "Description": "S3 key for asset version \"daac37af2b50452c854a73ef7e2c57d5229667e390db39773ffb9dfb497bbd20\""
+      "Description": "S3 key for asset version \"e843c57c7bcb07856b1680280dc9387725661764509856e890ae6e18a5e40796\""
     },
-    "AssetParametersdaac37af2b50452c854a73ef7e2c57d5229667e390db39773ffb9dfb497bbd20ArtifactHash90BA6C4A": {
+    "AssetParameterse843c57c7bcb07856b1680280dc9387725661764509856e890ae6e18a5e40796ArtifactHash0AFD7EAC": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"daac37af2b50452c854a73ef7e2c57d5229667e390db39773ffb9dfb497bbd20\""
+      "Description": "Artifact hash for asset \"e843c57c7bcb07856b1680280dc9387725661764509856e890ae6e18a5e40796\""
     }
   }
 }

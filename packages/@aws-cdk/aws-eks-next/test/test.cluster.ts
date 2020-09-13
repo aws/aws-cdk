@@ -566,6 +566,20 @@ export = {
     test.done();
   },
 
+  'fail creating a nodegroup for a cluster with no vpc'(test: Test) {
+
+    const { stack } = testFixtureNoVpc();
+
+    // WHEN
+    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster',
+    });
+
+    test.throws(() => new eks.Nodegroup(stack, 'Nodegroup', { cluster }), /'asd/);
+    test.done();
+
+  },
+
   'create nodegroup with existing role'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();

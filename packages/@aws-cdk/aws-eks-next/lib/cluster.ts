@@ -132,6 +132,8 @@ export interface ClusterAttributes {
 
   /**
    * The VPC in which this Cluster was created
+   *
+   * @default - If not specified, it will not be possible to create additional node groups for this cluster.
    */
   readonly vpc?: ec2.IVpc;
 
@@ -142,36 +144,53 @@ export interface ClusterAttributes {
 
   /**
    * The certificate-authority-data for your cluster.
+   *
+   * @default undefined
    */
   readonly clusterCertificateAuthorityData?: string;
 
   /**
    * The cluster security group that was created by Amazon EKS for the cluster.
+   *
+   * @default - If not specified, the k8s endpoint is expected to be accessible publicly. Otherwise, it will not be possible to
+   *            issue `kubectl` commands against the cluser.
    */
   readonly clusterSecurityGroupId?: string;
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
+   *
+   * @default undefined
    */
   readonly clusterEncryptionConfigKeyArn?: string;
 
   /**
    * Additional security groups associated with this cluster. These security groups are also included in `cluster.connections`.
+   *
+   * @default - No additional security groups.
    */
   readonly additionalSecurityGroupIds?: string[];
 
   /**
    * An IAM role with cluster administrator and "system:masters" permissions.
+   *
+   * @default - If not specified, it will not be possible to issue `kubectl` commands against the cluster.
    */
   readonly kubectlRoleArn?: string;
 
   /**
    * Environment variables to use when running `kubectl` against this cluster.
+   *
+   * @default - No custom environment variables.
    */
   readonly kubectlEnvironment?: { [name: string]: string };
 
   /**
    * Subnets to host the `kubectl` compute resources. If not specified, the k8s endpoint is expected to be accessible publicly.
+   * If specified, you must also configure `clusterSecurityGroupId`.
+   *
+   * @default - If not specified, the k8s endpoint is expected to be accessible publicly. Otherwise, it will not be possible to
+   *            issue `kubectl` commands against the cluser.
    */
   readonly kubectlPrivateSubnetIds?: string[];
 
@@ -311,7 +330,7 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly outputMastersRoleArn?: boolean;
 
   /**
-   * Configure access to the Kubernetes API server endpoint..
+   * Configure access to the Kubernetes API server endpoint.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
    *
@@ -320,7 +339,7 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly endpointAccess?: EndpointAccess;
 
   /**
-   * Environment variables for the kubectl execution. Only relevant for kubectl enabled clusters.
+   * Environment variables for the kubectl execution.
    *
    * @default - No environment variables.
    */
@@ -708,10 +727,7 @@ export class Cluster extends ClusterBase {
   public readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
-   * Subnets to host the `kubectl` compute resources.
-   *
-   * @default - If not specified, the k8s endpoint is expected to be accessible
-   * publicly.
+   * Subnets that host the `kubectl` compute resources.
    */
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[];
 
@@ -870,6 +886,8 @@ export class Cluster extends ClusterBase {
       }
 
       this.kubectlPrivateSubnets = privateSubents;
+
+      this._clusterResource.node.addDependency(this.vpc);
     }
 
     this.adminRole = resource.adminRole;
