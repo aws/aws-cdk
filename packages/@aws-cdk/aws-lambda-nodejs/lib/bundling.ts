@@ -4,7 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { DockerBundler, Installer, LocalBundler, LockFile } from './bundlers';
 import { PackageJsonManager } from './package-json-manager';
-import { findUp } from './util';
+import { findUp, getCallerDir } from './util';
 
 /**
  * Base options for Parcel bundling
@@ -114,12 +114,13 @@ export class Bundling {
    * Parcel bundled Lambda asset code
    */
   public static parcel(options: ParcelOptions): lambda.AssetCode {
+    const callerDir = getCallerDir();
     // Find project root
     const projectRoot = options.projectRoot
-      ?? findUp(`.git${path.sep}`)
-      ?? findUp(LockFile.YARN)
-      ?? findUp(LockFile.NPM)
-      ?? findUp('package.json');
+      ?? findUp(`.git${path.sep}`, callerDir)
+      ?? findUp(LockFile.YARN, callerDir)
+      ?? findUp(LockFile.NPM, callerDir)
+      ?? findUp('package.json', callerDir);
     if (!projectRoot) {
       throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }

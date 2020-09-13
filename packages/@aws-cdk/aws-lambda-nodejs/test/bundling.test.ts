@@ -312,8 +312,8 @@ test('Project root detection', () => {
     runtime: Runtime.NODEJS_12_X,
   })).toThrow(/Cannot find project root/);
 
-  expect(findUpMock).toHaveBeenNthCalledWith(1, `.git${path.sep}`);
-  expect(findUpMock).toHaveBeenNthCalledWith(2, LockFile.YARN);
-  expect(findUpMock).toHaveBeenNthCalledWith(3, LockFile.NPM);
-  expect(findUpMock).toHaveBeenNthCalledWith(4, 'package.json');
+  expect(findUpMock).toHaveBeenNthCalledWith(1, `.git${path.sep}`, __dirname);
+  expect(findUpMock).toHaveBeenNthCalledWith(2, LockFile.YARN, __dirname);
+  expect(findUpMock).toHaveBeenNthCalledWith(3, LockFile.NPM, __dirname);
+  expect(findUpMock).toHaveBeenNthCalledWith(4, 'package.json', __dirname);
 });

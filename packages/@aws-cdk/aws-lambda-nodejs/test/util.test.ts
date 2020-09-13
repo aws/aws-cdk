@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { findUp } from '../lib/util';
+import { findUp, getCallerDir } from '../lib/util';
 
 test('findUp', () => {
   // Starting at process.cwd()
@@ -17,3 +17,18 @@ test('findUp', () => {
   // Starting at a relative path
   expect(findUp('util.test.ts', 'test/integ-handlers')).toMatch(/aws-lambda-nodejs\/test$/);
 });
+
+const functionUsingGetCallerDir = (depth: number | undefined = undefined) : string | undefined => {
+  return getCallerDir(depth);
+}
+
+test('getCallerDir', () => {
+
+  it('should return current directory name', () => {
+    expect(functionUsingGetCallerDir()).toEqual(__dirname);
+  });
+
+  it('should return undefined when depth is too big', () => {
+    expect(functionUsingGetCallerDir(100000)).toEqual(undefined);
+  });
+})

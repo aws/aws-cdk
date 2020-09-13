@@ -72,7 +72,7 @@ project root is used as the source (`/asset-input`) for the volume mounted in
 the container.
 
 The following folders are considered by walking up parent folders starting from
-the current working directory (order matters):
+the directory where `new NodejsFunction()` is located (order matters):
 * the folder containing your `.git` folder
 * the folder containing a `yarn.lock` file
 * the folder containing a `package-lock.json` file

@@ -1,6 +1,7 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as callsite from 'callsite';
 
 // From https://github.com/errwischt/stacktrace-parser/blob/master/src/stack-trace-parser.js
 const STACK_RE = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
@@ -67,6 +68,21 @@ export function findUp(name: string, directory: string = process.cwd()): string 
   }
 
   return findUp(name, path.dirname(absoluteDirectory));
+}
+
+/**
+ * Find the directory of the caller of the caller of this method
+ * @param depth depth of the call stack, zero-indexed. 0th index: this method;
+ */
+export function getCallerDir(depth: number = 2) : string | undefined {
+  const stacks = callsite();
+
+  if (stacks.length < depth) {
+    return undefined;
+  }
+  const fileName = stacks[depth].getFileName();
+
+  return path.dirname(fileName);
 }
 
 /**
