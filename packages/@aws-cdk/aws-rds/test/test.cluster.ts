@@ -6,7 +6,10 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseCluster, DatabaseClusterEngine, ParameterGroup, PerformanceInsightRetention } from '../lib';
+import {
+  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseCluster, DatabaseClusterEngine,
+  DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention,
+} from '../lib';
 
 export = {
   'creating a Cluster also creates 2 DB Instances'(test: Test) {
@@ -475,6 +478,84 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
     }));
+
+    test.done();
+  },
+
+  'can import a cluster with minimal attributes'(test: Test) {
+    const stack = testStack();
+
+    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      clusterIdentifier: 'identifier',
+    });
+
+    test.equals(cluster.clusterIdentifier, 'identifier');
+
+    test.done();
+  },
+
+  'minimal imported cluster throws on accessing attributes for unprovided parameters'(test: Test) {
+    const stack = testStack();
+
+    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      clusterIdentifier: 'identifier',
+    });
+
+    test.throws(() => cluster.clusterEndpoint, /Cannot access `clusterEndpoint` of an imported cluster/);
+    test.throws(() => cluster.clusterReadEndpoint, /Cannot access `clusterReadEndpoint` of an imported cluster/);
+    test.throws(() => cluster.instanceIdentifiers, /Cannot access `instanceIdentifiers` of an imported cluster/);
+    test.throws(() => cluster.instanceEndpoints, /Cannot access `instanceEndpoints` of an imported cluster/);
+
+    test.done();
+  },
+
+  'imported cluster can access properties if attributes are provided'(test: Test) {
+    const stack = testStack();
+
+    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      clusterEndpointAddress: 'addr',
+      clusterIdentifier: 'identifier',
+      instanceEndpointAddresses: ['instance-addr'],
+      instanceIdentifiers: ['identifier'],
+      port: 3306,
+      readerEndpointAddress: 'reader-address',
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false,
+      })],
+    });
+
+    test.equals(cluster.clusterEndpoint.socketAddress, 'addr:3306');
+    test.equals(cluster.clusterReadEndpoint.socketAddress, 'reader-address:3306');
+    test.deepEqual(cluster.instanceIdentifiers, ['identifier']);
+    test.deepEqual(cluster.instanceEndpoints.map(endpoint => endpoint.socketAddress), ['instance-addr:3306']);
+
+    test.done();
+  },
+
+  'cluster supports metrics'(test: Test) {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_5_7_12 }),
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.plainText('tooshort'),
+      },
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    test.deepEqual(stack.resolve(cluster.metricCPUUtilization()), {
+      dimensions: { DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' } },
+      namespace: 'AWS/RDS',
+      metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+      account: '12345',
+      region: 'us-test-1',
+    });
 
     test.done();
   },
@@ -1307,6 +1388,37 @@ export = {
     const art = SynthUtils.synthesize(stack);
     const meta = art.findMetadataByType('aws:cdk:error');
     test.equal(meta[0].data, 'Cluster requires at least 2 subnets, got 0');
+
+    test.done();
+  },
+
+  'create a cluster from a snapshot'(test: Test) {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      Properties: {
+        Engine: 'aurora',
+        EngineVersion: '5.6.mysql_aurora.1.22.2',
+        DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+        SnapshotIdentifier: 'mySnapshot',
+      },
+      DeletionPolicy: ABSENT,
+      UpdateReplacePolicy: 'Snapshot',
+    }, ResourcePart.CompleteDefinition));
+
+    expect(stack).to(countResources('AWS::RDS::DBInstance', 2));
 
     test.done();
   },
