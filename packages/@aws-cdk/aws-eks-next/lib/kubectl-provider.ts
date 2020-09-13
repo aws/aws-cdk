@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Stack, NestedStack } from '@aws-cdk/core';
@@ -57,7 +58,7 @@ export class KubectlProvider extends NestedStack {
       throw new Error('"kubectlRole" is not defined, cannot issue kubectl commands against this cluster');
     }
 
-    if (cluster.kubectlPrivateSubnets && !cluster.kubectlSecurityGroup) {
+    if (cluster.kubectlPrivateSubnets && !cluster.clusterSecurityGroupId) {
       throw new Error('"kubectlSecurityGroup" is required if "kubectlSubnets" is specified');
     }
 
@@ -75,7 +76,7 @@ export class KubectlProvider extends NestedStack {
 
       // defined only when using private access
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
-      securityGroups: cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
+      securityGroups: cluster.clusterSecurityGroupId ? [ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', cluster.clusterSecurityGroupId)] : undefined,
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
     });
 

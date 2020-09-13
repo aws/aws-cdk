@@ -85,14 +85,6 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
-   * A security group to use for `kubectl` execution.
-   *
-   * @default - If not specified, the k8s endpoint is expected to be accessible
-   * publicly.
-   */
-  readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
-
-  /**
    * Subnets to host the `kubectl` compute resources.
    *
    * @default - If not specified, the k8s endpoint is expected to be accessible
@@ -172,10 +164,10 @@ export interface ClusterAttributes {
 
   /**
    * Additional security groups associated with this cluster.
-   * @default - if not specified, no additional security groups will be
-   * considered in `cluster.connections`.
+   *
+   * @default - if not specified, no additional security groups will be considered in `cluster.connections`.
    */
-  readonly securityGroupIds?: string[];
+  readonly additionalSecurityGroupIds?: string[];
 
   /**
    * An IAM role with cluster administrator and "system:masters" permissions.
@@ -189,13 +181,6 @@ export interface ClusterAttributes {
    * @default - no additional variables
    */
   readonly kubectlEnvironment?: { [name: string]: string };
-
-  /**
-   * A security group to use for `kubectl` execution. If not specified, the k8s
-   * endpoint is expected to be accessible publicly.
-   * @default - k8s endpoint is expected to be accessible publicly
-   */
-  readonly kubectlSecurityGroupId?: string;
 
   /**
    * Subnets to host the `kubectl` compute resources. If not specified, the k8s
@@ -278,11 +263,11 @@ export interface CommonClusterOptions {
   readonly clusterName?: string;
 
   /**
-   * Security Group to use for Control Plane ENIs
+   * Additional security groups that will be attached to the cluster.
    *
-   * @default - A security group is automatically created
+   * @default - No additional security groups. Cluster will only have the default EKS managed security group.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly additionalSecurityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The Kubernetes version to run in the cluster
@@ -585,7 +570,6 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterEncryptionConfigKeyArn: string;
   public abstract readonly kubectlRole?: iam.IRole;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
-  public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
 
   /**
@@ -736,14 +720,6 @@ export class Cluster extends ClusterBase {
   public readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
-   * A security group to use for `kubectl` execution.
-   *
-   * @default - If not specified, the k8s endpoint is expected to be accessible
-   * publicly.
-   */
-  public readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
-
-  /**
    * Subnets to host the `kubectl` compute resources.
    *
    * @default - If not specified, the k8s endpoint is expected to be accessible
@@ -844,16 +820,6 @@ export class Cluster extends ClusterBase {
       ],
     });
 
-    const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
-      vpc: this.vpc,
-      description: 'EKS Control Plane Security Group',
-    });
-
-    this.connections = new ec2.Connections({
-      securityGroups: [securityGroup],
-      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
-    });
-
     this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
 
     // Get subnetIds for all selected subnets
@@ -887,7 +853,7 @@ export class Cluster extends ClusterBase {
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
-        securityGroupIds: [securityGroup.securityGroupId],
+        securityGroupIds: props.additionalSecurityGroups ? props.additionalSecurityGroups.map(sg => sg.securityGroupId) : undefined,
         subnetIds,
       },
       ...(props.secretsEncryptionKey ? {
@@ -916,18 +882,6 @@ export class Cluster extends ClusterBase {
       }
 
       this.kubectlPrivateSubnets = privateSubents;
-
-      this.kubectlSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
-        vpc: this.vpc,
-        description: 'Comminication between KubectlProvider and EKS Control Plane',
-      });
-
-      // grant the kubectl provider access to the cluster control plane.
-      this.connections.allowFrom(this.kubectlSecurityGroup, this.connections.defaultPort!);
-
-      // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
-      // this ensures that.
-      this._clusterResource.node.addDependency(this.kubectlSecurityGroup, this.vpc);
     }
 
     this.adminRole = resource.adminRole;
@@ -1001,6 +955,13 @@ export class Cluster extends ClusterBase {
     }
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
+
+    this.connections = new ec2.Connections({
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId)],
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
+    });
+
+    props.additionalSecurityGroups?.forEach(sg => this.connections.addSecurityGroup(sg));
   }
 
   /**
@@ -1571,12 +1532,13 @@ export interface AutoScalingGroupOptions {
 class ImportedCluster extends ClusterBase implements ICluster {
   public readonly clusterName: string;
   public readonly clusterArn: string;
-  public readonly connections = new ec2.Connections();
+  public readonly clusterSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlRole?: iam.IRole;
   public readonly kubectlEnvironment?: { [key: string]: string; } | undefined;
-  public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+
+  public readonly connections = new ec2.Connections();
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
@@ -1584,14 +1546,18 @@ class ImportedCluster extends ClusterBase implements ICluster {
     this.clusterName = props.clusterName;
     this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
     this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
-    this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
+    this.clusterSecurityGroup = props.clusterSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.clusterSecurityGroupId) : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map(subnetid => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${subnetid}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
 
+    if (props.clusterSecurityGroupId) {
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', props.clusterSecurityGroupId));
+    }
+
     let i = 1;
-    for (const sgid of props.securityGroupIds ?? []) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgid));
+    for (const sgid of props.additionalSecurityGroupIds ?? []) {
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `AdditionalClusterSecurityGroup${i}`, sgid));
       i++;
     }
   }
@@ -1821,4 +1787,3 @@ function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
     INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
       CpuArch.X86_64;
 }
-

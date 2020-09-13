@@ -554,7 +554,7 @@ export = {
       vpc: cluster.vpc,
       clusterEndpoint: cluster.clusterEndpoint,
       clusterName: cluster.clusterName,
-      securityGroupIds: cluster.connections.securityGroups.map(x => x.securityGroupId),
+      additionalSecurityGroupIds: cluster.connections.securityGroups.map(x => x.securityGroupId),
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
       clusterSecurityGroupId: cluster.clusterSecurityGroupId,
       clusterEncryptionConfigKeyArn: cluster.clusterEncryptionConfigKeyArn,
