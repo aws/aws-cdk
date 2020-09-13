@@ -43,6 +43,9 @@ new batch.JobQueue(stack, 'batch-job-queue', {
           launchTemplate: {
             launchTemplateName: launchTemplate.launchTemplateName as string,
           },
+          computeResourcesTags: {
+            'compute-env-tag': '123XYZ',
+          },
         },
       }),
       order: 2,

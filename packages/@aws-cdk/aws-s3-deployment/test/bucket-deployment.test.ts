@@ -304,6 +304,7 @@ test('system metadata is correctly transformed', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
+  const expiration = cdk.Expiration.after(cdk.Duration.hours(12));
 
   // WHEN
   new s3deploy.BucketDeployment(stack, 'Deploy', {
@@ -318,7 +319,7 @@ test('system metadata is correctly transformed', () => {
     serverSideEncryptionCustomerAlgorithm: 'rot13',
     websiteRedirectLocation: 'example',
     cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
-    expires: s3deploy.Expires.after(cdk.Duration.hours(12)),
+    expires: expiration,
   });
 
   // THEN
@@ -331,7 +332,7 @@ test('system metadata is correctly transformed', () => {
       'sse': 'aws:kms',
       'sse-kms-key-id': 'mykey',
       'cache-control': 'public, max-age=3600',
-      'expires': s3deploy.Expires.after(cdk.Duration.hours(12)).value,
+      'expires': expiration.date.toUTCString(),
       'sse-c-copy-source': 'rot13',
       'website-redirect': 'example',
     },
@@ -339,11 +340,10 @@ test('system metadata is correctly transformed', () => {
 });
 
 test('expires type has correct values', () => {
-  expect(s3deploy.Expires.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).value).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
-  expect(s3deploy.Expires.atTimestamp(1580000000000).value).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
-  expect(Math.abs(new Date(s3deploy.Expires.after(cdk.Duration.minutes(10)).value).getTime() - (Date.now() + 600000)) < 15000).toBeTruthy();
-  expect(s3deploy.Expires.fromString('Tue, 04 Feb 2020 08:45:33 GMT').value).toEqual('Tue, 04 Feb 2020 08:45:33 GMT');
-
+  expect(cdk.Expiration.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+  expect(cdk.Expiration.atTimestamp(1580000000000).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+  expect(Math.abs(new Date(cdk.Expiration.after(cdk.Duration.minutes(10)).date.toUTCString()).getTime() - (Date.now() + 600000)) < 15000).toBeTruthy();
+  expect(cdk.Expiration.fromString('Tue, 04 Feb 2020 08:45:33 GMT').date.toUTCString()).toEqual('Tue, 04 Feb 2020 08:45:33 GMT');
 });
 
 test('cache control type has correct values', () => {

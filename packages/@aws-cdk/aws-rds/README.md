@@ -26,7 +26,7 @@ your instances will be launched privately or publicly:
 
 ```ts
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.AURORA,
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
   masterUser: {
     username: 'clusteradmin'
   },
@@ -41,26 +41,29 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
-To use a specific version of the engine
-(which is recommended, in order to avoid surprise updates when RDS add support for a newer version of the engine),
-use the static factory methods on `DatabaseClusterEngine`:
-
-```typescript
-new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.aurora({
-    version: rds.AuroraEngineVersion.VER_1_17_9, // different version class for each engine type
-  }),
-  ...
-});
-```
-
 If there isn't a constant for the exact version you want to use,
 all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
+
+```ts
+const customEngineVersion = rds.AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.08.1');
+```
 
 By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
 
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
+
+Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
+
+```ts
+new rds.DatabaseClusterFromSnapshot(stack, 'Database', {
+  engine: rds.DatabaseClusterEngine.aurora({ version: rds.AuroraEngineVersion.VER_1_22_2 }),
+  instanceProps: {
+    vpc,
+  },
+  snapshotIdentifier: 'mySnapshot',
+});
+```
 
 ### Starting an instance database
 
@@ -70,9 +73,9 @@ your instances will be launched privately or publicly:
 
 ```ts
 const instance = new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+  engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
   // optional, defaults to m5.large
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
   masterUsername: 'syscdk',
   vpc,
   vpcSubnets: {
@@ -81,23 +84,14 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
 });
 ```
 
-By default, the master password will be generated and stored in AWS Secrets Manager.
+If there isn't a constant for the exact engine version you want to use,
+all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
 
-To use a specific version of the engine
-(which is recommended, in order to avoid surprise updates when RDS add support for a newer version of the engine),
-use the static factory methods on `DatabaseInstanceEngine`:
-
-```typescript
-const instance = new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.oracleSe2({
-    version: rds.OracleEngineVersion.VER_19, // different version class for each engine type
-  }),
-  ...
-});
+```ts
+const customEngineVersion = rds.OracleEngineVersion.of('19.0.0.0.ru-2020-04.rur-2020-04.r1', '19');
 ```
 
-If there isn't a constant for the exact version you want to use,
-all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
+By default, the master password will be generated and stored in AWS Secrets Manager.
 
 To use the storage auto scaling option of RDS you can specify the maximum allocated storage.
 This is the upper limit to which RDS can automatically scale the storage. More info can be found
@@ -106,7 +100,7 @@ Example for max storage configuration:
 
 ```ts
 const instance = new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
   masterUsername: 'syscdk',
@@ -121,7 +115,7 @@ a source database respectively:
 ```ts
 new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
   snapshotIdentifier: 'my-snapshot',
-  engine: rds.DatabaseInstanceEngine.POSTGRES,
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
   vpc,
@@ -261,11 +255,14 @@ on configuring users for each available database engine.
 
 ### Metrics
 
-Database instances expose metrics (`cloudwatch.Metric`):
+Database instances and clusters both expose metrics (`cloudwatch.Metric`):
 
 ```ts
 // The number of database connections in use (average over 5 minutes)
 const dbConnections = instance.metricDatabaseConnections();
+
+// Average CPU utilization over 5 minutes
+const cpuUtilization = cluster.metricCPUUtilization();
 
 // The average amount of time taken per disk I/O operation (average over 1 minute)
 const readLatency = instance.metric('ReadLatency', { statistic: 'Average', periodSec: 60 });
@@ -366,8 +363,8 @@ that are available for a particular Amazon RDS DB instance.
 const vpc: ec2.IVpc = ...;
 const securityGroup: ec2.ISecurityGroup = ...;
 new rds.OptionGroup(stack, 'Options', {
-  engine: DatabaseInstanceEngine.oracleSe({
-    version: OracleLegacyEngineVersion.VER_11_2,
+  engine: rds.DatabaseInstanceEngine.oracleSe2({
+    version: rds.OracleEngineVersion.VER_19,
   }),
   configurations: [
     {

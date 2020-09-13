@@ -546,6 +546,7 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           cloneDepth: 3,
+          fetchSubmodules: true,
           webhook: true,
           reportBuildStatus: false,
           webhookFilters: [
@@ -561,6 +562,9 @@ export = {
           Location: 'https://github.com/testowner/testrepo.git',
           ReportBuildStatus: false,
           GitCloneDepth: 3,
+          GitSubmodulesConfig: {
+            FetchSubmodules: true,
+          },
         },
       }));
 

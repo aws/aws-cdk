@@ -384,6 +384,34 @@ files from several sources:
 * Directoy from the source repository
 * Additional compiled artifacts from the synth step
 
+### Controlling IAM permissions
+
+IAM permissions can be added to the execution role of a `ShellScriptAction` in
+two ways.
+
+Either pass additional policy statements in the `rolePolicyStatements` property:
+
+```ts
+new ShellScriptAction({
+  // ...
+  rolePolicyStatements: [
+    new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: ['*'],
+    }),
+  ],
+}));
+```
+
+The Action can also be used as a Grantable after having been added to a Pipeline:
+
+```ts
+const action = new ShellScriptAction({ /* ... */ });
+pipeline.addStage('Test').addActions(action);
+
+bucket.grantRead(action);
+```
+
 #### Additional files from the source repository
 
 Bringing in additional files from the source repository is appropriate if the

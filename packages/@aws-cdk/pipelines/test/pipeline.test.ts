@@ -42,6 +42,13 @@ test('references stack template in subassembly', () => {
   });
 });
 
+test('obvious error is thrown when stage contains no stacks', () => {
+  // WHEN
+  expect(() => {
+    pipeline.addApplicationStage(new Stage(app, 'EmptyStage'));
+  }).toThrow(/should contain at least one Stack/);
+});
+
 test('action has right settings for same-env deployment', () => {
   // WHEN
   pipeline.addApplicationStage(new OneStackApp(app, 'Same'));

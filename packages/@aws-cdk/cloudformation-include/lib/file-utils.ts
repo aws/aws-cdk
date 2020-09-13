@@ -37,23 +37,29 @@ const shortForms: yaml_types.Schema.CustomTag[] = [
   makeTagForCfnIntrinsic('Ref', false),
   makeTagForCfnIntrinsic('Condition', false),
   makeTagForCfnIntrinsic('GetAtt', true, (_doc: yaml.Document, cstNode: yaml_cst.CST.Node): any => {
-    // The position of the leftmost period and opening bracket tell us what syntax is being used
-    // If no brackets are found, then the dot notation is being used; the leftmost dot separates the
-    // logical ID from the attribute.
-    //
-    // If a bracket is found, then the list notation is being used; if present, the leftmost dot separates the
-    // logical ID from the attribute.
-    const firstDot = cstNode.toString().indexOf('.');
-    const firstBracket = cstNode.toString().indexOf('[');
+    const parsedArguments = parseYamlStrWithCfnTags(cstNode.toString().substring('!GetAtt'.length));
 
-    return {
-      'Fn::GetAtt': firstDot !== -1 && firstBracket === -1
-        ? [
-          cstNode.toString().substring('!GetAtt '.length, firstDot),
-          parseYamlStrWithCfnTags((cstNode.toString().substring(firstDot + 1))),
-        ]
-        : parseYamlStrWithCfnTags(cstNode.toString().substring('!GetAtt'.length)),
-    };
+    let value: any;
+    if (typeof parsedArguments === 'string') {
+      // if the arguments to !GetAtt are a string,
+      // the part before the first '.' is the logical ID,
+      // and the rest is the attribute name
+      // (which can contain '.')
+      const firstDot = parsedArguments.indexOf('.');
+      if (firstDot === -1) {
+        throw new Error(`Short-form Fn::GetAtt must contain a '.' in its string argument, got: '${parsedArguments}'`);
+      }
+      value = [
+        parsedArguments.substring(0, firstDot),
+        parsedArguments.substring(firstDot + 1), // the + 1 is to skip the actual '.'
+      ];
+    } else {
+      // this is the form where the arguments to Fn::GetAtt are already an array -
+      // in this case, nothing more to do
+      value = parsedArguments;
+    }
+
+    return { 'Fn::GetAtt': value };
   }),
 );
 

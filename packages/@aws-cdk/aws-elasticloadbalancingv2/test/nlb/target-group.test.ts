@@ -91,4 +91,117 @@ describe('tests', () => {
       });
     }).toThrow();
   });
+
+  test('Throws error for invalid health check interval', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(5),
+      },
+    });
+
+    expect(() => {
+      app.synth();
+    }).toThrow(/Health check interval '5' not supported. Must be one of the following values '10,30'./);
+  });
+
+  test('Throws error for invalid health check protocol', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      healthCheck: {
+        protocol: elbv2.Protocol.UDP,
+      },
+    });
+
+    expect(() => {
+      app.synth();
+    }).toThrow(/Health check protocol 'UDP' is not supported. Must be one of \[HTTP, HTTPS, TCP\]/);
+  });
+
+  test('Throws error for health check path property when protocol does not support it', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      healthCheck: {
+        path: '/my-path',
+        protocol: elbv2.Protocol.TCP,
+      },
+    });
+
+    expect(() => {
+      app.synth();
+    }).toThrow(/'TCP' health checks do not support the path property. Must be one of \[HTTP, HTTPS\]/);
+  });
+
+  test('Throws error for invalid health check healthy threshold', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      healthCheck: {
+        protocol: elbv2.Protocol.TCP,
+        healthyThresholdCount: 11,
+      },
+    });
+
+    expect(() => {
+      app.synth();
+    }).toThrow(/Healthy Threshold Count '11' not supported. Must be a number between 2 and 10./);
+  });
+
+  test('Throws error for invalid health check unhealthy threshold', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      healthCheck: {
+        protocol: elbv2.Protocol.TCP,
+        unhealthyThresholdCount: 1,
+      },
+    });
+
+    expect(() => {
+      app.synth();
+    }).toThrow(/Unhealthy Threshold Count '1' not supported. Must be a number between 2 and 10./);
+  });
+
+  test('Throws error for unequal healthy and unhealthy threshold counts', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      healthCheck: {
+        protocol: elbv2.Protocol.TCP,
+        healthyThresholdCount: 5,
+        unhealthyThresholdCount: 3,
+      },
+    });
+
+    expect(() => {
+      app.synth();
+    }).toThrow(/Healthy and Unhealthy Threshold Counts must be the same: 5 is not equal to 3./);
+  });
 });

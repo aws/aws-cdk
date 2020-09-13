@@ -1,6 +1,8 @@
 import { anything, arrayWith, deepObjectLike, encodedJson } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import { CfnOutput, Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
 import * as cdkp from '../lib';
 import { } from './testmatchers';
@@ -168,6 +170,54 @@ test('can use additional files from build', () => {
             ],
           },
         },
+      })),
+    },
+  });
+});
+
+test('add policy statements to ShellScriptAction', () => {
+  // WHEN
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    actionName: 'Boop',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+    rolePolicyStatements: [
+      new iam.PolicyStatement({
+        actions: ['s3:Banana'],
+        resources: ['*'],
+      }),
+    ],
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: arrayWith(deepObjectLike({
+        Action: 's3:Banana',
+        Resource: '*',
+      })),
+    },
+  });
+});
+
+test('ShellScriptAction is IGrantable', () => {
+  // GIVEN
+  const action = new cdkp.ShellScriptAction({
+    actionName: 'Boop',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+  });
+  pipeline.addStage('Test').addActions(action);
+  const bucket = new s3.Bucket(pipelineStack, 'Bucket');
+
+  // WHEN
+  bucket.grantRead(action);
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: arrayWith(deepObjectLike({
+        Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
       })),
     },
   });
