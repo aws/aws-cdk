@@ -59,7 +59,7 @@ export class KubectlProvider extends NestedStack {
     }
 
     if (cluster.kubectlPrivateSubnets && !cluster.clusterSecurityGroupId) {
-      throw new Error('"kubectlSecurityGroup" is required if "kubectlSubnets" is specified');
+      throw new Error('"clusterSecurityGroupId" is required if "kubectlPrivateSubnets" is specified');
     }
 
     const layer = cluster.kubectlLayer ?? getOrCreateKubectlLayer(this);

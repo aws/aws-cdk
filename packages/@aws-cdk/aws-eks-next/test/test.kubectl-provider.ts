@@ -39,7 +39,7 @@ export = {
       }),
     });
 
-    test.throws(() => new KubectlProvider(stack, 'KubectlProvider', { cluster }), /"kubectlSecurityGroup" is required if "kubectlSubnets" is specified/);
+    test.throws(() => new KubectlProvider(stack, 'KubectlProvider', { cluster }), /"clusterSecurityGroupId" is required if "kubectlPrivateSubnets" is specified/);
     test.done();
 
 

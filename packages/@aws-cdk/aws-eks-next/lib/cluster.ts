@@ -45,12 +45,12 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterArn: string;
 
   /**
-   * The VPC in which this Cluster was created
+   * The VPC in which this Cluster was created.
    */
   readonly vpc?: ec2.IVpc;
 
   /**
-   * The API Server endpoint URL
+   * The API Server endpoint URL.
    *
    * @attribute
    */
@@ -90,7 +90,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
-   * Subnets to host the `kubectl` compute resources.
+   * Subnets that host the `kubectl` compute resources.
    */
   readonly kubectlPrivateSubnets?: ec2.ISubnet[];
 

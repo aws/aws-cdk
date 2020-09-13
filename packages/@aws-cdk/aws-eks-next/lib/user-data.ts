@@ -47,6 +47,15 @@ export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup:
 }
 
 export function renderBottlerocketUserData(cluster: ICluster): string[] {
+
+  if (!cluster.clusterEndpoint) {
+    throw new Error("Cannot generate bottlerocket user data for clusters who's `clusterEndpoint` is undefined.");
+  }
+
+  if (!cluster.clusterCertificateAuthorityData) {
+    throw new Error("Cannot generate bottlerocket user data for clusters who's `clusterCertificateAuthorityData` is undefined.");
+  }
+
   return [
     '[settings.kubernetes]',
     `api-server="${cluster.clusterEndpoint}"`,
