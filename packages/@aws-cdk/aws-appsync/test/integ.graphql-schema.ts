@@ -21,13 +21,15 @@ const stack = new cdk.Stack(app, 'code-first-schema');
 
 const schema = new appsync.Schema();
 
-const node = schema.addType(new appsync.InterfaceType('Node', {
+const node = new appsync.InterfaceType('Node', {
   definition: {
     created: ScalarType.string,
     edited: ScalarType.string,
     id: ScalarType.required_id,
   },
-}));
+});
+
+schema.addType(node);
 
 const api = new appsync.GraphqlApi(stack, 'code-first-api', {
   name: 'api',
@@ -44,9 +46,9 @@ const table = new db.Table(stack, 'table', {
 const tableDS = api.addDynamoDbDataSource('planets', table);
 
 const planet = ObjectType.planet;
-schema.addToSchema(planet.toString());
+schema.addType(planet);
 
-api.addType(new appsync.ObjectType('Species', {
+const species = api.addType(new appsync.ObjectType('Species', {
   interfaceTypes: [node],
   definition: {
     name: ScalarType.string,
@@ -101,8 +103,31 @@ api.addMutation('addPlanet', new appsync.ResolvableField({
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 }));
 
-api.addType(new appsync.InputType('input', {
+api.addSubscription('addedPlanets', new appsync.ResolvableField({
+  returnType: planet.attribute(),
+  args: { id: ScalarType.required_id },
+  directives: [appsync.Directive.subscribe('addPlanet')],
+}));
+api.addType(new appsync.InputType('AwesomeInput', {
   definition: { awesomeInput: ScalarType.string },
+}));
+
+api.addType(new appsync.EnumType('Episodes', {
+  definition: [
+    'The_Phantom_Menace',
+    'Attack_of_the_Clones',
+    'Revenge_of_the_Sith',
+    'A_New_Hope',
+    'The_Empire_Strikes_Back',
+    'Return_of_the_Jedi',
+    'The_Force_Awakens',
+    'The_Last_Jedi',
+    'The_Rise_of_Skywalker',
+  ],
+}));
+
+api.addType(new appsync.UnionType('Union', {
+  definition: [species, planet],
 }));
 
 app.synth();

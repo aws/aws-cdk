@@ -29,8 +29,8 @@ describe('testing Object Type properties', () => {
       directives: [appsync.Directive.custom('@test')],
     });
 
-    api.addToSchema(baseTest.toString());
-    api.addToSchema(objectTest.toString());
+    api.addType(baseTest);
+    api.addType(objectTest);
     const gql_interface = 'interface baseTest {\n  id: ID\n}\n';
     const gql_object = 'type objectTest implements baseTest @test {\n  id2: ID\n  id: ID\n}\n';
     const out = `${gql_interface}${gql_object}`;
@@ -56,9 +56,9 @@ describe('testing Object Type properties', () => {
       },
     });
 
-    api.addToSchema(baseTest.toString());
-    api.addToSchema(anotherTest.toString());
-    api.addToSchema(objectTest.toString());
+    api.addType(baseTest);
+    api.addType(anotherTest);
+    api.addType(objectTest);
 
     const gql_interface = 'interface baseTest {\n  id: ID\n}\ninterface anotherTest {\n  id2: ID\n}\n';
     const gql_object = 'type objectTest implements anotherTest, baseTest {\n  id3: ID\n  id2: ID\n  id: ID\n}\n';
@@ -83,7 +83,7 @@ describe('testing Object Type properties', () => {
         test: graphqlType,
       },
     });
-    api.addToSchema(test.toString());
+    api.addType(test);
     const out = 'type Test {\n  test: baseTest\n}\n';
 
     // THEN
@@ -107,7 +107,7 @@ describe('testing Object Type properties', () => {
         resolve: field,
       },
     });
-    api.addToSchema(test.toString());
+    api.addType(test);
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n}\n';
 
     // THEN
@@ -131,7 +131,7 @@ describe('testing Object Type properties', () => {
         resolve: field,
       },
     });
-    api.addToSchema(test.toString());
+    api.addType(test);
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n}\n';
 
     // THEN
@@ -154,7 +154,7 @@ describe('testing Object Type properties', () => {
         }),
       },
     });
-    api.addToSchema(test.toString());
+    api.addType(test);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
@@ -168,9 +168,7 @@ describe('testing Object Type properties', () => {
     const field = new appsync.ResolvableField({
       returnType: t.string,
       dataSource: api.addNoneDataSource('none'),
-      args: {
-        arg: t.int,
-      },
+      args: { arg: t.int },
     });
     const test = new appsync.ObjectType('Test', {
       definition: {
@@ -181,7 +179,7 @@ describe('testing Object Type properties', () => {
     // test.addField('resolve', field);
     test.addField({ fieldName: 'dynamic', field: t.string });
 
-    api.addToSchema(test.toString());
+    api.addType(test);
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n  dynamic: String\n}\n';
 
     // THEN
@@ -191,31 +189,49 @@ describe('testing Object Type properties', () => {
     expect(stack).toHaveResource('AWS::AppSync::Resolver');
   });
 
-  test('Object Type can dynamically add Fields', () => {
+  test('Object Type can generate Fields with Directives', () => {
     // WHEN
-    const garbage = new appsync.InterfaceType('Garbage', {
+    const test = new appsync.ObjectType('Test', {
       definition: {
-        garbage: t.string,
+        test: t.string,
       },
     });
+    test.addField({
+      fieldName: 'resolve',
+      field: new appsync.Field({
+        returnType: t.string,
+        directives: [appsync.Directive.apiKey()],
+      }),
+    });
+
+    api.addType(test);
+    const out = 'type Test {\n  test: String\n  resolve: String\n  @aws_api_key\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('Object Type can generate ResolvableFields with Directives', () => {
+    // WHEN
     const test = new appsync.ObjectType('Test', {
       definition: {
         test: t.string,
       },
     });
     const field = new appsync.ResolvableField({
-      returnType: garbage.attribute(),
+      returnType: t.string,
+      directives: [appsync.Directive.apiKey()],
       dataSource: api.addNoneDataSource('none'),
       args: {
-        arg: garbage.attribute(),
+        arg: t.string,
       },
     });
     test.addField({ fieldName: 'resolve', field });
-    // test.addField('resolve', field);
-    test.addField({ fieldName: 'dynamic', field: garbage.attribute() });
 
-    api.addToSchema(test.toString());
-    const out = 'type Test {\n  test: String\n  resolve(arg: Garbage): Garbage\n  dynamic: Garbage\n}\n';
+    api.addType(test);
+    const out = 'type Test {\n  test: String\n  resolve(arg: String): String\n  @aws_api_key\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
