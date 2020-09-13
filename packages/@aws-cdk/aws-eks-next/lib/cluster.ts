@@ -138,7 +138,9 @@ export interface ClusterAttributes {
   readonly vpc?: ec2.IVpc;
 
   /**
-   * The API Server endpoint URL
+   * The API Server endpoint URL.
+   *
+   * @default undefined
    */
   readonly clusterEndpoint?: string;
 
