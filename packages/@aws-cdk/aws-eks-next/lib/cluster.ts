@@ -191,9 +191,10 @@ export interface ClusterAttributes {
   readonly kubectlEnvironment?: { [name: string]: string };
 
   /**
-   * A security group to use for `kubectl` execution. If not specified, the k8s
-   * endpoint is expected to be accessible publicly.
-   * @default - k8s endpoint is expected to be accessible publicly
+   * A security group to use for `kubectl` execution.
+   *
+   * @default - The value of `clusterSecurityGroupId` is used. If neither are specified,
+   *            the cluster endpoint is expected to have public access.
    */
   readonly kubectlSecurityGroupId?: string;
 
@@ -1572,10 +1573,12 @@ class ImportedCluster extends ClusterBase implements ICluster {
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
 
+    const kubectlSecurityGroupId = props.kubectlSecurityGroupId ?? props.clusterSecurityGroupId;
+
     this.clusterName = props.clusterName;
     this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
     this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
-    this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
+    this.kubectlSecurityGroup = kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', kubectlSecurityGroupId) : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map(subnetid => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${subnetid}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
@@ -1586,8 +1589,8 @@ class ImportedCluster extends ClusterBase implements ICluster {
       i++;
     }
 
-    if (props.clusterSecurityGroupId) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', props.clusterSecurityGroupId));
+    if (this.kubectlSecurityGroup) {
+      this.connections.addSecurityGroup(this.kubectlSecurityGroup);
     }
   }
 
