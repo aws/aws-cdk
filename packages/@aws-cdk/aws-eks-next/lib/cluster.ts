@@ -32,13 +32,14 @@ export interface ICluster extends IResource, ec2.IConnectable {
 
   /**
    * The physical name of the Cluster
+   *
    * @attribute
    */
   readonly clusterName: string;
 
   /**
-   * The unique ARN assigned to the service by AWS
-   * in the form of arn:aws:eks:
+   * The unique ARN assigned to the service by AWS in the form of arn:aws:eks:
+   *
    * @attribute
    */
   readonly clusterArn: string;
@@ -50,24 +51,28 @@ export interface ICluster extends IResource, ec2.IConnectable {
 
   /**
    * The API Server endpoint URL
+   *
    * @attribute
    */
   readonly clusterEndpoint?: string;
 
   /**
    * The certificate-authority-data for your cluster.
+   *
    * @attribute
    */
   readonly clusterCertificateAuthorityData?: string;
 
   /**
    * The cluster security group that was created by Amazon EKS for the cluster.
+   *
    * @attribute
    */
   readonly clusterSecurityGroupId?: string;
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
+   *
    * @attribute
    */
   readonly clusterEncryptionConfigKeyArn?: string;
@@ -81,22 +86,16 @@ export interface ICluster extends IResource, ec2.IConnectable {
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
-   * @default - no additional environment variables
    */
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
    * Subnets to host the `kubectl` compute resources.
-   *
-   * @default - If not specified, the k8s endpoint is expected to be accessible
-   * publicly.
    */
   readonly kubectlPrivateSubnets?: ec2.ISubnet[];
 
   /**
-   * An AWS Lambda layer that includes `kubectl`, `helm` and the `aws` CLI.
-   *
-   * If not defined, a default layer will be used.
+   * The AWS Lambda layer that is used to run `kubectl` and `helm` commands.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
 
@@ -133,61 +132,46 @@ export interface ClusterAttributes {
 
   /**
    * The VPC in which this Cluster was created
-   * @default - if not specified `cluster.vpc` will throw an error
    */
   readonly vpc?: ec2.IVpc;
 
   /**
    * The API Server endpoint URL
-   * @default - if not specified `cluster.clusterEndpoint` will throw an error.
    */
   readonly clusterEndpoint?: string;
 
   /**
    * The certificate-authority-data for your cluster.
-   * @default - if not specified `cluster.clusterCertificateAuthorityData` will
-   * throw an error
    */
   readonly clusterCertificateAuthorityData?: string;
 
   /**
    * The cluster security group that was created by Amazon EKS for the cluster.
-   * @default - if not specified `cluster.clusterSecurityGroupId` will throw an
-   * error
    */
   readonly clusterSecurityGroupId?: string;
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
-   * @default - if not specified `cluster.clusterEncryptionConfigKeyArn` will
-   * throw an error
    */
   readonly clusterEncryptionConfigKeyArn?: string;
 
   /**
-   * Additional security groups associated with this cluster.
-   *
-   * @default - if not specified, no additional security groups will be considered in `cluster.connections`.
+   * Additional security groups associated with this cluster. These security groups are also included in `cluster.connections`.
    */
   readonly additionalSecurityGroupIds?: string[];
 
   /**
    * An IAM role with cluster administrator and "system:masters" permissions.
-   * @default - if not specified, it not be possible to issue `kubectl` commands
-   * against an imported cluster.
    */
   readonly kubectlRoleArn?: string;
 
   /**
    * Environment variables to use when running `kubectl` against this cluster.
-   * @default - no additional variables
    */
   readonly kubectlEnvironment?: { [name: string]: string };
 
   /**
-   * Subnets to host the `kubectl` compute resources. If not specified, the k8s
-   * endpoint is expected to be accessible publicly.
-   * @default - k8s endpoint is expected to be accessible publicly
+   * Subnets to host the `kubectl` compute resources. If not specified, the k8s endpoint is expected to be accessible publicly.
    */
   readonly kubectlPrivateSubnetIds?: string[];
 
