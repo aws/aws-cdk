@@ -17,7 +17,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -59,7 +58,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -116,7 +114,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -151,7 +148,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -171,7 +167,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -227,7 +222,6 @@ export = {
     });
 
     // WHEN
-    // const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
     const ng = new eks.Nodegroup(stack1, 'Nodegroup', { cluster });
     const imported = eks.Nodegroup.fromNodegroupName(stack2, 'ImportedNg', ng.nodegroupName);
     new cdk.CfnOutput(stack2, 'NodegroupName', { value: imported.nodegroupName });
@@ -249,7 +243,6 @@ export = {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -291,7 +284,6 @@ export = {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -304,7 +296,6 @@ export = {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -319,7 +310,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -366,7 +356,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -400,7 +389,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
