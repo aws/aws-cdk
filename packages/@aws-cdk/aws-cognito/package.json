@@ -103,6 +103,7 @@
     ]
   },
   "stability": "experimental",
+  "maturity": "developer-preview",
   "features": [
     {
       "name": "Higher level constructs for User Pools",
