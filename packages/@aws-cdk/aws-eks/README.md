@@ -726,7 +726,7 @@ chart2.node.addDependency(chart1);
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts. At this moment the managed nodegroup only supports Amazon EKS-optimized AMI but it's possible to create a capacity of self-managed `AutoScalingGroup` running with bottlerocket Linux AMI.
 
-> **NOTICE**: Bottlerocket is in public preview and only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART.md#finding-an-ami).
+> **NOTICE**: Bottlerocket is only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-EKS.md#finding-an-ami).
 
 The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `t3.small` Linux instances running with `Bottlerocket` AMI.
 
@@ -738,6 +738,10 @@ cluster.addCapacity('BottlerocketNodes', {
   machineImageType: eks.MachineImageType.BOTTLEROCKET
 });
 ```
+
+The Bottlerocket AMI will be auto selected with the variant of different k8s version for the `x86_64` architecture.
+For example, if the Amazon EKS cluster version is `1.17`, the Bottlerocket AMI variant will be auto selected as
+`aws-k8s-1.17` behind the scene. See [Variants](https://github.com/bottlerocket-os/bottlerocket/blob/develop/README.md#variants) for more details.
 
 To define only Bottlerocket capacity in your cluster, set `defaultCapacity` to `0` when you define the cluster as described above.
 
