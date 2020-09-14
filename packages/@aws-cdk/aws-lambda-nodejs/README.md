@@ -32,6 +32,7 @@ This file is used as "entry" for [Parcel](https://parceljs.org/). This means tha
 automatically transpiled and bundled whether it's written in JavaScript or TypeScript.
 
 Alternatively, an entry file and handler can be specified:
+
 ```ts
 new lambda.NodejsFunction(this, 'MyFunction', {
   entry: '/path/to/my/file.ts', // accepts .js, .jsx, .ts and .tsx files
@@ -56,6 +57,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 ```
 
 Use the `buildArgs` prop to pass build arguments when building the bundling image:
+
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
   buildArgs: {
@@ -63,6 +65,20 @@ new lambda.NodejsFunction(this, 'my-handler', {
   },
 });
 ```
+
+Use the `bundlingDockerImage` prop to use a custom bundling image:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundlingDockerImage: dk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
+});
+```
+
+This image should have Parcel installed at `/`. If you plan to use `nodeModules` it
+should also have `npm` or `yarn` depending on the lock file you're using.
+
+Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/parcel/Dockerfile)
+as a source of inspiration.
 
 ### Project root
 The `NodejsFunction` tries to automatically determine your project root, that is

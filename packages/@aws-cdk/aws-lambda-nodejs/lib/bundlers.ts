@@ -77,6 +77,7 @@ export class LocalBundler implements cdk.ILocalBundling {
 }
 
 interface DockerBundlerProps extends BundlerProps {
+  bundlingDockerImage?: cdk.BundlingDockerImage;
   buildImage?: boolean;
   buildArgs?: { [key: string]: string };
   runtime: Runtime;
@@ -91,7 +92,7 @@ export class DockerBundler {
 
   constructor(props: DockerBundlerProps) {
     const image = props.buildImage
-      ? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel'), {
+      ? props.bundlingDockerImage ?? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel'), {
         buildArgs: {
           ...props.buildArgs ?? {},
           IMAGE: props.runtime.bundlingDockerImage.image,

@@ -13,16 +13,17 @@ const writeFileSyncMock = jest.spyOn(fs, 'writeFileSync').mockReturnValue();
 const existsSyncOriginal = fs.existsSync;
 const existsSyncMock = jest.spyOn(fs, 'existsSync');
 const originalFindUp = util.findUp;
-const findUpMock = jest.spyOn(util, 'findUp').mockImplementation((name: string, directory) => {
-  if (name === 'package.json') {
-    return path.join(__dirname, '..');
-  }
-  return originalFindUp(name, directory);
-});
 const fromAssetMock = jest.spyOn(BundlingDockerImage, 'fromAsset');
 
+let findUpMock: jest.SpyInstance;
 beforeEach(() => {
   jest.clearAllMocks();
+  findUpMock = jest.spyOn(util, 'findUp').mockImplementation((name: string, directory) => {
+    if (name === 'package.json') {
+      return path.join(__dirname, '..');
+    }
+    return originalFindUp(name, directory);
+  });
 });
 
 test('Parcel bundling', () => {
@@ -316,4 +317,20 @@ test('Project root detection', () => {
   expect(findUpMock).toHaveBeenNthCalledWith(2, LockFile.YARN);
   expect(findUpMock).toHaveBeenNthCalledWith(3, LockFile.NPM);
   expect(findUpMock).toHaveBeenNthCalledWith(4, 'package.json');
+});
+
+test('Custom bundling docker image', () => {
+  Bundling.parcel({
+    entry: '/project/folder/entry.ts',
+    projectRoot: '/project',
+    runtime: Runtime.NODEJS_12_X,
+    bundlingDockerImage: BundlingDockerImage.fromRegistry('my-custom-image'),
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.BUNDLE,
+    bundling: expect.objectContaining({
+      image: { image: 'my-custom-image' },
+    }),
+  });
 });
