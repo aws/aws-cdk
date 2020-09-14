@@ -88,8 +88,10 @@ export class Bootstrapper {
     const trustedAccounts = params.trustedAccounts ?? current.parameters.TrustedAccounts?.split(',') ?? [];
     const cloudFormationExecutionPolicies = params.cloudFormationExecutionPolicies ?? current.parameters.CloudFormationExecutionPolicies?.split(',') ?? [];
 
-    if (trustedAccounts.length > 0 && cloudFormationExecutionPolicies.length === 0) {
-      throw new Error(`You need to pass '--cloudformation-execution-policies' when trusting other accounts using '--trust' (${trustedAccounts}). Try a managed policy of the form 'arn:aws:iam::aws:policy/<PolicyName>'.`);
+    // To prevent user errors, require --cfn-exec-policies always
+    // (Hopefully until we get https://github.com/aws/aws-cdk/pull/9867 approved)
+    if (cloudFormationExecutionPolicies.length === 0) {
+      throw new Error('Please pass \'--cloudformation-execution-policies\' to specify deployment permissions. Try a managed policy of the form \'arn:aws:iam::aws:policy/<PolicyName>\'.');
     }
     // Remind people what the current settings are
     info(`Trusted accounts:   ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
