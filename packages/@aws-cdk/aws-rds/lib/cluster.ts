@@ -305,7 +305,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       }),
     ];
 
-    const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
     let { s3ImportRole, s3ExportRole } = this.setupS3ImportExport(props);
     // bind the engine to the Cluster
     const clusterEngineBindConfig = props.engine.bindToCluster(this, {
