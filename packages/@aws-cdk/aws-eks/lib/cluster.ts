@@ -18,6 +18,7 @@ import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
@@ -1045,7 +1046,9 @@ export class Cluster extends ClusterBase {
       ...options,
       vpc: this.vpc,
       machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        new BottleRocketImage() :
+        new BottleRocketImage({
+          kubernetesVersion: this.version.version,
+        }) :
         new EksOptimizedImage({
           nodeType: nodeTypeForInstanceType(options.instanceType),
           cpuArch: cpuArchForInstanceType(options.instanceType),
@@ -1691,38 +1694,6 @@ export class EksOptimizedImage implements ec2.IMachineImage {
       imageId: ami,
       osType: ec2.OperatingSystemType.LINUX,
       userData: ec2.UserData.forLinux(),
-    };
-  }
-}
-
-/**
- * Construct an Bottlerocket image from the latest AMI published in SSM
- */
-class BottleRocketImage implements ec2.IMachineImage {
-  private readonly kubernetesVersion?: string;
-
-  private readonly amiParameterName: string;
-
-  /**
-   * Constructs a new instance of the BottleRocketImage class.
-   */
-  public constructor() {
-    // only 1.15 is currently available
-    this.kubernetesVersion = '1.15';
-
-    // set the SSM parameter name
-    this.amiParameterName = `/aws/service/bottlerocket/aws-k8s-${this.kubernetesVersion}/x86_64/latest/image_id`;
-  }
-
-  /**
-   * Return the correct image
-   */
-  public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
-    return {
-      imageId: ami,
-      osType: ec2.OperatingSystemType.LINUX,
-      userData: ec2.UserData.custom(''),
     };
   }
 }
