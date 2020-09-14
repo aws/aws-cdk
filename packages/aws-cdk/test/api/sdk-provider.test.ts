@@ -475,16 +475,32 @@ test('assume fails with unsupported credential_source', async () => {
 });
 
 test('defaultAccount returns undefined if STS call fails', async () => {
+  // GIVEN
   process.env.AWS_ACCESS_KEY_ID = `${uid}akid`;
   process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
+  getCallerIdentityError = new Error('Something is wrong here');
 
+  // WHEN
   const provider = await SdkProvider.withAwsCliCompatibleDefaults({
     ...defaultCredOptions,
   });
 
+  // THEN
+  await expect(provider.defaultAccount()).resolves.toBe(undefined);
+});
+
+test('plugins are still queried even if current credentials are expired', async () => {
+  // GIVEN
+  process.env.AWS_ACCESS_KEY_ID = `${uid}akid`;
+  process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
   getCallerIdentityError = new Error('Something is wrong here');
 
-  await expect(provider.defaultAccount()).resolves.toBe(undefined);
+  // WHEN
+  const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
+  await provider.forEnvironment({ ...defaultEnv, account: `${uid}plugin_account_#` }, Mode.ForReading);
+
+  // THEN
+  expect(pluginQueried).toEqual(true);
 });
 
 /**
