@@ -13,6 +13,7 @@ import { CfnResource, TagType } from './cfn-resource';
 import { Construct, IConstruct, ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
+import { FeatureFlags } from './feature-flags';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
@@ -168,8 +169,8 @@ export class Stack extends Construct implements ITaggable {
         return c;
       }
 
-      if (!c.node.scope) {
-        throw new Error(`No stack could be identified for the construct at path ${construct.node.path}`);
+      if (Stage.isStage(c) || !c.node.scope) {
+        throw new Error(`${construct.constructor?.name ?? 'Construct'} at '${construct.node.path}' should be created in the scope of a Stack, but no Stack found`);
       }
 
       return _lookup(c.node.scope);
@@ -358,14 +359,16 @@ export class Stack extends Construct implements ITaggable {
     //
     // Also use the new behavior if we are using the new CI/CD-ready synthesizer; that way
     // people only have to flip one flag.
-    // eslint-disable-next-line max-len
-    this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT) || this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+    const featureFlags = FeatureFlags.of(this);
+    const stackNameDupeContext = featureFlags.isEnabled(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT);
+    const newStyleSynthesisContext = featureFlags.isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
+    this.artifactId = (stackNameDupeContext || newStyleSynthesisContext)
       ? this.generateStackArtifactId()
       : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
 
-    this.synthesizer = props.synthesizer ?? (this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+    this.synthesizer = props.synthesizer ?? (newStyleSynthesisContext
       ? new DefaultStackSynthesizer()
       : new LegacyStackSynthesizer());
     this.synthesizer.bind(this);
@@ -615,7 +618,7 @@ export class Stack extends Construct implements ITaggable {
    * Register a file asset on this Stack
    *
    * @deprecated Use `stack.synthesizer.addFileAsset()` if you are calling,
-   * and a different IDeploymentEnvironment class if you are implementing.
+   * and a different IStackSynthesizer class if you are implementing.
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     return this.synthesizer.addFileAsset(asset);
@@ -625,7 +628,7 @@ export class Stack extends Construct implements ITaggable {
    * Register a docker image asset on this Stack
    *
    * @deprecated Use `stack.synthesizer.addDockerImageAsset()` if you are calling,
-   * and a different `IDeploymentEnvironment` class if you are implementing.
+   * and a different `IStackSynthesizer` class if you are implementing.
    */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     return this.synthesizer.addDockerImageAsset(asset);
@@ -725,9 +728,6 @@ export class Stack extends Construct implements ITaggable {
     for (const ctx of this._missingContext) {
       builder.addMissing(ctx);
     }
-
-    // Delegate adding artifacts to the Synthesizer
-    this.synthesizer.synthesizeStackArtifacts(session);
   }
 
   /**

@@ -1,10 +1,11 @@
+import { info } from 'console';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { loadStructuredFile, toYAML } from '../../serialize';
 import { SdkProvider } from '../aws-auth';
 import { DeployStackResult } from '../deploy-stack';
 import { BootstrapEnvironmentOptions, BootstrappingParameters } from './bootstrap-props';
-import { deployBootstrapStack, bootstrapVersionFromTemplate } from './deploy-bootstrap';
+import { BootstrapStack, bootstrapVersionFromTemplate } from './deploy-bootstrap';
 import { legacyBootstrapTemplate } from './legacy-template';
 
 /* eslint-disable max-len */
@@ -53,12 +54,11 @@ export class Bootstrapper {
       throw new Error('--qualifier can only be passed for the new bootstrap experience.');
     }
 
-    return deployBootstrapStack(
-      await this.loadTemplate(params),
-      {},
-      environment,
-      sdkProvider,
-      options);
+    const current = await BootstrapStack.lookup(sdkProvider, environment, options.toolkitStackName);
+    return current.update(await this.loadTemplate(params), {}, {
+      ...options,
+      terminationProtection: options.terminationProtection ?? current.terminationProtection,
+    });
   }
 
   /**
@@ -73,25 +73,44 @@ export class Bootstrapper {
 
     const params = options.parameters ?? {};
 
-    if (params.trustedAccounts?.length && !params.cloudFormationExecutionPolicies?.length) {
-      throw new Error('--cloudformation-execution-policies are required if --trust has been passed!');
-    }
-
     const bootstrapTemplate = await this.loadTemplate();
 
-    return deployBootstrapStack(
+    const current = await BootstrapStack.lookup(sdkProvider, environment, options.toolkitStackName);
+
+    // If people re-bootstrap, existing parameter values are reused so that people don't accidentally change the configuration
+    // on their bootstrap stack (this happens automatically in deployStack). However, to do proper validation on the
+    // combined arguments (such that if --trust has been given, --cloudformation-execution-policies is necessary as well)
+    // we need to take this parameter reuse into account.
+    //
+    // Ideally we'd do this inside the template, but the `Rules` section of CFN
+    // templates doesn't seem to be able to express the conditions that we need
+    // (can't use Fn::Join or reference Conditions) so we do it here instead.
+    const trustedAccounts = params.trustedAccounts ?? current.parameters.TrustedAccounts?.split(',') ?? [];
+    const cloudFormationExecutionPolicies = params.cloudFormationExecutionPolicies ?? current.parameters.CloudFormationExecutionPolicies?.split(',') ?? [];
+
+    // To prevent user errors, require --cfn-exec-policies always
+    // (Hopefully until we get https://github.com/aws/aws-cdk/pull/9867 approved)
+    if (cloudFormationExecutionPolicies.length === 0) {
+      throw new Error('Please pass \'--cloudformation-execution-policies\' to specify deployment permissions. Try a managed policy of the form \'arn:aws:iam::aws:policy/<PolicyName>\'.');
+    }
+    // Remind people what the current settings are
+    info(`Trusted accounts:   ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
+    info(`Execution policies: ${cloudFormationExecutionPolicies.join(', ')}`);
+
+    return current.update(
       bootstrapTemplate,
       {
         FileAssetsBucketName: params.bucketName,
         FileAssetsBucketKmsKeyId: params.kmsKeyId,
-        TrustedAccounts: params.trustedAccounts?.join(','),
-        CloudFormationExecutionPolicies: params.cloudFormationExecutionPolicies?.join(','),
+        // Empty array becomes empty string
+        TrustedAccounts: trustedAccounts.join(','),
+        CloudFormationExecutionPolicies: cloudFormationExecutionPolicies.join(','),
         Qualifier: params.qualifier,
         PublicAccessBlockConfiguration: params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
-      },
-      environment,
-      sdkProvider,
-      options);
+      }, {
+        ...options,
+        terminationProtection: options.terminationProtection ?? current.terminationProtection,
+      });
   }
 
   private async customBootstrap(
@@ -119,5 +138,4 @@ export class Bootstrapper {
         return legacyBootstrapTemplate(params);
     }
   }
-
 }

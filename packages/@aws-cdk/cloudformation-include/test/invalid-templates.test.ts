@@ -125,12 +125,18 @@ describe('CDK Include', () => {
     }).toThrow(/Element referenced in Fn::Sub expression with logical ID: '' was not found in the template/);
   });
 
-  test('throws an error when a template supplies an invalid string to a number parameter', () => {
+  test("throws an exception for a template with a non-number string passed to a property with type 'number'", () => {
     includeTestTemplate(stack, 'alphabetical-string-passed-to-number.json');
 
     expect(() => {
       SynthUtils.synthesize(stack);
     }).toThrow(/"abc" should be a number/);
+  });
+
+  test('throws an exception for a template with a short-form Fn::GetAtt whose string argument does not contain a dot', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'short-form-get-att-no-dot.yaml');
+    }).toThrow(/Short-form Fn::GetAtt must contain a '.' in its string argument, got: 'Bucket1Arn'/);
   });
 });
 

@@ -77,6 +77,7 @@ export class LocalBundler implements cdk.ILocalBundling {
 }
 
 interface DockerBundlerProps extends BundlerProps {
+  bundlingDockerImage?: cdk.BundlingDockerImage;
   buildImage?: boolean;
   buildArgs?: { [key: string]: string };
   runtime: Runtime;
@@ -91,7 +92,7 @@ export class DockerBundler {
 
   constructor(props: DockerBundlerProps) {
     const image = props.buildImage
-      ? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel'), {
+      ? props.bundlingDockerImage ?? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel'), {
         buildArgs: {
           ...props.buildArgs ?? {},
           IMAGE: props.runtime.bundlingDockerImage.image,
@@ -128,7 +129,7 @@ interface BundlingCommandOptions extends LocalBundlerProps {
  */
 function createBundlingCommand(options: BundlingCommandOptions): string {
   const entryPath = path.join(options.projectRoot, options.relativeEntryPath);
-  const distFile = path.basename(options.relativeEntryPath).replace(/\.ts$/, '.js');
+  const distFile = path.basename(options.relativeEntryPath).replace(/\.(jsx|tsx?)$/, '.js');
   const parcelCommand: string = chain([
     [
       '$(node -p "require.resolve(\'parcel\')")', // Parcel is not globally installed, find its "bin"
