@@ -103,6 +103,7 @@
   },
   "awslint": {
     "exclude": [
+      "attribute-tag:@aws-cdk/aws-rds.DatabaseSecret.secretName",
       "props-physical-name:@aws-cdk/aws-rds.ParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterFromSnapshotProps",
