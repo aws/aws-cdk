@@ -19,6 +19,44 @@ const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
 
+  'can declare a security group from a different stack'(test: Test) {
+
+    class ClusterStack extends cdk.Stack {
+      public eksCluster: eks.Cluster;
+
+      constructor(scope: cdk.Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
+        super(scope, id);
+        this.eksCluster = new eks.Cluster(this, 'Cluster', {
+          version: eks.KubernetesVersion.V1_17,
+          securityGroup: props.sg,
+          vpc: props.vpc,
+        });
+      }
+    }
+
+    class NetworkStack extends cdk.Stack {
+
+      public readonly securityGroup: ec2.ISecurityGroup;
+      public readonly vpc: ec2.IVpc;
+
+      constructor(scope: cdk.Construct, id: string) {
+        super(scope, id);
+        this.vpc = new ec2.Vpc(this, 'Vpc');
+        this.securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.vpc });
+      }
+
+    }
+
+    const { app } = testFixture();
+    const networkStack = new NetworkStack(app, 'NetworkStack');
+    new ClusterStack(app, 'ClusterStack', { sg: networkStack.securityGroup, vpc: networkStack.vpc });
+
+    // make sure we can synth (no circular dependencies between the stacks)
+    app.synth();
+
+    test.done();
+  },
+
   'can declare a manifest with a token from a different stack than the cluster that depends on the cluster stack'(test: Test) {
 
     class ClusterStack extends cdk.Stack {
