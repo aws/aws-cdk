@@ -42,6 +42,27 @@ export interface InstanceProps {
    * @default no parameter group
    */
   readonly parameterGroup?: IParameterGroup;
+
+  /**
+   * Whether to enable Performance Insights for the DB instance.
+   *
+   * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
+   */
+  readonly enablePerformanceInsights?: boolean;
+
+  /**
+   * The amount of time, in days, to retain Performance Insights data.
+   *
+   * @default 7
+   */
+  readonly performanceInsightRetention?: PerformanceInsightRetention;
+
+  /**
+   * The AWS KMS key for encryption of Performance Insights data.
+   *
+   * @default - default master key
+   */
+  readonly performanceInsightEncryptionKey?: kms.IKey;
 }
 
 /**
@@ -126,4 +147,19 @@ export interface RotationMultiUserOptions {
    * @default Duration.days(30)
    */
   readonly automaticallyAfter?: Duration;
+}
+
+/**
+ * The retention period for Performance Insight.
+ */
+export enum PerformanceInsightRetention {
+  /**
+   * Default retention period of 7 days.
+   */
+  DEFAULT = 7,
+
+  /**
+   * Long term retention period of 2 years.
+   */
+  LONG_TERM = 731
 }

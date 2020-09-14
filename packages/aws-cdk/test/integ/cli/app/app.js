@@ -239,6 +239,14 @@ class ConditionalResourceStack extends cdk.Stack {
   }
 }
 
+class SomeStage extends cdk.Stage {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new YourStack(this, 'StackInStage');
+  }
+}
+
 const app = new cdk.App();
 
 const defaultEnv = {
@@ -285,5 +293,7 @@ new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-u
 new YourStack(app, `${stackPrefix}-termination-protection`, {
   terminationProtection: process.env.TERMINATION_PROTECTION !== 'FALSE' ? true : false,
 });
+
+new SomeStage(app, `${stackPrefix}-stage`);
 
 app.synth();

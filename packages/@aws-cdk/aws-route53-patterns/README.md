@@ -27,7 +27,7 @@ The `HttpsRedirect` constructs creates:
 * Amazon CloudFront distribution - makes website available from data centres
   around the world
 * Amazon S3 bucket - empty bucket used for website hosting redirect (`websiteRedirect`) capabilities.
-* Amazon Route 53 Alias record - routes traffic to the CloudFront distribution
+* Amazon Route 53 A/AAAA Alias records - routes traffic to the CloudFront distribution
 * AWS Certificate Manager certificate - SSL/TLS certificate used by
   CloudFront for your domain
 

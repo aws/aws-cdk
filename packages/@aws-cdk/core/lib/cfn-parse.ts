@@ -268,7 +268,6 @@ export class CfnParser {
   }
 
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
-    const finder = this.options.finder;
     const cfnOptions = resource.cfnOptions;
 
     cfnOptions.creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy);
@@ -279,7 +278,7 @@ export class CfnParser {
 
     // handle Condition
     if (resourceAttributes.Condition) {
-      const condition = finder.findCondition(resourceAttributes.Condition);
+      const condition = this.finder.findCondition(resourceAttributes.Condition);
       if (!condition) {
         throw new Error(`Resource '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
       }
@@ -291,7 +290,7 @@ export class CfnParser {
     const dependencies: string[] = Array.isArray(resourceAttributes.DependsOn) ?
       resourceAttributes.DependsOn : [resourceAttributes.DependsOn];
     for (const dep of dependencies) {
-      const depResource = finder.findResource(dep);
+      const depResource = this.finder.findResource(dep);
       if (!depResource) {
         throw new Error(`Resource '${logicalId}' depends on '${dep}' that doesn't exist`);
       }
@@ -411,7 +410,7 @@ export class CfnParser {
     if (typeof cfnValue === 'object') {
       // an object can be either a CFN intrinsic, or an actual object
       const cfnIntrinsic = this.parseIfCfnIntrinsic(cfnValue);
-      if (cfnIntrinsic) {
+      if (cfnIntrinsic !== undefined) {
         return cfnIntrinsic;
       }
       const ret: any = {};
@@ -424,6 +423,10 @@ export class CfnParser {
     return cfnValue;
   }
 
+  public get finder(): ICfnFinder {
+    return this.options.finder;
+  }
+
   private parseIfCfnIntrinsic(object: any): any {
     const key = this.looksLikeCfnIntrinsic(object);
     switch (key) {
@@ -432,10 +435,10 @@ export class CfnParser {
       case 'Ref': {
         const refTarget = object[key];
         const specialRef = this.specialCaseRefs(refTarget);
-        if (specialRef) {
+        if (specialRef !== undefined) {
           return specialRef;
         } else {
-          const refElement = this.options.finder.findRefTarget(refTarget);
+          const refElement = this.finder.findRefTarget(refTarget);
           if (!refElement) {
             throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' not found`);
           }
@@ -445,7 +448,7 @@ export class CfnParser {
       case 'Fn::GetAtt': {
         // Fn::GetAtt takes a 2-element list as its argument
         const value = object[key];
-        const target = this.options.finder.findResource(value[0]);
+        const target = this.finder.findResource(value[0]);
         if (!target) {
           throw new Error(`Resource used in GetAtt expression with logical ID: '${value[0]}' not found`);
         }
@@ -469,7 +472,7 @@ export class CfnParser {
       case 'Fn::FindInMap': {
         const value = this.parseValue(object[key]);
         // the first argument to FindInMap is the mapping name
-        const mapping = this.options.finder.findMapping(value[0]);
+        const mapping = this.finder.findMapping(value[0]);
         if (!mapping) {
           throw new Error(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
         }
@@ -503,7 +506,7 @@ export class CfnParser {
         // Fn::If takes a 3-element list as its argument,
         // where the first element is the name of a Condition
         const value = this.parseValue(object[key]);
-        const condition = this.options.finder.findCondition(value[0]);
+        const condition = this.finder.findCondition(value[0]);
         if (!condition) {
           throw new Error(`Condition '${value[0]}' used in an Fn::If expression does not exist in the template`);
         }
@@ -541,7 +544,7 @@ export class CfnParser {
       }
       case 'Condition': {
         // a reference to a Condition from another Condition
-        const condition = this.options.finder.findCondition(object[key]);
+        const condition = this.finder.findCondition(object[key]);
         if (!condition) {
           throw new Error(`Referenced Condition with name '${object[key]}' was not found in the template`);
         }
@@ -593,21 +596,21 @@ export class CfnParser {
 
     // since it's not in the map, check if it's a pseudo parameter
     const specialRef = this.specialCaseSubRefs(refTarget);
-    if (specialRef) {
+    if (specialRef !== undefined) {
       return leftHalf + specialRef + this.parseFnSubString(rightHalf, map);
     }
 
     const dotIndex = refTarget.indexOf('.');
     const isRef = dotIndex === -1;
     if (isRef) {
-      const refElement = this.options.finder.findRefTarget(refTarget);
+      const refElement = this.finder.findRefTarget(refTarget);
       if (!refElement) {
         throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
       }
       return leftHalf + CfnReference.for(refElement, 'Ref', true).toString() + this.parseFnSubString(rightHalf, map);
     } else {
       const targetId = refTarget.substring(0, dotIndex);
-      const refResource = this.options.finder.findResource(targetId);
+      const refResource = this.finder.findResource(targetId);
       if (!refResource) {
         throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
       }
@@ -630,7 +633,7 @@ export class CfnParser {
           // fail here - this substitution is not allowed
           throw new Error(`Cannot substitute parameter '${parameterName}' used in Fn::ValueOf expression with attribute '${value[1]}'`);
         }
-        const param = this.options.finder.findRefTarget(parameterName);
+        const param = this.finder.findRefTarget(parameterName);
         if (!param) {
           throw new Error(`Rule references parameter '${parameterName}' which was not found in the template`);
         }

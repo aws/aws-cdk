@@ -42,6 +42,13 @@ export class CloudFormationStack {
     return new CloudFormationStack(cfn, stackName);
   }
 
+  /**
+   * From static information (for testing)
+   */
+  public static fromStaticInformation(cfn: CloudFormation, stackName: string, stack: CloudFormation.Stack) {
+    return new CloudFormationStack(cfn, stackName, stack);
+  }
+
   private _template: any;
 
   protected constructor(private readonly cfn: CloudFormation, public readonly stackName: string, private readonly stack?: CloudFormation.Stack) {

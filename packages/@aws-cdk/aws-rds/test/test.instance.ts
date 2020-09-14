@@ -1,7 +1,8 @@
-import { ABSENT, countResources, expect, haveResource, ResourcePart, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, countResources, expect, haveResource, ResourcePart, haveResourceLike, anything } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -21,7 +22,7 @@ export = {
   'create a DB instance'(test: Test) {
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
@@ -63,7 +64,8 @@ export = {
           'listener',
         ],
         EnablePerformanceInsights: true,
-        Engine: 'oracle-se1',
+        Engine: 'oracle-se2',
+        EngineVersion: '19.0.0.0.ru-2020-04.rur-2020-04.r1',
         Iops: 1000,
         LicenseModel: 'bring-your-own-license',
         MasterUsername: {
@@ -196,7 +198,7 @@ export = {
 
   'instance with option and parameter group'(test: Test) {
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       configurations: [
         {
           name: 'XMLDB',
@@ -232,6 +234,39 @@ export = {
       OptionGroupName: {
         Ref: 'OptionGroupACA43DC1',
       },
+    }));
+
+    test.done();
+  },
+
+  'can specify subnet type'(test: Test) {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      masterUsername: 'syscdk',
+      vpc,
+      vpcPlacement: {
+        subnetType: ec2.SubnetType.PRIVATE,
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      DBSubnetGroupName: {
+        Ref: 'InstanceSubnetGroupF2CBA54F',
+      },
+      PubliclyAccessible: false,
+    }));
+    expect(stack).to(haveResource('AWS::RDS::DBSubnetGroup', {
+      DBSubnetGroupDescription: 'Subnet group for Instance database',
+      SubnetIds: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
     }));
 
     test.done();
@@ -757,4 +792,176 @@ export = {
     test.done();
   },
 
+  'domain - sets domain property'(test: Test) {
+    const domain = 'd-90670a8d36';
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+      vpc,
+      masterUsername: 'admin',
+      domain: domain,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      Domain: domain,
+    }));
+
+    test.done();
+  },
+
+  'domain - uses role if provided'(test: Test) {
+    const domain = 'd-90670a8d36';
+
+    // WHEN
+    const role = new Role(stack, 'DomainRole', { assumedBy: new ServicePrincipal('rds.amazonaws.com') });
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+      vpc,
+      masterUsername: 'admin',
+      domain: domain,
+      domainRole: role,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      Domain: domain,
+      DomainIAMRoleName: stack.resolve(role.roleName),
+    }));
+
+    test.done();
+  },
+
+  'domain - creates role if not provided'(test: Test) {
+    const domain = 'd-90670a8d36';
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+      vpc,
+      masterUsername: 'admin',
+      domain: domain,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      Domain: domain,
+      DomainIAMRoleName: anything(),
+    }));
+
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'rds.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess',
+            ],
+          ],
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'throws when domain is set for mariadb database engine'(test: Test) {
+    const domainSupportedEngines = [rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
+      rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB, rds.DatabaseInstanceEngine.MYSQL,
+      rds.DatabaseInstanceEngine.POSTGRES, rds.DatabaseInstanceEngine.ORACLE_EE];
+    const domainUnsupportedEngines = [rds.DatabaseInstanceEngine.MARIADB];
+
+    // THEN
+    domainSupportedEngines.forEach((engine) => {
+      test.ok(new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+        engine,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
+        masterUsername: 'master',
+        domain: 'd-90670a8d36',
+        vpc,
+      }));
+    });
+
+    domainUnsupportedEngines.forEach((engine) => {
+      const expectedError = new RegExp(`domain property cannot be configured for ${engine.engineType}`);
+
+      test.throws(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+        engine,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
+        masterUsername: 'master',
+        domain: 'd-90670a8d36',
+        vpc,
+      }), expectedError);
+    });
+
+    test.done();
+  },
+
+  'performance insights': {
+    'instance with all performance insights properties'(test: Test) {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        masterUsername: 'admin',
+        vpc,
+        enablePerformanceInsights: true,
+        performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+        performanceInsightEncryptionKey: new kms.Key(stack, 'Key'),
+      });
+
+      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: true,
+        PerformanceInsightsRetentionPeriod: 731,
+        PerformanceInsightsKMSKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }));
+
+      test.done();
+    },
+
+    'setting performance insights fields enables performance insights'(test: Test) {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        masterUsername: 'admin',
+        vpc,
+        performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+      });
+
+      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: true,
+        PerformanceInsightsRetentionPeriod: 731,
+      }));
+
+      test.done();
+    },
+
+    'throws if performance insights fields are set but performance insights is disabled'(test: Test) {
+      test.throws(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          masterUsername: 'admin',
+          vpc,
+          enablePerformanceInsights: false,
+          performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
+        });
+      }, /`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+
+      test.done();
+    },
+  },
 };

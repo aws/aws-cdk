@@ -4,13 +4,12 @@ import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import {
   AuthorizationType,
-  GraphQLApi,
+  GraphqlApi,
   KeyCondition,
   MappingTemplate,
   PrimaryKey,
-  UserPoolDefaultAction,
+  Schema,
   Values,
-  SchemaDefinition,
 } from '../lib';
 
 /*
@@ -34,16 +33,14 @@ const userPool = new UserPool(stack, 'Pool', {
   userPoolName: 'myPool',
 });
 
-const api = new GraphQLApi(stack, 'Api', {
+const api = new GraphqlApi(stack, 'Api', {
   name: 'demoapi',
-  schemaDefinition: SchemaDefinition.FILE,
-  schemaDefinitionFile: join(__dirname, 'integ.graphql.graphql'),
+  schema: Schema.fromAsset(join(__dirname, 'integ.graphql.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: AuthorizationType.USER_POOL,
       userPoolConfig: {
         userPool,
-        defaultAction: UserPoolDefaultAction.ALLOW,
       },
     },
     additionalAuthorizationModes: [

@@ -63,5 +63,20 @@ export const FUTURE_FLAGS = {
   [STACK_RELATIVE_EXPORTS_CONTEXT]: 'true',
 
   // We will advertise this flag when the feature is complete
-  // [NEW_STYLE_STACK_SYNTHESIS]: 'true',
+  // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
 };
+
+/**
+ * The set of defaults that should be applied if the feature flag is not
+ * explicitly configured.
+ */
+const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
+  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: false,
+  [ENABLE_DIFF_NO_FAIL_CONTEXT]: false,
+  [STACK_RELATIVE_EXPORTS_CONTEXT]: false,
+  [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+};
+
+export function futureFlagDefault(flag: string): boolean {
+  return FUTURE_FLAGS_DEFAULTS[flag];
+}

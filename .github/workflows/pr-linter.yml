@@ -5,7 +5,7 @@ name: PR Linter
 on: pull_request
 
 jobs:
-  mandatory-changes:
+  validate-pr:
     runs-on: ubuntu-latest
     steps:
 
@@ -17,8 +17,5 @@ jobs:
 
       - name: Validate
         uses: ./.github/actions/prlinter
-        with:
-          check: MANDATORY_CHANGES
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-

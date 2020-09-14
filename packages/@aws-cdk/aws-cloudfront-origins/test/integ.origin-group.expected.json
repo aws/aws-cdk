@@ -60,7 +60,7 @@
       "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
       "Properties": {
         "CloudFrontOriginAccessIdentityConfig": {
-          "Comment": "Access identity for cloudfrontorigingroupDistributionOrigin137659A54"
+          "Comment": "Identity for cloudfrontorigingroupDistributionOrigin137659A54"
         }
       }
     },
@@ -68,13 +68,6 @@
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
-          "DefaultCacheBehavior": {
-            "ForwardedValues": {
-              "QueryString": false
-            },
-            "TargetOriginId": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
-            "ViewerProtocolPolicy": "allow-all"
-          },
           "CacheBehaviors": [
             {
               "ForwardedValues": {
@@ -85,6 +78,13 @@
               "ViewerProtocolPolicy": "allow-all"
             }
           ],
+          "DefaultCacheBehavior": {
+            "ForwardedValues": {
+              "QueryString": false
+            },
+            "TargetOriginId": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
+            "ViewerProtocolPolicy": "allow-all"
+          },
           "Enabled": true,
           "HttpVersion": "http2",
           "IPV6Enabled": true,

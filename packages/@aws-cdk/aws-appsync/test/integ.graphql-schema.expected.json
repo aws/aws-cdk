@@ -16,7 +16,7 @@
             "ApiId"
           ]
         },
-        "Definition": "type Planet {\n  name: String\n  diameter: Int\n  rotationPeriod: Int\n  orbitalPeriod: Int\n  gravity: String\n  population: [String]\n  climates: [String]\n  terrains: [String]\n  surfaceWater: Float\n  created: String\n  edited: String\n  id: ID!\n}\ntype Species {\n  name: String\n  classification: String\n  designation: String\n  averageHeight: Float\n  averageLifespan: Int\n  eyeColors: [String]\n  hairColors: [String]\n  skinColors: [String]\n  language: String\n  homeworld: Planet\n  created: String\n  edited: String\n  id: ID!\n}\n\ntype Query {\n  getPlanets: [Planet]\n}\n"
+        "Definition": "schema {\n  query: Query\n  mutation: Mutation\n  subscription: Subscription\n}\ninterface Node {\n  created: String\n  edited: String\n  id: ID!\n}\ntype Planet {\n  name: String\n  diameter: Int\n  rotationPeriod: Int\n  orbitalPeriod: Int\n  gravity: String\n  population: [String]\n  climates: [String]\n  terrains: [String]\n  surfaceWater: Float\n  created: String\n  edited: String\n  id: ID!\n}\ntype Species implements Node {\n  name: String\n  classification: String\n  designation: String\n  averageHeight: Float\n  averageLifespan: Int\n  eyeColors: [String]\n  hairColors: [String]\n  skinColors: [String]\n  language: String\n  homeworld: Planet\n  created: String\n  edited: String\n  id: ID!\n}\ntype Query {\n  getPlanets: [Planet]\n}\ntype Mutation {\n  addPlanet(name: String diameter: Int rotationPeriod: Int orbitalPeriod: Int gravity: String population: [String] climates: [String] terrains: [String] surfaceWater: Float): Planet\n}\ntype Subscription {\n  addedPlanets(id: ID!): Planet\n  @aws_subscribe(mutations: [\"addPlanet\"])\n}\ninput AwesomeInput {\n  awesomeInput: String\n}\nenum Episodes {\n  The_Phantom_Menace\n  Attack_of_the_Clones\n  Revenge_of_the_Sith\n  A_New_Hope\n  The_Empire_Strikes_Back\n  Return_of_the_Jedi\n  The_Force_Awakens\n  The_Last_Jedi\n  The_Rise_of_Skywalker\n}\nunion Union = Species | Planet\n"
       }
     },
     "codefirstapiDefaultApiKey89863A80": {
@@ -134,6 +134,27 @@
         "Kind": "UNIT",
         "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
         "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "codefirstapiplanets0F6BB479",
+        "codefirstapiSchema148B6CDE"
+      ]
+    },
+    "codefirstapiplanetsMutationaddPlanetResolver155AF87E": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "codefirstapi1A3CC7D2",
+            "ApiId"
+          ]
+        },
+        "FieldName": "addPlanet",
+        "TypeName": "Mutation",
+        "DataSourceName": "planets",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "\n      #set($input = $context.arguments)\n      $util.qr($input.put(\"name\", $context.arguments.name))\n$util.qr($input.put(\"diameter\", $context.arguments.diameter))\n$util.qr($input.put(\"rotationPeriod\", $context.arguments.rotationPeriod))\n$util.qr($input.put(\"orbitalPeriod\", $context.arguments.orbitalPeriod))\n$util.qr($input.put(\"gravityPeriod\", $context.arguments.gravity))\n$util.qr($input.put(\"population\", $context.arguments.population))\n$util.qr($input.put(\"climates\", $context.arguments.climates))\n$util.qr($input.put(\"terrains\", $context.arguments.terrains))\n$util.qr($input.put(\"surfaceWater\", $context.arguments.surfaceWater))\n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
         "codefirstapiplanets0F6BB479",

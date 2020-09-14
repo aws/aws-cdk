@@ -23,4 +23,7 @@ if ! npx --no-install jest --version; then
   npm install --prefix . jest jest-junit aws-sdk
 fi
 
+# This must --runInBand because parallelism is arranged for inside the tests
+# themselves and they must run in the same process in order to coordinate to
+# make sure no 2 tests use the same region at the same time.
 npx jest --runInBand --verbose "$@"

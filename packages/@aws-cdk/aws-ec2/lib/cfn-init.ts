@@ -97,7 +97,12 @@ export class CloudFormationInit {
     // Note: This will not reflect mutations made after attaching.
     const bindResult = this.bind(attachedResource.stack, attachOptions);
     attachedResource.addMetadata('AWS::CloudFormation::Init', bindResult.configData);
-    const fingerprint = contentHash(JSON.stringify(bindResult.configData)).substr(0, 16);
+
+    // Need to resolve the various tokens from assets in the config,
+    // as well as include any asset hashes provided so the fingerprint is accurate.
+    const resolvedConfig = attachedResource.stack.resolve(bindResult.configData);
+    const fingerprintInput = { config: resolvedConfig, assetHash: bindResult.assetHash };
+    const fingerprint = contentHash(JSON.stringify(fingerprintInput)).substr(0, 16);
 
     attachOptions.instanceRole.addToPolicy(new iam.PolicyStatement({
       actions: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
@@ -140,7 +145,7 @@ export class CloudFormationInit {
     }
   }
 
-  private bind(scope: Construct, options: AttachInitOptions): { configData: any, authData: any } {
+  private bind(scope: Construct, options: AttachInitOptions): { configData: any, authData: any, assetHash?: any } {
     const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty() ? undefined : c);
 
     const configNameToBindResult = mapValues(nonEmptyConfigs, c => c._bind(scope, options));
@@ -151,6 +156,7 @@ export class CloudFormationInit {
         ...mapValues(configNameToBindResult, c => c.config),
       },
       authData: Object.values(configNameToBindResult).map(c => c.authentication).reduce(deepMerge, undefined),
+      assetHash: combineAssetHashesOrUndefined(Object.values(configNameToBindResult).map(c => c.assetHash)),
     };
   }
 
@@ -201,9 +207,9 @@ export class InitConfig {
     // Must be last!
     const servicesConfig = this.bindForType(InitElementType.SERVICE, bindOptions);
 
-    const authentication = [packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig]
-      .map(c => c?.authentication)
-      .reduce(deepMerge, undefined);
+    const allConfig = [packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig];
+    const authentication = allConfig.map(c => c?.authentication).reduce(deepMerge, undefined);
+    const assetHash = combineAssetHashesOrUndefined(allConfig.map(c => c?.assetHash));
 
     return {
       config: {
@@ -216,6 +222,7 @@ export class InitConfig {
         services: servicesConfig?.config,
       },
       authentication,
+      assetHash,
     };
   }
 
@@ -228,6 +235,7 @@ export class InitConfig {
     return {
       config: bindResults.map(r => r.config).reduce(deepMerge, undefined) ?? {},
       authentication: bindResults.map(r => r.authentication).reduce(deepMerge, undefined),
+      assetHash: combineAssetHashesOrUndefined(bindResults.map(r => r.assetHash)),
     };
   }
 
@@ -308,6 +316,12 @@ function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B | undefined): Re
     }
   }
   return ret;
+}
+
+// Combines all input asset hashes into one, or if no hashes are present, returns undefined.
+function combineAssetHashesOrUndefined(hashes: (string | undefined)[]): string | undefined {
+  const hashArray = hashes.filter((x): x is string => x !== undefined);
+  return hashArray.length > 0 ? hashArray.join('') : undefined;
 }
 
 function contentHash(content: string) {

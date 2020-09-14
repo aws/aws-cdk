@@ -443,7 +443,8 @@ nodeunitShim({
               isDefaultBehavior: true,
               lambdaFunctionAssociations: [{
                 eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
-                lambdaFunction: lambdaFunction.addVersion('1'),
+                lambdaFunction: lambdaFunction.currentVersion,
+                includeBody: true,
               }],
             },
           ],
@@ -457,8 +458,9 @@ nodeunitShim({
           'LambdaFunctionAssociations': [
             {
               'EventType': 'origin-request',
+              'IncludeBody': true,
               'LambdaFunctionARN': {
-                'Ref': 'LambdaVersion1BB7548E1',
+                'Ref': 'LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e',
               },
             },
           ],
@@ -492,7 +494,7 @@ nodeunitShim({
               isDefaultBehavior: true,
               lambdaFunctionAssociations: [{
                 eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
-                lambdaFunction: lambdaFunction.addVersion('1'),
+                lambdaFunction: lambdaFunction.currentVersion,
               }],
             },
           ],
@@ -532,7 +534,7 @@ nodeunitShim({
               isDefaultBehavior: true,
               lambdaFunctionAssociations: [{
                 eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
-                lambdaFunction: lambdaFunction.addVersion('1'),
+                lambdaFunction: lambdaFunction.currentVersion,
               }],
             },
           ],
@@ -541,6 +543,38 @@ nodeunitShim({
     });
 
     test.throws(() => app.synth(), /KEY/);
+
+    test.done();
+  },
+
+  'throws when associating a lambda with includeBody and a response event type'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    const fnVersion = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:testregion:111111111111:function:myTestFun:v1');
+
+    test.throws(() => {
+      new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+        originConfigs: [
+          {
+            s3OriginSource: {
+              s3BucketSource: sourceBucket,
+            },
+            behaviors: [
+              {
+                isDefaultBehavior: true,
+                lambdaFunctionAssociations: [{
+                  eventType: LambdaEdgeEventType.VIEWER_RESPONSE,
+                  includeBody: true,
+                  lambdaFunction: fnVersion,
+                }],
+              },
+            ],
+          },
+        ],
+      });
+    }, /'includeBody' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types./);
 
     test.done();
   },
@@ -1287,5 +1321,18 @@ nodeunitShim({
         test.done();
       },
     },
+  },
+
+  'existing distributions can be imported'(test: Test) {
+    const stack = new cdk.Stack();
+    const dist = CloudFrontWebDistribution.fromDistributionAttributes(stack, 'ImportedDist', {
+      domainName: 'd111111abcdef8.cloudfront.net',
+      distributionId: '012345ABCDEF',
+    });
+
+    test.equals(dist.distributionDomainName, 'd111111abcdef8.cloudfront.net');
+    test.equals(dist.distributionId, '012345ABCDEF');
+
+    test.done();
   },
 });

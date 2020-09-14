@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Construct, Stack, Token } from '@aws-cdk/core';
+import { Annotations, Construct, Stack, Token } from '@aws-cdk/core';
 import * as minimatch from 'minimatch';
 
 /**
@@ -112,7 +112,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     });
 
     if (props.repositoryName) {
-      this.node.addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
+      Annotations.of(this).addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
     }
 
     // include build context in "extra" so it will impact the hash
