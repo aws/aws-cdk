@@ -191,10 +191,9 @@ export interface ClusterAttributes {
   readonly kubectlEnvironment?: { [name: string]: string };
 
   /**
-   * A security group to use for `kubectl` execution.
-   *
-   * @default - The value of `clusterSecurityGroupId` is used. If neither are specified,
-   *            the cluster endpoint is expected to have public access.
+   * A security group to use for `kubectl` execution. If not specified, the k8s
+   * endpoint is expected to be accessible publicly.
+   * @default - k8s endpoint is expected to be accessible publicly
    */
   readonly kubectlSecurityGroupId?: string;
 
