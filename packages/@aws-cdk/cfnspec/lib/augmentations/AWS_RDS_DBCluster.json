@@ -1,6 +1,6 @@
 {
   "options": {
-    "classFile": "cluster",
+    "classFile": "private/cluster-internal",
     "class": "DatabaseClusterBase",
     "interfaceFile": "cluster-ref",
     "interface": "IDatabaseCluster"
