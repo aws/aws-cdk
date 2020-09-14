@@ -169,6 +169,18 @@ export interface IIntermediateType {
   addField(options: AddFieldOptions): void;
 }
 
+interface DirectiveOptions {
+  /**
+   * The authorization type of this directive
+   */
+  readonly mode?: AuthorizationType;
+
+  /**
+   * Mutation fields for a subscription directive
+   */
+  readonly mutationFields?: string[];
+}
+
 /**
  * Directives for types
  *
@@ -181,21 +193,21 @@ export class Directive {
    * Add the @aws_iam directive
    */
   public static iam(): Directive {
-    return new Directive('@aws_iam', AuthorizationType.IAM);
+    return new Directive('@aws_iam', { mode: AuthorizationType.IAM });
   }
 
   /**
    * Add the @aws_oidc directive
    */
   public static oidc(): Directive {
-    return new Directive('@aws_oidc', AuthorizationType.OIDC);
+    return new Directive('@aws_oidc', { mode: AuthorizationType.OIDC });
   }
 
   /**
    * Add the @aws_api_key directive
    */
   public static apiKey(): Directive {
-    return new Directive('@aws_api_key', AuthorizationType.API_KEY);
+    return new Directive('@aws_api_key', { mode: AuthorizationType.API_KEY });
   }
 
   /**
@@ -209,9 +221,25 @@ export class Directive {
     }
     // this function creates the cognito groups as a string (i.e. ["group1", "group2", "group3"])
     const stringify = (array: string[]): string => {
-      return array.reduce((acc, element) => `${acc}"${element}", `, '[').slice(0, -2) + ']';
+      return array.reduce((acc, element) => `${acc}"${element}", `, '').slice(0, -2);
     };
-    return new Directive(`@aws_auth(cognito_groups: ${stringify(groups)})`, AuthorizationType.USER_POOL);
+    return new Directive(`@aws_auth(cognito_groups: [${stringify(groups)}])`, { mode: AuthorizationType.USER_POOL });
+  }
+
+  /**
+   * Add the @aws_subscribe directive. Only use for top level Subscription type.
+   *
+   * @param mutations the mutation fields to link to
+   */
+  public static subscribe(...mutations: string[]): Directive {
+    if (mutations.length === 0) {
+      throw new Error(`Subscribe directive requires at least one mutation field to be supplied. Received: ${mutations.length}`);
+    }
+    // this function creates the subscribe directive as a string (i.e. ["mutation_field_1", "mutation_field_2"])
+    const stringify = (array: string[]): string => {
+      return array.reduce((acc, mutation) => `${acc}"${mutation}", `, '').slice(0, -2);
+    };
+    return new Directive(`@aws_subscribe(mutations: [${stringify(mutations)}])`, { mutationFields: mutations });
   }
 
   /**
@@ -224,6 +252,20 @@ export class Directive {
   }
 
   /**
+   * The authorization type of this directive
+   *
+   * @default - not an authorization directive
+   */
+  public readonly mode?: AuthorizationType;
+
+  /**
+   * Mutation fields for a subscription directive
+   *
+   * @default - not a subscription directive
+   */
+  public readonly mutationFields?: string[];
+
+  /**
    * the directive statement
    */
   private statement: string;
@@ -233,11 +275,10 @@ export class Directive {
    */
   protected modes?: AuthorizationType[];
 
-  private readonly mode?: AuthorizationType;
-
-  private constructor(statement: string, mode?: AuthorizationType) {
+  private constructor(statement: string, options?: DirectiveOptions) {
     this.statement = statement;
-    this.mode = mode;
+    this.mode = options?.mode;
+    this.mutationFields = options?.mutationFields;
   }
 
   /**
