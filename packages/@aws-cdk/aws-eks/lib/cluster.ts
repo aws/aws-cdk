@@ -937,12 +937,16 @@ export class Cluster extends ClusterBase {
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
-    this.kubectlSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+    const clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
 
     this.connections = new ec2.Connections({
-      securityGroups: [this.kubectlSecurityGroup, securityGroup],
+      securityGroups: [clusterSecurityGroup, securityGroup],
       defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
+
+    // we can use the cluster security group since its already attached to the cluster
+    // and configured to allow connections from itself.
+    this.kubectlSecurityGroup = clusterSecurityGroup;
 
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
