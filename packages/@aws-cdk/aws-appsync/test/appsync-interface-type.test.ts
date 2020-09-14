@@ -4,13 +4,12 @@ import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
 
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'api', {
+  api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.CODE,
   });
 });
 
@@ -25,7 +24,7 @@ describe('testing InterfaceType properties', () => {
   });
   test('basic InterfaceType produces correct schema', () => {
     // WHEN
-    api.appendToSchema(baseTest.toString());
+    api.addToSchema(baseTest.toString());
     const out = 'interface baseTest {\n  id: ID\n}\n';
 
     // THEN
@@ -36,11 +35,14 @@ describe('testing InterfaceType properties', () => {
 
   test('InterfaceType fields can have arguments', () => {
     // WHEN
-    baseTest.addField('test', new appsync.Field({
-      returnType: t.string,
-      args: { success: t.int },
-    }));
-    api.appendToSchema(baseTest.toString());
+    baseTest.addField({
+      fieldName: 'test',
+      field: new appsync.Field({
+        returnType: t.string,
+        args: { success: t.int },
+      }),
+    });
+    api.addToSchema(baseTest.toString());
     const out = 'interface baseTest {\n  id: ID\n  test(success: Int): String\n}\n';
 
     // THEN
@@ -51,12 +53,15 @@ describe('testing InterfaceType properties', () => {
 
   test('InterfaceType fields will not produce resolvers', () => {
     // WHEN
-    baseTest.addField('test', new appsync.ResolvableField({
-      returnType: t.string,
-      args: { success: t.int },
-      dataSource: api.addNoneDataSource('none'),
-    }));
-    api.appendToSchema(baseTest.toString());
+    baseTest.addField({
+      fieldName: 'test',
+      field: new appsync.ResolvableField({
+        returnType: t.string,
+        args: { success: t.int },
+        dataSource: api.addNoneDataSource('none'),
+      }),
+    });
+    api.addToSchema(baseTest.toString());
     const out = 'interface baseTest {\n  id: ID\n  test(success: Int): String\n}\n';
 
     // THEN
@@ -75,12 +80,95 @@ describe('testing InterfaceType properties', () => {
         test: graphqlType,
       },
     });
-    api.appendToSchema(test.toString());
+    api.addToSchema(test.toString());
     const out = 'type Test {\n  test: baseTest\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
+  });
+
+  test('Interface Type can generate Fields with Directives', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', {
+      definition: {
+        test: t.string,
+      },
+    });
+    test.addField({
+      fieldName: 'resolve',
+      field: new appsync.Field({
+        returnType: t.string,
+        directives: [appsync.Directive.apiKey()],
+      }),
+    });
+
+    api.addType(test);
+    const out = 'interface Test {\n  test: String\n  resolve: String\n  @aws_api_key\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('Interface Type can generate ResolvableFields with Directives, but not the resolver', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', {
+      definition: {
+        test: t.string,
+      },
+    });
+    test.addField({
+      fieldName: 'resolve',
+      field: new appsync.ResolvableField({
+        returnType: t.string,
+        directives: [appsync.Directive.apiKey()],
+        dataSource: api.addNoneDataSource('none'),
+      }),
+    });
+
+    api.addType(test);
+    const out = 'interface Test {\n  test: String\n  resolve: String\n  @aws_api_key\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+    expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
+  });
+
+  test('appsync fails addField with InterfaceType missing fieldName', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({ fieldName: 'test' });
+    }).toThrowError('Interface Types must have both fieldName and field options.');
+  });
+
+  test('appsync fails addField with InterfaceType missing field', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({ field: t.string });
+    }).toThrowError('Interface Types must have both fieldName and field options.');
+  });
+
+  test('appsync fails addField with InterfaceType missing both fieldName and field options', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({});
+    }).toThrowError('Interface Types must have both fieldName and field options.');
   });
 });
