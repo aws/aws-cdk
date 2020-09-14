@@ -2,7 +2,7 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Construct, Token } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
@@ -122,8 +122,8 @@ export class CodeCommitSourceAction extends Action {
     const createEvent = this.props.trigger === undefined ||
       this.props.trigger === CodeCommitTrigger.EVENTS;
     if (createEvent) {
-      const branchIdDisambiguator = this.branch === 'master' ? '' : `-${this.branch}-`;
-      this.props.repository.onCommit(`${stage.pipeline.node.uniqueId}${branchIdDisambiguator}EventRule`, {
+      const eventId = this.generateEventId(stage);
+      this.props.repository.onCommit(eventId, {
         target: new targets.CodePipeline(stage.pipeline),
         branches: [this.branch],
       });
@@ -152,5 +152,24 @@ export class CodeCommitSourceAction extends Action {
         PollForSourceChanges: this.props.trigger === CodeCommitTrigger.POLL,
       },
     };
+  }
+
+  private generateEventId(stage: codepipeline.IStage): string {
+    let branchIdDisambiguator: string;
+    let baseId = stage.pipeline.node.uniqueId;
+    if (this.branch === 'master') {
+      branchIdDisambiguator = baseId;
+    } else if (Token.isUnresolved(this.branch)) {
+      let candidate = baseId;
+      let counter = 0;
+      while (this.props.repository.node.tryFindChild(candidate) !== undefined) {
+        counter += 1;
+        candidate = `${baseId}-Branch${counter}-`;
+      }
+      branchIdDisambiguator = candidate;
+    } else {
+      branchIdDisambiguator = `${baseId}-${this.branch}-`;
+    }
+    return `${branchIdDisambiguator}EventRule`;
   }
 }

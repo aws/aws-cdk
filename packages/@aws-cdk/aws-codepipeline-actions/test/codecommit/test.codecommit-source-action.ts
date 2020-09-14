@@ -2,7 +2,7 @@ import { countResources, expect, haveResourceLike, not } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { Stack } from '@aws-cdk/core';
+import { Stack, Lazy } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
@@ -220,6 +220,51 @@ export = {
             ],
           },
         ],
+      }));
+
+      test.done();
+    },
+
+    'allows using a Token for the branch name'(test: Test) {
+      const stack = new Stack();
+
+      const branch = Lazy.stringValue({ produce: () => 'branch' });
+
+      const p = new codepipeline.Pipeline(stack, 'P');
+
+      const r = new codecommit.Repository(stack, 'R', {
+        repositoryName: 'repository',
+      });
+
+      const artifact = new codepipeline.Artifact();
+      const ccSourceAction = new cpactions.CodeCommitSourceAction({
+        actionName: 'CodeCommit',
+        repository: r,
+        branch: branch,
+        output: artifact,
+      });
+
+      p.addStage({
+        stageName: 'Source',
+        actions: [ccSourceAction],
+      });
+      p.addStage({
+        stageName: 'Build',
+        actions: [
+          new cpactions.CodeBuildAction({
+            actionName: 'Build',
+            project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+            input: artifact,
+          }),
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        EventPattern: {
+          detail: {
+            referenceName: [stack.resolve(branch)],
+          },
+        },
       }));
 
       test.done();
