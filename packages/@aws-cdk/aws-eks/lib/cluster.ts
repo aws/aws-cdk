@@ -175,7 +175,7 @@ export interface ClusterAttributes {
    * @default - if not specified, no additional security groups will be
    * considered in `cluster.connections`.
    */
-  readonly securityGroupIds?: string[];
+  readonly additionalSecurityGroupIds?: string[];
 
   /**
    * An IAM role with cluster administrator and "system:masters" permissions.
@@ -191,9 +191,10 @@ export interface ClusterAttributes {
   readonly kubectlEnvironment?: { [name: string]: string };
 
   /**
-   * A security group to use for `kubectl` execution. If not specified, the k8s
-   * endpoint is expected to be accessible publicly.
-   * @default - k8s endpoint is expected to be accessible publicly
+   * A security group to use for `kubectl` execution.
+   *
+   * @default - The value of `clusterSecurityGroupId` is used. If neither are specified,
+   *            the cluster endpoint is expected to have public access.
    */
   readonly kubectlSecurityGroupId?: string;
 
@@ -278,11 +279,11 @@ export interface CommonClusterOptions {
   readonly clusterName?: string;
 
   /**
-   * Security Group to use for Control Plane ENIs
+   * Additional security groups to be attached to the cluster.
    *
-   * @default - A security group is automatically created
+   * @default - No additional security groups.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly additionalSecurityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The Kubernetes version to run in the cluster
@@ -842,15 +843,15 @@ export class Cluster extends ClusterBase {
       ],
     });
 
-    const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
-      vpc: this.vpc,
-      description: 'EKS Control Plane Security Group',
-    });
+    const additionalSecurityGroups = [];
 
-    this.connections = new ec2.Connections({
-      securityGroups: [securityGroup],
-      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
-    });
+    if (props.additionalSecurityGroups && props.additionalSecurityGroups.length === 0) {
+      // add a default control plane security group for backwards compatiblity so that we don't require cluster replacement.
+      additionalSecurityGroups.push(new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
+        vpc: this.vpc,
+        description: 'EKS Control Plane Security Group',
+      }));
+    }
 
     this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
 
@@ -885,7 +886,7 @@ export class Cluster extends ClusterBase {
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
-        securityGroupIds: [securityGroup.securityGroupId],
+        securityGroupIds: additionalSecurityGroups?.map(sg => sg.securityGroupId),
         subnetIds,
       },
       ...(props.secretsEncryptionKey ? {
@@ -915,17 +916,9 @@ export class Cluster extends ClusterBase {
 
       this.kubectlPrivateSubnets = privateSubents;
 
-      this.kubectlSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
-        vpc: this.vpc,
-        description: 'Comminication between KubectlProvider and EKS Control Plane',
-      });
-
-      // grant the kubectl provider access to the cluster control plane.
-      this.connections.allowFrom(this.kubectlSecurityGroup, this.connections.defaultPort!);
-
-      // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
+      // the vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
       // this ensures that.
-      this._clusterResource.node.addDependency(this.kubectlSecurityGroup, this.vpc);
+      this._clusterResource.node.addDependency(this.vpc);
     }
 
     this.adminRole = resource.adminRole;
@@ -949,6 +942,15 @@ export class Cluster extends ClusterBase {
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
+
+    this.kubectlSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+
+    this.connections = new ec2.Connections({
+      securityGroups: [this.kubectlSecurityGroup],
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
+    });
+
+    props.additionalSecurityGroups?.forEach(sg => this.connections.addSecurityGroup(sg));
 
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
@@ -1579,18 +1581,24 @@ class ImportedCluster extends ClusterBase implements ICluster {
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
 
+    const kubectlSecurityGroupId = props.kubectlSecurityGroupId ?? props.clusterSecurityGroupId;
+
     this.clusterName = props.clusterName;
     this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
     this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
-    this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
+    this.kubectlSecurityGroup = kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', kubectlSecurityGroupId) : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map(subnetid => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${subnetid}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
 
     let i = 1;
-    for (const sgid of props.securityGroupIds ?? []) {
+    for (const sgid of props.additionalSecurityGroupIds ?? []) {
       this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgid));
       i++;
+    }
+
+    if (this.kubectlSecurityGroup) {
+      this.connections.addSecurityGroup(this.kubectlSecurityGroup);
     }
   }
 
