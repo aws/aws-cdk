@@ -175,7 +175,7 @@ export interface ClusterAttributes {
    * @default - if not specified, no additional security groups will be
    * considered in `cluster.connections`.
    */
-  readonly additionalSecurityGroupIds?: string[];
+  readonly securityGroupIds?: string[];
 
   /**
    * An IAM role with cluster administrator and "system:masters" permissions.
@@ -279,11 +279,11 @@ export interface CommonClusterOptions {
   readonly clusterName?: string;
 
   /**
-   * Additional security groups to be attached to the cluster.
+   * Security Group to use for Control Plane ENIs
    *
-   * @default - No additional security groups.
+   * @default - A security group is automatically created
    */
-  readonly additionalSecurityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * The Kubernetes version to run in the cluster
@@ -843,15 +843,10 @@ export class Cluster extends ClusterBase {
       ],
     });
 
-    const additionalSecurityGroups = [];
-
-    if (props.additionalSecurityGroups && props.additionalSecurityGroups.length === 0) {
-      // add a default control plane security group for backwards compatiblity so that we don't require cluster replacement.
-      additionalSecurityGroups.push(new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
-        vpc: this.vpc,
-        description: 'EKS Control Plane Security Group',
-      }));
-    }
+    const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
+      vpc: this.vpc,
+      description: 'EKS Control Plane Security Group',
+    });
 
     this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
 
@@ -886,7 +881,7 @@ export class Cluster extends ClusterBase {
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
-        securityGroupIds: additionalSecurityGroups?.map(sg => sg.securityGroupId),
+        securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
       },
       ...(props.secretsEncryptionKey ? {
@@ -946,11 +941,9 @@ export class Cluster extends ClusterBase {
     this.kubectlSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
 
     this.connections = new ec2.Connections({
-      securityGroups: [this.kubectlSecurityGroup],
+      securityGroups: [this.kubectlSecurityGroup, securityGroup],
       defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
-
-    props.additionalSecurityGroups?.forEach(sg => this.connections.addSecurityGroup(sg));
 
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
@@ -1592,7 +1585,7 @@ class ImportedCluster extends ClusterBase implements ICluster {
     this.kubectlLayer = props.kubectlLayer;
 
     let i = 1;
-    for (const sgid of props.additionalSecurityGroupIds ?? []) {
+    for (const sgid of props.securityGroupIds ?? []) {
       this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgid));
       i++;
     }

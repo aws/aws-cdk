@@ -19,116 +19,6 @@ const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
 
-  'can configure additional seucurity groups to the cluster'(test: Test) {
-    // GIVEN
-    const { stack, vpc } = testFixture();
-
-    // WHEN
-    new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
-      additionalSecurityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'Additional', 'additional-sg')],
-    });
-
-    // THEN
-    expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
-      Config: {
-        roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
-        version: '1.16',
-        resourcesVpcConfig: {
-          securityGroupIds: [
-            'additional-sg',
-          ],
-          subnetIds: [
-            { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
-            { Ref: 'VPCPublicSubnet2Subnet74179F39' },
-            { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-            { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-          ],
-        },
-      },
-    }));
-
-    test.done();
-  },
-
-  'additional securityg groups are added to connections on owned cluster'(test: Test) {
-
-    const { stack, vpc } = testFixture();
-
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
-      additionalSecurityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'Additional', 'additional-sg')],
-    });
-
-    test.equal(cluster.connections.securityGroups.length, 2);
-    test.equal(cluster.connections.securityGroups.filter(sg => sg.securityGroupId === 'additional-sg').length, 1);
-    test.done();
-
-  },
-
-  'additional securityg groups are added to connections on imported cluster'(test: Test) {
-
-    const { stack } = testFixture();
-
-    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
-      clusterName: 'cluster-name',
-      additionalSecurityGroupIds: ['additional-sg'],
-      clusterSecurityGroupId: 'cluster-sg',
-    });
-
-    test.equal(cluster.connections.securityGroups.length, 2);
-    test.equal(cluster.connections.securityGroups.filter(sg => sg.securityGroupId === 'additional-sg').length, 1);
-    test.done();
-
-  },
-
-  'can declare an additional security group in a different stack than the cluster'(test: Test) {
-
-    class ClusterStack extends cdk.Stack {
-      public eksCluster: eks.Cluster;
-
-      constructor(scope: cdk.Construct, id: string, props: { securityGroup: ec2.SecurityGroup, vpc: ec2.Vpc }) {
-        super(scope, id);
-        this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
-          additionalSecurityGroups: [props.securityGroup],
-          vpc: props.vpc,
-        });
-      }
-    }
-
-    class SecurityGroupStack extends cdk.Stack {
-
-      public readonly securityGroup: ec2.SecurityGroup;
-      public readonly vpc: ec2.Vpc;
-
-      constructor(scope: cdk.Construct, id: string) {
-        super(scope, id);
-
-        this.vpc = new ec2.Vpc(this, 'Vpc');
-        this.securityGroup = new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
-          vpc: this.vpc,
-        });
-      }
-    }
-
-    const { app } = testFixture();
-    const securityGroupStack = new SecurityGroupStack(app, 'SecurityGroupStack');
-    new ClusterStack(app, 'ClusterStack', {
-      securityGroup: securityGroupStack.securityGroup,
-      vpc: securityGroupStack.vpc,
-    });
-
-    // make sure we can synth (no circular dependencies between the stacks)
-    app.synth();
-
-    test.done();
-  },
-
   'can declare a manifest with a token from a different stack than the cluster that depends on the cluster stack'(test: Test) {
 
     class ClusterStack extends cdk.Stack {
@@ -663,7 +553,7 @@ export = {
       vpc: cluster.vpc,
       clusterEndpoint: cluster.clusterEndpoint,
       clusterName: cluster.clusterName,
-      additionalSecurityGroupIds: cluster.connections.securityGroups.map(x => x.securityGroupId),
+      securityGroupIds: cluster.connections.securityGroups.map(x => x.securityGroupId),
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
       clusterSecurityGroupId: cluster.clusterSecurityGroupId,
       clusterEncryptionConfigKeyArn: cluster.clusterEncryptionConfigKeyArn,

@@ -2,10 +2,9 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Annotations, CfnOutput, Construct, Resource, Stack, Token, Tags } from '@aws-cdk/core';
-import { ICluster, KubernetesVersion, NodeType, DefaultCapacityType, EksOptimizedImage, CapacityOptions, MachineImageType, AutoScalingGroupOptions } from './cluster';
+import { ICluster, ClusterAttributes, KubernetesVersion, NodeType, DefaultCapacityType, EksOptimizedImage, CapacityOptions, MachineImageType, AutoScalingGroupOptions, CommonClusterOptions } from './cluster';
 import { clusterArnComponents } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { HelmChartOptions, HelmChart } from './helm-chart';
@@ -20,75 +19,7 @@ const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.Inst
 /**
  * Common configuration props for EKS clusters.
  */
-export interface LegacyClusterProps {
-
-  /**
-   * The VPC in which to create the Cluster.
-   *
-   * @default - a VPC with default configuration will be created and can be accessed through `cluster.vpc`.
-   */
-  readonly vpc?: ec2.IVpc;
-
-  /**
-   * Where to place EKS Control Plane ENIs
-   *
-   * If you want to create public load balancers, this must include public subnets.
-   *
-   * For example, to only select private subnets, supply the following:
-   *
-   * ```ts
-   * vpcSubnets: [
-   *   { subnetType: ec2.SubnetType.Private }
-   * ]
-   * ```
-   *
-   * @default - All public and private subnets
-   */
-  readonly vpcSubnets?: ec2.SubnetSelection[];
-
-  /**
-   * Role that provides permissions for the Kubernetes control plane to make calls to AWS API operations on your behalf.
-   *
-   * @default - A role is automatically created for you
-   */
-  readonly role?: iam.IRole;
-
-  /**
-   * Name for the cluster.
-   *
-   * @default - Automatically generated name
-   */
-  readonly clusterName?: string;
-
-  /**
-   * Security Group to use for Control Plane ENIs
-   *
-   * @default - A security group is automatically created
-   */
-  readonly securityGroup?: ec2.ISecurityGroup;
-
-  /**
-   * The Kubernetes version to run in the cluster
-   */
-  readonly version: KubernetesVersion;
-
-  /**
-   * Determines whether a CloudFormation output with the name of the cluster
-   * will be synthesized.
-   *
-   * @default false
-   */
-  readonly outputClusterName?: boolean;
-
-  /**
-   * Determines whether a CloudFormation output with the `aws eks
-   * update-kubeconfig` command will be synthesized. This command will include
-   * the cluster name and, if applicable, the ARN of the masters IAM role.
-   *
-   * @default true
-   */
-  readonly outputConfigCommand?: boolean;
-
+export interface LegacyClusterProps extends CommonClusterOptions {
   /**
    * Number of instances to allocate as an initial capacity for this cluster.
    * Instance type can be configured through `defaultCapacityInstanceType`,
@@ -127,115 +58,6 @@ export interface LegacyClusterProps {
 }
 
 /**
- * Attributes for EKS clusters.
- */
-export interface LegacyClusterAttributes {
-
-  /**
-   * The VPC in which this Cluster was created
-   * @default - if not specified `cluster.vpc` will throw an error
-   */
-  readonly vpc?: ec2.IVpc;
-
-  /**
-   * The physical name of the Cluster
-   */
-  readonly clusterName: string;
-
-  /**
-   * The API Server endpoint URL
-   * @default - if not specified `cluster.clusterEndpoint` will throw an error.
-   */
-  readonly clusterEndpoint?: string;
-
-  /**
-   * The certificate-authority-data for your cluster.
-   * @default - if not specified `cluster.clusterCertificateAuthorityData` will
-   * throw an error
-   */
-  readonly clusterCertificateAuthorityData?: string;
-
-  /**
-   * The cluster security group that was created by Amazon EKS for the cluster.
-   * @default - if not specified `cluster.clusterSecurityGroupId` will throw an
-   * error
-   */
-  readonly clusterSecurityGroupId?: string;
-
-  /**
-   * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
-   * @default - if not specified `cluster.clusterEncryptionConfigKeyArn` will
-   * throw an error
-   */
-  readonly clusterEncryptionConfigKeyArn?: string;
-
-  /**
-   * Additional security groups associated with this cluster.
-   * @default - if not specified, no additional security groups will be
-   * considered in `cluster.connections`.
-   */
-  readonly securityGroupIds?: string[];
-
-  /**
-   * An IAM role with cluster administrator and "system:masters" permissions.
-   * @default - if not specified, it not be possible to issue `kubectl` commands
-   * against an imported cluster.
-   */
-  readonly kubectlRoleArn?: string;
-
-  /**
-   * Environment variables to use when running `kubectl` against this cluster.
-   * @default - no additional variables
-   */
-  readonly kubectlEnvironment?: { [name: string]: string };
-
-  /**
-   * A security group to use for `kubectl` execution. If not specified, the k8s
-   * endpoint is expected to be accessible publicly.
-   * @default - k8s endpoint is expected to be accessible publicly
-   */
-  readonly kubectlSecurityGroupId?: string;
-
-  /**
-   * Subnets to host the `kubectl` compute resources. If not specified, the k8s
-   * endpoint is expected to be accessible publicly.
-   * @default - k8s endpoint is expected to be accessible publicly
-   */
-  readonly kubectlPrivateSubnetIds?: string[];
-
-  /**
-   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
-   *
-   * By default, the provider will use the layer included in the
-   * "aws-lambda-layer-kubectl" SAR application which is available in all
-   * commercial regions.
-   *
-   * To deploy the layer locally, visit
-   * https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md
-   * for instructions on how to prepare the .zip file and then define it in your
-   * app as follows:
-   *
-   * ```ts
-   * const layer = new lambda.LayerVersion(this, 'kubectl-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-   *   compatibleRuntimes: [lambda.Runtime.PROVIDED]
-   * });
-   *
-   * Or you can use the standard layer like this (with options
-   * to customize the version and SAR application ID):
-   *
-   * ```ts
-   * const layer = new eks.KubectlLayer(this, 'KubectlLayer');
-   * ```
-   *
-   * @default - the layer provided by the `aws-lambda-layer-kubectl` SAR app.
-   * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
-   */
-  readonly kubectlLayer?: lambda.ILayerVersion;
-
-}
-
-/**
  * A Cluster represents a managed Kubernetes Service (EKS)
  *
  * This is a fully managed cluster of API Servers (control-plane)
@@ -251,7 +73,7 @@ export class LegacyCluster extends Resource implements ICluster {
    * @param id the id or name to import as
    * @param attrs the cluster properties to use for importing information
    */
-  public static fromClusterAttributes(scope: Construct, id: string, attrs: LegacyClusterAttributes): ICluster {
+  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
     return new ImportedCluster(scope, id, attrs);
   }
 
@@ -585,7 +407,7 @@ class ImportedCluster extends Resource implements ICluster {
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
 
-  constructor(scope: Construct, id: string, private readonly props: LegacyClusterAttributes) {
+  constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
 
     this.clusterName = props.clusterName;
