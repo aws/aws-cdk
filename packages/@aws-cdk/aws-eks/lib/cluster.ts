@@ -61,17 +61,10 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterCertificateAuthorityData: string;
 
   /**
-   * The ID of the cluster security group that was created by Amazon EKS for the cluster.
+   * The cluster security group that was created by Amazon EKS for the cluster.
    * @attribute
    */
   readonly clusterSecurityGroupId: string;
-
-  /**
-   * The cluster security group that was created by Amazon EKS for the cluster.
-   * Created from the `clusterSecurityGroupId`.
-   * @attribute
-   */
-  readonly clusterSecurityGroup: ec2.ISecurityGroup;
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
@@ -166,7 +159,7 @@ export interface ClusterAttributes {
 
   /**
    * The cluster security group that was created by Amazon EKS for the cluster.
-   * @default - if not specified `cluster.clusterSecurityGroupId` and `cluster.clusterSecurityGroup` will throw an
+   * @default - if not specified `cluster.clusterSecurityGroupId` will throw an
    * error
    */
   readonly clusterSecurityGroupId?: string;
@@ -590,7 +583,6 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterEndpoint: string;
   public abstract readonly clusterCertificateAuthorityData: string;
   public abstract readonly clusterSecurityGroupId: string;
-  public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
   public abstract readonly kubectlRole?: iam.IRole;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
@@ -693,15 +685,9 @@ export class Cluster extends ClusterBase {
   public readonly clusterCertificateAuthorityData: string;
 
   /**
-   * The ID of the cluster security group that was created by Amazon EKS for the cluster.
+   * The cluster security group that was created by Amazon EKS for the cluster.
    */
   public readonly clusterSecurityGroupId: string;
-
-  /**
-   * The cluster security group that was created by Amazon EKS for the cluster.
-   * Created from `clusterSecurityGroupId`.
-   */
-  public readonly clusterSecurityGroup: ec2.ISecurityGroup;
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
@@ -952,16 +938,16 @@ export class Cluster extends ClusterBase {
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
-    this.clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+    const clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
 
     this.connections = new ec2.Connections({
-      securityGroups: [this.clusterSecurityGroup, securityGroup],
+      securityGroups: [clusterSecurityGroup, securityGroup],
       defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
     // we can use the cluster security group since its already attached to the cluster
     // and configured to allow connections from itself.
-    this.kubectlSecurityGroup = this.clusterSecurityGroup;
+    this.kubectlSecurityGroup = clusterSecurityGroup;
 
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
@@ -1591,8 +1577,6 @@ class ImportedCluster extends ClusterBase implements ICluster {
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
 
-  private readonly _clusterSecurityGroup?: ec2.ISecurityGroup;
-
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
 
@@ -1611,16 +1595,8 @@ class ImportedCluster extends ClusterBase implements ICluster {
     }
 
     if (props.clusterSecurityGroupId) {
-      this._clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', props.clusterSecurityGroupId);
-      this.connections.addSecurityGroup(this._clusterSecurityGroup);
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', props.clusterSecurityGroupId));
     }
-  }
-
-  public get clusterSecurityGroup() {
-    if (!this._clusterSecurityGroup) {
-      throw new Error('"clusterSecurityGroup" is not defined for this imported cluster');
-    }
-    return this._clusterSecurityGroup;
   }
 
   public get vpc() {
