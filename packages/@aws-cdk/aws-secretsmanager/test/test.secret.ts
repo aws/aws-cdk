@@ -463,7 +463,7 @@ export = {
 
     // THEN
     test.equals(secret.secretArn, secretArn);
-    test.equals(secret.secretName, 'MySecret-f3gDy9');
+    test.equals(secret.secretName, 'MySecret');
     test.same(secret.encryptionKey, undefined);
     test.deepEqual(stack.resolve(secret.secretValue), `{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
     test.deepEqual(stack.resolve(secret.secretValueFromJson('password')), `{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
@@ -473,10 +473,12 @@ export = {
   'import by secretArn throws if ARN is malformed'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret'; // No resource name
+    const arnWithoutResourceName = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret';
+    const arnWithoutSecretsManagerSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
 
     // WHEN
-    test.throws(() => secretsmanager.Secret.fromSecretArn(stack, 'Secret', secretArn), /invalid ARN format/);
+    test.throws(() => secretsmanager.Secret.fromSecretArn(stack, 'Secret1', arnWithoutResourceName), /invalid ARN format/);
+    test.throws(() => secretsmanager.Secret.fromSecretArn(stack, 'Secret2', arnWithoutSecretsManagerSuffix), /invalid ARN format/);
     test.done();
   },
 
@@ -493,7 +495,7 @@ export = {
 
     // THEN
     test.equals(secret.secretArn, secretArn);
-    test.equals(secret.secretName, 'MySecret-f3gDy9');
+    test.equals(secret.secretName, 'MySecret');
     test.same(secret.encryptionKey, encryptionKey);
     test.deepEqual(stack.resolve(secret.secretValue), `{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
     test.deepEqual(stack.resolve(secret.secretValueFromJson('password')), `{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);

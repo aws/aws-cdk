@@ -156,7 +156,7 @@ abstract class SecretBase extends Resource implements ISecret {
     const result = iam.Grant.addToPrincipal({
       grantee,
       actions: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-      resourceArns: [this.arnForPolicies()],
+      resourceArns: [this.arnForPolicies],
       scope: this,
     });
     if (versionStages != null && result.principalStatement) {
@@ -180,7 +180,7 @@ abstract class SecretBase extends Resource implements ISecret {
     const result = iam.Grant.addToPrincipal({
       grantee,
       actions: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
-      resourceArns: [this.arnForPolicies()],
+      resourceArns: [this.arnForPolicies],
       scope: this,
     });
 
@@ -240,7 +240,7 @@ abstract class SecretBase extends Resource implements ISecret {
    * Provides an identifier for this secret for use in IAM policies. Typically, this is just the secret ARN.
    * However, secrets imported by name require a different format.
    */
-  protected arnForPolicies() { return this.secretArn; }
+  protected get arnForPolicies() { return this.secretArn; }
 }
 
 /**
@@ -264,7 +264,7 @@ export class Secret extends SecretBase {
       protected readonly autoCreatePolicy = false;
       // Overrides the secretArn for grant* methods, where the secretArn must be in ARN format.
       // Also adds a wildcard to the resource name to support the SecretsManager-provided suffix.
-      protected arnForPolicies() {
+      protected get arnForPolicies() {
         return Stack.of(this).formatArn({
           service: 'secretsmanager',
           resource: 'secret',
@@ -603,9 +603,12 @@ export interface SecretStringGenerator {
 
 /** Returns the secret name if defined, otherwise attempts to parse it from the ARN. */
 export function parseSecretName(construct: IConstruct, secretArn: string, secretName?: string) {
-  const secretNameFromNameOrArn = secretName ?? Stack.of(construct).parseArn(secretArn).resourceName;
-  if (!secretNameFromNameOrArn) {
-    throw new Error('invalid ARN format; no secret name provided');
+  if (secretName) { return secretName; }
+  const resourceName = Stack.of(construct).parseArn(secretArn).resourceName;
+  if (resourceName) {
+    // Secret resource names are in the format `${secretName}-${SecretsManager suffix}`
+    const secretNameFromArn = resourceName.substr(0, resourceName.lastIndexOf('-'));
+    if (secretNameFromArn) { return secretNameFromArn; }
   }
-  return secretNameFromNameOrArn;
+  throw new Error('invalid ARN format; no secret name provided');
 }
