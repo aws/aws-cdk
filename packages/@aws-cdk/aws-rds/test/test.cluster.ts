@@ -720,6 +720,62 @@ export = {
     test.done();
   },
 
+  'throws when s3 import bucket is supplied and database engine does not support it'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN / THEN
+    test.throws(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_10_4,
+        }),
+        instances: 1,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        },
+        s3ImportBuckets: [bucket],
+      });
+    }), /s3Import is not supported for engine version 10.4. Use an engine version that supports the s3Import feature./;
+
+    test.done();
+  },
+
+  'throws when s3 export bucket is supplied and database engine does not support it'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN / THEN
+    test.throws(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_10_4,
+        }),
+        instances: 1,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        },
+        s3ExportBuckets: [bucket],
+      });
+    }), /s3Import is not supported for engine version 10.4. Use an engine version that supports the s3Import feature./;
+
+    test.done();
+  },
+
   'cluster with s3 export bucket adds supported feature name to IAM role'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -1045,7 +1101,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.auroraPostgres({
-        version: AuroraPostgresEngineVersion.VER_11_4,
+        version: AuroraPostgresEngineVersion.VER_11_6,
       }),
       instances: 1,
       masterUser: {
