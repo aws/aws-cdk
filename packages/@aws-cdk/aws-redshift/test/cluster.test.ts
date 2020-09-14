@@ -358,6 +358,22 @@ test('throws when trying to add single user rotation multiple times', () => {
   }).toThrowError();
 });
 
+test('can use existing cluster subnet group', () => {
+  // GIVEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    subnetGroupName: 'my-existing-cluster-subnet-group',
+  });
+
+  expect(stack).not.toHaveResource('AWS::Redshift::ClusterSubnetGroup');
+  expect(stack).toHaveResourceLike('AWS::Redshift::Cluster', {
+    ClusterSubnetGroupName: 'my-existing-cluster-subnet-group',
+  });
+});
+
 function testStack() {
   const newTestStack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
   newTestStack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);

@@ -245,16 +245,23 @@ export interface ClusterProps {
   /**
    * Where to place the instances within the VPC
    *
-   * @default private subnets
+   * @default - private subnets
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Security group.
    *
-   * @default a new security group is created.
+   * @default - a new security group is created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The name of an existing Redshift cluster subnet group.
+   *
+   * @default - a new subnet group will be created.
+   */
+  readonly subnetGroupName?: string;
 
   /**
    * Username and password for the administrative user
@@ -398,14 +405,17 @@ export class Cluster extends ClusterBase {
 
     const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
 
-    const subnetGroup = new CfnClusterSubnetGroup(this, 'Subnets', {
-      description: `Subnets for ${id} Redshift cluster`,
-      subnetIds,
-    });
-
-    subnetGroup.applyRemovalPolicy(removalPolicy, {
-      applyToUpdateReplacePolicy: true,
-    });
+    let subnetGroupName = props.subnetGroupName;
+    if (!subnetGroupName) {
+      const subnetGroup = new CfnClusterSubnetGroup(this, 'Subnets', {
+        description: `Subnets for ${id} Redshift cluster`,
+        subnetIds,
+      });
+      subnetGroup.applyRemovalPolicy(removalPolicy, {
+        applyToUpdateReplacePolicy: true,
+      });
+      subnetGroupName = subnetGroup.ref;
+    }
 
     const securityGroups = props.securityGroups !== undefined ?
       props.securityGroups : [new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -448,7 +458,7 @@ export class Cluster extends ClusterBase {
       automatedSnapshotRetentionPeriod: 1,
       clusterType,
       clusterIdentifier: props.clusterName,
-      clusterSubnetGroupName: subnetGroup.ref,
+      clusterSubnetGroupName: subnetGroupName,
       vpcSecurityGroupIds: securityGroupIds,
       port: props.port,
       clusterParameterGroupName: props.parameterGroup && props.parameterGroup.clusterParameterGroupName,
