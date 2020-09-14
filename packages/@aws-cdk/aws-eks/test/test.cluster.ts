@@ -236,6 +236,7 @@ export = {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
         version: '1.16',
         resourcesVpcConfig: {
+          securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
             { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
             { Ref: 'VPCPublicSubnet2Subnet74179F39' },
@@ -1164,6 +1165,9 @@ export = {
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
           version: '1.16',
           resourcesVpcConfig: {
+            securityGroupIds: [
+              { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },
+            ],
             subnetIds: [
               { Ref: 'MyClusterDefaultVpcPublicSubnet1SubnetFAE5A9B6' },
               { Ref: 'MyClusterDefaultVpcPublicSubnet2SubnetF6D028A0' },
