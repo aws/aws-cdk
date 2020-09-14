@@ -11,6 +11,7 @@ import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
 import { getOrCreateKubectlLayer } from '../lib/kubectl-provider';
+import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
@@ -1145,6 +1146,27 @@ export = {
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('/amazon-linux-2-arm64/'),
       ), 'EKS AMI with GPU should be in ssm parameters');
+      test.done();
+    },
+
+    'BottleRocketImage() with specific kubernetesVersion return correct AMI'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new BottleRocketImage({ kubernetesVersion: '1.17' }).getImage(stack);
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
+          (v as any).Default.includes('/bottlerocket/'),
+      ), 'BottleRocket AMI should be in ssm parameters');
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
+          (v as any).Default.includes('/aws-k8s-1.17/'),
+      ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
 
