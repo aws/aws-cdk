@@ -19,6 +19,23 @@ const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
 
+  'cluster connections include both control plane and cluster security group'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      version: eks.KubernetesVersion.V1_17,
+    });
+
+    test.deepEqual(cluster.connections.securityGroups.map(sg => stack.resolve(sg.securityGroupId)), [
+      { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
+      { 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] },
+    ]);
+
+    test.done();
+
+  },
+
   'can declare a security group from a different stack'(test: Test) {
 
     class ClusterStack extends cdk.Stack {
