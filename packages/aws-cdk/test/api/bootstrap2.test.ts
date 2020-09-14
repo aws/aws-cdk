@@ -32,6 +32,7 @@ describe('Bootstrapping v2', () => {
     await bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
         bucketName: 'my-bucket-name',
+        cloudFormationExecutionPolicies: ['arn:policy'],
       },
     });
 
@@ -46,6 +47,7 @@ describe('Bootstrapping v2', () => {
   test('passes the KMS key ID as a CFN parameter', async () => {
     await bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
+        cloudFormationExecutionPolicies: ['arn:policy'],
         kmsKeyId: 'my-kms-key-id',
       },
     });
@@ -61,6 +63,7 @@ describe('Bootstrapping v2', () => {
   test('passes false to PublicAccessBlockConfiguration', async () => {
     await bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
+        cloudFormationExecutionPolicies: ['arn:policy'],
         publicAccessBlockConfiguration: false,
       },
     });
@@ -79,7 +82,7 @@ describe('Bootstrapping v2', () => {
       },
     }))
       .rejects
-      .toThrow(/--cloudformation-execution-policies.*--trust/);
+      .toThrow(/--cloudformation-execution-policies/);
   });
 
   test('allow adding trusted account if there was already a policy on the stack', async () => {
@@ -104,7 +107,11 @@ describe('Bootstrapping v2', () => {
       version: 999,
     };
 
-    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {}))
+    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        cloudFormationExecutionPolicies: ['arn:policy'],
+      },
+    }))
       .rejects.toThrow('Not downgrading existing bootstrap stack');
   });
 
@@ -114,7 +121,11 @@ describe('Bootstrapping v2', () => {
       template = args.stack.template;
     });
 
-    await bootstrapper.bootstrapEnvironment(env, sdk, {});
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        cloudFormationExecutionPolicies: ['arn:policy'],
+      },
+    });
 
     const exports = Object.values(template.Outputs ?? {})
       .filter((o: any) => o.Export !== undefined)
@@ -127,7 +138,11 @@ describe('Bootstrapping v2', () => {
   });
 
   test('stack is not termination protected by default', async () => {
-    await bootstrapper.bootstrapEnvironment(env, sdk);
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        cloudFormationExecutionPolicies: ['arn:policy'],
+      },
+    });
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
       stack: expect.objectContaining({
@@ -139,6 +154,9 @@ describe('Bootstrapping v2', () => {
   test('stack is termination protected when option is set', async () => {
     await bootstrapper.bootstrapEnvironment(env, sdk, {
       terminationProtection: true,
+      parameters: {
+        cloudFormationExecutionPolicies: ['arn:policy'],
+      },
     });
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
@@ -153,7 +171,11 @@ describe('Bootstrapping v2', () => {
       EnableTerminationProtection: true,
     });
 
-    await bootstrapper.bootstrapEnvironment(env, sdk, {});
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        cloudFormationExecutionPolicies: ['arn:policy'],
+      },
+    });
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
       stack: expect.objectContaining({
@@ -169,6 +191,9 @@ describe('Bootstrapping v2', () => {
 
     await bootstrapper.bootstrapEnvironment(env, sdk, {
       terminationProtection: false,
+      parameters: {
+        cloudFormationExecutionPolicies: ['arn:policy'],
+      },
     });
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({

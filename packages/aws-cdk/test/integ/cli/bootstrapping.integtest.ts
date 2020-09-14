@@ -41,7 +41,8 @@ integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', 
   await fixture.cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
     '--bootstrap-bucket-name', newBootstrapBucketName,
-    '--qualifier', fixture.qualifier], {
+    '--qualifier', fixture.qualifier,
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess'], {
     modEnv: {
       CDK_NEW_BOOTSTRAP: '1',
     },
