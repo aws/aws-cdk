@@ -982,10 +982,6 @@ export = {
             FeatureName: 'S3_INTEGRATION',
             RoleArn: { 'Fn::GetAtt': ['DBS3ImportRoleEF69B7D7', 'Arn'] },
           },
-          {
-            FeatureName: 'S3_INTEGRATION',
-            RoleArn: { 'Fn::GetAtt': ['DBS3ImportRoleEF69B7D7', 'Arn'] },
-          },
         ],
         OptionGroupName: { Ref: 'DBInstanceOptionGroup46C68006' },
       }));
