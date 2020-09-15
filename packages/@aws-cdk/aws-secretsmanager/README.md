@@ -95,7 +95,7 @@ new secretsmanager.SecretRotation(this, 'SecretRotation', {
   secret: mySecret,
   target: myDatabase, // a Connectable
   vpc: myVpc, // The VPC where the secret rotation application will be deployed
-  excludeCharacters: ` ;+%{}` + `@'"\`/\\#`, // A string of characters to never use when generating new passwords. Example is a superset of the characters which will break DMS endpoints and characters which cause problems in BASH scripts.
+  excludeCharacters: ProblemCharacters.AWS_DMS + ProblemCharacters.SHELL, // A string of characters to never use when generating new passwords. Example is a superset of the characters which will break DMS endpoints and characters which cause problems in shell scripts.
 });
 ```
 

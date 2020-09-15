@@ -6,6 +6,14 @@ import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
 
 /**
+ * Character Sets which cause problems for other services when used in passwords.
+ */
+export enum ProblemCharacters {
+  AWS_DMS = ' %+:;{}',
+  SHELL = '~`#$&*()|[]{};<>?!\'\\',
+}
+
+/**
  * A secret in AWS Secrets Manager.
  */
 export interface ISecret extends IResource {
