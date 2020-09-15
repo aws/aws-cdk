@@ -11,6 +11,7 @@ import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
 import { getOrCreateKubectlLayer } from '../lib/kubectl-provider';
+import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
@@ -18,6 +19,61 @@ import { testFixture, testFixtureNoVpc } from './util';
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
+
+  'cluster connections include both control plane and cluster security group'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      version: eks.KubernetesVersion.V1_17,
+    });
+
+    test.deepEqual(cluster.connections.securityGroups.map(sg => stack.resolve(sg.securityGroupId)), [
+      { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
+      { 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] },
+    ]);
+
+    test.done();
+
+  },
+
+  'can declare a security group from a different stack'(test: Test) {
+
+    class ClusterStack extends cdk.Stack {
+      public eksCluster: eks.Cluster;
+
+      constructor(scope: cdk.Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
+        super(scope, id);
+        this.eksCluster = new eks.Cluster(this, 'Cluster', {
+          version: eks.KubernetesVersion.V1_17,
+          securityGroup: props.sg,
+          vpc: props.vpc,
+        });
+      }
+    }
+
+    class NetworkStack extends cdk.Stack {
+
+      public readonly securityGroup: ec2.ISecurityGroup;
+      public readonly vpc: ec2.IVpc;
+
+      constructor(scope: cdk.Construct, id: string) {
+        super(scope, id);
+        this.vpc = new ec2.Vpc(this, 'Vpc');
+        this.securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.vpc });
+      }
+
+    }
+
+    const { app } = testFixture();
+    const networkStack = new NetworkStack(app, 'NetworkStack');
+    new ClusterStack(app, 'ClusterStack', { sg: networkStack.securityGroup, vpc: networkStack.vpc });
+
+    // make sure we can synth (no circular dependencies between the stacks)
+    app.synth();
+
+    test.done();
+  },
 
   'can declare a manifest with a token from a different stack than the cluster that depends on the cluster stack'(test: Test) {
 
@@ -1148,6 +1204,27 @@ export = {
       test.done();
     },
 
+    'BottleRocketImage() with specific kubernetesVersion return correct AMI'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new BottleRocketImage({ kubernetesVersion: '1.17' }).getImage(stack);
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
+          (v as any).Default.includes('/bottlerocket/'),
+      ), 'BottleRocket AMI should be in ssm parameters');
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
+          (v as any).Default.includes('/aws-k8s-1.17/'),
+      ), 'kubernetesVersion should be in ssm parameters');
+      test.done();
+    },
+
     'when using custom resource a creation role & policy is defined'(test: Test) {
       // GIVEN
       const { stack } = testFixture();
@@ -1965,7 +2042,7 @@ export = {
         VpcConfig: {
           SecurityGroupIds: [
             {
-              Ref: 'referencetoStackCluster1KubectlProviderSecurityGroupDF05D03AGroupId',
+              Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId',
             },
           ],
           SubnetIds: [
@@ -2080,7 +2157,7 @@ export = {
         VpcConfig: {
           SecurityGroupIds: [
             {
-              Ref: 'referencetoStackCluster1KubectlProviderSecurityGroupDF05D03AGroupId',
+              Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId',
             },
           ],
           SubnetIds: [
