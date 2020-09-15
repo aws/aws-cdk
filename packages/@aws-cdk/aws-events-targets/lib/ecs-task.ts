@@ -107,7 +107,7 @@ export class EcsTask implements events.IRuleTarget {
   private readonly taskDefinition: ecs.TaskDefinition;
   private readonly taskCount: number;
   private readonly role: iam.IRole;
-  private readonly platformVersion: ecs.FargatePlatformVersion|undefined;
+  private readonly platformVersion?: ecs.FargatePlatformVersion;
 
   constructor(private readonly props: EcsTaskProps) {
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
