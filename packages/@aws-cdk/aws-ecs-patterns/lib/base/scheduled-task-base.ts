@@ -32,6 +32,13 @@ export interface ScheduledTaskBaseProps {
    * in the Amazon CloudWatch User Guide.
    */
   readonly schedule: Schedule;
+  
+  /**
+   * Existing IAM role to run the ECS task
+   *
+   * @default A new IAM role is created
+   */
+  public readonly eventRole?: iam.IRole;
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
@@ -130,7 +137,9 @@ export abstract class ScheduledTaskBase extends Construct {
     }
     this.desiredTaskCount = props.desiredTaskCount || 1;
     this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE };
-
+    // Allow eventRole to remain undefined as it will be defaulted by events-targets/ecs-task.
+    this.eventRole = props.eventRole || undefined;
+    
     // An EventRule that describes the event trigger (in this case a scheduled run)
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
       schedule: props.schedule,
@@ -149,6 +158,7 @@ export abstract class ScheduledTaskBase extends Construct {
       taskDefinition,
       taskCount: this.desiredTaskCount,
       subnetSelection: this.subnetSelection,
+      role: this.eventRole,
     });
 
     this.eventRule.addTarget(eventRuleTarget);
