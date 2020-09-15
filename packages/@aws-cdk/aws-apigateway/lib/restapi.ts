@@ -406,7 +406,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     return resource;
   }
 
-  protected configureDeployment(props: RestApiOptions, account) {
+  protected configureDeployment(props: RestApiOptions, account?: CfnAccount) {
     const deploy = props.deploy === undefined ? true : props.deploy;
     if (deploy) {
 
@@ -425,6 +425,8 @@ export abstract class RestApiBase extends Resource implements IRestApi {
         ...props.deployOptions,
       });
 
+      // We add this dependency to prevent a race condition where the stage is created before the account has finished creating.
+      // This can happen when cloudwatch logging is enabled
       if (account) this.deploymentStage.node.addDependency(account);
 
       new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
