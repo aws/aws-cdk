@@ -50,20 +50,29 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 
 ### Gitpod
 
-For setting up a local development environment,
+For setting up a CDK development environment,
 we recommend using [Gitpod](http://gitpod.io) -
 a service that allows you to spin up an in-browser
 Visual Studio Code-compatible editor,
 with everything set up and ready to go for CDK development.
+Best of all, the project is already built.
+
 Just click the button below to create your private workspace:
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/aws/aws-cdk)
 
-This will start a new Gitpod workspace,
-and immediately kick off a build of the CDK code.
-Once it's done (it takes around an hour, unfortunately),
-you can work on any package that you want to modify,
+This will start a new Gitpod workspace.
+You can now work on any package that you want to modify,
 as described in ['Quick Iteration'](#quick-iteration) below.
+You can build and test only the module you're working on and its
+consumers using `scripts/buildown`.
+
+We don't recommend doing a full build on GitPod; it takes over
+an hour. Also, it will fail unless you include `--skip-prereqs`
+on the `yarn build` command (because Docker doesn't work in a
+Gitpod workspace). Instead, just discard your Gitpod workspace
+and create a new one. You will get the latest source files and
+bulid artifacts. 
 
 Gitpod is free for 50 hours per month -
 make sure to stop your workspace when you're done
