@@ -15,6 +15,13 @@ export interface MeshProps {
    * The service mesh into which to register the service
    */
   readonly mesh: appmesh.Mesh;
+
+  /**
+   * The protocol of the service: Protocol.HTTP, Protocol.HTTP2,
+   * Protocol.TCP, Protocol.GRPC
+   * @default - Protocol.HTTP
+   */
+  readonly protocol?: appmesh.Protocol;
 }
 
 /**
@@ -27,9 +34,20 @@ export class AppMeshExtension extends ServiceExtension {
   protected virtualService!: appmesh.VirtualService;
   private mesh: appmesh.Mesh;
 
+  /**
+   * The protocol of the service, for App Mesh routing purposes.
+   */
+  public readonly protocol: appmesh.Protocol;
+
   constructor(props: MeshProps) {
     super('appmesh');
     this.mesh = props.mesh;
+
+    if (props.protocol) {
+      this.protocol = props.protocol;
+    } else {
+      this.protocol = appmesh.Protocol.HTTP;
+    }
   }
 
   public prehook(service: Service, scope: cdk.Construct) {
@@ -87,14 +105,29 @@ export class AppMeshExtension extends ServiceExtension {
   }
 
   public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
-    const appMeshRepo = ecr.Repository.fromRepositoryArn(
+    var region = cdk.Stack.of(this.scope).region;
+    var appMeshRepo;
+    var ownerAccount;
+
+    // This is currently necessary because App Mesh has different images in each region,
+    // and some regions have their images in a different account. See:
+    // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
+    if (region === 'me-south-1') {
+      ownerAccount = 772975370895;
+    } else if (region === 'ap-east-1') {
+      ownerAccount = 856666278305;
+    } else {
+      ownerAccount = 840364872350;
+    }
+
+    appMeshRepo = ecr.Repository.fromRepositoryArn(
       this.scope,
       `${this.parentService.id}-envoy-repo`,
-      'arn:aws:ecr:us-east-1:840364872350:repository/aws-appmesh-envoy',
+      `arn:aws:ecr:us-east-1:${ownerAccount}:repository/aws-appmesh-envoy`,
     );
 
     this.container = taskDefinition.addContainer('envoy', {
-      image: ecs.ContainerImage.fromEcrRepository(appMeshRepo, 'v1.13.1.1-prod'),
+      image: ecs.ContainerImage.fromEcrRepository(appMeshRepo, 'v1.15.0.0-prod'),
       essential: true,
       environment: {
         APPMESH_VIRTUAL_NODE_NAME: `mesh/${this.mesh.meshName}/virtualNode/${this.parentService.id}`,
@@ -126,6 +159,18 @@ export class AppMeshExtension extends ServiceExtension {
 
   // Enable cloudmap for the service
   public mutateServiceProps(props: ServiceBuild) {
+    var maxPercent;
+
+    // Based on the desired count of tasks, adjust
+    // the maximum task rolling speed, by constraining
+    // the maximum number of health tasks. See:
+    // https://docs.aws.amazon.com/app-mesh/latest/userguide/best-practices.html#reduce-deployment-velocity
+    if (!props.desiredCount || props.desiredCount < 4) {
+      maxPercent = 150;
+    } else {
+      maxPercent = 125;
+    }
+
     return {
       ...props,
 
@@ -140,9 +185,9 @@ export class AppMeshExtension extends ServiceExtension {
 
       // These specific deployment settings are currently required in order to
       // maintain availability during a rolling deploy of the service with App Mesh
-      // Warning, these settings do not work with a low task count however.
-      // minHealthyPercent: 100,
-      // maxHealthyPercent: 125,
+      // https://docs.aws.amazon.com/app-mesh/latest/userguide/best-practices.html#reduce-deployment-velocity
+      minHealthyPercent: 100,
+      maxHealthyPercent: maxPercent,
     } as ServiceBuild;
   }
 
@@ -169,19 +214,8 @@ export class AppMeshExtension extends ServiceExtension {
       listener: {
         portMapping: {
           port: containerextension.trafficPort,
-          protocol: appmesh.Protocol.HTTP,
+          protocol: this.protocol,
         },
-        // Virtual node health is disabled, as we already have a Cloudmap healthcheck
-        // and container healthcheck from ECS
-        /*healthCheck: {
-          healthyThreshold: 2,
-          intervalMillis: 5000, // minimum
-          path: '/',
-          port: this.portNumber,
-          protocol: appmesh.Protocol.HTTP,
-          timeoutMillis: 2000, // minimum
-          unhealthyThreshold: 2
-        }*/
       },
     });
 

@@ -49,7 +49,25 @@ export interface ServiceBuild {
    * time to start passing healthchecks
    * @default - No grace period
    */
-  readonly healthCheckGracePeriod?: cdk.Duration
+  readonly healthCheckGracePeriod?: cdk.Duration,
+
+  /**
+   * How many tasks to run
+   * @default - 1
+   */
+  readonly desiredCount?: number;
+
+  /**
+   * Minimum healthy task percentage
+   * @default - 100
+   */
+  readonly minHealthyPercent?: number;
+
+  /**
+   * Maximum healthy task percentage
+   * @default - 200
+   */
+  readonly maxHealthyPercent?: number;
 }
 
 /**
