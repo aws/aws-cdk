@@ -118,6 +118,13 @@ export interface StateMachineProps {
    * @default No logging
    */
   readonly logs?: LogOptions;
+
+  /**
+   * Specifies whether Amazon X-Ray tracing is enabled for this state machine.
+   *
+   * @default false
+   */
+  readonly tracingEnabled?: boolean;
 }
 
 /**
@@ -297,12 +304,24 @@ export class StateMachine extends StateMachineBase {
       }));
     }
 
+    let tracingConfiguration: CfnStateMachine.TracingConfigurationProperty | undefined;
+    if (props.tracingEnabled) {
+      tracingConfiguration = {
+        enabled: true,
+      };
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
+        resources: ['*'],
+      }));
+    }
+
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
       stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
       roleArn: this.role.roleArn,
       definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
       loggingConfiguration,
+      tracingConfiguration,
     });
 
     resource.node.addDependency(this.role);
