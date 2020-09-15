@@ -6,6 +6,7 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 /**
  * Properties for updating Amazon SageMaker endpoint
  *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  * @experimental
  */
 export interface SageMakerUpdateEndpointProps extends sfn.TaskStateBaseProps {

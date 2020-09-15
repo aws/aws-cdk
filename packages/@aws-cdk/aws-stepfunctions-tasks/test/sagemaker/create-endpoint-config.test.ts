@@ -58,7 +58,7 @@ test('create complex endpoint config', () => {
 
   const task = new tasks.SageMakerCreateEndpointConfig(stack, 'SagemakerEndpointConfig', {
     endpointConfigName: sfn.JsonPath.stringAt('$.Endpoint.EndpointConfig'),
-    kmsKeyId: key.keyId,
+    kmsKey: key,
     productionVariants: [{
       initialInstanceCount: 1,
       initialVariantWeight: 0.8,

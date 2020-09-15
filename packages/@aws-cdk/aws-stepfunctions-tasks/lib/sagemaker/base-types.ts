@@ -627,6 +627,7 @@ export interface TransformResources {
 
 /**
  * Describes the container, as part of model definition.
+ * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
  *
  *  @experimental
  */
@@ -650,13 +651,15 @@ export interface ContainerDefinition {
    */
   readonly modelPackageName?: string;
   /**
-   * Whether the container hosts a single model or multiple models.
+   * Defines how many models the container hosts
    *
-   * @default - None
+   * @default - SingleModel
    */
   readonly mode?: Mode;
   /**
    * This parameter is ignored for models that contain only a PrimaryContainer.
+   * When a ContainerDefinition is part of an inference pipeline,
+   * the value of the parameter uniquely identifies the container for the purposes of logging and metrics.
    *
    * @default - None
    */
@@ -672,7 +675,8 @@ export interface ContainerDefinition {
 }
 
 /**
- * Specifies whether the container hosts a single model or multiple models.
+ * Specifies how many models the container hosts
+ *
  * @experimental
  */
 export enum Mode {
@@ -682,14 +686,16 @@ export enum Mode {
   SINGLE_MODEL = 'SingleModel',
   /**
    * Container hosts multiple models
+   *
+   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/multi-model-endpoints.html
    */
   MULTI_MODEL = 'MultiModel',
 }
 
 /**
  * Identifies a model that you want to host and the resources to deploy for hosting it.
- * https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ProductionVariant.html
  *
+ * @see  https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ProductionVariant.html
  * @experimental
  */
 export interface ProductionVariant {
@@ -698,7 +704,7 @@ export interface ProductionVariant {
    *
    * @default - None
    */
-  readonly acceleratorType?: string;
+  readonly acceleratorType?: AcceleratorType;
   /**
    * Number of instances to launch initially.
    */
@@ -721,6 +727,40 @@ export interface ProductionVariant {
    * The name of the model that you want to host. This is the name that you specified when creating the model.
    */
   readonly modelName: string;
+}
+
+/**
+ * The size of the Elastic Inference (EI) instance to use for the production variant.
+ * EI instances provide on-demand GPU computing for inference
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html
+ * @experimental
+ */
+export enum AcceleratorType {
+  /**
+   * Elastic Inference accelerator 1st generation, Instance size MEDIUM (medium)
+   */
+  EIA1_MEDIUM = 'ml.eia1.medium',
+  /**
+   * Elastic Inference accelerator 1st generation, Instance size LARGE (large)
+   */
+  EIA1_LARGE = 'ml.eia1.large',
+  /**
+   * Elastic Inference accelerator 1st generation, Instance size XLARGE (xlarge)
+   */
+  EIA1_XLARGE = 'ml.eia1.xlarge',
+  /**
+   * Elastic Inference accelerator 2nd generation, Instance size MEDIUM (medium)
+   */
+  EIA2_MEDIUM = 'ml.eia2.medium',
+  /**
+   * Elastic Inference accelerator 2nd generation, Instance size LARGE (large)
+   */
+  EIA2_LARGE = 'ml.eia2.large',
+  /**
+   * Elastic Inference accelerator 2nd generation, Instance size XLARGE (xlarge)
+   */
+  EIA2_XLARGE = 'ml.eia2.xlarge',
 }
 
 /**

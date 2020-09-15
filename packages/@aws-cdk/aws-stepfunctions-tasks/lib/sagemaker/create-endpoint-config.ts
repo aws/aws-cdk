@@ -1,8 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import * as kms from '@aws-cdk/aws-kms';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { ProductionVariant } from './base-types';
+import { renderTags } from './private/utils';
 
 /**
  * Properties for creating an Amazon SageMaker endpoint configuration
@@ -15,12 +17,12 @@ export interface SageMakerCreateEndpointConfigProps extends sfn.TaskStateBasePro
    */
   readonly endpointConfigName: string;
   /**
-   * The Amazon Resource Name (ARN) of a AWS Key Management Service key that Amazon SageMaker
+   * AWS Key Management Service key that Amazon SageMaker
    * uses to encrypt data on the storage volume attached to the ML compute instance that hosts the endpoint.
    *
    * @default - None
    */
-  readonly kmsKeyId?: string;
+  readonly kmsKey?: kms.IKey;
 
   /**
    * An list of ProductionVariant objects, one for each model that you want to host at this endpoint.
@@ -40,6 +42,7 @@ export interface SageMakerCreateEndpointConfigProps extends sfn.TaskStateBasePro
 /**
  * A Step Functions Task to create a SageMaker endpoint configuration
  *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  * @experimental
  */
 export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
@@ -81,9 +84,9 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
   private renderParameters(): { [key: string]: any } {
     return {
       EndpointConfigName: this.props.endpointConfigName,
-      ...this.props.kmsKeyId ? { KmsKeyId: this.props.kmsKeyId } : {},
+      ...this.props.kmsKey ? { KmsKeyId: this.props.kmsKey.keyId } : {},
       ...this.renderProductionVariants(this.props.productionVariants),
-      ...this.renderTags(this.props.tags),
+      ...renderTags(this.props.tags),
     };
   }
 
@@ -114,10 +117,6 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
         ],
       }),
     ];
-  }
-
-  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
-    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
   private renderProductionVariants(variants: ProductionVariant[]): {[key: string]: any} {

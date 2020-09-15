@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { renderTags } from './private/utils';
 
 /**
  * Properties for creating an Amazon SageMaker endpoint
@@ -28,6 +29,7 @@ export interface SageMakerCreateEndpointProps extends sfn.TaskStateBaseProps {
 /**
  * A Step Functions Task to create a SageMaker endpoint
  *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  * @experimental
  */
 export class SageMakerCreateEndpoint extends sfn.TaskStateBase {
@@ -59,7 +61,7 @@ export class SageMakerCreateEndpoint extends sfn.TaskStateBase {
     return {
       EndpointConfigName: this.props.endpointConfigName,
       EndpointName: this.props.endpointName,
-      ...(this.renderTags(this.props.tags)),
+      ...renderTags(this.props.tags),
     };
   }
 
@@ -91,9 +93,5 @@ export class SageMakerCreateEndpoint extends sfn.TaskStateBase {
         resources: ['*'],
       }),
     ];
-  }
-
-  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
-    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 }

@@ -4,6 +4,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { ContainerDefinition, VpcConfig } from './base-types';
+import { renderTags } from './private/utils';
 
 /**
  * Properties for creating an Amazon SageMaker model
@@ -47,7 +48,6 @@ export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps {
    */
   readonly vpcConfig?: VpcConfig;
 
-
   /**
    * Tags to be applied to the model.
    *
@@ -59,6 +59,7 @@ export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps {
 /**
  * A Step Functions Task to create a SageMaker model
  *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  * @experimental
  */
 export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
@@ -139,8 +140,8 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
       ModelName: this.props.modelName,
       ...this.renderContainers(this.props.containers),
       ...this.renderPrimaryContainer(this.props.primaryContainer),
-      ...this.renderTags(this.props.tags),
       ...this.renderVpcConfig(this.props.vpcConfig),
+      ...renderTags(this.props.tags),
     };
   }
 
@@ -221,10 +222,6 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
         },
       }),
     ];
-  }
-
-  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
-    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
   private renderVpcConfig(config: VpcConfig | undefined): { [key: string]: any } {
