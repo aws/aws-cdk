@@ -11,6 +11,7 @@ beforeEach(() => {
     authorizationConfig: {},
     name: 'api',
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    logConfig: {},
   });
 });
 
@@ -71,5 +72,35 @@ test('when xray is enabled should not throw an Error', () => {
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
     XrayEnabled: true,
+  });
+});
+
+test('appsync GraphqlApi should be configured with custom CW Logs Role ARN when specified', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'api-custom-cw-logs-role', {
+    authorizationConfig: {},
+    name: 'api',
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    logConfig: {
+      roleArn: 'testCustomRoleArn',
+    },
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    LogConfig: {
+      CloudWatchLogsRoleArn: 'testCustomRoleArn',
+    },
+  });
+});
+
+test('appsync GraphqlApi should not use custom role for CW Logs when not specified', () => {
+  // EXPECT
+  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    LogConfig: {
+      CloudWatchLogsRoleArn: {
+        'Fn::GetAtt': [],
+      },
+    },
   });
 });
