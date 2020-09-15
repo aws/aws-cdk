@@ -7,7 +7,8 @@ import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, T
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IClusterParameterGroup } from './parameter-group';
-import { CfnCluster, CfnClusterSubnetGroup } from './redshift.generated';
+import { CfnCluster } from './redshift.generated';
+import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
 
 /**
  * Possible Node Types to use in the cluster
@@ -257,11 +258,11 @@ export interface ClusterProps {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * The name of an existing Redshift cluster subnet group.
+   * A cluster subnet group to use with this cluster.
    *
    * @default - a new subnet group will be created.
    */
-  readonly subnetGroupName?: string;
+  readonly subnetGroup?: IClusterSubnetGroup;
 
   /**
    * Username and password for the administrative user
@@ -403,19 +404,12 @@ export class Cluster extends ClusterBase {
 
     const removalPolicy = props.removalPolicy ? props.removalPolicy : RemovalPolicy.RETAIN;
 
-    const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
-
-    let subnetGroupName = props.subnetGroupName;
-    if (!subnetGroupName) {
-      const subnetGroup = new CfnClusterSubnetGroup(this, 'Subnets', {
-        description: `Subnets for ${id} Redshift cluster`,
-        subnetIds,
-      });
-      subnetGroup.applyRemovalPolicy(removalPolicy, {
-        applyToUpdateReplacePolicy: true,
-      });
-      subnetGroupName = subnetGroup.ref;
-    }
+    const subnetGroup = props.subnetGroup ?? new ClusterSubnetGroup(this, 'Default', {
+      description: `Subnets for ${id} Redshift cluster`,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcSubnets,
+      removalPolicy: removalPolicy,
+    });
 
     const securityGroups = props.securityGroups !== undefined ?
       props.securityGroups : [new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -458,7 +452,7 @@ export class Cluster extends ClusterBase {
       automatedSnapshotRetentionPeriod: 1,
       clusterType,
       clusterIdentifier: props.clusterName,
-      clusterSubnetGroupName: subnetGroupName,
+      clusterSubnetGroupName: subnetGroup.clusterSubnetGroupName,
       vpcSecurityGroupIds: securityGroupIds,
       port: props.port,
       clusterParameterGroupName: props.parameterGroup && props.parameterGroup.clusterParameterGroupName,
