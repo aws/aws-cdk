@@ -27,6 +27,7 @@ const defaultCredOptions = {
 let uid: string;
 let pluginQueried = false;
 let defaultEnv: cxapi.Environment;
+let getCallerIdentityError: Error | null = null;
 
 beforeEach(() => {
   uid = `(${uuid.v4()})`;
@@ -34,7 +35,7 @@ beforeEach(() => {
   logging.setLogLevel(logging.LogLevel.TRACE);
 
   SDKMock.mock('STS', 'getCallerIdentity', (cb: AwsCallback<AWS.STS.GetCallerIdentityResponse>) => {
-    return cb(null, {
+    return cb(getCallerIdentityError, {
       Account: `${uid}the_account_#`,
       UserId: 'you!',
       Arn: 'arn:aws-here:iam::12345:role/test',
@@ -471,6 +472,35 @@ test('assume fails with unsupported credential_source', async () => {
 
   // THEN
   expect(account?.accountId).toEqual(undefined);
+});
+
+test('defaultAccount returns undefined if STS call fails', async () => {
+  // GIVEN
+  process.env.AWS_ACCESS_KEY_ID = `${uid}akid`;
+  process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
+  getCallerIdentityError = new Error('Something is wrong here');
+
+  // WHEN
+  const provider = await SdkProvider.withAwsCliCompatibleDefaults({
+    ...defaultCredOptions,
+  });
+
+  // THEN
+  await expect(provider.defaultAccount()).resolves.toBe(undefined);
+});
+
+test('plugins are still queried even if current credentials are expired', async () => {
+  // GIVEN
+  process.env.AWS_ACCESS_KEY_ID = `${uid}akid`;
+  process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
+  getCallerIdentityError = new Error('Something is wrong here');
+
+  // WHEN
+  const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
+  await provider.forEnvironment({ ...defaultEnv, account: `${uid}plugin_account_#` }, Mode.ForReading);
+
+  // THEN
+  expect(pluginQueried).toEqual(true);
 });
 
 /**

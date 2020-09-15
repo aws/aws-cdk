@@ -482,6 +482,56 @@ export = {
     test.done();
   },
 
+  'can import a cluster with minimal attributes'(test: Test) {
+    const stack = testStack();
+
+    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      clusterIdentifier: 'identifier',
+    });
+
+    test.equals(cluster.clusterIdentifier, 'identifier');
+
+    test.done();
+  },
+
+  'minimal imported cluster throws on accessing attributes for unprovided parameters'(test: Test) {
+    const stack = testStack();
+
+    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      clusterIdentifier: 'identifier',
+    });
+
+    test.throws(() => cluster.clusterEndpoint, /Cannot access `clusterEndpoint` of an imported cluster/);
+    test.throws(() => cluster.clusterReadEndpoint, /Cannot access `clusterReadEndpoint` of an imported cluster/);
+    test.throws(() => cluster.instanceIdentifiers, /Cannot access `instanceIdentifiers` of an imported cluster/);
+    test.throws(() => cluster.instanceEndpoints, /Cannot access `instanceEndpoints` of an imported cluster/);
+
+    test.done();
+  },
+
+  'imported cluster can access properties if attributes are provided'(test: Test) {
+    const stack = testStack();
+
+    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      clusterEndpointAddress: 'addr',
+      clusterIdentifier: 'identifier',
+      instanceEndpointAddresses: ['instance-addr'],
+      instanceIdentifiers: ['identifier'],
+      port: 3306,
+      readerEndpointAddress: 'reader-address',
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false,
+      })],
+    });
+
+    test.equals(cluster.clusterEndpoint.socketAddress, 'addr:3306');
+    test.equals(cluster.clusterReadEndpoint.socketAddress, 'reader-address:3306');
+    test.deepEqual(cluster.instanceIdentifiers, ['identifier']);
+    test.deepEqual(cluster.instanceEndpoints.map(endpoint => endpoint.socketAddress), ['instance-addr:3306']);
+
+    test.done();
+  },
+
   'cluster supports metrics'(test: Test) {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
