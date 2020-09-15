@@ -402,9 +402,11 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     });
 
     resource.node.addDependency(apiResource);
+
+    return resource;
   }
 
-  protected configureDeployment(props: RestApiOptions) {
+  protected configureDeployment(props: RestApiOptions, account) {
     const deploy = props.deploy === undefined ? true : props.deploy;
     if (deploy) {
 
@@ -422,6 +424,8 @@ export abstract class RestApiBase extends Resource implements IRestApi {
         deployment: this._latestDeployment,
         ...props.deployOptions,
       });
+
+      if (account) this.deploymentStage.node.addDependency(account);
 
       new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
     } else {
@@ -497,15 +501,18 @@ export class SpecRestApi extends RestApiBase {
     this.restApiRootResourceId = resource.attrRootResourceId;
     this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
-    this.configureDeployment(props);
+    let account;
+    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
+    if (cloudWatchRole) {
+      account = this.configureCloudWatchRole(resource);
+    }
+
+    this.configureDeployment(props, account);
+
     if (props.domainName) {
       this.addDomainName('CustomDomain', props.domainName);
     }
 
-    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
-    if (cloudWatchRole) {
-      this.configureCloudWatchRole(resource);
-    }
   }
 }
 
@@ -601,11 +608,12 @@ export class RestApi extends RestApiBase {
     this.restApiId = resource.ref;
 
     const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
+    let account;
     if (cloudWatchRole) {
-      this.configureCloudWatchRole(resource);
+      account = this.configureCloudWatchRole(resource);
     }
 
-    this.configureDeployment(props);
+    this.configureDeployment(props, account);
     if (props.domainName) {
       this.addDomainName('CustomDomain', props.domainName);
     }
