@@ -7,6 +7,7 @@ import { renderTags } from './private/utils';
 /**
  * Properties for creating an Amazon SageMaker endpoint
  *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  * @experimental
  */
 export interface SageMakerCreateEndpointProps extends sfn.TaskStateBaseProps {
