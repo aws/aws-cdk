@@ -89,7 +89,7 @@ import { Rule, Schedule } from '@aws-cdk/aws-events';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
 ...
 
-// in default, EcsTask runs on dafault fargate platform version managed by ECS.
+// By default, EcsTask runs on 'LATEST' Fargate platform version managed by ECS.
 // if you want to specify its version, you can set `platformVersion` in EcsTask's props
 // more information for fargate platform versions:
 //   https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
