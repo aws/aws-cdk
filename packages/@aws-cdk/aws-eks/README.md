@@ -230,6 +230,8 @@ cluster.addCapacity('self-ng-arm', {
 })
 ```
 
+Graviton 2 instance types are supported including `c6g`, `m6g`, `r6g` and `t4g`.
+
 ### Fargate
 
 AWS Fargate is a technology that provides on-demand, right-sized compute
