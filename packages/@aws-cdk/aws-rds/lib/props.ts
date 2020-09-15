@@ -123,6 +123,23 @@ export interface Login {
 /**
  * Options to add the multi user rotation
  */
+export interface RotationSingleUserOptions {
+  /**
+   * Specifies the number of days after the previous rotation
+   * before Secrets Manager triggers the next automatic rotation.
+   * @default Duration.days(30)
+   */
+  readonly automaticallyAfter?: Duration;
+  /**
+  * Specifies characters to not include in generated passwords.
+  * @default secretsmanager.ProblemCharacters.AWS_DMS+secretsmanager.ProblemCharacters.SHELL
+  */
+  readonly excludeCharacters?: string;
+}
+
+/**
+ * Options to add the multi user rotation
+ */
 export interface RotationMultiUserOptions {
   /**
    * The secret to rotate. It must be a JSON string with the following format:
@@ -153,7 +170,7 @@ export interface RotationMultiUserOptions {
    *
    * @default -
    */
-  readonly excludedCharacters?: string;
+  readonly excludeCharacters?: string;
 }
 
 /**

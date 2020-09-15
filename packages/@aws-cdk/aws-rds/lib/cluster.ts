@@ -10,7 +10,7 @@ import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { BackupProps, InstanceProps, Login, PerformanceInsightRetention, RotationMultiUserOptions } from './props';
+import { BackupProps, InstanceProps, Login, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
@@ -557,14 +557,8 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
   /**
    * Adds the single user rotation of the master password to this cluster.
-   *
-   * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
-   * before Secrets Manager triggers the next automatic rotation.
-   *
-   * @param [excludeCharacters=' ;+%{}`/"\\#\'@'] Specifies characters to not include in generated passwords.
-   * Defaults to the superset of characters which will break DMS endpoints and characters which cause problems in shell scripts.
    */
-  public addRotationSingleUser(automaticallyAfter?: Duration, excludedCharacters?: string): secretsmanager.SecretRotation {
+  public addRotationSingleUser(options?: RotationSingleUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
@@ -575,18 +569,16 @@ export class DatabaseCluster extends DatabaseClusterNew {
       throw new Error('A single user rotation was already added to this cluster.');
     }
 
-    const xc = excludedCharacters === undefined ? // empty string is legit input
-      ' ;+%{}' + '@\'"`/\\#' : // DMS + shell breakers
-      excludedCharacters;
-
     return new secretsmanager.SecretRotation(this, id, {
       secret: this.secret,
-      automaticallyAfter,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
-      excludeCharacters: xc,
+      ...options,
+      excludeCharacters: options?.excludeCharacters === undefined
+        ? secretsmanager.ProblemCharacters.AWS_DMS + secretsmanager.ProblemCharacters.SHELL
+        : options.excludeCharacters,
     });
   }
 

@@ -28,9 +28,9 @@ export interface DatabaseSecretProps {
   /**
    * Characters to not include in the generated password.
    *
-   * @default '"@/\\'
+   * @default secretsmanager.ProblemCharacters.AWS_DMS + secretsmanager.ProblemCharacters.SHELL
    */
-  readonly excludedCharacters?: string;
+  readonly excludeCharacters?: string;
 }
 
 /**
@@ -50,7 +50,9 @@ export class DatabaseSecret extends secretsmanager.Secret {
           masterarn: props.masterSecret?.secretArn,
         }),
         generateStringKey: 'password',
-        excludeCharacters: props.excludedCharacters === undefined ? '"@/\\' : props.excludedCharacters,
+        excludeCharacters: props.excludeCharacters === undefined
+          ? secretsmanager.ProblemCharacters.AWS_DMS + secretsmanager.ProblemCharacters.SHELL
+          : props.excludeCharacters,
       },
     });
   }
