@@ -848,11 +848,6 @@ export class Cluster extends ClusterBase {
       description: 'EKS Control Plane Security Group',
     });
 
-    this.connections = new ec2.Connections({
-      securityGroups: [securityGroup],
-      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
-    });
-
     this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
 
     // Get subnetIds for all selected subnets
@@ -916,17 +911,9 @@ export class Cluster extends ClusterBase {
 
       this.kubectlPrivateSubnets = privateSubents;
 
-      this.kubectlSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
-        vpc: this.vpc,
-        description: 'Comminication between KubectlProvider and EKS Control Plane',
-      });
-
-      // grant the kubectl provider access to the cluster control plane.
-      this.connections.allowFrom(this.kubectlSecurityGroup, this.connections.defaultPort!);
-
-      // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
+      // the vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
       // this ensures that.
-      this._clusterResource.node.addDependency(this.kubectlSecurityGroup, this.vpc);
+      this._clusterResource.node.addDependency(this.vpc);
     }
 
     this.adminRole = resource.adminRole;
@@ -950,6 +937,17 @@ export class Cluster extends ClusterBase {
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
+
+    const clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+
+    this.connections = new ec2.Connections({
+      securityGroups: [clusterSecurityGroup, securityGroup],
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
+    });
+
+    // we can use the cluster security group since its already attached to the cluster
+    // and configured to allow connections from itself.
+    this.kubectlSecurityGroup = clusterSecurityGroup;
 
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
@@ -1594,6 +1592,10 @@ class ImportedCluster extends ClusterBase implements ICluster {
     for (const sgid of props.securityGroupIds ?? []) {
       this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgid));
       i++;
+    }
+
+    if (props.clusterSecurityGroupId) {
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', props.clusterSecurityGroupId));
     }
   }
 
