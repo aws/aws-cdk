@@ -74,8 +74,8 @@ async function parseCommandLineArguments() {
       .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
-      .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
-      .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
+      .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
+      .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false })
       .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
       .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization.', default: false })
@@ -222,11 +222,11 @@ async function initCommandLine() {
     switch (command) {
       case 'ls':
       case 'list':
-        return await cli.list(args.STACKS, { long: args.long });
+        return cli.list(args.STACKS, { long: args.long });
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL);
-        return await cli.diff({
+        return cli.diff({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           templatePath: args.template,
@@ -258,10 +258,10 @@ async function initCommandLine() {
         const bootstrapper = new Bootstrapper(source);
 
         if (args.showTemplate) {
-          return await bootstrapper.showTemplate();
+          return bootstrapper.showTemplate();
         }
 
-        return await cli.bootstrap(args.ENVIRONMENTS, bootstrapper, {
+        return cli.bootstrap(args.ENVIRONMENTS, bootstrapper, {
           roleArn: args.roleArn,
           force: argv.force,
           toolkitStackName: toolkitStackName,
@@ -286,7 +286,7 @@ async function initCommandLine() {
             parameterMap[keyValue[0]] = keyValue.slice(1).join('=');
           }
         }
-        return await cli.deploy({
+        return cli.deploy({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           toolkitStackName,
@@ -305,7 +305,7 @@ async function initCommandLine() {
         });
 
       case 'destroy':
-        return await cli.destroy({
+        return cli.destroy({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           force: args.force,
@@ -314,17 +314,17 @@ async function initCommandLine() {
 
       case 'synthesize':
       case 'synth':
-        return await cli.synth(args.STACKS, args.exclusively);
+        return cli.synth(args.STACKS, args.exclusively);
 
       case 'metadata':
-        return await cli.metadata(args.STACK);
+        return cli.metadata(args.STACK);
 
       case 'init':
         const language = configuration.settings.get(['language']);
         if (args.list) {
-          return await printAvailableTemplates(language);
+          return printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
+          return cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
         }
       case 'version':
         return data(version.DISPLAY_VERSION);
