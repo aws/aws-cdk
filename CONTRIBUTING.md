@@ -65,7 +65,7 @@ This will start a new Gitpod workspace.
 You can now work on any package that you want to modify,
 as described in ['Quick Iteration'](#quick-iteration) below.
 You can build and test only the module you're working on and its
-consumers using `scripts/buildown`.
+consumers using `scripts/builddown`.
 
 We don't recommend doing a full build on GitPod; it takes over
 an hour. Also, it will fail unless you include `--skip-prereqs`
