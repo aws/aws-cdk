@@ -16,8 +16,8 @@ Parameters:
     Default: ''
     Type: String
   FileAssetsBucketKmsKeyId:
-    Description: Custom KMS key ID to use for encrypting file assets (by default a
-      KMS key will be automatically defined)
+    Description: Custom KMS key ID to use for encrypting file assets, set to '-' to use
+      an AWS-managed key (leave empty to create a CMK)
     Default: ''
     Type: String
   ContainerAssetsRepositoryName:
@@ -60,6 +60,10 @@ Conditions:
   CreateNewKey:
     Fn::Equals:
       - ''
+      - Ref: FileAssetsBucketKmsKeyId
+  UseAwsManagedKey:
+    Fn::Equals:
+      - '-'
       - Ref: FileAssetsBucketKmsKeyId
   HasCustomContainerAssetsRepositoryName:
     Fn::Not:
@@ -150,7 +154,10 @@ Resources:
                 Fn::If:
                   - CreateNewKey
                   - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
-                  - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
+                  - Fn::If:
+                    - UseAwsManagedKey
+                    - Ref: AWS::NoValue
+                    - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
       PublicAccessBlockConfiguration:
         Fn::If:
           - UsePublicAccessBlockConfiguration
