@@ -75,8 +75,7 @@ export interface EcsTaskProps {
    *
    * Unless you have specific compatibility requirements, you don't need to specify this.
    *
-   * More Information:
-   * https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
    *
    * @default A default fargate platform version managed by ECS
 
