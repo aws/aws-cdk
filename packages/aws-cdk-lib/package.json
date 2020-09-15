@@ -97,7 +97,6 @@
     "yaml": "1.10.0"
   },
   "devDependencies": {
-    "constructs": "^3.0.4",
     "@aws-cdk/alexa-ask": "0.0.0",
     "@aws-cdk/app-delivery": "0.0.0",
     "@aws-cdk/assets": "0.0.0",
@@ -109,6 +108,7 @@
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
+    "@aws-cdk/aws-applicationinsights": "0.0.0",
     "@aws-cdk/aws-appmesh": "0.0.0",
     "@aws-cdk/aws-appstream": "0.0.0",
     "@aws-cdk/aws-appsync": "0.0.0",
@@ -135,6 +135,7 @@
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codedeploy": "0.0.0",
     "@aws-cdk/aws-codeguruprofiler": "0.0.0",
+    "@aws-cdk/aws-codegurureviewer": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-codepipeline-actions": "0.0.0",
     "@aws-cdk/aws-codestar": "0.0.0",
@@ -253,6 +254,7 @@
     "@types/fs-extra": "^8.1.1",
     "@types/node": "^10.17.28",
     "cdk-build-tools": "0.0.0",
+    "constructs": "^3.0.4",
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
     "ts-node": "^8.10.2",
