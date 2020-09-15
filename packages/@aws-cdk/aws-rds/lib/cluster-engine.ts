@@ -500,14 +500,12 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
   public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
     if (options.s3ImportRole && !(config.features?.s3Import)) {
-      throw new Error (`s3Import is not supported for engine: ${this.engineVersion?.fullVersion}. Use an engine version that supports the s3Import feature.`);
+      throw new Error(`s3Import is not supported for Postgres version: ${this.engineVersion?.fullVersion ?? '<unversioned>'}. Use a version that supports the s3Import feature.`);
     }
     if (options.s3ExportRole && !(config.features?.s3Export)) {
-      throw new Error (`s3Export is not supported for engine: ${this.engineVersion?.fullVersion}. Use an engine version that supports the s3Export feature.`);
+      throw new Error(`s3Export is not supported for Postgres version: ${this.engineVersion?.fullVersion ?? '<unversioned>'}. Use a version that supports the s3Export feature.`);
     }
-    return {
-      ...config,
-    };
+    return config;
   }
 
   protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {

@@ -878,7 +878,7 @@ export = {
     test.done();
   },
 
-  'throws when s3 import bucket is supplied and database engine does not support it'(test: Test) {
+  'throws when s3 import bucket or s3 export bucket is supplied for a Postgres version that does not support it'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -901,21 +901,10 @@ export = {
         },
         s3ImportBuckets: [bucket],
       });
-    }), /s3Import is not supported for engine version 10.4. Use an engine version that supports the s3Import feature./;
+    }, /s3Import is not supported for Postgres version: 10.4. Use a version that supports the s3Import feature./);
 
-    test.done();
-  },
-
-  'throws when s3 export bucket is supplied and database engine does not support it'(test: Test) {
-    // GIVEN
-    const stack = testStack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
-    const bucket = new s3.Bucket(stack, 'Bucket');
-
-    // WHEN / THEN
     test.throws(() => {
-      new DatabaseCluster(stack, 'Database', {
+      new DatabaseCluster(stack, 'AnotherDatabase', {
         engine: DatabaseClusterEngine.auroraPostgres({
           version: AuroraPostgresEngineVersion.VER_10_4,
         }),
@@ -929,7 +918,7 @@ export = {
         },
         s3ExportBuckets: [bucket],
       });
-    }), /s3Import is not supported for engine version 10.4. Use an engine version that supports the s3Import feature./;
+    }, /s3Export is not supported for Postgres version: 10.4. Use a version that supports the s3Export feature./);
 
     test.done();
   },
