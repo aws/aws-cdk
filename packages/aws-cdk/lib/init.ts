@@ -274,13 +274,13 @@ async function initializeGitRepository(workDir: string) {
 async function postInstall(language: string, canUseNetwork: boolean, workDir: string) {
   switch (language) {
     case 'javascript':
-      return await postInstallJavascript(canUseNetwork, workDir);
+      return postInstallJavascript(canUseNetwork, workDir);
     case 'typescript':
-      return await postInstallTypescript(canUseNetwork, workDir);
+      return postInstallTypescript(canUseNetwork, workDir);
     case 'java':
-      return await postInstallJava(canUseNetwork, workDir);
+      return postInstallJava(canUseNetwork, workDir);
     case 'python':
-      return await postInstallPython(workDir);
+      return postInstallPython(workDir);
   }
 }
 

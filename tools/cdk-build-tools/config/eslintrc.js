@@ -112,6 +112,11 @@ module.exports = {
     // One of the easiest mistakes to make
     '@typescript-eslint/no-floating-promises': ['error'],
 
+    // Make sure that inside try/catch blocks, promises are 'return await'ed
+    // (must disable the base rule as it can report incorrect errors)
+    'no-return-await': 'off',
+    '@typescript-eslint/return-await': 'error',
+
     // Don't leave log statements littering the premises!
     'no-console': ['error'],
 
