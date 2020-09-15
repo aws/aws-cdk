@@ -1162,6 +1162,28 @@ export = {
       test.done();
     },
 
+    'addNodegroup with T4g instance type comes with nodegroup with correct AmiType'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        defaultCapacityInstance: new ec2.InstanceType('t4g.medium'),
+      }).addNodegroup('ng', {
+        instanceType: new ec2.InstanceType('t4g.medium'),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2_ARM_64',
+      }));
+      test.done();
+    },
+
+
+
     'EKS-Optimized AMI with GPU support when addCapacity'(test: Test) {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
