@@ -7,7 +7,7 @@ import { PluginHost } from '../../lib';
 import { ISDK, Mode, SdkProvider } from '../../lib/api/aws-auth';
 import * as logging from '../../lib/logging';
 import * as bockfs from '../bockfs';
-import { withMocked, withMockedClassSingleton } from '../util';
+import { withMocked } from '../util';
 
 // Mock promptly prompt to test MFA support
 jest.mock('promptly', () => ({
