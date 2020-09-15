@@ -89,10 +89,6 @@ import { Rule, Schedule } from '@aws-cdk/aws-events';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
 ...
 
-// By default, EcsTask runs on 'LATEST' Fargate platform version managed by ECS.
-// if you want to specify its version, you can set `platformVersion` in EcsTask's props
-// more information for fargate platform versions:
-//   https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
 const ecsTaskTarget = new EcsTask({ cluster, taskDefinition, role });
 
 new Rule(this, 'ScheduleRule', {
@@ -101,7 +97,11 @@ new Rule(this, 'ScheduleRule', {
 });
 ```
 
-More details in [ScheduledEvents](https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html) documentation page.
+If you want to specify Fargate platform version, set `platformVersion` in EcsTask's props like the following example:
+```ts
+const platformVersion = ecs.FargatePlatformVersion.VERSION1_4;
+const ecsTaskTarget = new EcsTask({ cluster, taskDefinition, role, platformVersion });
+```
 
 ## Event Targets
 
