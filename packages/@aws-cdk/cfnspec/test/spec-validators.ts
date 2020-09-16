@@ -68,12 +68,17 @@ function validateProperties(
         test.ok(resolvedType, `${typeName}.Properties.${name} ItemType (${fqn}) resolves`);
       }
 
-    } else if (schema.isComplexMapProperty(property)) {
+    } else if (schema.isMapOfStructsProperty(property)) {
       expectedKeys.push('Type', 'DuplicatesAllowed', 'ItemType', 'Type');
       test.ok(property.ItemType, `${typeName}.Properties.${name} has a valid ItemType`);
       const fqn = `${typeName.split('.')[0]}.${property.ItemType}`;
       const resolvedType = specification.PropertyTypes && specification.PropertyTypes[fqn];
       test.ok(resolvedType, `${typeName}.Properties.${name} ItemType (${fqn}) resolves`);
+      test.ok(!property.DuplicatesAllowed, `${typeName}.Properties.${name} does not allow duplicates`);
+
+    } else if (schema.isMapOfListsOfPrimitivesProperty(property)) {
+      expectedKeys.push('Type', 'DuplicatesAllowed', 'ItemType', 'PrimitiveItemItemType', 'Type');
+      test.ok(schema.isPrimitiveType(property.PrimitiveItemItemType), `${typeName}.Properties.${name} has a valid PrimitiveItemItemType`);
       test.ok(!property.DuplicatesAllowed, `${typeName}.Properties.${name} does not allow duplicates`);
 
     } else if (schema.isComplexProperty(property)) {
