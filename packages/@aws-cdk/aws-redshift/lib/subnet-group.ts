@@ -78,5 +78,4 @@ export class ClusterSubnetGroup extends Resource implements IClusterSubnetGroup 
     this.node.defaultChild = subnetGroup;
     this.clusterSubnetGroupName = subnetGroup.ref;
   }
-
 }
