@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-elasticloadbalancing",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS ElasticLoadBalancing",
+  "description": "The CDK Construct Library for AWS::ElasticLoadBalancing",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {

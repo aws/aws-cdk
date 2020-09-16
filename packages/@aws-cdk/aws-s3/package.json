@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-s3",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS S3",
+  "description": "The CDK Construct Library for AWS::S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
