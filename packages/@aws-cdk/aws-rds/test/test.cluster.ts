@@ -7,8 +7,8 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
-  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseCluster, DatabaseClusterEngine,
-  DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention,
+  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, DatabaseCluster, DatabaseClusterEngine,
+  DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
 } from '../lib';
 
 export = {
@@ -1419,6 +1419,54 @@ export = {
     }, ResourcePart.CompleteDefinition));
 
     expect(stack).to(countResources('AWS::RDS::DBInstance', 2));
+
+    test.done();
+  },
+
+  'reuse an existing subnet group'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        vpc,
+      },
+      subnetGroup: SubnetGroup.fromSubnetGroupName(stack, 'SubnetGroup', 'my-subnet-group'),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+      DBSubnetGroupName: 'my-subnet-group',
+    }));
+    expect(stack).to(countResources('AWS::RDS::DBSubnetGroup', 0));
+
+    test.done();
+  },
+
+  'defaultChild returns the DB Cluster'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    test.ok(cluster.node.defaultChild instanceof CfnDBCluster);
 
     test.done();
   },
