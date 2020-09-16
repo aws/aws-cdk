@@ -404,7 +404,7 @@ export class Cluster extends ClusterBase {
 
     const removalPolicy = props.removalPolicy ? props.removalPolicy : RemovalPolicy.RETAIN;
 
-    const subnetGroup = props.subnetGroup ?? new ClusterSubnetGroup(this, 'Default', {
+    const subnetGroup = props.subnetGroup ?? new ClusterSubnetGroup(this, 'Subnets', {
       description: `Subnets for ${id} Redshift cluster`,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
