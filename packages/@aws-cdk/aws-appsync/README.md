@@ -563,6 +563,7 @@ Types will be the meat of your GraphQL Schema as they are the types defined by y
 Intermediate Types include:
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
+- [**Enum Types**](#Enum-Types)
 - [**Input Types**](#Input-Types)
 - [**Union Types**](#Union-Types)
 
@@ -580,6 +581,8 @@ const node = new appsync.InterfaceType('Node', {
   },
 });
 ```
+
+To learn more about **Interface Types**, read the docs [here](https://graphql.org/learn/schema/#interfaces).
 
 ##### Object Types
 
@@ -643,6 +646,39 @@ You can create Object Types in three ways:
     });
     ```
     > This method allows for reusability and modularity, ideal for reducing code duplication.
+
+To learn more about **Object Types**, read the docs [here](https://graphql.org/learn/schema/#object-types-and-fields).
+
+### Enum Types
+
+**Enum Types** are a special type of Intermediate Type. They restrict a particular
+set of allowed values for other Intermediate Types.
+
+```gql
+enum Episode {
+  NEWHOPE
+  EMPIRE
+  JEDI
+}
+```
+
+> This means that wherever we use the type Episode in our schema, we expect it to
+> be exactly one of NEWHOPE, EMPIRE, or JEDI.
+
+The above GraphQL Enumeration Type can be expressed in CDK as the following:
+
+```ts
+const episode = new appsync.EnumType('Episode', {
+  definition: [
+    'NEWHOPE',
+    'EMPIRE',
+    'JEDI',
+  ],
+}); 
+api.addType(episode);
+```
+
+To learn more about **Enum Types**, read the docs [here](https://graphql.org/learn/schema/#enumeration-types).
 
 ##### Input Types
 
@@ -743,3 +779,25 @@ api.addMutation('addFilm', new appsync.ResolvableField({
 ```
 
 To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html). 
+
+#### Subscription
+
+Every schema **can** have a top level Subscription type. The top level `Subscription` Type
+is the only exposed type that users can access to invoke a response to a mutation. `Subscriptions`
+notify users when a mutation specific mutation is called. This means you can make any data source
+real time by specify a GraphQL Schema directive on a mutation. 
+
+**Note**: The AWS AppSync client SDK automatically handles subscription connection management.
+
+To add fields for these subscriptions, we can simply run the `addSubscription` function to add
+to the schema's `Subscription` type.
+
+```ts
+api.addSubscription('addedFilm', new appsync.ResolvableField({
+  returnType: film.attribute(),
+  args: { id: appsync.GraphqlType.id({ isRequired: true }) },
+  directive: [appsync.Directive.subscribe('addFilm')],
+}));
+```
+
+To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/real-time-data.html). 

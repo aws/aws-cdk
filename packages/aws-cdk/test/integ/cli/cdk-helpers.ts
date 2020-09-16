@@ -2,8 +2,97 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { outputFromStack, testEnv, AwsClients } from './aws-helpers';
-import { TestEnvironment } from './test-helpers';
+import { outputFromStack, AwsClients } from './aws-helpers';
+import { ResourcePool } from './resource-pool';
+import { TestContext } from './test-helpers';
+
+const REGIONS = process.env.AWS_REGIONS
+  ? process.env.AWS_REGIONS.split(',')
+  : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
+
+process.stdout.write(`Using regions: ${REGIONS}\n`);
+
+const REGION_POOL = new ResourcePool(REGIONS);
+
+
+export type AwsContext = { readonly aws: AwsClients };
+
+/**
+ * Higher order function to execute a block with an AWS client setup
+ *
+ * Allocate the next region from the REGION pool and dispose it afterwards.
+ */
+export function withAws<A extends TestContext>(block: (context: A & AwsContext) => Promise<void>) {
+  return (context: A) => REGION_POOL.using(async (region) => {
+    const aws = await AwsClients.forRegion(region, context.output);
+    await sanityCheck(aws);
+
+    return block({ ...context, aws });
+  });
+}
+
+/**
+ * Higher order function to execute a block with a CDK app fixture
+ *
+ * Requires an AWS client to be passed in.
+ *
+ * For backwards compatibility with existing tests (so we don't have to change
+ * too much) the inner block is expecte to take a `TestFixture` object.
+ */
+export function withCdkApp<A extends TestContext & AwsContext>(block: (context: TestFixture) => Promise<void>) {
+  return async (context: A) => {
+    const randy = randomString();
+    const stackNamePrefix = `cdktest-${randy}`;
+    const integTestDir = path.join(os.tmpdir(), `cdk-integ-${randy}`);
+
+    context.output.write(` Stack prefix:   ${stackNamePrefix}\n`);
+    context.output.write(` Test directory: ${integTestDir}\n`);
+    context.output.write(` Region:         ${context.aws.region}\n`);
+
+    await cloneDirectory(path.join(__dirname, 'app'), integTestDir, context.output);
+    const fixture = new TestFixture(
+      integTestDir,
+      stackNamePrefix,
+      context.output,
+      context.aws);
+
+    let success = true;
+    try {
+      await fixture.shell(['npm', 'install',
+        '@aws-cdk/core',
+        '@aws-cdk/aws-sns',
+        '@aws-cdk/aws-iam',
+        '@aws-cdk/aws-lambda',
+        '@aws-cdk/aws-ssm',
+        '@aws-cdk/aws-ecr-assets',
+        '@aws-cdk/aws-cloudformation',
+        '@aws-cdk/aws-ec2']);
+
+      await ensureBootstrapped(fixture);
+
+      await block(fixture);
+    } catch (e) {
+      success = false;
+      throw e;
+    } finally {
+      await fixture.dispose(success);
+    }
+  };
+}
+
+/**
+ * Default test fixture for most (all?) integ tests
+ *
+ * It's a composition of withAws/withCdkApp, expecting the test block to take a `TestFixture`
+ * object.
+ *
+ * We could have put `withAws(withCdkApp(fixture => { /... actual test here.../ }))` in every
+ * test declaration but centralizing it is going to make it convenient to modify in the future.
+ */
+export function withDefaultFixture(block: (context: TestFixture) => Promise<void>) {
+  return withAws<TestContext>(withCdkApp(block));
+  //              ^~~~~~ this is disappointing TypeScript! Feels like you should have been able to derive this.
+}
 
 export interface ShellOptions extends child_process.SpawnOptions {
   /**
@@ -47,6 +136,7 @@ export async function cloneDirectory(source: string, target: string, output?: No
 
 export class TestFixture {
   public readonly qualifier = randomString().substr(0, 10);
+  private readonly bucketsToDelete = new Array<string>();
 
   constructor(
     public readonly integTestDir: string,
@@ -60,7 +150,7 @@ export class TestFixture {
   }
 
   public async shell(command: string[], options: Omit<ShellOptions, 'cwd'|'output'> = {}): Promise<string> {
-    return await shell(command, {
+    return shell(command, {
       output: this.output,
       cwd: this.integTestDir,
       ...options,
@@ -88,11 +178,11 @@ export class TestFixture {
   }
 
   public async cdk(args: string[], options: CdkCliOptions = {}) {
-    return await this.shell(['cdk', ...args], {
+    return this.shell(['cdk', ...args], {
       ...options,
       modEnv: {
-        AWS_REGION: (await testEnv()).region,
-        AWS_DEFAULT_REGION: (await testEnv()).region,
+        AWS_REGION: this.aws.region,
+        AWS_DEFAULT_REGION: this.aws.region,
         STACK_NAME_PREFIX: this.stackNamePrefix,
         ...options.modEnv,
       },
@@ -107,6 +197,16 @@ export class TestFixture {
     } else {
       return stackNames.map(s => `${this.stackNamePrefix}-${s}`);
     }
+  }
+
+  /**
+   * Append this to the list of buckets to potentially delete
+   *
+   * At the end of a test, we clean up buckets that may not have gotten destroyed
+   * (for whatever reason).
+   */
+  public rememberToDeleteBucket(bucketName: string) {
+    this.bucketsToDelete.push(bucketName);
   }
 
   /**
@@ -127,10 +227,9 @@ export class TestFixture {
 
     // We might have leaked some buckets by upgrading the bootstrap stack. Be
     // sure to clean everything.
-    for (const bucket of bucketsToDelete) {
+    for (const bucket of this.bucketsToDelete) {
       await this.aws.deleteBucket(bucket);
     }
-    bucketsToDelete = [];
 
     // If the tests completed successfully, happily delete the fixture
     // (otherwise leave it for humans to inspect)
@@ -167,34 +266,43 @@ export class TestFixture {
 }
 
 /**
- * Prepare the app fixture
+ * Perform a one-time quick sanity check that the AWS clients has properly configured credentials
  *
- * If this is done in the main test script, it will be skipped
- * in the subprocess scripts since the app fixture can just be reused.
+ * If we don't do this, calls are going to fail and they'll be retried and everything will take
+ * forever before the user notices a simple misconfiguration.
+ *
+ * We can't check for the presence of environment variables since credentials could come from
+ * anywhere, so do simple account retrieval.
+ *
+ * Only do it once per process.
  */
-export async function prepareAppFixture(env: TestEnvironment): Promise<TestFixture> {
-  const randy = randomString();
-  const stackNamePrefix = `cdktest-${randy}`;
-  const integTestDir = path.join(os.tmpdir(), `cdk-integ-${randy}`);
+async function sanityCheck(aws: AwsClients) {
+  if (sanityChecked === undefined) {
+    try {
+      await aws.account();
+      sanityChecked = true;
+    } catch (e) {
+      sanityChecked = false;
+      throw new Error(`AWS credentials probably not configured, got error: ${e.message}`);
+    }
+  }
+  if (!sanityChecked) {
+    throw new Error('AWS credentials probably not configured, see previous error');
+  }
+}
+let sanityChecked: boolean | undefined;
 
-  env.output.write(` Stack prefixes: ${stackNamePrefix}\n`);
-  env.output.write(` Test directory: ${integTestDir}\n`);
-
-  await cloneDirectory(path.join(__dirname, 'app'), integTestDir, env.output);
-
-  const fixture = new TestFixture(integTestDir, stackNamePrefix, env.output, await AwsClients.default(env.output));
-
-  await fixture.shell(['npm', 'install',
-    '@aws-cdk/core',
-    '@aws-cdk/aws-sns',
-    '@aws-cdk/aws-iam',
-    '@aws-cdk/aws-lambda',
-    '@aws-cdk/aws-ssm',
-    '@aws-cdk/aws-ecr-assets',
-    '@aws-cdk/aws-cloudformation',
-    '@aws-cdk/aws-ec2']);
-
-  return fixture;
+/**
+ * Make sure that the given environment is bootstrapped
+ *
+ * Since we go striping across regions, it's going to suck doing this
+ * by hand so let's just mass-automate it.
+ */
+async function ensureBootstrapped(fixture: TestFixture) {
+  // Old-style bootstrap stack with default name
+  if (await fixture.aws.stackStatus('CDKToolkit') === undefined) {
+    await fixture.cdk(['bootstrap', `aws://${await fixture.aws.account()}/${fixture.aws.region}`]);
+  }
 }
 
 /**
@@ -241,22 +349,10 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
       if (code === 0 || options.allowErrExit) {
         resolve((Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim());
       } else {
-        reject(new Error(`'${command.join(' ')}' exited with error code ${code}: ${Buffer.concat(stderr).toString('utf-8').trim()}`));
+        reject(new Error(`'${command.join(' ')}' exited with error code ${code}`));
       }
     });
   });
-}
-
-let bucketsToDelete = new Array<string>();
-
-/**
- * Append this to the list of buckets to potentially delete
- *
- * At the end of a test, we clean up buckets that may not have gotten destroyed
- * (for whatever reason).
- */
-export function rememberToDeleteBucket(bucketName: string) {
-  bucketsToDelete.push(bucketName);
 }
 
 function defined<A>(x: A): x is NonNullable<A> {

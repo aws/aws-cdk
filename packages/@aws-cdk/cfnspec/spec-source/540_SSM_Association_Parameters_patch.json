@@ -5,12 +5,13 @@
         "description": "Removes 'ItemType' property since 'ParameterValues' is (currently) not defined in the spec and the documentation states it to be a list of String",
         "operations": [
           {
-            "op": "remove",
-            "path": "/Properties/Parameters/ItemType"
+            "op": "replace",
+            "path": "/Properties/Parameters/ItemType",
+            "value": "List"
           },
           {
             "op": "add",
-            "path": "/Properties/Parameters/PrimitiveItemType",
+            "path": "/Properties/Parameters/PrimitiveItemItemType",
             "value": "String"
           }
         ]
