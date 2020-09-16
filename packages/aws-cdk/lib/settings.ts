@@ -18,9 +18,33 @@ export const TRANSIENT_CONTEXT_KEY = '$dontSaveContext';
 
 const CONTEXT_KEY = 'context';
 
-const BUNDLING_COMMANDS = ['deploy', 'diff', 'synth', 'synthesize'];
+export enum Command {
+  LS = 'ls',
+  LIST = 'list',
+  DIFF = 'diff',
+  BOOTSTRAP = 'bootstrap',
+  DEPLOY = 'deploy',
+  DESTROY = 'destroy',
+  SYNTHESIZE = 'synthesize',
+  SYNTH = 'synth',
+  METADATA = 'metadata',
+  INIT = 'init',
+  VERSION = 'version',
+}
 
-export type Arguments = { readonly [name: string]: unknown, readonly _: string[] };
+const BUNDLING_COMMANDS = [
+  Command.DEPLOY,
+  Command.DIFF,
+  Command.SYNTH,
+  Command.SYNTHESIZE,
+];
+
+export type Arguments = {
+  readonly _: [Command, ...string[]];
+  readonly exclusively?: boolean;
+  readonly STACKS?: string[];
+  readonly [name: string]: unknown;
+};
 
 /**
  * All sources of settings combined
@@ -193,7 +217,7 @@ export class Settings {
     // If we deploy, diff or synth a list of stacks exclusively we skip
     // bundling for all other stacks.
       bundlingStacks = argv.exclusively
-        ? argv.STACKS as string[] ?? ['*']
+        ? argv.STACKS ?? ['*']
         : ['*'];
     } else { // Skip bundling for all stacks
       bundlingStacks = [];

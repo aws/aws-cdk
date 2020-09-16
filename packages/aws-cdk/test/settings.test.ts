@@ -1,4 +1,4 @@
-import { Context, Settings } from '../lib/settings';
+import { Command, Context, Settings } from '../lib/settings';
 
 test('can delete values from Context object', () => {
   // GIVEN
@@ -62,8 +62,8 @@ test('can clear all values in all objects', () => {
 
 test('can parse string context from command line arguments', () => {
   // GIVEN
-  const settings1 = Settings.fromCommandLineArguments({ context: ['foo=bar'], _: ['command'] });
-  const settings2 = Settings.fromCommandLineArguments({ context: ['foo='], _: ['command'] });
+  const settings1 = Settings.fromCommandLineArguments({ context: ['foo=bar'], _: [Command.DEPLOY] });
+  const settings2 = Settings.fromCommandLineArguments({ context: ['foo='], _: [Command.DEPLOY] });
 
   // THEN
   expect(settings1.get(['context']).foo).toEqual( 'bar');
@@ -72,8 +72,8 @@ test('can parse string context from command line arguments', () => {
 
 test('can parse string context from command line arguments with equals sign in value', () => {
   // GIVEN
-  const settings1 = Settings.fromCommandLineArguments({ context: ['foo==bar='], _: ['command'] });
-  const settings2 = Settings.fromCommandLineArguments({ context: ['foo=bar='], _: ['command'] });
+  const settings1 = Settings.fromCommandLineArguments({ context: ['foo==bar='], _: [Command.DEPLOY] });
+  const settings2 = Settings.fromCommandLineArguments({ context: ['foo=bar='], _: [Command.DEPLOY] });
 
   // THEN
   expect(settings1.get(['context']).foo).toEqual( '=bar=');
@@ -83,7 +83,7 @@ test('can parse string context from command line arguments with equals sign in v
 test('bundling stacks defaults to an empty list', () => {
   // GIVEN
   const settings = Settings.fromCommandLineArguments({
-    _: ['command'],
+    _: [Command.LIST],
   });
 
   // THEN
@@ -93,7 +93,7 @@ test('bundling stacks defaults to an empty list', () => {
 test('bundling stacks defaults to * for deploy', () => {
   // GIVEN
   const settings = Settings.fromCommandLineArguments({
-    _: ['deploy'],
+    _: [Command.DEPLOY],
   });
 
   // THEN
@@ -103,7 +103,7 @@ test('bundling stacks defaults to * for deploy', () => {
 test('bundling stacks with deploy exclusively', () => {
   // GIVEN
   const settings = Settings.fromCommandLineArguments({
-    _: ['deploy'],
+    _: [Command.DEPLOY],
     exclusively: true,
     STACKS: ['cool-stack'],
   });
