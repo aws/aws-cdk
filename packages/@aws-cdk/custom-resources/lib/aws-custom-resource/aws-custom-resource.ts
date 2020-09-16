@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
+import { PHYSICAL_RESOURCE_ID_REFERENCE, flatten } from './runtime';
 
 // don't use "require" since the typescript compiler emits errors since this
 // file is not listed in tsconfig.json.
@@ -15,6 +16,18 @@ const metadata = JSON.parse(fs.readFileSync(path.join(__dirname, 'sdk-api-metada
 export type AwsSdkMetadata = {[key: string]: any};
 
 const awsSdkMetadata: AwsSdkMetadata = metadata;
+
+/**
+ * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
+ */
+export class PhysicalResourceIdReference {
+  /**
+   * toJSON serialization to replace `PhysicalResourceIdReference` with a magic string.
+   */
+  public toJSON() {
+    return PHYSICAL_RESOURCE_ID_REFERENCE;
+  }
+}
 
 /**
  * Physical ID of the custom resource.
@@ -306,6 +319,15 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
       if (call?.physicalResourceId?.responsePath) {
         AwsCustomResource.breakIgnoreErrorsCircuit([call], 'PhysicalResourceId.fromResponse');
+      }
+    }
+
+    if (props.onCreate?.parameters) {
+      const flattenedOnCreateParams = flatten(JSON.parse(JSON.stringify(props.onCreate.parameters)));
+      for (const param in flattenedOnCreateParams) {
+        if (flattenedOnCreateParams[param] === PHYSICAL_RESOURCE_ID_REFERENCE) {
+          throw new Error('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
+        }
       }
     }
 
