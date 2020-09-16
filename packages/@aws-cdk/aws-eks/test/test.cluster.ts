@@ -1182,8 +1182,6 @@ export = {
       test.done();
     },
 
-
-
     'EKS-Optimized AMI with GPU support when addCapacity'(test: Test) {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
