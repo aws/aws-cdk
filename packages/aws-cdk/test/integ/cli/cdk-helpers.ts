@@ -150,7 +150,7 @@ export class TestFixture {
   }
 
   public async shell(command: string[], options: Omit<ShellOptions, 'cwd'|'output'> = {}): Promise<string> {
-    return await shell(command, {
+    return shell(command, {
       output: this.output,
       cwd: this.integTestDir,
       ...options,
@@ -178,7 +178,7 @@ export class TestFixture {
   }
 
   public async cdk(args: string[], options: CdkCliOptions = {}) {
-    return await this.shell(['cdk', ...args], {
+    return this.shell(['cdk', ...args], {
       ...options,
       modEnv: {
         AWS_REGION: this.aws.region,
