@@ -201,6 +201,21 @@ describe('User Pool Client', () => {
     })).not.toThrow();
   });
 
+  test('logoutUrls can be set', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    pool.addClient('Client', {
+      oAuth: {
+        logoutUrls: ['https://example.com'],
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      LogoutURLs: ['https://example.com'],
+    });
+  });
+
   test('fails when clientCredentials OAuth flow is selected along with codeGrant or implicitGrant', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
