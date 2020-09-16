@@ -297,7 +297,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.anyValue({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
-      volumes: Lazy.anyValue({ produce: () => this.volumes }, { omitEmptyArray: true }),
+      volumes: Lazy.anyValue({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       executionRoleArn: Lazy.stringValue({ produce: () => this.executionRole && this.executionRole.roleArn }),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
@@ -326,6 +326,32 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   public get executionRole(): iam.IRole | undefined {
     return this._executionRole;
+  }
+
+  private renderVolumes(): CfnTaskDefinition.VolumeProperty[] {
+    return this.volumes.map(renderVolume);
+
+    function renderVolume(spec: Volume): CfnTaskDefinition.VolumeProperty {
+      return {
+        host: spec.host,
+        name: spec.name,
+        dockerVolumeConfiguration: spec.dockerVolumeConfiguration && {
+          autoprovision: spec.dockerVolumeConfiguration.autoprovision,
+          driver: spec.dockerVolumeConfiguration.driver,
+          driverOpts: spec.dockerVolumeConfiguration.driverOpts,
+          labels: spec.dockerVolumeConfiguration.labels,
+          scope: spec.dockerVolumeConfiguration.scope,
+        },
+        efsVolumeConfiguration: spec.efsVolumeConfiguration && {
+          filesystemId: spec.efsVolumeConfiguration.fileSystemId,
+          authorizationConfig: spec.efsVolumeConfiguration.authorizationConfig,
+          rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
+          transitEncryption: spec.efsVolumeConfiguration.transitEncryption,
+          transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
+
+        },
+      };
+    }
   }
 
   /**
@@ -713,7 +739,7 @@ export interface DockerVolumeConfiguration {
    *
    * @default No labels
    */
-  readonly labels?: string[];
+  readonly labels?: { [key: string]: string; }
   /**
    * The scope for the Docker volume that determines its lifecycle.
    */
