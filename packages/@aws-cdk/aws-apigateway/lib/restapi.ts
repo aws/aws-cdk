@@ -298,6 +298,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    */
   public deploymentStage!: Stage;
 
+  /** @internal */
   protected resourcePolicyDocument?: iam.PolicyDocument;
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
