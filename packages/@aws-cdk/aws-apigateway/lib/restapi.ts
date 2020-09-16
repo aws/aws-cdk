@@ -299,7 +299,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   public deploymentStage!: Stage;
 
   /** @internal */
-  protected resourcePolicyDocument?: iam.PolicyDocument;
+  protected policy?: iam.PolicyDocument;
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
@@ -309,7 +309,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     });
 
     Object.defineProperty(this, RESTAPI_SYMBOL, { value: true });
-    this.resourcePolicyDocument = props.policy;
+    this.policy = props.policy;
   }
 
   /**
@@ -488,7 +488,7 @@ export class SpecRestApi extends RestApiBase {
     const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
-      policy: Lazy.anyValue({ produce: () => this.resourcePolicyDocument }),
+      policy: Lazy.anyValue({ produce: () => this.policy }),
       failOnWarnings: props.failOnWarnings,
       body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
@@ -591,7 +591,7 @@ export class RestApi extends RestApiBase {
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
-      policy: Lazy.anyValue({ produce: () => this.resourcePolicyDocument }),
+      policy: Lazy.anyValue({ produce: () => this.policy }),
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
@@ -705,11 +705,11 @@ export class RestApi extends RestApiBase {
    * @param statement the IAM statement to add
    */
   public addToPolicy(statement: iam.PolicyStatement): void {
-    if (!this.resourcePolicyDocument) {
-      this.resourcePolicyDocument = new iam.PolicyDocument();
+    if (!this.policy) {
+      this.policy = new iam.PolicyDocument();
     }
 
-    this.resourcePolicyDocument.addStatements(statement);
+    this.policy.addStatements(statement);
   }
 }
 
