@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-sns",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS SNS",
+  "description": "The CDK Construct Library for AWS::SNS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
