@@ -628,27 +628,6 @@
         }
       }
     },
-    "ClusterControlPlaneSecurityGroupfromawscdkeksclustertestClusterKubectlProviderSecurityGroup0285626644359187EDA": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "IpProtocol": "tcp",
-        "Description": "from awscdkeksclustertestClusterKubectlProviderSecurityGroup02856266:443",
-        "FromPort": 443,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
-        },
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterKubectlProviderSecurityGroup2D90691C",
-            "GroupId"
-          ]
-        },
-        "ToPort": 443
-      }
-    },
     "ClusterControlPlaneSecurityGroupfromawscdkeksclustertestClusterNodesInstanceSecurityGroupD0B64C54443795AF111": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
@@ -782,7 +761,6 @@
         }
       },
       "DependsOn": [
-        "ClusterKubectlProviderSecurityGroup2D90691C",
         "VpcIGWD7BA715C",
         "VpcPrivateSubnet1DefaultRouteBE02A9ED",
         "VpcPrivateSubnet1RouteTableB2C5B500",
@@ -930,7 +908,6 @@
         ]
       },
       "DependsOn": [
-        "ClusterKubectlProviderSecurityGroup2D90691C",
         "VpcIGWD7BA715C",
         "VpcPrivateSubnet1DefaultRouteBE02A9ED",
         "VpcPrivateSubnet1RouteTableB2C5B500",
@@ -1036,7 +1013,6 @@
         "AttributesRevision": 2
       },
       "DependsOn": [
-        "ClusterKubectlProviderSecurityGroup2D90691C",
         "ClusterCreationRoleDefaultPolicyE8BDFC7B",
         "ClusterCreationRole360249B6",
         "VpcIGWD7BA715C",
@@ -1072,22 +1048,6 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "ClusterKubectlProviderSecurityGroup2D90691C": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "Comminication between KubectlProvider and EKS Control Plane",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
-    },
     "ClusterKubectlReadyBarrier200052AF": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
@@ -1101,6 +1061,111 @@
         "ClusterCreationRole360249B6",
         "Cluster9EE0221C"
       ]
+    },
+    "ClusterClusterSecurityGroupfromawscdkeksclustertestClusterNodesInstanceSecurityGroupD0B64C544432C10EDB4": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterNodesInstanceSecurityGroupD0B64C54:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ClusterNodesInstanceSecurityGroup899246BD",
+            "GroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
+    "ClusterClusterSecurityGroupfromawscdkeksclustertestClusterNodesArmInstanceSecurityGroup52C45858443A88C1345": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterNodesArmInstanceSecurityGroup52C45858:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ClusterNodesArmInstanceSecurityGroup599F388B",
+            "GroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
+    "ClusterClusterSecurityGroupfromawscdkeksclustertestClusterBottlerocketNodesInstanceSecurityGroup83FE7914443A80EB501": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterBottlerocketNodesInstanceSecurityGroup83FE7914:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
+            "GroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
+    "ClusterClusterSecurityGroupfromawscdkeksclustertestClusterspotInstanceSecurityGroupF50F5D474432A818F38": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterspotInstanceSecurityGroupF50F5D47:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ClusterspotInstanceSecurityGroup01F7B1CE",
+            "GroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
+    "ClusterClusterSecurityGroupfromawscdkeksclustertestClusterInferenceInstancesInstanceSecurityGroup42C57C5144320402117": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterInferenceInstancesInstanceSecurityGroup42C57C51:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
+            "GroupId"
+          ]
+        },
+        "ToPort": 443
+      }
     },
     "ClusterAwsAuthmanifestFE51F8AE": {
       "Type": "Custom::AWSCDK-EKS-KubernetesResource",
@@ -1440,6 +1505,27 @@
         }
       }
     },
+    "ClusterNodesInstanceSecurityGroupfromawscdkeksclustertestClusterClusterSecurityGroupF7265A32443DC7FAF39": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterNodesInstanceSecurityGroup899246BD",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
     "ClusterNodesInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F130134443AE10EB12": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
@@ -1459,6 +1545,27 @@
           ]
         },
         "ToPort": 443
+      }
+    },
+    "ClusterNodesInstanceSecurityGroupfromawscdkeksclustertestClusterClusterSecurityGroupF7265A32102565535D6A46ADB": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:1025-65535",
+        "FromPort": 1025,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterNodesInstanceSecurityGroup899246BD",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "ToPort": 65535
       }
     },
     "ClusterNodesInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F1301341025655359F401D0D": {
@@ -1717,6 +1824,27 @@
         }
       }
     },
+    "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclustertestClusterClusterSecurityGroupF7265A32443AC8AE5BF": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterNodesArmInstanceSecurityGroup599F388B",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
     "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F13013444328ED4211": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
@@ -1736,6 +1864,27 @@
           ]
         },
         "ToPort": 443
+      }
+    },
+    "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclustertestClusterClusterSecurityGroupF7265A32102565535F5718241": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:1025-65535",
+        "FromPort": 1025,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterNodesArmInstanceSecurityGroup599F388B",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "ToPort": 65535
       }
     },
     "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F13013410256553586052D07": {
@@ -1994,6 +2143,27 @@
         }
       }
     },
+    "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclustertestClusterClusterSecurityGroupF7265A32443D1686B16": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
     "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F130134443A6D43789": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
@@ -2013,6 +2183,27 @@
           ]
         },
         "ToPort": 443
+      }
+    },
+    "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclustertestClusterClusterSecurityGroupF7265A32102565535674E85A7": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:1025-65535",
+        "FromPort": 1025,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "ToPort": 65535
       }
     },
     "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F1301341025655352CE8AD9A": {
@@ -2135,7 +2326,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsservicebottlerocketawsk8s115x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsservicebottlerocketawsk8s117x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "t3.small",
         "IamInstanceProfile": {
@@ -2285,6 +2476,27 @@
         }
       }
     },
+    "ClusterspotInstanceSecurityGroupfromawscdkeksclustertestClusterClusterSecurityGroupF7265A324438F751704": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterspotInstanceSecurityGroup01F7B1CE",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
     "ClusterspotInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F1301344430650F325": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
@@ -2304,6 +2516,27 @@
           ]
         },
         "ToPort": 443
+      }
+    },
+    "ClusterspotInstanceSecurityGroupfromawscdkeksclustertestClusterClusterSecurityGroupF7265A321025655350D837827": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:1025-65535",
+        "FromPort": 1025,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterspotInstanceSecurityGroup01F7B1CE",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "ToPort": 65535
       }
     },
     "ClusterspotInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F130134102565535C7203235": {
@@ -2528,7 +2761,7 @@
         },
         "Release": "ksclustertestclusterchartspotinterrupthandlerf41ba997",
         "Chart": "aws-node-termination-handler",
-        "Version": "0.7.3",
+        "Version": "0.9.5",
         "Values": "{\"nodeSelector.lifecycle\":\"Ec2Spot\"}",
         "Namespace": "kube-system",
         "Repository": "https://aws.github.io/eks-charts",
@@ -2595,6 +2828,27 @@
         }
       }
     },
+    "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclustertestClusterClusterSecurityGroupF7265A32443F6A7B9A5": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F1301344437B48FD33": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
@@ -2614,6 +2868,27 @@
           ]
         },
         "ToPort": 443
+      }
+    },
+    "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclustertestClusterClusterSecurityGroupF7265A321025655351C7B1E72": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:1025-65535",
+        "FromPort": 1025,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "Cluster9EE0221C",
+            "ClusterSecurityGroupId"
+          ]
+        },
+        "ToPort": 65535
       }
     },
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F130134102565535A460F673": {
@@ -3502,7 +3777,7 @@
               },
               "/",
               {
-                "Ref": "AssetParametersa298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dcS3BucketCA7ADF01"
+                "Ref": "AssetParameters215e9f40bd76e7102c690b24b0922eb4963d2d24938eec175e107db683455d11S3BucketC456B560"
               },
               "/",
               {
@@ -3512,7 +3787,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersa298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dcS3VersionKey822F0346"
+                        "Ref": "AssetParameters215e9f40bd76e7102c690b24b0922eb4963d2d24938eec175e107db683455d11S3VersionKeyA1DAD649"
                       }
                     ]
                   }
@@ -3525,7 +3800,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersa298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dcS3VersionKey822F0346"
+                        "Ref": "AssetParameters215e9f40bd76e7102c690b24b0922eb4963d2d24938eec175e107db683455d11S3VersionKeyA1DAD649"
                       }
                     ]
                   }
@@ -3562,10 +3837,10 @@
           "referencetoawscdkeksclustertestVpcPrivateSubnet3Subnet7F5D6918Ref": {
             "Ref": "VpcPrivateSubnet3SubnetF258B56E"
           },
-          "referencetoawscdkeksclustertestClusterKubectlProviderSecurityGroupD167EE6BGroupId": {
+          "referencetoawscdkeksclustertestClusterD76DFF87ClusterSecurityGroupId": {
             "Fn::GetAtt": [
-              "ClusterKubectlProviderSecurityGroup2D90691C",
-              "GroupId"
+              "Cluster9EE0221C",
+              "ClusterSecurityGroupId"
             ]
           },
           "referencetoawscdkeksclustertestAssetParameters34131c2e554ab57ad3a47fc0a13173a5c2a4b65a7582fe9622277b3d04c8e1e1S3Bucket85526CA7Ref": {
@@ -4267,17 +4542,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"04fa2d485a51abd8261468eb6fa053d3a72242fc068fa75683232a52960b30cf\""
     },
-    "AssetParametersa298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dcS3BucketCA7ADF01": {
+    "AssetParameters215e9f40bd76e7102c690b24b0922eb4963d2d24938eec175e107db683455d11S3BucketC456B560": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"a298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dc\""
+      "Description": "S3 bucket for asset \"215e9f40bd76e7102c690b24b0922eb4963d2d24938eec175e107db683455d11\""
     },
-    "AssetParametersa298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dcS3VersionKey822F0346": {
+    "AssetParameters215e9f40bd76e7102c690b24b0922eb4963d2d24938eec175e107db683455d11S3VersionKeyA1DAD649": {
       "Type": "String",
-      "Description": "S3 key for asset version \"a298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dc\""
+      "Description": "S3 key for asset version \"215e9f40bd76e7102c690b24b0922eb4963d2d24938eec175e107db683455d11\""
     },
-    "AssetParametersa298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dcArtifactHashA688F4F0": {
+    "AssetParameters215e9f40bd76e7102c690b24b0922eb4963d2d24938eec175e107db683455d11ArtifactHash95B6846D": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"a298dd278c9ef814ebac4c9d8b2dc8e1b8374a14c5b7d0e79f041a296668f5dc\""
+      "Description": "Artifact hash for asset \"215e9f40bd76e7102c690b24b0922eb4963d2d24938eec175e107db683455d11\""
     },
     "SsmParameterValueawsserviceeksoptimizedami117amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
@@ -4287,9 +4562,9 @@
       "Type": "AWS::SSM::Parameter::Value<String>",
       "Default": "/aws/service/eks/optimized-ami/1.17/amazon-linux-2-arm64/recommended/image_id"
     },
-    "SsmParameterValueawsservicebottlerocketawsk8s115x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsservicebottlerocketawsk8s117x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/bottlerocket/aws-k8s-1.15/x86_64/latest/image_id"
+      "Default": "/aws/service/bottlerocket/aws-k8s-1.17/x86_64/latest/image_id"
     },
     "SsmParameterValueawsserviceeksoptimizedami117amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
