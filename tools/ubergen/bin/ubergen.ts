@@ -1,10 +1,10 @@
 import * as console from 'console';
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as process from 'process';
+import * as fs from 'fs-extra';
 import * as ts from 'typescript';
 
-const LIB_ROOT = path.resolve(__dirname, '..', 'lib');
+const LIB_ROOT = path.resolve(process.cwd(), 'lib');
 
 async function main() {
   const libraries = await findLibrariesToPackage();
@@ -59,7 +59,7 @@ async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
 
   const result = new Array<LibraryReference>();
 
-  const librariesRoot = path.resolve(__dirname, '..', '..', '@aws-cdk');
+  const librariesRoot = path.resolve(process.cwd(), '..', '..', 'packages', '@aws-cdk');
   for (const dir of await fs.readdir(librariesRoot)) {
     const packageJson = await fs.readJson(path.resolve(librariesRoot, dir, 'package.json'));
 
@@ -88,7 +88,7 @@ async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
 
 async function verifyDependencies(libraries: readonly LibraryReference[]): Promise<PackageJson> {
   console.log('🧐 Verifying dependencies are complete...');
-  const packageJsonPath = path.resolve(__dirname, '..', 'package.json');
+  const packageJsonPath = path.resolve(process.cwd(), 'package.json');
   const packageJson = await fs.readJson(packageJsonPath);
 
   let changed = false;
@@ -122,9 +122,9 @@ async function verifyDependencies(libraries: readonly LibraryReference[]): Promi
     });
   }
 
-  const workspacePath = path.resolve(__dirname, '..', '..', '..', 'package.json');
+  const workspacePath = path.resolve(process.cwd(), '..', '..', 'package.json');
   const workspace = await fs.readJson(workspacePath);
-  let workspaceChanged = false
+  let workspaceChanged = false;
 
   const spuriousBundledDeps = new Set<string>(packageJson.bundledDependencies ?? []);
   for (const [name, version] of Object.entries(toBundle)) {
@@ -136,7 +136,7 @@ async function verifyDependencies(libraries: readonly LibraryReference[]): Promi
       workspace.workspaces.nohoist = Array.from(new Set([
         ...workspace.workspaces.nohoist ?? [],
         nohoist,
-        `${nohoist}/**`
+        `${nohoist}/**`,
       ])).sort();
       workspaceChanged = true;
     }
@@ -273,8 +273,8 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
   const promises = (await fs.readdir(from)).map(async name => {
     if (shouldIgnoreFile(name)) { return; }
 
-    if (name.endsWith(".d.ts") || name.endsWith(".js")) {
-      if (await fs.pathExists(path.join(from, name.replace(/\.(d\.ts|js)$/, ".ts")))) {
+    if (name.endsWith('.d.ts') || name.endsWith('.js')) {
+      if (await fs.pathExists(path.join(from, name.replace(/\.(d\.ts|js)$/, '.ts')))) {
         // We won't copy .d.ts and .js files with a corresponding .ts file
         return;
       }
@@ -289,13 +289,13 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
       return copyOrTransformFiles(source, destination, libraries);
     }
     if (name.endsWith('.ts')) {
-      return await fs.writeFile(
+      return fs.writeFile(
         destination,
         await rewriteImports(source, to, libraries),
         { encoding: 'utf8' },
       );
     } else {
-      return await fs.copyFile(source, destination);
+      return fs.copyFile(source, destination);
     }
   });
 
@@ -360,13 +360,13 @@ async function rewriteImports(fromFile: string, targetDir: string, libraries: re
     const sourceLibrary = libraries.find(
       lib =>
         moduleSpecifier === lib.packageJson.name ||
-        moduleSpecifier.startsWith(`${lib.packageJson.name}/`)
+        moduleSpecifier.startsWith(`${lib.packageJson.name}/`),
     );
     if (sourceLibrary == null) { return undefined; }
 
     const importedFile = moduleSpecifier === sourceLibrary.packageJson.name
-            ? path.join(LIB_ROOT, sourceLibrary.shortName)
-            : path.join(LIB_ROOT, sourceLibrary.shortName, moduleSpecifier.substr(sourceLibrary.packageJson.name.length + 1));
+      ? path.join(LIB_ROOT, sourceLibrary.shortName)
+      : path.join(LIB_ROOT, sourceLibrary.shortName, moduleSpecifier.substr(sourceLibrary.packageJson.name.length + 1));
     return ts.createStringLiteral(
       path.relative(targetDir, importedFile),
     );

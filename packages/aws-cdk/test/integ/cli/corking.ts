@@ -1,45 +1,28 @@
 /**
  * Routines for corking stdout and stderr
  */
+import * as stream from 'stream';
 
-let _corkShellOutput = false;
-const _corked = {
-  stdout: new Array<Buffer>(),
-  stderr: new Array<Buffer>(),
-};
+export class MemoryStream extends stream.Writable {
+  private parts = new Array<Buffer>();
 
-function cleanStreams() {
-  _corked.stdout.splice(0, _corked.stdout.length);
-  _corked.stderr.splice(0, _corked.stderr.length);
-}
+  public _write(chunk: Buffer, _encoding: string, callback: (error?: Error | null) => void): void {
+    this.parts.push(chunk);
+    callback();
+  }
 
-export function corkShellOutput() {
-  _corkShellOutput = true;
-  cleanStreams();
-}
+  public buffer() {
+    return Buffer.concat(this.parts);
+  }
 
-export function writeOutput(stream: 'stdout' | 'stderr', content: Buffer) {
-  if (_corkShellOutput) {
-    _corked[stream].push(content);
-  } else {
-    process[stream].write(content);
+  public clear() {
+    this.parts.splice(0, this.parts.length);
+  }
+
+  public async flushTo(strm: NodeJS.WritableStream) {
+    const flushed = strm.write(this.buffer());
+    if (!flushed) {
+      return new Promise(ok => strm.once('drain', ok));
+    }
   }
 }
-
-async function writeAndFlush(stream: 'stdout' | 'stderr', content: Buffer) {
-  const flushed = process[stream].write(content);
-  if (!flushed) {
-    return new Promise(ok => process[stream].once('drain', ok));
-  }
-}
-
-export function uncorkShellOutput() {
-  _corkShellOutput = false;
-}
-
-export async function flushCorkedOutput() {
-  await writeAndFlush('stdout', Buffer.concat(_corked.stdout));
-  await writeAndFlush('stderr', Buffer.concat(_corked.stderr));
-  cleanStreams();
-}
-
