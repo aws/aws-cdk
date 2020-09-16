@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ConstructNode, Fn, IResource, Resource, Token } from '@aws-cdk/core';
+import { ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
 import { AliasOptions } from './alias';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
@@ -361,11 +361,11 @@ export abstract class FunctionBase extends Resource implements IFunction {
    *
    * @internal
    */
-  protected _checkAccountIdFromArn(): boolean {
+  protected _isStackAccount(): boolean {
     if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.functionArn)) {
       return false;
     }
-    return Fn.select(4, Fn.split(':', this.functionArn)) === this.stack.account;
+    return this.stack.parseArn(this.functionArn).account === this.stack.account;
   }
 
   /**
