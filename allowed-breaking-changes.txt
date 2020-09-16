@@ -38,9 +38,4 @@ removed:@aws-cdk/core.IStackSynthesizer.synthesizeStackArtifacts
 
 # This property was never correctly typed but has been passed through an "any"
 changed-type:@aws-cdk/aws-ecs.DockerVolumeConfiguration.labels
-incompatible-argument:@aws-cdk/aws-ecs.Ec2TaskDefinition.<initializer>
-incompatible-argument:@aws-cdk/aws-ecs.Ec2TaskDefinition.addVolume
-incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.<initializer>
-incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.addVolume
-incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.<initializer>
-incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.addVolume
+removed:@aws-cdk/aws-ecs.CfnTaskDefinition.EfsVolumeConfigurationProperty
