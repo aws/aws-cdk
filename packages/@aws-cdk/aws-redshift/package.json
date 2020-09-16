@@ -94,9 +94,11 @@
   },
   "awslint": {
     "exclude": [
+      "attribute-tag:@aws-cdk/aws-redshift.DatabaseSecret.secretName",
       "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterName",
       "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterValue",
       "props-physical-name:@aws-cdk/aws-redshift.ClusterParameterGroupProps",
+      "props-physical-name:@aws-cdk/aws-redshift.ClusterSubnetGroupProps",
       "props-physical-name:@aws-cdk/aws-redshift.DatabaseSecretProps"
     ]
   },
