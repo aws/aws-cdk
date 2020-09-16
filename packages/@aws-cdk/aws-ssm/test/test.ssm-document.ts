@@ -11,11 +11,19 @@ export = {
     // WHEN
     new ssm.CfnAssociation(stack, 'Assoc', {
       name: 'document',
+      parameters: {
+        a: ['a'],
+        B: [],
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::SSM::Association', {
       Name: 'document',
+      Parameters: {
+        a: ['a'],
+        B: [],
+      },
     }));
     test.done();
   },

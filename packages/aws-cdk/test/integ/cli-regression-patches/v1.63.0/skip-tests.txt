@@ -1,0 +1,7 @@
+# We made --cloudformation-execution-policies required, old tests don't pass it yet
+
+upgrade legacy bootstrap stack to new bootstrap stack while in use
+deploy new style synthesis to new style bootstrap
+deploy new style synthesis to new style bootstrap (with docker image)
+switch on termination protection, switch is left alone on re-bootstrap
+add tags, left alone on re-bootstrap
