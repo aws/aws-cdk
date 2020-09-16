@@ -1280,6 +1280,56 @@ export = {
     test.done();
   },
 
+  'unversioned PostgreSQL cluster can be used with s3 import and s3 export buckets'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
+      s3ImportBuckets: [bucket],
+      s3ExportBuckets: [bucket],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      AssociatedRoles: [
+        {
+          FeatureName: 's3Import',
+          RoleArn: {
+            'Fn::GetAtt': [
+              'DatabaseS3ImportRole377BC9C0',
+              'Arn',
+            ],
+          },
+        },
+        {
+          FeatureName: 's3Export',
+          RoleArn: {
+            'Fn::GetAtt': [
+              'DatabaseS3ExportRole9E328562',
+              'Arn',
+            ],
+          },
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
   'MySQL cluster without S3 exports or imports references the correct default ParameterGroup'(test: Test) {
     // GIVEN
     const stack = testStack();

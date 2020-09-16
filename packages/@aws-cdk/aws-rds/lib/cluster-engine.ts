@@ -493,17 +493,18 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
           majorVersion: version.auroraPostgresMajorVersion,
         }
         : undefined,
-      features: version?._features,
+      features: version ? version._features : { s3Import: 's3Import', s3Export: 's3Export' },
     });
   }
 
   public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
-    if (options.s3ImportRole && !(config.features?.s3Import)) {
-      throw new Error(`s3Import is not supported for Postgres version: ${this.engineVersion?.fullVersion ?? '<unversioned>'}. Use a version that supports the s3Import feature.`);
+    // skip validation for unversioned as it might be supported/unsupported. we cannot reliably tell at compile-time
+    if (options.s3ImportRole && this.engineVersion && !(config.features?.s3Import)) {
+      throw new Error(`s3Import is not supported for Postgres version: ${this.engineVersion.fullVersion}. Use a version that supports the s3Import feature.`);
     }
-    if (options.s3ExportRole && !(config.features?.s3Export)) {
-      throw new Error(`s3Export is not supported for Postgres version: ${this.engineVersion?.fullVersion ?? '<unversioned>'}. Use a version that supports the s3Export feature.`);
+    if (options.s3ExportRole && this.engineVersion && !(config.features?.s3Export)) {
+      throw new Error(`s3Export is not supported for Postgres version: ${this.engineVersion.fullVersion}. Use a version that supports the s3Export feature.`);
     }
     return config;
   }
