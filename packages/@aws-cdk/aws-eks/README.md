@@ -292,8 +292,18 @@ Spot instance nodes will be labeled with `lifecycle=Ec2Spot` and tainted with `P
 The [AWS Node Termination Handler](https://github.com/aws/aws-node-termination-handler)
 DaemonSet will be installed from [
 Amazon EKS Helm chart repository
-](https://github.com/aws/eks-charts/tree/master/stable/aws-node-termination-handler) on these nodes. The termination handler ensures that the Kubernetes control plane responds appropriately to events that can cause your EC2 instance to become unavailable, such as [EC2 maintenance events](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-instances-status-check_sched.html) and [EC2 Spot interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html) and helps gracefully stop all pods running on spot nodes that are about to be
+](https://github.com/aws/eks-charts/tree/master/stable/aws-node-termination-handler) on these nodes.
+The termination handler ensures that the Kubernetes control plane responds appropriately to events that
+can cause your EC2 instance to become unavailable, such as [EC2 maintenance events](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-instances-status-check_sched.html)
+and [EC2 Spot interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html) and helps gracefully stop all pods running on spot nodes that are about to be
 terminated.
+
+Current version:
+
+| name       | version |
+|------------|---------|
+| Helm Chart | 0.9.5  |
+| App        | 1.7.0  |
 
 ### Bootstrapping
 
@@ -716,7 +726,7 @@ chart2.node.addDependency(chart1);
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts. At this moment the managed nodegroup only supports Amazon EKS-optimized AMI but it's possible to create a capacity of self-managed `AutoScalingGroup` running with bottlerocket Linux AMI.
 
-> **NOTICE**: Bottlerocket is in public preview and only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART.md#finding-an-ami).
+> **NOTICE**: Bottlerocket is only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-EKS.md#finding-an-ami).
 
 The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `t3.small` Linux instances running with `Bottlerocket` AMI.
 
@@ -728,6 +738,10 @@ cluster.addCapacity('BottlerocketNodes', {
   machineImageType: eks.MachineImageType.BOTTLEROCKET
 });
 ```
+
+The Bottlerocket AMI will be auto selected with the variant of different k8s version for the `x86_64` architecture.
+For example, if the Amazon EKS cluster version is `1.17`, the Bottlerocket AMI variant will be auto selected as
+`aws-k8s-1.17` behind the scene. See [Variants](https://github.com/bottlerocket-os/bottlerocket/blob/develop/README.md#variants) for more details.
 
 To define only Bottlerocket capacity in your cluster, set `defaultCapacity` to `0` when you define the cluster as described above.
 
