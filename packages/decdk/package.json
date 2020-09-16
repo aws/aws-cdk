@@ -185,18 +185,18 @@
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.4",
     "fs-extra": "^9.0.1",
-    "jsii-reflect": "^1.11.0",
+    "jsii-reflect": "^1.12.0",
     "jsonschema": "^1.2.6",
-    "yaml": "1.9.2",
-    "yargs": "^15.4.1"
+    "yaml": "1.10.0",
+    "yargs": "^16.0.3"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^26.0.14",
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.5",
-    "jest": "^25.5.4",
-    "jsii": "^1.11.0"
+    "jest": "^26.4.2",
+    "jsii": "^1.12.0"
   },
   "keywords": [
     "aws",
