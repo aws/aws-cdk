@@ -102,6 +102,26 @@ following to `cdk.json`:
 }
 ```
 
+## A note on cost
+
+By default, the `CdkPipeline` construct creates an AWS Key Management Service
+(AWS KMS) Customer Master Key (CMK) for you to encrypt the artifacts in the
+artifact bucket, which incurs a cost of
+**$1/month**. This default configuration is necessary to allow cross-account
+deployments.
+
+If you do not intend to perform cross-account deployments, you can disable
+the creation of the Customer Master Keys by passing `crossAccountKeys: false`
+when defining the Pipeline:
+
+```ts
+const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
+  crossAccountKeys: false,
+
+  // ...
+});
+```
+
 ## Defining the Pipeline (Source and Synth)
 
 The pipeline is defined by instantiating `CdkPipeline` in a Stack. This defines the

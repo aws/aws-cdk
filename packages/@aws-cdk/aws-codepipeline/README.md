@@ -27,6 +27,22 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 });
 ```
 
+Be aware that in the default configuration, the `Pipeline` construct creates
+an AWS Key Management Service (AWS KMS) Customer Master Key (CMK) for you to
+encrypt the artifacts in the artifact bucket, which incurs a cost of
+**$1/month**. This default configuration is necessary to allow cross-account
+actions.
+
+If you do not intend to perform cross-account deployments, you can disable
+the creation of the Customer Master Keys by passing `crossAccountKeys: false`
+when defining the Pipeline:
+
+```ts
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
+  crossAccountKeys: false,
+});
+```
+
 ### Stages
 
 You can provide Stages when creating the Pipeline:
@@ -80,16 +96,91 @@ or you can use the `IStage.addAction()` method to mutate an existing Stage:
 sourceStage.addAction(someAction);
 ```
 
-### Cross-region CodePipelines
+### Cross-account CodePipelines
 
-You can also use the cross-region feature to deploy resources
-into a different region than your Pipeline is in.
+Cross-account Pipeline actions require that the Pipeline has *not* been
+created with `crossAccountKeys: false`.
 
-It works like this:
+To perform actions in a different account than your Pipeline is in, most
+actions accept a resource that is in a different account (either created
+or imported):
 
 ```typescript
-const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
+stage.addAction(new codepipeline_actions.S3DeployAction({
+  bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
+    account: '123456789012',
+    // ...
+  }),
   // ...
+}));
+```
+
+Some actions accept an explicit `account` parameter:
+
+```typescript
+stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  account: '123456789012',
+  // ...
+}));
+```
+
+CodePipeline requires that an IAM Role exists in the target account with a
+well-known name. The `Pipeline` construct automatically defines a **support
+stack** for you, named `<PipelineStackName>-support-<account>`, that will
+provision a role that the pipeline will assume in the given account before
+executing this action. This support stack will automatically be deployed
+before the stack containing the pipeline.
+
+You can also explicitly pass a `role` when creating the action. In that case,
+the `account` property is ignored, and the action will operate in the same
+account the role belongs to:
+
+```ts
+stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  // ...
+  role: iam.Role.fromRoleArn(this, 'ActionRole', '...'),
+}));
+```
+
+### Cross-region CodePipelines
+
+To perform actions in a different region than your Pipeline is in, most
+actions accept a resource that is in a different region (either created
+or imported):
+
+```typescript
+stage.addAction(new codepipeline_actions.S3DeployAction({
+  bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
+    region: 'us-west-1',
+    // ...
+  }),
+  // ...
+}));
+```
+
+Some actions accept an explicit `region` parameter:
+
+```typescript
+stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  // ...
+  region: 'us-west-1',
+}));
+```
+
+CodePipeline requires that a replication bucket exists in the region(s) you
+want to deploy to. The `Pipeline` construct automatically defines a **support
+stack** for you, named `<nameOfYourPipelineStack>-support-<region>`, which
+contains this replication bucket. This support stack will automatically be
+deployed before the stack containing the pipeline.
+
+If you don't want to use these support stacks, and already have buckets in
+place to serve as replication buckets, you can supply these at Pipeline definition
+time using the `crossRegionReplicationBuckets` parameter. Example:
+
+```ts
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', { /* ... */ });
+  // ...
+
   crossRegionReplicationBuckets: {
     // note that a physical name of the replication Bucket must be known at synthesis time
     'us-west-1': s3.Bucket.fromBucketAttributes(this, 'UsWest1ReplicationBucket', {
@@ -101,32 +192,6 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
     }),
   },
 });
-
-// later in the code...
-new codepipeline_actions.CloudFormationCreateUpdateStackAction({
-  actionName: 'CFN_US_West_1',
-  // ...
-  region: 'us-west-1',
-});
-```
-
-This way, the `CFN_US_West_1` Action will operate in the `us-west-1` region,
-regardless of which region your Pipeline is in.
-
-If you don't provide a bucket for a region (other than the Pipeline's region)
-that you're using for an Action,
-there will be a new Stack, called `<nameOfYourPipelineStack>-support-<region>`,
-defined for you, containing a replication Bucket.
-This new Stack will depend on your Pipeline Stack,
-so deploying the Pipeline Stack will deploy the support Stack(s) first.
-Example:
-
-```bash
-$ cdk ls
-MyMainStack
-MyMainStack-support-us-west-1
-$ cdk deploy MyMainStack
-# output of cdk deploy here...
 ```
 
 See [the AWS docs here](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-cross-region.html)
