@@ -100,6 +100,7 @@
     ]
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "features": [
     {
       "name": "Higher level constructs for HTTP APIs",
