@@ -80,6 +80,15 @@ export interface ShellScriptActionProps {
    * @default - No VPC
    */
   readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection
 }
 
 /**
@@ -159,6 +168,7 @@ export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
     this._project = new codebuild.PipelineProject(scope, 'Project', {
       environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0 },
       vpc: this.props.vpc,
+      subnetSelection: this.props.subnetSelection,
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
         phases: {
