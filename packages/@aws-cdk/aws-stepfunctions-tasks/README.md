@@ -806,11 +806,11 @@ You can call the [`CreateModel`](https://docs.aws.amazon.com/sagemaker/latest/AP
 ```ts
 new sfn.SageMakerCreateModel(this, 'Sagemaker', {
   modelName: 'MyModel',
-  primaryContainer: {
-   image: tasks.DockerImage.fromRegistry(sfn.JsonPath.stringAt('$.Model.imageName')),
+  primaryContainer: new tasks.ContainerDefinition({
+   image: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Model.imageName')),
    mode: tasks.Mode.SINGLE_MODEL,
-   modelDataUrl: sfn.JsonPath.stringAt('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
-  },
+   modelS3Location: tasks.S3Location.fromJsonExpression('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
+  }),
 });
 ```
 
