@@ -299,7 +299,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   public deploymentStage!: Stage;
 
   /** @internal */
-  protected policy?: iam.PolicyDocument;
+  protected _policy?: iam.PolicyDocument;
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
@@ -309,7 +309,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     });
 
     Object.defineProperty(this, RESTAPI_SYMBOL, { value: true });
-    this.policy = props.policy;
+    this._policy = props.policy;
   }
 
   /**
@@ -382,11 +382,11 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    * @param statement the IAM statement to add
    */
   public addToPolicy(...statement: iam.PolicyStatement[]): void {
-    if (!this.policy) {
-      this.policy = new iam.PolicyDocument();
+    if (!this._policy) {
+      this._policy = new iam.PolicyDocument();
     }
 
-    this.policy.addStatements(...statement);
+    this._policy.addStatements(...statement);
   }
 
   /**
@@ -502,7 +502,7 @@ export class SpecRestApi extends RestApiBase {
     const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
-      policy: Lazy.anyValue({ produce: () => this.policy }),
+      policy: Lazy.anyValue({ produce: () => this._policy }),
       failOnWarnings: props.failOnWarnings,
       body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
@@ -605,7 +605,7 @@ export class RestApi extends RestApiBase {
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
-      policy: Lazy.anyValue({ produce: () => this.policy }),
+      policy: Lazy.anyValue({ produce: () => this._policy }),
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
