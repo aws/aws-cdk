@@ -2,7 +2,7 @@
   "ResourceTypes": {
       "AWS::ECR::Repository": {
           "patch": {
-            "description": "Add PrimtiveType = Json to AWS::ECR::Repository.RepositoryPolicyText",
+            "description": "Primitive type does not exist at all for some reason and it should be Json",
             "operations": [
               {
                 "path": "/Properties/RepositoryPolicyText/PrimitiveType",
