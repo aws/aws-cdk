@@ -410,7 +410,9 @@ export class CfnInclude extends core.CfnElement {
           return self.parameters[refTarget];
         },
         findResource() { throw new Error('Using GetAtt expressions in Rule definitions is not allowed'); },
-        findCondition() { throw new Error('Referring to Conditions in Rule definitions is not allowed'); },
+        findCondition(conditionName: string): core.CfnCondition | undefined {
+          return self.conditions[conditionName];
+        },
         findMapping(mappingName: string): core.CfnMapping | undefined {
           return self.mappings[mappingName];
         },
@@ -477,8 +479,8 @@ export class CfnInclude extends core.CfnElement {
         findRefTarget(elementName: string): core.CfnElement | undefined {
           return self.resources[elementName] ?? self.parameters[elementName];
         },
-        findCondition(): undefined {
-          return undefined;
+        findCondition(conditionName: string): core.CfnCondition | undefined {
+          return self.conditions[conditionName];
         },
         findMapping(mappingName): core.CfnMapping | undefined {
           return self.mappings[mappingName];
