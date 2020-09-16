@@ -13,7 +13,7 @@ jobs:
           title-or-body: 'title'
           parameters: >
            [
-           {"keywords":["[cli]","[command line]"],"labels":["package/tools"],"assignees":["shivlaks"]},
+           {"keywords":["[cli]","[command line]"],"labels":["package/tools"],"assignees":["rix0rrr"]},
            {"keywords":["[@aws-cdk/alexa-ask]","[alexa-ask]","[alexa ask]"],"labels":["@aws-cdk/alexa-ask"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["[@aws-cdk/app-delivery]","[app-delivery]","[app delivery]"],"labels":["@aws-cdk/app-delivery"],"assignees":["skinny85"]},
            {"keywords":["[@aws-cdk/assert]","[assert]"],"labels":["@aws-cdk/assert"],"assignees":["nija-at"]},
