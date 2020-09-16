@@ -80,7 +80,7 @@ export default class CodeGenerator {
    */
   public async save(dir: string): Promise<string[]> {
     this.code.closeFile(this.outputFile);
-    return await this.code.save(dir);
+    return this.code.save(dir);
   }
 
   /**
