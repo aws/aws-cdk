@@ -156,7 +156,7 @@ export abstract class ServiceExtension {
 
   /**
    * Once all containers are added to the task definition this hook is
-   * called for each extension to give it a chance to bake its dependency
+   * called for each extension to give it a chance to resolve its dependency
    * graph so that its container starts in the right order based on the
    * other extensions that were enabled
    */

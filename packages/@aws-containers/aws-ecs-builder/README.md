@@ -66,7 +66,7 @@ ECS Cluster, and any other required resources for the environment:
 const environment = new Environment(stack, 'production');
 ```
 
-However you can also choose to build an environment out of a preexisting VPC,
+However, you can also choose to build an environment out of a pre-existing VPC,
 or ECS Cluster:
 
 ```js
@@ -112,7 +112,7 @@ nameDescription.add(new HttpLoadBalancerExtension());
 
 ## Launching the `ServiceDescription` as a `Service`
 
-Once the service description is defined you can launch it as a service:
+Once the service description is defined, you can launch it as a service:
 
 ```js
 const nameService = new Service(stack, 'name', {
@@ -121,13 +121,13 @@ const nameService = new Service(stack, 'name', {
 });
 ```
 
-At this point all the service resources will be created. This includes the ECS Task
-Definition, Service, as well as any other attached resources such as App Mesh Virtual
-Node, or an Application Load Balancer.
+At this point, all the service resources will be created. This includes the ECS Task
+Definition, Service, as well as any other attached resources, such as App Mesh Virtual
+Node or an Application Load Balancer.
 
 ## Creating your own custom `ServiceExtension`
 
-In addition to using the default service extensions that come with this module you
+In addition to using the default service extensions that come with this module, you
 can choose to implement your own custom service extensions. The `ServiceExtension`
 class is an abstract class you can implement yourself. The following example
 implements a custom service extension that could be added to a service in order to
@@ -139,7 +139,7 @@ export class MyCustomAutoscaling extends ServiceExtension {
     super('my-custom-autoscaling');
   }
 
-  // This service modifies properties of the service prior
+  // This function modifies properties of the service prior
   // to construct creation.
   public mutateServiceProps(props: ServiceBuild) {
     return {
@@ -176,19 +176,19 @@ requiring decentralized updates to many different services.
 Every `ServiceExtension` can implement the following hooks to modify the properties
 of constructs, or make use of the resulting constructs:
 
-* `addHooks()` - This hook is called after all the extensions are added to a ServiceDescription, but before any of the other extension hooks have been run. It gives each extension a chance to do some inspection of the overall ServiceDescription and see what other extensions have been added. Some extensions may want to register hooks on the other extensions to modify them. For example the Firelens extension wants to be able to modify the settings of the application container to route logs through Firelens.
-* `modifyTaskDefinitionProps()` - This is hook is passed the proposed ecs.TaskDefinitionProps for a TaskDefinition that is about to be created. This allows the extension to make modifications to the task definition props before the TaskDefinition is created. For example the App Mesh extension modifies the proxy settings for the task.
+* `addHooks()` - This hook is called after all the extensions are added to a ServiceDescription, but before any of the other extension hooks have been run. It gives each extension a chance to do some inspection of the overall ServiceDescription and see what other extensions have been added. Some extensions may want to register hooks on the other extensions to modify them. For example, the Firelens extension wants to be able to modify the settings of the application container to route logs through Firelens.
+* `modifyTaskDefinitionProps()` - This is hook is passed the proposed ecs.TaskDefinitionProps for a TaskDefinition that is about to be created. This allows the extension to make modifications to the task definition props before the TaskDefinition is created. For example, the App Mesh extension modifies the proxy settings for the task.
 * `useTaskDefinition()` - After the TaskDefinition is created, this hook is passed the actual TaskDefinition construct that was created. This allows the extension to add containers to the task, modify the task definition's IAM role, etc.
-* `resolveContainerDependencies()` - Once all extensions have added their containers each extension is given a chance to modify its container's dependsOn settings. Extensions need to check and see what other extensions were enabled, and decide whether their container needs to wait on another container to start first.
-* `modifyServiceProps()` - Before an Ec2Service or FargateService is created this hook is passed a draft version of the service props to change. Each extension adds its own modifications to the service properties. For example the App Mesh extension needs to modify the service settings to enable CloudMap service discovery.
-* `useService()` - After the service is created this hook is given a chance to utilize the service that was created. This is used by extensions like the load balancer or App Mesh extension which create and link other AWS resources to the ECS extension.
-* `connectToService()` - This hook is called when a user wants to connect one service to another service. It allows an extension to implement logic about how to allow connections from one service to another. For example the App Mesh extension implements this method so that you can easily connect one service mesh service to another so that the service's Envoy proxy sidecars know how to route traffic to each other.
+* `resolveContainerDependencies()` - Once all extensions have added their containers, each extension is given a chance to modify its container's `dependsOn` settings. Extensions need to check and see what other extensions were enabled and decide whether their container needs to wait on another container to start first.
+* `modifyServiceProps()` - Before an Ec2Service or FargateService is created, this hook is passed a draft version of the service props to change. Each extension adds its own modifications to the service properties. For example, the App Mesh extension needs to modify the service settings to enable CloudMap service discovery.
+* `useService()` - After the service is created, this hook is given a chance to utilize that service. This is used by extensions like the load balancer or App Mesh extension, which create and link other AWS resources to the ECS extension.
+* `connectToService()` - This hook is called when a user wants to connect one service to another service. It allows an extension to implement logic about how to allow connections from one service to another. For example, the App Mesh extension implements this method in order to easily connect one service mesh service to another, which allows the service's Envoy proxy sidecars to route traffic to each other.
 
 ## Connecting one service to another service
 
 One of the hooks that a `ServiceExtension` can implement is a hook for connection
-logic. This is utilized when connecting one service to another service, for example
-connecting a user facing web service, with a backend API. Usage looks like this:
+logic. This is utilized when connecting one service to another service, e.g. 
+connecting a user facing web service with a backend API. Usage looks like this:
 
 ```js
 const serviceA = new Service(stack, 'service-a', {

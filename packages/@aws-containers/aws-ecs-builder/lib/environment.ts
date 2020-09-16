@@ -4,7 +4,7 @@ import * as cdk from '@aws-cdk/core';
 import { EnvironmentCapacityType } from './extensions/extension-interfaces';
 
 /**
- * Settings for the deploy environment you want to deploy
+ * Settings for the environment you want to deploy.
  * services within.
  */
 export interface EnvironmentProps {
@@ -15,14 +15,14 @@ export interface EnvironmentProps {
   readonly vpc?: ec2.IVpc,
 
   /**
-   * The ECS cluster which provides compute capacity to this service
+   * The ECS cluster which provides compute capacity to this service.
    * [disable-awslint:ref-via-interface]
    * @default - Create a new cluster
    */
   readonly cluster?: ecs.Cluster
 
   /**
-   * What type of capacity to use for this environment
+   * The type of capacity to use for this environment.
    * @default - EnvironmentCapacityType.FARGATE
    */
   readonly capacityType?: EnvironmentCapacityType
@@ -34,22 +34,22 @@ export interface EnvironmentProps {
  */
 export class Environment extends cdk.Construct {
   /**
-   * The name of this environment
+   * The name of this environment.
    */
   public readonly id: string;
 
   /**
-   * The VPC into which environment services should be placed
+   * The VPC into which environment services should be placed.
    */
   public readonly vpc: ec2.IVpc;
 
   /**
-   * The cluster that is providing capacity for this service
+   * The cluster that is providing capacity for this service.
    */
   public readonly cluster: ecs.Cluster;
 
   /**
-   * The cluster that is providing capacity for this service
+   * The capacity type used by the service's cluster.
    */
   public readonly capacityType: EnvironmentCapacityType;
 

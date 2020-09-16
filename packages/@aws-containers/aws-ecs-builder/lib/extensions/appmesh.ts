@@ -9,7 +9,7 @@ import { Container } from './container';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
 /**
- * The settings for the App Mesh extension
+ * The settings for the App Mesh extension.
  */
 export interface MeshProps {
   /**
@@ -18,8 +18,8 @@ export interface MeshProps {
   readonly mesh: appmesh.Mesh;
 
   /**
-   * The protocol of the service: Protocol.HTTP, Protocol.HTTP2,
-   * Protocol.TCP, Protocol.GRPC
+   * The protocol of the service. 
+   * Valid values are Protocol.HTTP, Protocol.HTTP2, Protocol.TCP, Protocol.GRPC
    * @default - Protocol.HTTP
    */
   readonly protocol?: appmesh.Protocol;
@@ -28,7 +28,7 @@ export interface MeshProps {
 /**
  * This extension adds an Envoy sidecar to the task definition and
  * creates the App Mesh resources required to route network traffic
- * to the container in a service mesh
+ * to the container in a service mesh.
  */
 export class AppMeshExtension extends ServiceExtension {
   protected virtualNode!: appmesh.VirtualNode;
@@ -38,7 +38,8 @@ export class AppMeshExtension extends ServiceExtension {
   private mesh: appmesh.Mesh;
 
   /**
-   * The protocol of the service, for App Mesh routing purposes.
+   * The protocol used for AppMesh routing.
+   * default - Protocol.HTTP
    */
   public readonly protocol: appmesh.Protocol;
 
@@ -172,7 +173,7 @@ export class AppMeshExtension extends ServiceExtension {
     });
   }
 
-  // Enable cloudmap for the service
+  // Enable CloudMap for the service.
   public mutateServiceProps(props: ServiceBuild) {
     var maxPercent;
 
@@ -189,7 +190,7 @@ export class AppMeshExtension extends ServiceExtension {
     return {
       ...props,
 
-      // We must make sure that service tasks are registered into
+      // Ensure that service tasks are registered into
       // CloudMap so that the App Mesh proxy can find them.
       cloudMapOptions: {
         dnsRecordType: 'A',
