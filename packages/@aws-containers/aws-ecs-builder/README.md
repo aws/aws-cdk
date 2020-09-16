@@ -14,11 +14,11 @@ deployed using Amazon ECS.
 
 The `Service` construct provided by this module can be extended with optional `ServiceExtension` classes that add supplemental ECS features including:
 
-- AWS X-Ray for tracing your application
-- Amazon CloudWatch Agent for capturing per task stats
-- AWS AppMesh for adding your application to a service mesh
-- Application Load Balancer, for exposing your service to the public
-- AWS FireLens, for filtering and routing application logs
+- [AWS X-Ray](https://aws.amazon.com/xray/) for tracing your application
+- [Amazon CloudWatch Agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html) for capturing per task stats
+- [AWS AppMesh f](https://aws.amazon.com/app-mesh/)or adding your application to a service mesh
+- [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
+- [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
 
 The `ServiceExtension` class is an abstract class which you can also implement in
 order to build your own custom service extensions for modifying your service, or
