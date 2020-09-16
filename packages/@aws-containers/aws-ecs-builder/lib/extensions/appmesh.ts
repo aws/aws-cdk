@@ -32,6 +32,8 @@ export interface MeshProps {
 export class AppMeshExtension extends ServiceExtension {
   protected virtualNode!: appmesh.VirtualNode;
   protected virtualService!: appmesh.VirtualService;
+  protected virtualRouter!: appmesh.VirtualRouter;
+  protected route!: appmesh.Route;
   private mesh: appmesh.Mesh;
 
   /**
@@ -219,10 +221,34 @@ export class AppMeshExtension extends ServiceExtension {
       },
     });
 
-    // Create virtual service to make the virtual node accessible
+    // Create a virtual router for this service. This allows for retries
+    // and other similar behaviors.
+    this.virtualRouter = new appmesh.VirtualRouter(this.scope, `${this.parentService.id}-virtual-router`, {
+      mesh: this.mesh,
+      listener: {
+        portMapping: {
+          port: containerextension.trafficPort,
+          protocol: this.protocol,
+        },
+      },
+      virtualRouterName: `${this.parentService.id}`,
+    });
+
+    // Now add the virtual node as a route in the virtual router
+    this.route = this.virtualRouter.addRoute(`${this.parentService.id}-route`, {
+      routeTargets: [{
+        virtualNode: this.virtualNode,
+        weight: 1,
+      }],
+      // Ensure that the route type matches the protocol type.
+      routeType: this.protocol == appmesh.Protocol.HTTP ? appmesh.RouteType.HTTP : appmesh.RouteType.TCP,
+    });
+
+    // Now create a virtual service. Relationship goes like this:
+    // virtual service -> virtual router -> virtual node
     this.virtualService = new appmesh.VirtualService(this.scope, `${this.parentService.id}-virtual-service`, {
       mesh: this.mesh,
-      virtualNode: this.virtualNode,
+      virtualRouter: this.virtualRouter,
       virtualServiceName: `${this.parentService.id}.${cloudmapNamespace.namespaceName}`,
     });
   }

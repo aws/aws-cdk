@@ -1207,6 +1207,66 @@
         "VirtualNodeName": "name"
       }
     },
+    "namevirtualrouterC00E1ACE": {
+      "Type": "AWS::AppMesh::VirtualRouter",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "mymeshEA67EDEF",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Listeners": [
+            {
+              "PortMapping": {
+                "Port": 80,
+                "Protocol": "http"
+              }
+            }
+          ]
+        },
+        "VirtualRouterName": "name"
+      }
+    },
+    "namevirtualrouternamerouteDCDF3715": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "mymeshEA67EDEF",
+            "MeshName"
+          ]
+        },
+        "RouteName": "name-route",
+        "Spec": {
+          "HttpRoute": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "namevirtualnode6C99CB14",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "Prefix": "/"
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "namevirtualrouterC00E1ACE",
+            "VirtualRouterName"
+          ]
+        }
+      }
+    },
     "namevirtualservice3DDDDF1E": {
       "Type": "AWS::AppMesh::VirtualService",
       "Properties": {
@@ -1218,11 +1278,11 @@
         },
         "Spec": {
           "Provider": {
-            "VirtualNode": {
-              "VirtualNodeName": {
+            "VirtualRouter": {
+              "VirtualRouterName": {
                 "Fn::GetAtt": [
-                  "namevirtualnode6C99CB14",
-                  "VirtualNodeName"
+                  "namevirtualrouterC00E1ACE",
+                  "VirtualRouterName"
                 ]
               }
             }
@@ -1905,6 +1965,66 @@
         "VirtualNodeName": "greeting"
       }
     },
+    "greetingvirtualrouter0F898D1A": {
+      "Type": "AWS::AppMesh::VirtualRouter",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "mymeshEA67EDEF",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Listeners": [
+            {
+              "PortMapping": {
+                "Port": 80,
+                "Protocol": "http"
+              }
+            }
+          ]
+        },
+        "VirtualRouterName": "greeting"
+      }
+    },
+    "greetingvirtualroutergreetingroute46305F50": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "mymeshEA67EDEF",
+            "MeshName"
+          ]
+        },
+        "RouteName": "greeting-route",
+        "Spec": {
+          "HttpRoute": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "greetingvirtualnodeC4A2C517",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "Prefix": "/"
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "greetingvirtualrouter0F898D1A",
+            "VirtualRouterName"
+          ]
+        }
+      }
+    },
     "greetingvirtualservice60AD3AD9": {
       "Type": "AWS::AppMesh::VirtualService",
       "Properties": {
@@ -1916,11 +2036,11 @@
         },
         "Spec": {
           "Provider": {
-            "VirtualNode": {
-              "VirtualNodeName": {
+            "VirtualRouter": {
+              "VirtualRouterName": {
                 "Fn::GetAtt": [
-                  "greetingvirtualnodeC4A2C517",
-                  "VirtualNodeName"
+                  "greetingvirtualrouter0F898D1A",
+                  "VirtualRouterName"
                 ]
               }
             }
@@ -2752,6 +2872,66 @@
         "VirtualNodeName": "greeter"
       }
     },
+    "greetervirtualrouter193840BB": {
+      "Type": "AWS::AppMesh::VirtualRouter",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "mymeshEA67EDEF",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Listeners": [
+            {
+              "PortMapping": {
+                "Port": 80,
+                "Protocol": "http"
+              }
+            }
+          ]
+        },
+        "VirtualRouterName": "greeter"
+      }
+    },
+    "greetervirtualroutergreeterroute3EC6ACB0": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "mymeshEA67EDEF",
+            "MeshName"
+          ]
+        },
+        "RouteName": "greeter-route",
+        "Spec": {
+          "HttpRoute": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "greetervirtualnode21EA7CC9",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "Prefix": "/"
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "greetervirtualrouter193840BB",
+            "VirtualRouterName"
+          ]
+        }
+      }
+    },
     "greetervirtualservice6559950C": {
       "Type": "AWS::AppMesh::VirtualService",
       "Properties": {
@@ -2763,11 +2943,11 @@
         },
         "Spec": {
           "Provider": {
-            "VirtualNode": {
-              "VirtualNodeName": {
+            "VirtualRouter": {
+              "VirtualRouterName": {
                 "Fn::GetAtt": [
-                  "greetervirtualnode21EA7CC9",
-                  "VirtualNodeName"
+                  "greetervirtualrouter193840BB",
+                  "VirtualRouterName"
                 ]
               }
             }
