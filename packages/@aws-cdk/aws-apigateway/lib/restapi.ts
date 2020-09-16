@@ -376,6 +376,20 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   /**
+   * Adds a statement to the resource policy document of the REST API.
+   * The statement must have a Principal.
+   *
+   * @param statement the IAM statement to add
+   */
+  public addToPolicy(statement: iam.PolicyStatement): void {
+    if (!this.policy) {
+      this.policy = new iam.PolicyDocument();
+    }
+
+    this.policy.addStatements(statement);
+  }
+
+  /**
    * Internal API used by `Method` to keep an inventory of methods at the API
    * level for validation purposes.
    *
@@ -696,20 +710,6 @@ export class RestApi extends RestApiBase {
     }
 
     return [];
-  }
-
-  /**
-   * Adds a statement to the resource policy document of the REST API.
-   * The statement must have a Principal.
-   *
-   * @param statement the IAM statement to add
-   */
-  public addToPolicy(statement: iam.PolicyStatement): void {
-    if (!this.policy) {
-      this.policy = new iam.PolicyDocument();
-    }
-
-    this.policy.addStatements(statement);
   }
 }
 
