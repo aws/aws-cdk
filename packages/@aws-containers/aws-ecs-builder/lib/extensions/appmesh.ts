@@ -2,6 +2,7 @@ import * as appmesh from '@aws-cdk/aws-appmesh';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { Container } from './container';
@@ -96,11 +97,9 @@ export class AppMeshExtension extends ServiceExtension {
             '169.254.170.2', // Allow services to talk directly to ECS metadata endpoints
             '169.254.169.254', // and EC2 instance endpoint
           ],
-          // Note that at some point we will need other extensions like
-          // MySQL to be able to add their ports to this egress ignored
-          // ports automatically.
-          egressIgnoredPorts: [
-          ],
+          // If there is outbound traffic that you want to
+          // ignore the proxy those ports can be added here.
+          egressIgnoredPorts: [],
         },
       }),
     } as ecs.TaskDefinitionProps;
@@ -151,7 +150,21 @@ export class AppMeshExtension extends ServiceExtension {
       logging: new ecs.AwsLogDriver({ streamPrefix: 'envoy' }),
     });
 
-    // Raise the number of open file descriptors allowed.
+    // Modify the task definition role to allow the Envoy sidecar to get
+    // configuration from the Envoy control plane, for this particular
+    // mesh only.
+    const policy = new iam.Policy(this.scope, `${this.parentService.id}-envoy-to-appmesh`);
+
+    const statement = new iam.PolicyStatement();
+    statement.addResources(this.mesh.meshArn);
+    statement.addActions('appmesh:StreamAggregatedResources');
+
+    policy.addStatements(statement);
+    policy.attachToRole(taskDefinition.taskRole);
+
+    // Raise the number of open file descriptors allowed. This is
+    // necessary when the Envoy proxy is handling large amounts of
+    // traffic.
     this.container.addUlimits({
       softLimit: 1024000,
       hardLimit: 1024000,

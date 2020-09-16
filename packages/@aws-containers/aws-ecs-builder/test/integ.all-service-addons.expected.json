@@ -1027,6 +1027,29 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
+    "nameenvoytoappmesh2767D3E6": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "appmesh:StreamAggregatedResources",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "mymeshEA67EDEF"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "nameenvoytoappmesh2767D3E6",
+        "Roles": [
+          {
+            "Ref": "nametaskdefinitionTaskRole50FE844E"
+          }
+        ]
+      }
+    },
     "namepublishmetricsF329C7AE": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
@@ -1784,6 +1807,29 @@
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
+    },
+    "greetingenvoytoappmesh97051B23": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "appmesh:StreamAggregatedResources",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "mymeshEA67EDEF"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "greetingenvoytoappmesh97051B23",
+        "Roles": [
+          {
+            "Ref": "greetingtaskdefinitionTaskRole9179DA4A"
+          }
+        ]
+      }
     },
     "greetingpublishmetricsF17124EF": {
       "Type": "AWS::IAM::Policy",
@@ -2655,6 +2701,29 @@
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
+    },
+    "greeterenvoytoappmesh1A94938B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "appmesh:StreamAggregatedResources",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "mymeshEA67EDEF"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "greeterenvoytoappmesh1A94938B",
+        "Roles": [
+          {
+            "Ref": "greetertaskdefinitionTaskRole2A098ACC"
+          }
+        ]
+      }
     },
     "greeterpublishmetrics0CCA359A": {
       "Type": "AWS::IAM::Policy",
