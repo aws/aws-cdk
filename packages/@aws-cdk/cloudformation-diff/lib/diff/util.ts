@@ -15,6 +15,12 @@
  */
 export function deepEqual(lvalue: any, rvalue: any): boolean {
   if (lvalue === rvalue) { return true; }
+  // CloudFormation allows passing strings into boolean-typed fields
+  if (((typeof lvalue === 'string' && typeof rvalue === 'boolean') ||
+      (typeof lvalue === 'boolean' && typeof rvalue === 'string')) &&
+      lvalue.toString() === rvalue.toString()) {
+    return true;
+  }
   // allows a numeric 10 and a literal "10" to be equivalent;
   // this is consistent with CloudFormation.
   if (((typeof lvalue === 'string') || (typeof rvalue === 'string')) && (parseFloat(lvalue) === parseFloat(rvalue))) {
