@@ -130,7 +130,7 @@ Node, or an Application Load Balancer.
 In addition to using the default service extensions that come with this module you
 can choose to implement your own custom service extensions. The `ServiceExtension`
 class is an abstract class you can implement yourself. The following example
-implements a custom service extension could be added to a service in order to
+implements a custom service extension that could be added to a service in order to
 autoscale it based on CPU:
 
 ```js
