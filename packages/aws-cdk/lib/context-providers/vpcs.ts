@@ -18,7 +18,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
     const vpcId = await this.findVpc(ec2, args);
 
-    return await this.readVpcProps(ec2, vpcId, args);
+    return this.readVpcProps(ec2, vpcId, args);
   }
 
   private async findVpc(ec2: AWS.EC2, args: cxschema.VpcContextQuery): Promise<AWS.EC2.Vpc> {
