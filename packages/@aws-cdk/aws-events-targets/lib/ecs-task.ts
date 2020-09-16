@@ -77,8 +77,7 @@ export interface EcsTaskProps {
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
    *
-   * @default - ECS will set the Fargate platform version to 'LATEST' 
-
+   * @default - ECS will set the Fargate platform version to 'LATEST'
    */
   readonly platformVersion?: ecs.FargatePlatformVersion;
 }
