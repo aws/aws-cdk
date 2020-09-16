@@ -378,6 +378,7 @@ abstract class BucketBase extends Resource implements IBucket {
       source: ['aws.s3'],
       detailType: ['AWS API Call via CloudTrail'],
       detail: {
+        eventSource: ['s3.amazonaws.com'],
         resources: {
           ARN: options.paths ? options.paths.map(p => this.arnForObjects(p)) : [this.bucketArn],
         },

@@ -1,4 +1,4 @@
-import { countResources, expect, haveResourceLike, not } from '@aws-cdk/assert';
+import { expect, haveResourceLike, not } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -54,7 +54,21 @@ export = {
         ],
       }));
 
-      expect(stack).to(countResources('AWS::Events::Rule', 1));
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        'EventPattern': {
+          'source': ['aws.s3'],
+          'detail-type': ['AWS API Call via CloudTrail'],
+          'detail': {
+            'eventSource': ['s3.amazonaws.com'],
+            'eventName': [
+              'CompleteMultipartUpload',
+              'CopyObject',
+              'PutObject',
+            ],
+          },
+        },
+        'State': 'ENABLED',
+      }));
 
       test.done();
     },
