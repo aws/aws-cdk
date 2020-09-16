@@ -5,6 +5,3 @@ deploy new style synthesis to new style bootstrap
 deploy new style synthesis to new style bootstrap (with docker image)
 switch on termination protection, switch is left alone on re-bootstrap
 add tags, left alone on re-bootstrap
-
-
-
