@@ -381,12 +381,12 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    *
    * @param statement the IAM statement to add
    */
-  public addToPolicy(statement: iam.PolicyStatement): void {
+  public addToPolicy(...statement: iam.PolicyStatement[]): void {
     if (!this.policy) {
       this.policy = new iam.PolicyDocument();
     }
 
-    this.policy.addStatements(statement);
+    this.policy.addStatements(...statement);
   }
 
   /**
