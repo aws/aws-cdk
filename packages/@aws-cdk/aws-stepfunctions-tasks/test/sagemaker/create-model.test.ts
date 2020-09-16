@@ -16,11 +16,11 @@ test('create basic model', () => {
   // WHEN
   const task = new tasks.SageMakerCreateModel(stack, 'SagemakerModel', {
     modelName: 'MyModel',
-    primaryContainer: {
-      image: tasks.DockerImage.fromRegistry(sfn.JsonPath.stringAt('$.Model.imageName')),
+    primaryContainer: new tasks.ContainerDefinition({
+      image: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Model.imageName')),
       mode: tasks.Mode.SINGLE_MODEL,
-      modelDataUrl: sfn.JsonPath.stringAt('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
-    },
+      modelS3Location: tasks.S3Location.fromJsonExpression('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
+    }),
   });
 
   // THEN
@@ -66,16 +66,17 @@ test('create complex model', () => {
 
   const task = new tasks.SageMakerCreateModel(stack, 'SagemakerModel', {
     modelName: sfn.JsonPath.stringAt('$.ModelName'),
-    primaryContainer: {
-      image: tasks.DockerImage.fromRegistry(sfn.JsonPath.stringAt('$.Model.imageName')),
+    primaryContainer: new tasks.ContainerDefinition({
+      image: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Model.imageName')),
       mode: tasks.Mode.MULTI_MODEL,
-      modelDataUrl: sfn.JsonPath.stringAt('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
-    },
+      modelS3Location: tasks.S3Location.fromJsonExpression('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
+    }),
     enableNetworkIsolation: true,
     role,
-    tags: {
-      Project: 'ML',
-    },
+    tags: sfn.TaskInput.fromObject([{
+      Key: 'Project',
+      Value: 'ML',
+    }]),
     vpcConfig: { vpc },
   });
   task.addSecurityGroup(securityGroup);
@@ -128,11 +129,11 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
     new tasks.SageMakerCreateModel(stack, 'Sagemaker', {
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       modelName: 'MyModel',
-      primaryContainer: {
-        image: tasks.DockerImage.fromRegistry(sfn.JsonPath.stringAt('$.Model.imageName')),
+      primaryContainer: new tasks.ContainerDefinition({
+        image: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Model.imageName')),
         mode: tasks.Mode.SINGLE_MODEL,
-        modelDataUrl: sfn.JsonPath.stringAt('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
-      },
+        modelS3Location: tasks.S3Location.fromJsonExpression('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
+      }),
     });
   }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/i);
 });

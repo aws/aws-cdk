@@ -2,7 +2,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { renderTags } from './private/utils';
 
 /**
  * Properties for creating an Amazon SageMaker endpoint
@@ -24,7 +23,7 @@ export interface SageMakerCreateEndpointProps extends sfn.TaskStateBaseProps {
    *
    * @default - No tags
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: sfn.TaskInput;
 }
 
 /**
@@ -62,7 +61,7 @@ export class SageMakerCreateEndpoint extends sfn.TaskStateBase {
     return {
       EndpointConfigName: this.props.endpointConfigName,
       EndpointName: this.props.endpointName,
-      ...renderTags(this.props.tags),
+      Tags: this.props.tags?.value,
     };
   }
 

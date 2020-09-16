@@ -3,8 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { ContainerDefinition, VpcConfig } from './base-types';
-import { renderTags } from './private/utils';
+import { IContainerDefinition, VpcConfig } from './base-types';
 
 /**
  * Properties for creating an Amazon SageMaker model
@@ -24,16 +23,16 @@ export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps {
    */
   readonly modelName: string;
   /**
-   * The location of the primary docker image containing inference code, associated artifacts,
+   * The definition of the primary docker image containing inference code, associated artifacts,
    * and custom environment map that the inference code uses when the model is deployed for predictions.
    */
-  readonly primaryContainer: ContainerDefinition;
+  readonly primaryContainer: IContainerDefinition;
   /**
    * Specifies the containers in the inference pipeline.
    *
    * @default - None
    */
-  readonly containers?: ContainerDefinition[];
+  readonly containers?: IContainerDefinition[];
 
   /**
    * Isolates the model container. No inbound or outbound network calls can be made to or from the model container.
@@ -54,7 +53,7 @@ export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps {
    *
    * @default - No tags
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: sfn.TaskInput;
 }
 
 /**
@@ -139,15 +138,17 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
       EnableNetworkIsolation: this.props.enableNetworkIsolation,
       ExecutionRoleArn: this._role!.roleArn,
       ModelName: this.props.modelName,
-      ...this.renderContainers(this.props.containers),
-      ...this.renderPrimaryContainer(this.props.primaryContainer),
+      Tags: this.props.tags?.value,
+      PrimaryContainer: this.props.primaryContainer.bind(this).parameters,
+      Containers: this.props.containers?.map(container => (container.bind(this))),
       ...this.renderVpcConfig(this.props.vpcConfig),
-      ...renderTags(this.props.tags),
     };
   }
 
   private makePolicyStatements(): iam.PolicyStatement[] {
+    const stack = cdk.Stack.of(this);
     // set the SageMaker role or create new one
+    // https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html
     this._grantPrincipal = this._role =
         this.props.role ||
         new iam.Role(this, 'SagemakerRole', {
@@ -159,35 +160,35 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
                   actions: [
                     'cloudwatch:PutMetricData',
                     'logs:CreateLogStream',
-                    'logs:PutLogEvents',
                     'logs:CreateLogGroup',
+                    'logs:PutLogEvents',
                     'logs:DescribeLogStreams',
-                    's3:GetObject',
                     'ecr:GetAuthorizationToken',
-                    'ecr:BatchCheckLayerAvailability',
-                    'ecr:GetDownloadUrlForLayer',
-                    'ecr:BatchGetImage',
-                    ...(this.props.vpcConfig
-                      ? [
-                        'ec2:CreateNetworkInterface',
-                        'ec2:CreateNetworkInterfacePermission',
-                        'ec2:DeleteNetworkInterface',
-                        'ec2:DeleteNetworkInterfacePermission',
-                        'ec2:DescribeNetworkInterfaces',
-                        'ec2:DescribeVpcs',
-                        'ec2:DescribeDhcpOptions',
-                        'ec2:DescribeSubnets',
-                        'ec2:DescribeSecurityGroups',
-                      ]
-                      : []),
                   ],
-                  resources: ['*'], // Those permissions cannot be resource-scoped
+                  resources: ['*'],
                 }),
               ],
             }),
           },
         });
-
+    if (this.props.vpcConfig) {
+      this.role.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          actions: [
+            'ec2:CreateNetworkInterface',
+            'ec2:CreateNetworkInterfacePermission',
+            'ec2:DeleteNetworkInterface',
+            'ec2:DeleteNetworkInterfacePermission',
+            'ec2:DescribeNetworkInterfaces',
+            'ec2:DescribeVpcs',
+            'ec2:DescribeDhcpOptions',
+            'ec2:DescribeSubnets',
+            'ec2:DescribeSecurityGroups',
+          ],
+          resources: ['*'],
+        }),
+      );
+    }
     // create a security group if not defined
     if (this.vpc && this.securityGroup === undefined) {
       this.securityGroup = new ec2.SecurityGroup(this, 'ModelSecurityGroup', {
@@ -196,7 +197,6 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
       this.connections.addSecurityGroup(this.securityGroup);
       this.securityGroups.push(this.securityGroup);
     }
-    const stack = cdk.Stack.of(this);
     // https://docs.aws.amazon.com/sagemaker/latest/dg/api-permissions-reference.html
     return [
       new iam.PolicyStatement({
@@ -236,21 +236,4 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
       : {};
   }
 
-  private renderPrimaryContainer(config: ContainerDefinition): {[key: string]: any} {
-    return (config) ? { PrimaryContainer: this.renderContainer(config) } : {};
-  }
-
-  private renderContainers(config: ContainerDefinition[] | undefined): {[key: string]: any} {
-    return (config) ? { Containers: config.map(container => (this.renderContainer(container))) } : {};
-  }
-
-  private renderContainer(container: ContainerDefinition): {[key: string]: any} {
-    return (container) ? {
-      ...(container.containerHostName) ? { ContainerHostname: container.containerHostName } : {},
-      ...(container.image) ? { Image: container.image.bind(this).imageUri } : {},
-      ...(container.mode) ? { Mode: container.mode } : {},
-      ...(container.modelDataUrl) ? { ModelDataUrl: container.modelDataUrl } : {},
-      ...(container.modelPackageName) ? { ModelPackageName: container.modelPackageName } : {},
-    } : {};
-  }
 }

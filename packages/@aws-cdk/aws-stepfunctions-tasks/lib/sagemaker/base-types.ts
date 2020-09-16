@@ -626,12 +626,12 @@ export interface TransformResources {
 }
 
 /**
- * Describes the container, as part of model definition.
- * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
+ * Properties to define a ContainerDefinition
  *
- *  @experimental
+ * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
+ * @experimental
  */
-export interface ContainerDefinition {
+export interface ContainerDefinitionOptions {
   /**
    * The Amazon EC2 Container Registry (Amazon ECR) path where inference code is stored.
    *
@@ -643,7 +643,7 @@ export interface ContainerDefinition {
    *
    * @default - No variables
    */
-  readonly environment?: {[key: string]: string};
+  readonly environmentVariables?: sfn.TaskInput;
   /**
    * The name or Amazon Resource Name (ARN) of the model package to use to create the model.
    *
@@ -653,7 +653,7 @@ export interface ContainerDefinition {
   /**
    * Defines how many models the container hosts
    *
-   * @default - SingleModel
+   * @default - Mode.SINGLE_MODEL
    */
   readonly mode?: Mode;
   /**
@@ -671,7 +671,59 @@ export interface ContainerDefinition {
    *
    * @default - None
    */
-  readonly modelDataUrl?: string;
+  readonly modelS3Location?: S3Location;
+}
+
+/**
+ * Describes the container, as part of model definition.
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
+ * @experimental
+ */
+export class ContainerDefinition implements IContainerDefinition {
+
+  constructor(private readonly options: ContainerDefinitionOptions) {}
+
+  /**
+   * Called when the ContainerDefinition type configured on Sagemaker Task
+   */
+  public bind(task: ISageMakerTask): ContainerDefinitionConfig {
+    return {
+      parameters: {
+        ContainerHostname: this.options.containerHostName,
+        Image: this.options.image?.bind(task).imageUri,
+        Mode: this.options.mode,
+        ModelDataUrl: this.options.modelS3Location?.bind(task, { forReading: true }).uri,
+        ModelPackageName: this.options.modelPackageName,
+        Environment: this.options.environmentVariables?.value,
+      },
+    };
+  }
+}
+
+/**
+ * Configuration of the container used to host the model
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
+ * @experimental
+ */
+export interface IContainerDefinition {
+  /**
+   * Called when the ContainerDefinition is used by a SageMaker task.
+   */
+  bind(task: ISageMakerTask): ContainerDefinitionConfig;
+}
+
+/**
+ * Configuration options for the ContainerDefinition
+ */
+export interface ContainerDefinitionConfig {
+  /**
+   * Additional parameters to pass to the base task
+   *
+   * @default - No additional parameters passed
+   */
+  readonly parameters?: { [key: string]: any };
 }
 
 /**

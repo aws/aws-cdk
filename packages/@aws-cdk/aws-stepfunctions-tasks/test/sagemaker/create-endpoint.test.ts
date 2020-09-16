@@ -45,9 +45,10 @@ test('create endpoint with tags', () => {
   const task = new tasks.SageMakerCreateEndpoint(stack, 'SagemakerEndpoint', {
     endpointName: 'MyEndpoint',
     endpointConfigName: 'MyEndpointConfig',
-    tags: {
-      Label: 'ML',
-    },
+    tags: sfn.TaskInput.fromObject([{
+      Key: 'Label',
+      Value: 'ML',
+    }]),
   });
 
   // THEN

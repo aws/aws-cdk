@@ -52,11 +52,11 @@ class CallSageMakerStack extends cdk.Stack {
     });
     const createModelTask = new tasks.SageMakerCreateModel(this, 'Create Model', {
       modelName: sfn.JsonPath.stringAt('$.Endpoint.Model'),
-      primaryContainer: {
-        image: tasks.DockerImage.fromRegistry(sfn.JsonPath.stringAt('$.Endpoint.Image')),
+      primaryContainer: new tasks.ContainerDefinition({
+        image: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Endpoint.Image')),
         mode: tasks.Mode.SINGLE_MODEL,
-        modelDataUrl: sfn.JsonPath.stringAt('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
-      },
+        modelS3Location: tasks.S3Location.fromJsonExpression('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
+      }),
       resultPath: '$.Model',
     });
 
@@ -74,7 +74,10 @@ class CallSageMakerStack extends cdk.Stack {
     const createEndpointTask = new tasks.SageMakerCreateEndpoint(this, 'Create endpoint', {
       endpointConfigName: sfn.JsonPath.stringAt('$.Endpoint.Config'),
       endpointName: sfn.JsonPath.stringAt('$.Endpoint.Name'),
-      tags: { Endpoint: 'New' },
+      tags: sfn.TaskInput.fromObject([{
+        Key: 'Endpoint',
+        Value: 'New',
+      }]),
       resultPath: '$.EndpointDeployed',
     });
 

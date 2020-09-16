@@ -271,14 +271,10 @@
                   "Action": [
                     "cloudwatch:PutMetricData",
                     "logs:CreateLogStream",
-                    "logs:PutLogEvents",
                     "logs:CreateLogGroup",
+                    "logs:PutLogEvents",
                     "logs:DescribeLogStreams",
-                    "s3:GetObject",
-                    "ecr:GetAuthorizationToken",
-                    "ecr:BatchCheckLayerAvailability",
-                    "ecr:GetDownloadUrlForLayer",
-                    "ecr:BatchGetImage"
+                    "ecr:GetAuthorizationToken"
                   ],
                   "Effect": "Allow",
                   "Resource": "*"

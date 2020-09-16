@@ -1,10 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import * as kms from '@aws-cdk/aws-kms';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { ProductionVariant } from './base-types';
-import { renderTags } from './private/utils';
 
 /**
  * Properties for creating an Amazon SageMaker endpoint configuration
@@ -37,7 +36,7 @@ export interface SageMakerCreateEndpointConfigProps extends sfn.TaskStateBasePro
    *
    * @default - No tags
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: sfn.TaskInput;
 }
 
 /**
@@ -59,16 +58,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
     validatePatternSupported(this.integrationPattern, SageMakerCreateEndpointConfig.SUPPORTED_INTEGRATION_PATTERNS);
 
-    // verify production variants
-    if (props.productionVariants.length < 1 || props.productionVariants.length > 10) {
-      throw new Error('Must specify from 1 to 10 production variants per endpoint configuration');
-    }
-    props.productionVariants.forEach((variant) => {
-      if ( variant.initialInstanceCount < 1) throw new Error('Must define at least one instance');
-      if ( variant.initialVariantWeight && variant.initialVariantWeight <= 0) {
-        throw new Error('InitialVariantWeight has minimum value of 0');
-      }
-    });
+    this.validateProductionVariants();
     this.taskPolicies = this.makePolicyStatements();
   }
 
@@ -85,9 +75,17 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
   private renderParameters(): { [key: string]: any } {
     return {
       EndpointConfigName: this.props.endpointConfigName,
-      ...this.props.kmsKey ? { KmsKeyId: this.props.kmsKey.keyId } : {},
-      ...this.renderProductionVariants(this.props.productionVariants),
-      ...renderTags(this.props.tags),
+      Tags: this.props.tags?.value,
+      KmsKeyId: this.props.kmsKey?.keyId,
+      ProductionVariants: this.props.productionVariants.map((variant) => ({
+        InitialInstanceCount: variant.initialInstanceCount,
+        InstanceType: `ml.${variant.instanceType}`,
+        ModelName: variant.modelName,
+        VariantName: variant.variantName,
+        AcceleratorType: variant.acceleratorType,
+        InitialVariantWeight: variant.initialVariantWeight,
+      }),
+      ),
     };
   }
 
@@ -109,27 +107,20 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
       }),
       new iam.PolicyStatement({
         actions: ['sagemaker:ListTags'],
-        resources: [
-          stack.formatArn({
-            service: 'sagemaker',
-            resource: 'endpoint-config',
-            resourceName: '*',
-          }),
-        ],
+        resources: ['*'],
       }),
     ];
   }
 
-  private renderProductionVariants(variants: ProductionVariant[]): {[key: string]: any} {
-    return {
-      ProductionVariants: variants.map((variant) => ({
-        InitialInstanceCount: variant.initialInstanceCount,
-        InstanceType: `ml.${variant.instanceType}`,
-        ModelName: variant.modelName,
-        VariantName: variant.variantName,
-        ...variant.acceleratorType ? { AcceleratorType: variant.acceleratorType }: {},
-        ...variant.initialVariantWeight ? { InitialVariantWeight: variant.initialVariantWeight } : {},
-      })),
-    };
+  private validateProductionVariants() {
+    if (this.props.productionVariants.length < 1 || this.props.productionVariants.length > 10) {
+      throw new Error('Must specify from 1 to 10 production variants per endpoint configuration');
+    }
+    this.props.productionVariants.forEach((variant) => {
+      if ( variant.initialInstanceCount < 1) throw new Error('Must define at least one instance');
+      if ( variant.initialVariantWeight && variant.initialVariantWeight <= 0) {
+        throw new Error('InitialVariantWeight has minimum value of 0');
+      }
+    });
   }
 }

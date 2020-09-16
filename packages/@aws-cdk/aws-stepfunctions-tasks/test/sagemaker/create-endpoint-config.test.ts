@@ -73,9 +73,10 @@ test('create complex endpoint config', () => {
       modelName: sfn.JsonPath.stringAt('$.Endpoint.Model'),
       variantName: 'awesome-variant-2',
     }],
-    tags: {
-      Project: 'ML',
-    },
+    tags: sfn.TaskInput.fromObject([{
+      Key: 'Project',
+      Value: 'ML',
+    }]),
   });
 
   // THEN
