@@ -472,6 +472,7 @@ pool.addClient('app-client', {
     },
     scopes: [ OAuthScope.OPENID ],
     callbackUrls: [ 'https://my-app-domain.com/welcome' ],
+    logoutUrls: [ 'https://my-app-domain.com/signin' ],
   }
 });
 ```

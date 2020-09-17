@@ -403,7 +403,6 @@ test('single element arrays are equivalent to the single element in DependsOn ex
   expect(differences.resources.differenceCount).toBe(0);
 });
 
-
 test('array equivalence is independent of element order in DependsOn expressions', () => {
   // GIVEN
   const currentTemplate = {
@@ -486,4 +485,38 @@ test('arrays that differ only in element order are considered unequal outside of
 
   differences = diffTemplate(newTemplate, currentTemplate);
   expect(differences.resources.differenceCount).toBe(1);
+});
+
+test('boolean properties are considered equal with their stringified counterparts', () => {
+  // GIVEN
+  const currentTemplate = {
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          PublicAccessBlockConfiguration: {
+            BlockPublicAcls: 'true',
+          },
+        },
+      },
+    },
+  };
+  const newTemplate = {
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          PublicAccessBlockConfiguration: {
+            BlockPublicAcls: true,
+          },
+        },
+      },
+    },
+  };
+
+  // WHEN
+  const differences = diffTemplate(currentTemplate, newTemplate);
+
+  // THEN
+  expect(differences.differenceCount).toBe(0);
 });
