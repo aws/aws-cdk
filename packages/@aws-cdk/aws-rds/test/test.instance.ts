@@ -56,7 +56,6 @@ export = {
         DBSubnetGroupName: {
           Ref: 'InstanceSubnetGroupF2CBA54F',
         },
-        DeletionProtection: true,
         EnableCloudwatchLogsExports: [
           'trace',
           'audit',
