@@ -839,6 +839,129 @@ export = {
     test.done();
   },
 
+  'cluster with s3 import bucket adds supported feature name to IAM role'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_10_12,
+      }),
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      s3ImportBuckets: [bucket],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      AssociatedRoles: [{
+        RoleArn: {
+          'Fn::GetAtt': [
+            'DatabaseS3ImportRole377BC9C0',
+            'Arn',
+          ],
+        },
+        FeatureName: 's3Import',
+      }],
+    }));
+
+    test.done();
+  },
+
+  'throws when s3 import bucket or s3 export bucket is supplied for a Postgres version that does not support it'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN / THEN
+    test.throws(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_10_4,
+        }),
+        instances: 1,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        },
+        s3ImportBuckets: [bucket],
+      });
+    }, /s3Import is not supported for Postgres version: 10.4. Use a version that supports the s3Import feature./);
+
+    test.throws(() => {
+      new DatabaseCluster(stack, 'AnotherDatabase', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_10_4,
+        }),
+        instances: 1,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        },
+        s3ExportBuckets: [bucket],
+      });
+    }, /s3Export is not supported for Postgres version: 10.4. Use a version that supports the s3Export feature./);
+
+    test.done();
+  },
+
+  'cluster with s3 export bucket adds supported feature name to IAM role'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_10_12,
+      }),
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      s3ExportBuckets: [bucket],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      AssociatedRoles: [{
+        RoleArn: {
+          'Fn::GetAtt': [
+            'DatabaseS3ExportRole9E328562',
+            'Arn',
+          ],
+        },
+        FeatureName: 's3Export',
+      }],
+    }));
+
+    test.done();
+  },
+
   'create a cluster with s3 export role'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -1125,7 +1248,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.auroraPostgres({
-        version: AuroraPostgresEngineVersion.VER_11_4,
+        version: AuroraPostgresEngineVersion.VER_11_6,
       }),
       instances: 1,
       masterUser: {
@@ -1153,6 +1276,56 @@ export = {
     }));
 
     expect(stack).notTo(haveResource('AWS::RDS::DBClusterParameterGroup'));
+
+    test.done();
+  },
+
+  'unversioned PostgreSQL cluster can be used with s3 import and s3 export buckets'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
+      s3ImportBuckets: [bucket],
+      s3ExportBuckets: [bucket],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      AssociatedRoles: [
+        {
+          FeatureName: 's3Import',
+          RoleArn: {
+            'Fn::GetAtt': [
+              'DatabaseS3ImportRole377BC9C0',
+              'Arn',
+            ],
+          },
+        },
+        {
+          FeatureName: 's3Export',
+          RoleArn: {
+            'Fn::GetAtt': [
+              'DatabaseS3ExportRole9E328562',
+              'Arn',
+            ],
+          },
+        },
+      ],
+    }));
 
     test.done();
   },
