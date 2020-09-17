@@ -196,7 +196,10 @@ integTest('switch on termination protection, switch is left alone on re-bootstra
 
   await fixture.cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName,
     '--termination-protection', 'true',
-    '--qualifier', fixture.qualifier], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
+    '--qualifier', fixture.qualifier,
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess'], {
+    modEnv: { CDK_NEW_BOOTSTRAP: '1' },
+  });
   await fixture.cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--force'], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
 
   const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
@@ -208,7 +211,10 @@ integTest('add tags, left alone on re-bootstrap', withDefaultFixture(async (fixt
 
   await fixture.cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName,
     '--tags', 'Foo=Bar',
-    '--qualifier', fixture.qualifier], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
+    '--qualifier', fixture.qualifier,
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess'], {
+    modEnv: { CDK_NEW_BOOTSTRAP: '1' },
+  });
   await fixture.cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--force'], { modEnv: { CDK_NEW_BOOTSTRAP: '1' } });
 
   const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });

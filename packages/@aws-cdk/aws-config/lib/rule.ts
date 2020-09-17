@@ -193,28 +193,28 @@ export interface RuleProps {
   /**
    * A name for the AWS Config rule.
    *
-   * @default a CloudFormation generated name
+   * @default - CloudFormation generated name
    */
   readonly configRuleName?: string;
 
   /**
    * A description about this AWS Config rule.
    *
-   * @default no description
+   * @default - No description
    */
   readonly description?: string;
 
   /**
    * Input parameter values that are passed to the AWS Config rule.
    *
-   * @default no input parameters
+   * @default - No input parameters
    */
   readonly inputParameters?: { [key: string]: any };
 
   /**
    * The maximum frequency at which the AWS Config rule runs evaluations.
    *
-   * @default 24 hours
+   * @default MaximumExecutionFrequency.TWENTY_FOUR_HOURS
    */
   readonly maximumExecutionFrequency?: MaximumExecutionFrequency
 }
@@ -276,7 +276,7 @@ export class ManagedRule extends RuleNew {
 }
 
 /**
- * Consruction properties for a CustomRule.
+ * Construction properties for a CustomRule.
  */
 export interface CustomRuleProps extends RuleProps {
   /**
