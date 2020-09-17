@@ -177,14 +177,14 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Check the job state\",\"Type\":\"Task\",\"Resource\":\"",
+              "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Check the job state\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"Resource\":\"",
               {
                 "Fn::GetAtt": [
                   "submitJobLambdaEFB00F3C",
                   "Arn"
                 ]
               },
-              "\"},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Type\":\"Task\",\"Resource\":\"",
+              "\"},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"Resource\":\"",
               {
                 "Fn::GetAtt": [
                   "checkJobStateLambda4618B7B7",
