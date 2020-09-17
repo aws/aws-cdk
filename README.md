@@ -134,7 +134,7 @@ You may also find help on these community resources:
   and tag it with `aws-cdk`
 * Come join the AWS CDK community on [Gitter](https://gitter.im/awslabs/aws-cdk)
 * Talk in the CDK channel of the [AWS Developers Slack workspace](https://awsdevelopers.slack.com) (invite required)
-* A community-driven Slack channel is also available, invite at [cdk.dev](cdk.dev).
+* A community-driven Slack channel is also available, invite at [cdk.dev](https://cdk.dev)
 
 ### Roadmap
 
