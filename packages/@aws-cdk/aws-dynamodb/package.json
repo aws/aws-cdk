@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-dynamodb",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS DynamoDB",
+  "description": "The CDK Construct Library for AWS::DynamoDB",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
