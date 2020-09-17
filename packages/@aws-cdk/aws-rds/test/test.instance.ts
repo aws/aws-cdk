@@ -1072,5 +1072,26 @@ export = {
 
       test.done();
     },
+
+    'throws if provided two different roles for import/export'(test: Test) {
+      const s3ImportRole = new Role(stack, 'S3ImportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+      const s3ExportRole = new Role(stack, 'S3ExportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+
+      test.throws(() => {
+        new rds.DatabaseInstance(stack, 'DBWithExportBucket', {
+          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+          masterUsername: 'admin',
+          vpc,
+          s3ImportRole,
+          s3ExportRole,
+        });
+      }, /S3 import and export roles must be the same/);
+
+      test.done();
+    },
   },
 };

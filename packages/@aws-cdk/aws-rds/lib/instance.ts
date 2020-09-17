@@ -800,26 +800,21 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       s3ExportRole,
     });
 
-    // Both SQL Server and Oracle use the same feature name and role for import and export,
-    // and we need to de-dupe them to only have one associated role.
     const instanceAssociatedRoles: CfnDBInstance.DBInstanceRoleProperty[] = [];
-    if (s3ImportRole || s3ExportRole) {
-      const engineDescription = props.engine.engineType + (props.engine.engineVersion ? `-${props.engine.engineVersion?.fullVersion}` : '');
-
-      if (s3ImportRole) {
-        if (!engineConfig.features?.s3Import) {
-          throw new Error(`Engine '${engineDescription}' does not support S3 import`);
-        }
-        instanceAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: engineConfig.features?.s3Import });
+    const engineFeatures = engineConfig.features;
+    if (s3ImportRole) {
+      if (!engineFeatures?.s3Import) {
+        throw new Error(`Engine '${props.engine.description}' does not support S3 import`);
       }
-      if (s3ExportRole) {
-        if (!engineConfig.features?.s3Export) {
-          throw new Error(`Engine '${engineDescription}' does not support S3 export`);
-        }
-        // Guard against adding the same entry twice
-        if (!s3ImportRole || s3ImportRole !== s3ExportRole || engineConfig.features.s3Import !== engineConfig.features?.s3Export) {
-          instanceAssociatedRoles.push({ roleArn: s3ExportRole.roleArn, featureName: engineConfig.features?.s3Export });
-        }
+      instanceAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: engineFeatures?.s3Import });
+    }
+    if (s3ExportRole) {
+      if (!engineFeatures?.s3Export) {
+        throw new Error(`Engine '${props.engine.description}' does not support S3 export`);
+      }
+      // Only add the export role and feature if they are different from the import role & feature.
+      if (s3ImportRole !== s3ExportRole || engineFeatures.s3Import !== engineFeatures?.s3Export) {
+        instanceAssociatedRoles.push({ roleArn: s3ExportRole.roleArn, featureName: engineFeatures?.s3Export });
       }
     }
 

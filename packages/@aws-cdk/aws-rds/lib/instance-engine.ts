@@ -97,6 +97,9 @@ export interface IInstanceEngine extends IEngine {
   /** The application used by this engine to perform rotation for a multi-user scenario. */
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
+  /** Human-readable description of the engine. */
+  readonly description: string;
+
   /**
    * Method called when the engine is used to create a new instance.
    */
@@ -131,8 +134,12 @@ abstract class InstanceEngineBase implements IInstanceEngine {
       (this.engineVersion ? `${this.engineType}${this.engineVersion.majorVersion}` : undefined);
   }
 
+  public get description() {
+    return this.engineType + (this.engineVersion ? `-${this.engineVersion?.fullVersion}` : '');
+  }
+
   public bindToInstance(_scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
-    if (options.timezone && !this._supportsTimezone) {
+    if (options.timezone && !this.supportsTimezone) {
       throw new Error(`timezone property can not be configured for ${this.engineType}`);
     }
     return {
@@ -141,11 +148,8 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     };
   }
 
-  /**
-   * Defines whether this Instance Engine can support timezone properties.
-   * @internal
-   */
-  protected get _supportsTimezone() { return false; }
+  /** Defines whether this Instance Engine can support timezone properties. */
+  protected get supportsTimezone() { return false; }
 }
 
 /**
@@ -553,7 +557,7 @@ export class PostgresEngineVersion {
    * The supported features for the DB engine
    * @internal
    */
-  public readonly _features?: InstanceEngineFeatures;
+  public readonly _features: InstanceEngineFeatures;
 
   private constructor(postgresFullVersion: string, postgresMajorVersion: string, postgresFeatures?: PostgresEngineFeatures) {
     this.postgresFullVersion = postgresFullVersion;
@@ -588,7 +592,7 @@ class PostgresInstanceEngine extends InstanceEngineBase {
           majorVersion: version.postgresMajorVersion,
         }
         : undefined,
-      features: version?._features,
+      features: version ? version?._features : { s3Import: 's3Import' },
     });
   }
 }
@@ -773,19 +777,9 @@ export class OracleEngineVersion {
   /** The major version of the engine, for example, "19". */
   public readonly oracleMajorVersion: string;
 
-  /**
-   * The supported features for this Oracle DB engine version.
-   * @internal
-   */
-  public readonly _features?: InstanceEngineFeatures;
-
   private constructor(oracleFullVersion: string, oracleMajorVersion: string) {
     this.oracleFullVersion = oracleFullVersion;
     this.oracleMajorVersion = oracleMajorVersion;
-    this._features = {
-      s3Import: 'S3_INTEGRATION',
-      s3Export: 'S3_INTEGRATION',
-    };
   }
 }
 
@@ -802,7 +796,10 @@ abstract class OracleInstanceEngineBase extends InstanceEngineBase {
       singleUserRotationApplication: secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER,
       multiUserRotationApplication: secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER,
       parameterGroupFamily: props.version ? `${props.engineType}-${props.version.majorVersion}` : undefined,
-      features: props.features,
+      features: {
+        s3Import: 'S3_INTEGRATION',
+        s3Export: 'S3_INTEGRATION',
+      },
     });
   }
 
@@ -909,7 +906,6 @@ class OracleSe2InstanceEngine extends OracleInstanceEngineBase {
           majorVersion: version.oracleMajorVersion,
         }
         : undefined,
-      features: version?._features,
     });
   }
 }
@@ -931,7 +927,6 @@ class OracleEeInstanceEngine extends OracleInstanceEngineBase {
           majorVersion: version.oracleMajorVersion,
         }
         : undefined,
-      features: version?._features,
     });
   }
 }
@@ -1022,19 +1017,9 @@ export class SqlServerEngineVersion {
   /** The major version of the engine, for example, "15.00". */
   public readonly sqlServerMajorVersion: string;
 
-  /**
-   * The supported features for this version of the SQL Server DB engine.
-   * @internal
-   */
-  public readonly _features?: InstanceEngineFeatures;
-
   private constructor(sqlServerFullVersion: string, sqlServerMajorVersion: string) {
     this.sqlServerFullVersion = sqlServerFullVersion;
     this.sqlServerMajorVersion = sqlServerMajorVersion;
-    this._features = {
-      s3Import: 'S3_INTEGRATION',
-      s3Export: 'S3_INTEGRATION',
-    };
   }
 }
 
@@ -1067,7 +1052,10 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
           ? props.version.sqlServerMajorVersion.slice(0, -1)
           : props.version.sqlServerMajorVersion}`
         : undefined,
-      features: props.version?._features,
+      features: {
+        s3Import: 'S3_INTEGRATION',
+        s3Export: 'S3_INTEGRATION',
+      },
     });
   }
 
@@ -1100,8 +1088,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
     };
   }
 
-  /** @internal */
-  protected get _supportsTimezone() { return true; }
+  protected get supportsTimezone() { return true; }
 }
 
 /**

@@ -268,9 +268,9 @@ const cpuUtilization = cluster.metricCPUUtilization();
 const readLatency = instance.metric('ReadLatency', { statistic: 'Average', periodSec: 60 });
 ```
 
-### Enabling S3 integration to a cluster
+### Enabling S3 integration
 
-Data in S3 buckets can be imported to and exported from Aurora databases using SQL queries. To enable this
+Data in S3 buckets can be imported to and exported from certain database engines using SQL queries. To enable this
 functionality, set the `s3ImportBuckets` and `s3ExportBuckets` properties for import and export respectively. When
 configured, the CDK automatically creates and configures IAM roles as required.
 Additionally, the `s3ImportRole` and `s3ExportRole` properties can be used to set this role directly.
