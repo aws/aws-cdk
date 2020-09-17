@@ -212,11 +212,11 @@ describe('Bootstrapping v2', () => {
   describe('KMS key', () => {
     test.each([
       // Default case
-      [undefined, '-'],
+      [undefined, 'AWS_MANAGED_KEY'],
       // Create a new key
       [true, ''],
       // Don't create a new key
-      [false, '-'],
+      [false, 'AWS_MANAGED_KEY'],
     ])('(new stack) createCustomerMasterKey=%p => parameter becomes %p ', async (createCustomerMasterKey, paramKeyId) => {
       // GIVEN: no existing stack
 
@@ -238,13 +238,13 @@ describe('Bootstrapping v2', () => {
 
     test.each([
       // Old bootstrap stack being upgraded to new one
-      [undefined, undefined, '-'],
+      [undefined, undefined, 'AWS_MANAGED_KEY'],
       // There is a value, user doesn't request a change
       ['arn:aws:key', undefined, undefined],
       // Switch off existing key
-      ['arn:aws:key', false, '-'],
+      ['arn:aws:key', false, 'AWS_MANAGED_KEY'],
       // Switch on existing key
-      ['-', true, ''],
+      ['AWS_MANAGED_KEY', true, ''],
     ])('(upgrading) current param %p, createCustomerMasterKey=%p => parameter becomes %p ', async (currentKeyId, createCustomerMasterKey, paramKeyId) => {
       // GIVEN
       mockTheToolkitInfo = mockToolkitInfo({

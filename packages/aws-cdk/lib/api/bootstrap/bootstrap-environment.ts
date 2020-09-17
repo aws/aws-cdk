@@ -107,10 +107,11 @@ export class Bootstrapper {
     //   * if customerKey is also not given
     //     * undefined if we already had a value in place (reusing what we had)
     //     * '-' if this is the first time we're deploying this stack (or upgrading from old to new bootstrap)
+    const currentKmsKeyId = current.parameters.FileAssetsBucketKmsKeyId;
     const kmsKeyId = params.kmsKeyId ??
-      (params.createCustomerMasterKey === true ? '' :
-        params.createCustomerMasterKey === false ? USE_AWS_MANAGED_KEY :
-          current.parameters.FileAssetsBucketKmsKeyId !== undefined ? undefined : USE_AWS_MANAGED_KEY);
+      (params.createCustomerMasterKey === true ? CREATE_NEW_KEY :
+        params.createCustomerMasterKey === false || currentKmsKeyId === undefined ? USE_AWS_MANAGED_KEY :
+          undefined);
 
     // Remind people what we settled on
     info(`Trusted accounts:   ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
@@ -162,4 +163,9 @@ export class Bootstrapper {
 /**
  * Magic parameter value that will cause the bootstrap-template.yml to NOT create a CMK but use the default keyo
  */
-const USE_AWS_MANAGED_KEY = '-';
+const USE_AWS_MANAGED_KEY = 'AWS_MANAGED_KEY';
+
+/**
+ * Magic parameter value that will cause the bootstrap-template.yml to create a CMK
+ */
+const CREATE_NEW_KEY = '';
