@@ -80,7 +80,7 @@ describe('CDK Include', () => {
   test('throws a validation exception when encountering an unrecognized resource attribute', () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-attribute.json');
-    }).toThrow(/The NonExistentResourceAttribute resource attribute is not supported by cloudformation-include yet/);
+    }).toThrow(/The 'NonExistentResourceAttribute' resource attribute is not supported by cloudformation-include yet/);
   });
 
   test("throws a validation exception when encountering a Ref-erence to a template element that doesn't exist", () => {
