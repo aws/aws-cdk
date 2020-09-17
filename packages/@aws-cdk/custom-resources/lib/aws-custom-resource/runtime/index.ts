@@ -3,6 +3,11 @@ import { execSync } from 'child_process';
 import { AwsSdkCall } from '../aws-custom-resource';
 
 /**
+ * Serialized form of the physical resource id for use in the operation parameters
+ */
+export const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
+
+/**
  * Flattens a nested object
  *
  * @param object the object to be flattened
@@ -24,15 +29,17 @@ export function flatten(object: object): { [key: string]: string } {
 }
 
 /**
- * Decodes encoded true/false values
+ * Decodes encoded special values (booleans and physicalResourceId)
  */
-function decodeBooleans(object: object) {
+function decodeSpecialValues(object: object, physicalResourceId: string) {
   return JSON.parse(JSON.stringify(object), (_k, v) => {
     switch (v) {
       case 'TRUE:BOOLEAN':
         return true;
       case 'FALSE:BOOLEAN':
         return false;
+      case PHYSICAL_RESOURCE_ID_REFERENCE:
+        return physicalResourceId;
       default:
         return v;
     }
@@ -115,7 +122,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       });
 
       try {
-        const response = await awsService[call.action](call.parameters && decodeBooleans(call.parameters)).promise();
+        const response = await awsService[call.action](
+          call.parameters && decodeSpecialValues(call.parameters, physicalResourceId)).promise();
         flatData = {
           apiVersion: awsService.config.apiVersion, // For test purposes: check if apiVersion was correctly passed.
           region: awsService.config.region, // For test purposes: check if region was correctly passed.
