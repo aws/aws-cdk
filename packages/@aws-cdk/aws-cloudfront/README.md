@@ -317,6 +317,29 @@ new cloudfront.Distribution(this, 'distro', {
 });
 ```
 
+#### Cross-region Lambda@Edge Support
+
+Lambda@Edge functions must be created in the `us-east-1` region, regardless of the region of the CloudFront distribution and stack.
+To make it easier to request functions for Lambda@Edge, the `EdgeFunction` construct can be used.
+The `EdgeFunction` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack;
+it will also validate some of the restrictions on Lambda@Edge functions, like use of environment variables.
+You can define an `EdgeFunction` exactly how you'd define a `Function`.
+
+```ts
+const myFunc = new lambda.EdgeFunction(...);
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: new origins.S3Origin(myBucket),
+    edgeLambdas: [
+      {
+        functionVersion: myFunc, // equivalent to myFunc.currentVersion
+        eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+      }
+    ],
+  },
+});
+```
+
 ### Logging
 
 You can configure CloudFront to create log files that contain detailed information about every user request that CloudFront receives.

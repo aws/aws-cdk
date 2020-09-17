@@ -16,4 +16,6 @@ nyc.config.js
 *.snk
 !.eslintrc.js
 
+!lib/edge-function/index.js
+
 junit.xml
