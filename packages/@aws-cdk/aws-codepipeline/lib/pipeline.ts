@@ -444,7 +444,7 @@ export class Pipeline extends PipelineBase {
     // `artifactBucket.grantRead(action.role)` (which is going to occur down the
     // line) can even work.
     if (hasAccount && !sameEnvDimension(this.env.account, actionEnv.account) && !this.crossAccountKeys) {
-      throw new Error(`Pipeline must be created with 'crossAccountKeys: true' to add cross-account action. Pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(actionEnv.account)}'`);
+      throw new Error(`Pipeline must be created with 'crossAccountKeys: true' to add cross-account action '${action.actionProperties.actionName}'. Pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(actionEnv.account)}'`);
     }
 
     // if actionRegion is undefined or the same as the pipeline region,
