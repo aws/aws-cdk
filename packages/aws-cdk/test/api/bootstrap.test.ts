@@ -158,7 +158,7 @@ test('passing trusted accounts to the old bootstrapping results in an error', as
     },
   }))
     .rejects
-    .toThrow('--trust can only be passed for the new bootstrap experience.');
+    .toThrow('--trust can only be passed for the modern bootstrap experience.');
 });
 
 test('passing CFN execution policies to the old bootstrapping results in an error', async () => {
@@ -169,7 +169,7 @@ test('passing CFN execution policies to the old bootstrapping results in an erro
     },
   }))
     .rejects
-    .toThrow('--cloudformation-execution-policies can only be passed for the new bootstrap experience.');
+    .toThrow('--cloudformation-execution-policies can only be passed for the modern bootstrap experience.');
 });
 
 test('even if the bootstrap stack is in a rollback state, can still retry bootstrapping it', async () => {
