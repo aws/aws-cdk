@@ -403,7 +403,7 @@ class MySqlInstanceEngine extends InstanceEngineBase {
  */
 export interface PostgresEngineFeatures {
   /**
-   * Whether the IAM role can access the S3 bucket for importing data
+   * Whether this version of the Postgres engine supports the S3 data import feature.
    *
    * @default false
    */
@@ -774,7 +774,7 @@ export class OracleEngineVersion {
   public readonly oracleMajorVersion: string;
 
   /**
-   * The supported features for the DB engine
+   * The supported features for this Oracle DB engine version.
    * @internal
    */
   public readonly _features?: InstanceEngineFeatures;
@@ -811,10 +811,12 @@ abstract class OracleInstanceEngineBase extends InstanceEngineBase {
 
     let optionGroup = options.optionGroup;
     if (options.s3ImportRole || options.s3ExportRole) {
-      optionGroup = optionGroup ?? new OptionGroup(scope, 'InstanceOptionGroup', {
-        engine: this,
-        configurations: [],
-      });
+      if (!optionGroup) {
+        optionGroup = new OptionGroup(scope, 'InstanceOptionGroup', {
+          engine: this,
+          configurations: [],
+        });
+      }
       // https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html
       optionGroup.addConfiguration({
         name: 'S3_INTEGRATION',
@@ -1021,7 +1023,7 @@ export class SqlServerEngineVersion {
   public readonly sqlServerMajorVersion: string;
 
   /**
-   * The supported features for the DB engine
+   * The supported features for this version of the SQL Server DB engine.
    * @internal
    */
   public readonly _features?: InstanceEngineFeatures;
@@ -1079,10 +1081,12 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
         throw new Error('S3 import and export roles must be the same for SQL Server engines');
       }
 
-      optionGroup = optionGroup ?? new OptionGroup(scope, 'InstanceOptionGroup', {
-        engine: this,
-        configurations: [],
-      });
+      if (!optionGroup) {
+        optionGroup = new OptionGroup(scope, 'InstanceOptionGroup', {
+          engine: this,
+          configurations: [],
+        });
+      }
       // https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.SQLServer.Options.BackupRestore.html
       optionGroup.addConfiguration({
         name: 'SQLSERVER_BACKUP_RESTORE',
