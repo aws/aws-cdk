@@ -786,7 +786,6 @@ export class OracleEngineVersion {
 interface OracleInstanceEngineBaseProps {
   readonly engineType: string;
   readonly version?: EngineVersion;
-  readonly features?: InstanceEngineFeatures;
 }
 
 abstract class OracleInstanceEngineBase extends InstanceEngineBase {
