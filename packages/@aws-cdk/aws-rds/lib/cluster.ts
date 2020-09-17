@@ -305,21 +305,22 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       }),
     ];
 
-    const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
     let { s3ImportRole, s3ExportRole } = this.setupS3ImportExport(props);
-    if (s3ImportRole) {
-      clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn });
-    }
-    if (s3ExportRole) {
-      clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn });
-    }
-
     // bind the engine to the Cluster
     const clusterEngineBindConfig = props.engine.bindToCluster(this, {
       s3ImportRole,
       s3ExportRole,
       parameterGroup: props.parameterGroup,
     });
+
+    const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
+    if (s3ImportRole) {
+      clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: clusterEngineBindConfig.features?.s3Import });
+    }
+    if (s3ExportRole) {
+      clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn, featureName: clusterEngineBindConfig.features?.s3Export });
+    }
+
     const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
 
