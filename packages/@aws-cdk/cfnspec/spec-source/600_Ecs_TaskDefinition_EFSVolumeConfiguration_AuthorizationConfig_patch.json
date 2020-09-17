@@ -1,0 +1,15 @@
+{
+  "PropertyTypes": {
+      "AWS::ECS::TaskDefinition.EFSVolumeConfiguration": {
+          "patch": {
+            "description": "Primitive type should not exist because it already has a complext type of AuthorizationConfig",
+            "operations": [
+              {
+                "path": "/Properties/AuthorizationConfig/PrimitiveType",
+                "op": "remove"
+              }
+            ]
+          }
+      }
+  }
+}

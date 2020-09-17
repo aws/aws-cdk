@@ -1006,8 +1006,8 @@ export = {
         Family: 'Ec2TaskDef',
         Volumes: [{
           Name: 'scratch',
-          EfsVolumeConfiguration: {
-            FileSystemId: 'local',
+          EFSVolumeConfiguration: {
+            FilesystemId: 'local',
           },
         }],
       }));
