@@ -520,3 +520,36 @@ test('boolean properties are considered equal with their stringified counterpart
   // THEN
   expect(differences.differenceCount).toBe(0);
 });
+
+test('when a property changes including equivalent DependsOn', () => {
+  // GIVEN
+  const bucketName = 'ShineyBucketName';
+  const currentTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        DependsOn: ['SomeResource'],
+        BucketName: bucketName,
+      },
+    },
+  };
+
+  // WHEN
+  const newBucketName = `${bucketName}-v2`;
+  const newTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        DependsOn: ['SomeResource'],
+        BucketName: newBucketName,
+      },
+    },
+  };
+
+  // THEN
+  let differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
+
+  differences = diffTemplate(newTemplate, currentTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
+});
