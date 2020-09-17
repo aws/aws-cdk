@@ -286,7 +286,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
-  protected readonly subnetGroupName: string;
+  protected readonly subnetGroup: ISubnetGroup;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
@@ -298,13 +298,12 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       Annotations.of(this).addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
-    const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
+    this.subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
       description: `Subnets for ${id} database`,
       vpc: props.instanceProps.vpc,
       vpcSubnets: props.instanceProps.vpcSubnets,
       removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
     });
-    this.subnetGroupName = subnetGroup.subnetGroupName;
 
     this.securityGroups = props.instanceProps.securityGroups ?? [
       new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -336,7 +335,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       dbClusterIdentifier: props.clusterIdentifier,
-      dbSubnetGroupName: this.subnetGroupName,
+      dbSubnetGroupName: this.subnetGroup.subnetGroupName,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
       port: props.port ?? clusterEngineBindConfig.port,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
@@ -560,7 +559,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
     }
 
     setLogRetention(this, props);
-    createInstances(this, props, this.subnetGroupName);
+    createInstances(this, props, this.subnetGroup);
   }
 
   /**
@@ -654,7 +653,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     this.setRemovalPolicy(cluster, props.removalPolicy);
 
     setLogRetention(this, props);
-    createInstances(this, props, this.subnetGroupName);
+    createInstances(this, props, this.subnetGroup);
   }
 }
 
@@ -692,7 +691,7 @@ interface InstanceConfig {
  * A function rather than a protected method on ``DatabaseClusterNew`` to avoid exposing
  * ``DatabaseClusterNew`` and ``DatabaseClusterBaseProps`` in the API.
  */
-function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBaseProps, subnetGroupName: string): InstanceConfig {
+function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBaseProps, subnetGroup: ISubnetGroup): InstanceConfig {
   const instanceCount = props.instances != null ? props.instances : 2;
   if (instanceCount < 1) {
     throw new Error('At least one instance is required');
@@ -747,7 +746,7 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
         ? (instanceProps.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
         : undefined,
       // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
-      dbSubnetGroupName: subnetGroupName,
+      dbSubnetGroupName: subnetGroup.subnetGroupName,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
       monitoringRoleArn: monitoringRole && monitoringRole.roleArn,

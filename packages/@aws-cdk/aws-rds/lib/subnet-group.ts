@@ -45,7 +45,7 @@ export interface SubnetGroupProps {
    * The removal policy to apply when the subnet group are removed
    * from the stack or replaced during an update.
    *
-   * @default RemovalPolicy.RETAIN
+   * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy
 }
@@ -73,7 +73,7 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE });
 
-    // Using 'Defaults' as the resource id for historical reasons (usage from `Instance` and `Cluster`).
+    // Using 'Default' as the resource id for historical reasons (usage from `Instance` and `Cluster`).
     const subnetGroup = new CfnDBSubnetGroup(this, 'Default', {
       dbSubnetGroupDescription: props.description,
       dbSubnetGroupName: props.subnetGroupName,

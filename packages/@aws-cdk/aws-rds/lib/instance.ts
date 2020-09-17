@@ -547,6 +547,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       description: `Subnet group for ${this.node.id} database`,
       vpc: this.vpc,
       vpcSubnets: this.vpcPlacement,
+      removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
     });
 
     const securityGroups = props.securityGroups || [new ec2.SecurityGroup(this, 'SecurityGroup', {
