@@ -11,10 +11,6 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
   }
 
   public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
-
-    // we need to add the function id since the permission won't be added under the function
-    // scope in this case, causing duplicate id's when configuring two different lambda destinations
-    // on the same bucket.
     let permissionId = `AllowBucketNotificationsFrom${bucket.node.uniqueId}To${this.fn.permissionsNode.uniqueId}`;
 
     // the bucket stack already has a dependency on the lambda stack because
