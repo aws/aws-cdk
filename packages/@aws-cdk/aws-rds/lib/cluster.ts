@@ -10,7 +10,7 @@ import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, defaultDeletionProtection } from './private/util';
+import { applyRemovalPolicy, defaultDeletionProtection, setupS3ImportExport } from './private/util';
 import { BackupProps, InstanceProps, Login, PerformanceInsightRetention, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
@@ -306,7 +306,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       }),
     ];
 
-    let { s3ImportRole, s3ExportRole } = this.setupS3ImportExport(props);
+    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props);
     // bind the engine to the Cluster
     const clusterEngineBindConfig = props.engine.bindToCluster(this, {
       s3ImportRole,
@@ -343,38 +343,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       databaseName: props.defaultDatabaseName,
       enableCloudwatchLogsExports: props.cloudwatchLogsExports,
     };
-  }
-
-  private setupS3ImportExport(props: DatabaseClusterBaseProps): { s3ImportRole?: IRole, s3ExportRole?: IRole } {
-    let s3ImportRole = props.s3ImportRole;
-    if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
-      if (props.s3ImportRole) {
-        throw new Error('Only one of s3ImportRole or s3ImportBuckets must be specified, not both.');
-      }
-
-      s3ImportRole = new Role(this, 'S3ImportRole', {
-        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
-      });
-      for (const bucket of props.s3ImportBuckets) {
-        bucket.grantRead(s3ImportRole);
-      }
-    }
-
-    let s3ExportRole = props.s3ExportRole;
-    if (props.s3ExportBuckets && props.s3ExportBuckets.length > 0) {
-      if (props.s3ExportRole) {
-        throw new Error('Only one of s3ExportRole or s3ExportBuckets must be specified, not both.');
-      }
-
-      s3ExportRole = new Role(this, 'S3ExportRole', {
-        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
-      });
-      for (const bucket of props.s3ExportBuckets) {
-        bucket.grantReadWrite(s3ExportRole);
-      }
-    }
-
-    return { s3ImportRole, s3ExportRole };
   }
 }
 
