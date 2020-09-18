@@ -21,8 +21,13 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
       // of the notification resource. therefore adding the permission to the lambda
       // stack would create a circular dependency, so we add it to the bucket stack.
       scope = Stack.of(bucket);
-      node = scope.node;
+
+      // we need to add the function id since the permission won't be added under the function
+      // scope in this case, causing duplicate id's when configuring two different lambda destinations
+      // on the same bucket.
       permissionId = `${permissionId}To${this.fn.permissionsNode.uniqueId}`;
+
+      node = scope.node;
     }
 
     if (node.tryFindChild(permissionId) === undefined) {
