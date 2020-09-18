@@ -284,8 +284,8 @@ export class StateMachine extends StateMachineBase {
       stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
       roleArn: this.role.roleArn,
       definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
-      loggingConfiguration: this.buildLoggingConfiguration(props),
-      tracingConfiguration: this.buildTracingConfiguration(props),
+      loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
+      tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
     });
 
     resource.node.addDependency(this.role);
@@ -388,11 +388,7 @@ export class StateMachine extends StateMachineBase {
     return this.metric('ExecutionTime', props);
   }
 
-  private buildLoggingConfiguration(props: StateMachineProps) {
-    if (props.logs === undefined) {
-      return undefined;
-    }
-
+  private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
     // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
     this.addToRolePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
@@ -410,18 +406,17 @@ export class StateMachine extends StateMachineBase {
     }));
 
     return {
-      destinations: [{ cloudWatchLogsLogGroup: { logGroupArn: props.logs.destination.logGroupArn } }],
-      includeExecutionData: props.logs.includeExecutionData,
-      level: props.logs.level || 'ERROR',
+      destinations: [{
+        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
+      }],
+      includeExecutionData: logOptions.includeExecutionData,
+      level: logOptions.level || 'ERROR',
     };
   }
 
-  private buildTracingConfiguration(props: StateMachineProps) {
-    if (!props.tracingEnabled) {
-      return undefined;
-    }
-
+  private buildTracingConfiguration(): CfnStateMachine.TracingConfigurationProperty {
     this.addToRolePolicy(new iam.PolicyStatement({
+      // https://docs.aws.amazon.com/xray/latest/devguide/security_iam_id-based-policy-examples.html#xray-permissions-resources
       actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
       resources: ['*'],
     }));
