@@ -291,7 +291,7 @@ export class CfnInclude extends core.CfnElement {
   }
 
   /**
-   * Returns the NestedStack with name logicalId.
+   * Returns a loaded NestedStack with name logicalId.
    * For a nested stack to be returned by this method,
    * it must be specified either in the {@link CfnIncludeProps.loadNestedStacks} property,
    * or through the {@link loadNestedStack} method.
@@ -305,7 +305,7 @@ export class CfnInclude extends core.CfnElement {
       } else if (this.template.Resources[logicalId].Type !== 'AWS::CloudFormation::Stack') {
         throw new Error(`Resource with logical ID '${logicalId}' is not a CloudFormation Stack`);
       } else {
-        throw new Error(`Nested Stack '${logicalId}' was not included in the loadNestedStacks property when including the parent template`);
+        throw new Error(`Nested Stack '${logicalId}' was not included in the loadNestedStacks property when including the parent template. To access a nested stack it must be specified either in the `loadNestedStacks` property, or through the `loadNestedStack` method `);
       }
     }
     return this.nestedStacks[logicalId];
