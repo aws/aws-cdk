@@ -11,25 +11,28 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
   }
 
   public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
-    const permissionId = `AllowBucketNotificationsFrom${bucket.node.uniqueId}To${this.fn.permissionsNode.uniqueId}`;
+    const permissionId = `AllowBucketNotificationsTo${this.fn.permissionsNode.uniqueId}`;
 
-    // the bucket stack already has a dependency on the lambda stack because
-    // of the notification resource. therefore adding the permission to the lambda
-    // stack would create a circular dependency, so we add it to the bucket stack.
-    const bucketStack = Stack.of(bucket);
+    if (!Construct.isConstruct(bucket)) {
+      throw new Error(`LambdaDestination for function ${this.fn.permissionsNode.uniqueId} can only be configured on a
+        bucket construct (Bucket ${bucket.bucketName})`);
+    }
 
-    if (bucketStack.node.tryFindChild(permissionId) === undefined) {
+    if (bucket.node.tryFindChild(permissionId) === undefined) {
       this.fn.addPermission(permissionId, {
         sourceAccount: Stack.of(bucket).account,
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
         sourceArn: bucket.bucketArn,
-        scope: bucketStack,
+        // the bucket stack already has a dependency on the lambda stack because
+        // of the notification resource. therefore adding the permission to the lambda
+        // stack would create a circular dependency, so we add it to the bucket scope.
+        scope: bucket,
       });
     }
 
     // if we have a permission resource for this relationship, add it as a dependency
     // to the bucket notifications resource, so it will be created first.
-    const permission = bucketStack.node.tryFindChild(permissionId) as CfnResource | undefined;
+    const permission = bucket.node.tryFindChild(permissionId) as CfnResource | undefined;
 
     return {
       type: s3.BucketNotificationDestinationType.LAMBDA,
