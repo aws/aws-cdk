@@ -37,13 +37,13 @@ export interface BundlingOptions {
  * Produce bundled Lambda asset code
  */
 export function bundle(options: BundlingOptions): lambda.AssetCode {
-  const { entry, runtime, outputPathSuffix: pathSuffix } = options;
+  const { entry, runtime, outputPathSuffix } = options;
 
   const hasDeps = hasDependencies(entry);
 
   const depsCommand = chain([
-    hasDeps ? `rsync -r ${BUNDLER_DEPENDENCIES_CACHE}/. ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${pathSuffix}` : '',
-    `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${pathSuffix}`,
+    hasDeps ? `rsync -r ${BUNDLER_DEPENDENCIES_CACHE}/. ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}` : '',
+    `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}`,
   ]);
 
   // Determine which dockerfile to use. When dependencies are present, we use a
