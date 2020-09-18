@@ -6,6 +6,39 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Stack, App } from '@aws-cdk/core';
 import * as s3n from '../../lib';
 
+test('add notifications to multiple functions', () => {
+
+  const stack = new Stack();
+  const bucket = new s3.Bucket(stack, 'MyBucket');
+  const fn1 = new lambda.Function(stack, 'MyFunction1', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('foo'),
+  });
+
+  const fn2 = new lambda.Function(stack, 'MyFunction2', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('foo'),
+  });
+
+  const lambdaDestination1 = new s3n.LambdaDestination(fn1);
+  const lambdaDestination2 = new s3n.LambdaDestination(fn2);
+
+  bucket.addEventNotification(s3.EventType.OBJECT_CREATED, lambdaDestination1, { prefix: 'v1/' });
+  bucket.addEventNotification(s3.EventType.OBJECT_CREATED, lambdaDestination2, { prefix: 'v2/' });
+
+  expect(stack).toHaveResourceLike('Custom::S3BucketNotifications', {
+    NotificationConfiguration: {
+      LambdaFunctionConfigurations: [
+        { Filter: { Key: { FilterRules: [{ Name: 'prefix', Value: 'v1/' }] } } },
+        { Filter: { Key: { FilterRules: [{ Name: 'prefix', Value: 'v2/' }] } } },
+      ],
+    },
+  });
+
+});
+
 test('lambda in a different stack as notification target', () => {
 
   const app = new App();
