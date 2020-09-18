@@ -81,9 +81,7 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
     });
 
     if (props.removalPolicy) {
-      subnetGroup.applyRemovalPolicy(props.removalPolicy, {
-        applyToUpdateReplacePolicy: true,
-      });
+      subnetGroup.applyRemovalPolicy(props.removalPolicy);
     }
 
     this.subnetGroupName = subnetGroup.ref;
