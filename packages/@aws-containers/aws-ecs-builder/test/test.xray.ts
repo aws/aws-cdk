@@ -76,7 +76,7 @@ export = {
             StartPeriod: 10,
             Timeout: 2,
           },
-          Image: 'amazon/aws-xray-daemon',
+          Image: 'amazon/aws-xray-daemon:latest',
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {

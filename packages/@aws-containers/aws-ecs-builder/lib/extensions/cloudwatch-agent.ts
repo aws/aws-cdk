@@ -4,6 +4,8 @@ import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
 
+const CLOUDWATCH_AGENT_IMAGE = 'amazon/cloudwatch-agent:latest';
+
 /**
  * This extension adds a CloudWatch agent to the task definition and
  * configures the task to be able to publish metrics to CloudWatch
@@ -34,7 +36,7 @@ export class CloudwatchAgentExtension extends ServiceExtension {
   public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     // Add the CloudWatch Agent to this task
     this.container = taskDefinition.addContainer('cloudwatch-agent', {
-      image: ecs.ContainerImage.fromRegistry('amazon/cloudwatch-agent:latest'),
+      image: ecs.ContainerImage.fromRegistry(CLOUDWATCH_AGENT_IMAGE),
       environment: {
         CW_CONFIG_CONTENT: JSON.stringify(this.CW_CONFIG_CONTENT),
       },

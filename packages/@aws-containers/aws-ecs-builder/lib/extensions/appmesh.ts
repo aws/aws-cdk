@@ -110,13 +110,24 @@ export class AppMeshExtension extends ServiceExtension {
           appPorts: [containerextension.trafficPort],
           proxyEgressPort: 15001,
           proxyIngressPort: 15000,
+
+          // The App Mesh proxy runs with this user ID, and this keeps its
+          // own outbound connections from recursively attempting to infinitely proxy.
           ignoredUID: 1337,
+
+          // This GID is ignored and any outbound traffic originating from containers that
+          // use this group ID will be ignored by the proxy. This is primarily utilized by
+          // the FireLens extension, so that outbound application logs don't have to go through Envoy
+          // and therefore add extra burden to the proxy sidecar. Instead the logs can go directly
+          // to CloudWatch
           ignoredGID: 1338,
+
           egressIgnoredIPs: [
             '169.254.170.2', // Allow services to talk directly to ECS metadata endpoints
             '169.254.169.254', // and EC2 instance endpoint
           ],
-          // If there is outbound traffic that you want to
+
+          // If there is outbound traffic to specific ports that you want to
           // ignore the proxy those ports can be added here.
           egressIgnoredPorts: [],
         },

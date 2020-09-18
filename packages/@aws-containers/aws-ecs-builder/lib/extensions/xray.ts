@@ -4,6 +4,8 @@ import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
 
+const XRAY_DAEMON_IMAGE = 'amazon/aws-xray-daemon:latest';
+
 /**
  * This extension adds an X-Ray daemon inside the task definition, for
  * capturing application trace spans and submitting them to the AWS
@@ -22,7 +24,7 @@ export class XRayExtension extends ServiceExtension {
   public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     // Add the XRay Daemon to the task
     this.container = taskDefinition.addContainer('xray', {
-      image: ecs.ContainerImage.fromRegistry('amazon/aws-xray-daemon'),
+      image: ecs.ContainerImage.fromRegistry(XRAY_DAEMON_IMAGE),
       essential: true,
       memoryReservationMiB: 256,
       environment: {
