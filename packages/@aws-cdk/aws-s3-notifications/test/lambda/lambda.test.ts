@@ -28,11 +28,45 @@ test('add notifications to multiple functions', () => {
   bucket.addEventNotification(s3.EventType.OBJECT_CREATED, lambdaDestination1, { prefix: 'v1/' });
   bucket.addEventNotification(s3.EventType.OBJECT_CREATED, lambdaDestination2, { prefix: 'v2/' });
 
+  // expecting notification configuration to have both events
   expect(stack).toHaveResourceLike('Custom::S3BucketNotifications', {
     NotificationConfiguration: {
       LambdaFunctionConfigurations: [
         { Filter: { Key: { FilterRules: [{ Name: 'prefix', Value: 'v1/' }] } } },
         { Filter: { Key: { FilterRules: [{ Name: 'prefix', Value: 'v2/' }] } } },
+      ],
+    },
+  });
+
+  // expecting one permission for each function
+  expect(stack).toCountResources('AWS::Lambda::Permission', 2);
+
+  // make sure each permission points to the correct function
+  expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
+    FunctionName: {
+      'Fn::GetAtt': [
+        'MyFunction12A744C2E',
+        'Arn',
+      ],
+    },
+    SourceArn: {
+      'Fn::GetAtt': [
+        'MyBucketF68F3FF0',
+        'Arn',
+      ],
+    },
+  });
+  expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
+    FunctionName: {
+      'Fn::GetAtt': [
+        'MyFunction2F2A964CA',
+        'Arn',
+      ],
+    },
+    SourceArn: {
+      'Fn::GetAtt': [
+        'MyBucketF68F3FF0',
+        'Arn',
       ],
     },
   });
