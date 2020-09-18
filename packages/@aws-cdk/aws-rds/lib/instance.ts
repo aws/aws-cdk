@@ -14,7 +14,8 @@ import { IParameterGroup } from './parameter-group';
 import { applyRemovalPolicy, defaultDeletionProtection, engineDescription, setupS3ImportExport } from './private/util';
 import { PerformanceInsightRetention, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
-import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
+import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
+import { ISubnetGroup, SubnetGroup } from './subnet-group';
 
 /**
  * A database instance
@@ -503,6 +504,13 @@ export interface DatabaseInstanceNewProps {
   readonly domainRole?: iam.IRole;
 
   /**
+   * Existing subnet group for the instance.
+   *
+   * @default - a new subnet group will be created.
+   */
+  readonly subnetGroup?: ISubnetGroup;
+
+  /**
    * Role that will be associated with this DB instance to enable S3 import.
    * This feature is only supported by the Microsoft SQL Server, Oracle, and PostgreSQL engines.
    *
@@ -601,11 +609,11 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     }
     this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
 
-    const { subnetIds } = props.vpc.selectSubnets(this.vpcPlacement);
-
-    const subnetGroup = new CfnDBSubnetGroup(this, 'SubnetGroup', {
-      dbSubnetGroupDescription: `Subnet group for ${this.node.id} database`,
-      subnetIds,
+    const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'SubnetGroup', {
+      description: `Subnet group for ${this.node.id} database`,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcPlacement,
+      removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
     });
 
     const securityGroups = props.securityGroups || [new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -657,7 +665,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
       dbInstanceClass: Lazy.stringValue({ produce: () => `db.${this.instanceType}` }),
       dbInstanceIdentifier: props.instanceIdentifier,
-      dbSubnetGroupName: subnetGroup.ref,
+      dbSubnetGroupName: subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
