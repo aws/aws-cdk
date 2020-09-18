@@ -965,6 +965,34 @@ export = {
     },
   },
 
+  'reuse an existing subnet group'(test: Test) {
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+      masterUsername: 'admin',
+      vpc,
+      subnetGroup: rds.SubnetGroup.fromSubnetGroupName(stack, 'SubnetGroup', 'my-subnet-group'),
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      DBSubnetGroupName: 'my-subnet-group',
+    }));
+    expect(stack).to(countResources('AWS::RDS::DBSubnetGroup', 0));
+
+    test.done();
+  },
+
+  'defaultChild returns the DB Instance'(test: Test) {
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+      masterUsername: 'admin',
+      vpc,
+    });
+
+    // THEN
+    test.ok(instance.node.defaultChild instanceof rds.CfnDBInstance);
+
+    test.done();
+  },
   'S3 Import/Export': {
     'instance with s3 import and export buckets'(test: Test) {
       new rds.DatabaseInstance(stack, 'DB', {
