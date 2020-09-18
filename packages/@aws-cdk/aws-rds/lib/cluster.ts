@@ -4,13 +4,13 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Annotations, CfnDeletionPolicy, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Annotations, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { setupS3ImportExport } from './private/util';
+import { applyRemovalPolicy, defaultDeletionProtection, setupS3ImportExport } from './private/util';
 import { BackupProps, InstanceProps, Login, PerformanceInsightRetention, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
@@ -82,7 +82,7 @@ interface DatabaseClusterBaseProps {
   /**
    * Indicates whether the DB cluster should have deletion protection enabled.
    *
-   * @default false
+   * @default - true if ``removalPolicy`` is RETAIN, false otherwise
    */
   readonly deletionProtection?: boolean;
 
@@ -335,7 +335,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       port: props.port ?? clusterEngineBindConfig.port,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
-      deletionProtection: props.deletionProtection,
+      deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       // Admin
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
@@ -343,19 +343,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       databaseName: props.defaultDatabaseName,
       enableCloudwatchLogsExports: props.cloudwatchLogsExports,
     };
-  }
-
-  protected setRemovalPolicy(cluster: CfnDBCluster, removalPolicy?: RemovalPolicy) {
-    // if removalPolicy was not specified,
-    // leave it as the default, which is Snapshot
-    if (removalPolicy) {
-      cluster.applyRemovalPolicy(removalPolicy);
-    } else {
-      // The CFN default makes sense for DeletionPolicy,
-      // but doesn't cover UpdateReplacePolicy.
-      // Fix that here.
-      cluster.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
-    }
   }
 }
 
@@ -515,7 +502,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    this.setRemovalPolicy(cluster, props.removalPolicy);
+    applyRemovalPolicy(cluster, props.removalPolicy);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -613,7 +600,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    this.setRemovalPolicy(cluster, props.removalPolicy);
+    applyRemovalPolicy(cluster, props.removalPolicy);
 
     setLogRetention(this, props);
     createInstances(this, props, this.subnetGroup);
@@ -720,7 +707,7 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
     // Because of that, in this case,
     // we can safely use the CFN default of Delete for DbInstances with dbClusterIdentifier set.
     if (props.removalPolicy) {
-      instance.applyRemovalPolicy(props.removalPolicy);
+      applyRemovalPolicy(instance, props.removalPolicy);
     }
 
     // We must have a dependency on the NAT gateway provider here to create
