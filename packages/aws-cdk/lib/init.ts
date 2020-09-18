@@ -274,13 +274,13 @@ async function initializeGitRepository(workDir: string) {
 async function postInstall(language: string, canUseNetwork: boolean, workDir: string) {
   switch (language) {
     case 'javascript':
-      return await postInstallJavascript(canUseNetwork, workDir);
+      return postInstallJavascript(canUseNetwork, workDir);
     case 'typescript':
-      return await postInstallTypescript(canUseNetwork, workDir);
+      return postInstallTypescript(canUseNetwork, workDir);
     case 'java':
-      return await postInstallJava(canUseNetwork, workDir);
+      return postInstallJava(canUseNetwork, workDir);
     case 'python':
-      return await postInstallPython(workDir);
+      return postInstallPython(workDir);
   }
 }
 
@@ -323,7 +323,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
 
 async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
-  warning(`Please run ${python} -m venv .env'!`);
+  warning(`Please run '${python} -m venv .env'!`);
   print(`Executing ${colors.green('Creating virtualenv...')}`);
   try {
     await execute(python, ['-m venv', '.env'], { cwd });
@@ -362,7 +362,7 @@ function isRoot(dir: string) {
  * @returns STDOUT (if successful).
  */
 async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
-  const child = childProcess.spawn(cmd, args, { cwd, shell: true, stdio: [ 'ignore', 'pipe', 'inherit' ] });
+  const child = childProcess.spawn(cmd, args, { cwd, shell: true, stdio: ['ignore', 'pipe', 'inherit'] });
   let stdout = '';
   child.stdout.on('data', chunk => stdout += chunk.toString());
   return new Promise<string>((ok, fail) => {

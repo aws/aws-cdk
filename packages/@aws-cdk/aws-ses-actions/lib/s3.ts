@@ -65,7 +65,7 @@ export class S3 implements ses.IReceiptRuleAction {
     if (policy) { // The bucket could be imported
       rule.node.addDependency(policy);
     } else {
-      rule.node.addWarning('This rule is using a S3 action with an imported bucket. Ensure permission is given to SES to write to that bucket.');
+      cdk.Annotations.of(rule).addWarning('This rule is using a S3 action with an imported bucket. Ensure permission is given to SES to write to that bucket.');
     }
 
     // Allow SES to use KMS master key
@@ -73,7 +73,7 @@ export class S3 implements ses.IReceiptRuleAction {
     if (this.props.kmsKey && !/alias\/aws\/ses$/.test(this.props.kmsKey.keyArn)) {
       const kmsStatement = new iam.PolicyStatement({
         actions: ['km:Encrypt', 'kms:GenerateDataKey'],
-        principals: [ new iam.ServicePrincipal('ses.amazonaws.com')],
+        principals: [new iam.ServicePrincipal('ses.amazonaws.com')],
         resources: ['*'],
         conditions: {
           Null: {

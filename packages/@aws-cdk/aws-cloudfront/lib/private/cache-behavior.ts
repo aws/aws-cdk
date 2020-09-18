@@ -1,11 +1,11 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { CfnDistribution } from '../cloudfront.generated';
-import { BehaviorOptions, ViewerProtocolPolicy } from '../distribution';
-import { Origin } from '../origin';
+import { AddBehaviorOptions, EdgeLambda, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
 
 /**
  * Properties for specifying custom behaviors for origins.
  */
-export interface CacheBehaviorProps extends BehaviorOptions {
+export interface CacheBehaviorProps extends AddBehaviorOptions {
   /**
    * The pattern (e.g., `images/*.jpg`) that specifies which requests to apply the behavior to.
    * There must be exactly one behavior associated with each `Distribution` that has a path pattern
@@ -21,14 +21,13 @@ export interface CacheBehaviorProps extends BehaviorOptions {
  * CloudFrontWebDistribution implementation.
  */
 export class CacheBehavior {
+  private readonly originId: string;
 
-  /**
-   * Origin that this behavior will route traffic to.
-   */
-  public readonly origin: Origin;
+  constructor(originId: string, private readonly props: CacheBehaviorProps) {
+    this.originId = originId;
 
-  constructor(private readonly props: CacheBehaviorProps) {
-    this.origin = props.origin;
+    this.validateEdgeLambdas(props.edgeLambdas);
+    this.grantEdgeLambdaFunctionExecutionRole(props.edgeLambdas);
   }
 
   /**
@@ -42,14 +41,43 @@ export class CacheBehavior {
   public _renderBehavior(): CfnDistribution.CacheBehaviorProperty {
     return {
       pathPattern: this.props.pathPattern,
-      targetOriginId: this.origin.id,
-      allowedMethods: this.props.allowedMethods?.methods ?? undefined,
+      targetOriginId: this.originId,
+      allowedMethods: this.props.allowedMethods?.methods,
+      cachedMethods: this.props.cachedMethods?.methods,
+      compress: this.props.compress,
       forwardedValues: {
         queryString: this.props.forwardQueryString ?? false,
         queryStringCacheKeys: this.props.forwardQueryStringCacheKeys,
       },
-      viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+      smoothStreaming: this.props.smoothStreaming,
+      viewerProtocolPolicy: this.props.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL,
+      lambdaFunctionAssociations: this.props.edgeLambdas
+        ? this.props.edgeLambdas.map(edgeLambda => ({
+          lambdaFunctionArn: edgeLambda.functionVersion.edgeArn,
+          eventType: edgeLambda.eventType.toString(),
+          includeBody: edgeLambda.includeBody,
+        }))
+        : undefined,
     };
   }
 
+  private validateEdgeLambdas(edgeLambdas?: EdgeLambda[]) {
+    const includeBodyEventTypes = [LambdaEdgeEventType.ORIGIN_REQUEST, LambdaEdgeEventType.VIEWER_REQUEST];
+    if (edgeLambdas && edgeLambdas.some(lambda => lambda.includeBody && !includeBodyEventTypes.includes(lambda.eventType))) {
+      throw new Error('\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.');
+    }
+  }
+
+  private grantEdgeLambdaFunctionExecutionRole(edgeLambdas?: EdgeLambda[]) {
+    if (!edgeLambdas || edgeLambdas.length === 0) { return; }
+    edgeLambdas.forEach((edgeLambda) => {
+      const role = edgeLambda.functionVersion.role;
+      if (role && role instanceof iam.Role && role.assumeRolePolicy) {
+        role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
+          actions: ['sts:AssumeRole'],
+          principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],
+        }));
+      }
+    });
+  }
 }

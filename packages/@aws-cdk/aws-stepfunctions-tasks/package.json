@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-stepfunctions-tasks",
         "module": "aws_cdk.aws_stepfunctions_tasks"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -71,6 +72,7 @@
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-dynamodb": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
@@ -85,13 +87,14 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-dynamodb": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
@@ -106,7 +109,7 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

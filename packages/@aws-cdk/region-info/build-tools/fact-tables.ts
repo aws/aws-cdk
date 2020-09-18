@@ -18,6 +18,7 @@ export const AWS_CDK_METADATA = new Set([
   // 'us-gov-west-1',
   // 'us-iso-east-1',
   // 'us-isob-east-1',
+  // 'af-south-1',
   'ap-south-1',
   'ap-east-1',
   // 'ap-northeast-3',
@@ -33,6 +34,7 @@ export const AWS_CDK_METADATA = new Set([
   'eu-west-2',
   'eu-west-3',
   'eu-north-1',
+  // 'eu-south-1',
   'me-south-1',
   'sa-east-1',
 ]);
@@ -49,6 +51,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'us-west-2': 'Z3BJ6K6RIION7M',
   'us-gov-east-1': 'Z2NIFVYYW2VKV1',
   'us-gov-west-1': 'Z31GFT0UA1I2HV',
+  'af-south-1': 'Z11KHD8FBVPUYU',
   'ap-east-1': 'ZNB98KWMFR0R6',
   'ap-south-1': 'Z11RGJOFQNVJUP',
   'ap-northeast-3': 'Z2YQB5RD63NC85',
@@ -103,4 +106,30 @@ export const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'us-gov-east-1': '190560391635',
   'cn-north-1': '638102146993',
   'cn-northwest-1': '037604701340',
+};
+
+// https://aws.amazon.com/releasenotes/available-deep-learning-containers-images
+export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
+  'us-east-1': '763104351884',
+  'us-east-2': '763104351884',
+  'us-west-1': '763104351884',
+  'us-west-2': '763104351884',
+  'ca-central-1': '763104351884',
+  'eu-west-1': '763104351884',
+  'eu-west-2': '763104351884',
+  'eu-west-3': '763104351884',
+  'eu-central-1': '763104351884',
+  'eu-north-1': '763104351884',
+  'sa-east-1': '763104351884',
+  'ap-south-1': '763104351884',
+  'ap-northeast-1': '763104351884',
+  'ap-northeast-2': '763104351884',
+  'ap-southeast-1': '763104351884',
+  'ap-southeast-2': '763104351884',
+
+  'ap-east-1': '871362719292',
+  'me-south-1': '217643126080',
+
+  'cn-north-1': '727897471807',
+  'cn-northwest-1': '727897471807',
 };

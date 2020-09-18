@@ -1,12 +1,25 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
+import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 
-const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN '});
+const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN ' });
 
 const FAKE_CREDENTIAL_CHAIN = new AWS.CredentialProviderChain([
   () => FAKE_CREDENTIALS,
 ]);
+
+export interface MockSdkProviderOptions {
+  /**
+   * Whether the mock provider should produce a real SDK
+   *
+   * Some tests require a real SDK because they use `AWS-mock` to replace
+   * the underlying calls. Other tests do their work completely using jest-mocks.
+   *
+   * @default true
+   */
+  readonly realSdk?: boolean;
+}
 
 /**
  * An SDK that allows replacing (some of) the clients
@@ -17,12 +30,16 @@ const FAKE_CREDENTIAL_CHAIN = new AWS.CredentialProviderChain([
 export class MockSdkProvider extends SdkProvider {
   private readonly sdk: ISDK;
 
-  constructor() {
+  constructor(options: MockSdkProviderOptions = {}) {
     super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
 
     // SDK contains a real SDK, since some test use 'AWS-mock' to replace the underlying
     // AWS calls which a real SDK would do, and some tests use the 'stub' functionality below.
-    this.sdk = new SDK(FAKE_CREDENTIALS, this.defaultRegion, { customUserAgent: 'aws-cdk/jest' });
+    if (options.realSdk ?? true) {
+      this.sdk = new SDK(FAKE_CREDENTIALS, this.defaultRegion, { customUserAgent: 'aws-cdk/jest' });
+    } else {
+      this.sdk = new MockSdk();
+    }
   }
 
   public defaultAccount(): Promise<Account | undefined> {
@@ -167,14 +184,23 @@ class FakeAWSResponse<T> {
   }
 }
 
-export function mockToolkitInfo() {
-  return new ToolkitInfo({
-    sdk: new MockSdk(),
-    bucketName: 'BUCKET_NAME',
-    bucketEndpoint: 'BUCKET_ENDPOINT',
-    environment: { name: 'env', account: '1234', region: 'abc' },
-    version: 1,
+export function mockBootstrapStack(sdk: ISDK | undefined, stack?: Partial<AWS.CloudFormation.Stack>) {
+  return CloudFormationStack.fromStaticInformation((sdk ?? new MockSdk()).cloudFormation(), 'CDKToolkit', {
+    CreationTime: new Date(),
+    StackName: 'CDKToolkit',
+    StackStatus: 'CREATE_COMPLETE',
+    Outputs: [
+      { OutputKey: 'BucketName', OutputValue: 'BUCKET_NAME' },
+      { OutputKey: 'BucketDomainName', OutputValue: 'BUCKET_ENDPOINT' },
+      { OutputKey: 'BootstrapVersion', OutputValue: '1' },
+    ],
+    ...stack,
   });
+}
+
+export function mockToolkitInfo(stack?: Partial<AWS.CloudFormation.Stack>) {
+  const sdk = new MockSdk();
+  return new ToolkitInfo(mockBootstrapStack(sdk, stack), sdk);
 }
 
 export function mockResolvedEnvironment(): cxapi.Environment {

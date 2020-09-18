@@ -66,7 +66,8 @@ new codepipeline_actions.CodeBuildAction({
 
 If you want to use a GitHub repository as the source, you must create:
 
-* A [GitHub Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+* A [GitHub Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line),
+  with scopes **repo** and **admin:repo_hook**.
 * A [Secrets Manager PlainText Secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html)
   with the value of the **GitHub Access Token**. Pick whatever name you want
   (for example `my-github-token`) and pass it as the argument of `oauthToken`.
@@ -83,7 +84,6 @@ const sourceAction = new codepipeline_actions.GitHubSourceAction({
   oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
   output: sourceOutput,
   branch: 'develop', // default: 'master'
-  trigger: codepipeline_actions.GitHubTrigger.POLL // default: 'WEBHOOK', 'NONE' is also possible for no Source trigger
 });
 pipeline.addStage({
   stageName: 'Source',
@@ -164,6 +164,19 @@ const sourceAction = new codepipeline_actions.S3SourceAction({
 pipeline.addStage({
   stageName: 'Source',
   actions: [sourceAction],
+});
+```
+
+The region of the action will be determined by the region the bucket itself is in.
+When using a newly created bucket,
+that region will be taken from the stack the bucket belongs to;
+for an imported bucket,
+you can specify the region explicitly:
+
+```ts
+const sourceBucket = s3.Bucket.fromBucketAttributes(this, 'SourceBucket', {
+  bucketName: 'my-bucket',
+  region: 'ap-southeast-1',
 });
 ```
 
@@ -691,6 +704,29 @@ new codepipeline_actions.AlexaSkillDeployAction({
   clientSecret: clientSecret,
   refreshToken: refreshToken,
   skillId: 'amzn1.ask.skill.12345678-1234-1234-1234-123456789012',
+});
+```
+
+### AWS Service Catalog
+
+You can deploy a CloudFormation template to an existing Service Catalog product with the following action:
+
+```ts
+new codepipeline.Pipeline(this, 'Pipeline', {
+      stages: [
+          {
+            stageName: 'ServiceCatalogDeploy',
+            actions: [
+            new codepipeline_actions.ServiceCatalogDeployAction({
+                actionName: 'ServiceCatalogDeploy',
+                templatePath: cdkBuildOutput.atPath("Sample.template.json"),
+                productVersionName: "Version - " + Date.now.toString,
+                productType: "CLOUD_FORMATION_TEMPLATE",
+                productVersionDescription: "This is a version from the pipeline with a new description.",
+                productId: "prod-XXXXXXXX",
+            }),
+          },
+        ],
 });
 ```
 

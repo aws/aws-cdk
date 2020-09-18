@@ -1,4 +1,5 @@
 ## AWS S3 Deployment Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -91,7 +92,7 @@ new BucketDeployment(this, 'BucketDeployment', {
 });
 
 new BucketDeployment(this, 'HTMLBucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['!index.html'] })],
+  sources: [Source.asset('./website', { exclude: ['*', '!index.html'] })],
   destinationBucket: bucket,
   cacheControl: [CacheControl.fromString('max-age=0,no-cache,no-store,must-revalidate')],
   prune: false,
@@ -145,9 +146,30 @@ new s3deploy.BucketDeployment(this, 'DeployWebsite', {
 You can provide a CloudFront distribution and optional paths to invalidate after the bucket deployment finishes.
 
 ```ts
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as origins from '@aws-cdk/aws-cloudfront-origins';
+
 const bucket = new s3.Bucket(this, 'Destination');
 
-const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {
+// Option 1 (Experimental): Handles buckets whether or not they are configured for website hosting.
+const distribution = new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.S3Origin(bucket) },
+});
+
+// Option 2 (Stable): Use this if the bucket has website hosting enabled.
+const distribution_for_website_bucket = new cloudfront.CloudFrontWebDistribution(this, 'DistributionForWebBucket', {
+  originConfigs: [
+    {
+      customOriginSource: {
+        domainName: bucket.bucketWebsiteDomainName,
+      },
+      behaviors : [ {isDefaultBehavior: true}]
+    }
+  ]
+});
+
+// Option 3 (Stable): Use this version if the bucket does not have website hosting enabled.
+const distribution_for_bucket = new cloudfront.CloudFrontWebDistribution(this, 'DistributionForBucket', {
   originConfigs: [
     {
       s3OriginSource: {
@@ -161,7 +183,7 @@ const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distributio
 new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
   sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: bucket,
-  distribution,
+  distribution, // or distribution_for_website_bucket or distribution_for_bucket
   distributionPaths: ['/images/*.png'],
 });
 ```

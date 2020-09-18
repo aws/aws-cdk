@@ -188,7 +188,7 @@ export = {
             Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': [ '', [
+              'Fn::Join': ['', [
                 'arn:',
                 { Ref: 'AWS::Partition' },
                 ':logs:',
@@ -304,9 +304,9 @@ export = {
       PolicyDocument: {
         Statement: [
           {
-            Action: [ 'logs:CreateLogStream', 'logs:PutLogEvents' ],
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
-            Resource: { 'Fn::GetAtt': [ 'LogGroupF5B46931', 'Arn' ] },
+            Resource: { 'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'] },
           },
         ],
         Version: '2012-10-17',
