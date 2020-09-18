@@ -428,7 +428,6 @@
         "DBSubnetGroupName": {
           "Ref": "dbInstanceSubnetGroupD062EC9E"
         },
-        "DeletionProtection": true,
         "Engine": "postgres",
         "MasterUsername": {
           "Fn::Join": [

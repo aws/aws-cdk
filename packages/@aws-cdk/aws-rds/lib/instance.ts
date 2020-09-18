@@ -5,13 +5,13 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { CfnDeletionPolicy, Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { engineDescription, setupS3ImportExport } from './private/util';
+import { applyRemovalPolicy, defaultDeletionProtection, engineDescription, setupS3ImportExport } from './private/util';
 import { PerformanceInsightRetention, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
@@ -468,7 +468,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * Indicates whether the DB instance should have deletion protection enabled.
    *
-   * @default true
+   * @default - true if ``removalPolicy`` is RETAIN, false otherwise
    */
   readonly deletionProtection?: boolean;
 
@@ -626,7 +626,6 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       });
     }
 
-    const deletionProtection = props.deletionProtection !== undefined ? props.deletionProtection : true;
     const storageType = props.storageType || StorageType.GP2;
     const iops = storageType === StorageType.IO1 ? (props.iops || 1000) : undefined;
 
@@ -660,7 +659,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       dbInstanceIdentifier: props.instanceIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
-      deletionProtection,
+      deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
       enableIamDatabaseAuthentication: Lazy.anyValue({ produce: () => this.enableIamAuthentication }),
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
@@ -956,7 +955,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    applyInstanceDeletionPolicy(instance, props.removalPolicy);
+    applyRemovalPolicy(instance, props.removalPolicy);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -1052,7 +1051,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    applyInstanceDeletionPolicy(instance, props.removalPolicy);
+    applyRemovalPolicy(instance, props.removalPolicy);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -1127,7 +1126,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    applyInstanceDeletionPolicy(instance, props.removalPolicy);
+    applyRemovalPolicy(instance, props.removalPolicy);
 
     this.setLogRetention();
   }
@@ -1142,15 +1141,4 @@ function renderProcessorFeatures(features: ProcessorFeatures): CfnDBInstance.Pro
   const featuresList = Object.entries(features).map(([name, value]) => ({ name, value: value.toString() }));
 
   return featuresList.length === 0 ? undefined : featuresList;
-}
-
-function applyInstanceDeletionPolicy(cfnDbInstance: CfnDBInstance, removalPolicy: RemovalPolicy | undefined): void {
-  if (!removalPolicy) {
-    // the default DeletionPolicy is 'Snapshot', which is fine,
-    // but we should also make it 'Snapshot' for UpdateReplace policy
-    cfnDbInstance.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
-  } else {
-    // just apply whatever removal policy the customer explicitly provided
-    cfnDbInstance.applyRemovalPolicy(removalPolicy);
-  }
 }
