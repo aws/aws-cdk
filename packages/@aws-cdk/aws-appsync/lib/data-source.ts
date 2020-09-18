@@ -1,7 +1,7 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Construct, IResolvable } from '@aws-cdk/core';
+import { Construct, IResolvable, IConstruct } from '@aws-cdk/core';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
@@ -41,13 +41,35 @@ export interface BackedDataSourceProps extends BaseDataSourceProps {
 }
 
 /**
+ * Enum containing the possible AppSync Data Source types
+ */
+export enum DataSourceType {
+  /**
+   * An AppSync dummy datasource
+   */
+  NONE = 'NONE',
+  /**
+   * An AppSync datasource backed by a DynamoDB table
+   */
+  DYNAMODB = 'AMAZON_DYNAMODB',
+  /**
+   * An AppSync datasource backed by a http endpoint
+   */
+  HTTP = 'HTTP',
+  /**
+   * An AppSync datasource backed by a Lambda function
+   */
+  LAMBDA = 'AWS_LAMBDA',
+}
+
+/**
  * props used by implementations of BaseDataSource to provide configuration. Should not be used directly.
  */
 export interface ExtendedDataSourceProps {
   /**
    * the type of the AppSync datasource
    */
-  readonly type: string;
+  readonly type: DataSourceType;
   /**
    * configuration for DynamoDB Datasource
    *
@@ -81,13 +103,41 @@ export interface ExtendedDataSourceProps {
 }
 
 /**
- * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
+ * An Interface for Data Sources
  */
-export abstract class BaseDataSource extends Construct {
+export interface IDataSource extends IConstruct {
+  /**
+   * the name of the data source
+   */
+  readonly name: string;
+  /**
+   * the arn of the data source
+   */
+  readonly arn: string;
+  /**
+   * the underlying CFN data source resource
+   */
+  readonly ds: CfnDataSource;
+  /**
+   * creates a new resolver for this datasource and API using the given properties
+   */
+  createResolver(props: BaseResolverProps): Resolver;
+}
+
+/**
+ * Abstract AppSync datasource implementation.
+ *
+ * Do not use directly but use subclasses for concrete datasources
+ */
+export abstract class BaseDataSource extends Construct implements IDataSource {
   /**
    * the name of the data source
    */
   public readonly name: string;
+  /**
+   * the arn of the data source
+   */
+  public readonly arn: string;
   /**
    * the underlying CFN data source resource
    */
@@ -98,9 +148,8 @@ export abstract class BaseDataSource extends Construct {
 
   constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
     super(scope, id);
-
     if (extended.type !== 'NONE') {
-      this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
+      this.serviceRole = props.serviceRole ?? new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
     }
     const name = props.name ?? id;
     this.ds = new CfnDataSource(this, 'Resource', {
@@ -110,6 +159,7 @@ export abstract class BaseDataSource extends Construct {
       serviceRoleArn: this.serviceRole?.roleArn,
       ...extended,
     });
+    this.arn = this.ds.attrDataSourceArn;
     this.name = name;
     this.api = props.api;
   }
@@ -137,7 +187,6 @@ export abstract class BackedDataSource extends BaseDataSource implements IGranta
 
   constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
     super(scope, id, props, extended);
-
     this.grantPrincipal = this.serviceRole!;
   }
 }
@@ -145,8 +194,7 @@ export abstract class BackedDataSource extends BaseDataSource implements IGranta
 /**
  * Properties for an AppSync dummy datasource
  */
-export interface NoneDataSourceProps extends BaseDataSourceProps {
-}
+export interface NoneDataSourceProps extends BaseDataSourceProps { }
 
 /**
  * An AppSync dummy datasource
@@ -154,7 +202,7 @@ export interface NoneDataSourceProps extends BaseDataSourceProps {
 export class NoneDataSource extends BaseDataSource {
   constructor(scope: Construct, id: string, props: NoneDataSourceProps) {
     super(scope, id, props, {
-      type: 'NONE',
+      type: DataSourceType.NONE,
     });
   }
 }
@@ -165,7 +213,6 @@ export class NoneDataSource extends BaseDataSource {
 export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
   /**
    * The DynamoDB table backing this data source
-   * [disable-awslint:ref-via-interface]
    */
   readonly table: ITable;
   /**
@@ -188,7 +235,7 @@ export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
 export class DynamoDbDataSource extends BackedDataSource {
   constructor(scope: Construct, id: string, props: DynamoDbDataSourceProps) {
     super(scope, id, props, {
-      type: 'AMAZON_DYNAMODB',
+      type: DataSourceType.DYNAMODB,
       dynamoDbConfig: {
         tableName: props.table.tableName,
         awsRegion: props.table.stack.region,
@@ -231,7 +278,6 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
    * The authorization config in case the HTTP endpoint requires authorization
    *
    * @default - none
-   *
    */
   readonly authorizationConfig?: AwsIamConfig;
 }
@@ -246,7 +292,7 @@ export class HttpDataSource extends BaseDataSource {
       awsIamConfig: props.authorizationConfig,
     } : undefined;
     super(scope, id, props, {
-      type: 'HTTP',
+      type: DataSourceType.HTTP,
       httpConfig: {
         endpoint: props.endpoint,
         authorizationConfig,
@@ -271,7 +317,7 @@ export interface LambdaDataSourceProps extends BackedDataSourceProps {
 export class LambdaDataSource extends BackedDataSource {
   constructor(scope: Construct, id: string, props: LambdaDataSourceProps) {
     super(scope, id, props, {
-      type: 'AWS_LAMBDA',
+      type: DataSourceType.LAMBDA,
       lambdaConfig: {
         lambdaFunctionArn: props.lambdaFunction.functionArn,
       },

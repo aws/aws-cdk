@@ -1,4 +1,5 @@
-import { AuthorizationType, GraphqlApi } from './graphqlapi';
+import { AuthorizationType } from './graphqlapi';
+import { IGraphqlApi } from './graphqlapi-base';
 import { Resolver } from './resolver';
 import { ResolvableFieldOptions, BaseTypeOptions, GraphqlType } from './schema-field';
 import { InterfaceType } from './schema-intermediate';
@@ -142,11 +143,11 @@ export interface IIntermediateType {
   /**
    * Method called when the stringifying Intermediate Types for schema generation
    *
-   * @param api The binding GraphQL Api [disable-awslint:ref-via-interface]
+   * @param api The binding GraphQL Api
    *
    * @internal
    */
-  _bindToGraphqlApi(api: GraphqlApi): IIntermediateType;
+  _bindToGraphqlApi(api: IGraphqlApi): IIntermediateType;
 
   /**
    * Create an GraphQL Type representing this Intermediate Type

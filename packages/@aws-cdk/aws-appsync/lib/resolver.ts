@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/core';
 import { CfnResolver } from './appsync.generated';
-import { BaseDataSource } from './data-source';
+import { IDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 
@@ -50,7 +50,7 @@ export interface ResolverProps extends BaseResolverProps {
    *
    * @default - No datasource
    */
-  readonly dataSource?: BaseDataSource;
+  readonly dataSource?: IDataSource;
 }
 
 /**

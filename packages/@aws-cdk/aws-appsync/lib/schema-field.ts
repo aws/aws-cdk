@@ -1,4 +1,4 @@
-import { BaseDataSource } from './data-source';
+import { IDataSource } from './data-source';
 import { AuthorizationType } from './graphqlapi';
 import { MappingTemplate } from './mapping-template';
 import { Type, IField, IIntermediateType, Directive } from './schema-base';
@@ -416,7 +416,7 @@ export interface ResolvableFieldOptions extends FieldOptions {
    *
    * @default - no data source
    */
-  readonly dataSource?: BaseDataSource;
+  readonly dataSource?: IDataSource;
   /**
    * configuration of the pipeline resolver
    *
