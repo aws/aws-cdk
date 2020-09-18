@@ -569,7 +569,6 @@
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnetGroup7D60F180"
         },
-        "DeletionProtection": true,
         "Engine": "sqlserver-se",
         "EngineVersion": "14.00.3192.2.v1",
         "LicenseModel": "license-included",
