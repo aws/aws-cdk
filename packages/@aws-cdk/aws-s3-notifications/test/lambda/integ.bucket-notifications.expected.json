@@ -44,7 +44,7 @@
         }
       },
       "DependsOn": [
-        "MyFunctionAllowBucketNotificationsFromlambdabucketnotificationsMyBucket0F0FC402189522F6"
+        "AllowBucketNotificationsFromlambdabucketnotificationsMyBucket0F0FC402TolambdabucketnotificationsMyFunction4086861C"
       ]
     },
     "MyFunctionServiceRole3C357FF2": {
@@ -97,50 +97,6 @@
         "MyFunctionServiceRole3C357FF2"
       ]
     },
-    "MyFunctionAllowBucketNotificationsFromlambdabucketnotificationsMyBucket0F0FC402189522F6": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "MyFunction3BAA72D1",
-            "Arn"
-          ]
-        },
-        "Principal": "s3.amazonaws.com",
-        "SourceAccount": {
-          "Ref": "AWS::AccountId"
-        },
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "MyBucketF68F3FF0",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "MyFunctionAllowBucketNotificationsFromlambdabucketnotificationsYourBucket307F72F245F2C5AE": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "MyFunction3BAA72D1",
-            "Arn"
-          ]
-        },
-        "Principal": "s3.amazonaws.com",
-        "SourceAccount": {
-          "Ref": "AWS::AccountId"
-        },
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "YourBucketC6A57364",
-            "Arn"
-          ]
-        }
-      }
-    },
     "YourBucketC6A57364": {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
@@ -175,7 +131,7 @@
         }
       },
       "DependsOn": [
-        "MyFunctionAllowBucketNotificationsFromlambdabucketnotificationsYourBucket307F72F245F2C5AE"
+        "AllowBucketNotificationsFromlambdabucketnotificationsYourBucket307F72F2TolambdabucketnotificationsMyFunction4086861C"
       ]
     },
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
@@ -251,6 +207,50 @@
         "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
         "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
       ]
+    },
+    "AllowBucketNotificationsFromlambdabucketnotificationsMyBucket0F0FC402TolambdabucketnotificationsMyFunction4086861C": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "MyFunction3BAA72D1",
+            "Arn"
+          ]
+        },
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": {
+          "Ref": "AWS::AccountId"
+        },
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "MyBucketF68F3FF0",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "AllowBucketNotificationsFromlambdabucketnotificationsYourBucket307F72F2TolambdabucketnotificationsMyFunction4086861C": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "MyFunction3BAA72D1",
+            "Arn"
+          ]
+        },
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": {
+          "Ref": "AWS::AccountId"
+        },
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "YourBucketC6A57364",
+            "Arn"
+          ]
+        }
+      }
     }
   }
 }
