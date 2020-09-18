@@ -510,7 +510,7 @@ export interface DatabaseInstanceNewProps {
    */
   readonly subnetGroup?: ISubnetGroup;
 
-  /*
+  /**
    * Role that will be associated with this DB instance to enable S3 import.
    * This feature is only supported by the Microsoft SQL Server, Oracle, and PostgreSQL engines.
    *
