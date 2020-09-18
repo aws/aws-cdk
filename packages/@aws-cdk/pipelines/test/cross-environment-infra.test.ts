@@ -35,7 +35,29 @@ test('in a cross-account/cross-region setup, artifact bucket can be read by depl
         Action: arrayWith('s3:GetObject*', 's3:GetBucket*', 's3:List*'),
         Principal: {
           AWS: {
-            'Fn::Sub': stringLike('*-deploy-role-*'),
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              stringLike('*-deploy-role-*'),
+            ]],
+          },
+        },
+      })),
+    },
+  });
+
+  // And the key to go along with it
+  expect(supportStack).toHaveResourceLike('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: arrayWith(objectLike({
+        Action: arrayWith('kms:Decrypt', 'kms:DescribeKey'),
+        Principal: {
+          AWS: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              stringLike('*-deploy-role-*'),
+            ]],
           },
         },
       })),
@@ -56,7 +78,11 @@ test('in a cross-account/same-region setup, artifact bucket can be read by deplo
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
         Principal: {
           AWS: {
-            'Fn::Sub': stringLike('*-deploy-role-*'),
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              stringLike('*-deploy-role-*'),
+            ]],
           },
         },
       })),

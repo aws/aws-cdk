@@ -16,7 +16,11 @@
   "Outputs": {
     "Output1": {
       "Value": {
-        "Fn::Base64": "Output1Value"
+        "Fn::If": [
+          "Cond1",
+          { "Fn::Base64": "Output1Value" },
+          { "Fn::GetAtt": ["Bucket", "DualStackDomainName"] }
+        ]
       }
     }
   },

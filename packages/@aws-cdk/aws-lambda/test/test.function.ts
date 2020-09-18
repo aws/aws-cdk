@@ -197,6 +197,7 @@ export = testCase({
 
     expect(stack).to(haveResource('AWS::CodeGuruProfiler::ProfilingGroup', {
       ProfilingGroupName: 'MyLambdaProfilingGroupC5B6CCD8',
+      ComputePlatform: 'AWSLambda',
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -354,6 +355,31 @@ export = testCase({
       },
     }),
     /AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled/);
+
+    test.done();
+  },
+
+  'multiple calls to latestVersion returns the same version'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version1 = fn.latestVersion;
+    const version2 = fn.latestVersion;
+
+    const expectedArn = {
+      'Fn::Join': ['', [
+        { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+        ':$LATEST',
+      ]],
+    };
+    test.equal(version1, version2);
+    test.deepEqual(stack.resolve(version1.functionArn), expectedArn);
+    test.deepEqual(stack.resolve(version2.functionArn), expectedArn);
 
     test.done();
   },

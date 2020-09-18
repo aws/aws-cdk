@@ -2,8 +2,9 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
-import { IpAddressType } from '../shared/enums';
+import { IpAddressType, ApplicationProtocol } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
+import { ListenerAction } from './application-listener-action';
 
 /**
  * Properties for defining an Application Load Balancer
@@ -57,22 +58,21 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
   public readonly connections: ec2.Connections;
   public readonly ipAddressType?: IpAddressType;
-  private readonly securityGroup: ec2.ISecurityGroup;
 
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
       type: 'application',
-      securityGroups: Lazy.listValue({ produce: () => [this.securityGroup.securityGroupId] }),
+      securityGroups: Lazy.listValue({ produce: () => this.connections.securityGroups.map(sg => sg.securityGroupId) }),
       ipAddressType: props.ipAddressType,
     });
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
-    this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
+    const securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
       description: `Automatically created Security Group for ELB ${this.node.uniqueId}`,
       allowAllOutbound: false,
-    });
-    this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
+    })];
+    this.connections = new ec2.Connections({ securityGroups });
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
@@ -86,6 +86,31 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       loadBalancer: this,
       ...props,
     });
+  }
+
+  /**
+   * Add a redirection listener to this load balancer
+   */
+  public addRedirect(props: ApplicationLoadBalancerRedirectConfig = {}): ApplicationListener {
+    const sourcePort = props.sourcePort ?? 80;
+    const targetPort = (props.targetPort ?? 443).toString();
+    return this.addListener(`Redirect${sourcePort}To${targetPort}`, {
+      protocol: props.sourceProtocol ?? ApplicationProtocol.HTTP,
+      port: sourcePort,
+      open: true,
+      defaultAction: ListenerAction.redirect({
+        port: targetPort,
+        protocol: props.targetProtocol ?? ApplicationProtocol.HTTPS,
+        permanent: true,
+      }),
+    });
+  }
+
+  /**
+   * Add a security group to this load balancer
+   */
+  public addSecurityGroup(securityGroup: ec2.ISecurityGroup) {
+    this.connections.addSecurityGroup(securityGroup);
   }
 
   /**
@@ -570,4 +595,39 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
     // eslint-disable-next-line max-len
     throw new Error(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
   }
+}
+
+/**
+ * Properties for a redirection config
+ */
+export interface ApplicationLoadBalancerRedirectConfig {
+
+  /**
+   * The protocol of the listener being created
+   *
+   * @default HTTP
+   */
+  readonly sourceProtocol?: ApplicationProtocol;
+
+  /**
+   * The port number to listen to
+   *
+   * @default 80
+   */
+  readonly sourcePort?: number;
+
+  /**
+   * The protocol of the redirection target
+   *
+   * @default HTTPS
+   */
+  readonly targetProtocol?: ApplicationProtocol;
+
+  /**
+   * The port number to redirect to
+   *
+   * @default 443
+   */
+  readonly targetPort?: number;
+
 }

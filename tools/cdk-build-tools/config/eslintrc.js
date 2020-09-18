@@ -52,6 +52,10 @@ module.exports = {
     'object-curly-spacing': ['error', 'always'], // { key: 'value' }
     'object-curly-newline': ['error', { multiline: true, consistent: true }], // enforce consistent line breaks between braces
     'object-property-newline': ['error', { allowAllPropertiesOnSameLine: true }], // enforce "same line" or "multiple line" on object properties
+    'keyword-spacing': ['error'], // require a space before & after keywords
+    'brace-style': ['error', '1tbs', { allowSingleLine: true }], // enforce one true brace style
+    'space-before-blocks': 'error', // require space before blocks
+    'curly': ['error', 'multi-line', 'consistent'], // require curly braces for multiline control statements
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
@@ -108,6 +112,11 @@ module.exports = {
 
     // One of the easiest mistakes to make
     '@typescript-eslint/no-floating-promises': ['error'],
+
+    // Make sure that inside try/catch blocks, promises are 'return await'ed
+    // (must disable the base rule as it can report incorrect errors)
+    'no-return-await': 'off',
+    '@typescript-eslint/return-await': 'error',
 
     // Don't leave log statements littering the premises!
     'no-console': ['error'],

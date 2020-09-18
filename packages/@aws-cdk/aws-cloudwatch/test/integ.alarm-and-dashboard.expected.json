@@ -71,6 +71,22 @@
               {
                 "Ref": "AWS::Region"
               },
+              "\",\"query\":\"SOURCE 'my-log-group' | fields @message\\n                | filter @message like /Error/\"}},{\"type\":\"log\",\"width\":6,\"height\":6,\"x\":0,\"y\":23,\"properties\":{\"view\":\"bar\",\"title\":\"Errors in my log group - bar\",\"region\":\"",
+              {
+                "Ref": "AWS::Region"
+              },
+              "\",\"query\":\"SOURCE 'my-log-group' | fields @message\\n                | filter @message like /Error/\"}},{\"type\":\"log\",\"width\":6,\"height\":6,\"x\":0,\"y\":29,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Errors in my log group - line\",\"region\":\"",
+              {
+                "Ref": "AWS::Region"
+              },
+              "\",\"query\":\"SOURCE 'my-log-group' | fields @message\\n                | filter @message like /Error/\",\"stacked\":false}},{\"type\":\"log\",\"width\":6,\"height\":6,\"x\":0,\"y\":35,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Errors in my log group - stacked\",\"region\":\"",
+              {
+                "Ref": "AWS::Region"
+              },
+              "\",\"query\":\"SOURCE 'my-log-group' | fields @message\\n                | filter @message like /Error/\",\"stacked\":true}},{\"type\":\"log\",\"width\":6,\"height\":6,\"x\":0,\"y\":41,\"properties\":{\"view\":\"pie\",\"title\":\"Errors in my log group - pie\",\"region\":\"",
+              {
+                "Ref": "AWS::Region"
+              },
               "\",\"query\":\"SOURCE 'my-log-group' | fields @message\\n                | filter @message like /Error/\"}}]}"
             ]
           ]

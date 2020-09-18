@@ -86,6 +86,18 @@ test('if a parameter is retrieved from SSM, the parameters always count as chang
   expect(params.diff({ Foo: '/Some/Key' }, { Foo: '/Some/Key' }).changed).toEqual(true);
 });
 
+test('empty string is a valid update value', () => {
+  const params = TemplateParameters.fromTemplate({
+    Parameters: {
+      Foo: { Type: 'String', Default: 'Foo' },
+    },
+  });
+
+  expect(params.diff({ Foo: '' }, { Foo: 'ThisIsOld' }).apiParameters).toEqual([
+    { ParameterKey: 'Foo', ParameterValue: '' },
+  ]);
+});
+
 test('unknown parameter in overrides, pass it anyway', () => {
   // Not sure if we really want this. It seems like it would be nice
   // to not pass parameters that aren't expected, given that CFN will

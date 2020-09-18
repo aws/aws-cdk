@@ -129,6 +129,28 @@ cluster.addAutoScalingGroup(autoScalingGroup);
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
 
+
+### Bottlerocket
+
+[Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open source operating system that is
+purpose-built by AWS for running containers. You can launch Amazon ECS container instances with the Bottlerocket AMI.
+
+> **NOTICE**: The Bottlerocket AMI is in developer preview release for Amazon ECS and is subject to change.
+
+The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `c5.large` Linux instances running with `Bottlerocket` AMI.
+
+Note that you must specify either a `machineImage` or `machineImageType`, at least one, not both.
+
+The following example adds Bottlerocket capacity to the cluster:
+
+```ts
+cluster.addCapacity('bottlerocket-asg', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c5.large'),
+  machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+});
+```
+
 ### Spot Instances
 
 To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
@@ -216,6 +238,21 @@ You can specify container properties when you add them to the task definition, o
 container.addPortMappings({
   containerPort: 3000
 })
+```
+
+To add data volumes to a task definition, call `addVolume()`:
+
+```ts
+const volume = ecs.Volume("Volume", {
+  // Use an Elastic FileSystem
+  name: "mydatavolume",
+  efsVolumeConfiguration: ecs.EfsVolumeConfiguration({
+    fileSystemId: "EFS"
+    // ... other options here ...
+  })
+});
+
+const container = fargateTaskDefinition.addVolume("mydatavolume");
 ```
 
 To use a TaskDefinition that can be used with either Amazon EC2 or

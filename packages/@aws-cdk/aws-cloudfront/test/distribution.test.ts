@@ -51,6 +51,7 @@ test('exhaustive example of props renders correctly', () => {
     certificate,
     comment: 'a test',
     defaultRootObject: 'index.html',
+    domainNames: ['example.com'],
     enabled: false,
     enableIpv6: false,
     enableLogging: true,
@@ -64,6 +65,7 @@ test('exhaustive example of props renders correctly', () => {
 
   expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
     DistributionConfig: {
+      Aliases: ['example.com'],
       DefaultCacheBehavior: {
         ForwardedValues: { QueryString: false },
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
@@ -96,8 +98,9 @@ test('exhaustive example of props renders correctly', () => {
       ViewerCertificate: {
         AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
         SslSupportMethod: 'sni-only',
-        MinimumProtocolVersion: 'TLSv1.2_2018',
+        MinimumProtocolVersion: 'TLSv1.2_2019',
       },
+      WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
     },
   });
 });
@@ -263,20 +266,41 @@ describe('certificates', () => {
     }).toThrow(/Distribution certificates must be in the us-east-1 region and the certificate you provided is in eu-west-1./);
   });
 
-  test('adding a certificate renders the correct ViewerCertificate property', () => {
+  test('adding a certificate without a domain name throws', () => {
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+    expect(() => {
+      new Distribution(stack, 'Dist1', {
+        defaultBehavior: { origin: defaultOrigin() },
+        certificate,
+      });
+    }).toThrow(/Must specify at least one domain name/);
+
+    expect(() => {
+      new Distribution(stack, 'Dist2', {
+        defaultBehavior: { origin: defaultOrigin() },
+        domainNames: [],
+        certificate,
+      });
+    }).toThrow(/Must specify at least one domain name/);
+  });
+
+  test('adding a certificate and domain renders the correct ViewerCertificate and Aliases property', () => {
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
+      domainNames: ['example.com', 'www.example.com'],
       certificate,
     });
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
+        Aliases: ['example.com', 'www.example.com'],
         ViewerCertificate: {
           AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
           SslSupportMethod: 'sni-only',
-          MinimumProtocolVersion: 'TLSv1.2_2018',
+          MinimumProtocolVersion: 'TLSv1.2_2019',
         },
       },
     });
@@ -444,6 +468,7 @@ describe('with Lambda@Edge functions', () => {
           {
             functionVersion: lambdaFunction.currentVersion,
             eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+            includeBody: true,
           },
         ],
       },
@@ -455,12 +480,49 @@ describe('with Lambda@Edge functions', () => {
           LambdaFunctionAssociations: [
             {
               EventType: 'origin-request',
+              IncludeBody: true,
               LambdaFunctionARN: {
                 Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
               },
             },
           ],
         },
+      },
+    });
+  });
+
+  test('edgelambda.amazonaws.com is added to the trust policy of lambda', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: lambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+          },
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'edgelambda.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
       },
     });
   });
@@ -514,6 +576,95 @@ describe('with Lambda@Edge functions', () => {
         },
       });
     }).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
+  });
+
+  test('with removable env vars', () => {
+    const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
+      runtime: lambda.Runtime.NODEJS,
+      code: lambda.Code.fromInline('whateverwithenv'),
+      handler: 'index.handler',
+    });
+    envLambdaFunction.addEnvironment('KEY', 'value', { removeInEdge: true });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: envLambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Environment: ABSENT,
+      Code: {
+        ZipFile: 'whateverwithenv',
+      },
+    });
+  });
+
+  test('with incompatible env vars', () => {
+    const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
+      runtime: lambda.Runtime.NODEJS,
+      code: lambda.Code.fromInline('whateverwithenv'),
+      handler: 'index.handler',
+      environment: {
+        KEY: 'value',
+      },
+    });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: envLambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(() => app.synth()).toThrow(/KEY/);
+  });
+
+  test('with singleton function', () => {
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: 'singleton-for-cloudfront',
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromInline('code'),
+      handler: 'index.handler',
+    });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: singleton.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          LambdaFunctionAssociations: [
+            {
+              EventType: 'origin-request',
+              LambdaFunctionARN: {
+                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion0078406348a0962a52448a200cd0dbc0e22edb2a',
+              },
+            },
+          ],
+        },
+      },
+    });
   });
 });
 

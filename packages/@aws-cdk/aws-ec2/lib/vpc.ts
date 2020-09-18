@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
-  ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-  IDependable, IResource, Lazy, Resource, Stack, Tag, Token,
+  Annotations, ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
+  IDependable, IResource, Lazy, Resource, Stack, Token, Tags,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
@@ -11,6 +11,7 @@ import {
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
+import { SubnetFilter } from './subnet';
 import { allRouteTableIds, defaultSubnetName, flatten, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
@@ -35,6 +36,11 @@ export interface ISubnet extends IResource {
    * Dependable that can be depended upon to force internet connectivity established on the VPC
    */
   readonly internetConnectivityEstablished: IDependable;
+
+  /**
+   * The IPv4 CIDR block for this subnet
+   */
+  readonly ipv4CidrBlock: string;
 
   /**
    * The route table for this subnet
@@ -237,6 +243,13 @@ export interface SubnetSelection {
   readonly onePerAz?: boolean;
 
   /**
+   * List of provided subnet filters.
+   *
+   * @default - none
+   */
+  readonly subnetFilters?: SubnetFilter[];
+
+  /**
    * Explicitly select individual subnets
    *
    * Use this if you don't want to automatically use all subnets in
@@ -380,7 +393,7 @@ abstract class VpcBase extends Resource implements IVpc {
     const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => this.selectSubnets(s).subnets)));
 
     if (routeTableIds.length === 0) {
-      this.node.addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+      Annotations.of(this).addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
     }
 
     const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
@@ -460,15 +473,19 @@ abstract class VpcBase extends Resource implements IVpc {
       subnets = this.selectSubnetObjectsByType(type);
     }
 
-    if (selection.availabilityZones !== undefined) { // Filter by AZs, if specified
-      subnets = retainByAZ(subnets, selection.availabilityZones);
-    }
-
-    if (!!selection.onePerAz && subnets.length > 0) { // Ensure one per AZ if specified
-      subnets = retainOnePerAz(subnets);
-    }
+    // Apply all the filters
+    subnets = this.applySubnetFilters(subnets, selection.subnetFilters ?? []);
 
     return subnets;
+  }
+
+  private applySubnetFilters(subnets: ISubnet[], filters: SubnetFilter[]): ISubnet[] {
+    let filtered = subnets;
+    // Apply each filter in sequence
+    for (const filter of filters) {
+      filtered = filter.selectSubnets(filtered);
+    }
+    return filtered;
   }
 
   private selectSubnetObjectsByName(groupName: string) {
@@ -510,9 +527,12 @@ abstract class VpcBase extends Resource implements IVpc {
    * PUBLIC (in that order) that has any subnets.
    */
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
+
     if (placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
         throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');
+      } else {
+        Annotations.of(this).addWarning('Usage of \'subnetName\' in SubnetSelection is deprecated, use \'subnetGroupName\' instead');
       }
       placement = { ...placement, subnetGroupName: placement.subnetName };
     }
@@ -525,42 +545,27 @@ abstract class VpcBase extends Resource implements IVpc {
 
     if (placement.subnetType === undefined && placement.subnetGroupName === undefined && placement.subnets === undefined) {
       // Return default subnet type based on subnets that actually exist
-      if (this.privateSubnets.length > 0) {
-        return {
-          subnetType: SubnetType.PRIVATE,
-          onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones,
-        };
-      }
-      if (this.isolatedSubnets.length > 0) {
-        return {
-          subnetType: SubnetType.ISOLATED,
-          onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones,
-        };
-      }
-      return {
-        subnetType: SubnetType.PUBLIC,
-        onePerAz: placement.onePerAz,
-        availabilityZones: placement.availabilityZones,
-      };
+      let subnetType = this.privateSubnets.length ? SubnetType.PRIVATE : this.isolatedSubnets.length ? SubnetType.ISOLATED : SubnetType.PUBLIC;
+      placement = { ...placement, subnetType: subnetType };
     }
 
-    return placement;
+    // Establish which subnet filters are going to be used
+    let subnetFilters = placement.subnetFilters ?? [];
+
+    // Backwards compatibility with existing `availabilityZones` and `onePerAz` functionality
+    if (placement.availabilityZones !== undefined) { // Filter by AZs, if specified
+      subnetFilters.push(SubnetFilter.availabilityZones(placement.availabilityZones));
+    }
+    if (!!placement.onePerAz) { // Ensure one per AZ if specified
+      subnetFilters.push(SubnetFilter.onePerAz());
+    }
+
+    // Overwrite the provided placement filters and remove the availabilityZones and onePerAz properties
+    placement = { ...placement, subnetFilters: subnetFilters, availabilityZones: undefined, onePerAz: undefined };
+    const { availabilityZones, onePerAz, ...rest } = placement;
+
+    return rest;
   }
-}
-
-function retainByAZ(subnets: ISubnet[], azs: string[]): ISubnet[] {
-  return subnets.filter(s => azs.includes(s.availabilityZone));
-}
-
-function retainOnePerAz(subnets: ISubnet[]): ISubnet[] {
-  const azsSeen = new Set<string>();
-  return subnets.filter(subnet => {
-    if (azsSeen.has(subnet.availabilityZone)) { return false; }
-    azsSeen.add(subnet.availabilityZone);
-    return true;
-  });
 }
 
 /**
@@ -654,6 +659,7 @@ export interface VpcAttributes {
 }
 
 export interface SubnetAttributes {
+
   /**
    * The Availability Zone the subnet is located in
    *
@@ -662,9 +668,11 @@ export interface SubnetAttributes {
   readonly availabilityZone?: string;
 
   /**
-   * The subnetId for this particular subnet
+   * The IPv4 CIDR block associated with the subnet
+   *
+   * @default - No CIDR information, cannot use CIDR filter features
    */
-  readonly subnetId: string;
+  readonly ipv4CidrBlock?: string;
 
   /**
    * The ID of the route table for this particular subnet
@@ -672,6 +680,11 @@ export interface SubnetAttributes {
    * @default - No route table information, cannot create VPC endpoints
    */
   readonly routeTableId?: string;
+
+  /**
+   * The subnetId for this particular subnet
+   */
+  readonly subnetId: string;
 }
 
 /**
@@ -1182,7 +1195,7 @@ export class Vpc extends VpcBase {
     this.vpcDefaultSecurityGroup = this.resource.attrDefaultSecurityGroup;
     this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
 
-    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
+    Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.availabilityZones = stack.availabilityZones;
 
@@ -1369,8 +1382,8 @@ export class Vpc extends VpcBase {
 
       // These values will be used to recover the config upon provider import
       const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
-      subnet.node.applyAspect(new Tag(SUBNETNAME_TAG, subnetConfig.name, { includeResourceTypes }));
-      subnet.node.applyAspect(new Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { includeResourceTypes }));
+      Tags.of(subnet).add(SUBNETNAME_TAG, subnetConfig.name, { includeResourceTypes });
+      Tags.of(subnet).add(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { includeResourceTypes });
     });
   }
 }
@@ -1443,6 +1456,11 @@ export class Subnet extends Resource implements ISubnet {
   public readonly availabilityZone: string;
 
   /**
+   * @attribute
+   */
+  public readonly ipv4CidrBlock: string;
+
+  /**
    * The subnetId for this particular subnet
    */
   public readonly subnetId: string;
@@ -1488,9 +1506,10 @@ export class Subnet extends Resource implements ISubnet {
 
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
-    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
+    Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.availabilityZone = props.availabilityZone;
+    this.ipv4CidrBlock = props.cidrBlock;
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpcId,
       cidrBlock: props.cidrBlock,
@@ -1790,7 +1809,6 @@ class ImportedVpc extends VpcBase {
 
 class LookedUpVpc extends VpcBase {
   public readonly vpcId: string;
-  public readonly vpnGatewayId: string | undefined;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   public readonly availabilityZones: string[];
   public readonly publicSubnets: ISubnet[];
@@ -1891,6 +1909,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;
   private readonly _availabilityZone?: string;
+  private readonly _ipv4CidrBlock?: string;
 
   constructor(scope: Construct, id: string, attrs: SubnetAttributes) {
     super(scope, id);
@@ -1900,9 +1919,10 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
         ? `at '${scope.node.path}/${id}'`
         : `'${attrs.subnetId}'`;
       // eslint-disable-next-line max-len
-      scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
+      Annotations.of(this).addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
+    this._ipv4CidrBlock = attrs.ipv4CidrBlock;
     this._availabilityZone = attrs.availabilityZone;
     this.subnetId = attrs.subnetId;
     this.routeTable = {
@@ -1914,9 +1934,17 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public get availabilityZone(): string {
     if (!this._availabilityZone) {
       // eslint-disable-next-line max-len
-      throw new Error("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
+      throw new Error('You cannot reference a Subnet\'s availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()');
     }
     return this._availabilityZone;
+  }
+
+  public get ipv4CidrBlock(): string {
+    if (!this._ipv4CidrBlock) {
+      // tslint:disable-next-line: max-line-length
+      throw new Error('You cannot reference an imported Subnet\'s IPv4 CIDR if it was not supplied. Add the ipv4CidrBlock when importing using Subnet.fromSubnetAttributes()');
+    }
+    return this._ipv4CidrBlock;
   }
 
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {

@@ -54,7 +54,7 @@ describe('With bucket', () => {
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
       CloudFrontOriginAccessIdentityConfig: {
-        Comment: 'Allows CloudFront to reach the bucket',
+        Comment: 'Identity for StackDistOrigin15754CE84',
       },
     });
     expect(stack).toHaveResourceLike('AWS::S3::BucketPolicy', {

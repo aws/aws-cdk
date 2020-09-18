@@ -152,6 +152,29 @@ new MyPipelineStack(this, 'PipelineStack', {
 });
 ```
 
+If you prefer more control over the underlying CodePipeline object, you can
+create one yourself, including custom Source and Build stages:
+
+```ts
+const codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
+  stages: [
+    {
+      stageName: 'CustomSource',
+      actions: [...],
+    },
+    {
+      stageName: 'CustomBuild',
+      actions: [...],
+    },
+  ],
+});
+
+const cdkPipeline = new CdkPipeline(this, 'CdkPipeline', {
+  codePipeline,
+  cloudAssemblyArtifact,
+});
+```
+
 ## Initial pipeline deployment
 
 You provision this pipeline by making sure the target environment has been
@@ -199,8 +222,8 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
   synthAction: new SimpleSynthAction({
     sourceArtifact,
     cloudAssemblyArtifact,
-    installCommand: 'npm install -g aws-cdk',
-    buildCommand: 'mvn package',
+    installCommands: ['npm install -g aws-cdk'],
+    buildCommands: ['mvn package'],
     synthCommand: 'cdk synth',
   })
 });
@@ -361,6 +384,34 @@ files from several sources:
 * Directoy from the source repository
 * Additional compiled artifacts from the synth step
 
+### Controlling IAM permissions
+
+IAM permissions can be added to the execution role of a `ShellScriptAction` in
+two ways.
+
+Either pass additional policy statements in the `rolePolicyStatements` property:
+
+```ts
+new ShellScriptAction({
+  // ...
+  rolePolicyStatements: [
+    new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: ['*'],
+    }),
+  ],
+}));
+```
+
+The Action can also be used as a Grantable after having been added to a Pipeline:
+
+```ts
+const action = new ShellScriptAction({ /* ... */ });
+pipeline.addStage('Test').addActions(action);
+
+bucket.grantRead(action);
+```
+
 #### Additional files from the source repository
 
 Bringing in additional files from the source repository is appropriate if the
@@ -402,7 +453,7 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
   synthAction: SimpleSynthAction.standardNpmSynth({
     sourceArtifact,
     cloudAssemblyArtifact,
-    buildCommand: 'npm run build',
+    buildCommands: ['npm run build'],
     additionalArtifacts: [
       {
         directory: 'test',
@@ -419,6 +470,44 @@ const validationAction = new ShellScriptAction({
   // 'test.js' was produced from 'test/test.ts' during the synth step
   commands: ['node ./test.js'],
 });
+```
+
+#### Add Additional permissions to the CodeBuild Project Role for building and synthing
+
+You can customize the role permissions used by the CodeBuild project so it has access to
+the needed resources. eg: Adding CodeArtifact repo permissions so we pull npm packages
+from the CA repo instead of NPM.
+
+```ts
+class MyPipelineStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    ...
+    const pipeline = new CdkPipeline(this, 'Pipeline', {
+      ...
+      synthAction: SimpleSynthAction.standardNpmSynth({
+        sourceArtifact,
+        cloudAssemblyArtifact,
+
+        // Use this to customize and a permissions required for the build
+        // and synth
+        rolePolicyStatements: [
+          new PolicyStatement({
+            actions: ['codeartifact:*', 'sts:GetServiceBearerToken'],
+            resources: ['arn:codeartifact:repo:arn'],
+          }),
+        ],
+
+        // Then you can login to codeartifact repository
+        // and npm will now pull packages from your repository
+        // Note the codeartifact login command requires more params to work.
+        buildCommands: [
+          'aws codeartifact login --tool npm',
+          'npm run build',
+        ],
+      }),
+    });
+  }
+}
 ```
 
 ## CDK Environment Bootstrapping

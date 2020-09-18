@@ -102,6 +102,17 @@ export interface DistributionProps {
   readonly defaultRootObject?: string;
 
   /**
+   * Alternative domain names for this distribution.
+   *
+   * If you want to use your own domain name, such as www.example.com, instead of the cloudfront.net domain name,
+   * you can add an alternate domain name to your distribution. If you attach a certificate to the distribution,
+   * you must add (at least one of) the domain names of the certificate to this list.
+   *
+   * @default - The distribution will only support the default generated name (e.g., d111111abcdef8.cloudfront.net)
+   */
+  readonly domainNames?: string[];
+
+  /**
    * Enable or disable the distribution.
    *
    * @default true
@@ -121,7 +132,7 @@ export interface DistributionProps {
   /**
    * Enable access logging for the distribution.
    *
-   * @default - false, unless `loggingBucket` is specified.
+   * @default - false, unless `logBucket` is specified.
    */
   readonly enableLogging?: boolean;
 
@@ -239,6 +250,10 @@ export class Distribution extends Resource implements IDistribution {
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
       }
+
+      if ((props.domainNames ?? []).length === 0) {
+        throw new Error('Must specify at least one domain name to use a certificate with a distribution');
+      }
     }
 
     const originId = this.addOrigin(props.defaultBehavior.origin);
@@ -258,6 +273,7 @@ export class Distribution extends Resource implements IDistribution {
         origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
         originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
         defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
+        aliases: props.domainNames,
         cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
         comment: props.comment,
         customErrorResponses: this.renderErrorResponses(),
@@ -268,6 +284,7 @@ export class Distribution extends Resource implements IDistribution {
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
+        webAclId: props.webAclId,
       },
     });
 
@@ -414,7 +431,7 @@ export class Distribution extends Resource implements IDistribution {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
-      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2018,
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
     };
   }
 }
@@ -494,7 +511,8 @@ export enum SecurityPolicyProtocol {
   TLS_V1 = 'TLSv1',
   TLS_V1_2016 = 'TLSv1_2016',
   TLS_V1_1_2016 = 'TLSv1.1_2016',
-  TLS_V1_2_2018 = 'TLSv1.2_2018'
+  TLS_V1_2_2018 = 'TLSv1.2_2018',
+  TLS_V1_2_2019 = 'TLSv1.2_2019'
 }
 
 /**
@@ -603,6 +621,15 @@ export interface EdgeLambda {
 
   /** The type of event in response to which should the function be invoked. */
   readonly eventType: LambdaEdgeEventType;
+
+  /**
+   * Allows a Lambda function to have read access to the body content.
+   * Only valid for "request" event types (`ORIGIN_REQUEST` or `VIEWER_REQUEST`).
+   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
+   *
+   * @default false
+   */
+  readonly includeBody?: boolean;
 }
 
 /**

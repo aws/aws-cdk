@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 
 import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
-import { Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Tag, Token } from '@aws-cdk/core';
+import { Annotations, Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags } from '@aws-cdk/core';
 import { CfnInstance, CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 
@@ -176,7 +176,7 @@ export function synthesizeBlockDeviceMappings(construct: Construct, blockDevices
           throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+        Annotations.of(construct).addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
       }
     }
 
@@ -507,8 +507,8 @@ abstract class VolumeBase extends Resource implements IVolume {
 
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
-    Tag.add(this, tagKey, tagValue);
-    constructs.forEach(construct => Tag.add(construct, tagKey, tagValue));
+    Tags.of(this).add(tagKey, tagValue);
+    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
 
     return result;
   }
@@ -536,8 +536,8 @@ abstract class VolumeBase extends Resource implements IVolume {
 
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
-    Tag.add(this, tagKey, tagValue);
-    constructs.forEach(construct => Tag.add(construct, tagKey, tagValue));
+    Tags.of(this).add(tagKey, tagValue);
+    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
 
     return result;
   }
