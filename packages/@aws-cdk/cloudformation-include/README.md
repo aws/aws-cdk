@@ -254,7 +254,7 @@ and the nested stack in your CDK application as follows:
 ```typescript
 const parentTemplate = new inc.CfnInclude(this, 'ParentStack', {
   templateFile: 'path/to/my-parent-template.json',
-  nestedStacks: {
+  loadNestedStacks: {
     'ChildStack': {
       templateFile: 'path/to/my-nested-template.json',
     },
@@ -297,6 +297,15 @@ role.addToPolicy(new iam.PolicyStatement({
   ],
   resources: [cfnBucket.attrArn],
 }));
+```
+
+You can also include the nested stack after the `CfnInclude` object was created,
+instead of doing it on construction:
+
+```ts
+const includedChildStack = parentTemplate.loadNestedStack('ChildTemplate', {
+  templateFile: 'path/to/my-nested-template.json',
+});
 ```
 
 ## Vending CloudFormation templates as Constructs
