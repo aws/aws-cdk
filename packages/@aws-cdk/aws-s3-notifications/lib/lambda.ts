@@ -16,7 +16,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
     // the bucket stack already has a dependency on the lambda stack because
     // of the notification resource. therefore adding the permission to the lambda
     // stack would create a circular dependency, so we add it to the bucket stack.
-    let bucketStack = Stack.of(bucket);
+    const bucketStack = Stack.of(bucket);
 
     if (bucketStack.node.tryFindChild(permissionId) === undefined) {
       this.fn.addPermission(permissionId, {
