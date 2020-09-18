@@ -44,8 +44,30 @@
         }
       },
       "DependsOn": [
-        "AllowBucketNotificationsFromlambdabucketnotificationsMyBucket0F0FC402TolambdabucketnotificationsMyFunction4086861C"
+        "MyBucketAllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C1BF13476"
       ]
+    },
+    "MyBucketAllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C1BF13476": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "MyFunction3BAA72D1",
+            "Arn"
+          ]
+        },
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": {
+          "Ref": "AWS::AccountId"
+        },
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "MyBucketF68F3FF0",
+            "Arn"
+          ]
+        }
+      }
     },
     "MyFunctionServiceRole3C357FF2": {
       "Type": "AWS::IAM::Role",
@@ -131,8 +153,30 @@
         }
       },
       "DependsOn": [
-        "AllowBucketNotificationsFromlambdabucketnotificationsYourBucket307F72F2TolambdabucketnotificationsMyFunction4086861C"
+        "YourBucketAllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C8FE2B89D"
       ]
+    },
+    "YourBucketAllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C8FE2B89D": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "MyFunction3BAA72D1",
+            "Arn"
+          ]
+        },
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": {
+          "Ref": "AWS::AccountId"
+        },
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "YourBucketC6A57364",
+            "Arn"
+          ]
+        }
+      }
     },
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
       "Type": "AWS::IAM::Role",
@@ -207,50 +251,6 @@
         "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
         "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
       ]
-    },
-    "AllowBucketNotificationsFromlambdabucketnotificationsMyBucket0F0FC402TolambdabucketnotificationsMyFunction4086861C": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "MyFunction3BAA72D1",
-            "Arn"
-          ]
-        },
-        "Principal": "s3.amazonaws.com",
-        "SourceAccount": {
-          "Ref": "AWS::AccountId"
-        },
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "MyBucketF68F3FF0",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "AllowBucketNotificationsFromlambdabucketnotificationsYourBucket307F72F2TolambdabucketnotificationsMyFunction4086861C": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "MyFunction3BAA72D1",
-            "Arn"
-          ]
-        },
-        "Principal": "s3.amazonaws.com",
-        "SourceAccount": {
-          "Ref": "AWS::AccountId"
-        },
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "YourBucketC6A57364",
-            "Arn"
-          ]
-        }
-      }
     }
   }
 }
