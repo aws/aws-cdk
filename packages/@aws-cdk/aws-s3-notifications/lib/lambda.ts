@@ -11,7 +11,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
   }
 
   public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
-    let permissionId = `AllowBucketNotificationsFrom${bucket.node.uniqueId}To${this.fn.permissionsNode.uniqueId}`;
+    const permissionId = `AllowBucketNotificationsFrom${bucket.node.uniqueId}To${this.fn.permissionsNode.uniqueId}`;
 
     // the bucket stack already has a dependency on the lambda stack because
     // of the notification resource. therefore adding the permission to the lambda
