@@ -305,7 +305,8 @@ export class CfnInclude extends core.CfnElement {
       } else if (this.template.Resources[logicalId].Type !== 'AWS::CloudFormation::Stack') {
         throw new Error(`Resource with logical ID '${logicalId}' is not a CloudFormation Stack`);
       } else {
-        throw new Error(`Nested Stack '${logicalId}' was not included in the loadNestedStacks property when including the parent template. To access a nested stack it must be specified either in the `loadNestedStacks` property, or through the `loadNestedStack` method `);
+        throw new Error(`Nested Stack '${logicalId}' was not included in the parent template. ` +
+          'To retrieve an included nested stack, it must be specified either in the `loadNestedStacks` property, or through the `loadNestedStack` method');
       }
     }
     return this.nestedStacks[logicalId];
