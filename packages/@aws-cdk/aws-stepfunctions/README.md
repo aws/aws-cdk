@@ -568,6 +568,22 @@ new stepfunctions.StateMachine(stack, 'MyStateMachine', {
 });
 ```
 
+## X-Ray tracing
+
+Enable X-Ray tracing for StateMachine:
+
+```ts
+const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+
+new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+    definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+    tracingEnabled: true
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-xray-tracing.html)
+to learn more about AWS Step Functions's X-Ray support.
+
 ## State Machine Permission Grants
 
 IAM roles, users, or groups which need to be able to work with a State Machine should be granted IAM permissions.
