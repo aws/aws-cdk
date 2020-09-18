@@ -279,49 +279,13 @@ export class StateMachine extends StateMachineBase {
 
     this.stateMachineType = props.stateMachineType ? props.stateMachineType : StateMachineType.STANDARD;
 
-    let loggingConfiguration: CfnStateMachine.LoggingConfigurationProperty | undefined;
-    if (props.logs) {
-      const conf = props.logs;
-      loggingConfiguration = {
-        destinations: [{ cloudWatchLogsLogGroup: { logGroupArn: conf.destination.logGroupArn } }],
-        includeExecutionData: conf.includeExecutionData,
-        level: conf.level || 'ERROR',
-      };
-      // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
-      this.addToRolePolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: [
-          'logs:CreateLogDelivery',
-          'logs:GetLogDelivery',
-          'logs:UpdateLogDelivery',
-          'logs:DeleteLogDelivery',
-          'logs:ListLogDeliveries',
-          'logs:PutResourcePolicy',
-          'logs:DescribeResourcePolicies',
-          'logs:DescribeLogGroups',
-        ],
-        resources: ['*'],
-      }));
-    }
-
-    let tracingConfiguration: CfnStateMachine.TracingConfigurationProperty | undefined;
-    if (props.tracingEnabled) {
-      tracingConfiguration = {
-        enabled: true,
-      };
-      this.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
-        resources: ['*'],
-      }));
-    }
-
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
       stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
       roleArn: this.role.roleArn,
       definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
-      loggingConfiguration,
-      tracingConfiguration,
+      loggingConfiguration: this.buildLoggingConfiguration(props),
+      tracingConfiguration: this.buildTracingConfiguration(props),
     });
 
     resource.node.addDependency(this.role);
@@ -343,7 +307,7 @@ export class StateMachine extends StateMachineBase {
    * Add the given statement to the role's policy
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -422,6 +386,49 @@ export class StateMachine extends StateMachineBase {
    */
   public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('ExecutionTime', props);
+  }
+
+  private buildLoggingConfiguration(props: StateMachineProps) {
+    if (props.logs === undefined) {
+      return undefined;
+    }
+
+    // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
+    this.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'logs:CreateLogDelivery',
+        'logs:GetLogDelivery',
+        'logs:UpdateLogDelivery',
+        'logs:DeleteLogDelivery',
+        'logs:ListLogDeliveries',
+        'logs:PutResourcePolicy',
+        'logs:DescribeResourcePolicies',
+        'logs:DescribeLogGroups',
+      ],
+      resources: ['*'],
+    }));
+
+    return {
+      destinations: [{ cloudWatchLogsLogGroup: { logGroupArn: props.logs.destination.logGroupArn } }],
+      includeExecutionData: props.logs.includeExecutionData,
+      level: props.logs.level || 'ERROR',
+    };
+  }
+
+  private buildTracingConfiguration(props: StateMachineProps) {
+    if (!props.tracingEnabled) {
+      return undefined;
+    }
+
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
+      resources: ['*'],
+    }));
+
+    return {
+      enabled: true,
+    };
   }
 }
 
