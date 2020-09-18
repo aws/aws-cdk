@@ -29,8 +29,10 @@ export interface EnvironmentProps {
 }
 
 /**
- * A service builder class. This construct support various extensions
- * which can construct an ECS service progressively.
+ * An environment into which to deploy a service. This environment
+ * can either be instantiated with a preexisting AWS VPC and ECS cluster,
+ * or it can create it's own VPC and cluster. By default it will create
+ * a cluster with Fargate capacity.
  */
 export class Environment extends cdk.Construct {
   /**

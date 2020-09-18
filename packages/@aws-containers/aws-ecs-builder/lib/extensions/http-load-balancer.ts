@@ -37,7 +37,7 @@ export class HttpLoadBalancerExtension extends ServiceExtension {
   }
 
   // Minor service configuration tweaks to work better with a load balancer
-  public mutateServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild) {
     return {
       ...props,
 

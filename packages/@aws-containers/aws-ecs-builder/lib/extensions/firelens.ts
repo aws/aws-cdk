@@ -110,7 +110,7 @@ export class FireLensExtension extends ServiceExtension {
     });
   }
 
-  public bakeContainerDependencies() {
+  public resolveContainerDependencies() {
     if (!this.container) {
       throw new Error('The container dependency hook was called before the container was created');
     }

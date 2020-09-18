@@ -9,7 +9,7 @@ class MyCustomAutoscaling extends ServiceExtension {
 
   // This service modifies properties of the service prior
   // to construct creation.
-  public mutateServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild) {
     return {
       ...props,
 

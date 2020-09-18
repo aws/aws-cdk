@@ -60,8 +60,8 @@ greeterDescription.add(new Container({
   image: ContainerImage.fromRegistry('nathanpeck/greeter'),
   environment: {
     PORT: '80',
-    GREETING_URL: 'http://greeting.internal',
-    NAME_URL: 'http://name.internal',
+    GREETING_URL: 'http://greeting.production',
+    NAME_URL: 'http://name.production',
   },
 }));
 greeterDescription.add(new AppMeshExtension({ mesh }));

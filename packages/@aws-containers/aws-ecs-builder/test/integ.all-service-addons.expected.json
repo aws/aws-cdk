@@ -527,7 +527,7 @@
     "productionenvironmentclusterDefaultServiceDiscoveryNamespaceBE74D64D": {
       "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
       "Properties": {
-        "Name": "internal",
+        "Name": "production",
         "Vpc": {
           "Ref": "productionenvironmentvpcAEB47DF7"
         }
@@ -1217,7 +1217,7 @@
           },
           "ServiceDiscovery": {
             "AWSCloudMap": {
-              "NamespaceName": "internal",
+              "NamespaceName": "production",
               "ServiceName": {
                 "Fn::GetAtt": [
                   "nameserviceCloudmapService3D5B0548",
@@ -1311,7 +1311,7 @@
             }
           }
         },
-        "VirtualServiceName": "name.internal"
+        "VirtualServiceName": "name.production"
       }
     },
     "greetinglogsCC360934": {
@@ -1998,7 +1998,7 @@
           },
           "ServiceDiscovery": {
             "AWSCloudMap": {
-              "NamespaceName": "internal",
+              "NamespaceName": "production",
               "ServiceName": {
                 "Fn::GetAtt": [
                   "greetingserviceCloudmapService0A2D7385",
@@ -2092,7 +2092,7 @@
             }
           }
         },
-        "VirtualServiceName": "greeting.internal"
+        "VirtualServiceName": "greeting.production"
       }
     },
     "greeterlogsCCD2F8B2": {
@@ -2928,7 +2928,7 @@
           },
           "ServiceDiscovery": {
             "AWSCloudMap": {
-              "NamespaceName": "internal",
+              "NamespaceName": "production",
               "ServiceName": {
                 "Fn::GetAtt": [
                   "greeterserviceCloudmapServiceEE292978",
@@ -3022,7 +3022,7 @@
             }
           }
         },
-        "VirtualServiceName": "greeter.internal"
+        "VirtualServiceName": "greeter.production"
       }
     }
   },

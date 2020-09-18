@@ -54,7 +54,7 @@ export class CloudwatchAgentExtension extends ServiceExtension {
     policy.attachToRole(taskDefinition.taskRole);
   }
 
-  public bakeContainerDependencies() {
+  public resolveContainerDependencies() {
     if (!this.container) {
       throw new Error('The container dependency hook was called before the container was created');
     }

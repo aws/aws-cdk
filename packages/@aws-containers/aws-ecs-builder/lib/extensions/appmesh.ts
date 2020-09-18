@@ -8,6 +8,17 @@ import { Service } from '../service';
 import { Container } from './container';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
+// A map of AWS account ID's which hold the App Mesh image in various
+// regions
+enum APPMESH_ECR_ACCOUNTS {
+  ME_SOUTH_1 = 772975370895,
+  AP_EAST_1 = 856666278305,
+  DEFAULT = 840364872350
+}
+
+// The version of the App Mesh envoy sidecar to add to the task.
+const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.0.0-prod';
+
 /**
  * The settings for the App Mesh extension.
  */
@@ -18,7 +29,7 @@ export interface MeshProps {
   readonly mesh: appmesh.Mesh;
 
   /**
-   * The protocol of the service. 
+   * The protocol of the service.
    * Valid values are Protocol.HTTP, Protocol.HTTP2, Protocol.TCP, Protocol.GRPC
    * @default - Protocol.HTTP
    */
@@ -29,6 +40,11 @@ export interface MeshProps {
  * This extension adds an Envoy sidecar to the task definition and
  * creates the App Mesh resources required to route network traffic
  * to the container in a service mesh.
+ *
+ * The service will then be available to other App Mesh services at the
+ * address `<service name>.<environment name>`. For example a service called
+ * `orders` deploying in an environment called `production` would be accessible
+ * to other App Mesh enabled services at the address `http://orders.production`
  */
 export class AppMeshExtension extends ServiceExtension {
   protected virtualNode!: appmesh.VirtualNode;
@@ -62,12 +78,14 @@ export class AppMeshExtension extends ServiceExtension {
     // a namespace attached.
     if (!this.parentService.cluster.defaultCloudMapNamespace) {
       this.parentService.cluster.addDefaultCloudMapNamespace({
-        name: 'internal',
+        // Name the namespace after the environment name.
+        // Service DNS will be like <service id>.<environment id>
+        name: this.parentService.environment.id,
       });
     }
   }
 
-  public mutateTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
+  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
     // Find the app extension, to get its port
     const containerextension = this.parentService.serviceDescription.get('service-container') as Container;
 
@@ -115,11 +133,11 @@ export class AppMeshExtension extends ServiceExtension {
     // and some regions have their images in a different account. See:
     // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
     if (region === 'me-south-1') {
-      ownerAccount = 772975370895;
+      ownerAccount = APPMESH_ECR_ACCOUNTS.ME_SOUTH_1;
     } else if (region === 'ap-east-1') {
-      ownerAccount = 856666278305;
+      ownerAccount = APPMESH_ECR_ACCOUNTS.AP_EAST_1;
     } else {
-      ownerAccount = 840364872350;
+      ownerAccount = APPMESH_ECR_ACCOUNTS.DEFAULT;
     }
 
     appMeshRepo = ecr.Repository.fromRepositoryArn(
@@ -129,7 +147,7 @@ export class AppMeshExtension extends ServiceExtension {
     );
 
     this.container = taskDefinition.addContainer('envoy', {
-      image: ecs.ContainerImage.fromEcrRepository(appMeshRepo, 'v1.15.0.0-prod'),
+      image: ecs.ContainerImage.fromEcrRepository(appMeshRepo, APP_MESH_ENVOY_SIDECAR_VERSION),
       essential: true,
       environment: {
         APPMESH_VIRTUAL_NODE_NAME: `mesh/${this.mesh.meshName}/virtualNode/${this.parentService.id}`,
@@ -174,7 +192,7 @@ export class AppMeshExtension extends ServiceExtension {
   }
 
   // Enable CloudMap for the service.
-  public mutateServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild) {
     var maxPercent;
 
     // Based on the desired count of tasks, adjust
@@ -272,6 +290,13 @@ export class AppMeshExtension extends ServiceExtension {
   public connectToService(otherService: Service) {
     const otherAppMesh = otherService.serviceDescription.get('appmesh') as AppMeshExtension;
     const otherContainer = otherService.serviceDescription.get('service-container') as Container;
+
+    // Do a check to ensure that these services are in the same environment.
+    // Currently this extension only supports connecting services within
+    // the same VPC, same App Mesh service mesh, and same Cloud Map namespace
+    if (otherAppMesh.parentService.environment.id !== this.parentService.environment.id) {
+      throw new Error(`Unable to connect service '${this.parentService.id}' in environment '${this.parentService.environment.id}' to service '${otherService.id}' in environment '${otherAppMesh.parentService.environment.id}' because services can not be connected across environment boundaries`);
+    }
 
     // First allow this service to talk to the other service
     // at a network level. This opens the security groups so that

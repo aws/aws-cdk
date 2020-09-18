@@ -65,7 +65,7 @@ export class Container extends ServiceExtension {
 
   // This hook sets the overall task resource requirements to the
   // resource requirements of the application itself.
-  public mutateTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
+  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
     return {
       ...props,
       cpu: this.props.cpu.toString(),
@@ -105,7 +105,7 @@ export class Container extends ServiceExtension {
     });
   }
 
-  public bakeContainerDependencies() {
+  public resolveContainerDependencies() {
     if (!this.container) {
       throw new Error('The container dependency hook was called before the container was created');
     }

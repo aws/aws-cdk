@@ -57,10 +57,20 @@ export class Service extends cdk.Construct {
   public readonly serviceDescription: ServiceDescription;
 
   /**
+   * The environment this service was launched in
+   */
+  public readonly environment: Environment;
+
+  /**
    * The generated task definition for this service, is only
    * generated once .prepare() has been executed
    */
   protected taskDefinition!: ecs.TaskDefinition;
+
+  /**
+   * The list of URL's associated with this service
+   */
+  private urls: Record<string, string> = {};
 
   private readonly scope: cdk.Construct;
 
@@ -69,6 +79,7 @@ export class Service extends cdk.Construct {
 
     this.scope = scope;
     this.id = id;
+    this.environment = props.environment;
     this.vpc = props.environment.vpc;
     this.cluster = props.environment.cluster;
     this.capacityType = props.environment.capacityType;
@@ -109,7 +120,7 @@ export class Service extends cdk.Construct {
 
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
-        taskDefProps = this.serviceDescription.extensions[extensions].mutateTaskDefinitionProps(taskDefProps);
+        taskDefProps = this.serviceDescription.extensions[extensions].modifyTaskDefinitionProps(taskDefProps);
       }
     }
 
@@ -127,7 +138,7 @@ export class Service extends cdk.Construct {
     // to bake its dependency graph
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
-        this.serviceDescription.extensions[extensions].bakeContainerDependencies();
+        this.serviceDescription.extensions[extensions].resolveContainerDependencies();
       }
     }
 
@@ -140,7 +151,7 @@ export class Service extends cdk.Construct {
 
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
-        serviceProps = this.serviceDescription.extensions[extensions].mutateServiceProps(serviceProps);
+        serviceProps = this.serviceDescription.extensions[extensions].modifyServiceProps(serviceProps);
       }
     }
 
@@ -173,5 +184,29 @@ export class Service extends cdk.Construct {
         this.serviceDescription.extensions[extensions].connectToService(service);
       }
     }
+  }
+
+  /**
+   * This method adds a new URL for the service. This allows extensions
+   * to submit a URL for the service, for example LB might add its URL
+   * or App Mesh can add its DNS name for the service.
+   * @param urlName - The identifier name for this URL
+   * @param url - The URL itself.
+   */
+  public addURL(urlName: string, url: string) {
+    this.urls[urlName] = url;
+  }
+
+  /**
+   * Retrieve a URL for the service. The URL must have previously been
+   * stored by one of the URL providing extensions.
+   * @param urlName - The URL to look up.
+   */
+  public getURL(urlName: string) {
+    if (!this.urls[urlName]) {
+      throw new Error(`Unable to find a URL with name '${urlName}'`);
+    }
+
+    return this.urls[urlName];
   }
 }

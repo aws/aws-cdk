@@ -89,6 +89,12 @@ export abstract class ServiceExtension {
    */
   public container?: ecs.ContainerDefinition;
 
+  /**
+   * The service which this extension is applying itself to.
+   * Initially extensions are added to a ServiceDescription, but no service
+   * exists yet. Later when the ServiceDescription is used to create a service,
+   * the extension is told what Service it is now working on.
+   */
   protected parentService!: Service;
   protected scope!: cdk.Construct;
 
@@ -126,7 +132,7 @@ export abstract class ServiceExtension {
    * the task.
    * @param props - Properties of the task definition to be created
    */
-  public mutateTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
+  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
     return {
       ...props,
     } as ecs.TaskDefinitionProps;
@@ -160,7 +166,7 @@ export abstract class ServiceExtension {
    * graph so that its container starts in the right order based on the
    * other extensions that were enabled
    */
-  public bakeContainerDependencies() {
+  public resolveContainerDependencies() {
     return;
   }
 
@@ -170,7 +176,7 @@ export abstract class ServiceExtension {
    * of the service to be created
    * @param props - The service properties to mutate
    */
-  public mutateServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild) {
     return {
       ...props,
     } as ServiceBuild;

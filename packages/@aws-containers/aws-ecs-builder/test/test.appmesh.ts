@@ -243,7 +243,6 @@ export = {
       image: ecs.ContainerImage.fromRegistry('nathanpeck/greeter'),
       environment: {
         PORT: '80',
-
       },
     }));
     greeterDescription.add(new AppMeshExtension({ mesh }));
@@ -266,6 +265,61 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition'));
+
+    test.done();
+  },
+
+  'should detect when attempting to connect services from two different envs'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const production = new Environment(stack, 'production');
+    const development = new Environment(stack, 'development');
+
+    const productionMesh = new appmesh.Mesh(stack, 'production-mesh');
+    const developmentMesh = new appmesh.Mesh(stack, 'development-mesh');
+
+    /** Production name service */
+    const productionNameDescription = new ServiceDescription();
+    productionNameDescription.add(new Container({
+      cpu: 1024,
+      memoryMiB: 2048,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      environment: {
+        PORT: '80',
+      },
+    }));
+    productionNameDescription.add(new AppMeshExtension({ mesh: productionMesh }));
+
+    const productionNameService = new Service(stack, 'name-production', {
+      environment: production,
+      serviceDescription: productionNameDescription,
+    });
+
+    /** Development name service */
+    const developmentNameDescription = new ServiceDescription();
+    developmentNameDescription.add(new Container({
+      cpu: 1024,
+      memoryMiB: 2048,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      environment: {
+        PORT: '80',
+      },
+    }));
+    developmentNameDescription.add(new AppMeshExtension({ mesh: developmentMesh }));
+
+    const developmentNameService = new Service(stack, 'name-development', {
+      environment: development,
+      serviceDescription: developmentNameDescription,
+    });
+
+    // THEN
+    test.throws(() => {
+      developmentNameService.connectTo(productionNameService);
+    }, /Unable to connect service 'name-development' in environment 'development' to service 'name-production' in environment 'production' because services can not be connected across environment boundaries/);
 
     test.done();
   },
