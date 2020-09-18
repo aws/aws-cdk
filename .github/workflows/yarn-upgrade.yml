@@ -48,11 +48,11 @@ jobs:
           # Upgrade dependencies at repository root
           ncu --upgrade --filter=@types/node,@types/fs-extra --target=minor
           ncu --upgrade --filter=typescript --target=patch
-          ncu --upgrade --reject=@types/node,@types/fs-extra,typescript
+          ncu --upgrade --reject=@types/node,@types/fs-extra,typescript --target=minor
           # Upgrade all the packages
           lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
           lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
-          lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,typescript,${{ steps.list-packages.outputs.list }}'
+          lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,typescript,${{ steps.list-packages.outputs.list }}'  --target=minor
       # This will create a brand new `yarn.lock` file (this is more efficient than `yarn install && yarn upgrade`)
       - name: Run "yarn install --force"
         run: yarn install --force
