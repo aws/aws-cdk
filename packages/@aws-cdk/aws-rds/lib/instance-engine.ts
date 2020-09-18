@@ -97,9 +97,6 @@ export interface IInstanceEngine extends IEngine {
   /** The application used by this engine to perform rotation for a multi-user scenario. */
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  /** Human-readable description of the engine. */
-  readonly description: string;
-
   /**
    * Method called when the engine is used to create a new instance.
    */
@@ -132,10 +129,6 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.engineVersion = props.version;
     this.parameterGroupFamily = props.parameterGroupFamily ??
       (this.engineVersion ? `${this.engineType}${this.engineVersion.majorVersion}` : undefined);
-  }
-
-  public get description() {
-    return this.engineType + (this.engineVersion ? `-${this.engineVersion?.fullVersion}` : '');
   }
 
   public bindToInstance(_scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {

@@ -11,7 +11,7 @@ import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { setupS3ImportExport } from './private/util';
+import { engineDescription, setupS3ImportExport } from './private/util';
 import { PerformanceInsightRetention, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
@@ -804,13 +804,13 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     const engineFeatures = engineConfig.features;
     if (s3ImportRole) {
       if (!engineFeatures?.s3Import) {
-        throw new Error(`Engine '${props.engine.description}' does not support S3 import`);
+        throw new Error(`Engine '${engineDescription(props.engine)}' does not support S3 import`);
       }
       instanceAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: engineFeatures?.s3Import });
     }
     if (s3ExportRole) {
       if (!engineFeatures?.s3Export) {
-        throw new Error(`Engine '${props.engine.description}' does not support S3 export`);
+        throw new Error(`Engine '${engineDescription(props.engine)}' does not support S3 export`);
       }
       // Only add the export role and feature if they are different from the import role & feature.
       if (s3ImportRole !== s3ExportRole || engineFeatures.s3Import !== engineFeatures?.s3Export) {
