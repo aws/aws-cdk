@@ -467,7 +467,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * Indicates whether the DB instance should have deletion protection enabled.
    *
-   * @default - true if ``removalPolicy`` is RETAIN
+   * @default - true if ``removalPolicy`` is RETAIN, false otherwise
    */
   readonly deletionProtection?: boolean;
 

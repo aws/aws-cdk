@@ -82,7 +82,7 @@ interface DatabaseClusterBaseProps {
   /**
    * Indicates whether the DB cluster should have deletion protection enabled.
    *
-   * @default - true if ``removalPolicy`` is RETAIN
+   * @default - true if ``removalPolicy`` is RETAIN, false otherwise
    */
   readonly deletionProtection?: boolean;
 
