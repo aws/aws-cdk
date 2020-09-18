@@ -16,8 +16,8 @@ Parameters:
     Default: ''
     Type: String
   FileAssetsBucketKmsKeyId:
-    Description: Custom KMS key ID to use for encrypting file assets (by default a
-      KMS key will be automatically defined)
+    Description: Empty to create a new key (default), 'AWS_MANAGED_KEY' to use a managed
+      S3 key, or the ID/ARN of an existing key.
     Default: ''
     Type: String
   ContainerAssetsRepositoryName:
@@ -60,6 +60,10 @@ Conditions:
   CreateNewKey:
     Fn::Equals:
       - ''
+      - Ref: FileAssetsBucketKmsKeyId
+  UseAwsManagedKey:
+    Fn::Equals:
+      - 'AWS_MANAGED_KEY'
       - Ref: FileAssetsBucketKmsKeyId
   HasCustomContainerAssetsRepositoryName:
     Fn::Not:
@@ -150,7 +154,10 @@ Resources:
                 Fn::If:
                   - CreateNewKey
                   - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
-                  - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
+                  - Fn::If:
+                    - UseAwsManagedKey
+                    - Ref: AWS::NoValue
+                    - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
       PublicAccessBlockConfiguration:
         Fn::If:
           - UsePublicAccessBlockConfiguration
@@ -341,6 +348,7 @@ Resources:
                   - cloudformation:DescribeStackEvents
                   - cloudformation:GetTemplate
                   - cloudformation:DeleteStack
+                  - cloudformation:UpdateTerminationProtection
                   - sts:GetCallerIdentity
                 Resource: "*"
                 Effect: Allow

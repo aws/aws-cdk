@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { ContainerOverride } from './ecs-task-properties';
 import { singletonEventRole } from './util';
 
@@ -68,6 +69,17 @@ export interface EcsTaskProps {
    * @default A new IAM role is created
    */
   readonly role?: iam.IRole;
+
+  /**
+   * The platform version on which to run your task
+   *
+   * Unless you have specific compatibility requirements, you don't need to specify this.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
+   *
+   * @default - ECS will set the Fargate platform version to 'LATEST'
+   */
+  readonly platformVersion?: ecs.FargatePlatformVersion;
 }
 
 /**
@@ -94,6 +106,7 @@ export class EcsTask implements events.IRuleTarget {
   private readonly taskDefinition: ecs.TaskDefinition;
   private readonly taskCount: number;
   private readonly role: iam.IRole;
+  private readonly platformVersion?: ecs.FargatePlatformVersion;
 
   constructor(private readonly props: EcsTaskProps) {
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
@@ -103,6 +116,7 @@ export class EcsTask implements events.IRuleTarget {
     this.cluster = props.cluster;
     this.taskDefinition = props.taskDefinition;
     this.taskCount = props.taskCount !== undefined ? props.taskCount : 1;
+    this.platformVersion = props.platformVersion;
 
     if (props.role) {
       const role = props.role;
@@ -115,7 +129,7 @@ export class EcsTask implements events.IRuleTarget {
     // Security groups are only configurable with the "awsvpc" network mode.
     if (this.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC) {
       if (props.securityGroup !== undefined || props.securityGroups !== undefined) {
-        this.taskDefinition.node.addWarning('security groups are ignored when network mode is not awsvpc');
+        cdk.Annotations.of(this.taskDefinition).addWarning('security groups are ignored when network mode is not awsvpc');
       }
       return;
     }
@@ -150,6 +164,7 @@ export class EcsTask implements events.IRuleTarget {
       ? {
         ...baseEcsParameters,
         launchType: this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE',
+        platformVersion: this.platformVersion,
         networkConfiguration: {
           awsVpcConfiguration: {
             subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,

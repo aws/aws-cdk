@@ -60,12 +60,12 @@ export interface CfnIncludeProps {
  */
 export interface IncludedNestedStack {
   /**
-   * The NestedStack object which respresents the scope of the template.
+   * The NestedStack object which represents the scope of the template.
    */
   readonly stack: core.NestedStack;
 
   /**
-   * The CfnInclude that respresents the template, which can
+   * The CfnInclude that represents the template, which can
    * be used to access Resources and other template elements.
    */
   readonly includedTemplate: CfnInclude;
@@ -410,7 +410,9 @@ export class CfnInclude extends core.CfnElement {
           return self.parameters[refTarget];
         },
         findResource() { throw new Error('Using GetAtt expressions in Rule definitions is not allowed'); },
-        findCondition() { throw new Error('Referring to Conditions in Rule definitions is not allowed'); },
+        findCondition(conditionName: string): core.CfnCondition | undefined {
+          return self.conditions[conditionName];
+        },
         findMapping(mappingName: string): core.CfnMapping | undefined {
           return self.mappings[mappingName];
         },
@@ -477,8 +479,8 @@ export class CfnInclude extends core.CfnElement {
         findRefTarget(elementName: string): core.CfnElement | undefined {
           return self.resources[elementName] ?? self.parameters[elementName];
         },
-        findCondition(): undefined {
-          return undefined;
+        findCondition(conditionName: string): core.CfnCondition | undefined {
+          return self.conditions[conditionName];
         },
         findMapping(mappingName): core.CfnMapping | undefined {
           return self.mappings[mappingName];
@@ -550,12 +552,12 @@ export class CfnInclude extends core.CfnElement {
 
     // fail early for resource attributes we don't support yet
     const knownAttributes = [
-      'Type', 'Properties', 'Condition', 'DependsOn', 'Metadata',
+      'Type', 'Properties', 'Condition', 'DependsOn', 'Metadata', 'Version',
       'CreationPolicy', 'UpdatePolicy', 'DeletionPolicy', 'UpdateReplacePolicy',
     ];
     for (const attribute of Object.keys(resourceAttributes)) {
       if (!knownAttributes.includes(attribute)) {
-        throw new Error(`The ${attribute} resource attribute is not supported by cloudformation-include yet. ` +
+        throw new Error(`The '${attribute}' resource attribute is not supported by cloudformation-include yet. ` +
           'Either remove it from the template, or use the CdkInclude class from the core package instead.');
       }
     }
