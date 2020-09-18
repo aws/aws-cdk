@@ -319,7 +319,7 @@ describe('CDK Include for nested stacks', () => {
     }).toThrow(/Resource with logical ID 'BucketImport' is not a CloudFormation Stack/);
   });
 
-  test('getNestedStack() throws an exception when getting a resource that exists in the template, but was not specified in the props', () => {
+  test('getNestedStack() throws an exception when getting a nested stack that exists in the template, but was not specified in the props', () => {
     const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-two-children.json'),
       loadNestedStacks: {
@@ -331,7 +331,7 @@ describe('CDK Include for nested stacks', () => {
 
     expect(() => {
       parentTemplate.getNestedStack('AnotherChildStack');
-    }).toThrow(/Nested Stack 'AnotherChildStack' was not included in the loadNestedStacks property when including the parent template/);
+    }).toThrow(/Nested Stack 'AnotherChildStack' was not included in the parent template/);
   });
 
   test('correctly handles renaming of references across nested stacks', () => {
