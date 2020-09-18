@@ -3,8 +3,37 @@ import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Stack } from '@aws-cdk/core';
+import { Stack, App } from '@aws-cdk/core';
 import * as s3n from '../../lib';
+
+test('lambda in a different stack as notification target', () => {
+
+  const app = new App();
+  const lambdaStack = new Stack(app, 'stack1');
+  const bucketStack = new Stack(app, 'stack2');
+
+  const lambdaFunction = new lambda.Function(lambdaStack, 'lambdaFunction', {
+    code: lambda.Code.fromInline('whatever'),
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_10_X,
+  });
+
+  const bucket = new s3.Bucket(bucketStack, 'bucket');
+  bucket.addObjectCreatedNotification(new s3n.LambdaDestination(lambdaFunction));
+
+  // permission should be in the bucket stack
+  expect(bucketStack).toHaveResourceLike('AWS::Lambda::Permission', {
+    FunctionName: {
+      'Fn::ImportValue': 'stack1:ExportsOutputFnGetAttlambdaFunction940E68ADArn6B2878AF',
+    },
+    SourceArn: {
+      'Fn::GetAtt': [
+        'bucket43879C71',
+        'Arn',
+      ],
+    },
+  });
+});
 
 test('lambda as notification target', () => {
   // GIVEN
