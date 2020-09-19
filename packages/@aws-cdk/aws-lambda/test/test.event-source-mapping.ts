@@ -185,4 +185,61 @@ export = {
     test.equals(imported.stack.stackName, 'test-stack');
     test.done();
   },
+
+  'throws if topics is empty'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    test.throws(() =>
+      new EventSourceMapping(
+        stack,
+        'test',
+        {
+          target: fn,
+          eventSourceArn: '',
+          topics: [],
+        }), /topics must contain 1 value, got 0/);
+
+    test.done();
+  },
+  'throws if topics contains more than 1 item'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    test.throws(() =>
+      new EventSourceMapping(
+        stack,
+        'test',
+        {
+          target: fn,
+          eventSourceArn: '',
+          topics: ['topic-a', 'topic-b'],
+        }), /topics must contain 1 value, got 2/);
+
+    test.done();
+  },
+  'accepts if topics is a token'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      topics: cdk.Lazy.listValue({ produce: () => ['topic-a'] }),
+    });
+
+    test.done();
+  },
 };
