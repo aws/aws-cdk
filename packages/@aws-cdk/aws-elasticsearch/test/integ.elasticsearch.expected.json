@@ -84,7 +84,10 @@
         "InstallLatestAwsSdk": true
       },
       "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41"
+      ]
     },
     "Domain66AC69E0": {
       "Type": "AWS::Elasticsearch::Domain",
@@ -93,6 +96,7 @@
           "Enabled": false
         },
         "DomainEndpointOptions": {
+          "EnforceHTTPS": false,
           "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
         },
         "EBSOptions": {
@@ -138,6 +142,7 @@
         }
       },
       "DependsOn": [
+        "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41",
         "DomainESLogGroupPolicy5373A2E8"
       ]
     },
@@ -188,7 +193,7 @@
         ]
       }
     },
-    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E": {
+    "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -204,7 +209,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
+        "PolicyName": "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41",
         "Roles": [
           {
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -217,7 +222,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersa21506baa8c8c02336b158f9f100fd684e4a423c4d762fa21557d79adde522feS3Bucket1EBE4391"
+            "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E"
           },
           "S3Key": {
             "Fn::Join": [
@@ -230,7 +235,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersa21506baa8c8c02336b158f9f100fd684e4a423c4d762fa21557d79adde522feS3VersionKey89F851D8"
+                          "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0"
                         }
                       ]
                     }
@@ -243,7 +248,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersa21506baa8c8c02336b158f9f100fd684e4a423c4d762fa21557d79adde522feS3VersionKey89F851D8"
+                          "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0"
                         }
                       ]
                     }
@@ -264,23 +269,22 @@
         "Timeout": 120
       },
       "DependsOn": [
-        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
       ]
     }
   },
   "Parameters": {
-    "AssetParametersa21506baa8c8c02336b158f9f100fd684e4a423c4d762fa21557d79adde522feS3Bucket1EBE4391": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"a21506baa8c8c02336b158f9f100fd684e4a423c4d762fa21557d79adde522fe\""
+    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94ArtifactHash782948FC": {
+      "Type":"String",
+      "Description":"Artifact hash for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
     },
-    "AssetParametersa21506baa8c8c02336b158f9f100fd684e4a423c4d762fa21557d79adde522feS3VersionKey89F851D8": {
+    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E": {
       "Type": "String",
-      "Description": "S3 key for asset version \"a21506baa8c8c02336b158f9f100fd684e4a423c4d762fa21557d79adde522fe\""
+      "Description": "S3 bucket for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
     },
-    "AssetParametersa21506baa8c8c02336b158f9f100fd684e4a423c4d762fa21557d79adde522feArtifactHashC36CC496": {
+    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"a21506baa8c8c02336b158f9f100fd684e4a423c4d762fa21557d79adde522fe\""
+      "Description": "S3 key for asset version \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
     }
   }
 }

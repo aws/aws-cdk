@@ -130,3 +130,31 @@ const domain = new es.Domain(this, 'Domain', {
 
 const masterUserPassword = domain.masterUserPassword;
 ```
+
+### Using unsigned basic auth
+
+For convenience, the domain can be configured to allow unsigned HTTP requests
+that use basic auth. Unless the domain is configured to be part of a VPC this
+means anyone can access the domain using the configured master username and
+password.
+
+To enable unsigned basic auth access the domain is configured with an access
+policy that allows anyonmous requests, HTTPS required, node to node encryption,
+encryption at rest and fine grained access control.
+
+If the above settings are not set they will be configured as part of enabling
+unsigned basic auth.
+
+If no master user is configured a default master user is created with the
+username `admin`.
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_1,
+    useUnsignedBasicAuth: true,
+});
+
+const masterUserPassword = domain.masterUserPassword;
+```
+
+```

@@ -856,6 +856,152 @@ test('can specify future version', () => {
   });
 });
 
+describe('unsigned basic auth', () => {
+  test('can create a domain with unsigned basic auth', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_7,
+      useUnsignedBasicAuth: true,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      AccessPolicies: [{
+        action: ['es:ESHttp*'],
+        principal: {
+          AWS: ['*'],
+        },
+        resource: [{
+          'Fn::Join': [
+            '',
+            [
+              {
+                'Fn::GetAtt': [
+                  'Domain66AC69E0',
+                  'Arn',
+                ],
+              },
+              '/*',
+            ],
+          ],
+        }],
+        effect: 'Allow',
+      }],
+      AdvancedSecurityOptions: {
+        Enabled: true,
+        InternalUserDatabaseEnabled: true,
+        MasterUserOptions: {
+          MasterUserName: 'admin',
+        },
+      },
+      EncryptionAtRestOptions: {
+        Enabled: true,
+      },
+      NodeToNodeEncryptionOptions: {
+        Enabled: true,
+      },
+      DomainEndpointOptions: {
+        EnforceHTTPS: true,
+      },
+    });
+  });
+
+  test('does not overwrite master user ARN configuration', () => {
+    const masterUserArn = 'arn:aws:iam::123456789012:user/JohnDoe';
+
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_7,
+      fineGrainedAccessControl: {
+        masterUserArn,
+      },
+      useUnsignedBasicAuth: true,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      AdvancedSecurityOptions: {
+        Enabled: true,
+        InternalUserDatabaseEnabled: false,
+        MasterUserOptions: {
+          MasterUserARN: masterUserArn,
+        },
+      },
+      EncryptionAtRestOptions: {
+        Enabled: true,
+      },
+      NodeToNodeEncryptionOptions: {
+        Enabled: true,
+      },
+      DomainEndpointOptions: {
+        EnforceHTTPS: true,
+      },
+    });
+  });
+
+  test('does not overwrite master user name and password', () => {
+    const masterUserName = 'JohnDoe';
+    const password = 'password';
+    const masterUserPassword = SecretValue.plainText(password);
+
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+      fineGrainedAccessControl: {
+        masterUserName,
+        masterUserPassword,
+      },
+      useUnsignedBasicAuth: true,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      AdvancedSecurityOptions: {
+        Enabled: true,
+        InternalUserDatabaseEnabled: true,
+        MasterUserOptions: {
+          MasterUserName: masterUserName,
+          MasterUserPassword: password,
+        },
+      },
+      EncryptionAtRestOptions: {
+        Enabled: true,
+      },
+      NodeToNodeEncryptionOptions: {
+        Enabled: true,
+      },
+      DomainEndpointOptions: {
+        EnforceHTTPS: true,
+      },
+    });
+  });
+
+  test('fails to create a domain with unsigned basic auth when enforce HTTPS is disabled', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_7,
+      useUnsignedBasicAuth: true,
+      enforceHttps: false,
+    })).toThrow(/You cannot disable HTTPS and use unsigned basic auth/);
+  });
+
+  test('fails to create a domain with unsigned basic auth when node to node encryption is disabled', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_7,
+      useUnsignedBasicAuth: true,
+      nodeToNodeEncryption: false,
+    })).toThrow(/You cannot disable node to node encryption and use unsigned basic auth/);
+  });
+
+  test('fails to create a domain with unsigned basic auth when encryption at rest is disabled', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_7,
+      useUnsignedBasicAuth: true,
+      encryptionAtRest: { enabled: false },
+    })).toThrow(/You cannot disable encryption at rest and use unsigned basic auth/);
+  });
+
+  test('using unsigned basic auth throws with Elasticsearch < 6.7', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V6_5,
+      useUnsignedBasicAuth: true,
+    })).toThrow(/Using unsigned basic auth requires Elasticsearch version 6\.7 or later./);
+  });
+});
+
 
 function testGrant(
   expectedActions: string[],

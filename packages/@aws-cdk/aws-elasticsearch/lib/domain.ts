@@ -480,6 +480,20 @@ export interface DomainProps {
    * @default - fine-grained access control is disabled
    */
   readonly fineGrainedAccessControl?: AdvancedSecurityOptions;
+
+  /**
+   * Configures the domain so that unsigned basic auth is enabled. If no master user is provided a default master user
+   * with username `admin` and a dynamically generated password stored in KMS is created. The password can be retrieved
+   * by getting `masterUserPassword` from the domain instance.
+   *
+   * Setting this to true will also add an access policy that allows unsigned
+   * access, enable node to node encryption, encryption at rest. If conflicting
+   * settings are encountered (like disabling encryption at rest) enabling this
+   * setting will cause a failure.
+   *
+   * @default - false
+   */
+  readonly useUnsignedBasicAuth?: boolean;
 }
 
 /**
@@ -859,8 +873,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   }
 
   /**
-
-  * Metric for the time the cluster status is red.
+   * Metric for the time the cluster status is red.
    *
    * @default maximum over 5 minutes
    */
@@ -1194,27 +1207,7 @@ export class Domain extends DomainBase implements IDomain {
     }
 
     const elasticsearchVersion = props.version.version;
-    const elasticsearchVersionNum = parseVersion(elasticsearchVersion);
-
-    function parseVersion(version: string): number {
-      const firstDot = version.indexOf('.');
-
-      if (firstDot < 1) {
-        throw new Error(`Invalid Elasticsearch version: ${version}. Version string needs to start with major and minor version (x.y).`);
-      }
-
-      const secondDot = version.indexOf('.', firstDot + 1);
-
-      try {
-        if (secondDot == -1) {
-          return parseFloat(version);
-        } else {
-          return parseFloat(version.substring(0, secondDot));
-        }
-      } catch (error) {
-        throw new Error(`Invalid Elasticsearch version: ${version}. Version string needs to start with major and minor version (x.y).`);
-      }
-    }
+    const elasticsearchVersionNum = parseVersion(props.version);
 
     if (
       elasticsearchVersionNum <= 7.7 &&
@@ -1227,8 +1220,33 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error(`Unknown Elasticsearch version: ${elasticsearchVersion}`);
     }
 
+    const unsignedBasicAuthEnabled = props.useUnsignedBasicAuth ?? false;
+
+    if (unsignedBasicAuthEnabled) {
+      if (props.enforceHttps == false) {
+        throw new Error('You cannot disable HTTPS and use unsigned basic auth');
+      }
+      if (props.nodeToNodeEncryption == false) {
+        throw new Error('You cannot disable node to node encryption and use unsigned basic auth');
+      }
+      if (props.encryptionAtRest?.enabled == false) {
+        throw new Error('You cannot disable encryption at rest and use unsigned basic auth');
+      }
+    }
+
+    const unsignedAccessPolicy = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['es:ESHttp*'],
+      principals: [new iam.Anyone()],
+      resources: [cdk.Lazy.stringValue({ produce: () => `${this.domainArn}/*` })],
+    });
+
     const masterUserArn = props.fineGrainedAccessControl?.masterUserArn;
-    const masterUserName = props.fineGrainedAccessControl?.masterUserName;
+    const masterUserNameProps = props.fineGrainedAccessControl?.masterUserName;
+    // If basic auth is enabled set the user name to admin if no other user info is supplied.
+    const masterUserName = unsignedBasicAuthEnabled
+      ? (masterUserArn == null ? (masterUserNameProps ?? 'admin') : undefined)
+      : masterUserNameProps;
 
     if (masterUserArn != null && masterUserName != null) {
       throw new Error('Invalid fine grained access control settings. Only provide one of master user ARN or master user name. Not both.');
@@ -1253,12 +1271,12 @@ export class Domain extends DomainBase implements IDomain {
       : undefined;
 
     const encryptionAtRestEnabled =
-      props.encryptionAtRest?.enabled ?? props.encryptionAtRest?.kmsKey != null;
-    const nodeToNodeEncryptionEnabled = props.nodeToNodeEncryption ?? false;
+      props.encryptionAtRest?.enabled ?? (props.encryptionAtRest?.kmsKey != null || unsignedBasicAuthEnabled);
+    const nodeToNodeEncryptionEnabled = props.nodeToNodeEncryption ?? unsignedBasicAuthEnabled;
     const volumeSize = props.ebs?.volumeSize ?? 10;
     const volumeType = props.ebs?.volumeType ?? ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
     const ebsEnabled = props.ebs?.enabled ?? true;
-    const enforceHttps = props.enforceHttps;
+    const enforceHttps = props.enforceHttps ?? unsignedBasicAuthEnabled;
 
     function isInstanceType(t: string): Boolean {
       return dedicatedMasterType.startsWith(t) || instanceType.startsWith(t);
@@ -1301,8 +1319,11 @@ export class Domain extends DomainBase implements IDomain {
     }
 
     if (elasticsearchVersionNum < 6.7) {
+      if (unsignedBasicAuthEnabled) {
+        throw new Error('Using unsigned basic auth requires Elasticsearch version 6.7 or later.');
+      }
       if (advancedSecurityEnabled) {
-        throw new Error('Fine-grained access logging requires Elasticsearch version 6.7 or later.');
+        throw new Error('Fine-grained access control requires Elasticsearch version 6.7 or later.');
       }
     }
 
@@ -1398,6 +1419,9 @@ export class Domain extends DomainBase implements IDomain {
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
+      accessPolicies: unsignedBasicAuthEnabled
+        ? (props.accessPolicies ?? []).concat(unsignedAccessPolicy)
+        : props.accessPolicies,
       elasticsearchVersion,
       elasticsearchClusterConfig: {
         dedicatedMasterEnabled,
@@ -1472,14 +1496,15 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.domainName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName); }
 
+    this.domainName = this.getResourceNameAttribute(this.domain.ref);
+
+    this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
+
     this.domainArn = this.getResourceArnAttribute(this.domain.attrArn, {
       service: 'es',
       resource: 'domain',
       resourceName: this.physicalName,
     });
-    this.domainName = this.getResourceNameAttribute(this.domain.ref);
-
-    this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
   }
 }
 
@@ -1502,4 +1527,30 @@ function extractNameFromEndpoint(domainEndpoint: string) {
   const domain = hostname.split('.')[0];
   const suffix = '-' + domain.split('-').slice(-1)[0];
   return domain.split(suffix)[0];
+}
+
+/**
+ * Converts an Elasticsearch version into a into a decimal number with major and minor version i.e x.y.
+ *
+ * @param version The Elasticsearch version object
+ */
+function parseVersion(version: ElasticsearchVersion): number {
+  const versionStr = version.version;
+  const firstDot = versionStr.indexOf('.');
+
+  if (firstDot < 1) {
+    throw new Error(`Invalid Elasticsearch version: ${versionStr}. Version string needs to start with major and minor version (x.y).`);
+  }
+
+  const secondDot = versionStr.indexOf('.', firstDot + 1);
+
+  try {
+    if (secondDot == -1) {
+      return parseFloat(versionStr);
+    } else {
+      return parseFloat(versionStr.substring(0, secondDot));
+    }
+  } catch (error) {
+    throw new Error(`Invalid Elasticsearch version: ${versionStr}. Version string needs to start with major and minor version (x.y).`);
+  }
 }
