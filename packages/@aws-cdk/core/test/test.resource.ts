@@ -586,6 +586,31 @@ export = {
       test.done();
     },
 
+    'addOverride(p, v) will not split on escaped dots'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const r = new CfnResource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
+
+      // WHEN
+      r.addOverride('Properties.Hello\\.World.Foo\\.Bar', 42);
+
+      // THEN
+      test.deepEqual(toCloudFormation(stack), {
+        Resources:
+        {
+          MyResource:
+          {
+            Type: 'AWS::Resource::Type',
+            Properties:
+            {
+              'Hello.World': { 'Foo.Bar': 42 },
+            },
+          },
+        },
+      });
+      test.done();
+    },
+
     'addPropertyOverride(pp, v) is a sugar for overriding properties'(test: Test) {
       // GIVEN
       const stack = new Stack();
