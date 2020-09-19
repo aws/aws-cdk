@@ -169,6 +169,6 @@ if [ $? -eq 0 ]
 then    
     echo "Ok"
 else
-    die "Docker is not running"
+    echo "❗️ Docker daemon not found. Ignore if running docker build."
 fi
 
