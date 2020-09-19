@@ -68,9 +68,9 @@ If you want to use a GitHub repository as the source, you must create:
 
 * A [GitHub Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line),
   with scopes **repo** and **admin:repo_hook**.
-* A [Secrets Manager PlainText Secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html)
+* A [Secrets Manager Secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html)
   with the value of the **GitHub Access Token**. Pick whatever name you want
-  (for example `my-github-token`) and pass it as the argument of `oauthToken`.
+  (for example `my-github-token`). This token can be stored either as a string or as a JSON key-value pair. If you stored the token as a string, set `cdk.SecretValue.secretsManager('my-github-token')` as the value of `oauthToken`. If you stored it as a JSON key-value pair, you must set `cdk.SecretValue.secretsManager('my-github-token', { jsonField : 'my-github-token' })` as the value of `oauthToken`.
 
 To use GitHub as the source of a CodePipeline:
 
