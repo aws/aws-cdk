@@ -164,11 +164,6 @@ check_which $app $app_min
 
 # Make sure docker is running
 echo -e "Checking if docker is running... \c"
-docker_running=$(docker ps)
-if [ $? -eq 0 ]
-then    
-    echo "Ok"
-else
-    echo "❗️ Docker daemon not found. Ignore if running docker build."
-fi
+docker ps && echo "Ok" || echo "❗️ Docker daemon not found. Ignore if running docker build."
+
 
