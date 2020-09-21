@@ -701,6 +701,12 @@ new tasks.LambdaInvoke(stack, 'Invoke with callback', {
 call. Learn more about [Callback with the Task
 Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token).
 
+AWS Lambda can occasionally experience transient service errors. In this case, invoking Lambda
+results in a 500 error, such as `ServiceException`, `AWSLambdaException`, or `SdkClientException`.
+As a best practive, the `LambdaInvoke` task will retry on those errors with an interval of 2 seconds,
+a back-off rate of 2 and 6 maximum attempts. Set the `retryOnServiceExceptions` prop to `false` to
+disable this behavior.
+
 ## SageMaker
 
 Step Functions supports [AWS SageMaker](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html) through the service integration pattern.
