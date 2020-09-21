@@ -307,6 +307,11 @@ $ cdk doctor
   - AWS_SDK_LOAD_CONFIG = 1
 ```
 
+#### Bundling
+By default asset bundling is skipped for `cdk list` and `cdk destroy`. For `cdk deploy`, `cdk diff`
+and `cdk synthesize` the default is to bundle assets for all stacks unless `exclusively` is specified.
+In this case, only the listed stacks will have their assets bundled.
+
 ### MFA support
 
 If `mfa_serial` is found in the active profile of the shared ini file AWS CDK

@@ -5,6 +5,7 @@ import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '@aws-cd
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as rds from '../lib';
@@ -56,7 +57,6 @@ export = {
         DBSubnetGroupName: {
           Ref: 'InstanceSubnetGroupF2CBA54F',
         },
-        DeletionProtection: true,
         EnableCloudwatchLogsExports: [
           'trace',
           'audit',
@@ -688,7 +688,7 @@ export = {
         masterUsername: 'master',
         timezone: 'Europe/Zurich',
         vpc,
-      }), /timezone property can be configured only for Microsoft SQL Server/);
+      }), /timezone property can not be configured for/);
     });
 
     test.done();
@@ -960,6 +960,163 @@ export = {
           performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
         });
       }, /`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+
+      test.done();
+    },
+  },
+
+  'reuse an existing subnet group'(test: Test) {
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+      masterUsername: 'admin',
+      vpc,
+      subnetGroup: rds.SubnetGroup.fromSubnetGroupName(stack, 'SubnetGroup', 'my-subnet-group'),
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      DBSubnetGroupName: 'my-subnet-group',
+    }));
+    expect(stack).to(countResources('AWS::RDS::DBSubnetGroup', 0));
+
+    test.done();
+  },
+
+  'defaultChild returns the DB Instance'(test: Test) {
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+      masterUsername: 'admin',
+      vpc,
+    });
+
+    // THEN
+    test.ok(instance.node.defaultChild instanceof rds.CfnDBInstance);
+
+    test.done();
+  },
+  'S3 Import/Export': {
+    'instance with s3 import and export buckets'(test: Test) {
+      new rds.DatabaseInstance(stack, 'DB', {
+        engine: rds.DatabaseInstanceEngine.sqlServerSe({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+        masterUsername: 'admin',
+        vpc,
+        s3ImportBuckets: [new s3.Bucket(stack, 'S3Import')],
+        s3ExportBuckets: [new s3.Bucket(stack, 'S3Export')],
+      });
+
+      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+        AssociatedRoles: [
+          {
+            FeatureName: 'S3_INTEGRATION',
+            RoleArn: { 'Fn::GetAtt': ['DBS3ImportRoleEF69B7D7', 'Arn'] },
+          },
+        ],
+        OptionGroupName: { Ref: 'DBInstanceOptionGroup46C68006' },
+      }));
+
+      // Can read from import bucket, and read/write from export bucket
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [{
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::GetAtt': ['S3ImportD5D5F2EB', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['S3ImportD5D5F2EB', 'Arn'] }, '/*']] },
+            ],
+          },
+          {
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+              's3:DeleteObject*',
+              's3:PutObject*',
+              's3:Abort*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::GetAtt': ['S3Export390B8694', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['S3Export390B8694', 'Arn'] }, '/*']] },
+            ],
+          }],
+          Version: '2012-10-17',
+        },
+      }));
+
+      test.done();
+    },
+
+    'throws if using s3 import on unsupported engine'(test: Test) {
+      const s3ImportRole = new Role(stack, 'S3ImportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+
+      test.throws(() => {
+        new rds.DatabaseInstance(stack, 'DBWithImportBucket', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          masterUsername: 'admin',
+          vpc,
+          s3ImportBuckets: [new s3.Bucket(stack, 'S3Import')],
+        });
+      }, /Engine 'mysql-8.0.19' does not support S3 import/);
+      test.throws(() => {
+        new rds.DatabaseInstance(stack, 'DBWithImportRole', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          masterUsername: 'admin',
+          vpc,
+          s3ImportRole,
+        });
+      }, /Engine 'mysql-8.0.19' does not support S3 import/);
+
+      test.done();
+    },
+
+    'throws if using s3 export on unsupported engine'(test: Test) {
+      const s3ExportRole = new Role(stack, 'S3ExportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+
+      test.throws(() => {
+        new rds.DatabaseInstance(stack, 'DBWithExportBucket', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          masterUsername: 'admin',
+          vpc,
+          s3ExportBuckets: [new s3.Bucket(stack, 'S3Export')],
+        });
+      }, /Engine 'mysql-8.0.19' does not support S3 export/);
+      test.throws(() => {
+        new rds.DatabaseInstance(stack, 'DBWithExportRole', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          masterUsername: 'admin',
+          vpc,
+          s3ExportRole: s3ExportRole,
+        });
+      }, /Engine 'mysql-8.0.19' does not support S3 export/);
+
+      test.done();
+    },
+
+    'throws if provided two different roles for import/export'(test: Test) {
+      const s3ImportRole = new Role(stack, 'S3ImportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+      const s3ExportRole = new Role(stack, 'S3ExportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+
+      test.throws(() => {
+        new rds.DatabaseInstance(stack, 'DBWithExportBucket', {
+          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+          masterUsername: 'admin',
+          vpc,
+          s3ImportRole,
+          s3ExportRole,
+        });
+      }, /S3 import and export roles must be the same/);
 
       test.done();
     },

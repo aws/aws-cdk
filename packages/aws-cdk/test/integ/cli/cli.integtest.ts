@@ -1,13 +1,13 @@
 import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { retry, sleep, testEnv } from './aws-helpers';
-import { cloneDirectory, prepareAppFixture, shell } from './cdk-helpers';
+import { retry, sleep } from './aws-helpers';
+import { cloneDirectory, shell, withDefaultFixture } from './cdk-helpers';
 import { integTest } from './test-helpers';
 
 jest.setTimeout(600 * 1000);
 
-integTest('VPC Lookup', prepareAppFixture, async (fixture) => {
+integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
   fixture.log('Making sure we are clean before starting.');
   await fixture.cdkDestroy('define-vpc', { modEnv: { ENABLE_VPC_TESTING: 'DEFINE' } });
 
@@ -17,16 +17,16 @@ integTest('VPC Lookup', prepareAppFixture, async (fixture) => {
 
   fixture.log('Verifying we can now import that VPC');
   await fixture.cdkDeploy('import-vpc', { modEnv: { ENABLE_VPC_TESTING: 'IMPORT' } });
-});
+}));
 
-integTest('Two ways of shoing the version', prepareAppFixture, async (fixture) => {
+integTest('Two ways of shoing the version', withDefaultFixture(async (fixture) => {
   const version1 = await fixture.cdk(['version']);
   const version2 = await fixture.cdk(['--version']);
 
   expect(version1).toEqual(version2);
-});
+}));
 
-integTest('Termination protection', prepareAppFixture, async (fixture) => {
+integTest('Termination protection', withDefaultFixture(async (fixture) => {
   const stackName = 'termination-protection';
   await fixture.cdkDeploy(stackName);
 
@@ -36,9 +36,9 @@ integTest('Termination protection', prepareAppFixture, async (fixture) => {
   // Can update termination protection even though the change set doesn't contain changes
   await fixture.cdkDeploy(stackName, { modEnv: { TERMINATION_PROTECTION: 'FALSE' } });
   await fixture.cdkDestroy(stackName);
-});
+}));
 
-integTest('cdk synth', prepareAppFixture, async (fixture) => {
+integTest('cdk synth', withDefaultFixture(async (fixture) => {
   await expect(fixture.cdk(['synth', fixture.fullStackName('test-1')])).resolves.toEqual(
     `Resources:
   topic69831491:
@@ -56,25 +56,25 @@ integTest('cdk synth', prepareAppFixture, async (fixture) => {
     Type: AWS::SNS::Topic
     Metadata:
       aws:cdk:path: ${fixture.stackNamePrefix}-test-2/topic2/Resource`);
-});
+}));
 
-integTest('ssm parameter provider error', prepareAppFixture, async (fixture) => {
+integTest('ssm parameter provider error', withDefaultFixture(async (fixture) => {
   await expect(fixture.cdk(['synth',
     fixture.fullStackName('missing-ssm-parameter'),
     '-c', 'test:ssm-parameter-name=/does/not/exist'], {
     allowErrExit: true,
   })).resolves.toContain('SSM parameter not available in account');
-});
+}));
 
-integTest('automatic ordering', prepareAppFixture, async (fixture) => {
+integTest('automatic ordering', withDefaultFixture(async (fixture) => {
   // Deploy the consuming stack which will include the producing stack
   await fixture.cdkDeploy('order-consuming');
 
   // Destroy the providing stack which will include the consuming stack
   await fixture.cdkDestroy('order-providing');
-});
+}));
 
-integTest('context setting', prepareAppFixture, async (fixture) => {
+integTest('context setting', withDefaultFixture(async (fixture) => {
   await fs.writeFile(path.join(fixture.integTestDir, 'cdk.context.json'), JSON.stringify({
     contextkey: 'this is the context value',
   }));
@@ -91,9 +91,9 @@ integTest('context setting', prepareAppFixture, async (fixture) => {
   } finally {
     await fs.unlink(path.join(fixture.integTestDir, 'cdk.context.json'));
   }
-});
+}));
 
-integTest('deploy', prepareAppFixture, async (fixture) => {
+integTest('deploy', withDefaultFixture(async (fixture) => {
   const stackArn = await fixture.cdkDeploy('test-2', { captureStderr: false });
 
   // verify the number of resources in the stack
@@ -101,16 +101,16 @@ integTest('deploy', prepareAppFixture, async (fixture) => {
     StackName: stackArn,
   });
   expect(response.StackResources?.length).toEqual(2);
-});
+}));
 
-integTest('deploy all', prepareAppFixture, async (fixture) => {
+integTest('deploy all', withDefaultFixture(async (fixture) => {
   const arns = await fixture.cdkDeploy('test-*', { captureStderr: false });
 
   // verify that we only deployed a single stack (there's a single ARN in the output)
   expect(arns.split('\n').length).toEqual(2);
-});
+}));
 
-integTest('nested stack with parameters', prepareAppFixture, async (fixture) => {
+integTest('nested stack with parameters', withDefaultFixture(async (fixture) => {
   // STACK_NAME_PREFIX is used in MyTopicParam to allow multiple instances
   // of this test to run in parallel, othewise they will attempt to create the same SNS topic.
   const stackArn = await fixture.cdkDeploy('with-nested-stack-using-parameters', {
@@ -126,9 +126,9 @@ integTest('nested stack with parameters', prepareAppFixture, async (fixture) => 
     StackName: stackArn,
   });
   expect(response.StackResources?.length).toEqual(1);
-});
+}));
 
-integTest('deploy without execute', prepareAppFixture, async (fixture) => {
+integTest('deploy without execute', withDefaultFixture(async (fixture) => {
   const stackArn = await fixture.cdkDeploy('test-2', {
     options: ['--no-execute'],
     captureStderr: false,
@@ -141,9 +141,9 @@ integTest('deploy without execute', prepareAppFixture, async (fixture) => {
   });
 
   expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
-});
+}));
 
-integTest('security related changes without a CLI are expected to fail', prepareAppFixture, async (fixture) => {
+integTest('security related changes without a CLI are expected to fail', withDefaultFixture(async (fixture) => {
   // redirect /dev/null to stdin, which means there will not be tty attached
   // since this stack includes security-related changes, the deployment should
   // immediately fail because we can't confirm the changes
@@ -157,9 +157,9 @@ integTest('security related changes without a CLI are expected to fail', prepare
   await expect(fixture.aws.cloudFormation('describeStacks', {
     StackName: fixture.fullStackName(stackName),
   })).rejects.toThrow('does not exist');
-});
+}));
 
-integTest('deploy wildcard with outputs', prepareAppFixture, async (fixture) => {
+integTest('deploy wildcard with outputs', withDefaultFixture(async (fixture) => {
   const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
   await fs.mkdir(path.dirname(outputsFile), { recursive: true });
 
@@ -176,9 +176,9 @@ integTest('deploy wildcard with outputs', prepareAppFixture, async (fixture) => 
       TopicName: `${fixture.stackNamePrefix}-outputs-test-2MyOtherTopic`,
     },
   });
-});
+}));
 
-integTest('deploy with parameters', prepareAppFixture, async (fixture) => {
+integTest('deploy with parameters', withDefaultFixture(async (fixture) => {
   const stackArn = await fixture.cdkDeploy('param-test-1', {
     options: [
       '--parameters', `TopicNameParam=${fixture.stackNamePrefix}bazinga`,
@@ -196,9 +196,9 @@ integTest('deploy with parameters', prepareAppFixture, async (fixture) => {
       ParameterValue: `${fixture.stackNamePrefix}bazinga`,
     },
   ]);
-});
+}));
 
-integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and create a new one', prepareAppFixture, async (fixture) => {
+integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and create a new one', withDefaultFixture(async (fixture) => {
   // GIVEN
   await expect(fixture.cdkDeploy('param-test-1', {
     options: [
@@ -235,9 +235,9 @@ integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and crea
       ParameterValue: `${fixture.stackNamePrefix}allgood`,
     },
   ]);
-});
+}));
 
-integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', prepareAppFixture, async (fixture) => {
+integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', withDefaultFixture(async (fixture) => {
   // GIVEN
   const stackArn = await fixture.cdkDeploy('param-test-1', {
     options: [
@@ -286,9 +286,9 @@ integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', prepareAppFi
       ParameterValue: `${fixture.stackNamePrefix}allgood`,
     },
   ]);
-});
+}));
 
-integTest('deploy with wildcard and parameters', prepareAppFixture, async (fixture) => {
+integTest('deploy with wildcard and parameters', withDefaultFixture(async (fixture) => {
   await fixture.cdkDeploy('param-test-*', {
     options: [
       '--parameters', `${fixture.stackNamePrefix}-param-test-1:TopicNameParam=${fixture.stackNamePrefix}bazinga`,
@@ -297,9 +297,9 @@ integTest('deploy with wildcard and parameters', prepareAppFixture, async (fixtu
       '--parameters', `${fixture.stackNamePrefix}-param-test-3:OtherDisplayNameParam=${fixture.stackNamePrefix}AnotherOne`,
     ],
   });
-});
+}));
 
-integTest('deploy with parameters multi', prepareAppFixture, async (fixture) => {
+integTest('deploy with parameters multi', withDefaultFixture(async (fixture) => {
   const paramVal1 = `${fixture.stackNamePrefix}bazinga`;
   const paramVal2 = `${fixture.stackNamePrefix}=jagshemash`;
 
@@ -325,9 +325,9 @@ integTest('deploy with parameters multi', prepareAppFixture, async (fixture) => 
       ParameterValue: paramVal2,
     },
   ]);
-});
+}));
 
-integTest('deploy with notification ARN', prepareAppFixture, async (fixture) => {
+integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => {
   const topicName = `${fixture.stackNamePrefix}-test-topic`;
 
   const response = await fixture.aws.sns('createTopic', { Name: topicName });
@@ -347,9 +347,9 @@ integTest('deploy with notification ARN', prepareAppFixture, async (fixture) => 
       TopicArn: topicArn,
     });
   }
-});
+}));
 
-integTest('deploy with role', prepareAppFixture, async (fixture) => {
+integTest('deploy with role', withDefaultFixture(async (fixture) => {
   const roleName = `${fixture.stackNamePrefix}-test-role`;
 
   await deleteRole();
@@ -424,9 +424,9 @@ integTest('deploy with role', prepareAppFixture, async (fixture) => {
       throw e;
     }
   }
-});
+}));
 
-integTest('cdk diff', prepareAppFixture, async (fixture) => {
+integTest('cdk diff', withDefaultFixture(async (fixture) => {
   const diff1 = await fixture.cdk(['diff', fixture.fullStackName('test-1')]);
   expect(diff1).toContain('AWS::SNS::Topic');
 
@@ -436,9 +436,9 @@ integTest('cdk diff', prepareAppFixture, async (fixture) => {
   // We can make it fail by passing --fail
   await expect(fixture.cdk(['diff', '--fail', fixture.fullStackName('test-1')]))
     .rejects.toThrow('exited with error');
-});
+}));
 
-integTest('cdk diff --fail on multiple stacks exits with error if any of the stacks contains a diff', prepareAppFixture, async (fixture) => {
+integTest('cdk diff --fail on multiple stacks exits with error if any of the stacks contains a diff', withDefaultFixture(async (fixture) => {
   // GIVEN
   const diff1 = await fixture.cdk(['diff', fixture.fullStackName('test-1')]);
   expect(diff1).toContain('AWS::SNS::Topic');
@@ -449,9 +449,9 @@ integTest('cdk diff --fail on multiple stacks exits with error if any of the sta
 
   // WHEN / THEN
   await expect(fixture.cdk(['diff', '--fail', fixture.fullStackName('test-1'), fixture.fullStackName('test-2')])).rejects.toThrow('exited with error');
-});
+}));
 
-integTest('cdk diff --fail with multiple stack exits with if any of the stacks contains a diff', prepareAppFixture, async (fixture) => {
+integTest('cdk diff --fail with multiple stack exits with if any of the stacks contains a diff', withDefaultFixture(async (fixture) => {
   // GIVEN
   await fixture.cdkDeploy('test-1');
   const diff1 = await fixture.cdk(['diff', fixture.fullStackName('test-1')]);
@@ -462,13 +462,13 @@ integTest('cdk diff --fail with multiple stack exits with if any of the stacks c
 
   // WHEN / THEN
   await expect(fixture.cdk(['diff', '--fail', fixture.fullStackName('test-1'), fixture.fullStackName('test-2')])).rejects.toThrow('exited with error');
-});
+}));
 
-integTest('deploy stack with docker asset', prepareAppFixture, async (fixture) => {
+integTest('deploy stack with docker asset', withDefaultFixture(async (fixture) => {
   await fixture.cdkDeploy('docker');
-});
+}));
 
-integTest('deploy and test stack with lambda asset', prepareAppFixture, async (fixture) => {
+integTest('deploy and test stack with lambda asset', withDefaultFixture(async (fixture) => {
   const stackArn = await fixture.cdkDeploy('lambda', { captureStderr: false });
 
   const response = await fixture.aws.cloudFormation('describeStacks', {
@@ -484,9 +484,9 @@ integTest('deploy and test stack with lambda asset', prepareAppFixture, async (f
   });
 
   expect(JSON.stringify(output.Payload)).toContain('dear asset');
-});
+}));
 
-integTest('cdk ls', prepareAppFixture, async (fixture) => {
+integTest('cdk ls', withDefaultFixture(async (fixture) => {
   const listing = await fixture.cdk(['ls'], { captureStderr: false });
 
   const expectedStacks = [
@@ -514,9 +514,9 @@ integTest('cdk ls', prepareAppFixture, async (fixture) => {
   for (const stack of expectedStacks) {
     expect(listing).toContain(fixture.fullStackName(stack));
   }
-});
+}));
 
-integTest('deploy stack without resource', prepareAppFixture, async (fixture) => {
+integTest('deploy stack without resource', withDefaultFixture(async (fixture) => {
   // Deploy the stack without resources
   await fixture.cdkDeploy('conditional-resource', { modEnv: { NO_RESOURCE: 'TRUE' } });
 
@@ -532,9 +532,9 @@ integTest('deploy stack without resource', prepareAppFixture, async (fixture) =>
 
   await expect(fixture.aws.cloudFormation('describeStacks', { StackName: fixture.fullStackName('conditional-resource') }))
     .rejects.toThrow('conditional-resource does not exist');
-});
+}));
 
-integTest('IAM diff', prepareAppFixture, async (fixture) => {
+integTest('IAM diff', withDefaultFixture(async (fixture) => {
   const output = await fixture.cdk(['diff', fixture.fullStackName('iam-test')]);
 
   // Roughly check for a table like this:
@@ -548,9 +548,9 @@ integTest('IAM diff', prepareAppFixture, async (fixture) => {
   expect(output).toContain('${SomeRole.Arn}');
   expect(output).toContain('sts:AssumeRole');
   expect(output).toContain('ec2.amazonaws.com');
-});
+}));
 
-integTest('fast deploy', prepareAppFixture, async (fixture) => {
+integTest('fast deploy', withDefaultFixture(async (fixture) => {
   // we are using a stack with a nested stack because CFN will always attempt to
   // update a nested stack, which will allow us to verify that updates are actually
   // skipped unless --force is specified.
@@ -579,14 +579,14 @@ integTest('fast deploy', prepareAppFixture, async (fixture) => {
     fixture.log(`Found Change Set ${response.Stacks?.[0].ChangeSetId}`);
     return response.Stacks?.[0];
   }
-});
+}));
 
-integTest('failed deploy does not hang', prepareAppFixture, async (fixture) => {
+integTest('failed deploy does not hang', withDefaultFixture(async (fixture) => {
   // this will hang if we introduce https://github.com/aws/aws-cdk/issues/6403 again.
   await expect(fixture.cdkDeploy('failed')).rejects.toThrow('exited with error');
-});
+}));
 
-integTest('can still load old assemblies', prepareAppFixture, async (fixture) => {
+integTest('can still load old assemblies', withDefaultFixture(async (fixture) => {
   const cxAsmDir = path.join(os.tmpdir(), 'cdk-integ-cx');
 
   const testAssembliesDirectory = path.join(__dirname, 'cloud-assemblies');
@@ -603,8 +603,8 @@ integTest('can still load old assemblies', prepareAppFixture, async (fixture) =>
         cwd: cxAsmDir,
         output: fixture.output,
         modEnv: {
-          TEST_ACCOUNT: (await testEnv()).account,
-          TEST_REGION: (await testEnv()).region,
+          TEST_ACCOUNT: await fixture.aws.account(),
+          TEST_REGION: fixture.aws.region,
         },
       });
     }
@@ -621,10 +621,10 @@ integTest('can still load old assemblies', prepareAppFixture, async (fixture) =>
     // provider fails, we inspect the logs here.
     expect(output).not.toContain('$providerError');
   }
-});
+}));
 
-integTest('generating and loading assembly', prepareAppFixture, async (fixture) => {
-  const asmOutputDir = path.join(os.tmpdir(), 'cdk-integ-asm');
+integTest('generating and loading assembly', withDefaultFixture(async (fixture) => {
+  const asmOutputDir = `${fixture.integTestDir}-cdk-integ-asm`;
   await fixture.shell(['rm', '-rf', asmOutputDir]);
 
   // Synthesize a Cloud Assembly tothe default directory (cdk.out) and a specific directory.
@@ -632,10 +632,7 @@ integTest('generating and loading assembly', prepareAppFixture, async (fixture) 
   await fixture.cdk(['synth', '--output', asmOutputDir]);
 
   // cdk.out in the current directory and the indicated --output should be the same
-  await shell(['diff', 'cdk.out', asmOutputDir], {
-    output: fixture.output,
-    cwd: fixture.integTestDir,
-  });
+  await fixture.shell(['diff', 'cdk.out', asmOutputDir]);
 
   // Check that we can 'ls' the synthesized asm.
   // Change to some random directory to make sure we're not accidentally loading cdk.json
@@ -668,9 +665,9 @@ integTest('generating and loading assembly', prepareAppFixture, async (fixture) 
     // Rename back to restore fixture to original state
     await fs.rename(`${customDockerFile}~`, customDockerFile);
   }
-});
+}));
 
-integTest('templates on disk contain metadata resource, also in nested assemblies', prepareAppFixture, async (fixture) => {
+integTest('templates on disk contain metadata resource, also in nested assemblies', withDefaultFixture(async (fixture) => {
   // Synth first, and switch on version reporting because cdk.json is disabling it
   await fixture.cdk(['synth', '--version-reporting=true']);
 
@@ -683,7 +680,7 @@ integTest('templates on disk contain metadata resource, also in nested assemblie
   const nestedTemplateContents = await fixture.shell(['cat', 'cdk.out/assembly-*-stage/*-stage-StackInStage.template.json']);
 
   expect(JSON.parse(nestedTemplateContents).Resources.CDKMetadata).toBeTruthy();
-});
+}));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
   const ret = new Array<string>();

@@ -6,7 +6,7 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB|MrArnoldPalmer|NetaNir|iliapolo|njlynch|ericzbeard|ccfife|fulghum|pkandasamy91|SoManyHs|uttarasridhar|BryanPan342|comcalvi|kaizen3031593|)$
+      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB|MrArnoldPalmer|NetaNir|iliapolo|njlynch|ericzbeard|ccfife|fulghum|pkandasamy91|SoManyHs|uttarasridhar)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:
@@ -29,7 +29,6 @@ pull_request_rules:
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
-      #- status-success=Semantic Pull Request
       - status-success=validate-pr
   - name: automatic merge (2+ approvers)
     actions:
@@ -53,7 +52,6 @@ pull_request_rules:
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
-      #- status-success=Semantic Pull Request
       - status-success=validate-pr
   - name: automatic merge (no-squash)
     actions:
@@ -78,7 +76,6 @@ pull_request_rules:
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
-      #- status-success=Semantic Pull Request
       - status-success=validate-pr
   - name: remove stale reviews
     actions:
@@ -121,5 +118,4 @@ pull_request_rules:
       - "#approved-reviews-by>=1"
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
-      #- status-success=Semantic Pull Request
       - status-success=validate-pr

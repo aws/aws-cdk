@@ -13,7 +13,7 @@ import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-f
  *
  * @experimental
  */
-export interface IntermediateTypeProps {
+export interface IntermediateTypeOptions {
   /**
    * the attributes of this type
    */
@@ -52,20 +52,10 @@ export class InterfaceType implements IIntermediateType {
    */
   protected modes?: AuthorizationType[];
 
-  public constructor(name: string, props: IntermediateTypeProps) {
+  public constructor(name: string, props: IntermediateTypeOptions) {
     this.name = name;
     this.definition = props.definition;
     this.directives = props.directives;
-  }
-
-  /**
-   * Method called when the stringifying Intermediate Types for schema generation
-   *
-   * @internal
-   */
-  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
-    this.modes = api.modes;
-    return this;
   }
 
   /**
@@ -111,6 +101,16 @@ export class InterfaceType implements IIntermediateType {
     }
     this.definition[options.fieldName] = options.field;
   }
+
+  /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @internal
+   */
+  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    return this;
+  }
 }
 
 /**
@@ -123,7 +123,7 @@ export class InterfaceType implements IIntermediateType {
  *
  * @experimental
  */
-export interface ObjectTypeProps extends IntermediateTypeProps {
+export interface ObjectTypeOptions extends IntermediateTypeOptions {
   /**
    * The Interface Types this Object Type implements
    *
@@ -149,7 +149,7 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
    */
   public resolvers?: Resolver[];
 
-  public constructor(name: string, props: ObjectTypeProps) {
+  public constructor(name: string, props: ObjectTypeOptions) {
     const options = {
       definition: props.interfaceTypes?.reduce((def, interfaceType) => {
         return Object.assign({}, def, interfaceType.definition);
@@ -234,7 +234,7 @@ export class InputType implements IIntermediateType {
    */
   protected modes?: AuthorizationType[];
 
-  public constructor(name: string, props: IntermediateTypeProps) {
+  public constructor(name: string, props: IntermediateTypeOptions) {
     this.name = name;
     this.definition = props.definition;
   }
@@ -251,16 +251,6 @@ export class InputType implements IIntermediateType {
       isRequiredList: options?.isRequiredList,
       intermediateType: this,
     });
-  }
-
-  /**
-   * Method called when the stringifying Intermediate Types for schema generation
-   *
-   * @internal
-   */
-  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
-    this.modes = api.modes;
-    return this;
   }
 
   /**
@@ -289,12 +279,20 @@ export class InputType implements IIntermediateType {
     }
     this.definition[options.fieldName] = options.field;
   }
+
+  /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @internal
+   */
+  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    return this;
+  }
 }
 
 /**
  * Properties for configuring an Union Type
- *
- * @param definition - the object types for this union type
  *
  * @experimental
  */
@@ -349,16 +347,6 @@ export class UnionType implements IIntermediateType {
   }
 
   /**
-   * Method called when the stringifying Intermediate Types for schema generation
-   *
-   * @internal
-   */
-  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
-    this.modes = api.modes;
-    return this;
-  }
-
-  /**
    * Generate the string of this Union type
    */
   public toString(): string {
@@ -386,5 +374,109 @@ export class UnionType implements IIntermediateType {
       throw new Error('Fields for Union Types must be Object Types.');
     }
     this.definition[options.field?.toString() + 'id'] = options.field;
+  }
+
+  /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @internal
+   */
+  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    return this;
+  }
+}
+
+/**
+ * Properties for configuring an Enum Type
+ *
+ * @experimental
+ */
+export interface EnumTypeOptions {
+  /**
+   * the attributes of this type
+   */
+  readonly definition: string[];
+}
+
+/**
+ * Enum Types are abstract types that includes a set of fields
+ * that represent the strings this type can create.
+ *
+ * @experimental
+ */
+export class EnumType implements IIntermediateType {
+  /**
+   * the name of this type
+   */
+  public readonly name: string;
+  /**
+   * the attributes of this type
+   */
+  public readonly definition: { [key: string]: IField };
+  /**
+   * the authorization modes for this intermediate type
+   */
+  protected modes?: AuthorizationType[];
+
+  public constructor(name: string, options: EnumTypeOptions) {
+    this.name = name;
+    this.definition = {};
+    options.definition.map((fieldName: string) => this.addField({ fieldName }));
+  }
+
+  /**
+   * Create an GraphQL Type representing this Enum Type
+   */
+  public attribute(options?: BaseTypeOptions): GraphqlType {
+    return GraphqlType.intermediate({
+      isList: options?.isList,
+      isRequired: options?.isRequired,
+      isRequiredList: options?.isRequiredList,
+      intermediateType: this,
+    });
+  }
+
+  /**
+   * Generate the string of this enum type
+   */
+  public toString(): string {
+    return shapeAddition({
+      prefix: 'enum',
+      name: this.name,
+      fields: Object.keys(this.definition),
+      modes: this.modes,
+    });
+  }
+
+  /**
+   * Add a field to this Enum Type
+   *
+   * To add a field to this Enum Type, you must only configure
+   * addField with the fieldName options.
+   *
+   * @param options the options to add a field
+   */
+  public addField(options: AddFieldOptions): void {
+    if (options.field) {
+      throw new Error('Enum Type fields consist of strings. Use the fieldName option instead of the field option.');
+    }
+    if (!options.fieldName) {
+      throw new Error('When adding a field to an Enum Type, you must configure the fieldName option.');
+    }
+    if (options.fieldName.indexOf(' ') > -1) {
+      throw new Error(`Enum Type values cannot have whitespace. Received: ${options.fieldName}`);
+    }
+    this.definition[options.fieldName] = GraphqlType.string();
+  }
+
+  /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @internal
+   */
+  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    return this;
   }
 }
