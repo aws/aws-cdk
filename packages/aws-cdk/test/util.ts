@@ -166,20 +166,18 @@ export function withMocked<A extends object, K extends keyof A, B>(obj: A, key: 
   const mockFn = jest.fn();
   (obj as any)[key] = mockFn;
 
-  let ret;
+  let asyncFinally: boolean = false;
   try {
-    ret = block(mockFn as any);
-  } catch (e) {
-    obj[key] = original;
-    throw e;
-  }
+    const ret = block(mockFn as any);
+    if (!isPromise(ret)) { return ret; }
 
-  if (!isPromise(ret)) {
-    obj[key] = original;
-    return ret;
+    asyncFinally = true;
+    return ret.finally(() => { obj[key] = original; }) as any;
+  } finally {
+    if (!asyncFinally) {
+      obj[key] = original;
+    }
   }
-
-  return ret.finally(() => { obj[key] = original; }) as any;
 }
 
 function isPromise<A>(object: any): object is Promise<A> {

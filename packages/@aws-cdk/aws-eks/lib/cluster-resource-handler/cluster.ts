@@ -123,7 +123,7 @@ export class ClusterResourceHandler extends ResourceHandler {
         throw new Error(`Cannot replace cluster "${this.oldProps.name}" since it has an explicit physical name. Either rename the cluster or remove the "name" configuration`);
       }
 
-      return await this.onCreate();
+      return this.onCreate();
     }
 
     // if a version update is required, issue the version update
@@ -132,7 +132,7 @@ export class ClusterResourceHandler extends ResourceHandler {
         throw new Error(`Cannot remove cluster version configuration. Current version is ${this.oldProps.version}`);
       }
 
-      return await this.updateClusterVersion(this.newProps.version);
+      return this.updateClusterVersion(this.newProps.version);
     }
 
     if (updates.updateLogging || updates.updateAccess) {
