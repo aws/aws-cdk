@@ -129,13 +129,6 @@ export interface SecretAttributes {
    * The ARN of the secret in SecretsManager.
    */
   readonly secretArn: string;
-
-  /**
-   * The name of the secret in SecretsManager.
-   *
-   * @default - the name is derived from the secretArn.
-   */
-  readonly secretName?: string;
 }
 
 /**
@@ -286,7 +279,7 @@ export class Secret extends SecretBase {
     class Import extends SecretBase {
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly secretArn = attrs.secretArn;
-      public readonly secretName = parseSecretName(scope, attrs.secretArn, attrs.secretName);
+      public readonly secretName = parseSecretName(scope, attrs.secretArn);
       protected readonly autoCreatePolicy = false;
     }
 
@@ -601,9 +594,8 @@ export interface SecretStringGenerator {
   readonly generateStringKey?: string;
 }
 
-/** Returns the secret name if defined, otherwise attempts to parse it from the ARN. */
-export function parseSecretName(construct: IConstruct, secretArn: string, secretName?: string) {
-  if (secretName) { return secretName; }
+/** Parses the secret name from the ARN. */
+function parseSecretName(construct: IConstruct, secretArn: string) {
   const resourceName = Stack.of(construct).parseArn(secretArn).resourceName;
   if (resourceName) {
     // Secret resource names are in the format `${secretName}-${SecretsManager suffix}`

@@ -28,6 +28,10 @@ describe('Bootstrapping v2', () => {
     mockTheToolkitInfo = undefined;
   });
 
+  afterEach(() => {
+    mockDeployStack.mockClear();
+  });
+
   test('passes the bucket name as a CFN parameter', async () => {
     await bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
@@ -137,73 +141,130 @@ describe('Bootstrapping v2', () => {
     ]);
   });
 
-  test('stack is not termination protected by default', async () => {
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
-      parameters: {
-        cloudFormationExecutionPolicies: ['arn:policy'],
-      },
+  describe('termination protection', () => {
+    test('stack is not termination protected by default', async () => {
+      await bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          cloudFormationExecutionPolicies: ['arn:policy'],
+        },
+      });
+
+      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+        stack: expect.objectContaining({
+          terminationProtection: false,
+        }),
+      }));
     });
 
-    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      stack: expect.objectContaining({
-        terminationProtection: false,
-      }),
-    }));
-  });
-
-  test('stack is termination protected when option is set', async () => {
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
-      terminationProtection: true,
-      parameters: {
-        cloudFormationExecutionPolicies: ['arn:policy'],
-      },
-    });
-
-    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      stack: expect.objectContaining({
+    test('stack is termination protected when option is set', async () => {
+      await bootstrapper.bootstrapEnvironment(env, sdk, {
         terminationProtection: true,
-      }),
-    }));
-  });
+        parameters: {
+          cloudFormationExecutionPolicies: ['arn:policy'],
+        },
+      });
 
-  test('termination protection is left alone when option is not given', async () => {
-    mockTheToolkitInfo = mockToolkitInfo({
-      EnableTerminationProtection: true,
+      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+        stack: expect.objectContaining({
+          terminationProtection: true,
+        }),
+      }));
     });
 
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
-      parameters: {
-        cloudFormationExecutionPolicies: ['arn:policy'],
-      },
+    test('termination protection is left alone when option is not given', async () => {
+      mockTheToolkitInfo = mockToolkitInfo({
+        EnableTerminationProtection: true,
+      });
+
+      await bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          cloudFormationExecutionPolicies: ['arn:policy'],
+        },
+      });
+
+      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+        stack: expect.objectContaining({
+          terminationProtection: true,
+        }),
+      }));
     });
 
-    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      stack: expect.objectContaining({
-        terminationProtection: true,
-      }),
-    }));
-  });
+    test('termination protection can be switched off', async () => {
+      mockTheToolkitInfo = mockToolkitInfo({
+        EnableTerminationProtection: true,
+      });
 
-  test('termination protection can be switched off', async () => {
-    mockTheToolkitInfo = mockToolkitInfo({
-      EnableTerminationProtection: true,
-    });
-
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
-      terminationProtection: false,
-      parameters: {
-        cloudFormationExecutionPolicies: ['arn:policy'],
-      },
-    });
-
-    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      stack: expect.objectContaining({
+      await bootstrapper.bootstrapEnvironment(env, sdk, {
         terminationProtection: false,
-      }),
-    }));
+        parameters: {
+          cloudFormationExecutionPolicies: ['arn:policy'],
+        },
+      });
+
+      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+        stack: expect.objectContaining({
+          terminationProtection: false,
+        }),
+      }));
+    });
   });
 
-  afterEach(() => {
-    mockDeployStack.mockClear();
+  describe('KMS key', () => {
+    test.each([
+      // Default case
+      [undefined, 'AWS_MANAGED_KEY'],
+      // Create a new key
+      [true, ''],
+      // Don't create a new key
+      [false, 'AWS_MANAGED_KEY'],
+    ])('(new stack) createCustomerMasterKey=%p => parameter becomes %p ', async (createCustomerMasterKey, paramKeyId) => {
+      // GIVEN: no existing stack
+
+      // WHEN
+      await bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          createCustomerMasterKey,
+          cloudFormationExecutionPolicies: ['arn:booh'],
+        },
+      });
+
+      // THEN
+      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+        parameters: expect.objectContaining({
+          FileAssetsBucketKmsKeyId: paramKeyId,
+        }),
+      }));
+    });
+
+    test.each([
+      // Old bootstrap stack being upgraded to new one
+      [undefined, undefined, 'AWS_MANAGED_KEY'],
+      // There is a value, user doesn't request a change
+      ['arn:aws:key', undefined, undefined],
+      // Switch off existing key
+      ['arn:aws:key', false, 'AWS_MANAGED_KEY'],
+      // Switch on existing key
+      ['AWS_MANAGED_KEY', true, ''],
+    ])('(upgrading) current param %p, createCustomerMasterKey=%p => parameter becomes %p ', async (currentKeyId, createCustomerMasterKey, paramKeyId) => {
+      // GIVEN
+      mockTheToolkitInfo = mockToolkitInfo({
+        Parameters: currentKeyId ? [{ ParameterKey: 'FileAssetsBucketKmsKeyId', ParameterValue: currentKeyId }] : undefined,
+      });
+
+      // WHEN
+      await bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          createCustomerMasterKey,
+          cloudFormationExecutionPolicies: ['arn:booh'],
+        },
+      });
+
+      // THEN
+      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+        parameters: expect.objectContaining({
+          FileAssetsBucketKmsKeyId: paramKeyId,
+        }),
+      }));
+    });
   });
 });
