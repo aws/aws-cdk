@@ -328,6 +328,8 @@ const stage = pipeline.addApplicationStage(new MyApplication(/* ... */));
 stage.addActions(new ShellScriptAction({
   actionName: 'MyValidation',
   commands: ['curl -Ssf https://my.webservice.com/'],
+  // Optionally specify a VPC if, for example, the service is deployed with a private load balancer
+  vpc,
   // ... more configuration ...
 }));
 ```
