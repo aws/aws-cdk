@@ -580,6 +580,31 @@ export = {
 
     test.done();
   },
+
+  'bundling looks at bundling stacks in context'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['OtherStack']);
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const asset = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.BUNDLE,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    test.throws(() => readDockerStubInput()); // Bundling did not run
+    test.equal(asset.assetHash, '3d96e735e26b857743a7c44523c9160c285c2d3ccf273d80fa38a1e674c32cb3'); // hash of MyStack/Asset
+    test.equal(asset.sourcePath, directory);
+    test.equal(stack.resolve(asset.stagedPath), directory);
+
+    test.done();
+  },
 };
 
 // Reads a docker stub and cleans the volume paths out of the stub.
