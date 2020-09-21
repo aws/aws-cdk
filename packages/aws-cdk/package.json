@@ -54,7 +54,6 @@
     "@types/table": "^5.0.0",
     "@types/uuid": "^8.3.0",
     "@types/wrap-ansi": "^3.0.0",
-    "@types/yaml": "^1.9.7",
     "@types/yargs": "^15.0.5",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
@@ -70,6 +69,7 @@
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
+    "@aws-cdk/yaml-cfn": "0.0.0",
     "archiver": "^5.0.2",
     "aws-sdk": "^2.739.0",
     "camelcase": "^6.0.0",
@@ -87,7 +87,6 @@
     "table": "^6.0.3",
     "uuid": "^8.3.0",
     "wrap-ansi": "^7.0.0",
-    "yaml": "^1.10.0",
     "yargs": "^16.0.3"
   },
   "repository": {
