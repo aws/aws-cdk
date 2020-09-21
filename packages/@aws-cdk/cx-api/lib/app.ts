@@ -27,3 +27,8 @@ export const DISABLE_ASSET_STAGING_CONTEXT = 'aws:cdk:disable-asset-staging';
  * Omits stack traces from construct metadata entries.
  */
 export const DISABLE_METADATA_STACK_TRACE = 'aws:cdk:disable-stack-trace';
+
+/**
+ * Run bundling for stacks specified in this context key
+ */
+export const BUNDLING_STACKS = 'aws:cdk:bundling-stacks';

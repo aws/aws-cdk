@@ -17,7 +17,7 @@ import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib
 import { data, debug, error, print, setLogLevel } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
-import { Configuration, Settings } from '../lib/settings';
+import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
 /* eslint-disable max-len */
@@ -137,7 +137,10 @@ async function initCommandLine() {
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
-  const configuration = new Configuration(argv);
+  const configuration = new Configuration({
+    ...argv,
+    _: argv._ as [Command, ...string[]], // TypeScript at its best
+  });
   await configuration.load();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
