@@ -177,6 +177,22 @@ describe('InitFile', () => {
     }).toThrow('Owner, group, and mode options not supported for Windows.');
   });
 
+  test('file renders properly on Windows', () => {
+    // GIVEN
+    const file = ec2.InitFile.fromString('/tmp/foo', 'My content');
+
+    // WHEN
+    const rendered = getElementConfig(file, InitPlatform.WINDOWS);
+
+    // THEN
+    expect(rendered).toEqual({
+      '/tmp/foo': {
+        content: 'My content',
+        encoding: 'plain',
+      },
+    });
+  });
+
   test('symlink throws an error if mode is set incorrectly', () => {
     expect(() => {
       ec2.InitFile.symlink('/tmp/foo', '/tmp/bar', {

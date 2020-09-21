@@ -80,7 +80,7 @@ export function filterUndefined(obj: any): any {
  */
 export class PostResolveToken extends Intrinsic implements IPostProcessor {
   constructor(value: any, private readonly processor: (x: any) => any) {
-    super(value);
+    super(value, { stackTrace: false });
   }
 
   public resolve(context: IResolveContext) {
