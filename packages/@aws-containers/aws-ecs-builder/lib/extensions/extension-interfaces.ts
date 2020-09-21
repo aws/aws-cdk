@@ -64,7 +64,7 @@ export interface ServiceBuild {
   readonly minHealthyPercent?: number;
 
   /**
-   * Maximum healthy task percentage
+   * Maximum percentage of tasks that can be launched
    * @default - 200
    */
   readonly maxHealthyPercent?: number;

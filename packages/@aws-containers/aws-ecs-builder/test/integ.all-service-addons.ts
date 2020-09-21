@@ -1,7 +1,7 @@
 import { Mesh } from '@aws-cdk/aws-appmesh';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
-import { AppMeshExtension, CloudwatchAgentExtension, Container, Environment, FireLensExtension, HttpLoadBalancerExtension, Service, ServiceDescription, XRayExtension } from '../lib';
+import { AppMeshExtension, CloudwatchAgentExtension, Container, Environment, FireLensExtension, HttpLoadBalancerExtension, ScaleOnCpuUtilization, Service, ServiceDescription, XRayExtension } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ');
@@ -24,6 +24,10 @@ nameDescription.add(new AppMeshExtension({ mesh }));
 nameDescription.add(new FireLensExtension());
 nameDescription.add(new XRayExtension());
 nameDescription.add(new CloudwatchAgentExtension());
+nameDescription.add(new ScaleOnCpuUtilization({
+  initialTaskCount: 2,
+  minTaskCount: 2,
+}));
 
 const nameService = new Service(stack, 'name', {
   environment: environment,
@@ -45,6 +49,10 @@ greetingDescription.add(new AppMeshExtension({ mesh }));
 greetingDescription.add(new FireLensExtension());
 greetingDescription.add(new XRayExtension());
 greetingDescription.add(new CloudwatchAgentExtension());
+greetingDescription.add(new ScaleOnCpuUtilization({
+  initialTaskCount: 2,
+  minTaskCount: 2,
+}));
 
 const greetingService = new Service(stack, 'greeting', {
   environment: environment,
@@ -69,6 +77,10 @@ greeterDescription.add(new FireLensExtension());
 greeterDescription.add(new XRayExtension());
 greeterDescription.add(new CloudwatchAgentExtension());
 greeterDescription.add(new HttpLoadBalancerExtension());
+greeterDescription.add(new ScaleOnCpuUtilization({
+  initialTaskCount: 2,
+  minTaskCount: 2,
+}));
 
 const greeterService = new Service(stack, 'greeter', {
   environment: environment,

@@ -589,7 +589,7 @@
         },
         "DeploymentConfiguration": {
           "MaximumPercent": 200,
-          "MinimumHealthyPercent": 50
+          "MinimumHealthyPercent": 100
         },
         "DesiredCount": 10,
         "EnableECSManagedTags": false,

@@ -1,13 +1,13 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as appmesh from '@aws-cdk/aws-appmesh';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 
 import { Test } from 'nodeunit';
-import { AppMeshExtension, Container, Environment, ServiceDescription, Service } from '../lib';
+import { AppMeshExtension, Container, Environment, ScaleOnCpuUtilization, ServiceDescription, Service } from '../lib';
 
 export = {
-  'should be able to add AWS X-Ray to a service'(test: Test) {
+  'should be able to add AWS App Mesh to a service'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -36,8 +36,7 @@ export = {
 
     // THEN
 
-    // Ensure that task has a Firelens sidecar and a log configuration
-    // pointing at the sidecar
+    // Ensure that task has an App Mesh sidecar
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
@@ -116,7 +115,20 @@ export = {
             'Fn::Join': [
               '',
               [
-                '840364872350.dkr.ecr.us-east-1.',
+                {
+                  'Fn::FindInMap': [
+                    'myserviceenvoyimageaccountmapping',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    'accountID',
+                  ],
+                },
+                '.dkr.ecr.',
+                {
+                  Ref: 'AWS::Region',
+                },
+                '.',
                 {
                   Ref: 'AWS::URLSuffix',
                 },
@@ -198,6 +210,259 @@ export = {
           'Arn',
         ],
       },
+    }));
+
+    // Ensure that the service has the right settings
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      Cluster: {
+        Ref: 'productionenvironmentclusterC6599D2D',
+      },
+      DeploymentConfiguration: {
+        MaximumPercent: 200,
+        MinimumHealthyPercent: 100,
+      },
+      DesiredCount: 1,
+      EnableECSManagedTags: false,
+      LaunchType: 'FARGATE',
+      NetworkConfiguration: {
+        AwsvpcConfiguration: {
+          AssignPublicIp: 'DISABLED',
+          SecurityGroups: [
+            {
+              'Fn::GetAtt': [
+                'myserviceserviceSecurityGroup3A44A969',
+                'GroupId',
+              ],
+            },
+          ],
+          Subnets: [
+            {
+              Ref: 'productionenvironmentvpcPrivateSubnet1Subnet53F632E6',
+            },
+            {
+              Ref: 'productionenvironmentvpcPrivateSubnet2Subnet756FB93C',
+            },
+          ],
+        },
+      },
+      ServiceRegistries: [
+        {
+          RegistryArn: {
+            'Fn::GetAtt': [
+              'myserviceserviceCloudmapService32F63163',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      TaskDefinition: {
+        Ref: 'myservicetaskdefinitionF3E2D86F',
+      },
+    }));
+
+    test.done();
+  },
+
+  'should have the right maximumPercentage at desired count == 1'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+    serviceDescription.add(new ScaleOnCpuUtilization({
+      initialTaskCount: 1,
+    }));
+
+    const mesh = new appmesh.Mesh(stack, 'my-mesh');
+
+    serviceDescription.add(new AppMeshExtension({
+      mesh,
+    }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MaximumPercent: 200,
+        MinimumHealthyPercent: 100,
+      },
+      DesiredCount: 1,
+    }));
+
+    test.done();
+  },
+
+  'should have the right maximumPercentage at desired count == 2'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+    serviceDescription.add(new ScaleOnCpuUtilization({
+      initialTaskCount: 2,
+    }));
+
+    const mesh = new appmesh.Mesh(stack, 'my-mesh');
+
+    serviceDescription.add(new AppMeshExtension({
+      mesh,
+    }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MaximumPercent: 150,
+        MinimumHealthyPercent: 100,
+      },
+      DesiredCount: 2,
+    }));
+
+    test.done();
+  },
+
+  'should have the right maximumPercentage at desired count == 3'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+    serviceDescription.add(new ScaleOnCpuUtilization({
+      initialTaskCount: 3,
+    }));
+
+    const mesh = new appmesh.Mesh(stack, 'my-mesh');
+
+    serviceDescription.add(new AppMeshExtension({
+      mesh,
+    }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MaximumPercent: 150,
+        MinimumHealthyPercent: 100,
+      },
+      DesiredCount: 3,
+    }));
+
+    test.done();
+  },
+
+  'should have the right maximumPercentage at desired count == 4'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+    serviceDescription.add(new ScaleOnCpuUtilization({
+      initialTaskCount: 4,
+    }));
+
+    const mesh = new appmesh.Mesh(stack, 'my-mesh');
+
+    serviceDescription.add(new AppMeshExtension({
+      mesh,
+    }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MaximumPercent: 125,
+        MinimumHealthyPercent: 100,
+      },
+      DesiredCount: 4,
+    }));
+
+    test.done();
+  },
+
+  'should have the right maximumPercentage at desired count > 4'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+    serviceDescription.add(new ScaleOnCpuUtilization({
+      initialTaskCount: 8,
+    }));
+
+    const mesh = new appmesh.Mesh(stack, 'my-mesh');
+
+    serviceDescription.add(new AppMeshExtension({
+      mesh,
+    }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MaximumPercent: 125,
+        MinimumHealthyPercent: 100,
+      },
+      DesiredCount: 8,
     }));
 
     test.done();

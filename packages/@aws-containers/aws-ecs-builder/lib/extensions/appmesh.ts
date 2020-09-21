@@ -10,11 +10,11 @@ import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
 // A map of AWS account ID's which hold the App Mesh image in various
 // regions
-enum APPMESH_ECR_ACCOUNTS {
-  ME_SOUTH_1 = 772975370895,
-  AP_EAST_1 = 856666278305,
-  DEFAULT = 840364872350
-}
+const APPMESH_ECR_ACCOUNTS = {
+  ME_SOUTH_1: { accountID: 772975370895 },
+  AP_EAST_1: { accountID: 856666278305 },
+  DEFAULT: { accountID: 840364872350 },
+};
 
 // The version of the App Mesh envoy sidecar to add to the task.
 const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.0.0-prod';
@@ -138,23 +138,48 @@ export class AppMeshExtension extends ServiceExtension {
   public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     var region = cdk.Stack.of(this.scope).region;
     var appMeshRepo;
-    var ownerAccount;
 
     // This is currently necessary because App Mesh has different images in each region,
     // and some regions have their images in a different account. See:
     // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
-    if (region === 'me-south-1') {
-      ownerAccount = APPMESH_ECR_ACCOUNTS.ME_SOUTH_1;
-    } else if (region === 'ap-east-1') {
-      ownerAccount = APPMESH_ECR_ACCOUNTS.AP_EAST_1;
-    } else {
-      ownerAccount = APPMESH_ECR_ACCOUNTS.DEFAULT;
-    }
+    const mapping = new cdk.CfnMapping(this.scope, `${this.parentService.id}-envoy-image-account-mapping`, {
+      mapping: {
+        'af-south-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'eu-north-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'ap-south-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'eu-west-3': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'eu-west-2': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'eu-south-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'eu-west-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'ap-northeast-3': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'ap-northeast-2': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'ap-northeast-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'sa-east-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'ca-central-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'ap-southeast-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'ap-southeast-2': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'eu-central-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'us-east-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'us-east-2': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'us-west-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'us-west-2': APPMESH_ECR_ACCOUNTS.DEFAULT,
 
-    appMeshRepo = ecr.Repository.fromRepositoryArn(
+        // These two region have different account IDs
+        'me-south-1': APPMESH_ECR_ACCOUNTS.ME_SOUTH_1,
+        'ap-east-1': APPMESH_ECR_ACCOUNTS.AP_EAST_1,
+      },
+    });
+
+    // WHEN
+    const ownerAccount = mapping.findInMap(region, 'accountID');
+
+    appMeshRepo = ecr.Repository.fromRepositoryAttributes(
       this.scope,
       `${this.parentService.id}-envoy-repo`,
-      `arn:aws:ecr:us-east-1:${ownerAccount}:repository/aws-appmesh-envoy`,
+      {
+        repositoryName: 'aws-appmesh-envoy',
+        repositoryArn: `arn:aws:ecr:${region}:${ownerAccount}:repository/aws-appmesh-envoy`,
+      },
     );
 
     this.container = taskDefinition.addContainer('envoy', {
@@ -204,18 +229,6 @@ export class AppMeshExtension extends ServiceExtension {
 
   // Enable CloudMap for the service.
   public modifyServiceProps(props: ServiceBuild) {
-    var maxPercent;
-
-    // Based on the desired count of tasks, adjust
-    // the maximum task rolling speed, by constraining
-    // the maximum number of health tasks. See:
-    // https://docs.aws.amazon.com/app-mesh/latest/userguide/best-practices.html#reduce-deployment-velocity
-    if (!props.desiredCount || props.desiredCount < 4) {
-      maxPercent = 150;
-    } else {
-      maxPercent = 125;
-    }
-
     return {
       ...props,
 
@@ -232,7 +245,7 @@ export class AppMeshExtension extends ServiceExtension {
       // maintain availability during a rolling deploy of the service with App Mesh
       // https://docs.aws.amazon.com/app-mesh/latest/userguide/best-practices.html#reduce-deployment-velocity
       minHealthyPercent: 100,
-      maxHealthyPercent: maxPercent,
+      maxHealthyPercent: 125, // Note that at low task count the Service will boost this setting higher
     } as ServiceBuild;
   }
 

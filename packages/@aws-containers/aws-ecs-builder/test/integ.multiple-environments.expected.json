@@ -1169,7 +1169,20 @@
               "Fn::Join": [
                 "",
                 [
-                  "840364872350.dkr.ecr.us-east-1.",
+                  {
+                    "Fn::FindInMap": [
+                      "nameproductionenvoyimageaccountmapping",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "accountID"
+                    ]
+                  },
+                  ".dkr.ecr.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
                   {
                     "Ref": "AWS::URLSuffix"
                   },
@@ -1287,7 +1300,28 @@
                 "ecr:BatchGetImage"
               ],
               "Effect": "Allow",
-              "Resource": "arn:aws:ecr:us-east-1:840364872350:repository/aws-appmesh-envoy"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Fn::FindInMap": [
+                        "nameproductionenvoyimageaccountmapping",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "accountID"
+                      ]
+                    },
+                    ":repository/aws-appmesh-envoy"
+                  ]
+                ]
+              }
             },
             {
               "Action": "ecr:GetAuthorizationToken",
@@ -1348,7 +1382,7 @@
           "Ref": "productionenvironmentclusterC6599D2D"
         },
         "DeploymentConfiguration": {
-          "MaximumPercent": 150,
+          "MaximumPercent": 200,
           "MinimumHealthyPercent": 100
         },
         "DesiredCount": 1,
@@ -1666,7 +1700,20 @@
               "Fn::Join": [
                 "",
                 [
-                  "840364872350.dkr.ecr.us-east-1.",
+                  {
+                    "Fn::FindInMap": [
+                      "namedevelopmentenvoyimageaccountmapping",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "accountID"
+                    ]
+                  },
+                  ".dkr.ecr.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
                   {
                     "Ref": "AWS::URLSuffix"
                   },
@@ -1784,7 +1831,28 @@
                 "ecr:BatchGetImage"
               ],
               "Effect": "Allow",
-              "Resource": "arn:aws:ecr:us-east-1:840364872350:repository/aws-appmesh-envoy"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Fn::FindInMap": [
+                        "namedevelopmentenvoyimageaccountmapping",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "accountID"
+                      ]
+                    },
+                    ":repository/aws-appmesh-envoy"
+                  ]
+                ]
+              }
             },
             {
               "Action": "ecr:GetAuthorizationToken",
@@ -1845,7 +1913,7 @@
           "Ref": "developmentenvironmentcluster1B64BE8B"
         },
         "DeploymentConfiguration": {
-          "MaximumPercent": 150,
+          "MaximumPercent": 200,
           "MinimumHealthyPercent": 100
         },
         "DesiredCount": 1,
@@ -2058,6 +2126,138 @@
           }
         },
         "VirtualServiceName": "name-development.development"
+      }
+    }
+  },
+  "Mappings": {
+    "nameproductionenvoyimageaccountmapping": {
+      "af-south-1": {
+        "accountID": 840364872350
+      },
+      "eu-north-1": {
+        "accountID": 840364872350
+      },
+      "ap-south-1": {
+        "accountID": 840364872350
+      },
+      "eu-west-3": {
+        "accountID": 840364872350
+      },
+      "eu-west-2": {
+        "accountID": 840364872350
+      },
+      "eu-south-1": {
+        "accountID": 840364872350
+      },
+      "eu-west-1": {
+        "accountID": 840364872350
+      },
+      "ap-northeast-3": {
+        "accountID": 840364872350
+      },
+      "ap-northeast-2": {
+        "accountID": 840364872350
+      },
+      "ap-northeast-1": {
+        "accountID": 840364872350
+      },
+      "sa-east-1": {
+        "accountID": 840364872350
+      },
+      "ca-central-1": {
+        "accountID": 840364872350
+      },
+      "ap-southeast-1": {
+        "accountID": 840364872350
+      },
+      "ap-southeast-2": {
+        "accountID": 840364872350
+      },
+      "eu-central-1": {
+        "accountID": 840364872350
+      },
+      "us-east-1": {
+        "accountID": 840364872350
+      },
+      "us-east-2": {
+        "accountID": 840364872350
+      },
+      "us-west-1": {
+        "accountID": 840364872350
+      },
+      "us-west-2": {
+        "accountID": 840364872350
+      },
+      "me-south-1": {
+        "accountID": 772975370895
+      },
+      "ap-east-1": {
+        "accountID": 856666278305
+      }
+    },
+    "namedevelopmentenvoyimageaccountmapping": {
+      "af-south-1": {
+        "accountID": 840364872350
+      },
+      "eu-north-1": {
+        "accountID": 840364872350
+      },
+      "ap-south-1": {
+        "accountID": 840364872350
+      },
+      "eu-west-3": {
+        "accountID": 840364872350
+      },
+      "eu-west-2": {
+        "accountID": 840364872350
+      },
+      "eu-south-1": {
+        "accountID": 840364872350
+      },
+      "eu-west-1": {
+        "accountID": 840364872350
+      },
+      "ap-northeast-3": {
+        "accountID": 840364872350
+      },
+      "ap-northeast-2": {
+        "accountID": 840364872350
+      },
+      "ap-northeast-1": {
+        "accountID": 840364872350
+      },
+      "sa-east-1": {
+        "accountID": 840364872350
+      },
+      "ca-central-1": {
+        "accountID": 840364872350
+      },
+      "ap-southeast-1": {
+        "accountID": 840364872350
+      },
+      "ap-southeast-2": {
+        "accountID": 840364872350
+      },
+      "eu-central-1": {
+        "accountID": 840364872350
+      },
+      "us-east-1": {
+        "accountID": 840364872350
+      },
+      "us-east-2": {
+        "accountID": 840364872350
+      },
+      "us-west-1": {
+        "accountID": 840364872350
+      },
+      "us-west-2": {
+        "accountID": 840364872350
+      },
+      "me-south-1": {
+        "accountID": 772975370895
+      },
+      "ap-east-1": {
+        "accountID": 856666278305
       }
     }
   }

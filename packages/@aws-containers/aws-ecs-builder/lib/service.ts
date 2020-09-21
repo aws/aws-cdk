@@ -110,7 +110,7 @@ export class Service extends cdk.Construct {
 
     // Give each extension a chance to mutate the task def creation properties
     let taskDefProps = {
-      // Default CPU and memoryyarn clean
+      // Default CPU and memory
       cpu: '256',
       memory: '512',
 
@@ -147,11 +147,47 @@ export class Service extends cdk.Construct {
     let serviceProps = {
       cluster: this.cluster,
       taskDefinition: this.taskDefinition,
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200,
+      desiredCount: 1,
     } as ServiceBuild;
 
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
         serviceProps = this.serviceDescription.extensions[extensions].modifyServiceProps(serviceProps);
+      }
+    }
+
+    // If a maxHealthyPercent and desired count has been set while minHealthyPercent == 100% then we
+    // need to do some failsafe checking to ensure that the maxHealthyPercent
+    // actually allows a rolling deploy. Otherwise it is possible to end up with
+    // blocked deploys that can take no action because minHealtyhPercent == 100%
+    // prevents running, healthy tasks from being stopped, but a low maxHealthyPercent
+    // can also prevents new parallel tasks from being started.
+    if (serviceProps.maxHealthyPercent && serviceProps.desiredCount && serviceProps.minHealthyPercent && serviceProps.minHealthyPercent == 100) {
+      if (serviceProps.desiredCount == 1) {
+        // If there is one task then we must allow max percentage to be at
+        // least 200% for another replacement task to be added
+        serviceProps = {
+          ...serviceProps,
+          maxHealthyPercent: Math.max(200, serviceProps.maxHealthyPercent),
+        };
+      } else if (serviceProps.desiredCount <= 3) {
+        // If task count is 2 or 3 then max percent must be at least 150% to
+        // allow one replacement task to be launched at a time.
+        serviceProps = {
+          ...serviceProps,
+          maxHealthyPercent: Math.max(150, serviceProps.maxHealthyPercent),
+        };
+      } else {
+        // For anything higher than 3 tasks set max percent to at least 125%
+        // For 4 tasks this will allow exactly one extra replacement task
+        // at a time, for any higher task count it will allow 25% of the tasks
+        // to be replaced at a time.
+        serviceProps = {
+          ...serviceProps,
+          maxHealthyPercent: Math.max(125, serviceProps.maxHealthyPercent),
+        };
       }
     }
 
