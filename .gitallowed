@@ -18,6 +18,6 @@ account: '123456789012'
 
 # The account ID's of public facing ECR images for App Mesh Envoy
 # https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
-account: 772975370895
-account: 856666278305
-account: 840364872350
+account: '772975370895'
+account: '856666278305'
+account: '840364872350'
