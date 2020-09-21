@@ -23,9 +23,9 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
         sourceAccount: Stack.of(bucket).account,
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
         sourceArn: bucket.bucketArn,
-        // the bucket stack already has a dependency on the lambda stack because
-        // of the notification resource. therefore adding the permission to the lambda
-        // stack would create a circular dependency, so we add it to the bucket scope.
+        // Placing the permissions node in the same scope as the s3 bucket.
+        // Otherwise, there is a circular dependency when the s3 bucket
+        // and lambda functions declared in different stacks.
         scope: bucket,
       });
     }
