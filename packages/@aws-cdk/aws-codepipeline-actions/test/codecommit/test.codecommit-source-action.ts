@@ -230,39 +230,39 @@ export = {
 
       const branch = Lazy.stringValue({ produce: () => 'branch' });
 
-      const p = new codepipeline.Pipeline(stack, 'P');
-
-      const r = new codecommit.Repository(stack, 'R', {
-        repositoryName: 'repository',
-      });
-
-      const artifact = new codepipeline.Artifact();
-      const ccSourceAction = new cpactions.CodeCommitSourceAction({
-        actionName: 'CodeCommit',
-        repository: r,
-        branch: branch,
-        output: artifact,
-      });
-
-      p.addStage({
-        stageName: 'Source',
-        actions: [ccSourceAction],
-      });
-      p.addStage({
-        stageName: 'Build',
-        actions: [
-          new cpactions.CodeBuildAction({
-            actionName: 'Build',
-            project: new codebuild.PipelineProject(stack, 'CodeBuild'),
-            input: artifact,
-          }),
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'P', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'CodeCommit',
+                repository: new codecommit.Repository(stack, 'R', {
+                  repositoryName: 'repository',
+                }),
+                branch: Lazy.stringValue({ produce: () => 'my-branch' }),
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+                input: sourceOutput,
+              }),
+            ],
+          },
         ],
       });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         EventPattern: {
           detail: {
-            referenceName: [stack.resolve(branch)],
+            referenceName: ['my-branch'],
           },
         },
       }));
