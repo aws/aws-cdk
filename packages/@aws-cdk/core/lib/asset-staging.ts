@@ -7,6 +7,7 @@ import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
 import { Construct } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
+import { Stack } from './stack';
 import { Stage } from './stage';
 
 /**
@@ -97,16 +98,26 @@ export class AssetStaging extends Construct {
     const hashType = determineHashType(props.assetHashType, props.assetHash);
 
     if (props.bundling) {
-      // Determine the source hash in advance of bundling if the asset hash type
-      // is SOURCE so that the bundler can opt to re-use its previous output.
-      const sourceHash = hashType === AssetHashType.SOURCE
-        ? this.calculateHash(hashType, props.assetHash, props.bundling)
-        : undefined;
+      // Check if we actually have to bundle for this stack
+      const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
+      const runBundling = bundlingStacks.includes(Stack.of(this).stackName) || bundlingStacks.includes('*');
+      if (runBundling) {
+        // Determine the source hash in advance of bundling if the asset hash type
+        // is SOURCE so that the bundler can opt to re-use its previous output.
+        const sourceHash = hashType === AssetHashType.SOURCE
+          ? this.calculateHash(hashType, props.assetHash, props.bundling)
+          : undefined;
 
-      this.bundleDir = this.bundle(props.bundling, outdir, sourceHash);
-      this.assetHash = sourceHash ?? this.calculateHash(hashType, props.assetHash, props.bundling);
-      this.relativePath = renderAssetFilename(this.assetHash);
-      this.stagedPath = this.relativePath;
+        this.bundleDir = this.bundle(props.bundling, outdir, sourceHash);
+        this.assetHash = sourceHash ?? this.calculateHash(hashType, props.assetHash, props.bundling);
+        this.relativePath = renderAssetFilename(this.assetHash);
+        this.stagedPath = this.relativePath;
+      } else { // Bundling is skipped
+        this.assetHash = props.assetHashType === AssetHashType.BUNDLE
+          ? this.calculateHash(AssetHashType.CUSTOM, this.node.path) // Use node path as dummy hash because we're not bundling
+          : this.calculateHash(hashType, props.assetHash);
+        this.stagedPath = this.sourcePath;
+      }
     } else {
       this.assetHash = this.calculateHash(hashType, props.assetHash);
 

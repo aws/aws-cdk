@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ConstructNode, IResource, Resource } from '@aws-cdk/core';
+import { ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
 import { AliasOptions } from './alias';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
@@ -182,7 +182,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
   /**
    * Whether the addPermission() call adds any permissions
    *
-   * True for new Lambdas, false for imported Lambdas (they might live in different accounts).
+   * True for new Lambdas, false for version $LATEST and imported Lambdas
+   * from different accounts.
    */
   protected abstract readonly canCreatePermissions: boolean;
 
@@ -347,6 +348,27 @@ export abstract class FunctionBase extends Resource implements IFunction {
   }
 
   /**
+   * Given the function arn, check if the account id matches this account
+   *
+   * Function ARNs look like this:
+   *
+   *   arn:aws:lambda:region:account-id:function:function-name
+   *
+   * ..which means that in order to extract the `account-id` component from the ARN, we can
+   * split the ARN using ":" and select the component in index 4.
+   *
+   * @returns true if account id of function matches this account
+   *
+   * @internal
+   */
+  protected _isStackAccount(): boolean {
+    if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.functionArn)) {
+      return false;
+    }
+    return this.stack.parseArn(this.functionArn).account === this.stack.account;
+  }
+
+  /**
    * Translate IPrincipal to something we can pass to AWS::Lambda::Permissions
    *
    * Do some nasty things because `Permission` supports a subset of what the
@@ -431,7 +453,7 @@ class LatestVersion extends FunctionBase implements IVersion {
   public readonly version = '$LATEST';
   public readonly permissionsNode = this.node;
 
-  protected readonly canCreatePermissions = true;
+  protected readonly canCreatePermissions = false;
 
   constructor(lambda: FunctionBase) {
     super(lambda, '$LATEST');
