@@ -100,7 +100,7 @@ test('surive no context in old file', async () => {
 test('command line context is merged with stored context', async () => {
   // GIVEN
   await fs.writeJSON('cdk.context.json', { boo: 'far' });
-  const config = await new Configuration({ context: ['foo=bar'] } as any).load();
+  const config = await new Configuration({ context: ['foo=bar'], _: ['command'] } as any).load();
 
   // WHEN
   expect(config.context.all).toEqual({ foo: 'bar', boo: 'far' });
