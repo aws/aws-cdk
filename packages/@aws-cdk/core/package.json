@@ -37,6 +37,7 @@
     "exclude": [
       "props-physical-name:@aws-cdk/aws-cloudformation.CustomResourceProps",
       "construct-ctor:@aws-cdk/core.App.<initializer>",
+      "construct-ctor:@aws-cdk/core.Construct.<initializer>.params[0]",
       "props-no-cfn-types:@aws-cdk/core.CfnOutputProps.condition",
       "duration-prop-type:@aws-cdk/core.ResourceSignal.timeout",
       "props-no-any:@aws-cdk/core.CfnParameterProps.default",
@@ -115,7 +116,8 @@
       "construct-interface-extends-iconstruct:@aws-cdk/core.ICustomResourceProvider",
       "props-physical-name:@aws-cdk/core.CustomResourceProps",
       "integ-return-type:@aws-cdk/core.IStackSynthesizer.bind",
-      "props-no-any:@aws-cdk/core.CfnJsonProps.value"
+      "props-no-any:@aws-cdk/core.CfnJsonProps.value",
+      "base-construct-ctor:*"
     ]
   },
   "scripts": {
