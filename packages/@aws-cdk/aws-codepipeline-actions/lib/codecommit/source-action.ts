@@ -155,21 +155,22 @@ export class CodeCommitSourceAction extends Action {
   }
 
   private generateEventId(stage: codepipeline.IStage): string {
-    let branchIdDisambiguator: string;
-    let baseId = stage.pipeline.node.uniqueId;
-    if (this.branch === 'master') {
-      branchIdDisambiguator = baseId;
-    } else if (Token.isUnresolved(this.branch)) {
-      let candidate = baseId;
+    const baseId = stage.pipeline.node.uniqueId;
+    if (Token.isUnresolved(this.branch)) {
+      let candidate = '';
       let counter = 0;
-      while (this.props.repository.node.tryFindChild(candidate) !== undefined) {
+      do {
+        candidate = this.eventIdFromPrefix(`${baseId}-Branch${counter}-`);
         counter += 1;
-        candidate = `${baseId}-Branch${counter}-`;
-      }
-      branchIdDisambiguator = candidate;
+      } while (this.props.repository.node.tryFindChild(candidate) !== undefined);
+      return candidate;
     } else {
-      branchIdDisambiguator = `${baseId}-${this.branch}-`;
+      const branchIdDisambiguator = this.branch === 'master' ? '' : '-${this.branch}-';
+      return this.eventIdFromPrefix(`${baseId}${branchIdDisambiguator}`);
     }
-    return `${branchIdDisambiguator}EventRule`;
+  }
+
+  private eventIdFromPrefix(eventIdPrefix: string) {
+    return `${eventIdPrefix}EventRule`;
   }
 }
