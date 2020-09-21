@@ -45,12 +45,11 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
 
-Use the `containerEnvironment` prop to pass environments variables to the Docker container
-running Parcel:
+Use the `parcelEnvironment` prop to define environments variables when Parcel runs:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  containerEnvironment: {
+  parcelEnvironment: {
     NODE_ENV: 'production',
   },
 });
