@@ -5,14 +5,14 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
 import { applyRemovalPolicy, defaultDeletionProtection, engineDescription, setupS3ImportExport } from './private/util';
-import { PerformanceInsightRetention, RotationMultiUserOptions } from './props';
+import { Login, PerformanceInsightRetention, RotationMultiUserOptions, SnapshotLogin } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -751,20 +751,6 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   readonly allocatedStorage?: number;
 
   /**
-   * The master user password.
-   *
-   * @default - a Secrets Manager generated password
-   */
-  readonly masterUserPassword?: SecretValue;
-
-  /**
-   * The KMS key used to encrypt the secret for the master user password.
-   *
-   * @default - default master key
-   */
-  readonly masterUserPasswordEncryptionKey?: kms.IKey;
-
-  /**
    * The name of the database.
    *
    * @default - no name
@@ -894,9 +880,11 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
  */
 export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
   /**
-   * The master user name.
+   * Username and password for the administrative user
+   *
+   * @default - A username of 'admin' and SecretsManager-generated password
    */
-  readonly masterUsername: string;
+  readonly masterUser?: Login;
 
   /**
    * For supported engines, specifies the character set to associate with the
@@ -936,22 +924,21 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
-    let secret: DatabaseSecret | undefined;
-    if (!props.masterUserPassword) {
-      secret = new DatabaseSecret(this, 'Secret', {
-        username: props.masterUsername,
-        encryptionKey: props.masterUserPasswordEncryptionKey,
-      });
+    let login = props.masterUser ?? Login.fromUsername('admin');
+    if (!login.secret && !login.password) {
+      login = Login.fromSecret(new DatabaseSecret(this, 'Secret', {
+        username: login.username,
+        encryptionKey: login.encryptionKey,
+      }));
     }
+    const secret = login.secret;
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUsername,
-      masterUserPassword: secret
-        ? secret.secretValueFromJson('password').toString()
-        : props.masterUserPassword && props.masterUserPassword.toString(),
+      masterUsername: login.username,
+      masterUserPassword: login.password?.toString(),
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
@@ -985,26 +972,14 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
   readonly snapshotIdentifier: string;
 
   /**
-   * The master user name.
+   * Master user login details.
    *
-   * Specify this prop with the **current** master user name of the snapshot
-   * only when generating a new master user password with `generateMasterUserPassword`.
-   * The value will be set in the generated secret attached to the instance.
+   * Note - It is not possible to change the master username for a snapshot;
+   * however, it is possible to provide (or generate) a new password.
    *
-   * It is not possible to change the master user name of a RDS instance.
-   *
-   * @default - inherited from the snapshot
+   * @default - The existing username and password from the snapshot will be used.
    */
-  readonly masterUsername?: string;
-
-  /**
-   * Whether to generate a new master user password and store it in
-   * Secrets Manager. `masterUsername` must be specified with the **current**
-   * master user name of the snapshot when this property is set to true.
-   *
-   * @default false
-   */
-  readonly generateMasterUserPassword?: boolean;
+  readonly masterUser?: SnapshotLogin;
 }
 
 /**
@@ -1022,25 +997,17 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
 
-    let secret: DatabaseSecret | undefined;
-
-    if (props.generateMasterUserPassword) {
-      if (!props.masterUsername) { // We need the master username to include it in the generated secret
-        throw new Error('`masterUsername` must be specified when `generateMasterUserPassword` is set to true.');
-      }
-
-      if (props.masterUserPassword) {
-        throw new Error('Cannot specify `masterUserPassword` when `generateMasterUserPassword` is set to true.');
+    let login = props.masterUser;
+    let secret = login?.secret;
+    if (!secret && login?.generatePassword) {
+      if (!login.username) {
+        throw new Error('`username` must be specified when `generatePassword` is set to true');
       }
 
       secret = new DatabaseSecret(this, 'Secret', {
-        username: props.masterUsername,
-        encryptionKey: props.masterUserPasswordEncryptionKey,
+        username: login.username,
+        encryptionKey: login.encryptionKey,
       });
-    } else {
-      if (props.masterUsername) { // It's not possible to change the master username of a RDS instance
-        throw new Error('Cannot specify `masterUsername` when `generateMasterUserPassword` is set to false.');
-      }
     }
 
     const instance = new CfnDBInstance(this, 'Resource', {
@@ -1048,7 +1015,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
       dbSnapshotIdentifier: props.snapshotIdentifier,
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').toString()
-        : props.masterUserPassword && props.masterUserPassword.toString(),
+        : login?.password?.toString(),
     });
 
     this.instanceIdentifier = instance.ref;

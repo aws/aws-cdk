@@ -27,9 +27,7 @@ your instances will be launched privately or publicly:
 ```ts
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
-  masterUser: {
-    username: 'clusteradmin'
-  },
+  masterUser: rds.Login.fromUsername('clusteradmin'), // Optional - will default to admin
   instanceProps: {
     // optional, defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -76,7 +74,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-  masterUsername: 'syscdk',
+  masterUsername: rds.Login.fromUsername('syscdk'), // Optional - will default to admin
   vpc,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE
@@ -103,7 +101,6 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-  masterUsername: 'syscdk',
   vpc,
   maxAllocatedStorage: 200,
 });
@@ -211,7 +208,6 @@ The following example shows enabling IAM authentication for a database instance 
 ```ts
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
-  masterUsername: 'admin',
   vpc,
   iamAuthentication: true, // Optional - will be automatically set if you call grantConnect().
 });
@@ -240,7 +236,6 @@ const role = new iam.Role(stack, 'RDSDirectoryServicesRole', {
 });
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
-  masterUsername: 'admin',
   vpc,
   domain: 'd-????????', // The ID of the domain for the instance to join.
   domainRole: role, // Optional - will be create automatically if not provided.

@@ -419,8 +419,10 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
 export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
   /**
    * Username and password for the administrative user
+   *
+   * @default - A username of 'admin' and SecretsManager-generated password
    */
-  readonly masterUser: Login;
+  readonly masterUser?: Login;
 
   /**
    * Whether to enable storage encryption.
@@ -476,23 +478,20 @@ export class DatabaseCluster extends DatabaseClusterNew {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    let secret: DatabaseSecret | undefined;
-    if (!props.masterUser.password) {
-      secret = new DatabaseSecret(this, 'Secret', {
-        username: props.masterUser.username,
-        encryptionKey: props.masterUser.encryptionKey,
-      });
+    let login = props.masterUser ?? Login.fromUsername('admin');
+    if (!login.secret && !login.password) {
+      login = Login.fromSecret(new DatabaseSecret(this, 'Secret', {
+        username: login.username,
+        encryptionKey: login.encryptionKey,
+      }));
     }
+    const secret = login.secret;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       // Admin
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
-      masterUserPassword: secret
-        ? secret.secretValueFromJson('password').toString()
-        : (props.masterUser.password
-          ? props.masterUser.password.toString()
-          : undefined),
+      masterUsername: login.username,
+      masterUserPassword: login.password?.toString(),
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,

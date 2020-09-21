@@ -12,7 +12,6 @@ export = {
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-      masterUsername: 'admin',
       vpc,
     });
 
