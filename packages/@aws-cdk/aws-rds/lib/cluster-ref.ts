@@ -46,38 +46,50 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
  */
 export interface DatabaseClusterAttributes {
   /**
-   * The database port
-   */
-  readonly port: number;
-
-  /**
-   * The security groups of the database cluster
-   */
-  readonly securityGroups: ec2.ISecurityGroup[];
-
-  /**
    * Identifier for the cluster
    */
   readonly clusterIdentifier: string;
 
   /**
-   * Identifier for the instances
+   * The database port
+   *
+   * @default - none
    */
-  readonly instanceIdentifiers: string[];
+  readonly port?: number;
+
+  /**
+   * The security groups of the database cluster
+   *
+   * @default - no security groups
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Identifier for the instances
+   *
+   * @default - no instance identifiers
+   */
+  readonly instanceIdentifiers?: string[];
   // Actual underlying type: DBInstanceId[], but we have to type it more loosely for Java's benefit.
 
   /**
    * Cluster endpoint address
+   *
+   * @default - no endpoint address
    */
-  readonly clusterEndpointAddress: string;
+  readonly clusterEndpointAddress?: string;
 
   /**
    * Reader endpoint address
+   *
+   * @default - no reader address
    */
-  readonly readerEndpointAddress: string;
+  readonly readerEndpointAddress?: string;
 
   /**
    * Endpoint addresses of individual instances
+   *
+   * @default - no instance endpoints
    */
-  readonly instanceEndpointAddresses: string[];
+  readonly instanceEndpointAddresses?: string[];
 }

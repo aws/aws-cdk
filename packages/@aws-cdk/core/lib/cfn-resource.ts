@@ -300,6 +300,7 @@ export class CfnResource extends CfnRefElement {
             UpdatePolicy: capitalizePropertyNames(this, this.cfnOptions.updatePolicy),
             UpdateReplacePolicy: capitalizePropertyNames(this, this.cfnOptions.updateReplacePolicy),
             DeletionPolicy: capitalizePropertyNames(this, this.cfnOptions.deletionPolicy),
+            Version: this.cfnOptions.version,
             Metadata: ignoreEmpty(this.cfnOptions.metadata),
             Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId,
           }, props => {
@@ -428,6 +429,14 @@ export interface ICfnResourceOptions {
    * when it is replaced during a stack update operation.
    */
   updateReplacePolicy?: CfnDeletionPolicy;
+
+  /**
+   * The version of this resource.
+   * Used only for custom CloudFormation resources.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html
+   */
+  version?: string;
 
   /**
    * Metadata associated with the CloudFormation resource. This is not the same as the construct metadata which can be added

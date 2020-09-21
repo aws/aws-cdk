@@ -126,6 +126,28 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
       }
     }
 
+    if (healthCheck.healthyThresholdCount) {
+      const thresholdCount = healthCheck.healthyThresholdCount;
+      if (thresholdCount < 2 || thresholdCount > 10) {
+        ret.push(`Healthy Threshold Count '${thresholdCount}' not supported. Must be a number between 2 and 10.`);
+      }
+    }
+
+    if (healthCheck.unhealthyThresholdCount) {
+      const thresholdCount = healthCheck.unhealthyThresholdCount;
+      if (thresholdCount < 2 || thresholdCount > 10) {
+        ret.push(`Unhealthy Threshold Count '${thresholdCount}' not supported. Must be a number between 2 and 10.`);
+      }
+    }
+
+    if (healthCheck.healthyThresholdCount && healthCheck.unhealthyThresholdCount &&
+        healthCheck.healthyThresholdCount !== healthCheck.unhealthyThresholdCount) {
+      ret.push([
+        `Healthy and Unhealthy Threshold Counts must be the same: ${healthCheck.healthyThresholdCount}`,
+        `is not equal to ${healthCheck.unhealthyThresholdCount}.`,
+      ].join(' '));
+    }
+
     if (!healthCheck.protocol) {
       return ret;
     }

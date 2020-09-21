@@ -82,5 +82,5 @@ async function testCloudAssembly({ env }: { env?: string, versionReporting?: boo
     }],
   });
 
-  return await cloudExec.synthesize();
+  return cloudExec.synthesize();
 }

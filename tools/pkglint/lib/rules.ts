@@ -482,7 +482,7 @@ export class JSIIProjectReferences extends ValidationRule {
       this.name,
       pkg,
       'jsii.projectReferences',
-      pkg.json.name !== 'monocdk-experiment',
+      pkg.json.name !== 'monocdk-experiment' && pkg.json.name !== 'aws-cdk-lib',
     );
   }
 }
@@ -862,6 +862,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info',
+      '@aws-cdk/yaml-cfn',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {

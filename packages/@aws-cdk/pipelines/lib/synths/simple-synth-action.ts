@@ -1,10 +1,11 @@
+import * as crypto from 'crypto';
 import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Construct, Stack } from '@aws-cdk/core';
 import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
 
@@ -273,32 +274,48 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
     const testCommands = this.props.testCommands ?? [];
     const synthCommand = this.props.synthCommand;
 
-    const project = new codebuild.PipelineProject(scope, 'CdkBuildProject', {
-      projectName: this.props.projectName ?? this.props.projectName,
-      environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0, ...this.props.environment },
-      buildSpec: codebuild.BuildSpec.fromObject({
-        version: '0.2',
-        phases: {
-          pre_build: {
-            commands: filterEmpty([
-              this.props.subdirectory ? `cd ${this.props.subdirectory}` : '',
-              ...installCommands,
-            ]),
-          },
-          build: {
-            commands: filterEmpty([
-              ...buildCommands,
-              ...testCommands,
-              synthCommand,
-            ]),
-          },
+    const buildSpec = codebuild.BuildSpec.fromObject({
+      version: '0.2',
+      phases: {
+        pre_build: {
+          commands: filterEmpty([
+            this.props.subdirectory ? `cd ${this.props.subdirectory}` : '',
+            ...installCommands,
+          ]),
         },
-        artifacts: renderArtifacts(this),
-      }),
-      environmentVariables: {
-        ...copyEnvironmentVariables(...this.props.copyEnvironmentVariables || []),
-        ...this.props.environmentVariables,
+        build: {
+          commands: filterEmpty([
+            ...buildCommands,
+            ...testCommands,
+            synthCommand,
+          ]),
+        },
       },
+      artifacts: renderArtifacts(this),
+    });
+
+    const environment = { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0, ...this.props.environment };
+
+    const environmentVariables = {
+      ...copyEnvironmentVariables(...this.props.copyEnvironmentVariables || []),
+      ...this.props.environmentVariables,
+    };
+
+    // A hash over the values that make the CodeBuild Project unique (and necessary
+    // to restart the pipeline if one of them changes). projectName is not necessary to include
+    // here because the pipeline will definitely restart if projectName changes.
+    // (Resolve tokens)
+    const projectConfigHash = hash(Stack.of(scope).resolve({
+      environment,
+      buildSpecString: buildSpec.toBuildSpec(),
+      environmentVariables,
+    }));
+
+    const project = new codebuild.PipelineProject(scope, 'CdkBuildProject', {
+      projectName: this.props.projectName,
+      environment,
+      buildSpec,
+      environmentVariables,
     });
 
     if (this.props.rolePolicyStatements !== undefined) {
@@ -313,6 +330,14 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       actionName: this.actionProperties.actionName,
       input: this.props.sourceArtifact,
       outputs: [this.props.cloudAssemblyArtifact, ...(this.props.additionalArtifacts ?? []).map(a => a.artifact)],
+
+      // Inclusion of the hash here will lead to the pipeline structure for any changes
+      // made the config of the underlying CodeBuild Project.
+      // Hence, the pipeline will be restarted. This is necessary if the users
+      // adds (for example) build or test commands to the buildspec.
+      environmentVariables: {
+        _PROJECT_CONFIG_HASH: { value: projectConfigHash },
+      },
       project,
     });
     this._actionProperties = this._action.actionProperties;
@@ -431,4 +456,10 @@ export interface StandardYarnSynthOptions extends SimpleSynthOptions {
    * @default 'npx cdk synth'
    */
   readonly synthCommand?: string;
+}
+
+function hash<A>(obj: A) {
+  const d = crypto.createHash('sha256');
+  d.update(JSON.stringify(obj));
+  return d.digest('hex');
 }

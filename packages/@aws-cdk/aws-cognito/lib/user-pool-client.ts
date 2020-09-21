@@ -57,6 +57,12 @@ export interface OAuthSettings {
   readonly callbackUrls?: string[];
 
   /**
+   * List of allowed logout URLs for the identity providers.
+   * @default - no logout URLs
+   */
+  readonly logoutUrls?: string[];
+
+  /**
    * OAuth scopes that are allowed with this client.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-idp-settings.html
    * @default [OAuthScope.PHONE,OAuthScope.EMAIL,OAuthScope.OPENID,OAuthScope.PROFILE,OAuthScope.COGNITO_ADMIN]
@@ -315,6 +321,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
       allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
       callbackUrLs: callbackUrls && callbackUrls.length > 0 ? callbackUrls : undefined,
+      logoutUrLs: props.oAuth?.logoutUrls,
       allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
       supportedIdentityProviders: this.configureIdentityProviders(props),
