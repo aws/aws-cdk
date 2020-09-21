@@ -21,7 +21,7 @@ import { Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
 /* eslint-disable max-len */
-/* eslint-disable no-shadow */ // yargs
+/* eslint-disable @typescript-eslint/no-shadow */ // yargs
 
 async function parseCommandLineArguments() {
   // Use the following configuration for array arguments:

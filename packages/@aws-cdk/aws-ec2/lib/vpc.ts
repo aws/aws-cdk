@@ -1445,7 +1445,7 @@ export class Subnet extends Resource implements ISubnet {
   /**
    * Import existing subnet from id.
    */
-  // eslint-disable-next-line no-shadow
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   public static fromSubnetId(scope: Construct, id: string, subnetId: string): ISubnet {
     return this.fromSubnetAttributes(scope, id, { subnetId });
   }
