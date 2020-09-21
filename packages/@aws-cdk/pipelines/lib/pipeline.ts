@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Annotations, App, CfnOutput, Construct, PhysicalName, Stack, Stage, Aspects } from '@aws-cdk/core';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
@@ -63,6 +64,22 @@ export interface CdkPipelineProps {
    * @default - Latest version
    */
   readonly cdkCliVersion?: string;
+
+  /**
+   * The VPC where to execute the CdkPipeline actions.
+   *
+   * @default - No VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
 }
 
 /**
@@ -153,6 +170,8 @@ export class CdkPipeline extends Construct {
       cdkCliVersion: props.cdkCliVersion,
       pipeline: this._pipeline,
       projectName: maybeSuffix(props.pipelineName, '-publish'),
+      vpc: props.vpc,
+      subnetSelection: props.subnetSelection,
     });
 
     Aspects.of(this).add({ visit: () => this._assets.removeAssetsStageIfEmpty() });
@@ -300,6 +319,8 @@ interface AssetPublishingProps {
   readonly pipeline: codepipeline.Pipeline;
   readonly cdkCliVersion?: string;
   readonly projectName?: string;
+  readonly vpc?: ec2.IVpc;
+  readonly subnetSelection?: ec2.SubnetSelection;
 }
 
 /**
@@ -367,6 +388,8 @@ class AssetPublishing extends Construct {
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
         role: this.assetRoles[command.assetType],
+        vpc: this.props.vpc,
+        subnetSelection: this.props.subnetSelection,
       });
       this.stage.addAction(action);
     }

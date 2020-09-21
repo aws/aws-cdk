@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Stack } from '@aws-cdk/core';
@@ -88,6 +89,22 @@ export interface SimpleSynthOptions {
    * @default - No policy statements added to CodeBuild Project Role
    */
   readonly rolePolicyStatements?: iam.PolicyStatement[];
+
+  /**
+   * The VPC where to execute the SimpleSynth.
+   *
+   * @default - No VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
 }
 
 /**
@@ -186,6 +203,8 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       ...options,
       installCommand: options.installCommand ?? 'npm ci',
       synthCommand: options.synthCommand ?? 'npx cdk synth',
+      vpc: options.vpc,
+      subnetSelection: options.subnetSelection,
     });
   }
 
@@ -201,6 +220,8 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       ...options,
       installCommand: options.installCommand ?? 'yarn install --frozen-lockfile',
       synthCommand: options.synthCommand ?? 'npx cdk synth',
+      vpc: options.vpc,
+      subnetSelection: options.subnetSelection,
     });
   }
 
@@ -314,6 +335,8 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
     const project = new codebuild.PipelineProject(scope, 'CdkBuildProject', {
       projectName: this.props.projectName,
       environment,
+      vpc: this.props.vpc,
+      subnetSelection: this.props.subnetSelection,
       buildSpec,
       environmentVariables,
     });

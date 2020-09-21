@@ -135,6 +135,9 @@ class MyPipelineStack extends Stack {
         sourceArtifact,
         cloudAssemblyArtifact,
 
+        // Optionally specify a VPC in which the action runs
+        vpc: new ec2.Vpc(this, 'NpmSynthVpc'),
+
         // Use this if you need a build step (if you're not using ts-node
         // or if you have TypeScript Lambdas that need to be compiled).
         buildCommand: 'npm run build',
