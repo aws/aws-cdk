@@ -32,9 +32,20 @@ export class FromCloudFormation {
   // nothing to for any but return it
   public static getAny(value: any) { return value; }
 
-  // nothing to do - if 'value' is not a boolean or a Token,
-  // a validator should report that at runtime
-  public static getBoolean(value: any): boolean | IResolvable { return value; }
+  public static getBoolean(value: any): boolean | IResolvable {
+    if (typeof value === 'string') {
+      // CloudFormation allows passing strings as boolean
+      switch (value) {
+        case 'true': return true;
+        case 'false': return false;
+        default: throw new Error(`Expected 'true' or 'false' for boolean value, got: '${value}'`);
+      }
+    }
+
+    // in all other cases, just return the value,
+    // and let a validator handle if it's not a boolean
+    return value;
+  }
 
   public static getDate(value: any): Date | IResolvable {
     // if the date is a deploy-time value, just return it
@@ -80,9 +91,8 @@ export class FromCloudFormation {
     }
 
     // return a number, if the input can be parsed as one
-    let parsedValue;
     if (typeof value === 'string') {
-      parsedValue = parseFloat(value);
+      const parsedValue = parseFloat(value);
       if (!isNaN(parsedValue)) {
         return parsedValue;
       }
@@ -274,6 +284,7 @@ export class CfnParser {
     cfnOptions.updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
     cfnOptions.deletionPolicy = this.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
     cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
+    cfnOptions.version = this.parseValue(resourceAttributes.Version);
     cfnOptions.metadata = this.parseValue(resourceAttributes.Metadata);
 
     // handle Condition
@@ -338,8 +349,8 @@ export class CfnParser {
       autoScalingRollingUpdate: parseAutoScalingRollingUpdate(policy.AutoScalingRollingUpdate),
       autoScalingScheduledAction: parseAutoScalingScheduledAction(policy.AutoScalingScheduledAction),
       codeDeployLambdaAliasUpdate: parseCodeDeployLambdaAliasUpdate(policy.CodeDeployLambdaAliasUpdate),
-      enableVersionUpgrade: policy.EnableVersionUpgrade,
-      useOnlineResharding: policy.UseOnlineResharding,
+      enableVersionUpgrade: FromCloudFormation.getBoolean(policy.EnableVersionUpgrade),
+      useOnlineResharding: FromCloudFormation.getBoolean(policy.UseOnlineResharding),
     });
 
     function parseAutoScalingReplacingUpdate(p: any): CfnAutoScalingReplacingUpdate | undefined {
@@ -359,7 +370,7 @@ export class CfnParser {
         minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent),
         pauseTime: FromCloudFormation.getString(p.PauseTime),
         suspendProcesses: FromCloudFormation.getStringArray(p.SuspendProcesses),
-        waitOnResourceSignals: p.WaitOnResourceSignals,
+        waitOnResourceSignals: FromCloudFormation.getBoolean(p.WaitOnResourceSignals),
       });
     }
 
