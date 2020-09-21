@@ -1,4 +1,4 @@
-import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { DeploymentController, FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
@@ -59,6 +59,14 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
+
+  /**
+   * Specifies which deployment controller to use for the service. For more information, see
+   * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
+   *
+   * @default - Rolling update (ECS)
+   */
+  readonly deploymentController?: DeploymentController;
 }
 
 /**
@@ -106,6 +114,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       platformVersion: props.platformVersion,
+      deploymentController: props.deploymentController,
     });
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);
