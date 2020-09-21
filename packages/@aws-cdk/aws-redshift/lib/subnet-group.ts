@@ -66,8 +66,7 @@ export class ClusterSubnetGroup extends Resource implements IClusterSubnetGroup 
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE });
 
-    // Using 'Subnets' as the resource id for historical reasons (usage from `Cluster`).
-    const subnetGroup = new CfnClusterSubnetGroup(this, 'Subnets', {
+    const subnetGroup = new CfnClusterSubnetGroup(this, 'Default', {
       description: props.description,
       subnetIds,
     });
@@ -75,7 +74,6 @@ export class ClusterSubnetGroup extends Resource implements IClusterSubnetGroup 
       applyToUpdateReplacePolicy: true,
     });
 
-    this.node.defaultChild = subnetGroup;
     this.clusterSubnetGroupName = subnetGroup.ref;
   }
 }

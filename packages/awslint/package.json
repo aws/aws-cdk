@@ -16,12 +16,12 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "^1.11.0",
+    "@jsii/spec": "^1.12.0",
     "camelcase": "^6.0.0",
     "colors": "^1.4.0",
     "fs-extra": "^9.0.1",
-    "jsii-reflect": "^1.11.0",
-    "yargs": "^15.4.1"
+    "jsii-reflect": "^1.12.0",
+    "yargs": "^16.0.3"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
