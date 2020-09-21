@@ -543,6 +543,24 @@ class MyPipelineStack extends Stack {
 }
 ```
 
+### Developing the pipeline
+
+The self-mutation feature of the `CdkPipeline` might at times get in the way
+of the pipeline development workflow. Each change to the pipeline must be pushed
+to git, otherwise, after the pipeline was updated using `cdk deploy`, it will
+automatically revert to the state found in git.
+
+To make the development more convenient, the self-mutation feature can be turned
+off temporarily, by passing `selfMutating: false` property, example:
+
+```ts
+const pipeline = new CdkPipeline(this, 'Pipeline', {
+  selfMutating: false,
+  ...  
+});
+```
+
+
 ## CDK Environment Bootstrapping
 
 An *environment* is an *(account, region)* pair where you want to deploy a
