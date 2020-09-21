@@ -1,13 +1,14 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { StackOutput } from '../stage';
 
 /**
- * Properties for ShellScriptValidation
+ * Properties for ShellScriptAction
  */
 export interface ShellScriptActionProps {
   /**
@@ -72,6 +73,22 @@ export interface ShellScriptActionProps {
    * @default - No policy statements
    */
   readonly rolePolicyStatements?: iam.PolicyStatement[];
+
+  /**
+   * The VPC where to execute the specified script.
+   *
+   * @default - No VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection
 }
 
 /**
@@ -150,6 +167,8 @@ export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
 
     this._project = new codebuild.PipelineProject(scope, 'Project', {
       environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0 },
+      vpc: this.props.vpc,
+      subnetSelection: this.props.subnetSelection,
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
         phases: {
