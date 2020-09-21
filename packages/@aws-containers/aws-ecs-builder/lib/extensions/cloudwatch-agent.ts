@@ -46,14 +46,15 @@ export class CloudwatchAgentExtension extends ServiceExtension {
     });
 
     // Add permissions that allow the cloudwatch agent to publish metrics
-    const policy = new iam.Policy(this.scope, `${this.parentService.id}-publish-metrics`);
-
-    const statement = new iam.PolicyStatement();
-    statement.addResources('*');
-    statement.addActions('cloudwatch:PutMetricData');
-
-    policy.addStatements(statement);
-    policy.attachToRole(taskDefinition.taskRole);
+    new iam.Policy(this.scope, `${this.parentService.id}-publish-metrics`, {
+      roles: [taskDefinition.taskRole],
+      statements: [
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['cloudwatch:PutMetricData'],
+        }),
+      ],
+    });
   }
 
   public resolveContainerDependencies() {

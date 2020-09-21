@@ -208,14 +208,15 @@ export class AppMeshExtension extends ServiceExtension {
     // Modify the task definition role to allow the Envoy sidecar to get
     // configuration from the Envoy control plane, for this particular
     // mesh only.
-    const policy = new iam.Policy(this.scope, `${this.parentService.id}-envoy-to-appmesh`);
-
-    const statement = new iam.PolicyStatement();
-    statement.addResources(this.mesh.meshArn);
-    statement.addActions('appmesh:StreamAggregatedResources');
-
-    policy.addStatements(statement);
-    policy.attachToRole(taskDefinition.taskRole);
+    new iam.Policy(this.scope, `${this.parentService.id}-envoy-to-appmesh`, {
+      roles: [taskDefinition.taskRole],
+      statements: [
+        new iam.PolicyStatement({
+          resources: [this.mesh.meshArn],
+          actions: ['appmesh:StreamAggregatedResources'],
+        }),
+      ],
+    });
 
     // Raise the number of open file descriptors allowed. This is
     // necessary when the Envoy proxy is handling large amounts of
