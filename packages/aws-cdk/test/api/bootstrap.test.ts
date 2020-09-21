@@ -1,6 +1,6 @@
 import { CreateChangeSetInput } from 'aws-sdk/clients/cloudformation';
 import { Bootstrapper } from '../../lib/api/bootstrap';
-import { fromYAML } from '../../lib/serialize';
+import { deserializeStructure } from '../../lib/serialize';
 import { MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
 
 const env = {
@@ -38,7 +38,7 @@ beforeEach(() => {
         ],
       })),
     createChangeSet: jest.fn((info: CreateChangeSetInput) => {
-      changeSetTemplate = fromYAML(info.TemplateBody as string);
+      changeSetTemplate = deserializeStructure(info.TemplateBody as string);
       return {};
     }),
     describeChangeSet: jest.fn(() => ({
