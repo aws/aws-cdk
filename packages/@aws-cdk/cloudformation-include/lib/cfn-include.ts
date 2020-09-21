@@ -634,7 +634,11 @@ export class CfnInclude extends core.CfnElement {
       l1Instance = this.createNestedStack(logicalId, cfnParser);
     } else {
       const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
-      if (l1ClassFqn) {
+      // The AWS::CloudFormation::CustomResource type corresponds to the CfnCustomResource class.
+      // Unfortunately, it's quite useless; it only has a single property, ServiceToken.
+      // For that reason, even the CustomResource class from @core doesn't use it!
+      // So, special-case the handling of this one resource type
+      if (l1ClassFqn && resourceAttributes.Type !== 'AWS::CloudFormation::CustomResource') {
         const options: cfn_parse.FromCloudFormationOptions = {
           parser: cfnParser,
         };
