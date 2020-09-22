@@ -1,5 +1,4 @@
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { IBucket } from './bucket';
 
 /**
@@ -13,7 +12,7 @@ export interface IBucketNotificationDestination {
    * idempotency in each destination.
    * @param bucket The bucket object to bind to
    */
-  bind(scope: Construct, bucket: IBucket): BucketNotificationDestinationConfig;
+  bind(scope: cdk.Construct, bucket: IBucket): BucketNotificationDestinationConfig;
 }
 
 /**
