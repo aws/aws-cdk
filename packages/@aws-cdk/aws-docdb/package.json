@@ -91,6 +91,11 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
+  "awslint": {
+    "exclude": [
+      "attribute-tag:@aws-cdk/aws-docdb.DatabaseSecret.secretName"
+    ]
+  },
   "stability": "experimental",
   "maturity": "experimental",
   "awscdkio": {

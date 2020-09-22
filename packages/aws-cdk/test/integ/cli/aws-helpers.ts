@@ -121,7 +121,7 @@ async function awsCall<
   const cfn = new ctor(config);
   const response = cfn[call](request);
   try {
-    return await response.promise();
+    return response.promise();
   } catch (e) {
     const newErr = new Error(`${call}(${JSON.stringify(request)}): ${e.message}`);
     (newErr as any).code = e.code;

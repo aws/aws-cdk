@@ -1,3 +1,155 @@
+# CloudFormation Resource Specification v18.3.0
+
+## New Resource Types
+
+* AWS::ApplicationInsights::Application
+* AWS::CloudFront::CachePolicy
+* AWS::CloudFront::OriginRequestPolicy
+* AWS::CloudFront::RealtimeLogConfig
+* AWS::CodeGuruReviewer::RepositoryAssociation
+* AWS::EC2::CarrierGateway
+* AWS::EKS::FargateProfile
+* AWS::GameLift::GameServerGroup
+* AWS::IoT::Authorizer
+* AWS::Kendra::DataSource
+* AWS::Kendra::Faq
+* AWS::Kendra::Index
+* AWS::Route53Resolver::ResolverQueryLoggingConfig
+* AWS::Route53Resolver::ResolverQueryLoggingConfigAssociation
+* AWS::SSO::Assignment
+* AWS::SSO::PermissionSet
+* AWS::SageMaker::MonitoringSchedule
+
+## Attribute Changes
+
+* AWS::GameLift::Alias AliasId (__added__)
+* AWS::IoT::Certificate Id (__added__)
+* AWS::KMS::Key KeyId (__added__)
+* AWS::Lambda::EventSourceMapping Id (__added__)
+* AWS::OpsWorksCM::Server Id (__added__)
+* AWS::Route53::HealthCheck HealthCheckId (__added__)
+* AWS::StepFunctions::StateMachine Arn (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::Authorizer AuthorizerPayloadFormatVersion (__added__)
+* AWS::ApiGatewayV2::Authorizer EnableSimpleResponses (__added__)
+* AWS::ApiGatewayV2::Integration IntegrationSubtype (__added__)
+* AWS::Cognito::UserPoolClient AccessTokenValidity (__added__)
+* AWS::Cognito::UserPoolClient IdTokenValidity (__added__)
+* AWS::Cognito::UserPoolClient TokenValidityUnits (__added__)
+* AWS::EC2::NetworkInterface Ipv6Addresses.DuplicatesAllowed (__added__)
+* AWS::EC2::NetworkInterface Ipv6Addresses.ItemType (__added__)
+* AWS::EC2::NetworkInterface Ipv6Addresses.Type (__changed__)
+  * Old: InstanceIpv6Address
+  * New: List
+* AWS::EC2::TransitGateway MulticastSupport (__added__)
+* AWS::ECR::Repository ImageScanningConfiguration (__added__)
+* AWS::ECR::Repository ImageTagMutability (__added__)
+* AWS::ECR::Repository RepositoryPolicyText.PrimitiveType (__deleted__)
+* AWS::ECR::Repository Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::TaskDefinition TaskDefinitionStatus (__deleted__)
+* AWS::EKS::Nodegroup LaunchTemplate (__added__)
+* AWS::GuardDuty::Detector DataSources (__added__)
+* AWS::IoT::Certificate CACertificatePem (__added__)
+* AWS::IoT::Certificate CertificateMode (__added__)
+* AWS::IoT::Certificate CertificatePem (__added__)
+* AWS::IoT::Certificate CertificateSigningRequest.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KMS::Key KeyPolicy.PrimitiveType (__deleted__)
+* AWS::KMS::Key Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::EventSourceMapping Topics (__added__)
+* AWS::Neptune::DBCluster AssociatedRoles (__added__)
+* AWS::OpsWorksCM::Server EngineAttributes.DuplicatesAllowed (__added__)
+* AWS::OpsWorksCM::Server SecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::OpsWorksCM::Server SubnetIds.DuplicatesAllowed (__added__)
+* AWS::OpsWorksCM::Server Tags.DuplicatesAllowed (__added__)
+* AWS::Route53::HealthCheck HealthCheckConfig.Type (__deleted__)
+* AWS::Route53::HealthCheck HealthCheckConfig.PrimitiveType (__added__)
+* AWS::Route53::HealthCheck HealthCheckConfig.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::Route53::HealthCheck HealthCheckTags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::SNS::Topic FifoTopic (__deleted__)
+* AWS::SageMaker::Model EnableNetworkIsolation (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct PathName (__added__)
+* AWS::StepFunctions::StateMachine StateMachineType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::StepFunctions::StateMachine Tags.DuplicatesAllowed (__added__)
+* AWS::Transfer::Server SecurityPolicyName (__added__)
+
+## Property Type Changes
+
+* AWS::ECS::TaskDefinition.EfsVolumeConfiguration (__removed__)
+* AWS::ECS::TaskDefinition.Options (__removed__)
+* AWS::Route53::HealthCheck.AlarmIdentifier (__removed__)
+* AWS::Route53::HealthCheck.HealthCheckConfig (__removed__)
+* AWS::Cognito::UserPoolClient.TokenValidityUnits (__added__)
+* AWS::ECS::TaskDefinition.EFSVolumeConfiguration (__added__)
+* AWS::ECS::TaskDefinition.EnvironmentFile (__added__)
+* AWS::EKS::Nodegroup.LaunchTemplateSpecification (__added__)
+* AWS::GuardDuty::Detector.CFNDataSourceConfigurations (__added__)
+* AWS::GuardDuty::Detector.CFNS3LogsConfiguration (__added__)
+* AWS::MSK::Cluster.Sasl (__added__)
+* AWS::MSK::Cluster.Scram (__added__)
+* AWS::Macie::FindingsFilter.FindingsFilterListItem (__added__)
+* AWS::Neptune::DBCluster.DBClusterRole (__added__)
+* AWS::SSM::Association.ParameterValues (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior RealtimeLogConfigArn (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior RealtimeLogConfigArn (__added__)
+* AWS::CodeCommit::Repository.Code BranchName (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition EnvironmentFiles (__added__)
+* AWS::ECS::TaskDefinition.AuthorizationConfig Iam (__deleted__)
+* AWS::ECS::TaskDefinition.AuthorizationConfig IAM (__added__)
+* AWS::ECS::TaskDefinition.AuthorizationConfig AccessPointId.Documentation (__changed__)
+  * Old: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#specify-efs-config
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-authorizationconfig.html#cfn-ecs-taskdefinition-authorizationconfig-accesspointid
+* AWS::ECS::TaskDefinition.FirelensConfiguration Options.PrimitiveItemType (__added__)
+* AWS::ECS::TaskDefinition.FirelensConfiguration Options.Type (__changed__)
+  * Old: Options
+  * New: Map
+* AWS::ECS::TaskDefinition.LogConfiguration Options.PrimitiveItemType (__added__)
+* AWS::ECS::TaskDefinition.LogConfiguration Options.Type (__changed__)
+  * Old: Options
+  * New: Map
+* AWS::ECS::TaskDefinition.Volume EfsVolumeConfiguration (__deleted__)
+* AWS::ECS::TaskDefinition.Volume EFSVolumeConfiguration (__added__)
+* AWS::FSx::FileSystem.LustreConfiguration DriveCacheType (__added__)
+* AWS::GameLift::Alias.RoutingStrategy Type.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::EventSourceMapping.DestinationConfig OnFailure.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::EventSourceMapping.OnFailure Destination.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MSK::Cluster.ClientAuthentication Sasl (__added__)
+* AWS::Route53::HealthCheck.HealthCheckTag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthchecktag.html#cfn-route53-healthchecktags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthchecktag.html#cfn-route53-healthcheck-healthchecktag-key
+* AWS::Route53::HealthCheck.HealthCheckTag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthchecktag.html#cfn-route53-healthchecktags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthchecktag.html#cfn-route53-healthcheck-healthchecktag-value
+* AWS::StepFunctions::StateMachine.CloudWatchLogsLogGroup LogGroupArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-logdestination-cloudwatchlogsloggroup.html#cfn-stepfunctions-statemachine-logdestination-cloudwatchlogsloggroup-loggrouparn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-cloudwatchlogsloggroup.html#cfn-stepfunctions-statemachine-cloudwatchlogsloggroup-loggrouparn
+* AWS::StepFunctions::StateMachine.CloudWatchLogsLogGroup LogGroupArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::StepFunctions::StateMachine.TracingConfiguration Enabled.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 # CloudFormation Resource Specification v16.3.0
 
 ## New Resource Types

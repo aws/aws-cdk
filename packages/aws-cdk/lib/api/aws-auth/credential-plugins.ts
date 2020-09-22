@@ -45,7 +45,7 @@ export class CredentialPlugins {
       // Backwards compatibility: if the plugin returns a ProviderChain, resolve that chain.
       // Otherwise it must have returned credentials.
       if ((providerOrCreds as any).resolvePromise) {
-        return await (providerOrCreds as any).resolvePromise();
+        return (providerOrCreds as any).resolvePromise();
       }
       return providerOrCreds;
     }
