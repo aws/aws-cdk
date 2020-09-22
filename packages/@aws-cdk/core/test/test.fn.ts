@@ -35,6 +35,24 @@ export = nodeunit.testCase({
       test.done();
     },
   },
+  'FnParseDomainName': {
+    'parse domain name from resolved url'(test: nodeunit.Test) {
+      test.deepEqual(Fn.parseDomainName('https://test.com/'), 'test.com');
+      test.done();
+    },
+    'parse domain name on token'(test: nodeunit.Test) {
+      const stack = new Stack();
+      const url = Fn.join('//', [
+        'https:',
+        Fn.join('/', [
+          'test.com',
+          'graphql',
+        ]),
+      ]);
+      test.deepEqual(Fn.parseDomainName(stack.resolve(url)), 'test.com');
+      test.done();
+    },
+  },
   'FnJoin': {
     'rejects empty list of arguments to join'(test: nodeunit.Test) {
       test.throws(() => Fn.join('.', []));
