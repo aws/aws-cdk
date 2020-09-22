@@ -147,6 +147,17 @@ export class FactName {
   public static readonly DLC_REPOSITORY_ACCOUNT = 'dlcRepositoryAccount';
 
   /**
+   * The ID of the AWS account that owns the public ECR repository containing the
+   * AWS Deep Learning Containers images in this region.
+   */
+  public static readonly APPMESH_REPOSITORY_ACCOUNT = 'appmeshRepositoryAccounts';
+
+  /**
+   * The image name and tag of the latest Envoy release from AWS App Mesh.
+   */
+  public static readonly APPMESH_LATEST_ENVOY_IMAGE = 'appmeshLatestEnvoyImage';
+
+  /**
    * The name of the regional service principal for a given service.
    *
    * @param service the service name, either simple (e.g: `s3`, `codedeploy`) or qualified (e.g: `s3.amazonaws.com`).

@@ -133,3 +133,56 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
   'cn-north-1': '727897471807',
   'cn-northwest-1': '727897471807',
 };
+
+/**
+ * ECR Repositories where App Mesh Images are hosted
+ *
+ * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
+ */
+export const APPMESH_REPOSITORY_ACCOUNTS: { [region: string]: string} = {
+  'us-east-1': '840364872350',
+  'us-east-2': '840364872350',
+  'us-west-1': '840364872350',
+  'us-west-2': '840364872350',
+  'ca-central-1': '840364872350',
+  'eu-west-1': '840364872350',
+  'eu-west-2': '840364872350',
+  'eu-west-3': '840364872350',
+  'eu-central-1': '840364872350',
+  'eu-north-1': '840364872350',
+  'sa-east-1': '840364872350',
+  'ap-south-1': '840364872350',
+  'ap-northeast-1': '840364872350',
+  'ap-northeast-2': '840364872350',
+  'ap-southeast-1': '840364872350',
+  'ap-southeast-2': '840364872350',
+
+  'me-south-1': '772975370895',
+  'ap-east-1': '856666278305',
+};
+
+/**
+ * Latest Envoy Image released by the App Mesh Team
+ *
+ * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
+ */
+export const APPMESH_LATEST_ENVOY_IMAGES: { [region: string]: string} = {
+  'us-east-1': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'us-east-2': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'us-west-1': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'us-west-2': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'ca-central-1': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'eu-west-1': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'eu-west-2': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'eu-west-3': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'eu-central-1': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'eu-north-1': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'sa-east-1': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'ap-south-1': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'ap-northeast-1': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'ap-northeast-2': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'ap-southeast-1': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'ap-southeast-2': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'me-south-1': 'aws-appmesh-envoy:v1.15.0.0-prod',
+  'ap-east-1': 'aws-appmesh-envoy:v1.15.0.0-prod',
+};

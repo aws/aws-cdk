@@ -3,6 +3,8 @@ import * as fs from 'fs-extra';
 import { Default } from '../lib/default';
 import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
 import {
+  APPMESH_LATEST_ENVOY_IMAGES,
+  APPMESH_REPOSITORY_ACCOUNTS,
   AWS_CDK_METADATA, AWS_OLDER_REGIONS, DLC_REPOSITORY_ACCOUNTS, ELBV2_ACCOUNTS, PARTITION_MAP,
   ROUTE_53_BUCKET_WEBSITE_ZONE_IDS,
 } from './fact-tables';
@@ -53,6 +55,10 @@ async function main(): Promise<void> {
     registerFact(region, 'ELBV2_ACCOUNT', ELBV2_ACCOUNTS[region]);
 
     registerFact(region, 'DLC_REPOSITORY_ACCOUNT', DLC_REPOSITORY_ACCOUNTS[region]);
+
+    registerFact(region, 'APPMESH_REPOSITORY_ACCOUNT', APPMESH_REPOSITORY_ACCOUNTS[region]);
+
+    registerFact(region, 'APPMESH_LATEST_ENVOY_IMAGE', APPMESH_LATEST_ENVOY_IMAGES[region]);
 
     const vpcEndpointServiceNamePrefix = `${domainSuffix.split('.').reverse().join('.')}.vpce`;
     registerFact(region, 'VPC_ENDPOINT_SERVICE_NAME_PREFIX', vpcEndpointServiceNamePrefix);
