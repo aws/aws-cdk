@@ -148,7 +148,7 @@ export class FactName {
 
   /**
    * The ID of the AWS account that owns the public ECR repository containing the
-   * AWS Deep Learning Containers images in this region.
+   * AWS App Mesh Envoy images in this region.
    */
   public static readonly APPMESH_REPOSITORY_ACCOUNT = 'appmeshRepositoryAccounts';
 
