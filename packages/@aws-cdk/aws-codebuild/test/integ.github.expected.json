@@ -112,8 +112,7 @@
           "Location": "https://github.com/aws/aws-cdk.git",
           "ReportBuildStatus": false,
           "Type": "GITHUB"
-        },
-        "EncryptionKey": "alias/aws/s3"
+        }
       }
     }
   }
