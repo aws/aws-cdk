@@ -12,10 +12,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **rds:** removed protected member `subnetGroup` from DatabaseCluster classes
 * **rds:** Cluster now has deletionProtection enabled if its removal policy is `RETAIN`
 * **rds**: Instance now has deletionProtection enabled by default only if its removal policy is `RETAIN`
-* **cfnspec:** Fixed ECS task definition within the L1 layer. Fixed the casing of the `efsVolumeConfiguration` property to match the spec published by cloudformation. Fixed the type of the `DockerVolumeConfiguration.labels` property to allow users to properly apply labels.
 
-* **ecs**: Task definitions configured with an `efsVolumeConfiguration` will incur a resource replacement due to wrong casing of the underlying resources introduced in this [PR](https://github.com/aws/aws-cdk/pull/8467/files). This replacement will in turn cause a rolling update to any running tasks that use that definition.
-* **ecs**: `DockerVolumeConfiguration.labels` changed from an **array** to a **map**. This was a long standing latent bug and in fact configuring labels in the old format would have resulted in the wrong behavior.
 * **eks:** Clusters previously running k8s version other than `1.15` and bottlerocket AMI(`aws-k8s-1.15` variant) will trigger AMI and node replacement.
 
 ### Features
@@ -71,6 +68,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **rds:** standardize removal policies and deletion protection ([#10412](https://github.com/aws/aws-cdk/issues/10412)) ([75811c1](https://github.com/aws/aws-cdk/commit/75811c1325c3d857cf9891048474201b2f28477a))
 * **redshift:** cluster defaultChild broken after adding subnet group ([#10389](https://github.com/aws/aws-cdk/issues/10389)) ([746dfe2](https://github.com/aws/aws-cdk/commit/746dfe2b8d0fced5d2a9e4b760f477b0abcb6df9)), closes [#10340](https://github.com/aws/aws-cdk/issues/10340)
 * **s3-notifications:** lambda destination creates a circular dependency when bucket and lambda are in different stacks ([#10426](https://github.com/aws/aws-cdk/issues/10426)) ([7222b5d](https://github.com/aws/aws-cdk/commit/7222b5d62c70719f9a7b3af5a80840d750b109b1))
+* **ecs**: `DockerVolumeConfiguration.labels` changed from an **array** to a **map**. This was a long standing latent bug and in fact configuring labels in the old format would have resulted in the wrong behavior. ([#10385](https://github.com/aws/aws-cdk/pull/10385))
 
 ## [1.63.0](https://github.com/aws/aws-cdk/compare/v1.62.0...v1.63.0) (2020-09-12)
 
