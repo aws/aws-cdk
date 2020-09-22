@@ -134,12 +134,6 @@ export class CdkPipeline extends Construct {
     if (!props.sourceAction && (!props.codePipeline || props.codePipeline.stages.length < 1)) {
       throw new Error('You must pass a \'sourceAction\' (or a \'codePipeline\' that already has a Source stage)');
     }
-    if (!props.synthAction && (!props.codePipeline || props.codePipeline.stages.length < 2)) {
-      // This looks like a weirdly specific requirement, but actually the underlying CodePipeline
-      // requires that a Pipeline has at least 2 stages. We're just hitching onto upstream
-      // requirements to do this check.
-      throw new Error('You must pass a \'synthAction\' (or a \'codePipeline\' that already has a Build stage)');
-    }
 
     if (props.sourceAction) {
       this._pipeline.addStage({
