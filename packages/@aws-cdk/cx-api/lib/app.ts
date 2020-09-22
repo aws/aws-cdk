@@ -13,7 +13,7 @@ export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
 /**
  * Disable the collection and reporting of version information.
  *
- * @deprecated Use ENABLE_VERSION_REPORTING instead
+ * @deprecated Use VERSION_REPORTING_ENABLED_CONTEXT instead
  */
 export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';
 
