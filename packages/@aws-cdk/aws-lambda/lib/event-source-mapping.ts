@@ -17,7 +17,7 @@ export interface EventSourceMappingOptions {
    *
    * Valid Range: Minimum value of 1. Maximum value of 10000.
    *
-   * @default - Amazon Kinesis and Amazon DynamoDB is 100 records.
+   * @default - Amazon Kinesis, Amazon DynamoDB, and Amazon MSK is 100 records.
    * Both the default and maximum for Amazon SQS are 10 messages.
    */
   readonly batchSize?: number;
@@ -44,12 +44,12 @@ export interface EventSourceMappingOptions {
   readonly enabled?: boolean;
 
   /**
-   * The position in the DynamoDB or Kinesis stream where AWS Lambda should
+   * The position in the DynamoDB, Kinesis or MSK stream where AWS Lambda should
    * start reading.
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html#Kinesis-GetShardIterator-request-ShardIteratorType
    *
-   * @default - Required for Amazon Kinesis and Amazon DynamoDB Streams sources.
+   * @default - Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources.
    */
   readonly startingPosition?: StartingPosition;
 
@@ -91,6 +91,13 @@ export interface EventSourceMappingOptions {
    * @default 1
    */
   readonly parallelizationFactor?: number;
+
+  /**
+   * The name of the Kafka topic.
+   *
+   * @default - no topic
+   */
+  readonly kafkaTopic?: string;
 }
 
 /**
@@ -185,13 +192,14 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
+      topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }
 }
 
 /**
- * The position in the DynamoDB or Kinesis stream where AWS Lambda should start
+ * The position in the DynamoDB, Kinesis or MSK stream where AWS Lambda should start
  * reading.
  */
 export enum StartingPosition {
