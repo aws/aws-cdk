@@ -228,8 +228,6 @@ export = {
     'allows using a Token for the branch name'(test: Test) {
       const stack = new Stack();
 
-      const branch = Lazy.stringValue({ produce: () => 'branch' });
-
       const sourceOutput = new codepipeline.Artifact();
       new codepipeline.Pipeline(stack, 'P', {
         stages: [
