@@ -418,11 +418,19 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
  */
 export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
   /**
-   * Username and password for the administrative user
+   * Login information for the administrative user
    *
+   * @deprecated use ``login`` instead
    * @default - A username of 'admin' and SecretsManager-generated password
    */
   readonly masterUser?: Login;
+
+  /**
+   * Login information for the administrative user
+   *
+   * @default - A username of 'admin' and SecretsManager-generated password
+   */
+  readonly login?: Login;
 
   /**
    * Whether to enable storage encryption.
@@ -478,7 +486,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    let login = props.masterUser ?? Login.fromUsername('admin');
+    let login = props.login ?? props.masterUser ?? Login.fromUsername('admin');
     if (!login.secret && !login.password) {
       login = Login.fromSecret(new DatabaseSecret(this, 'Secret', {
         username: login.username,

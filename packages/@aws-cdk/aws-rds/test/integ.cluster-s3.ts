@@ -16,7 +16,7 @@ const exportBucket = new s3.Bucket(stack, 'ExportBucket');
 
 const cluster = new DatabaseCluster(stack, 'Database', {
   engine: DatabaseClusterEngine.AURORA,
-  masterUser: {
+  login: {
     username: 'admin',
     password: cdk.SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6'),
   },

@@ -880,11 +880,11 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
  */
 export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
   /**
-   * Username and password for the administrative user
+   * Login information for the administrative user
    *
    * @default - A username of 'admin' and SecretsManager-generated password
    */
-  readonly masterUser?: Login;
+  readonly login?: Login;
 
   /**
    * For supported engines, specifies the character set to associate with the
@@ -924,7 +924,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
-    let login = props.masterUser ?? Login.fromUsername('admin');
+    let login = props.login ?? Login.fromUsername('admin');
     if (!login.secret && !login.password) {
       login = Login.fromSecret(new DatabaseSecret(this, 'Secret', {
         username: login.username,
@@ -979,7 +979,7 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
    *
    * @default - The existing username and password from the snapshot will be used.
    */
-  readonly masterUser?: SnapshotLogin;
+  readonly login?: SnapshotLogin;
 }
 
 /**
@@ -997,7 +997,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
 
-    let login = props.masterUser;
+    let login = props.login;
     let secret = login?.secret;
     if (!secret && login?.generatePassword) {
       if (!login.username) {

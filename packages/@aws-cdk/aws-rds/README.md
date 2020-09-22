@@ -138,6 +138,35 @@ method:
 const rule = instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
 ```
 
+### Login credentials
+
+By default, database instances and clusters will have `admin` user with an auto-generated password.
+An alternative username (and password) may be specified for the admin user instead of the default.
+
+The following examples use a `DatabaseInstance`, but the same usage is applicable to `DatabaseCluster`.
+
+```ts
+const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
+new rds.DatabaseInstance(this, 'InstanceWithUsername', {
+  engine,
+  vpc,
+  login: rds.Login.fromUsername('postgres'), // Creates an admin user of postgres with a generated password
+});
+
+new rds.DatabaseInstance(this, 'InstanceWithUsernameAndPassword', {
+  engine,
+  vpc,
+  login: rds.Login.fromUsername('postgres', SecretValue.ssmSecure('/dbPassword', 1)), // Use password from SSM
+});
+
+const mySecret = secretsmanager.Secret.fromSecretName(this, 'DBSecret', 'myDBLoginInfo');
+new rds.DatabaseInstance(this, 'InstanceWithSecretLogin', {
+  engine,
+  vpc,
+  login: rds.Login.fromSecret(mySecret), // Get both username and password from existing secret
+});
+```
+
 ### Connecting
 
 To control who can access the cluster or instance, use the `.connections` attribute. RDS databases have
