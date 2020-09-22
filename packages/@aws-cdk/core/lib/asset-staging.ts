@@ -52,6 +52,15 @@ export class AssetStaging extends Construct {
   public static readonly BUNDLING_OUTPUT_DIR = '/asset-output';
 
   /**
+   * Clears the asset hash cache
+   */
+  public static clearAssetHashCache() {
+    this.assetHashCache = {};
+  }
+
+  private static assetHashCache: { [key: string]: string } = {};
+
+  /**
    * The path to the asset (stringinfied token).
    *
    * If asset staging is disabled, this will just be the original path.
@@ -82,6 +91,8 @@ export class AssetStaging extends Construct {
 
   private readonly bundleDir?: string;
 
+  private cacheHash?: string;
+
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
 
@@ -102,14 +113,27 @@ export class AssetStaging extends Construct {
       const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
       const runBundling = bundlingStacks.includes(Stack.of(this).stackName) || bundlingStacks.includes('*');
       if (runBundling) {
-        // Determine the source hash in advance of bundling if the asset hash type
-        // is SOURCE so that the bundler can opt to re-use its previous output.
-        const sourceHash = hashType === AssetHashType.SOURCE
-          ? this.calculateHash(hashType, props.assetHash, props.bundling)
-          : undefined;
+        // Check if we already bundled this source path in this App (e.g. the same
+        // asset is used in multiple stacks). In this case we can completely skip
+        // file system and bundling operations.
+        this.cacheHash = crypto.createHash('sha256')
+          .update(path.resolve(this.sourcePath))
+          .update(JSON.stringify(props.bundling))
+          .digest('hex');
+        if (AssetStaging.assetHashCache[this.cacheHash]) {
+          this.assetHash = AssetStaging.assetHashCache[this.cacheHash];
+        } else {
+          // Determine the source hash in advance of bundling if the asset hash type
+          // is SOURCE so that the bundler can opt to re-use its previous output.
+          const sourceHash = hashType === AssetHashType.SOURCE
+            ? this.calculateHash(hashType, props.assetHash, props.bundling)
+            : undefined;
+          this.bundleDir = this.bundle(props.bundling, outdir, sourceHash);
+          this.assetHash = sourceHash ?? this.calculateHash(hashType, props.assetHash, props.bundling);
+          // Cache the hash, especially useful when hash type is OUTPUT
+          AssetStaging.assetHashCache[this.cacheHash] = this.assetHash;
+        }
 
-        this.bundleDir = this.bundle(props.bundling, outdir, sourceHash);
-        this.assetHash = sourceHash ?? this.calculateHash(hashType, props.assetHash, props.bundling);
         this.relativePath = renderAssetFilename(this.assetHash);
         this.stagedPath = this.relativePath;
       } else { // Bundling is skipped

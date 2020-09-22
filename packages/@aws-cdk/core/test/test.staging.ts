@@ -4,7 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
 import * as sinon from 'sinon';
-import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, Stack } from '../lib';
+import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, FileSystem, Stack } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -24,6 +24,7 @@ process.env.CDK_DOCKER = `${__dirname}/docker-stub.sh`;
 export = {
 
   'tearDown'(cb: any) {
+    AssetStaging.clearAssetHashCache();
     if (fs.existsSync(STUB_INPUT_FILE)) {
       fs.unlinkSync(STUB_INPUT_FILE);
     }
@@ -209,6 +210,56 @@ export = {
       'stack.template.json',
       'tree.json',
     ]);
+
+    test.done();
+  },
+
+  'bundler uses asset cache with OUTPUT'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const fingerPrintSpy = sinon.spy(FileSystem, 'fingerprint');
+
+    // WHEN
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack, 'AssetDuplicate', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+
+    // We're testing that docker was run exactly once even though there are two bundling assets
+    // and that the hash is based on the output
+    test.deepEqual(
+      readDockerStubInputConcat(),
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
+
+    test.deepEqual(fs.readdirSync(assembly.directory), [
+      'asset.33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f',
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
+
+    // Only one fingerprinting
+    test.ok(fingerPrintSpy.calledOnce);
 
     test.done();
   },
