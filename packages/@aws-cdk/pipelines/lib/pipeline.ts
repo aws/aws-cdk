@@ -72,6 +72,7 @@ export interface CdkPipelineProps {
    * @default true
    */
   readonly crossAccountKeys?: boolean;
+  // @deprecated(v2): switch to default false
 
   /**
    * CDK CLI version to use in pipeline
