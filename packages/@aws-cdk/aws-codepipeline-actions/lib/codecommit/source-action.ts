@@ -160,7 +160,7 @@ export class CodeCommitSourceAction extends Action {
       let candidate = '';
       let counter = 0;
       do {
-        candidate = this.eventIdFromPrefix(`${baseId}-Branch${counter}-`);
+        candidate = this.eventIdFromPrefix(`${baseId}{counter}`);
         counter += 1;
       } while (this.props.repository.node.tryFindChild(candidate) !== undefined);
       return candidate;
