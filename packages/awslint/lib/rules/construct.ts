@@ -24,6 +24,7 @@ export class ConstructReflection {
     return typeRef.fqn;
   }
 
+  /** @deprecated */
   public readonly ROOT_CLASS: reflect.ClassType; // cdk.Construct
 
   public readonly fqn: string;
@@ -93,9 +94,15 @@ constructLinter.add({
 
     const expectedParams = new Array<MethodSignatureParameterExpectation>();
 
+    let baseType;
+    if (e.options.flags?.includes('use-base-constructs') && !initializer.parentType.name.startsWith('Cfn')) {
+      baseType = e.ctx.core.baseConstructClass;
+    } else {
+      baseType = e.ctx.core.constructClass;
+    }
     expectedParams.push({
       name: 'scope',
-      type: e.ctx.core.constructClass.fqn,
+      type: baseType.fqn,
     });
 
     expectedParams.push({

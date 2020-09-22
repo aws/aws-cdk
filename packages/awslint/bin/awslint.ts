@@ -19,6 +19,7 @@ async function main() {
     .command('list', 'list all available rules')
     .option('include', { alias: 'i', type: 'array', desc: 'evaluate only this rule(s)', default: ['*'] })
     .option('exclude', { alias: 'x', type: 'array', desc: 'do not evaludate these rules (takes priority over --include)', default: [] })
+    .option('flag', { type: 'array', desc: 'flags to apply when passing rules', default: [] })
     .option('save', { type: 'boolean', desc: 'updates package.json with "exclude" statements for all failing rules', default: false })
     .option('verbose', { alias: 'v', type: 'boolean', desc: 'verbose output (prints all assertions)', default: false })
     .option('quiet', { alias: 'q', type: 'boolean', desc: 'quiet mode - shows only errors', default: false })
@@ -110,6 +111,7 @@ async function main() {
     results.push(...ALL_RULES_LINTER.eval(assembly, {
       include: args.include,
       exclude: args.exclude,
+      flags: args.flag,
     }));
 
     // Sort errors to the top (highest severity first)
