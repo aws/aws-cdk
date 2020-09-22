@@ -24,7 +24,9 @@ export class ConstructReflection {
     return typeRef.fqn;
   }
 
-  /** @deprecated */
+  /**
+   * @deprecated - use `CoreTypes.constructClass()` or `CoreTypes.baseConstructClass()` as appropriate
+   */
   public readonly ROOT_CLASS: reflect.ClassType; // cdk.Construct
 
   public readonly fqn: string;
