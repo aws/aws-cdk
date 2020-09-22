@@ -28,4 +28,16 @@ export interface IEngine {
    *   (which means the major version of the engine is also not known)
    */
   readonly parameterGroupFamily?: string;
+
+  /**
+   * The family this engine belongs to,
+   * like "MYSQL", or "POSTGRESQL".
+   * This property is used when creating
+   * a Database Proxy.
+   * Most engines don't belong to any family
+   * (and because of that, you can't create Database Proxies for their Clusters or Instances).
+   *
+   * @default - the engine doesn't belong to any family
+   */
+  readonly engineFamily?: string;
 }

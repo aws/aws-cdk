@@ -281,7 +281,11 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
  * Abstract base for ``DatabaseCluster`` and ``DatabaseClusterFromSnapshot``
  */
 abstract class DatabaseClusterNew extends DatabaseClusterBase {
-
+  /**
+   * The engine for this Cluster.
+   * Never undefined.
+   */
+  public readonly engine?: IClusterEngine;
   public readonly instanceIdentifiers: string[] = [];
   public readonly instanceEndpoints: Endpoint[] = [];
 
@@ -331,6 +335,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
+    this.engine = props.engine;
 
     this.newCfnProps = {
       // Basic
@@ -359,6 +364,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
+  public readonly engine?: IClusterEngine;
 
   private readonly _clusterEndpoint?: Endpoint;
   private readonly _clusterReadEndpoint?: Endpoint;
@@ -375,6 +381,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
       securityGroups: attrs.securityGroups,
       defaultPort,
     });
+    this.engine = attrs.engine;
 
     this._clusterEndpoint = (attrs.clusterEndpointAddress && attrs.port) ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
     this._clusterReadEndpoint = (attrs.readerEndpointAddress && attrs.port) ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;

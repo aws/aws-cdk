@@ -3,8 +3,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { IDatabaseCluster } from './cluster-ref';
+import { IEngine } from './engine';
 import { IDatabaseInstance } from './instance';
-import { CfnDBCluster, CfnDBInstance, CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
+import { CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
 
 /**
  * SessionPinningFilter
@@ -47,7 +48,7 @@ export class ProxyTarget {
    * @param instance RDS database instance
    */
   public static fromInstance(instance: IDatabaseInstance): ProxyTarget {
-    return new ProxyTarget(instance);
+    return new ProxyTarget(instance, undefined);
   }
 
   /**
@@ -59,34 +60,34 @@ export class ProxyTarget {
     return new ProxyTarget(undefined, cluster);
   }
 
-  private constructor(private readonly dbInstance?: IDatabaseInstance, private readonly dbCluster?: IDatabaseCluster) {}
+  private constructor(
+    private readonly dbInstance: IDatabaseInstance | undefined,
+    private readonly dbCluster: IDatabaseCluster | undefined) {
+  }
 
   /**
    * Bind this target to the specified database proxy.
    */
   public bind(_: DatabaseProxy): ProxyTargetConfig {
-    let engine: string | undefined;
-    if (this.dbCluster && this.dbInstance) {
-      throw new Error('Proxy cannot target both database cluster and database instance.');
-    } else if (this.dbCluster) {
-      engine = (this.dbCluster.node.defaultChild as CfnDBCluster).engine;
+    let engine: IEngine | undefined;
+    if (this.dbCluster) {
+      engine = this.dbCluster.engine;
     } else if (this.dbInstance) {
-      engine = (this.dbInstance.node.defaultChild as CfnDBInstance).engine;
+      engine = this.dbInstance.engine;
     }
 
-    let engineFamily;
-    switch (engine) {
-      case 'aurora':
-      case 'aurora-mysql':
-      case 'mysql':
-        engineFamily = 'MYSQL';
-        break;
-      case 'aurora-postgresql':
-      case 'postgres':
-        engineFamily = 'POSTGRESQL';
-        break;
-      default:
-        throw new Error(`Unsupported engine type - ${engine}`);
+    if (!engine) {
+      const errorResource = this.dbCluster ?? this.dbInstance;
+      throw new Error(`Could not determine engine for proxy target '${errorResource?.node.path}'. ` +
+        'Please provide it explicitly when importing the resource');
+    }
+
+    const engineFamily = engine.engineFamily;
+    if (!engineFamily) {
+      const engineVersion = engine.engineVersion?.fullVersion
+        ? ` (version: ${engine.engineVersion.fullVersion})`
+        : '';
+      throw new Error(`Engine '${engine.engineType}'${engineVersion} does not support proxies`);
     }
 
     return {
@@ -105,12 +106,14 @@ export interface ProxyTargetConfig {
    * The engine family of the database instance or cluster this proxy connects with.
    */
   readonly engineFamily: string;
+
   /**
    * The database instances to which this proxy connects.
    * Either this or `dbClusters` will be set and the other `undefined`.
    * @default - `undefined` if `dbClusters` is set.
    */
   readonly dbInstances?: IDatabaseInstance[];
+
   /**
    * The database clusters to which this proxy connects.
    * Either this or `dbInstances` will be set and the other `undefined`.
