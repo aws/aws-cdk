@@ -3,16 +3,19 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { CfnDeletionPolicy, Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
+import { applyRemovalPolicy, defaultDeletionProtection, engineDescription, setupS3ImportExport } from './private/util';
 import { PerformanceInsightRetention, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
-import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
+import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
+import { ISubnetGroup, SubnetGroup } from './subnet-group';
 
 /**
  * A database instance
@@ -466,7 +469,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * Indicates whether the DB instance should have deletion protection enabled.
    *
-   * @default true
+   * @default - true if ``removalPolicy`` is RETAIN, false otherwise
    */
   readonly deletionProtection?: boolean;
 
@@ -499,6 +502,77 @@ export interface DatabaseInstanceNewProps {
    * @default - The role will be created for you if {@link DatabaseInstanceNewProps#domain} is specified
    */
   readonly domainRole?: iam.IRole;
+
+  /**
+   * Existing subnet group for the instance.
+   *
+   * @default - a new subnet group will be created.
+   */
+  readonly subnetGroup?: ISubnetGroup;
+
+  /**
+   * Role that will be associated with this DB instance to enable S3 import.
+   * This feature is only supported by the Microsoft SQL Server, Oracle, and PostgreSQL engines.
+   *
+   * This property must not be used if `s3ImportBuckets` is used.
+   *
+   * For Microsoft SQL Server:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html
+   * For Oracle:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.html
+   *
+   * @default - New role is created if `s3ImportBuckets` is set, no role is defined otherwise
+   */
+  readonly s3ImportRole?: iam.IRole;
+
+  /**
+   * S3 buckets that you want to load data from.
+   * This feature is only supported by the Microsoft SQL Server, Oracle, and PostgreSQL engines.
+   *
+   * This property must not be used if `s3ImportRole` is used.
+   *
+   * For Microsoft SQL Server:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html
+   * For Oracle:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.html
+   *
+   * @default - None
+   */
+  readonly s3ImportBuckets?: s3.IBucket[];
+
+  /**
+   * Role that will be associated with this DB instance to enable S3 export.
+   * This feature is only supported by the Microsoft SQL Server and Oracle engines.
+   *
+   * This property must not be used if `s3ExportBuckets` is used.
+   *
+   * For Microsoft SQL Server:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html
+   * For Oracle:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html
+   *
+   * @default - New role is created if `s3ExportBuckets` is set, no role is defined otherwise
+   */
+  readonly s3ExportRole?: iam.IRole;
+
+  /**
+   * S3 buckets that you want to load data into.
+   * This feature is only supported by the Microsoft SQL Server and Oracle engines.
+   *
+   * This property must not be used if `s3ExportRole` is used.
+   *
+   * For Microsoft SQL Server:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html
+   * For Oracle:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html
+   *
+   * @default - None
+   */
+  readonly s3ExportBuckets?: s3.IBucket[];
 }
 
 /**
@@ -535,11 +609,11 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     }
     this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
 
-    const { subnetIds } = props.vpc.selectSubnets(this.vpcPlacement);
-
-    const subnetGroup = new CfnDBSubnetGroup(this, 'SubnetGroup', {
-      dbSubnetGroupDescription: `Subnet group for ${this.node.id} database`,
-      subnetIds,
+    const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'SubnetGroup', {
+      description: `Subnet group for ${this.node.id} database`,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcPlacement,
+      removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
     });
 
     const securityGroups = props.securityGroups || [new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -560,7 +634,6 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       });
     }
 
-    const deletionProtection = props.deletionProtection !== undefined ? props.deletionProtection : true;
     const storageType = props.storageType || StorageType.GP2;
     const iops = storageType === StorageType.IO1 ? (props.iops || 1000) : undefined;
 
@@ -592,9 +665,9 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
       dbInstanceClass: Lazy.stringValue({ produce: () => `db.${this.instanceType}` }),
       dbInstanceIdentifier: props.instanceIdentifier,
-      dbSubnetGroupName: subnetGroup.ref,
+      dbSubnetGroupName: subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
-      deletionProtection,
+      deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
       enableIamDatabaseAuthentication: Lazy.anyValue({ produce: () => this.enableIamAuthentication }),
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
@@ -602,7 +675,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
       monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
       multiAz: props.multiAz,
-      optionGroupName: props.optionGroup && props.optionGroup.optionGroupName,
+      optionGroupName: props.optionGroup?.optionGroupName,
       performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights
         ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
@@ -727,12 +800,38 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    props.engine.bindToInstance(this, props);
+    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, true);
+    const engineConfig = props.engine.bindToInstance(this, {
+      ...props,
+      s3ImportRole,
+      s3ExportRole,
+    });
+
+    const instanceAssociatedRoles: CfnDBInstance.DBInstanceRoleProperty[] = [];
+    const engineFeatures = engineConfig.features;
+    if (s3ImportRole) {
+      if (!engineFeatures?.s3Import) {
+        throw new Error(`Engine '${engineDescription(props.engine)}' does not support S3 import`);
+      }
+      instanceAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: engineFeatures?.s3Import });
+    }
+    if (s3ExportRole) {
+      if (!engineFeatures?.s3Export) {
+        throw new Error(`Engine '${engineDescription(props.engine)}' does not support S3 export`);
+      }
+      // Only add the export role and feature if they are different from the import role & feature.
+      if (s3ImportRole !== s3ExportRole || engineFeatures.s3Import !== engineFeatures?.s3Export) {
+        instanceAssociatedRoles.push({ roleArn: s3ExportRole.roleArn, featureName: engineFeatures?.s3Export });
+      }
+    }
+
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
     const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
     this.sourceCfnProps = {
       ...this.newCfnProps,
+      associatedRoles: instanceAssociatedRoles.length > 0 ? instanceAssociatedRoles : undefined,
+      optionGroupName: engineConfig.optionGroup?.optionGroupName,
       allocatedStorage: props.allocatedStorage ? props.allocatedStorage.toString() : '100',
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
@@ -864,7 +963,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    applyInstanceDeletionPolicy(instance, props.removalPolicy);
+    applyRemovalPolicy(instance, props.removalPolicy);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -960,7 +1059,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    applyInstanceDeletionPolicy(instance, props.removalPolicy);
+    applyRemovalPolicy(instance, props.removalPolicy);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -1035,7 +1134,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    applyInstanceDeletionPolicy(instance, props.removalPolicy);
+    applyRemovalPolicy(instance, props.removalPolicy);
 
     this.setLogRetention();
   }
@@ -1050,15 +1149,4 @@ function renderProcessorFeatures(features: ProcessorFeatures): CfnDBInstance.Pro
   const featuresList = Object.entries(features).map(([name, value]) => ({ name, value: value.toString() }));
 
   return featuresList.length === 0 ? undefined : featuresList;
-}
-
-function applyInstanceDeletionPolicy(cfnDbInstance: CfnDBInstance, removalPolicy: RemovalPolicy | undefined): void {
-  if (!removalPolicy) {
-    // the default DeletionPolicy is 'Snapshot', which is fine,
-    // but we should also make it 'Snapshot' for UpdateReplace policy
-    cfnDbInstance.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
-  } else {
-    // just apply whatever removal policy the customer explicitly provided
-    cfnDbInstance.applyRemovalPolicy(removalPolicy);
-  }
 }

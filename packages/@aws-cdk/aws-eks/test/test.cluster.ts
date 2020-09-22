@@ -20,6 +20,61 @@ const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
 
+  'cluster connections include both control plane and cluster security group'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      version: eks.KubernetesVersion.V1_17,
+    });
+
+    test.deepEqual(cluster.connections.securityGroups.map(sg => stack.resolve(sg.securityGroupId)), [
+      { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
+      { 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] },
+    ]);
+
+    test.done();
+
+  },
+
+  'can declare a security group from a different stack'(test: Test) {
+
+    class ClusterStack extends cdk.Stack {
+      public eksCluster: eks.Cluster;
+
+      constructor(scope: cdk.Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
+        super(scope, id);
+        this.eksCluster = new eks.Cluster(this, 'Cluster', {
+          version: eks.KubernetesVersion.V1_17,
+          securityGroup: props.sg,
+          vpc: props.vpc,
+        });
+      }
+    }
+
+    class NetworkStack extends cdk.Stack {
+
+      public readonly securityGroup: ec2.ISecurityGroup;
+      public readonly vpc: ec2.IVpc;
+
+      constructor(scope: cdk.Construct, id: string) {
+        super(scope, id);
+        this.vpc = new ec2.Vpc(this, 'Vpc');
+        this.securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.vpc });
+      }
+
+    }
+
+    const { app } = testFixture();
+    const networkStack = new NetworkStack(app, 'NetworkStack');
+    new ClusterStack(app, 'ClusterStack', { sg: networkStack.securityGroup, vpc: networkStack.vpc });
+
+    // make sure we can synth (no circular dependencies between the stacks)
+    app.synth();
+
+    test.done();
+  },
+
   'can declare a manifest with a token from a different stack than the cluster that depends on the cluster stack'(test: Test) {
 
     class ClusterStack extends cdk.Stack {
@@ -538,6 +593,29 @@ export = {
       bootstrapOptions: {},
     }), /bootstrapOptions is not supported for Bottlerocket/);
     test.done();
+  },
+
+  'import cluster with new kubectl private subnets'(test: Test) {
+
+    const { stack, vpc } = testFixture();
+
+    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster',
+      kubectlPrivateSubnetIds: vpc.privateSubnets.map(s => s.subnetId),
+    });
+
+    test.deepEqual(cluster.kubectlPrivateSubnets?.map(s => stack.resolve(s.subnetId)), [
+      { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+      { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+    ]);
+
+    test.deepEqual(cluster.kubectlPrivateSubnets?.map(s => s.node.id), [
+      'KubectlSubnet0',
+      'KubectlSubnet1',
+    ]);
+
+    test.done();
+
   },
 
   'exercise export/import'(test: Test) {
@@ -1987,7 +2065,7 @@ export = {
         VpcConfig: {
           SecurityGroupIds: [
             {
-              Ref: 'referencetoStackCluster1KubectlProviderSecurityGroupDF05D03AGroupId',
+              Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId',
             },
           ],
           SubnetIds: [
@@ -2102,7 +2180,7 @@ export = {
         VpcConfig: {
           SecurityGroupIds: [
             {
-              Ref: 'referencetoStackCluster1KubectlProviderSecurityGroupDF05D03AGroupId',
+              Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId',
             },
           ],
           SubnetIds: [

@@ -35,7 +35,7 @@ async function defaultStartExecution(req: AWS.StepFunctions.StartExecutionInput)
     sfn = new AWS.StepFunctions(awsSdkConfig);
   }
 
-  return await sfn.startExecution(req).promise();
+  return sfn.startExecution(req).promise();
 }
 
 async function defaultInvokeFunction(req: AWS.Lambda.InvocationRequest): Promise<AWS.Lambda.InvocationResponse> {
@@ -43,7 +43,7 @@ async function defaultInvokeFunction(req: AWS.Lambda.InvocationRequest): Promise
     lambda = new AWS.Lambda(awsSdkConfig);
   }
 
-  return await lambda.invoke(req).promise();
+  return lambda.invoke(req).promise();
 }
 
 export let startExecution = defaultStartExecution;

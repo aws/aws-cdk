@@ -66,13 +66,6 @@ describe('with custom Source stage in existing Pipeline', () => {
     });
   });
 
-  test('synth action is required', () => {
-    // WHEN
-    expect(() => {
-      new cdkp.CdkPipeline(pipelineStack, 'Cdk', { cloudAssemblyArtifact, codePipeline });
-    }).toThrow(/You must pass a 'synthAction'/);
-  });
-
   test('Work with synthAction', () => {
     // WHEN
     new cdkp.CdkPipeline(pipelineStack, 'Cdk', {
