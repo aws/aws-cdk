@@ -37,7 +37,7 @@ export interface AppProps {
   /**
    * Include runtime versioning information in the Stacks of this app
    *
-   * @depreacted use `versionReporting` instead
+   * @deprecated use `versionReporting` instead
    * @default Value of 'aws:cdk:version-reporting' context key
    */
   readonly runtimeInfo?: boolean;
