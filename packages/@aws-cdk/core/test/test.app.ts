@@ -3,8 +3,8 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { CfnResource, Construct, Stack, StackProps } from '../lib';
 import { Annotations } from '../lib/annotations';
-import { MetadataResource } from '../lib/private/metadata-resource';
 import { App, AppProps } from '../lib/app';
+import { MetadataResource } from '../lib/private/metadata-resource';
 
 function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {
   const app = new App({

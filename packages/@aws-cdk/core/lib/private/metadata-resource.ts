@@ -80,7 +80,6 @@ function formatModules(runtime: cxapi.RuntimeInfo): string {
   const modules = new Array<string>();
 
   // inject toolkit version to list of modules
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const cliVersion = process.env[cxapi.CLI_VERSION_ENV];
   if (cliVersion) {
     modules.push(`aws-cdk=${cliVersion}`);

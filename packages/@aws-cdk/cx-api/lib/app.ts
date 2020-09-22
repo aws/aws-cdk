@@ -12,8 +12,15 @@ export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
 
 /**
  * Disable the collection and reporting of version information.
+ *
+ * @deprecated Use ENABLE_VERSION_REPORTING instead
  */
 export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';
+
+/**
+ * Enable the collection and reporting of version information.
+ */
+export const VERSION_REPORTING_ENABLED_CONTEXT = 'aws:cdk:version-reporting';
 
 /**
  * If this is set, asset staging is disabled. This means that assets will not be copied to

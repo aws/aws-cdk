@@ -126,6 +126,14 @@ export interface StackProps {
    * @default false
    */
   readonly terminationProtection?: boolean;
+
+  /**
+   * Include runtime versioning information in this Stack
+   *
+   * @default `versionReporting setting of containing `App`, or value of
+   * 'aws:cdk:version-reporting' context key
+   */
+  readonly versionReporting?: boolean;
 }
 
 /**
@@ -280,6 +288,16 @@ export class Stack extends Construct implements ITaggable {
   public readonly synthesizer: IStackSynthesizer;
 
   /**
+   * Whether version reporting is enabled for this stack
+   *
+   * Controls whether the CDK Metadata resource is injected
+   *
+   * @internal
+   */
+  public readonly _versionReportingEnabled: boolean;
+
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -367,6 +385,10 @@ export class Stack extends Construct implements ITaggable {
       : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
+
+    // Not for nested stacks
+    this._versionReportingEnabled = (props.versionReporting ?? this.node.tryGetContext(cxapi.VERSION_REPORTING_ENABLED_CONTEXT))
+      && !this.nestedStackParent;
 
     this.synthesizer = props.synthesizer ?? (newStyleSynthesisContext
       ? new DefaultStackSynthesizer()
