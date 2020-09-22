@@ -94,11 +94,10 @@ export interface EventSourceMappingOptions {
 
   /**
    * The name of the Kafka topic.
-   * Maximum of 1
    *
-   * @default - no topics
+   * @default - no topic
    */
-  readonly topics?: string[];
+  readonly kafkaTopic?: string;
 }
 
 /**
@@ -172,12 +171,6 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       }
     });
 
-    props.topics !== undefined && cdk.withResolved(props.topics, (topics) => {
-      if (topics.length !== 1) {
-        throw new Error(`topics must contain 1 value, got ${topics.length}`);
-      }
-    });
-
 
     let destinationConfig;
 
@@ -199,7 +192,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
-      topics: props.topics,
+      topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }

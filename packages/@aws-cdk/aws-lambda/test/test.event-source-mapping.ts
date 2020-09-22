@@ -1,3 +1,4 @@
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Code, EventSourceMapping, Function, Runtime } from '../lib';
@@ -186,48 +187,12 @@ export = {
     test.done();
   },
 
-  'throws if topics is empty'(test: Test) {
+  'accepts if kafkaTopic is a parameter'(test: Test) {
     const stack = new cdk.Stack();
-    const fn = new Function(stack, 'fn', {
-      handler: 'index.handler',
-      code: Code.fromInline('exports.handler = ${handler.toString()}'),
-      runtime: Runtime.NODEJS_10_X,
+    const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
+      type: 'String',
     });
 
-    test.throws(() =>
-      new EventSourceMapping(
-        stack,
-        'test',
-        {
-          target: fn,
-          eventSourceArn: '',
-          topics: [],
-        }), /topics must contain 1 value, got 0/);
-
-    test.done();
-  },
-  'throws if topics contains more than 1 item'(test: Test) {
-    const stack = new cdk.Stack();
-    const fn = new Function(stack, 'fn', {
-      handler: 'index.handler',
-      code: Code.fromInline('exports.handler = ${handler.toString()}'),
-      runtime: Runtime.NODEJS_10_X,
-    });
-
-    test.throws(() =>
-      new EventSourceMapping(
-        stack,
-        'test',
-        {
-          target: fn,
-          eventSourceArn: '',
-          topics: ['topic-a', 'topic-b'],
-        }), /topics must contain 1 value, got 2/);
-
-    test.done();
-  },
-  'accepts if topics is a token'(test: Test) {
-    const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = ${handler.toString()}'),
@@ -237,8 +202,14 @@ export = {
     new EventSourceMapping(stack, 'test', {
       target: fn,
       eventSourceArn: '',
-      topics: cdk.Lazy.listValue({ produce: () => ['topic-a'] }),
+      kafkaTopic: topicNameParam.valueAsString,
     });
+
+    expect(stack).to(haveResourceLike('AWS::Lambda::EventSourceMapping', {
+      Topics: [{
+        Ref: 'TopicNameParam',
+      }],
+    }));
 
     test.done();
   },
