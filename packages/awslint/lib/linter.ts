@@ -2,6 +2,17 @@ import * as util from 'util';
 import { PrimitiveType } from '@jsii/spec';
 import * as reflect from 'jsii-reflect';
 
+/**
+ * The list of valid flags for awslint
+ */
+export enum Flag {
+  /**
+   * Constructs are subclasses of the "constructs" module, instead
+   * of the "@aws-cdk/core" module.
+   */
+  USE_CONSTRUCTS_MODULE = 'use-constructs-module',
+}
+
 export interface LinterOptions {
   /**
    * List of rules to include.
@@ -18,7 +29,7 @@ export interface LinterOptions {
   /**
    * List of flags to be passed down to the linters
    */
-  flags?: string[];
+  flags?: Flag[];
 }
 
 export abstract class LinterBase {

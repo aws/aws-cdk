@@ -1,5 +1,5 @@
 import * as reflect from 'jsii-reflect';
-import { Linter } from '../linter';
+import { Flag, Linter } from '../linter';
 import { AttributeSite, ResourceReflection } from './resource';
 
 export const importsLinter = new Linter<ImportsReflection>(assembly => ResourceReflection
@@ -70,7 +70,7 @@ importsLinter.add({
       // "fromRoleArn" => "roleArn"
       const argName = e.ctx.resource.basename[0].toLocaleLowerCase() + method.name.slice('from'.length + 1);
 
-      const baseType = e.options.flags?.includes('use-base-constructs') ? e.ctx.resource.core.baseConstructClass :
+      const baseType = e.options.flags?.includes(Flag.USE_CONSTRUCTS_MODULE) ? e.ctx.resource.core.baseConstructClass :
         e.ctx.resource.core.constructClass;
       e.assertSignature(method, {
         parameters: [
@@ -92,7 +92,7 @@ importsLinter.add({
       return;
     }
 
-    const baseType = e.options.flags?.includes('use-base-constructs') ? e.ctx.resource.core.baseConstructClass
+    const baseType = e.options.flags?.includes(Flag.USE_CONSTRUCTS_MODULE) ? e.ctx.resource.core.baseConstructClass
       : e.ctx.resource.core.constructClass;
     e.assertSignature(e.ctx.fromAttributesMethod, {
       parameters: [

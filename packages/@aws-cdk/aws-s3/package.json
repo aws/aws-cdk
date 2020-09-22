@@ -90,7 +90,7 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
-    "flag": [ "use-base-constructs" ],
+    "flag": [ "use-constructs-module" ],
     "exclude": [
       "props-physical-name:@aws-cdk/aws-s3.BucketPolicyProps",
       "no-unused-type:@aws-cdk/aws-s3.Location",
