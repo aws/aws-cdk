@@ -40,7 +40,7 @@ test('Parcel bundling', () => {
 
   // Correctly bundles with parcel
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.BUNDLE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       local: {
         props: expect.objectContaining({
@@ -93,7 +93,7 @@ test('Parcel bundling with handler named index.ts', () => {
 
   // Correctly bundles with parcel
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.BUNDLE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
@@ -112,7 +112,7 @@ test('Parcel bundling with tsx handler', () => {
 
   // Correctly bundles with parcel
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.BUNDLE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
@@ -152,7 +152,7 @@ test('Parcel bundling with externals and dependencies', () => {
 
   // Correctly bundles with parcel
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.BUNDLE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
@@ -199,7 +199,7 @@ test('Detects yarn.lock', () => {
 
   // Correctly bundles with parcel
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.BUNDLE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
         expect.stringMatching(/yarn\.lock.+yarn install/),
@@ -316,7 +316,7 @@ test('Custom bundling docker image', () => {
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.BUNDLE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       image: { image: 'my-custom-image' },
     }),

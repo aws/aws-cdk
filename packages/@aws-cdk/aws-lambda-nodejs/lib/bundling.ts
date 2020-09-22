@@ -212,7 +212,7 @@ export class Bundling {
     });
 
     return lambda.Code.fromAsset(projectRoot, {
-      assetHashType: cdk.AssetHashType.BUNDLE,
+      assetHashType: cdk.AssetHashType.OUTPUT,
       bundling: {
         local: localBundler,
         ...dockerBundler.bundlingOptions,
