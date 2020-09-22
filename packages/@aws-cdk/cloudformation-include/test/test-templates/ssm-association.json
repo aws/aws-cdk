@@ -1,0 +1,14 @@
+{
+  "Resources": {
+    "Association": {
+      "Type": "AWS::SSM::Association",
+      "Properties": {
+        "Name": "association",
+        "Parameters": {
+          "P1": ["a", "b"],
+          "p2": []
+        }
+      }
+    }
+  }
+}
