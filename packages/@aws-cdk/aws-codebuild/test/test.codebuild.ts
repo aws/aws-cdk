@@ -1036,12 +1036,6 @@ export = {
         buildSpec: codebuild.BuildSpec.fromObject({
           version: '0.2',
         }),
-        fileSystemLocations: [codebuild.FileSystemLocation.efs({
-          identifier: 'myidentifier2',
-          location: 'myclodation.mydnsroot.com:/loc',
-          mountPoint: '/media',
-          mountOptions: 'opts',
-        })],
       });
       project.addFileSystemLocation(codebuild.FileSystemLocation.efs({
         identifier: 'myidentifier3',
@@ -1052,13 +1046,6 @@ export = {
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         'FileSystemLocations': [
-          {
-            'Identifier': 'myidentifier2',
-            'MountPoint': '/media',
-            'MountOptions': 'opts',
-            'Location': 'myclodation.mydnsroot.com:/loc',
-            'Type': 'EFS',
-          },
           {
             'Identifier': 'myidentifier3',
             'MountPoint': '/media',

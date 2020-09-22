@@ -371,6 +371,31 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
 })
 ```
 
+### Physical Resource Id Parameter
+Some AWS APIs may require passing the physical resource id in as a parameter for doing updates and deletes. You can pass it by using `PhysicalResourceIdReference`.
+
+```
+const awsCustom = new AwsCustomResource(this, '...', {
+  onCreate: {
+    service: '...',
+    action: '...'
+    parameters: {
+      text: '...'
+    },
+    physicalResourceId: PhysicalResourceId.of('...')
+  },
+  onUpdate: {
+    service: '...',
+    action: '...'.
+    parameters: {
+      text: '...',
+      resourceId: new PhysicalResourceIdReference()
+    }
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
+})
+```
+
 ### Error Handling
 
 Every error produced by the API call is treated as is and will cause a "FAILED" response to be submitted to CloudFormation.

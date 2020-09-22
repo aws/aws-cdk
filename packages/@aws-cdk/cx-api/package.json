@@ -47,18 +47,18 @@
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "semver": "^7.2.2"
+    "semver": "^7.3.2"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^26.0.14",
     "@types/mock-fs": "^4.10.0",
-    "@types/semver": "^7.3.3",
+    "@types/semver": "^7.3.4",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.4.2",
     "mock-fs": "^4.13.0",
     "pkglint": "0.0.0"
   },

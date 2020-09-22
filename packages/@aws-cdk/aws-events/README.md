@@ -97,7 +97,11 @@ new Rule(this, 'ScheduleRule', {
 });
 ```
 
-More details in [ScheduledEvents](https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html) documentation page.
+If you want to specify Fargate platform version, set `platformVersion` in EcsTask's props like the following example:
+```ts
+const platformVersion = ecs.FargatePlatformVersion.VERSION1_4;
+const ecsTaskTarget = new EcsTask({ cluster, taskDefinition, role, platformVersion });
+```
 
 ## Event Targets
 

@@ -80,7 +80,7 @@ export default class CodeGenerator {
    */
   public async save(dir: string): Promise<string[]> {
     this.code.closeFile(this.outputFile);
-    return await this.code.save(dir);
+    return this.code.save(dir);
   }
 
   /**
@@ -478,6 +478,9 @@ export default class CodeGenerator {
         visitMap(itemType: genspec.CodeName) {
           return `${CORE}.hashMapper(${this.visitAtom(itemType)})`;
         },
+        visitMapOfLists(itemType: genspec.CodeName) {
+          return `${CORE}.hashMapper(${CORE}.listMapper(${this.visitAtom(itemType)}))`;
+        },
         visitUnionMap(itemTypes: genspec.CodeName[]) {
           const validators = itemTypes.map(type => genspec.validatorName(type).fqn);
           const mappers = itemTypes.map(type => this.visitAtom(type));
@@ -564,6 +567,11 @@ export default class CodeGenerator {
 
       public visitMap(itemType: genspec.CodeName): string {
         return `${CFN_PARSE}.FromCloudFormation.getMap(${this.visitAtom(itemType)})`;
+      }
+
+      public visitMapOfLists(itemType: genspec.CodeName): string {
+        return `${CFN_PARSE}.FromCloudFormation.getMap(` +
+          `${CFN_PARSE}.FromCloudFormation.getArray(${this.visitAtom(itemType)}))`;
       }
 
       public visitAtomUnion(types: genspec.CodeName[]): string {
@@ -693,6 +701,9 @@ export default class CodeGenerator {
         },
         visitMap(itemType: genspec.CodeName) {
           return `${CORE}.hashValidator(${this.visitAtom(itemType)})`;
+        },
+        visitMapOfLists(itemType: genspec.CodeName) {
+          return `${CORE}.hashValidator(${CORE}.listValidator(${this.visitAtom(itemType)}))`;
         },
         visitUnionMap(itemTypes: genspec.CodeName[]) {
           return `${CORE}.hashValidator(${CORE}.unionValidator(${itemTypes.map(type => this.visitAtom(type)).join(', ')}))`;

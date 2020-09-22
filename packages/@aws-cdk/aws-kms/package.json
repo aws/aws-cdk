@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-kms",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS KMS",
+  "description": "The CDK Construct Library for AWS::KMS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {

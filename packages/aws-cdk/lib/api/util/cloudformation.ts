@@ -377,7 +377,7 @@ export class StackParameters {
         this._changes = true;
       }
 
-      if (key in updates && updates[key]) {
+      if (key in updates && updates[key] !== undefined) {
         this.apiParameters.push({ ParameterKey: key, ParameterValue: updates[key] });
 
         // If the updated value is different than the current value, this will lead to a change

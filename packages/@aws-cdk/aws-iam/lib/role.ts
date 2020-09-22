@@ -101,7 +101,7 @@ export interface RoleProps {
    * Acknowledging IAM Resources in AWS CloudFormation Templates.
    *
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
-   * for the group name.
+   * for the role name.
    */
   readonly roleName?: string;
 

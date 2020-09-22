@@ -101,7 +101,7 @@ export = {
               [
                 'arn:',
                 { Ref: 'AWS::Partition' },
-                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda',
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited',
               ],
             ],
           },
@@ -160,7 +160,7 @@ export = {
               [
                 'arn:',
                 { Ref: 'AWS::Partition' },
-                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda',
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited',
               ],
             ],
           },

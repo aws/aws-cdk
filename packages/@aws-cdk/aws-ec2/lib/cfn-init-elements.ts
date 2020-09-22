@@ -489,7 +489,9 @@ export abstract class InitFile extends InitElement {
       if (fileOptions.group || fileOptions.owner || fileOptions.mode) {
         throw new Error('Owner, group, and mode options not supported for Windows.');
       }
-      return {};
+      return {
+        [this.fileName]: { ...contentVars },
+      };
     }
 
     return {

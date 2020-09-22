@@ -862,6 +862,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info',
+      '@aws-cdk/yaml-cfn',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
