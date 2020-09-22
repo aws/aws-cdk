@@ -752,7 +752,6 @@ class FnJoin implements IResolvable {
   }
 }
 
-
 function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
   const result = new Array<T[]>();
   for (let i = 0; i < array.length; i += maxGroup) {

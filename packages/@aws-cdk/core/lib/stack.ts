@@ -296,7 +296,6 @@ export class Stack extends Construct implements ITaggable {
    */
   public readonly _versionReportingEnabled: boolean;
 
-
   /**
    * Logical ID generation strategy
    */

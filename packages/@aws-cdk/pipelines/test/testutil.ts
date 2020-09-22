@@ -20,7 +20,6 @@ export class TestApp extends App {
       },
       stackTraces: false,
       autoSynth: false,
-      runtimeInfo: false,
       treeMetadata: false,
       ...props,
     });
