@@ -4,17 +4,10 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as regionInfo from '@aws-cdk/region-info';
 import { Service } from '../service';
 import { Container } from './container';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
-
-// A map of AWS account ID's which hold the App Mesh image in various
-// regions
-const APPMESH_ECR_ACCOUNTS = {
-  ME_SOUTH_1: { accountID: 772975370895 },
-  AP_EAST_1: { accountID: 856666278305 },
-  DEFAULT: { accountID: 840364872350 },
-};
 
 // The version of the App Mesh envoy sidecar to add to the task.
 const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.0.0-prod';
@@ -135,6 +128,10 @@ export class AppMeshExtension extends ServiceExtension {
     } as ecs.TaskDefinitionProps;
   }
 
+  private accountIdForRegion(region: string) {
+    return { ecrRepo: regionInfo.RegionInfo.get(region).appMeshRepositoryAccount };
+  }
+
   public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     var region = cdk.Stack.of(this.scope).region;
     var appMeshRepo;
@@ -144,34 +141,31 @@ export class AppMeshExtension extends ServiceExtension {
     // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
     const mapping = new cdk.CfnMapping(this.scope, `${this.parentService.id}-envoy-image-account-mapping`, {
       mapping: {
-        'af-south-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'eu-north-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'ap-south-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'eu-west-3': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'eu-west-2': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'eu-south-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'eu-west-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'ap-northeast-3': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'ap-northeast-2': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'ap-northeast-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'sa-east-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'ca-central-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'ap-southeast-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'ap-southeast-2': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'eu-central-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'us-east-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'us-east-2': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'us-west-1': APPMESH_ECR_ACCOUNTS.DEFAULT,
-        'us-west-2': APPMESH_ECR_ACCOUNTS.DEFAULT,
+        'ap-northeast-1': this.accountIdForRegion('ap-northeast-1'),
+        'ap-northeast-2': this.accountIdForRegion('ap-northeast-2'),
+        'ap-south-1': this.accountIdForRegion('ap-south-1'),
+        'ap-southeast-1': this.accountIdForRegion('ap-southeast-1'),
+        'ap-southeast-2': this.accountIdForRegion('ap-southeast-1'),
+        'ca-central-1': this.accountIdForRegion('ca-central-1'),
+        'eu-central-1': this.accountIdForRegion('eu-central-1'),
+        'eu-north-1': this.accountIdForRegion('eu-north-1'),
+        'eu-south-1': this.accountIdForRegion('eu-south-1'),
+        'eu-west-1': this.accountIdForRegion('eu-west-1'),
+        'eu-west-2': this.accountIdForRegion('eu-west-2'),
+        'eu-west-3': this.accountIdForRegion('eu-west-3'),
+        'sa-east-1': this.accountIdForRegion('sa-east-1'),
+        'us-east-1': this.accountIdForRegion('us-east-1'),
+        'us-east-2': this.accountIdForRegion('us-east-2'),
+        'us-west-1': this.accountIdForRegion('us-west-1'),
+        'us-west-2': this.accountIdForRegion('us-west-2'),
 
-        // These two region have different account IDs
-        'me-south-1': APPMESH_ECR_ACCOUNTS.ME_SOUTH_1,
-        'ap-east-1': APPMESH_ECR_ACCOUNTS.AP_EAST_1,
+        'me-south-1': this.accountIdForRegion('me-south-1'),
+        'ap-east-1': this.accountIdForRegion('ap-east-1'),
       },
     });
 
     // WHEN
-    const ownerAccount = mapping.findInMap(region, 'accountID');
+    const ownerAccount = mapping.findInMap(region, 'ecrRepo');
 
     appMeshRepo = ecr.Repository.fromRepositoryAttributes(
       this.scope,

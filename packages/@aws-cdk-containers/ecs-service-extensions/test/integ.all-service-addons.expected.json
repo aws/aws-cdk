@@ -716,7 +716,7 @@
                       {
                         "Ref": "AWS::Region"
                       },
-                      "accountID"
+                      "ecrRepo"
                     ]
                   },
                   ".dkr.ecr.",
@@ -960,7 +960,7 @@
                         {
                           "Ref": "AWS::Region"
                         },
-                        "accountID"
+                        "ecrRepo"
                       ]
                     },
                     ":repository/aws-appmesh-envoy"
@@ -1592,7 +1592,7 @@
                       {
                         "Ref": "AWS::Region"
                       },
-                      "accountID"
+                      "ecrRepo"
                     ]
                   },
                   ".dkr.ecr.",
@@ -1836,7 +1836,7 @@
                         {
                           "Ref": "AWS::Region"
                         },
-                        "accountID"
+                        "ecrRepo"
                       ]
                     },
                     ":repository/aws-appmesh-envoy"
@@ -2581,7 +2581,7 @@
                       {
                         "Ref": "AWS::Region"
                       },
-                      "accountID"
+                      "ecrRepo"
                     ]
                   },
                   ".dkr.ecr.",
@@ -2825,7 +2825,7 @@
                         {
                           "Ref": "AWS::Region"
                         },
-                        "accountID"
+                        "ecrRepo"
                       ]
                     },
                     ":repository/aws-appmesh-envoy"
@@ -3313,198 +3313,180 @@
   },
   "Mappings": {
     "nameenvoyimageaccountmapping": {
-      "af-south-1": {
-        "accountID": 840364872350
-      },
-      "eu-north-1": {
-        "accountID": 840364872350
-      },
-      "ap-south-1": {
-        "accountID": 840364872350
-      },
-      "eu-west-3": {
-        "accountID": 840364872350
-      },
-      "eu-west-2": {
-        "accountID": 840364872350
-      },
-      "eu-south-1": {
-        "accountID": 840364872350
-      },
-      "eu-west-1": {
-        "accountID": 840364872350
-      },
-      "ap-northeast-3": {
-        "accountID": 840364872350
+      "ap-northeast-1": {
+        "ecrRepo": "840364872350"
       },
       "ap-northeast-2": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
-      "ap-northeast-1": {
-        "accountID": 840364872350
-      },
-      "sa-east-1": {
-        "accountID": 840364872350
-      },
-      "ca-central-1": {
-        "accountID": 840364872350
+      "ap-south-1": {
+        "ecrRepo": "840364872350"
       },
       "ap-southeast-1": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "ap-southeast-2": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
+      },
+      "ca-central-1": {
+        "ecrRepo": "840364872350"
       },
       "eu-central-1": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
+      },
+      "eu-north-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-south-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-2": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-3": {
+        "ecrRepo": "840364872350"
+      },
+      "sa-east-1": {
+        "ecrRepo": "840364872350"
       },
       "us-east-1": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "us-east-2": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "us-west-1": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "us-west-2": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "me-south-1": {
-        "accountID": 772975370895
+        "ecrRepo": "772975370895"
       },
       "ap-east-1": {
-        "accountID": 856666278305
+        "ecrRepo": "856666278305"
       }
     },
     "greetingenvoyimageaccountmapping": {
-      "af-south-1": {
-        "accountID": 840364872350
-      },
-      "eu-north-1": {
-        "accountID": 840364872350
-      },
-      "ap-south-1": {
-        "accountID": 840364872350
-      },
-      "eu-west-3": {
-        "accountID": 840364872350
-      },
-      "eu-west-2": {
-        "accountID": 840364872350
-      },
-      "eu-south-1": {
-        "accountID": 840364872350
-      },
-      "eu-west-1": {
-        "accountID": 840364872350
-      },
-      "ap-northeast-3": {
-        "accountID": 840364872350
+      "ap-northeast-1": {
+        "ecrRepo": "840364872350"
       },
       "ap-northeast-2": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
-      "ap-northeast-1": {
-        "accountID": 840364872350
-      },
-      "sa-east-1": {
-        "accountID": 840364872350
-      },
-      "ca-central-1": {
-        "accountID": 840364872350
+      "ap-south-1": {
+        "ecrRepo": "840364872350"
       },
       "ap-southeast-1": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "ap-southeast-2": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
+      },
+      "ca-central-1": {
+        "ecrRepo": "840364872350"
       },
       "eu-central-1": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
+      },
+      "eu-north-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-south-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-2": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-3": {
+        "ecrRepo": "840364872350"
+      },
+      "sa-east-1": {
+        "ecrRepo": "840364872350"
       },
       "us-east-1": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "us-east-2": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "us-west-1": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "us-west-2": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "me-south-1": {
-        "accountID": 772975370895
+        "ecrRepo": "772975370895"
       },
       "ap-east-1": {
-        "accountID": 856666278305
+        "ecrRepo": "856666278305"
       }
     },
     "greeterenvoyimageaccountmapping": {
-      "af-south-1": {
-        "accountID": 840364872350
-      },
-      "eu-north-1": {
-        "accountID": 840364872350
-      },
-      "ap-south-1": {
-        "accountID": 840364872350
-      },
-      "eu-west-3": {
-        "accountID": 840364872350
-      },
-      "eu-west-2": {
-        "accountID": 840364872350
-      },
-      "eu-south-1": {
-        "accountID": 840364872350
-      },
-      "eu-west-1": {
-        "accountID": 840364872350
-      },
-      "ap-northeast-3": {
-        "accountID": 840364872350
+      "ap-northeast-1": {
+        "ecrRepo": "840364872350"
       },
       "ap-northeast-2": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
-      "ap-northeast-1": {
-        "accountID": 840364872350
-      },
-      "sa-east-1": {
-        "accountID": 840364872350
-      },
-      "ca-central-1": {
-        "accountID": 840364872350
+      "ap-south-1": {
+        "ecrRepo": "840364872350"
       },
       "ap-southeast-1": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "ap-southeast-2": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
+      },
+      "ca-central-1": {
+        "ecrRepo": "840364872350"
       },
       "eu-central-1": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
+      },
+      "eu-north-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-south-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-2": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-3": {
+        "ecrRepo": "840364872350"
+      },
+      "sa-east-1": {
+        "ecrRepo": "840364872350"
       },
       "us-east-1": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "us-east-2": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "us-west-1": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "us-west-2": {
-        "accountID": 840364872350
+        "ecrRepo": "840364872350"
       },
       "me-south-1": {
-        "accountID": 772975370895
+        "ecrRepo": "772975370895"
       },
       "ap-east-1": {
-        "accountID": 856666278305
+        "ecrRepo": "856666278305"
       }
     }
   },

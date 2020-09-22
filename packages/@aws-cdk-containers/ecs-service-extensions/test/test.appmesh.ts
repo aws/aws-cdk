@@ -121,7 +121,7 @@ export = {
                     {
                       Ref: 'AWS::Region',
                     },
-                    'accountID',
+                    'ecrRepo',
                   ],
                 },
                 '.dkr.ecr.',

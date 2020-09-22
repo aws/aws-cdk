@@ -1,7 +1,7 @@
 {
-  "name": "@aws-containers/aws-ecs-builder",
+  "name": "@aws-cdk-containers/ecs-service-extensions",
   "version": "0.0.0",
-  "description": "The CDK Construct Library that supplies a builder pattern for ECS services",
+  "description": "The CDK Construct Library that helps you build ECS services using simple extensions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -9,29 +9,29 @@
     "projectReferences": true,
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.@aws.containers/aws.ecs.builder",
+        "package": "software.amazon.awscdk.@aws.cdk.containers/ecs.service.extensions",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-@aws-containers/aws-ecs-builder"
+          "artifactId": "cdk-@aws-cdk-containers/ecs-service-extensions"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Aws.ContainersAws.Ecs.Builder",
-        "packageId": "Amazon.CDK.AWS.Containers.Builder",
+        "namespace": "Amazon.CDK.Aws.Cdk.ContainersEcs.Service.Extensions",
+        "packageId": "Amazon.CDK.AWS.Containers.Service.Extensions",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-containers.aws-ecs-builder",
-        "module": "aws_cdk.aws_containers.aws_ecs_builder"
+        "distName": "aws-cdk.aws-cdk-containers.ecs-service-extensions",
+        "module": "aws_cdk.aws_cdk_containers.ecs_service_extensions"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-containers/aws-ecs-builder"
+    "directory": "packages/@aws-cdk-containers/ecs-service-extensions"
   },
   "scripts": {
     "build": "cdk-build",
@@ -86,6 +86,7 @@
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -107,6 +108,7 @@
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.4"
   },
   "engines": {
