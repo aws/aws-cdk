@@ -130,7 +130,7 @@ export interface StackProps {
   /**
    * Include runtime versioning information in this Stack
    *
-   * @default `versionReporting setting of containing `App`, or value of
+   * @default `versionReporting` setting of containing `App`, or value of
    * 'aws:cdk:version-reporting' context key
    */
   readonly versionReporting?: boolean;
