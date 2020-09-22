@@ -110,7 +110,7 @@ export class SDK implements ISDK {
   /**
    * Return the current credentials
    *
-   * Don't use -- only used to write tests around role assuming.
+   * Don't use -- only used to write tests around assuming roles.
    */
   public async currentCredentials(): Promise<AWS.Credentials> {
     await this.credentials.getPromise();
