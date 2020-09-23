@@ -49,6 +49,9 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::IAM",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    },
     "jest": true
   },
   "keywords": [
