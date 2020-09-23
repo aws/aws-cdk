@@ -51,6 +51,13 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
   readonly instanceEndpoint: Endpoint;
 
   /**
+   * The engine of this database Instance.
+   * May be not known for imported Instances if it wasn't provided explicitly,
+   * or for read replicas.
+   */
+  readonly engine?: IInstanceEngine;
+
+  /**
    * Add a new db proxy to this instance.
    */
   addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy;
@@ -90,6 +97,13 @@ export interface DatabaseInstanceAttributes {
    * The security groups of the instance.
    */
   readonly securityGroups: ec2.ISecurityGroup[];
+
+  /**
+   * The engine of the existing database Instance.
+   *
+   * @default - the imported Instance's engine is unknown
+   */
+  readonly engine?: IInstanceEngine;
 }
 
 /**
@@ -110,6 +124,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
       public readonly dbInstanceEndpointPort = attrs.port.toString();
       public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
+      public readonly engine = attrs.engine;
       protected enableIamAuthentication = true;
     }
 
@@ -769,6 +784,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
  * A new source database instance (not a read replica)
  */
 abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDatabaseInstance {
+  public readonly engine?: IInstanceEngine;
   /**
    * The AWS Secrets Manager secret attached to the instance.
    */
@@ -785,6 +801,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
+    this.engine = props.engine;
 
     let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, true);
     const engineConfig = props.engine.bindToInstance(this, {
