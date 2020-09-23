@@ -322,6 +322,10 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_2_08_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.0');
   /** Version "5.7.mysql_aurora.2.08.1". */
   public static readonly VER_2_08_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.1');
+  /** Version "5.7.mysql_aurora.2.08.2". */
+  public static readonly VER_2_08_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.2');
+  /** Version "5.7.mysql_aurora.2.09.0". */
+  public static readonly VER_2_09_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.0');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
