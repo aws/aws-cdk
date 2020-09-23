@@ -6,7 +6,7 @@ import * as colors from 'colors';
 import * as fs from 'fs-extra';
 import * as reflect from 'jsii-reflect';
 import * as yargs from 'yargs';
-import { ALL_RULES_LINTER, DiagnosticLevel, Flag } from '../lib';
+import { ALL_RULES_LINTER, DiagnosticLevel } from '../lib';
 
 let stackTrace = false;
 
@@ -111,7 +111,7 @@ async function main() {
     results.push(...ALL_RULES_LINTER.eval(assembly, {
       include: args.include,
       exclude: args.exclude,
-      flags: flags(args.flag),
+      flags: args.flag,
     }));
 
     // Sort errors to the top (highest severity first)
@@ -251,19 +251,6 @@ function mergeOptions(dest: any, pkg?: any) {
   }
 
   return dest;
-}
-
-function flags(options: string[]): Flag[] {
-  const valid = Object.values(Flag).map(v => v.toString());
-
-  const f = new Set<Flag>();
-  options.forEach(o => {
-    if (!valid.includes(o)) {
-      throw new Error(`Invalid flag "${o}"`);
-    }
-    f.add(Flag.USE_CONSTRUCTS_MODULE); //FIXME
-  });
-  return Array.from(f);
 }
 
 async function shell(command: string) {

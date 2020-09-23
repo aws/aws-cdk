@@ -1,5 +1,5 @@
 import * as reflect from 'jsii-reflect';
-import { Flag, Linter, MethodSignatureParameterExpectation } from '../linter';
+import { Linter, MethodSignatureParameterExpectation } from '../linter';
 import { CoreTypes } from './core-types';
 
 export const constructLinter = new Linter<ConstructReflection>(assembly => assembly.classes
@@ -97,7 +97,7 @@ constructLinter.add({
     const expectedParams = new Array<MethodSignatureParameterExpectation>();
 
     let baseType;
-    if (e.options.flags?.includes(Flag.USE_CONSTRUCTS_MODULE) && !initializer.parentType.name.startsWith('Cfn')) {
+    if (e.options.flags?.includes('use-base-constructs') && !initializer.parentType.name.startsWith('Cfn')) {
       baseType = e.ctx.core.baseConstructClass;
     } else {
       baseType = e.ctx.core.constructClass;

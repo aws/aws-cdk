@@ -90,21 +90,6 @@ Examples:
 When a rule is excluded, it will be displayed as `skipped:` in the output and
 will always considered to pass.
 
-## Flags
-
-Flags are a way to specify any special behaviour. They control the behaviour of specific rules or
-can entirely skip them if necessary.
-
-A list of flags can be specified in the command line or in the `package.json`.
-
-```console
-$ npm run awslint --flag '<flag 1>' --flag '<flag 2>'
-```
-
-The list of flags available are:
-* `use-constructs-module`: Constructs are subclasses of the "constructs" module, instead
-  of the "@aws-cdk/core" module.
-
 ## Saving State
 
 The `--save` option can be used to capture all failed linting rules and save them as `exclude`s
