@@ -1333,8 +1333,8 @@ export class Table extends TableBase {
       encryptionType = props.encryptionKey != null
         // If there is a configured encyptionKey, the encryption is implicitly CUSTOMER_MANAGED
         ? TableEncryption.CUSTOMER_MANAGED
-        // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else DEFAULT
-        : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : TableEncryption.DEFAULT;
+        // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else undefined (do not set anything)
+        : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : undefined;
     }
 
     if (encryptionType !== TableEncryption.CUSTOMER_MANAGED && props.encryptionKey) {
@@ -1362,6 +1362,9 @@ export class Table extends TableBase {
         return { sseSpecification: { sseEnabled: true } };
 
       case TableEncryption.DEFAULT:
+        return { sseSpecification: { sseEnabled: false } };
+
+      case undefined:
         // Not specifying "sseEnabled: false" here because it would cause phony changes to existing stacks.
         return { sseSpecification: undefined };
 

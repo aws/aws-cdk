@@ -27,10 +27,10 @@ function lineBetween(rowA: string[], rowB: string[]) {
   return rowA[1] !== rowB[1];
 }
 
-function buildColumnConfig(widths: number[] | undefined): { [index: number]: table.ColumnConfig } | undefined {
+function buildColumnConfig(widths: number[] | undefined): { [index: number]: table.TableColumns } | undefined {
   if (widths === undefined) { return undefined; }
 
-  const ret: { [index: number]: table.ColumnConfig } = {};
+  const ret: { [index: number]: table.TableColumns } = {};
   widths.forEach((width, i) => {
     ret[i] = { width, useWordWrap: true } as any; // 'useWordWrap' is not in @types/table
     if (width === undefined) {
