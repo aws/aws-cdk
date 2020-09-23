@@ -5,6 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { IDatabaseCluster } from './cluster-ref';
 import { IEngine } from './engine';
 import { IDatabaseInstance } from './instance';
+import { engineDescription } from './private/util';
 import { CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
 
 /**
@@ -69,12 +70,7 @@ export class ProxyTarget {
    * Bind this target to the specified database proxy.
    */
   public bind(_: DatabaseProxy): ProxyTargetConfig {
-    let engine: IEngine | undefined;
-    if (this.dbCluster) {
-      engine = this.dbCluster.engine;
-    } else if (this.dbInstance) {
-      engine = this.dbInstance.engine;
-    }
+    const engine: IEngine | undefined = this.dbInstance?.engine ?? this.dbCluster?.engine;
 
     if (!engine) {
       const errorResource = this.dbCluster ?? this.dbInstance;
@@ -84,10 +80,7 @@ export class ProxyTarget {
 
     const engineFamily = engine.engineFamily;
     if (!engineFamily) {
-      const engineVersion = engine.engineVersion?.fullVersion
-        ? ` (version: ${engine.engineVersion.fullVersion})`
-        : '';
-      throw new Error(`Engine '${engine.engineType}'${engineVersion} does not support proxies`);
+      throw new Error(`Engine '${engineDescription(engine)}' does not support proxies`);
     }
 
     return {

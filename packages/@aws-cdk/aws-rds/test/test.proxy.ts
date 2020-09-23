@@ -83,9 +83,7 @@ export = {
       engine: rds.DatabaseClusterEngine.auroraPostgres({
         version: rds.AuroraPostgresEngineVersion.VER_10_7,
       }),
-      instanceProps: {
-        vpc,
-      },
+      instanceProps: { vpc },
     });
 
     // WHEN
@@ -147,10 +145,7 @@ export = {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_10_7 }),
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      instanceProps: { vpc },
     });
 
     // WHEN
@@ -198,7 +193,7 @@ export = {
         vpc,
         secrets: [new secretsmanager.Secret(stack, 'Secret')],
       });
-    }, /Engine 'mariadb' \(version: 10\.0\.24\) does not support proxies/);
+    }, /Engine 'mariadb-10\.0\.24' does not support proxies/);
 
     test.done();
   },
