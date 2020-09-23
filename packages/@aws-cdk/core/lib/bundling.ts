@@ -110,6 +110,7 @@ export class BundlingDockerImage {
 
     const dockerArgs: string[] = [
       'build', '-q',
+      ...(options.file ? ['-f', options.file] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
@@ -268,6 +269,13 @@ export interface DockerBuildOptions {
    * @default - no build args
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Name of the Dockerfile
+   *
+   * @default - The Dockerfile immediately within the build context path
+   */
+  readonly file?: string;
 }
 
 function flatten(x: string[][]) {
@@ -290,4 +298,22 @@ function dockerExec(args: string[], options?: SpawnSyncOptions) {
   }
 
   return proc;
+}
+
+export function dockerCopyFromImage(image: string, imagePath: string, outputPath: string) {
+  const { stdout } = dockerExec(['create', image]);
+  const match = stdout.toString().match(/([0-9a-f]{16,})/);
+  if (!match) {
+    throw new Error('Failed to extract container ID from Docker create output');
+  }
+
+  const containerId = match[1];
+  const containerPath = `${containerId}:${imagePath}`;
+  try {
+    dockerExec(['cp', containerPath, outputPath]);
+  } catch (err) {
+    throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
+  } finally {
+    dockerExec(['rm', '-v', containerId]);
+  }
 }
