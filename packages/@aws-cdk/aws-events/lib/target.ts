@@ -54,6 +54,12 @@ export interface RuleTargetConfig {
   readonly ecsParameters?: CfnRule.EcsParametersProperty;
 
   /**
+   * Parameters used when the rule invokes Amazon API Gateway
+   * @default no parameters set
+   */
+  readonly httpParameters?: CfnRule.HttpParametersProperty;
+
+  /**
    * Settings that control shard assignment, when the target is a Kinesis
    * stream. If you don't include this parameter, eventId is used as the
    * partition key.

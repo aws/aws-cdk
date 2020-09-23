@@ -23,6 +23,7 @@ Currently supported are:
 * Queue a Batch job
 * Make an AWS API call
 * Put a record to a Kinesis stream
+* Invoke an API Gateway endpoint
 
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.

@@ -1,0 +1,266 @@
+{
+  "Resources": {
+    "MyApiGateway04A753E5": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "MyApiGateway"
+      }
+    },
+    "MyApiGatewayCloudWatchRoleD56CBB1D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "MyApiGatewayAccount7AB4232E": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "MyApiGatewayCloudWatchRoleD56CBB1D",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "MyApiGateway04A753E5"
+      ]
+    },
+    "MyApiGatewayDeployment44AAC031c084abf74dac823e945fa49f51afd971": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyApiGateway04A753E5"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "MyApiGatewayv1idPUTE3E2B2F6",
+        "MyApiGatewayv1id019EA366",
+        "MyApiGatewayv145BDC608"
+      ]
+    },
+    "MyApiGatewayDeploymentStageprodEBC77C1B": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyApiGateway04A753E5"
+        },
+        "DeploymentId": {
+          "Ref": "MyApiGatewayDeployment44AAC031c084abf74dac823e945fa49f51afd971"
+        },
+        "StageName": "prod"
+      }
+    },
+    "MyApiGatewayv145BDC608": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "MyApiGateway04A753E5",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "v1",
+        "RestApiId": {
+          "Ref": "MyApiGateway04A753E5"
+        }
+      }
+    },
+    "MyApiGatewayv1id019EA366": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "MyApiGatewayv145BDC608"
+        },
+        "PathPart": "{id}",
+        "RestApiId": {
+          "Ref": "MyApiGateway04A753E5"
+        }
+      }
+    },
+    "MyApiGatewayv1idPUTE3E2B2F6": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "MyApiGatewayv1id019EA366"
+        },
+        "RestApiId": {
+          "Ref": "MyApiGateway04A753E5"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "MOCK"
+        }
+      }
+    },
+    "MyApiGatewayEventsRole86361856": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyApiGatewayEventsRoleDefaultPolicy3EC352F2": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "execute-api:Invoke",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "MyApiGateway04A753E5"
+                    },
+                    "/prod/PUT/v1/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyApiGatewayEventsRoleDefaultPolicy3EC352F2",
+        "Roles": [
+          {
+            "Ref": "MyApiGatewayEventsRole86361856"
+          }
+        ]
+      }
+    },
+    "EveryMinute2BBCEA8F": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "ScheduleExpression": "rate(1 minute)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":execute-api:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":",
+                  {
+                    "Ref": "MyApiGateway04A753E5"
+                  },
+                  "/prod/PUT/v1/*"
+                ]
+              ]
+            },
+            "HttpParameters": {
+              "PathParameterValues": [
+                "$.detail.id"
+              ]
+            },
+            "Id": "Target0",
+            "InputTransformer": {
+              "InputPathsMap": {
+                "detail-bar": "$.detail.bar"
+              },
+              "InputTemplate": "{\"foo\":<detail-bar>}"
+            },
+            "RoleArn": {
+              "Fn::GetAtt": [
+                "MyApiGatewayEventsRole86361856",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "MyApiGatewayEndpoint84AE9DBF": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "MyApiGateway04A753E5"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "MyApiGatewayDeploymentStageprodEBC77C1B"
+            },
+            "/"
+          ]
+        ]
+      }
+    }
+  }
+}

@@ -77,6 +77,7 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -95,6 +96,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -117,6 +119,7 @@
   "stability": "stable",
   "awslint": {
     "exclude": [
+      "docs-public-apis:@aws-cdk/aws-events-targets.ApiGatewayProps.httpParameters",
       "docs-public-apis:@aws-cdk/aws-events-targets.EcsTask.securityGroup",
       "docs-public-apis:@aws-cdk/aws-events-targets.SfnStateMachine.machine",
       "docs-public-apis:@aws-cdk/aws-events-targets.SnsTopic.topic",

@@ -1,3 +1,4 @@
+export * from './apigateway';
 export * from './batch';
 export * from './codepipeline';
 export * from './sns';
