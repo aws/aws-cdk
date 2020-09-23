@@ -12,8 +12,9 @@ enum CoreTypesFqn {
   BaseConstruct = 'constructs.Construct',
   BaseConstructInterface = 'constructs.Construct',
 
-  // @deprecated(v2)
+  /** @deprecated - use BaseConstruct */
   Construct = '@aws-cdk/core.Construct',
+  /** @deprecated - use BaseConstructInterface */
   ConstructInterface = '@aws-cdk/core.IConstruct',
 }
 
