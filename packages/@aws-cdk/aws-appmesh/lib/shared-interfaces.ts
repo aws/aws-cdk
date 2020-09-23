@@ -92,9 +92,19 @@ export interface VirtualNodeListener {
   readonly portMapping?: PortMapping;
 
   /**
-   * Array fo HealthCheckProps for the node(s)
+   * Array of HealthCheckProps for the node(s)
    *
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
+}
+
+/**
+ * Configuration for Envoy Access logs for mesh endpoints
+ */
+export interface AccessLog {
+  /**
+   * Path to a file to write access logs to
+   */
+  readonly filePath: string;
 }
