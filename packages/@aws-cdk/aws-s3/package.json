@@ -48,7 +48,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::S3"
+    "cloudformation": "AWS::S3",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "keywords": [
     "aws",
