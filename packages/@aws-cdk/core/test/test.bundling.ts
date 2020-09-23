@@ -21,7 +21,7 @@ export = {
     });
 
     const image = BundlingDockerImage.fromRegistry('alpine');
-    image._run({
+    image.run({
       command: ['cool', 'command'],
       environment: {
         VAR1: 'value1',
@@ -65,7 +65,7 @@ export = {
         TEST_ARG: 'cdk-test',
       },
     });
-    image._run();
+    image.run();
 
     test.ok(spawnSyncStub.firstCall.calledWith('docker', [
       'build', '-q',
@@ -106,7 +106,7 @@ export = {
     });
 
     const image = BundlingDockerImage.fromRegistry('alpine');
-    test.throws(() => image._run(), /UnknownError/);
+    test.throws(() => image.run(), /UnknownError/);
     test.done();
   },
 
@@ -121,7 +121,7 @@ export = {
     });
 
     const image = BundlingDockerImage.fromRegistry('alpine');
-    test.throws(() => image._run(), /\[Status -1\]/);
+    test.throws(() => image.run(), /\[Status -1\]/);
     test.done();
   },
 

@@ -146,10 +146,8 @@ export class BundlingDockerImage {
 
   /**
    * Runs a Docker image
-   *
-   * @internal
    */
-  public _run(options: DockerRunOptions = {}) {
+  public run(options: DockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
     const command = options.command || [];
@@ -222,7 +220,7 @@ export enum DockerVolumeConsistency {
 /**
  * Docker run options
  */
-interface DockerRunOptions {
+export interface DockerRunOptions {
   /**
    * The command to run in the container.
    *

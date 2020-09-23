@@ -239,7 +239,7 @@ export class AssetStaging extends Construct {
 
       localBundling = options.local?.tryBundle(bundleDir, options);
       if (!localBundling) {
-        options.image._run({
+        options.image.run({
           command: options.command,
           user,
           volumes,
