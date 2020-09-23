@@ -254,17 +254,14 @@ function mergeOptions(dest: any, pkg?: any) {
 }
 
 function flags(options: string[]): Flag[] {
-  const values = Object.values(Flag);
-  const valid = values.map(v => v.toString());
+  const valid = Object.values(Flag).map(v => v.toString());
 
   const f = new Set<Flag>();
   options.forEach(o => {
     if (!valid.includes(o)) {
       throw new Error(`Invalid flag "${o}"`);
     }
-    for (const v of values) {
-      if (v === o) { f.add(v); }
-    }
+    f.add(Flag.USE_CONSTRUCTS_MODULE); //FIXME
   });
   return Array.from(f);
 }
