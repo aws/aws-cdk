@@ -70,11 +70,9 @@ importsLinter.add({
       // "fromRoleArn" => "roleArn"
       const argName = e.ctx.resource.basename[0].toLocaleLowerCase() + method.name.slice('from'.length + 1);
 
-      const baseType = e.options.flags?.includes('use-base-constructs') ? e.ctx.resource.core.baseConstructClass :
-        e.ctx.resource.core.constructClass;
       e.assertSignature(method, {
         parameters: [
-          { name: 'scope', type: baseType },
+          { name: 'scope', type: e.ctx.resource.construct.ROOT_CLASS },
           { name: 'id', type: 'string' },
           { name: argName, type: 'string' },
         ],
@@ -92,11 +90,9 @@ importsLinter.add({
       return;
     }
 
-    const baseType = e.options.flags?.includes('use-base-constructs') ? e.ctx.resource.core.baseConstructClass
-      : e.ctx.resource.core.constructClass;
     e.assertSignature(e.ctx.fromAttributesMethod, {
       parameters: [
-        { name: 'scope', type: baseType },
+        { name: 'scope', type: e.ctx.resource.construct.ROOT_CLASS },
         { name: 'id', type: 'string' },
         { name: 'attrs', type: e.ctx.attributesStruct },
       ],

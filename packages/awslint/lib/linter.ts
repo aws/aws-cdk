@@ -14,11 +14,6 @@ export interface LinterOptions {
    * @default none
    */
   exclude?: string[];
-
-  /**
-   * List of flags to be passed down to the linters
-   */
-  flags?: string[];
 }
 
 export abstract class LinterBase {
