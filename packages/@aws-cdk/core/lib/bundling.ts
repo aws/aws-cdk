@@ -174,6 +174,13 @@ export class BundlingDockerImage {
       ],
     });
   }
+
+  /**
+   * Copies a file out of the docker image to the local filesystem
+   */
+  public copyOut(imagePath: string, localPath: string) {
+    dockerCopyFromImage(this.image, imagePath, localPath);
+  }
 }
 
 /**
