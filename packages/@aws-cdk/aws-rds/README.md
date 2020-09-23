@@ -156,7 +156,7 @@ new rds.DatabaseInstance(this, 'InstanceWithUsername', {
 new rds.DatabaseInstance(this, 'InstanceWithUsernameAndPassword', {
   engine,
   vpc,
-  login: rds.Login.fromUsername('postgres', SecretValue.ssmSecure('/dbPassword', 1)), // Use password from SSM
+  login: rds.Login.fromUsername('postgres', { password: SecretValue.ssmSecure('/dbPassword', 1) }), // Use password from SSM
 });
 
 const mySecret = secretsmanager.Secret.fromSecretName(this, 'DBSecret', 'myDBLoginInfo');

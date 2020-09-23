@@ -95,16 +95,37 @@ export interface BackupProps {
 }
 
 /**
+ * Options for creating a Login from a username.
+ */
+export interface LoginFromUsernameOptions {
+  /**
+   * Password
+   *
+   * Do not put passwords in your CDK code directly.
+   *
+   * @default - a Secrets Manager generated password
+   */
+  readonly password?: SecretValue;
+
+  /**
+   * KMS encryption key to encrypt the generated secret.
+   *
+   * @default - default master key
+   */
+  readonly encryptionKey?: kms.IKey;
+}
+
+/**
  * Username and password combination
  */
-export abstract class Login {
+export class Login {
 
   /**
    * Creates a Login for the given username, and optional password and key.
    * If no password is provided, one will be generated and stored in SecretsManager.
    */
-  public static fromUsername(username: string, password?: SecretValue, encryptionKey?: kms.IKey): Login {
-    return { username, password, encryptionKey };
+  public static fromUsername(username: string, options: LoginFromUsernameOptions = {}): Login {
+    return new Login(username, options.password, options.encryptionKey);
   }
 
   /**
@@ -120,18 +141,18 @@ export abstract class Login {
    * ```
    */
   public static fromSecret(secret: secretsmanager.Secret): Login {
-    return {
-      username: secret.secretValueFromJson('username').toString(),
-      password: secret.secretValueFromJson('password'),
-      encryptionKey: secret.encryptionKey,
+    return new Login(
+      secret.secretValueFromJson('username').toString(),
+      secret.secretValueFromJson('password'),
+      secret.encryptionKey,
       secret,
-    };
+    );
   }
 
   /**
    * Username
    */
-  public abstract readonly username: string;
+  public readonly username: string;
 
   /**
    * Password
@@ -140,21 +161,28 @@ export abstract class Login {
    *
    * @default - a Secrets Manager generated password
    */
-  public abstract readonly password?: SecretValue;
+  public readonly password?: SecretValue;
 
   /**
    * KMS encryption key to encrypt the generated secret.
    *
    * @default - default master key
    */
-  public abstract readonly encryptionKey?: kms.IKey;
+  public readonly encryptionKey?: kms.IKey;
 
   /**
    * Secret used to instantiate this Login.
    *
    * @default - none
    */
-  public abstract readonly secret?: secretsmanager.Secret;
+  public readonly secret?: secretsmanager.Secret;
+
+  private constructor(username: string, password?: SecretValue, encryptionKey?: kms.IKey, secret?: secretsmanager.Secret) {
+    this.username = username;
+    this.password = password;
+    this.encryptionKey = encryptionKey;
+    this.secret = secret;
+  }
 }
 
 /**

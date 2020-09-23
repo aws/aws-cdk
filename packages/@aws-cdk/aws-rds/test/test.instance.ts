@@ -321,7 +321,7 @@ export = {
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
         login: { generatePassword: true },
-      }), /`username` must be specified when `generatePassword` is set to true/);
+      }), /`login` `username` must be specified when `generatePassword` is set to true/);
 
       test.done();
     },
@@ -658,7 +658,7 @@ export = {
   'throws when trying to add rotation to an instance without secret'(test: Test) {
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
-      login: rds.Login.fromUsername('syscdk', cdk.SecretValue.plainText('tooshort')),
+      login: rds.Login.fromUsername('syscdk', { password: cdk.SecretValue.plainText('tooshort') }),
       vpc,
     });
 

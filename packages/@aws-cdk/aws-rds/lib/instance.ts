@@ -1001,7 +1001,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     let secret = login?.secret;
     if (!secret && login?.generatePassword) {
       if (!login.username) {
-        throw new Error('`username` must be specified when `generatePassword` is set to true');
+        throw new Error('`login` `username` must be specified when `generatePassword` is set to true');
       }
 
       secret = new DatabaseSecret(this, 'Secret', {
