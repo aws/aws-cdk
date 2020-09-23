@@ -11,7 +11,7 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
 import { applyRemovalPolicy, defaultDeletionProtection, setupS3ImportExport } from './private/util';
-import { BackupProps, InstanceProps, Login, PerformanceInsightRetention, RotationMultiUserOptions } from './props';
+import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -418,19 +418,11 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
  */
 export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
   /**
-   * Login information for the administrative user
-   *
-   * @deprecated use ``login`` instead
-   * @default - A username of 'admin' and SecretsManager-generated password
-   */
-  readonly masterUser?: Login;
-
-  /**
-   * Login information for the administrative user
+   * Credentials for the administrative user
    *
    * @default - A username of 'admin' and SecretsManager-generated password
    */
-  readonly login?: Login;
+  readonly credentials?: Credentials;
 
   /**
    * Whether to enable storage encryption.
@@ -486,20 +478,20 @@ export class DatabaseCluster extends DatabaseClusterNew {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    let login = props.login ?? props.masterUser ?? Login.fromUsername('admin');
-    if (!login.secret && !login.password) {
-      login = Login.fromSecret(new DatabaseSecret(this, 'Secret', {
-        username: login.username,
-        encryptionKey: login.encryptionKey,
+    let credentials = props.credentials ?? Credentials.fromUsername('admin');
+    if (!credentials.secret && !credentials.password) {
+      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
+        username: credentials.username,
+        encryptionKey: credentials.encryptionKey,
       }));
     }
-    const secret = login.secret;
+    const secret = credentials.secret;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       // Admin
-      masterUsername: login.username,
-      masterUserPassword: login.password?.toString(),
+      masterUsername: credentials.username,
+      masterUserPassword: credentials.password?.toString(),
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,

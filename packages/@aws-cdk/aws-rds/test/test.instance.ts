@@ -28,7 +28,7 @@ export = {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
-      login: rds.Login.fromUsername('syscdk'),
+      credentials: rds.Credentials.fromUsername('syscdk'),
       vpc,
       databaseName: 'ORCL',
       storageEncrypted: true,
@@ -242,7 +242,7 @@ export = {
       engine: rds.DatabaseInstanceEngine.mysql({
         version: rds.MysqlEngineVersion.VER_8_0_19,
       }),
-      login: rds.Login.fromUsername('syscdk'),
+      credentials: rds.Credentials.fromUsername('syscdk'),
       vpc,
       vpcPlacement: {
         subnetType: ec2.SubnetType.PRIVATE,
@@ -291,7 +291,7 @@ export = {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
-        login: rds.SnapshotLogin.fromGeneratedPassword('admin'),
+        credentials: rds.SnapshotCredentials.fromGeneratedPassword('admin'),
       });
 
       expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
@@ -320,8 +320,8 @@ export = {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
-        login: { generatePassword: true },
-      }), /`login` `username` must be specified when `generatePassword` is set to true/);
+        credentials: { generatePassword: true },
+      }), /`credentials` `username` must be specified when `generatePassword` is set to true/);
 
       test.done();
     },
@@ -331,7 +331,7 @@ export = {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
-        login: rds.SnapshotLogin.fromPassword(cdk.SecretValue.plainText('mysecretpassword')),
+        credentials: rds.SnapshotCredentials.fromPassword(cdk.SecretValue.plainText('mysecretpassword')),
       });
 
       // TODO - Expect this to be broken
@@ -352,7 +352,7 @@ export = {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
-        login: rds.SnapshotLogin.fromSecret(secret),
+        credentials: rds.SnapshotCredentials.fromSecret(secret),
       });
 
       expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
@@ -658,7 +658,7 @@ export = {
   'throws when trying to add rotation to an instance without secret'(test: Test) {
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
-      login: rds.Login.fromUsername('syscdk', { password: cdk.SecretValue.plainText('tooshort') }),
+      credentials: rds.Credentials.fromUsername('syscdk', { password: cdk.SecretValue.plainText('tooshort') }),
       vpc,
     });
 
@@ -672,7 +672,7 @@ export = {
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-      login: rds.Login.fromUsername('syscdk'),
+      credentials: rds.Credentials.fromUsername('syscdk'),
       vpc,
     });
 

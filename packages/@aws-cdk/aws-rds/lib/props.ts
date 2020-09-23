@@ -97,7 +97,7 @@ export interface BackupProps {
 /**
  * Options for creating a Login from a username.
  */
-export interface LoginFromUsernameOptions {
+export interface CredentialsFromUsernameOptions {
   /**
    * Password
    *
@@ -118,18 +118,18 @@ export interface LoginFromUsernameOptions {
 /**
  * Username and password combination
  */
-export class Login {
+export abstract class Credentials {
 
   /**
-   * Creates a Login for the given username, and optional password and key.
+   * Creates Credentials for the given username, and optional password and key.
    * If no password is provided, one will be generated and stored in SecretsManager.
    */
-  public static fromUsername(username: string, options: LoginFromUsernameOptions = {}): Login {
-    return new Login(username, options.password, options.encryptionKey);
+  public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
+    return { username, password: options.password, encryptionKey: options.encryptionKey };
   }
 
   /**
-   * Creates a Login from an existing SecretsManager ``Secret`` (or ``DatabaseSecret``)
+   * Creates Credentials from an existing SecretsManager ``Secret`` (or ``DatabaseSecret``)
    *
    * The Secret must be a JSON string with a ``username`` and ``password`` field:
    * ```
@@ -140,19 +140,19 @@ export class Login {
    * }
    * ```
    */
-  public static fromSecret(secret: secretsmanager.Secret): Login {
-    return new Login(
-      secret.secretValueFromJson('username').toString(),
-      secret.secretValueFromJson('password'),
-      secret.encryptionKey,
+  public static fromSecret(secret: secretsmanager.Secret): Credentials {
+    return {
+      username: secret.secretValueFromJson('username').toString(),
+      password: secret.secretValueFromJson('password'),
+      encryptionKey: secret.encryptionKey,
       secret,
-    );
+    };
   }
 
   /**
    * Username
    */
-  public readonly username: string;
+  public abstract readonly username: string;
 
   /**
    * Password
@@ -161,47 +161,40 @@ export class Login {
    *
    * @default - a Secrets Manager generated password
    */
-  public readonly password?: SecretValue;
+  public abstract readonly password?: SecretValue;
 
   /**
    * KMS encryption key to encrypt the generated secret.
    *
    * @default - default master key
    */
-  public readonly encryptionKey?: kms.IKey;
+  public abstract readonly encryptionKey?: kms.IKey;
 
   /**
    * Secret used to instantiate this Login.
    *
    * @default - none
    */
-  public readonly secret?: secretsmanager.Secret;
-
-  private constructor(username: string, password?: SecretValue, encryptionKey?: kms.IKey, secret?: secretsmanager.Secret) {
-    this.username = username;
-    this.password = password;
-    this.encryptionKey = encryptionKey;
-    this.secret = secret;
-  }
+  public abstract readonly secret?: secretsmanager.Secret;
 }
 
 /**
- * Login details to update the password for a ``DatabaseInstanceFromSnapshot``.
+ * Credentials to update the password for a ``DatabaseInstanceFromSnapshot``.
  */
-export abstract class SnapshotLogin {
+export abstract class SnapshotCredentials {
   /**
    * Generate a new password for the snapshot, using the existing username and an optional encryption key.
    *
    * Note - The username must match the existing master username of the snapshot.
    */
-  public static fromGeneratedPassword(username: string, encryptionKey?: kms.IKey): SnapshotLogin {
+  public static fromGeneratedPassword(username: string, encryptionKey?: kms.IKey): SnapshotCredentials {
     return { generatePassword: true, username, encryptionKey };
   }
 
   /**
    * Update the snapshot login with an existing password.
    */
-  public static fromPassword(password: SecretValue): SnapshotLogin {
+  public static fromPassword(password: SecretValue): SnapshotCredentials {
     return { generatePassword: false, password };
   }
 
@@ -216,7 +209,7 @@ export abstract class SnapshotLogin {
    * }
    * ```
    */
-  public static fromSecret(secret: secretsmanager.Secret): SnapshotLogin {
+  public static fromSecret(secret: secretsmanager.Secret): SnapshotCredentials {
     return {
       generatePassword: false,
       password: secret.secretValueFromJson('password'),

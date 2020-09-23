@@ -12,7 +12,7 @@ import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
 import { applyRemovalPolicy, defaultDeletionProtection, engineDescription, setupS3ImportExport } from './private/util';
-import { Login, PerformanceInsightRetention, RotationMultiUserOptions, SnapshotLogin } from './props';
+import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -880,11 +880,11 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
  */
 export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
   /**
-   * Login information for the administrative user
+   * Credentials for the administrative user
    *
    * @default - A username of 'admin' and SecretsManager-generated password
    */
-  readonly login?: Login;
+  readonly credentials?: Credentials;
 
   /**
    * For supported engines, specifies the character set to associate with the
@@ -924,21 +924,21 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
-    let login = props.login ?? Login.fromUsername('admin');
-    if (!login.secret && !login.password) {
-      login = Login.fromSecret(new DatabaseSecret(this, 'Secret', {
-        username: login.username,
-        encryptionKey: login.encryptionKey,
+    let credentials = props.credentials ?? Credentials.fromUsername('admin');
+    if (!credentials.secret && !credentials.password) {
+      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
+        username: credentials.username,
+        encryptionKey: credentials.encryptionKey,
       }));
     }
-    const secret = login.secret;
+    const secret = credentials.secret;
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
-      masterUsername: login.username,
-      masterUserPassword: login.password?.toString(),
+      masterUsername: credentials.username,
+      masterUserPassword: credentials.password?.toString(),
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
@@ -972,14 +972,14 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
   readonly snapshotIdentifier: string;
 
   /**
-   * Master user login details.
+   * Master user credentials.
    *
    * Note - It is not possible to change the master username for a snapshot;
    * however, it is possible to provide (or generate) a new password.
    *
    * @default - The existing username and password from the snapshot will be used.
    */
-  readonly login?: SnapshotLogin;
+  readonly credentials?: SnapshotCredentials;
 }
 
 /**
@@ -997,16 +997,16 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
 
-    let login = props.login;
-    let secret = login?.secret;
-    if (!secret && login?.generatePassword) {
-      if (!login.username) {
-        throw new Error('`login` `username` must be specified when `generatePassword` is set to true');
+    let credentials = props.credentials;
+    let secret = credentials?.secret;
+    if (!secret && credentials?.generatePassword) {
+      if (!credentials.username) {
+        throw new Error('`credentials` `username` must be specified when `generatePassword` is set to true');
       }
 
       secret = new DatabaseSecret(this, 'Secret', {
-        username: login.username,
-        encryptionKey: login.encryptionKey,
+        username: credentials.username,
+        encryptionKey: credentials.encryptionKey,
       });
     }
 
@@ -1015,7 +1015,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
       dbSnapshotIdentifier: props.snapshotIdentifier,
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').toString()
-        : login?.password?.toString(),
+        : credentials?.password?.toString(),
     });
 
     this.instanceIdentifier = instance.ref;

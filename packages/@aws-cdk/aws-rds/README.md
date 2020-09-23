@@ -150,20 +150,20 @@ const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngine
 new rds.DatabaseInstance(this, 'InstanceWithUsername', {
   engine,
   vpc,
-  login: rds.Login.fromUsername('postgres'), // Creates an admin user of postgres with a generated password
+  credentials: rds.Credentials.fromUsername('postgres'), // Creates an admin user of postgres with a generated password
 });
 
 new rds.DatabaseInstance(this, 'InstanceWithUsernameAndPassword', {
   engine,
   vpc,
-  login: rds.Login.fromUsername('postgres', { password: SecretValue.ssmSecure('/dbPassword', 1) }), // Use password from SSM
+  credentials: rds.Credentials.fromUsername('postgres', { password: SecretValue.ssmSecure('/dbPassword', 1) }), // Use password from SSM
 });
 
 const mySecret = secretsmanager.Secret.fromSecretName(this, 'DBSecret', 'myDBLoginInfo');
 new rds.DatabaseInstance(this, 'InstanceWithSecretLogin', {
   engine,
   vpc,
-  login: rds.Login.fromSecret(mySecret), // Get both username and password from existing secret
+  credentials: rds.Credentials.fromSecret(mySecret), // Get both username and password from existing secret
 });
 ```
 
