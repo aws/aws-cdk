@@ -12,7 +12,6 @@ export = {
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-      masterUsername: 'admin',
       vpc,
     });
 
@@ -82,9 +81,6 @@ export = {
       engine: rds.DatabaseClusterEngine.auroraPostgres({
         version: rds.AuroraPostgresEngineVersion.VER_10_7,
       }),
-      masterUser: {
-        username: 'admin',
-      },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
@@ -157,9 +153,6 @@ export = {
       engine: rds.DatabaseClusterEngine.auroraPostgres({
         version: rds.AuroraPostgresEngineVersion.VER_10_7,
       }),
-      masterUser: {
-        username: 'admin',
-      },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
@@ -188,7 +181,6 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_10_7 }),
-      masterUser: { username: 'admin' },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,

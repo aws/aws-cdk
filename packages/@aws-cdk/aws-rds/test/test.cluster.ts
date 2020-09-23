@@ -20,7 +20,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -61,7 +61,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -95,7 +95,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -133,7 +133,7 @@ export = {
     });
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -157,7 +157,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
     new DatabaseCluster(stack, 'Cluster', {
-      masterUser: { username: 'admin' },
+      credentials: { username: 'admin' },
       engine: DatabaseClusterEngine.AURORA,
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
@@ -182,7 +182,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -239,7 +239,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -276,7 +276,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -305,7 +305,7 @@ export = {
       // WHEN
       new DatabaseCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA,
-        masterUser: {
+        credentials: {
           username: 'admin',
         },
         instanceProps: {
@@ -333,7 +333,7 @@ export = {
       // WHEN
       new DatabaseCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA,
-        masterUser: {
+        credentials: {
           username: 'admin',
         },
         instanceProps: {
@@ -358,7 +358,7 @@ export = {
       test.throws(() => {
         new DatabaseCluster(stack, 'Database', {
           engine: DatabaseClusterEngine.AURORA,
-          masterUser: {
+          credentials: {
             username: 'admin',
           },
           instanceProps: {
@@ -383,7 +383,7 @@ export = {
       engine: DatabaseClusterEngine.auroraMysql({
         version: AuroraMysqlEngineVersion.VER_2_04_4,
       }),
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -411,7 +411,7 @@ export = {
       engine: DatabaseClusterEngine.auroraPostgres({
         version: AuroraPostgresEngineVersion.VER_10_7,
       }),
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -437,7 +437,7 @@ export = {
     // WHEN
     const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -538,7 +538,7 @@ export = {
 
     const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_5_7_12 }),
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -569,7 +569,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -635,7 +635,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -665,7 +665,7 @@ export = {
     // WHEN
     const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -687,7 +687,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: { username: 'admin' },
+      credentials: { username: 'admin' },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
@@ -716,7 +716,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -764,7 +764,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -852,7 +852,7 @@ export = {
         version: AuroraPostgresEngineVersion.VER_10_12,
       }),
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -892,7 +892,7 @@ export = {
           version: AuroraPostgresEngineVersion.VER_10_4,
         }),
         instances: 1,
-        masterUser: {
+        credentials: {
           username: 'admin',
         },
         instanceProps: {
@@ -909,7 +909,7 @@ export = {
           version: AuroraPostgresEngineVersion.VER_10_4,
         }),
         instances: 1,
-        masterUser: {
+        credentials: {
           username: 'admin',
         },
         instanceProps: {
@@ -936,7 +936,7 @@ export = {
         version: AuroraPostgresEngineVersion.VER_10_12,
       }),
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -975,7 +975,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1023,7 +1023,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1113,7 +1113,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1184,7 +1184,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1251,7 +1251,7 @@ export = {
         version: AuroraPostgresEngineVersion.VER_11_6,
       }),
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1291,7 +1291,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1339,7 +1339,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1372,7 +1372,7 @@ export = {
     test.throws(() => new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1400,7 +1400,7 @@ export = {
     test.throws(() => new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1422,7 +1422,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -1449,7 +1449,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -1494,7 +1494,7 @@ export = {
     test.throws(() => {
       new DatabaseCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA,
-        masterUser: {
+        credentials: {
           username: 'admin',
           password: cdk.SecretValue.plainText('tooshort'),
         },
@@ -1517,7 +1517,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -1545,7 +1545,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1604,7 +1604,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1630,7 +1630,7 @@ export = {
     // WHEN
     const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
