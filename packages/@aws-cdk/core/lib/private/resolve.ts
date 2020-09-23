@@ -1,9 +1,12 @@
 import { IConstruct } from 'constructs';
-import { IConstruct as ICoreConstruct } from '../construct-compat';
 import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, StringConcat } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
 import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
+
+// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
+// eslint-disable-next-line import/order
+import { IConstruct as ICoreConstruct } from '../construct-compat';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
 
