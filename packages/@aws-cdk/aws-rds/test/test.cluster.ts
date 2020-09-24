@@ -406,17 +406,13 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
-        username: 'admin',
-      },
       instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         allowMajorVersionUpgrade: true,
         vpc,
       },
     });
 
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
       AllowMajorVersionUpgrade: true,
     }));
 
@@ -431,17 +427,13 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
-        username: 'admin',
-      },
       instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         deleteAutomatedBackups: false,
         vpc,
       },
     });
 
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
       DeleteAutomatedBackups: false,
     }));
 
