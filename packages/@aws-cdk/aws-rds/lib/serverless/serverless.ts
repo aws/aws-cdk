@@ -114,6 +114,65 @@ export interface ServerlessClusterBaseProps {
 }
 
 /**
+ * Aurora capacity units (ACUs).
+ * Each ACU is a combination of processing and memory capacity.
+ *
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.setting-capacity.html
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.how-it-works.html#aurora-serverless.architecture
+ */
+export enum AuroraCapacityUnit {
+  /**
+   * 1 Aurora Capacity Unit
+   */
+  ACU_1 = 1,
+
+  /**
+   * 2 Aurora Capacity Units
+   */
+  ACU_2 = 2,
+
+  /**
+   * 8 Aurora Capacity Units
+   */
+  ACU_8 = 8,
+
+  /**
+   * 16 Aurora Capacity Units
+   */
+  ACU_16 = 16,
+
+  /**
+   * 32 Aurora Capacity Units
+   */
+  ACU_32 = 32,
+
+  /**
+   * 64 Aurora Capacity Units
+   */
+  ACU_64 = 64,
+
+  /**
+   * 128 Aurora Capacity Units
+   */
+  ACU_128 = 128,
+
+  /**
+   * 192 Aurora Capacity Units
+   */
+  ACU_192 = 192,
+
+  /**
+   * 256 Aurora Capacity Units
+   */
+  ACU_256 = 256,
+
+  /**
+   * 384 Aurora Capacity Units
+   */
+  ACU_384 = 384
+}
+
+/**
  * Properties to configure an Aurora Serverless Cluster
  */
 export interface ServerlessDatabaseClusterProps extends ServerlessClusterBaseProps {
@@ -124,37 +183,32 @@ export interface ServerlessDatabaseClusterProps extends ServerlessClusterBasePro
  */
 export interface ServerlessScalingOptions {
   /**
-   * Whether to allow automatic pause for the database cluster.
-   * A database cluster can be paused only when it is idle (it has no connections).
-   *
-   * If a DB cluster is paused for more than seven days, the DB cluster might be
-   * backed up with a snapshot. In this case, the DB cluster is restored when there
-   * is a request to connect to it.
-   *
-   * @default true
-   */
-  readonly autoPause?: boolean;
-
-  /**
    * The minimum capacity for an Aurora serverless database cluster.
    *
    * @default - determined by Aurora based on database engine
    */
-  readonly minCapacity?: number;
+  readonly minCapacity?: AuroraCapacityUnit;
 
   /**
    * The maximum capacity for an Aurora serverless database cluster.
    *
    * @default - determined by Aurora based on database engine
    */
-  readonly maxCapacity?: number;
+  readonly maxCapacity?: AuroraCapacityUnit;
 
   /**
    * The time before an Aurora serverless database cluster is paused.
+   * A database cluster can be paused only when it is idle (it has no connections).
    *
-   * @default Duration.minutes(5)
+   * If a DB cluster is paused for more than seven days, the DB cluster might be
+   * backed up with a snapshot. In this case, the DB cluster is restored when there
+   * is a request to connect to it.
+   *
+   * Set to 0 to disable
+   *
+   * @default - automatic pause enabled after 5 minutes
    */
-  readonly autoPauseTime?: Duration;
+  readonly autoPause?: Duration;
 }
 
 /**
@@ -291,6 +345,7 @@ export class ServerlessDatabaseCluster extends ServerlessClusterBase {
         : (props.masterUser.password
           ? props.masterUser.password.toString()
           : undefined),
+      scalingConfiguration: props.scaling ? this.renderScalingConfiguration(props.scaling) : undefined,
       storageEncrypted: true,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
     });
@@ -379,6 +434,22 @@ export class ServerlessDatabaseCluster extends ServerlessClusterBase {
       // Fix that here.
       cluster.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
     }
+  }
+
+  private renderScalingConfiguration(options: ServerlessScalingOptions): CfnDBCluster.ScalingConfigurationProperty {
+    const minCapacity = options.minCapacity;
+    const maxCapacity = options.maxCapacity;
+
+    if (minCapacity && maxCapacity && minCapacity > maxCapacity) {
+      throw new Error('maximum capacity must be greater than or equal to minimum capacity.');
+    }
+
+    return {
+      autoPause: (options.autoPause?.toSeconds() === 0) ? false : true,
+      minCapacity: options.minCapacity,
+      maxCapacity: options.maxCapacity,
+      secondsUntilAutoPause: options.autoPause?.toSeconds(),
+    };
   }
 }
 

@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AuroraPostgresEngineVersion, ServerlessDatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../../lib';
+import { AuroraPostgresEngineVersion, ServerlessDatabaseCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit } from '../../lib';
 
 export = {
   'can create a Serverless Cluster with Aurora Postgres database engine'(test: Test) {
@@ -47,6 +47,7 @@ export = {
       DeletionPolicy: ABSENT,
       UpdateReplacePolicy: 'Snapshot',
     }, ResourcePart.CompleteDefinition));
+
     test.done();
   },
 
@@ -432,6 +433,62 @@ export = {
     const art = SynthUtils.synthesize(stack);
     const meta = art.findMetadataByType('aws:cdk:error');
     test.equal(meta[0].data, 'Cluster requires at least 2 subnets, got 0');
+
+    test.done();
+  },
+
+  'can set scaling configuration'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    new ServerlessDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.plainText('tooshort'),
+      },
+      vpc,
+      scaling: {
+        minCapacity: AuroraCapacityUnit.ACU_1,
+        maxCapacity: AuroraCapacityUnit.ACU_128,
+        autoPause: cdk.Duration.minutes(10),
+      },
+    });
+
+    //THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      ScalingConfiguration: {
+        AutoPause: true,
+        MaxCapacity: 128,
+        MinCapacity: 1,
+        SecondsUntilAutoPause: 600,
+      },
+    }));
+
+    test.done();
+  },
+
+  'throws error when min capacity is greater than max capacity'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    test.throws(() =>
+      new ServerlessDatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        masterUser: {
+          username: 'admin',
+          password: cdk.SecretValue.plainText('tooshort'),
+        },
+        vpc,
+        scaling: {
+          minCapacity: AuroraCapacityUnit.ACU_2,
+          maxCapacity: AuroraCapacityUnit.ACU_1,
+        },
+      }), /maximum capacity must be greater than or equal to minimum capacity./);
 
     test.done();
   },
