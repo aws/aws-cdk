@@ -1,8 +1,8 @@
 import * as child_process from 'child_process';
+import * as path from 'path';
 import { Test } from 'nodeunit';
 import * as sinon from 'sinon';
-import * as path from 'path';
-import { BundlingDockerImage, dockerCopyFromImage, FileSystem } from '../lib';
+import { BundlingDockerImage, FileSystem } from '../lib';
 
 export = {
   'tearDown'(callback: any) {
@@ -187,7 +187,7 @@ export = {
     });
 
     // WHEN
-    dockerCopyFromImage('alpine', '/foo/bar', '/baz');
+    BundlingDockerImage.fromRegistry('alpine').copyOut('/foo/bar', '/baz');
 
     // THEN
     test.ok(spawnSyncStub.calledWith(sinon.match.any, ['create', 'alpine'], sinon.match.any));
@@ -221,7 +221,7 @@ export = {
 
     // WHEN
     test.throws(() => {
-      dockerCopyFromImage('alpine', '/foo/bar', '/baz');
+      BundlingDockerImage.fromRegistry('alpine').copyOut('/foo/bar', '/baz');
     }, /Failed.*copy/i);
 
     // THEN

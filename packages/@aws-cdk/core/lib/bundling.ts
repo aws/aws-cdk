@@ -178,8 +178,22 @@ export class BundlingDockerImage {
   /**
    * Copies a file out of the docker image to the local filesystem
    */
-  public copyOut(imagePath: string, localPath: string) {
-    dockerCopyFromImage(this.image, imagePath, localPath);
+  public copyOut(imagePath: string, outputPath: string) {
+    const { stdout } = dockerExec(['create', this.image]);
+    const match = stdout.toString().match(/([0-9a-f]{16,})/);
+    if (!match) {
+      throw new Error('Failed to extract container ID from Docker create output');
+    }
+
+    const containerId = match[1];
+    const containerPath = `${containerId}:${imagePath}`;
+    try {
+      dockerExec(['cp', containerPath, outputPath]);
+    } catch (err) {
+      throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
+    } finally {
+      dockerExec(['rm', '-v', containerId]);
+    }
   }
 }
 
@@ -303,22 +317,4 @@ function dockerExec(args: string[], options?: SpawnSyncOptions) {
   }
 
   return proc;
-}
-
-export function dockerCopyFromImage(image: string, imagePath: string, outputPath: string) {
-  const { stdout } = dockerExec(['create', image]);
-  const match = stdout.toString().match(/([0-9a-f]{16,})/);
-  if (!match) {
-    throw new Error('Failed to extract container ID from Docker create output');
-  }
-
-  const containerId = match[1];
-  const containerPath = `${containerId}:${imagePath}`;
-  try {
-    dockerExec(['cp', containerPath, outputPath]);
-  } catch (err) {
-    throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
-  } finally {
-    dockerExec(['rm', '-v', containerId]);
-  }
 }
