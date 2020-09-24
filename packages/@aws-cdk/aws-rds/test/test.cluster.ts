@@ -381,11 +381,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
-        username: 'admin',
-      },
       instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         autoMinorVersionUpgrade: false,
         vpc,
       },
