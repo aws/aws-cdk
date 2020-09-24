@@ -197,7 +197,7 @@ const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
   },
 });
 this.cluster.addNodegroup('extra-ng', {
-  launchTemplate: {
+  launchTemplateSpec: {
     id: lt.ref,
     version: lt.attrDefaultVersionNumber,
   },
