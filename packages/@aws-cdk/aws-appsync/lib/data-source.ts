@@ -103,7 +103,7 @@ export interface ExtendedDataSourceProps {
 }
 
 /**
- * An Interface for Data Sources
+ * Represents an AppSync data source
  */
 export interface IDataSource extends IConstruct {
   /**
