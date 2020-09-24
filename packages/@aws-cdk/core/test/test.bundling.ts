@@ -174,7 +174,7 @@ export = {
     test.done();
   },
 
-  'dockerCopyFromImage copies from an image'(test: Test) {
+  'copyOut copies from an image'(test: Test) {
     // GIVEN
     const containerId = '1234567890abcdef1234567890abcdef';
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
@@ -197,7 +197,7 @@ export = {
     test.done();
   },
 
-  'dockerCopyFromImage cleans up after itself'(test: Test) {
+  'copyOut cleans up after itself'(test: Test) {
     // GIVEN
     const containerId = '1234567890abcdef1234567890abcdef';
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({

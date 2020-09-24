@@ -176,7 +176,7 @@ export class BundlingDockerImage {
   }
 
   /**
-   * Copies a file out of the docker image to the local filesystem
+   * Copies a file or directory out of the Docker image to the local filesystem
    */
   public copyOut(imagePath: string, outputPath: string) {
     const { stdout } = dockerExec(['create', this.image]);
