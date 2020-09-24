@@ -154,6 +154,7 @@ interface MysqlClusterEngineBaseProps {
 }
 
 abstract class MySqlClusterEngineBase extends ClusterEngineBase {
+  public readonly engineFamily = 'MYSQL';
   public readonly supportedLogTypes: string[] = ['error', 'general', 'slowquery', 'audit'];
 
   constructor(props: MysqlClusterEngineBaseProps) {
@@ -322,6 +323,10 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_2_08_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.0');
   /** Version "5.7.mysql_aurora.2.08.1". */
   public static readonly VER_2_08_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.1');
+  /** Version "5.7.mysql_aurora.2.08.2". */
+  public static readonly VER_2_08_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.2');
+  /** Version "5.7.mysql_aurora.2.09.0". */
+  public static readonly VER_2_09_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.0');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
@@ -489,6 +494,7 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
    */
   private static readonly S3_EXPORT_FEATURE_NAME = 's3Export';
 
+  public readonly engineFamily = 'POSTGRESQL';
   public readonly supportedLogTypes: string[] = ['postgresql'];
 
   constructor(version?: AuroraPostgresEngineVersion) {

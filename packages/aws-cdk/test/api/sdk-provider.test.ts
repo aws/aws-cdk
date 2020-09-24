@@ -1,3 +1,4 @@
+import * as os from 'os';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as SDKMock from 'aws-sdk-mock';
@@ -270,6 +271,44 @@ describe('with default config files', () => {
       // THEN - error message contains both a helpful hint and the underlying AssumeRole message
       await expect(sdk.s3().listBuckets().promise()).rejects.toThrow('did you bootstrap');
       await expect(sdk.s3().listBuckets().promise()).rejects.toThrow('Nope!');
+    });
+
+    test('assuming a role sanitizes the username into the session name', async () => {
+      // GIVEN
+      SDKMock.restore();
+
+      await withMocked(os, 'userInfo', async (userInfo) => {
+        userInfo.mockReturnValue({ username: 'skål', uid: 1, gid: 1, homedir: '/here', shell: '/bin/sh' });
+
+        await withMocked((new AWS.STS()).constructor.prototype, 'assumeRole', async (assumeRole) => {
+          let assumeRoleRequest;
+
+          assumeRole.mockImplementation(function (
+            this: any,
+            request: AWS.STS.Types.AssumeRoleRequest,
+            cb?: (err: Error | null, x: AWS.STS.Types.AssumeRoleResponse) => void) {
+
+            // Part of the request is stored on "this"
+            assumeRoleRequest = { ...this.config.params, ...request };
+
+            const response = {
+              Credentials: { AccessKeyId: `${uid}aid`, Expiration: new Date(), SecretAccessKey: 's', SessionToken: '' },
+            };
+            if (cb) { cb(null, response); }
+            return { promise: () => Promise.resolve(response) };
+          });
+
+          // WHEN
+          const provider = new SdkProvider(new AWS.CredentialProviderChain([() => new AWS.Credentials({ accessKeyId: 'a', secretAccessKey: 's' })]), 'eu-somewhere');
+          const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined);
+
+          await sdk.currentCredentials();
+
+          expect(assumeRoleRequest).toEqual(expect.objectContaining({
+            RoleSessionName: 'aws-cdk-sk@l',
+          }));
+        });
+      });
     });
   });
 

@@ -135,6 +135,15 @@ export class Fn {
   }
 
   /**
+   * Given an url, parse the domain name
+   * @param url the url to parse
+   */
+  public static parseDomainName(url: string): string {
+    const noHttps = Fn.select(1, Fn.split('//', url));
+    return Fn.select(0, Fn.split('/', noHttps));
+  }
+
+  /**
    * The intrinsic function ``Fn::GetAZs`` returns an array that lists
    * Availability Zones for a specified region. Because customers have access to
    * different Availability Zones, the intrinsic function ``Fn::GetAZs`` enables

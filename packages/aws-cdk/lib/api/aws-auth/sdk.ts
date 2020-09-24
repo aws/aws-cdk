@@ -106,6 +106,16 @@ export class SDK implements ISDK {
       return { accountId, partition };
     }));
   }
+
+  /**
+   * Return the current credentials
+   *
+   * Don't use -- only used to write tests around assuming roles.
+   */
+  public async currentCredentials(): Promise<AWS.Credentials> {
+    await this.credentials.getPromise();
+    return this.credentials;
+  }
 }
 
 /**

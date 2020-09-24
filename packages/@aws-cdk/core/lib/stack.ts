@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { IConstruct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents } from './arn';
@@ -10,7 +11,7 @@ import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { Construct, IConstruct, ISynthesisSession } from './construct-compat';
+import { Construct, ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
@@ -169,11 +170,12 @@ export class Stack extends Construct implements ITaggable {
         return c;
       }
 
-      if (Stage.isStage(c) || !c.node.scope) {
-        throw new Error(`${construct.constructor?.name ?? 'Construct'} at '${construct.node.path}' should be created in the scope of a Stack, but no Stack found`);
+      const _scope = Node.of(c).scope;
+      if (Stage.isStage(c) || !_scope) {
+        throw new Error(`${construct.constructor?.name ?? 'Construct'} at '${Node.of(construct).path}' should be created in the scope of a Stack, but no Stack found`);
       }
 
-      return _lookup(c.node.scope);
+      return _lookup(_scope);
     }
   }
 
@@ -934,7 +936,7 @@ export class Stack extends Construct implements ITaggable {
    */
   private generateStackId(container: IConstruct | undefined) {
     const rootPath = rootPathTo(this, container);
-    const ids = rootPath.map(c => c.node.id);
+    const ids = rootPath.map(c => Node.of(c).id);
 
     // In unit tests our Stack (which is the only component) may not have an
     // id, so in that case just pretend it's "Stack".
@@ -1051,7 +1053,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
     into.push(node);
   }
 
-  for (const child of node.node.children) {
+  for (const child of Node.of(node).children) {
     // Don't recurse into a substack
     if (Stack.isStack(child)) { continue; }
 
@@ -1067,7 +1069,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
  * If no ancestor is given or the ancestor is not found, return the entire root path.
  */
 export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConstruct[] {
-  const scopes = construct.node.scopes;
+  const scopes = Node.of(construct).scopes;
   for (let i = scopes.length - 2; i >= 0; i--) {
     if (scopes[i] === ancestor) {
       return scopes.slice(i + 1);

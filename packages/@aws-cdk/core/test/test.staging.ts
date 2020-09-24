@@ -425,6 +425,28 @@ export = {
     test.done();
   },
 
+  'bundling with OUTPUT asset hash type'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const asset = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+      assetHashType: AssetHashType.OUTPUT,
+    });
+
+    // THEN
+    test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
+
+    test.done();
+  },
+
   'custom hash'(test: Test) {
     // GIVEN
     const app = new App();
@@ -474,7 +496,23 @@ export = {
     test.throws(() => new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       assetHashType: AssetHashType.BUNDLE,
-    }), /Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified/);
+    }), /Cannot use `bundle` hash type when `bundling` is not specified/);
+    test.equal(fs.existsSync(STUB_INPUT_FILE), false);
+
+    test.done();
+  },
+
+  'throws with OUTPUT hash type and no bundling'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // THEN
+    test.throws(() => new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+    }), /Cannot use `output` hash type when `bundling` is not specified/);
     test.equal(fs.existsSync(STUB_INPUT_FILE), false);
 
     test.done();
