@@ -178,7 +178,7 @@ export class TestFixture {
   }
 
   public async cdk(args: string[], options: CdkCliOptions = {}) {
-    return this.shell(['cdk', '-v', ...args], {
+    return this.shell(['cdk', ...args], {
       ...options,
       modEnv: {
         AWS_REGION: this.aws.region,
