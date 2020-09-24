@@ -135,6 +135,9 @@ class MyPipelineStack extends Stack {
         sourceArtifact,
         cloudAssemblyArtifact,
 
+        // Optionally specify a VPC in which the action runs
+        vpc: new ec2.Vpc(this, 'NpmSynthVpc'),
+
         // Use this if you need a build step (if you're not using ts-node
         // or if you have TypeScript Lambdas that need to be compiled).
         buildCommand: 'npm run build',
@@ -328,6 +331,8 @@ const stage = pipeline.addApplicationStage(new MyApplication(/* ... */));
 stage.addActions(new ShellScriptAction({
   actionName: 'MyValidation',
   commands: ['curl -Ssf https://my.webservice.com/'],
+  // Optionally specify a VPC if, for example, the service is deployed with a private load balancer
+  vpc,
   // ... more configuration ...
 }));
 ```
@@ -383,6 +388,34 @@ files from several sources:
 
 * Directoy from the source repository
 * Additional compiled artifacts from the synth step
+
+### Controlling IAM permissions
+
+IAM permissions can be added to the execution role of a `ShellScriptAction` in
+two ways.
+
+Either pass additional policy statements in the `rolePolicyStatements` property:
+
+```ts
+new ShellScriptAction({
+  // ...
+  rolePolicyStatements: [
+    new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: ['*'],
+    }),
+  ],
+}));
+```
+
+The Action can also be used as a Grantable after having been added to a Pipeline:
+
+```ts
+const action = new ShellScriptAction({ /* ... */ });
+pipeline.addStage('Test').addActions(action);
+
+bucket.grantRead(action);
+```
 
 #### Additional files from the source repository
 

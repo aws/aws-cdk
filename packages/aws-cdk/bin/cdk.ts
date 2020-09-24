@@ -17,11 +17,11 @@ import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib
 import { data, debug, error, print, setLogLevel } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
-import { Configuration, Settings } from '../lib/settings';
+import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
 /* eslint-disable max-len */
-/* eslint-disable no-shadow */ // yargs
+/* eslint-disable @typescript-eslint/no-shadow */ // yargs
 
 async function parseCommandLineArguments() {
   // Use the following configuration for array arguments:
@@ -69,13 +69,14 @@ async function parseCommandLineArguments() {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
-      .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined })
+      .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined, conflicts: 'bootstrap-customer-key' })
+      .option('bootstrap-customer-key', { type: 'boolean', desc: 'Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)', default: undefined, conflicts: 'bootstrap-kms-key-id' })
       .option('qualifier', { type: 'string', desc: 'Unique string to distinguish multiple bootstrap stacks', default: undefined })
       .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
-      .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
-      .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
+      .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
+      .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false })
       .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
       .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization.', default: false })
@@ -87,7 +88,8 @@ async function parseCommandLineArguments() {
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
       .option('ci', { type: 'boolean', desc: 'Force CI detection', default: process.env.CI !== undefined })
       .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
-      .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly', nargs: 1, requiresArg: true })
+      // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
+      .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
@@ -135,7 +137,10 @@ async function initCommandLine() {
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
-  const configuration = new Configuration(argv);
+  const configuration = new Configuration({
+    ...argv,
+    _: argv._ as [Command, ...string[]], // TypeScript at its best
+  });
   await configuration.load();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
@@ -221,11 +226,11 @@ async function initCommandLine() {
     switch (command) {
       case 'ls':
       case 'list':
-        return await cli.list(args.STACKS, { long: args.long });
+        return cli.list(args.STACKS, { long: args.long });
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL);
-        return await cli.diff({
+        return cli.diff({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           templatePath: args.template,
@@ -257,10 +262,10 @@ async function initCommandLine() {
         const bootstrapper = new Bootstrapper(source);
 
         if (args.showTemplate) {
-          return await bootstrapper.showTemplate();
+          return bootstrapper.showTemplate();
         }
 
-        return await cli.bootstrap(args.ENVIRONMENTS, bootstrapper, {
+        return cli.bootstrap(args.ENVIRONMENTS, bootstrapper, {
           roleArn: args.roleArn,
           force: argv.force,
           toolkitStackName: toolkitStackName,
@@ -270,6 +275,7 @@ async function initCommandLine() {
           parameters: {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
+            createCustomerMasterKey: args.bootstrapCustomerKey,
             qualifier: args.qualifier,
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
             trustedAccounts: arrayFromYargs(args.trust),
@@ -285,7 +291,7 @@ async function initCommandLine() {
             parameterMap[keyValue[0]] = keyValue.slice(1).join('=');
           }
         }
-        return await cli.deploy({
+        return cli.deploy({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           toolkitStackName,
@@ -304,7 +310,7 @@ async function initCommandLine() {
         });
 
       case 'destroy':
-        return await cli.destroy({
+        return cli.destroy({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           force: args.force,
@@ -313,17 +319,17 @@ async function initCommandLine() {
 
       case 'synthesize':
       case 'synth':
-        return await cli.synth(args.STACKS, args.exclusively);
+        return cli.synth(args.STACKS, args.exclusively);
 
       case 'metadata':
-        return await cli.metadata(args.STACK);
+        return cli.metadata(args.STACK);
 
       case 'init':
         const language = configuration.settings.get(['language']);
         if (args.list) {
-          return await printAvailableTemplates(language);
+          return printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
+          return cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
         }
       case 'version':
         return data(version.DISPLAY_VERSION);
