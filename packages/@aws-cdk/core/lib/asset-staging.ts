@@ -113,7 +113,7 @@ export class AssetStaging extends Construct {
         this.relativePath = renderAssetFilename(this.assetHash);
         this.stagedPath = this.relativePath;
       } else { // Bundling is skipped
-        this.assetHash = props.assetHashType === AssetHashType.BUNDLE
+        this.assetHash = props.assetHashType === AssetHashType.BUNDLE || props.assetHashType === AssetHashType.OUTPUT
           ? this.calculateHash(AssetHashType.CUSTOM, this.node.path) // Use node path as dummy hash because we're not bundling
           : this.calculateHash(hashType, props.assetHash);
         this.stagedPath = this.sourcePath;
@@ -295,8 +295,9 @@ export class AssetStaging extends Construct {
       case AssetHashType.SOURCE:
         return FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
       case AssetHashType.BUNDLE:
+      case AssetHashType.OUTPUT:
         if (!this.bundleDir) {
-          throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
+          throw new Error(`Cannot use \`${hashType}\` hash type when \`bundling\` is not specified.`);
         }
         return FileSystem.fingerprint(this.bundleDir, this.fingerprintOptions);
       default:
