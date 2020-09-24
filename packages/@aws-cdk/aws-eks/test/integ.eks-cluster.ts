@@ -87,7 +87,7 @@ class EksClusterStack extends TestStack {
       },
     });
 
-    const nginxIngress = this.cluster.addChart('nginx-ingress', {
+    const nginxIngress = this.cluster.addHelmChart('nginx-ingress', {
       chart: 'nginx-ingress',
       repository: 'https://helm.nginx.com/stable',
       namespace: 'nginx',
@@ -103,7 +103,7 @@ class EksClusterStack extends TestStack {
   }
   private assertSimpleHelmChart() {
     // deploy the Kubernetes dashboard through a helm chart
-    this.cluster.addChart('dashboard', {
+    this.cluster.addHelmChart('dashboard', {
       chart: 'kubernetes-dashboard',
       repository: 'https://kubernetes.github.io/dashboard/',
     });

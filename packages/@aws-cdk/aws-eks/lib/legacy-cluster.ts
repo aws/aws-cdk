@@ -366,7 +366,7 @@ export class LegacyCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding kubernetes manifests');
   }
 
-  public addChart(_id: string, _options: HelmChartOptions): HelmChart {
+  public addHelmChart(_id: string, _options: HelmChartOptions): HelmChart {
     throw new Error('legacy cluster does not support adding helm charts');
   }
 
@@ -424,7 +424,7 @@ class ImportedCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding kubernetes manifests');
   }
 
-  public addChart(_id: string, _options: HelmChartOptions): HelmChart {
+  public addHelmChart(_id: string, _options: HelmChartOptions): HelmChart {
     throw new Error('legacy cluster does not support adding helm charts');
   }
 

@@ -126,7 +126,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @param options options of this chart.
    * @returns a `HelmChart` construct
    */
-  addChart(id: string, options: HelmChartOptions): HelmChart;
+  addHelmChart(id: string, options: HelmChartOptions): HelmChart;
 }
 
 /**
@@ -609,7 +609,7 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @param options options of this chart.
    * @returns a `HelmChart` construct
    */
-  public addChart(id: string, options: HelmChartOptions): HelmChart {
+  public addHelmChart(id: string, options: HelmChartOptions): HelmChart {
     return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
   }
 }
@@ -1333,7 +1333,7 @@ export class Cluster extends ClusterBase {
    */
   private addSpotInterruptHandler() {
     if (!this._spotInterruptHandler) {
-      this._spotInterruptHandler = this.addChart('spot-interrupt-handler', {
+      this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
         version: '0.9.5',
         repository: 'https://aws.github.io/eks-charts',

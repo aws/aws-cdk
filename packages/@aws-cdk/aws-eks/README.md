@@ -206,11 +206,11 @@ this.cluster.addNodegroup('extra-ng', {
 
 ### ARM64 Support
 
-Instance types with `ARM64` architecture are supported in both managed nodegroup and self-managed capacity. Simply specify an ARM64 `instanceType` (such as `m6g.medium`), and the latest 
+Instance types with `ARM64` architecture are supported in both managed nodegroup and self-managed capacity. Simply specify an ARM64 `instanceType` (such as `m6g.medium`), and the latest
 Amazon Linux 2 AMI for ARM64 will be automatically selected.
 
 ```ts
-// create a cluster with a default managed nodegroup 
+// create a cluster with a default managed nodegroup
 cluster = new eks.Cluster(this, 'Cluster', {
   vpc,
   mastersRole,
@@ -669,10 +669,10 @@ unfortunately beyond the scope of this documentation.
 
 ### Helm Charts
 
-The `HelmChart` construct or `cluster.addChart` method can be used
+The `HelmChart` construct or `cluster.addHelmChart` method can be used
 to add Kubernetes resources to this cluster using Helm.
 
-> When using `cluster.addChart`, the manifest construct is defined within the cluster's stack scope. If the manifest contains
+> When using `cluster.addHelmChart`, the manifest construct is defined within the cluster's stack scope. If the manifest contains
 > attributes from a different stack which depend on the cluster stack, a circular dependency will be created and you will get a synth time error.
 > To avoid this, directly use `new HelmChart` to create the chart in the scope of the other stack.
 
@@ -688,8 +688,8 @@ new HelmChart(this, 'NginxIngress', {
   namespace: 'kube-system'
 });
 
-// or, option2: use `addChart`
-cluster.addChart('NginxIngress', {
+// or, option2: use `addHelmChart`
+cluster.addHelmChart('NginxIngress', {
   chart: 'nginx-ingress',
   repository: 'https://helm.nginx.com/stable',
   namespace: 'kube-system'
@@ -716,8 +716,8 @@ resource or if Helm charts depend on each other. You can use
 charts:
 
 ```ts
-const chart1 = cluster.addChart(...);
-const chart2 = cluster.addChart(...);
+const chart1 = cluster.addHelmChart(...);
+const chart2 = cluster.addHelmChart(...);
 
 chart2.node.addDependency(chart1);
 ```
