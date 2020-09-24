@@ -34,7 +34,16 @@ export class AwsCliCompatible {
    */
   public static async credentialChain(options: CredentialChainOptions = {}) {
 
-    const profile = options.profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
+    // To match AWS CLI behavior, if a profile is explicitly given using --profile,
+    // we use that to the exclusion of everything else (note: this does not apply
+    // to AWS_PROFILE, environment credentials still take precedence over AWS_PROFILE)
+    if (options.profile) {
+      await forceSdkToReadConfigIfPresent();
+      const theProfile = options.profile;
+      return new AWS.CredentialProviderChain([() => profileCredentials(theProfile)]);
+    }
+
+    const implicitProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
     const sources = [
       () => new AWS.EnvironmentCredentials('AWS'),
@@ -45,12 +54,7 @@ export class AwsCliCompatible {
       // Force reading the `config` file if it exists by setting the appropriate
       // environment variable.
       await forceSdkToReadConfigIfPresent();
-      sources.push(() => new PatchedSharedIniFileCredentials({
-        profile,
-        filename: credentialsFileName(),
-        httpOptions: options.httpOptions,
-        tokenCodeFn,
-      }));
+      sources.push(() => profileCredentials(implicitProfile));
     }
 
     if (options.containerCreds ?? hasEcsCredentials()) {
@@ -63,6 +67,15 @@ export class AwsCliCompatible {
     }
 
     return new AWS.CredentialProviderChain(sources);
+
+    function profileCredentials(profileName: string) {
+      return new PatchedSharedIniFileCredentials({
+        profile: profileName,
+        filename: credentialsFileName(),
+        httpOptions: options.httpOptions,
+        tokenCodeFn,
+      });
+    }
   }
 
   /**

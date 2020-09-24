@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-kinesis",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS Kinesis",
+  "description": "The CDK Construct Library for AWS::Kinesis",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
