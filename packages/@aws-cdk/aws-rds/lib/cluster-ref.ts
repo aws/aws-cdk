@@ -42,6 +42,66 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
 }
 
 /**
+ * Create a clustered database with a given number of instances.
+ */
+export interface IServerlessDatabaseCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+  /**
+   * Identifier of the cluster
+   */
+  readonly clusterIdentifier: string;
+
+  /**
+   * The endpoint to use for read/write operations
+   * @attribute EndpointAddress,EndpointPort
+   */
+  readonly clusterEndpoint: Endpoint;
+
+  /**
+   * Endpoint to use for load-balanced read-only operations.
+   * @attribute ReadEndpointAddress
+   */
+  readonly clusterReadEndpoint: Endpoint;
+}
+
+/**
+ * Properties that describe an existing cluster instance
+ */
+export interface ServerlessDatabaseClusterAttributes {
+  /**
+   * Identifier for the cluster
+   */
+  readonly clusterIdentifier: string;
+
+  /**
+   * The database port
+   *
+   * @default - none
+   */
+  readonly port?: number;
+
+  /**
+   * The security groups of the database cluster
+   *
+   * @default - no security groups
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Cluster endpoint address
+   *
+   * @default - no endpoint address
+   */
+  readonly clusterEndpointAddress?: string;
+
+  /**
+   * Reader endpoint address
+   *
+   * @default - no reader address
+   */
+  readonly readerEndpointAddress?: string;
+}
+
+/**
  * Properties that describe an existing cluster instance
  */
 export interface DatabaseClusterAttributes {
