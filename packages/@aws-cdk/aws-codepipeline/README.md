@@ -98,12 +98,22 @@ sourceStage.addAction(someAction);
 
 ### Cross-account CodePipelines
 
-Cross-account Pipeline actions require that the Pipeline has *not* been
-created with `crossAccountKeys: false`.
+> Cross-account Pipeline actions require that the Pipeline has *not* been
+> created with `crossAccountKeys: false`.
 
-To perform actions in a different account than your Pipeline is in, most
-actions accept a resource that is in a different account (either created
-or imported):
+Most pipeline Actions accept an AWS resource object to operate on. For example:
+
+* `S3DeployAction` accepts an `s3.IBucket`.
+* `CodeBuildAction` accepts a `codebuild.IProject`.
+* etc.
+
+These resources can be either newly defined (`new s3.Bucket(...)`) or imported
+(`s3.Bucket.fromBucketAttributes(...)`) and identify the resource that should
+be changed.
+
+These resources can be in different accounts than the pipeline itself. For
+example, the following action deploys to an imported S3 bucket from a
+different account:
 
 ```typescript
 stage.addAction(new codepipeline_actions.S3DeployAction({
@@ -115,7 +125,7 @@ stage.addAction(new codepipeline_actions.S3DeployAction({
 }));
 ```
 
-Some actions accept an explicit `account` parameter:
+Actions that don't accept a resource object accept an explicit `account` parameter:
 
 ```typescript
 stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
@@ -124,15 +134,14 @@ stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
 }));
 ```
 
-CodePipeline requires that an IAM Role exists in the target account with a
-well-known name. The `Pipeline` construct automatically defines a **support
-stack** for you, named `<PipelineStackName>-support-<account>`, that will
-provision a role that the pipeline will assume in the given account before
-executing this action. This support stack will automatically be deployed
+The `Pipeline` construct automatically defines an **IAM Role** for you in the
+target account which the pipeline will assume to perform that action. This
+Role will be defined in a **support stack** named
+`<PipelineStackName>-support-<account>`, that will automatically be deployed
 before the stack containing the pipeline.
 
-You can also explicitly pass a `role` when creating the action. In that case,
-the `account` property is ignored, and the action will operate in the same
+If you do not want to use the generated role, you can also explicitly pass a
+`role` when creating the action. In that case, the action will operate in the
 account the role belongs to:
 
 ```ts
@@ -144,9 +153,9 @@ stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
 
 ### Cross-region CodePipelines
 
-To perform actions in a different region than your Pipeline is in, most
-actions accept a resource that is in a different region (either created
-or imported):
+Similar to how you set up a cross-account Action, the AWS resource object you
+pass to actions can also be in different *Regions*. For example, the
+following Action deploys to an imported S3 bucket from a different Region:
 
 ```typescript
 stage.addAction(new codepipeline_actions.S3DeployAction({
@@ -158,7 +167,8 @@ stage.addAction(new codepipeline_actions.S3DeployAction({
 }));
 ```
 
-Some actions accept an explicit `region` parameter:
+Actions that don't take an AWS resource will accept an explicit `region`
+parameter:
 
 ```typescript
 stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
@@ -167,11 +177,11 @@ stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
 }));
 ```
 
-CodePipeline requires that a replication bucket exists in the region(s) you
-want to deploy to. The `Pipeline` construct automatically defines a **support
-stack** for you, named `<nameOfYourPipelineStack>-support-<region>`, which
-contains this replication bucket. This support stack will automatically be
-deployed before the stack containing the pipeline.
+The `Pipeline` construct automatically defines a **replication bucket** for
+you in the target region, which the pipeline will replicate artifacts to and
+from. This Bucket will be defined in a **support stack** named
+`<PipelineStackName>-support-<region>`, that will automatically be deployed
+before the stack containing the pipeline.
 
 If you don't want to use these support stacks, and already have buckets in
 place to serve as replication buckets, you can supply these at Pipeline definition

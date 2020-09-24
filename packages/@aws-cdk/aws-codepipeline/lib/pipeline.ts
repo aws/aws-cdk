@@ -242,6 +242,8 @@ export class Pipeline extends PipelineBase {
       throw new Error('Only one of artifactBucket and crossRegionReplicationBuckets can be specified!');
     }
 
+
+    // @deprecated(v2): switch to default false
     this.crossAccountKeys = props.crossAccountKeys ?? true;
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
