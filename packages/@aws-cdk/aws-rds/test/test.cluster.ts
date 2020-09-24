@@ -398,7 +398,7 @@ export = {
     test.done();
   },
 
-  'cluster with disallow upgrade of major version'(test: Test) {
+  'cluster with allow upgrade of major version'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -411,13 +411,13 @@ export = {
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        allowMajorVersionUpgrade: false,
+        allowMajorVersionUpgrade: true,
         vpc,
       },
     });
 
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      AllowMajorVersionUpgrade: false,
+      AllowMajorVersionUpgrade: true,
     }));
 
     test.done();
