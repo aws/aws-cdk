@@ -111,8 +111,8 @@ test('create complex model', () => {
       ],
       'VpcConfig': {
         SecurityGroupIds: [
-          { 'Fn::GetAtt': ['SagemakerModelModelSecurityGroup4D2A2C36', 'GroupId'] },
           { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
+          { 'Fn::GetAtt': ['SagemakerModelModelSecurityGroup4D2A2C36', 'GroupId'] },
         ],
         Subnets: [
           { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
