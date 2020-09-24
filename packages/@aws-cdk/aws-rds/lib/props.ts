@@ -63,6 +63,27 @@ export interface InstanceProps {
    * @default - default master key
    */
   readonly performanceInsightEncryptionKey?: kms.IKey;
+
+  /**
+   * Whether to enable automatic upgrade of minor version for the DB instance.
+   *
+   * @default - true
+   */
+  readonly autoMinorVersionUpgrade?: boolean;
+
+  /**
+   * Whether to allow upgrade of major version for the DB instance.
+   *
+   * @default - false
+   */
+  readonly allowMajorVersionUpgrade?: boolean;
+
+  /**
+   *  Whether to remove automated backups immediately after the DB instance is deleted for the DB instance.
+   *
+   * @default - true
+   */
+  readonly deleteAutomatedBackups?: boolean;
 }
 
 /**
