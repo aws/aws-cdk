@@ -63,6 +63,7 @@ export class CrossRegionSupportConstruct extends cdk.Construct {
     }
     this.replicationBucket = new s3.Bucket(this, 'CrossRegionCodePipelineReplicationBucket', {
       bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+      encryption: encryptionAlias ? s3.BucketEncryption.KMS : s3.BucketEncryption.KMS_MANAGED,
       encryptionKey: encryptionAlias,
     });
   }

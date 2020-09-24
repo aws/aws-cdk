@@ -1,5 +1,5 @@
 import { Aws, ResourceEnvironment } from '@aws-cdk/core';
-import { IAction } from './action';
+import { IAction } from '../action';
 
 /**
  * Helper routines to work with Actions
@@ -14,7 +14,7 @@ import { IAction } from './action';
  * It was probably my own idea but I don't want it anymore:
  * https://github.com/aws/aws-cdk/issues/10393
  */
-export class EnhancedAction {
+export class RichAction {
   constructor(private readonly action: IAction) {
   }
 

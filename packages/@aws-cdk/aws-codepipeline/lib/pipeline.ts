@@ -6,13 +6,13 @@ import {
   App, BootstraplessSynthesizer, Construct, DefaultStackSynthesizer,
   IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token, TokenComparison,
 } from '@aws-cdk/core';
-import { EnhancedAction } from './_enhanced_action';
 import { ActionCategory, IAction, IPipeline, IStage } from './action';
 import { CfnPipeline } from './codepipeline.generated';
-import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './cross-region-support-stack';
-import { FullActionDescriptor } from './full-action-descriptor';
-import { Stage } from './stage';
-import { validateName, validateNamespaceName, validateSourceAction } from './validation';
+import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
+import { FullActionDescriptor } from './private/full-action-descriptor';
+import { RichAction } from './private/rich-action';
+import { Stage } from './private/stage';
+import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
@@ -432,25 +432,16 @@ export class Pipeline extends PipelineBase {
   }
 
   private ensureReplicationResourcesExistFor(action: IAction): CrossRegionInfo {
-    const actionEnv = new EnhancedAction(action).env;
+    const actionEnv = new RichAction(action).env;
 
     // Whether the action seems to care about its account/region (or is happy
     // to inherit from the pipeline)
-    const hasAccount = !Token.isUnresolved(actionEnv.account);
     const hasRegion = !Token.isUnresolved(actionEnv.region);
-
-    // Do a check on whether the cross-account acccess is possible given the
-    // current pipeline configuration. This has bearing on whether
-    // `artifactBucket.grantRead(action.role)` (which is going to occur down the
-    // line) can even work.
-    if (hasAccount && !sameEnvDimension(this.env.account, actionEnv.account) && !this.crossAccountKeys) {
-      throw new Error(`Pipeline must be created with 'crossAccountKeys: true' to add cross-account action '${action.actionProperties.actionName}'. Pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(actionEnv.account)}'`);
-    }
 
     // if actionRegion is undefined or the same as the pipeline region,
     // it means the action is in the same region as the pipeline - so, just
     // return the artifactBucket
-    if (!hasRegion || sameEnvDimension(this.env.region, actionEnv.region) || Token.isUnresolved(actionEnv.region)) {
+    if (!hasRegion || sameEnvDimension(this.env.region, actionEnv.region)) {
       return {
         artifactBucket: this.artifactBucket,
       };
@@ -486,7 +477,7 @@ export class Pipeline extends PipelineBase {
     let crossRegionSupport = this._crossRegionSupport[actionRegion];
     if (!crossRegionSupport) {
       // we need to create scaffolding resources for this region
-      const otherStack = this.crossRegionSupportScope(action);
+      const otherStack = this.scopeForCrossRegionSupportConstruct(action);
       crossRegionSupport = this.createSupportResourcesForRegion(otherStack, actionRegion);
       this._crossRegionSupport[actionRegion] = crossRegionSupport;
     }
@@ -502,17 +493,16 @@ export class Pipeline extends PipelineBase {
    * (Always true for owned action resources but not necessarily true
    * for imported ones).
    */
-  private crossRegionSupportScope(action: IAction): Stack | undefined {
+  private scopeForCrossRegionSupportConstruct(action: IAction): Stack | undefined {
     // The resource this action is targeting (if any). Might be owned, might be imported.
     const actionResource = action.actionProperties.resource;
     if (!actionResource) { return undefined; }
 
     const actionResourceStack = Stack.of(actionResource);
 
-    const stackHasCorrectEnvironment = (
+    const stackHasCorrectEnvironment =
       sameEnvDimension(actionResource.env.region, actionResourceStack.region)
-      && sameEnvDimension(actionResource.env.account, actionResourceStack.account));
-
+      && sameEnvDimension(actionResource.env.account, actionResourceStack.account);
 
     return stackHasCorrectEnvironment ? actionResourceStack : undefined;
   }
@@ -621,6 +611,16 @@ export class Pipeline extends PipelineBase {
 
   private getRoleFromActionPropsOrGenerateIfCrossAccount(stage: Stage, action: IAction): iam.IRole | undefined {
     const pipelineStack = Stack.of(this);
+    const actionEnv = new RichAction(action).env;
+
+    // Do a check on whether the cross-account acccess is possible given the
+    // current pipeline configuration. This has bearing on whether
+    // `artifactBucket.grantRead(action.role)` (which is going to occur down the
+    // line) can even work.
+    const hasAccount = !Token.isUnresolved(actionEnv.account);
+    if (hasAccount && !sameEnvDimension(this.env.account, actionEnv.account) && !this.crossAccountKeys) {
+      throw new Error(`Pipeline must be created with 'crossAccountKeys: true' to add cross-account action '${action.actionProperties.actionName}'. Pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(actionEnv.account)}'`);
+    }
 
     // if a Role has been passed explicitly, always use it
     // (even if the backing resource is from a different account -
