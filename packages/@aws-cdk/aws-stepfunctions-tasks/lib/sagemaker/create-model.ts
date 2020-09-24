@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { IContainerDefinition, VpcConfig } from './base-types';
+import { IContainerDefinition } from './base-types';
 
 /**
  * Properties for creating an Amazon SageMaker model
@@ -42,11 +42,19 @@ export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps {
   readonly enableNetworkIsolation?: boolean;
 
   /**
-   * A VpcConfig object that specifies the VPC that you want your model to connect to.
+   * The VPC that is accessible by the hosted model
    *
    * @default - None
    */
-  readonly vpcConfig?: VpcConfig;
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * The subnets of the VPC to which the hosted model is connected
+   * (Note this parameter is only used when VPC is provided)
+   *
+   * @default - Private Subnets are selected
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
    * Tags to be applied to the model.
@@ -70,6 +78,11 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
    * Allows specify security group connections for instances of this fleet.
    */
   public readonly connections: ec2.Connections = new ec2.Connections();
+  /**
+   * The execution role for the Sagemaker Create Model API.
+   */
+  public readonly role: iam.IRole;
+  public readonly grantPrincipal: iam.IPrincipal;
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
   private readonly vpc?: ec2.IVpc;
@@ -77,8 +90,6 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
   private readonly subnets?: string[];
   private readonly integrationPattern: sfn.IntegrationPattern;
-  private _role?: iam.IRole;
-  private _grantPrincipal?: iam.IPrincipal;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: SageMakerCreateModelProps) {
     super(scope, id, props);
@@ -86,31 +97,14 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
     validatePatternSupported(this.integrationPattern, SageMakerCreateModel.SUPPORTED_INTEGRATION_PATTERNS);
 
     // add the security groups to the connections object
-    if (props.vpcConfig) {
-      this.vpc = props.vpcConfig.vpc;
-      this.subnets = props.vpcConfig.subnets ? this.vpc.selectSubnets(props.vpcConfig.subnets).subnetIds : this.vpc.selectSubnets().subnetIds;
+    if (props.vpc) {
+      this.vpc = props.vpc;
+      this.subnets = props.subnetSelection ? this.vpc.selectSubnets(props.subnetSelection).subnetIds : this.vpc.selectSubnets().subnetIds;
     }
 
+    this.role = this.props.role || this.createSagemakerRole();
+    this.grantPrincipal = this.role;
     this.taskPolicies = this.makePolicyStatements();
-  }
-
-  /**
-   * The execution role for the Sagemaker Create Model API.
-   *
-   * Only available after task has been added to a state machine.
-   */
-  public get role(): iam.IRole {
-    if (this._role === undefined) {
-      throw new Error('role not available yet--use the object in a Task first');
-    }
-    return this._role;
-  }
-
-  public get grantPrincipal(): iam.IPrincipal {
-    if (this._grantPrincipal === undefined) {
-      throw new Error('Principal not available yet--use the object in a Task first');
-    }
-    return this._grantPrincipal;
   }
 
   /**
@@ -136,43 +130,73 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
   private renderParameters(): { [key: string]: any } {
     return {
       EnableNetworkIsolation: this.props.enableNetworkIsolation,
-      ExecutionRoleArn: this._role!.roleArn,
+      ExecutionRoleArn: this.role.roleArn,
       ModelName: this.props.modelName,
       Tags: this.props.tags?.value,
       PrimaryContainer: this.props.primaryContainer.bind(this).parameters,
       Containers: this.props.containers?.map(container => (container.bind(this))),
-      ...this.renderVpcConfig(this.props.vpcConfig),
+      ...this.renderVpcConfig(),
     };
   }
 
   private makePolicyStatements(): iam.PolicyStatement[] {
     const stack = cdk.Stack.of(this);
-    // set the SageMaker role or create new one
+    return [
+      new iam.PolicyStatement({
+        actions: ['sagemaker:CreateModel'],
+        resources: [
+          stack.formatArn({
+            service: 'sagemaker',
+            resource: 'model',
+            // If the model name comes from input, we cannot target the policy to a particular ARN prefix reliably.
+            // SageMaker uses lowercase for resource name in the arn
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.modelName) ? '*' : `${this.props.modelName.toLowerCase()}*`,
+          }),
+        ],
+      }),
+      new iam.PolicyStatement({
+        actions: ['sagemaker:ListTags'],
+        // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
+        resources: ['*'],
+      }),
+      new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.role.roleArn],
+        conditions: {
+          StringEquals: { 'iam:PassedToService': 'sagemaker.amazonaws.com' },
+        },
+      }),
+    ];
+  }
+
+  private createSagemakerRole() {
     // https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html
-    this._grantPrincipal = this._role =
-        this.props.role ||
-        new iam.Role(this, 'SagemakerRole', {
-          assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-          inlinePolicies: {
-            CreateModel: new iam.PolicyDocument({
-              statements: [
-                new iam.PolicyStatement({
-                  actions: [
-                    'cloudwatch:PutMetricData',
-                    'logs:CreateLogStream',
-                    'logs:CreateLogGroup',
-                    'logs:PutLogEvents',
-                    'logs:DescribeLogStreams',
-                    'ecr:GetAuthorizationToken',
-                  ],
-                  resources: ['*'],
-                }),
+    const role = new iam.Role(this, 'SagemakerRole', {
+      assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+      inlinePolicies: {
+        CreateModel: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              actions: [
+                // https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazoncloudwatch.html
+                'cloudwatch:PutMetricData',
+                // https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazoncloudwatchlogs.html
+                'logs:CreateLogStream',
+                'logs:CreateLogGroup',
+                'logs:PutLogEvents',
+                'logs:DescribeLogStreams',
+                // https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazonelasticcontainerregistry.html
+                'ecr:GetAuthorizationToken',
               ],
+              resources: ['*'],
             }),
-          },
-        });
-    if (this.props.vpcConfig) {
-      this.role.addToPrincipalPolicy(
+          ],
+        }),
+      },
+    });
+    if (this.props.vpc) {
+      role.addToPrincipalPolicy(
+        // https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazonec2.html
         new iam.PolicyStatement({
           actions: [
             'ec2:CreateNetworkInterface',
@@ -189,6 +213,10 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
         }),
       );
     }
+    return role;
+  }
+
+  private renderVpcConfig(): { [key: string]: any } {
     // create a security group if not defined
     if (this.vpc && this.securityGroup === undefined) {
       this.securityGroup = new ec2.SecurityGroup(this, 'ModelSecurityGroup', {
@@ -197,36 +225,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
       this.connections.addSecurityGroup(this.securityGroup);
       this.securityGroups.push(this.securityGroup);
     }
-    // https://docs.aws.amazon.com/sagemaker/latest/dg/api-permissions-reference.html
-    return [
-      new iam.PolicyStatement({
-        actions: ['sagemaker:CreateModel'],
-        resources: [
-          stack.formatArn({
-            service: 'sagemaker',
-            resource: 'model',
-            // If the model name comes from input, we cannot target the policy to a particular ARN prefix reliably.
-            // SageMaker uses lowercase for resource name in the arn
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.modelName) ? '*' : `${this.props.modelName.toLowerCase()}*`,
-          }),
-        ],
-      }),
-      new iam.PolicyStatement({
-        actions: ['sagemaker:ListTags'],
-        resources: ['*'],
-      }),
-      new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: [this._role!.roleArn],
-        conditions: {
-          StringEquals: { 'iam:PassedToService': 'sagemaker.amazonaws.com' },
-        },
-      }),
-    ];
-  }
-
-  private renderVpcConfig(config: VpcConfig | undefined): { [key: string]: any } {
-    return config
+    return this.vpc
       ? {
         VpcConfig: {
           SecurityGroupIds: cdk.Lazy.listValue({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
@@ -235,5 +234,4 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
       }
       : {};
   }
-
 }

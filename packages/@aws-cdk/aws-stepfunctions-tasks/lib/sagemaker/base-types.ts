@@ -759,8 +759,10 @@ export interface ProductionVariant {
   readonly acceleratorType?: AcceleratorType;
   /**
    * Number of instances to launch initially.
+   *
+   * @default - 1
    */
-  readonly initialInstanceCount: number;
+  readonly initialInstanceCount?: number;
   /**
    * Determines initial traffic distribution among all of the models that you specify in the endpoint configuration.
    *
@@ -782,37 +784,57 @@ export interface ProductionVariant {
 }
 
 /**
+ * The generation of Elastic Inference (EI) instance
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html
+ * @experimental
+ */
+export class AcceleratorClass {
+  /**
+   * Elastic Inference accelerator 1st generation
+   */
+  public static readonly EIA1 = AcceleratorClass.of('eia1');
+  /**
+   * Elastic Inference accelerator 2nd generation
+   */
+  public static readonly EIA2 = AcceleratorClass.of('eia2');
+  /**
+   * Custom AcceleratorType
+   * @param version - Elastic Inference accelerator generation
+  */
+  public static of(version: string) { return new AcceleratorClass(version); }
+  /**
+   * @param version - Elastic Inference accelerator generation
+   */
+  private constructor(public readonly version: string) { }
+}
+
+/**
  * The size of the Elastic Inference (EI) instance to use for the production variant.
  * EI instances provide on-demand GPU computing for inference
  *
  * @see https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html
  * @experimental
  */
-export enum AcceleratorType {
+export class AcceleratorType {
   /**
-   * Elastic Inference accelerator 1st generation, Instance size MEDIUM (medium)
+   * AcceleratorType
+   *
+   * This class takes a combination of a class and size.
    */
-  EIA1_MEDIUM = 'ml.eia1.medium',
+  public static of(acceleratorClass: AcceleratorClass, instanceSize: ec2.InstanceSize) {
+    return new AcceleratorType(`ml.${acceleratorClass}.${instanceSize}`);
+  }
+
+  constructor(private readonly instanceTypeIdentifier: string) {
+  }
+
   /**
-   * Elastic Inference accelerator 1st generation, Instance size LARGE (large)
+   * Return the accelerator type as a dotted string
    */
-  EIA1_LARGE = 'ml.eia1.large',
-  /**
-   * Elastic Inference accelerator 1st generation, Instance size XLARGE (xlarge)
-   */
-  EIA1_XLARGE = 'ml.eia1.xlarge',
-  /**
-   * Elastic Inference accelerator 2nd generation, Instance size MEDIUM (medium)
-   */
-  EIA2_MEDIUM = 'ml.eia2.medium',
-  /**
-   * Elastic Inference accelerator 2nd generation, Instance size LARGE (large)
-   */
-  EIA2_LARGE = 'ml.eia2.large',
-  /**
-   * Elastic Inference accelerator 2nd generation, Instance size XLARGE (xlarge)
-   */
-  EIA2_XLARGE = 'ml.eia2.xlarge',
+  public toString(): string {
+    return this.instanceTypeIdentifier;
+  }
 }
 
 /**

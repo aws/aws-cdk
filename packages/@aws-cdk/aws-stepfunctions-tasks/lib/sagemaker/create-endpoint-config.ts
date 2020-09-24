@@ -78,7 +78,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
       Tags: this.props.tags?.value,
       KmsKeyId: this.props.kmsKey?.keyId,
       ProductionVariants: this.props.productionVariants.map((variant) => ({
-        InitialInstanceCount: variant.initialInstanceCount,
+        InitialInstanceCount: variant.initialInstanceCount ? variant.initialInstanceCount : 1,
         InstanceType: `ml.${variant.instanceType}`,
         ModelName: variant.modelName,
         VariantName: variant.variantName,
@@ -107,6 +107,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
       }),
       new iam.PolicyStatement({
         actions: ['sagemaker:ListTags'],
+        // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
         resources: ['*'],
       }),
     ];
@@ -117,7 +118,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
       throw new Error('Must specify from 1 to 10 production variants per endpoint configuration');
     }
     this.props.productionVariants.forEach((variant) => {
-      if ( variant.initialInstanceCount < 1) throw new Error('Must define at least one instance');
+      if (variant.initialInstanceCount && variant.initialInstanceCount < 1) throw new Error('Must define at least one instance');
       if ( variant.initialVariantWeight && variant.initialVariantWeight <= 0) {
         throw new Error('InitialVariantWeight has minimum value of 0');
       }

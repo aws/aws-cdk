@@ -77,7 +77,7 @@ test('create complex model', () => {
       Key: 'Project',
       Value: 'ML',
     }]),
-    vpcConfig: { vpc },
+    vpc,
   });
   task.addSecurityGroup(securityGroup);
 

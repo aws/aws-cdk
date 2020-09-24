@@ -90,6 +90,7 @@ export class SageMakerCreateEndpoint extends sfn.TaskStateBase {
       }),
       new iam.PolicyStatement({
         actions: ['sagemaker:ListTags'],
+        // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
         resources: ['*'],
       }),
     ];
