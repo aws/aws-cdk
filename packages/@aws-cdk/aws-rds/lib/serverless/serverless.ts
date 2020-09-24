@@ -76,13 +76,6 @@ export interface ServerlessClusterBaseProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * What port to listen on
-   *
-   * @default - The default for the engine is used.
-   */
-  readonly port?: number;
-
-  /**
    * Scaling configuration
    *
    * @default - None
