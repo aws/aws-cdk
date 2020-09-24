@@ -111,7 +111,7 @@ export interface IDataSource extends IConstruct {
    */
   readonly name: string;
   /**
-   * the arn of the data source
+   * the ARN of the data source
    */
   readonly arn: string;
   /**
