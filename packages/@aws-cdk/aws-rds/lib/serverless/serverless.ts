@@ -298,6 +298,7 @@ export class ServerlessDatabaseCluster extends ServerlessClusterBase {
         : (props.masterUser.password
           ? props.masterUser.password.toString()
           : undefined),
+      storageEncrypted: true,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
     });
 
