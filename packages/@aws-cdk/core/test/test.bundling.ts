@@ -174,7 +174,7 @@ export = {
     test.done();
   },
 
-  'copyOut copies from an image'(test: Test) {
+  'cp utility copies from an image'(test: Test) {
     // GIVEN
     const containerId = '1234567890abcdef1234567890abcdef';
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
@@ -187,7 +187,7 @@ export = {
     });
 
     // WHEN
-    BundlingDockerImage.fromRegistry('alpine').copyOut('/foo/bar', '/baz');
+    BundlingDockerImage.fromRegistry('alpine').cp('/foo/bar', '/baz');
 
     // THEN
     test.ok(spawnSyncStub.calledWith(sinon.match.any, ['create', 'alpine'], sinon.match.any));
@@ -197,7 +197,7 @@ export = {
     test.done();
   },
 
-  'copyOut cleans up after itself'(test: Test) {
+  'cp utility cleans up after itself'(test: Test) {
     // GIVEN
     const containerId = '1234567890abcdef1234567890abcdef';
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
@@ -221,7 +221,7 @@ export = {
 
     // WHEN
     test.throws(() => {
-      BundlingDockerImage.fromRegistry('alpine').copyOut('/foo/bar', '/baz');
+      BundlingDockerImage.fromRegistry('alpine').cp('/foo/bar', '/baz');
     }, /Failed.*copy/i);
 
     // THEN

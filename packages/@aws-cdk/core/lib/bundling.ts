@@ -178,7 +178,7 @@ export class BundlingDockerImage {
   /**
    * Copies a file or directory out of the Docker image to the local filesystem
    */
-  public copyOut(imagePath: string, outputPath: string) {
+  public cp(imagePath: string, outputPath: string) {
     const { stdout } = dockerExec(['create', this.image]);
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
