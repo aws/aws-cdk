@@ -6,7 +6,7 @@ import { Test } from 'nodeunit';
 import { AuroraPostgresEngineVersion, ServerlessDatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../../lib';
 
 export = {
-  'creating a Serverless Cluster with Aurora Postgres database engine'(test: Test) {
+  'can create a Serverless Cluster with Aurora Postgres database engine'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -34,6 +34,7 @@ export = {
         EngineMode: 'serverless',
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
+        StorageEncrypted: true,
         VpcSecurityGroupIds: [
           {
             'Fn::GetAtt': [
@@ -76,6 +77,7 @@ export = {
         EngineMode: 'serverless',
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
+        StorageEncrypted: true,
         VpcSecurityGroupIds: [
           {
             'Fn::GetAtt': [
