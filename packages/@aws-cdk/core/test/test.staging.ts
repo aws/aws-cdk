@@ -149,7 +149,7 @@ export = {
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // WHEN
-    new AssetStaging(stack, 'Asset', {
+    const asset = new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
@@ -167,6 +167,14 @@ export = {
       'stack.template.json',
       'tree.json',
     ]);
+
+    test.equal(asset.sourceHash, 'b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4');
+    test.equal(asset.sourcePath, directory);
+
+    const resolvedStagePath = stack.resolve(asset.stagedPath);
+    // absolute path ending with bundling dir
+    test.ok(path.isAbsolute(resolvedStagePath));
+    test.ok(new RegExp('asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4$').test(resolvedStagePath));
 
     test.done();
   },

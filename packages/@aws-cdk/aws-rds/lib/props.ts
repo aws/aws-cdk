@@ -95,29 +95,165 @@ export interface BackupProps {
 }
 
 /**
- * Username and password combination
+ * Options for creating a Login from a username.
  */
-export interface Login {
-  /**
-   * Username
-   */
-  readonly username: string;
-
+export interface CredentialsFromUsernameOptions {
   /**
    * Password
    *
    * Do not put passwords in your CDK code directly.
    *
-   * @default a Secrets Manager generated password
+   * @default - a Secrets Manager generated password
    */
   readonly password?: SecretValue;
 
   /**
    * KMS encryption key to encrypt the generated secret.
    *
-   * @default default master key
+   * @default - default master key
    */
   readonly encryptionKey?: kms.IKey;
+}
+
+/**
+ * Username and password combination
+ */
+export abstract class Credentials {
+
+  /**
+   * Creates Credentials for the given username, and optional password and key.
+   * If no password is provided, one will be generated and stored in SecretsManager.
+   */
+  public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
+    return { username, password: options.password, encryptionKey: options.encryptionKey };
+  }
+
+  /**
+   * Creates Credentials from an existing SecretsManager ``Secret`` (or ``DatabaseSecret``)
+   *
+   * The Secret must be a JSON string with a ``username`` and ``password`` field:
+   * ```
+   * {
+   *   ...
+   *   "username": <required: username>,
+   *   "password": <required: password>,
+   * }
+   * ```
+   */
+  public static fromSecret(secret: secretsmanager.Secret): Credentials {
+    return {
+      username: secret.secretValueFromJson('username').toString(),
+      password: secret.secretValueFromJson('password'),
+      encryptionKey: secret.encryptionKey,
+      secret,
+    };
+  }
+
+  /**
+   * Username
+   */
+  public abstract readonly username: string;
+
+  /**
+   * Password
+   *
+   * Do not put passwords in your CDK code directly.
+   *
+   * @default - a Secrets Manager generated password
+   */
+  public abstract readonly password?: SecretValue;
+
+  /**
+   * KMS encryption key to encrypt the generated secret.
+   *
+   * @default - default master key
+   */
+  public abstract readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Secret used to instantiate this Login.
+   *
+   * @default - none
+   */
+  public abstract readonly secret?: secretsmanager.Secret;
+}
+
+/**
+ * Credentials to update the password for a ``DatabaseInstanceFromSnapshot``.
+ */
+export abstract class SnapshotCredentials {
+  /**
+   * Generate a new password for the snapshot, using the existing username and an optional encryption key.
+   *
+   * Note - The username must match the existing master username of the snapshot.
+   */
+  public static fromGeneratedPassword(username: string, encryptionKey?: kms.IKey): SnapshotCredentials {
+    return { generatePassword: true, username, encryptionKey };
+  }
+
+  /**
+   * Update the snapshot login with an existing password.
+   */
+  public static fromPassword(password: SecretValue): SnapshotCredentials {
+    return { generatePassword: false, password };
+  }
+
+  /**
+   * Update the snapshot login with an existing password from a Secret.
+   *
+   * The Secret must be a JSON string with a ``password`` field:
+   * ```
+   * {
+   *   ...
+   *   "password": <required: password>,
+   * }
+   * ```
+   */
+  public static fromSecret(secret: secretsmanager.Secret): SnapshotCredentials {
+    return {
+      generatePassword: false,
+      password: secret.secretValueFromJson('password'),
+      secret,
+    };
+  }
+
+  /**
+   * The master user name.
+   *
+   * Must be the **current** master user name of the snapshot.
+   * It is not possible to change the master user name of a RDS instance.
+   *
+   * @default - the existing username from the snapshot
+   */
+  public abstract readonly username?: string;
+
+  /**
+   * Whether a new password should be generated.
+   */
+  public abstract readonly generatePassword: boolean;
+
+  /**
+   * The master user password.
+   *
+   * Do not put passwords in your CDK code directly.
+   *
+   * @default - the existing password from the snapshot
+   */
+  public abstract readonly password?: SecretValue;
+
+  /**
+   * KMS encryption key to encrypt the generated secret.
+   *
+   * @default - default master key
+   */
+  public abstract readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Secret used to instantiate this Login.
+   *
+   * @default - none
+   */
+  public abstract readonly secret?: secretsmanager.Secret;
 }
 
 /**
