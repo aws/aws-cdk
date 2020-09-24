@@ -70,14 +70,14 @@ export interface InstanceProps {
    * @default - true
    */
   readonly autoMinorVersionUpgrade?: boolean;
-  
+
   /**
    * Whether to allow upgrade of major version for the DB instance.
    *
-   * @default - true
+   * @default - false
    */
   readonly allowMajorVersionUpgrade?: boolean;
-  
+
   /**
    *  Whether to remove automated backups immediately after the DB instance is deleted for the DB instance.
    *
