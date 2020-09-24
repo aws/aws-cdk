@@ -227,6 +227,9 @@ interface DatabaseClusterBaseProps {
  * A new or imported clustered database.
  */
 export abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
+  // only required because of JSII bug: https://github.com/aws/jsii/issues/2040
+  public abstract readonly engine?: IClusterEngine;
+
   /**
    * Identifier of the cluster
    */
