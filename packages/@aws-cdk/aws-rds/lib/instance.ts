@@ -135,6 +135,8 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public abstract readonly dbInstanceEndpointAddress: string;
   public abstract readonly dbInstanceEndpointPort: string;
   public abstract readonly instanceEndpoint: Endpoint;
+  // only required because of JSII bug: https://github.com/aws/jsii/issues/2040
+  public abstract readonly engine?: IInstanceEngine;
   protected abstract enableIamAuthentication?: boolean;
 
   /**
@@ -1096,6 +1098,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
+  public readonly engine?: IInstanceEngine = undefined;
   protected readonly instanceType: ec2.InstanceType;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
