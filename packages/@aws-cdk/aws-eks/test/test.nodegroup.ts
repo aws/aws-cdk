@@ -271,7 +271,7 @@ export = {
     });
 
     // WHEN
-    cluster.addNodegroup('ng');
+    cluster.addNodegroupCapacity('ng');
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
@@ -312,7 +312,7 @@ export = {
       version: CLUSTER_VERSION,
     });
     // THEN
-    test.throws(() => cluster.addNodegroup('ng', { desiredSize: 3, maxSize: 2 }), /Desired capacity 3 can't be greater than max size 2/);
+    test.throws(() => cluster.addNodegroupCapacity('ng', { desiredSize: 3, maxSize: 2 }), /Desired capacity 3 can't be greater than max size 2/);
     test.done();
   },
   'throws when desiredSize < minSize'(test: Test) {
@@ -325,7 +325,7 @@ export = {
       version: CLUSTER_VERSION,
     });
     // THEN
-    test.throws(() => cluster.addNodegroup('ng', { desiredSize: 2, minSize: 3 }), /Minimum capacity 3 can't be greater than desired size 2/);
+    test.throws(() => cluster.addNodegroupCapacity('ng', { desiredSize: 2, minSize: 3 }), /Minimum capacity 3 can't be greater than desired size 2/);
     test.done();
   },
   'create nodegroup correctly with launch template'(test: Test) {
@@ -351,7 +351,7 @@ export = {
         userData: cdk.Fn.base64(userData.render()),
       },
     });
-    cluster.addNodegroup('ng-lt', {
+    cluster.addNodegroupCapacity('ng-lt', {
       launchTemplate: {
         id: lt.ref,
         version: lt.attrDefaultVersionNumber,
@@ -400,7 +400,7 @@ export = {
     });
     // THEN
     test.throws(() =>
-      cluster.addNodegroup('ng-lt', {
+      cluster.addNodegroupCapacity('ng-lt', {
         diskSize: 100,
         launchTemplate: {
           id: lt.ref,
@@ -434,7 +434,7 @@ export = {
     });
     // THEN
     test.throws(() =>
-      cluster.addNodegroup('ng-lt', {
+      cluster.addNodegroupCapacity('ng-lt', {
         instanceType: new ec2.InstanceType('c5.large'),
         launchTemplate: {
           id: lt.ref,

@@ -147,11 +147,11 @@ And the `cluster.defaultNodegroup` property will reference the `Nodegroup`
 resource for the default capacity. It will be `undefined` if `defaultCapacity`
 is set to `0` or `defaultCapacityType` is `EC2`.
 
-You can add `AutoScalingGroup` resource as customized capacity through `cluster.addCapacity()` or
+You can add `AutoScalingGroup` resource as customized capacity through `cluster.addAutoScalingGroupCapacity()` or
 `cluster.addAutoScalingGroup()`:
 
 ```ts
-cluster.addCapacity('frontend-nodes', {
+cluster.addAutoScalingGroupCapacity('frontend-nodes', {
   instanceType: new ec2.InstanceType('t2.medium'),
   minCapacity: 3,
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
@@ -224,7 +224,7 @@ cluster.addNodegroup('extra-ng-arm', {
 });
 
 // add a self-managed ARM64 nodegroup
-cluster.addCapacity('self-ng-arm', {
+cluster.addAutoScalingGroupCapacity('self-ng-arm', {
   instanceType: new ec2.InstanceType('m6g.medium'),
   minCapacity: 2,
 })
@@ -280,7 +280,7 @@ on Amazon EKS (minimum version v1.1.4).
 If `spotPrice` is specified, the capacity will be purchased from spot instances:
 
 ```ts
-cluster.addCapacity('spot', {
+cluster.addAutoScalingGroupCapacity('spot', {
   spotPrice: '0.1094',
   instanceType: new ec2.InstanceType('t3.large'),
   maxCapacity: 10
@@ -314,7 +314,7 @@ you can use `kubeletExtraArgs` to add custom node labels or taints.
 
 ```ts
 // up to ten spot instances
-cluster.addCapacity('spot', {
+cluster.addAutoScalingGroupCapacity('spot', {
   instanceType: new ec2.InstanceType('t3.large'),
   minCapacity: 2,
   bootstrapOptions: {
@@ -596,7 +596,7 @@ on your behalf and exposes an API through the `cluster.awsAuth` for mapping
 users, roles and accounts.
 
 Furthermore, when auto-scaling capacity is added to the cluster (through
-`cluster.addCapacity` or `cluster.addAutoScalingGroup`), the IAM instance role
+`cluster.addAutoScalingGroupCapacity` or `cluster.addAutoScalingGroup`), the IAM instance role
 of the auto-scaling group will be automatically mapped to RBAC so nodes can
 connect to the cluster. No manual mapping is required any longer.
 
@@ -732,7 +732,7 @@ The following example will create a capacity with self-managed Amazon EC2 capaci
 
 ```ts
 // add bottlerocket nodes
-cluster.addCapacity('BottlerocketNodes', {
+cluster.addAutoScalingGroupCapacity('BottlerocketNodes', {
   instanceType: new ec2.InstanceType('t3.small'),
   minCapacity:  2,
   machineImageType: eks.MachineImageType.BOTTLEROCKET
