@@ -49,7 +49,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::CodePipeline",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "nyc": {
     "statements": 50,
