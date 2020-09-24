@@ -120,14 +120,14 @@ export class AssetStaging extends Construct {
       }
     } else {
       this.assetHash = this.calculateHash(hashType, props.assetHash);
+      this.relativePath = renderAssetFilename(this.assetHash, path.extname(this.sourcePath));
+      this.stagedPath = this.relativePath;
+    }
 
-      const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
-      if (stagingDisabled) {
-        this.stagedPath = this.sourcePath;
-      } else {
-        this.relativePath = renderAssetFilename(this.assetHash, path.extname(this.sourcePath));
-        this.stagedPath = this.relativePath;
-      }
+    const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
+    if (stagingDisabled) {
+      this.relativePath = undefined;
+      this.stagedPath = this.bundleDir ?? this.sourcePath;
     }
 
     this.sourceHash = this.assetHash;
