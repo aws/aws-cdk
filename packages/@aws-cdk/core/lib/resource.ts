@@ -1,5 +1,6 @@
+import { Construct } from 'constructs';
 import { ArnComponents } from './arn';
-import { Construct, IConstruct } from './construct-compat';
+import { IConstruct, Construct as CoreConstruct } from './construct-compat';
 import { Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { IResolveContext } from './resolvable';
@@ -86,7 +87,7 @@ export interface ResourceProps {
 /**
  * A construct which represents an AWS resource.
  */
-export abstract class Resource extends Construct implements IResource {
+export abstract class Resource extends CoreConstruct implements IResource {
   public readonly stack: Stack;
   public readonly env: ResourceEnvironment;
 

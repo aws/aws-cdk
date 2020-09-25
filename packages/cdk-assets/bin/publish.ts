@@ -140,7 +140,7 @@ class DefaultAwsClient implements IAws {
       params: {
         RoleArn: roleArn,
         ExternalId: externalId,
-        RoleSessionName: `cdk-assets-${os.userInfo().username}`,
+        RoleSessionName: `cdk-assets-${safeUsername()}`,
       },
       stsConfig: {
         region,
@@ -148,4 +148,13 @@ class DefaultAwsClient implements IAws {
       },
     });
   }
+}
+
+/**
+ * Return the username with characters invalid for a RoleSessionName removed
+ *
+ * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+ */
+function safeUsername() {
+  return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
 }

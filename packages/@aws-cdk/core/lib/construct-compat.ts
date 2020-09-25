@@ -64,7 +64,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    */
   public readonly node: ConstructNode;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id, {
       nodeFactory: {
         createNode: (h: constructs.Construct, s: constructs.IConstruct, i: string) =>

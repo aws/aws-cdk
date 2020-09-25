@@ -47,6 +47,8 @@ cluster.addManifest('mypod', {
 });
 ```
 
+> **NOTE: You can only create 1 cluster per stack.** If you have a use-case for multiple clusters per stack, > or would like to understand more about this limitation, see https://github.com/aws/aws-cdk/issues/10073.
+
 In order to interact with your cluster through `kubectl`, you can use the `aws
 eks update-kubeconfig` [AWS CLI command](https://docs.aws.amazon.com/cli/latest/reference/eks/update-kubeconfig.html)
 to configure your local kubeconfig.
@@ -98,7 +100,8 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 });
 ```
 
-The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, and worker node traffic to the endpoint will stay within your VPC.
+The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, but worker node traffic as well as `kubectl` commands
+to the endpoint will stay within your VPC.
 
 ### Capacity
 
@@ -139,16 +142,12 @@ new eks.Cluster(this, 'cluster-with-no-capacity', {
 });
 ```
 
-The `cluster.defaultCapacity` property will reference the `AutoScalingGroup`
-resource for the default capacity. It will be `undefined` if `defaultCapacity`
-is set to `0` or `defaultCapacityType` is either `NODEGROUP` or undefined.
+When creating a cluster with default capacity (i.e `defaultCapacity !== 0` or is undefined), you can access the allocated capacity using:
 
-And the `cluster.defaultNodegroup` property will reference the `Nodegroup`
-resource for the default capacity. It will be `undefined` if `defaultCapacity`
-is set to `0` or `defaultCapacityType` is `EC2`.
+- `cluster.defaultCapacity` will reference the `AutoScalingGroup` resource in case `defaultCapacityType` is set to `EC2` or is undefined.
+- `cluster.defaultNodegroup` will reference the `Nodegroup` resource in case `defaultCapacityType` is set to `NODEGROUP`.
 
-You can add `AutoScalingGroup` resource as customized capacity through `cluster.addCapacity()` or
-`cluster.addAutoScalingGroup()`:
+You can add customized capacity in the form of an `AutoScalingGroup` resource through `cluster.addCapacity()` or `cluster.addAutoScalingGroup()`:
 
 ```ts
 cluster.addCapacity('frontend-nodes', {
@@ -167,7 +166,7 @@ for Amazon EKS Kubernetes clusters. By default, `eks.Nodegroup` create a nodegro
 new eks.Nodegroup(stack, 'nodegroup', { cluster });
 ```
 
-You can add customized node group through `cluster.addNodegroup()`:
+You can add customized node groups through `cluster.addNodegroup()`:
 
 ```ts
 cluster.addNodegroup('nodegroup', {
@@ -206,14 +205,13 @@ this.cluster.addNodegroup('extra-ng', {
 
 ### ARM64 Support
 
-Instance types with `ARM64` architecture are supported in both managed nodegroup and self-managed capacity. Simply specify an ARM64 `instanceType` (such as `m6g.medium`), and the latest 
+Instance types with `ARM64` architecture are supported in both managed nodegroup and self-managed capacity. Simply specify an ARM64 `instanceType` (such as `m6g.medium`), and the latest
 Amazon Linux 2 AMI for ARM64 will be automatically selected.
 
 ```ts
-// create a cluster with a default managed nodegroup 
+// create a cluster with a default managed nodegroup
 cluster = new eks.Cluster(this, 'Cluster', {
   vpc,
-  mastersRole,
   version: eks.KubernetesVersion.V1_17,
 });
 
@@ -298,12 +296,9 @@ can cause your EC2 instance to become unavailable, such as [EC2 maintenance even
 and [EC2 Spot interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html) and helps gracefully stop all pods running on spot nodes that are about to be
 terminated.
 
-Current version:
-
-| name       | version |
-|------------|---------|
-| Helm Chart | 0.9.5  |
-| App        | 1.7.0  |
+> Handler Version: [1.7.0](https://github.com/aws/aws-node-termination-handler/releases/tag/v1.7.0)
+>
+> Chart Version: [0.9.5](https://github.com/aws/eks-charts/blob/v0.0.28/stable/aws-node-termination-handler/Chart.yaml)
 
 ### Bootstrapping
 
@@ -327,7 +322,7 @@ cluster.addCapacity('spot', {
 To disable bootstrapping altogether (i.e. to fully customize user-data), set `bootstrapEnabled` to `false` when you add
 the capacity.
 
-### Kubernetes Resources
+### Kubernetes Manifests
 
 The `KubernetesManifest` construct or `cluster.addManifest` method can be used
 to apply Kubernetes resource manifests to this cluster.
@@ -387,7 +382,7 @@ cluster.addManifest('hello-kub', service, deployment);
 
 #### Kubectl Layer and Environment
 
-The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can useful in order to configure an http proxy:
+The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```typescript
 const cluster = new eks.Cluster(this, 'hello-eks', {
@@ -450,10 +445,14 @@ const manifest = yaml.safeLoadAll(request('GET', manifestUrl).getBody());
 cluster.addManifest('my-resource', ...manifest);
 ```
 
-Since Kubernetes resources are implemented as CloudFormation resources in the
-CDK. This means that if the resource is deleted from your code (or the stack is
+Since Kubernetes manifests are implemented as CloudFormation resources in the
+CDK. This means that if the manifest is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `kubectl delete` command and the
-Kubernetes resources will be deleted.
+Kubernetes resources in that manifest will be deleted.
+
+#### Caveat
+
+If you have multiple resources in a single `KubernetesManifest`, and one of those **resources** is removed from the manifest, it will not be deleted and will remain orphan. See [Support Object pruning](https://github.com/aws/aws-cdk/issues/10495) for more details.
 
 #### Dependencies
 
@@ -482,9 +481,9 @@ const service = cluster.addManifest('my-service', {
 service.node.addDependency(namespace); // will apply `my-namespace` before `my-service`.
 ```
 
-NOTE: when a `KubernetesManifest` includes multiple resources (either directly
+**NOTE:** when a `KubernetesManifest` includes multiple resources (either directly
 or through `cluster.addManifest()`) (e.g. `cluster.addManifest('foo', r1, r2,
-r3,...))`), these resources will be applied as a single manifest via `kubectl`
+r3,...)`), these resources will be applied as a single manifest via `kubectl`
 and will be applied sequentially (the standard behavior in `kubectl`).
 
 ### Patching Kubernetes Resources
@@ -582,7 +581,7 @@ If the cluster is configured with private-only or private and restricted public
 Kubernetes [endpoint access](#endpoint-access), you must also specify:
 
 - `kubectlSecurityGroupId` - the ID of an EC2 security group that is allowed
-  connections to the cluster's control security group.
+  connections to the cluster's control security group. For example, the EKS managed [cluster security group](#cluster-security-group).
 - `kubectlPrivateSubnetIds` - a list of private VPC subnets IDs that will be used
   to access the Kubernetes endpoint.
 
@@ -598,7 +597,7 @@ users, roles and accounts.
 Furthermore, when auto-scaling capacity is added to the cluster (through
 `cluster.addCapacity` or `cluster.addAutoScalingGroup`), the IAM instance role
 of the auto-scaling group will be automatically mapped to RBAC so nodes can
-connect to the cluster. No manual mapping is required any longer.
+connect to the cluster. No manual mapping is required.
 
 For example, let's say you want to grant an IAM user administrative privileges
 on your cluster:
@@ -657,11 +656,10 @@ const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
 ### Node ssh Access
 
 If you want to be able to SSH into your worker nodes, you must already
-have an SSH key in the region you're connecting to and pass it, and you must
-be able to connect to the hosts (meaning they must have a public IP and you
+have an SSH key in the region you're connecting to and pass it when you add capacity to the cluster. You must also be able to connect to the hosts (meaning they must have a public IP and you
 should be allowed to connect to them on port 22):
 
-[ssh into nodes example](test/example.ssh-into-nodes.lit.ts)
+See [SSH into nodes](test/example.ssh-into-nodes.lit.ts) for a code example.
 
 If you want to SSH into nodes in a private subnet, you should set up a
 bastion host in a public subnet. That setup is recommended, but is
@@ -699,7 +697,7 @@ cluster.addChart('NginxIngress', {
 Helm charts will be installed and updated using `helm upgrade --install`, where a few parameters
 are being passed down (such as `repo`, `values`, `version`, `namespace`, `wait`, `timeout`, etc).
 This means that if the chart is added to CDK with the same release name, it will try to update
-the chart in the cluster. The chart will exists as CloudFormation resource.
+the chart in the cluster.
 
 Helm charts are implemented as CloudFormation resources in CDK.
 This means that if the chart is deleted from your code (or the stack is
@@ -775,7 +773,9 @@ const mypod = cluster.addManifest('mypod', {
   }
 });
 
-// create the resource after the service account
+// create the resource after the service account.
+// note that using `sa.serviceAccountName` above **does not** translate into a dependency.
+// this is why an explicit dependency is needed. See https://github.com/aws/aws-cdk/issues/9910 for more details.
 mypod.node.addDependency(sa);
 
 // print the IAM role arn for this service account
