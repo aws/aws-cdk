@@ -58,8 +58,6 @@ class EksClusterStack extends TestStack {
 
     this.assertSimpleHelmChart();
 
-    this.assertSimplePatch();
-
     this.assertCreateNamespace();
 
     this.assertServiceAccount();
@@ -102,37 +100,6 @@ class EksClusterStack extends TestStack {
     nginxIngress.node.addDependency(nginxNamespace);
 
 
-  }
-
-  private assertSimplePatch() {
-    new eks.KubernetesPatch(this, 'SimplePatch', {
-      cluster: this.cluster,
-      restorePatch: {
-        spec: {
-          template: {
-            metadata: {
-              annotations: {
-                annoation: 'original',
-              },
-            },
-          },
-        },
-      },
-      applyPatch: {
-        spec: {
-          template: {
-            metadata: {
-              annotations: {
-                annoation: 'patched',
-              },
-            },
-          },
-        },
-      },
-      resourceName: 'aws-auth',
-      resourceNamespace: 'kube-system',
-
-    });
   }
   private assertSimpleHelmChart() {
     // deploy the Kubernetes dashboard through a helm chart
