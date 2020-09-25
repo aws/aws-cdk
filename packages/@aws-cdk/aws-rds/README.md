@@ -26,10 +26,8 @@ your instances will be launched privately or publicly:
 
 ```ts
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.AURORA,
-  masterUser: {
-    username: 'clusteradmin'
-  },
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
+  masterUser: rds.Login.fromUsername('clusteradmin'), // Optional - will default to admin
   instanceProps: {
     // optional, defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -41,63 +39,57 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
-To use a specific version of the engine
-(which is recommended, in order to avoid surprise updates when RDS add support for a newer version of the engine),
-use the static factory methods on `DatabaseClusterEngine`:
-
-```typescript
-new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.aurora({
-    version: rds.AuroraEngineVersion.VER_1_17_9, // different version class for each engine type
-  }),
-  ...
-});
-```
-
 If there isn't a constant for the exact version you want to use,
 all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
+
+```ts
+const customEngineVersion = rds.AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.08.1');
+```
 
 By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
 
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 
+Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
+
+```ts
+new rds.DatabaseClusterFromSnapshot(stack, 'Database', {
+  engine: rds.DatabaseClusterEngine.aurora({ version: rds.AuroraEngineVersion.VER_1_22_2 }),
+  instanceProps: {
+    vpc,
+  },
+  snapshotIdentifier: 'mySnapshot',
+});
+```
+
 ### Starting an instance database
 
 To set up a instance database, define a `DatabaseInstance`. You must
-always launch a database in a VPC. Use the `vpcPlacement` attribute to control whether
+always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
 ```ts
 const instance = new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+  engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
   // optional, defaults to m5.large
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-  masterUsername: 'syscdk',
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+  masterUsername: rds.Login.fromUsername('syscdk'), // Optional - will default to admin
   vpc,
-  vpcPlacement: {
+  vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE
   }
 });
 ```
 
-By default, the master password will be generated and stored in AWS Secrets Manager.
+If there isn't a constant for the exact engine version you want to use,
+all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
 
-To use a specific version of the engine
-(which is recommended, in order to avoid surprise updates when RDS add support for a newer version of the engine),
-use the static factory methods on `DatabaseInstanceEngine`:
-
-```typescript
-const instance = new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.oracleSe2({
-    version: rds.OracleEngineVersion.VER_19, // different version class for each engine type
-  }),
-  ...
-});
+```ts
+const customEngineVersion = rds.OracleEngineVersion.of('19.0.0.0.ru-2020-04.rur-2020-04.r1', '19');
 ```
 
-If there isn't a constant for the exact version you want to use,
-all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
+By default, the master password will be generated and stored in AWS Secrets Manager.
 
 To use the storage auto scaling option of RDS you can specify the maximum allocated storage.
 This is the upper limit to which RDS can automatically scale the storage. More info can be found
@@ -106,10 +98,9 @@ Example for max storage configuration:
 
 ```ts
 const instance = new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-  masterUsername: 'syscdk',
   vpc,
   maxAllocatedStorage: 200,
 });
@@ -121,7 +112,7 @@ a source database respectively:
 ```ts
 new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
   snapshotIdentifier: 'my-snapshot',
-  engine: rds.DatabaseInstanceEngine.POSTGRES,
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
   vpc,
@@ -145,6 +136,35 @@ method:
 
 ```ts
 const rule = instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
+```
+
+### Login credentials
+
+By default, database instances and clusters will have `admin` user with an auto-generated password.
+An alternative username (and password) may be specified for the admin user instead of the default.
+
+The following examples use a `DatabaseInstance`, but the same usage is applicable to `DatabaseCluster`.
+
+```ts
+const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
+new rds.DatabaseInstance(this, 'InstanceWithUsername', {
+  engine,
+  vpc,
+  credentials: rds.Credentials.fromUsername('postgres'), // Creates an admin user of postgres with a generated password
+});
+
+new rds.DatabaseInstance(this, 'InstanceWithUsernameAndPassword', {
+  engine,
+  vpc,
+  credentials: rds.Credentials.fromUsername('postgres', { password: SecretValue.ssmSecure('/dbPassword', 1) }), // Use password from SSM
+});
+
+const mySecret = secretsmanager.Secret.fromSecretName(this, 'DBSecret', 'myDBLoginInfo');
+new rds.DatabaseInstance(this, 'InstanceWithSecretLogin', {
+  engine,
+  vpc,
+  credentials: rds.Credentials.fromSecret(mySecret), // Get both username and password from existing secret
+});
 ```
 
 ### Connecting
@@ -217,7 +237,6 @@ The following example shows enabling IAM authentication for a database instance 
 ```ts
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
-  masterUsername: 'admin',
   vpc,
   iamAuthentication: true, // Optional - will be automatically set if you call grantConnect().
 });
@@ -228,32 +247,67 @@ instance.grantConnect(role); // Grant the role connection access to the DB.
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
 See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html for setup instructions.
 
+### Kerberos Authentication
+
+You can also authenticate using Kerberos to a database instance using AWS Managed Microsoft AD for authentication;
+See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html for more information
+and a list of supported versions and limitations.
+
+The following example shows enabling domain support for a database instance and creating an IAM role to access
+Directory Services.
+
+```ts
+const role = new iam.Role(stack, 'RDSDirectoryServicesRole', {
+  assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
+  ],
+});
+const instance = new rds.DatabaseInstance(stack, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+  vpc,
+  domain: 'd-????????', // The ID of the domain for the instance to join.
+  domainRole: role, // Optional - will be create automatically if not provided.
+});
+```
+
+**Note**: In addition to the setup above, you need to make sure that the database instance has network connectivity
+to the domain controllers. This includes enabling cross-VPC traffic if in a different VPC and setting up the
+appropriate security groups/network ACL to allow traffic between the database instance and domain controllers.
+Once configured, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html for details
+on configuring users for each available database engine.
+
 ### Metrics
 
-Database instances expose metrics (`cloudwatch.Metric`):
+Database instances and clusters both expose metrics (`cloudwatch.Metric`):
 
 ```ts
 // The number of database connections in use (average over 5 minutes)
 const dbConnections = instance.metricDatabaseConnections();
 
+// Average CPU utilization over 5 minutes
+const cpuUtilization = cluster.metricCPUUtilization();
+
 // The average amount of time taken per disk I/O operation (average over 1 minute)
 const readLatency = instance.metric('ReadLatency', { statistic: 'Average', periodSec: 60 });
 ```
 
-### Enabling S3 integration to a cluster (non-serverless Aurora only)
+### Enabling S3 integration
 
-Data in S3 buckets can be imported to and exported from Aurora databases using SQL queries. To enable this
+Data in S3 buckets can be imported to and exported from certain database engines using SQL queries. To enable this
 functionality, set the `s3ImportBuckets` and `s3ExportBuckets` properties for import and export respectively. When
 configured, the CDK automatically creates and configures IAM roles as required.
 Additionally, the `s3ImportRole` and `s3ExportRole` properties can be used to set this role directly.
 
-For Aurora MySQL, read more about [loading data from
-S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html) and [saving
-data into S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html).
+You can read more about loading data to (or from) S3 here:
 
-For Aurora PostgreSQL, read more about [loading data from
-S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html) and [saving
-data into S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html).
+* Aurora MySQL - [import](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html)
+  and [export](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html).
+* Aurora PostgreSQL - [import](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html)
+  and [export](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html).
+* Microsoft SQL Server - [import & export](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html)
+* PostgreSQL - [import](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.html)
+* Oracle - [import & export](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html)
 
 The following snippet sets up a database cluster with different S3 buckets where the data is imported and exported -
 
@@ -335,8 +389,8 @@ that are available for a particular Amazon RDS DB instance.
 const vpc: ec2.IVpc = ...;
 const securityGroup: ec2.ISecurityGroup = ...;
 new rds.OptionGroup(stack, 'Options', {
-  engine: DatabaseInstanceEngine.oracleSe({
-    version: OracleLegacyEngineVersion.VER_11_2,
+  engine: rds.DatabaseInstanceEngine.oracleSe2({
+    version: rds.OracleEngineVersion.VER_19,
   }),
   configurations: [
     {

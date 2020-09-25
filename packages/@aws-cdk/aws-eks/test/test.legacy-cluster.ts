@@ -277,11 +277,10 @@ export = {
 
     // WHEN
     const imported = eks.LegacyCluster.fromClusterAttributes(stack2, 'Imported', {
-      clusterArn: cluster.clusterArn,
       vpc: cluster.vpc,
       clusterEndpoint: cluster.clusterEndpoint,
       clusterName: cluster.clusterName,
-      securityGroups: cluster.connections.securityGroups,
+      securityGroupIds: cluster.connections.securityGroups.map(s => s.securityGroupId),
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
       clusterSecurityGroupId: cluster.clusterSecurityGroupId,
       clusterEncryptionConfigKeyArn: cluster.clusterEncryptionConfigKeyArn,
@@ -295,7 +294,23 @@ export = {
       Outputs: {
         ClusterARN: {
           Value: {
-            'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F',
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':eks:us-east-1:',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':cluster/',
+                {
+                  'Fn::ImportValue': 'Stack:ExportsOutputRefClusterEB0386A796A0E3FE',
+                },
+              ],
+            ],
           },
         },
       },

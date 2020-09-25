@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags,
+  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -747,7 +747,7 @@ export = {
   'Stack.of() throws when there is no parent Stack'(test: Test) {
     const root = new Construct(undefined as any, 'Root');
     const construct = new Construct(root, 'Construct');
-    test.throws(() => Stack.of(construct), /No stack could be identified for the construct at path/);
+    test.throws(() => Stack.of(construct), /should be created in the scope of a Stack, but no Stack found/);
     test.done();
   },
 
@@ -949,6 +949,30 @@ export = {
 
     app.synth();
     test.ok(called, 'synthesize() not called for Stack');
+    test.done();
+  },
+
+  'context can be set on a stack using a LegacySynthesizer'(test: Test) {
+    // WHEN
+    const stack = new Stack(undefined, undefined, {
+      synthesizer: new LegacyStackSynthesizer(),
+    });
+    stack.node.setContext('something', 'value');
+
+    // THEN: no exception
+
+    test.done();
+  },
+
+  'context can be set on a stack using a DefaultSynthesizer'(test: Test) {
+    // WHEN
+    const stack = new Stack(undefined, undefined, {
+      synthesizer: new DefaultStackSynthesizer(),
+    });
+    stack.node.setContext('something', 'value');
+
+    // THEN: no exception
+
     test.done();
   },
 };

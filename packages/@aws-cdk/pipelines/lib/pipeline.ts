@@ -1,7 +1,8 @@
 import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput, Construct, PhysicalName, Stack, Stage, Aspects } from '@aws-cdk/core';
+import { Annotations, App, CfnOutput, Construct, PhysicalName, Stack, Stage, Aspects } from '@aws-cdk/core';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
@@ -12,13 +13,17 @@ import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from '
 export interface CdkPipelineProps {
   /**
    * The CodePipeline action used to retrieve the CDK app's source
+   *
+   * @default - Required unless `codePipeline` is given
    */
-  readonly sourceAction: codepipeline.IAction;
+  readonly sourceAction?: codepipeline.IAction;
 
   /**
    * The CodePipeline action build and synthesis step of the CDK app
+   *
+   * @default - Required unless `codePipeline` or `sourceAction` is given
    */
-  readonly synthAction: codepipeline.IAction;
+  readonly synthAction?: codepipeline.IAction;
 
   /**
    * The artifact you have defined to be the artifact to hold the cloudAssemblyArtifact for the synth action
@@ -26,7 +31,25 @@ export interface CdkPipelineProps {
   readonly cloudAssemblyArtifact: codepipeline.Artifact;
 
   /**
+   * Existing CodePipeline to add deployment stages to
+   *
+   * Use this if you want more control over the CodePipeline that gets created.
+   * You can choose to not pass this value, in which case a new CodePipeline is
+   * created with default settings.
+   *
+   * If you pass an existing CodePipeline, it should should have been created
+   * with `restartExecutionOnUpdate: true`.
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - A new CodePipeline is automatically generated
+   */
+  readonly codePipeline?: codepipeline.Pipeline;
+
+  /**
    * Name of the pipeline
+   *
+   * Can only be set if `codePipeline` is not set.
    *
    * @default - A name is automatically generated
    */
@@ -41,6 +64,22 @@ export interface CdkPipelineProps {
    * @default - Latest version
    */
   readonly cdkCliVersion?: string;
+
+  /**
+   * The VPC where to execute the CdkPipeline actions.
+   *
+   * @default - No VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
 }
 
 /**
@@ -72,28 +111,52 @@ export class CdkPipeline extends Construct {
     this._cloudAssemblyArtifact = props.cloudAssemblyArtifact;
     const pipelineStack = Stack.of(this);
 
-    this._pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
-      ...props,
-      restartExecutionOnUpdate: true,
-      stages: [
-        {
-          stageName: 'Source',
-          actions: [props.sourceAction],
-        },
-        {
-          stageName: 'Build',
-          actions: [props.synthAction],
-        },
-        {
-          stageName: 'UpdatePipeline',
-          actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
-            cloudAssemblyInput: this._cloudAssemblyArtifact,
-            pipelineStackName: pipelineStack.stackName,
-            cdkCliVersion: props.cdkCliVersion,
-            projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
-          })],
-        },
-      ],
+    if (props.codePipeline) {
+      if (props.pipelineName) {
+        throw new Error('Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
+
+      this._pipeline = props.codePipeline;
+    } else {
+      this._pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
+        pipelineName: props.pipelineName,
+        restartExecutionOnUpdate: true,
+      });
+    }
+
+    if (props.sourceAction && !props.synthAction) {
+      // Because of ordering limitations, you can: bring your own Source, bring your own
+      // Both, or bring your own Nothing. You cannot bring your own Build (which because of the
+      // current CodePipeline API must go BEFORE what we're adding) and then having us add a
+      // Source after it. That doesn't make any sense.
+      throw new Error('When passing a \'sourceAction\' you must also pass a \'synthAction\' (or a \'codePipeline\' that already has both)');
+    }
+    if (!props.sourceAction && (!props.codePipeline || props.codePipeline.stages.length < 1)) {
+      throw new Error('You must pass a \'sourceAction\' (or a \'codePipeline\' that already has a Source stage)');
+    }
+
+    if (props.sourceAction) {
+      this._pipeline.addStage({
+        stageName: 'Source',
+        actions: [props.sourceAction],
+      });
+    }
+
+    if (props.synthAction) {
+      this._pipeline.addStage({
+        stageName: 'Build',
+        actions: [props.synthAction],
+      });
+    }
+
+    this._pipeline.addStage({
+      stageName: 'UpdatePipeline',
+      actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
+        cloudAssemblyInput: this._cloudAssemblyArtifact,
+        pipelineStackName: pipelineStack.stackName,
+        cdkCliVersion: props.cdkCliVersion,
+        projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
+      })],
     });
 
     this._assets = new AssetPublishing(this, 'Assets', {
@@ -101,9 +164,30 @@ export class CdkPipeline extends Construct {
       cdkCliVersion: props.cdkCliVersion,
       pipeline: this._pipeline,
       projectName: maybeSuffix(props.pipelineName, '-publish'),
+      vpc: props.vpc,
+      subnetSelection: props.subnetSelection,
     });
 
     Aspects.of(this).add({ visit: () => this._assets.removeAssetsStageIfEmpty() });
+  }
+
+  /**
+   * The underlying CodePipeline object
+   *
+   * You can use this to add more Stages to the pipeline, or Actions
+   * to Stages.
+   */
+  public get codePipeline(): codepipeline.Pipeline {
+    return this._pipeline;
+  }
+
+  /**
+   * Access one of the pipeline's stages by stage name
+   *
+   * You can use this to add more Actions to a stage.
+   */
+  public stage(stageName: string): codepipeline.IStage {
+    return this._pipeline.stage(stageName);
   }
 
   /**
@@ -195,7 +279,7 @@ export class CdkPipeline extends Construct {
         const depAction = stackActions.find(s => s.stackArtifactId === depId);
 
         if (depAction === undefined) {
-          this.node.addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
+          Annotations.of(this).addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
               `'${depId}', but that dependency is not deployed through the pipeline!`);
         } else if (!(depAction.executeRunOrder < stackAction.prepareRunOrder)) {
           yield `Stack '${stackAction.stackName}' depends on stack ` +
@@ -229,6 +313,8 @@ interface AssetPublishingProps {
   readonly pipeline: codepipeline.Pipeline;
   readonly cdkCliVersion?: string;
   readonly projectName?: string;
+  readonly vpc?: ec2.IVpc;
+  readonly subnetSelection?: ec2.SubnetSelection;
 }
 
 /**
@@ -265,6 +351,13 @@ class AssetPublishing extends Construct {
     // FIXME: this is silly, we need the relative path here but no easy way to get it
     const relativePath = path.relative(this.myCxAsmRoot, command.assetManifestPath);
 
+    // The path cannot be outside the asm root. I don't really understand how this could ever
+    // come to pass, but apparently it has (see https://github.com/aws/aws-cdk/issues/9766).
+    // Add a sanity check here so we can catch it more quickly next time.
+    if (relativePath.startsWith(`..${path.sep}`)) {
+      throw new Error(`The asset manifest (${command.assetManifestPath}) cannot be outside the Cloud Assembly directory (${this.myCxAsmRoot}). Please report this error at https://github.com/aws/aws-cdk/issues to help us debug why this is happening.`);
+    }
+
     // Late-binding here (rather than in the constructor) to prevent creating the role in cases where no asset actions are created.
     if (!this.assetRoles[command.assetType]) {
       this.generateAssetRole(command.assetType);
@@ -289,6 +382,8 @@ class AssetPublishing extends Construct {
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
         role: this.assetRoles[command.assetType],
+        vpc: this.props.vpc,
+        subnetSelection: this.props.subnetSelection,
       });
       this.stage.addAction(action);
     }

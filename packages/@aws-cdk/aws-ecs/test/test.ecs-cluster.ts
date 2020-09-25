@@ -526,7 +526,10 @@ export = {
       // THEN
       expect(stack).to(haveResourceLike('AWS::SNS::Topic', {
         KmsMasterKeyId: {
-          Ref: 'Key961B73FD',
+          'Fn::GetAtt': [
+            'Key961B73FD',
+            'Arn',
+          ],
         },
       }));
 
@@ -1493,6 +1496,136 @@ export = {
       'ClusterSettings should not be defined',
     );
 
+    test.done();
+  },
+  'BottleRocketImage() returns correct AMI'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // WHEN
+    new ecs.BottleRocketImage().getImage(stack);
+
+    // THEN
+    const assembly = app.synth();
+    const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+    test.ok(Object.entries(parameters).some(
+      ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
+        (v as any).Default.includes('/bottlerocket/'),
+    ), 'Bottlerocket AMI should be in ssm parameters');
+    test.ok(Object.entries(parameters).some(
+      ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
+        (v as any).Default.includes('/aws-ecs-1/'),
+    ), 'ecs variant should be in ssm parameters');
+    test.done();
+  },
+
+  'cluster capacity with bottlerocket AMI'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Cluster'));
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup'));
+    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+      ImageId: {
+        Ref: 'SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
+      UserData: {
+        'Fn::Base64': {
+          'Fn::Join': [
+            '',
+            [
+              '\n[settings.ecs]\ncluster = "',
+              {
+                Ref: 'EcsCluster97242B84',
+              },
+              '"',
+            ],
+          ],
+        },
+      },
+    }));
+    expect(stack).to(haveResourceLike('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'ec2.',
+                    {
+                      Ref: 'AWS::URLSuffix',
+                    },
+                  ],
+                ],
+              },
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/AmazonSSMManagedInstanceCore',
+            ],
+          ],
+        },
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role',
+            ],
+          ],
+        },
+      ],
+      Tags: [
+        {
+          Key: 'Name',
+          Value: 'test/EcsCluster/bottlerocket-asg',
+        },
+      ],
+    }),
+    );
+    test.done();
+  },
+  'throws when machineImage and machineImageType both specified'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // THEN
+    test.throws(() => {
+      cluster.addCapacity('bottlerocket-asg', {
+        instanceType: new ec2.InstanceType('c5.large'),
+        machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+        machineImage: new ecs.EcsOptimizedAmi(),
+      });
+    }, /You can only specify either machineImage or machineImageType, not both./);
     test.done();
   },
 };

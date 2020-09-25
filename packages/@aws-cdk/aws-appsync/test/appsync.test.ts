@@ -4,10 +4,10 @@ import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'api', {
+  api = new appsync.GraphqlApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
@@ -61,7 +61,7 @@ test('appsync should configure resolver as unit when pipelineConfig is empty arr
 
 test('when xray is enabled should not throw an Error', () => {
   // WHEN
-  new appsync.GraphQLApi(stack, 'api-x-ray', {
+  new appsync.GraphqlApi(stack, 'api-x-ray', {
     authorizationConfig: {},
     name: 'api',
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),

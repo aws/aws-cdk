@@ -580,7 +580,7 @@ describe('DatabaseCluster', () => {
     expectCDK(stack).to(haveResource('AWS::Serverless::Application', {
       Location: {
         ApplicationId: 'arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerMongoDBRotationSingleUser',
-        SemanticVersion: '1.1.3',
+        SemanticVersion: '1.1.60',
       },
       Parameters: {
         endpoint: {
@@ -698,7 +698,7 @@ describe('DatabaseCluster', () => {
     expectCDK(stack).to(haveResource('AWS::Serverless::Application', {
       Location: {
         ApplicationId: 'arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerMongoDBRotationMultiUser',
-        SemanticVersion: '1.1.3',
+        SemanticVersion: '1.1.60',
       },
       Parameters: {
         endpoint: {

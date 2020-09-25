@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { Lazy } from '@aws-cdk/core';
 import { CfnGraphQLSchema } from './appsync.generated';
-import { GraphQLApi } from './graphqlapi';
+import { GraphqlApi } from './graphqlapi';
 import { SchemaMode, shapeAddition } from './private';
 import { IIntermediateType } from './schema-base';
 import { ResolvableField } from './schema-field';
@@ -56,6 +56,8 @@ export class Schema {
 
   private mode: SchemaMode;
 
+  private types: IIntermediateType[];
+
   public constructor(options?: SchemaOptions) {
     if (options?.filePath) {
       this.mode = SchemaMode.FILE;
@@ -64,6 +66,7 @@ export class Schema {
       this.mode = SchemaMode.CODE;
       this.definition = '';
     }
+    this.types = [];
   }
 
   /**
@@ -72,11 +75,16 @@ export class Schema {
    *
    * @param api The binding GraphQL Api
    */
-  public bind(api: GraphQLApi): CfnGraphQLSchema {
+  public bind(api: GraphqlApi): CfnGraphQLSchema {
     if (!this.schema) {
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
-        definition: Lazy.stringValue({ produce: () => `${this.declareSchema()}${this.definition}` }),
+        definition: this.mode === SchemaMode.CODE ?
+          Lazy.stringValue({
+            produce: () => this.types.reduce((acc, type) => { return `${acc}${type._bindToGraphqlApi(api).toString()}\n`; },
+              `${this.declareSchema()}${this.definition}`),
+          })
+          : this.definition,
       });
     }
     return this.schema;
@@ -101,8 +109,8 @@ export class Schema {
   }
 
   /**
-   * Add a query field to the schema's Query. If one isn't set by
-   * the user, CDK will create an Object Type called 'Query'. For example,
+   * Add a query field to the schema's Query. CDK will create an
+   * Object Type called 'Query'. For example,
    *
    * type Query {
    *   fieldName: Field.returnType
@@ -113,19 +121,19 @@ export class Schema {
    */
   public addQuery(fieldName: string, field: ResolvableField): ObjectType {
     if (this.mode !== SchemaMode.CODE) {
-      throw new Error(`Unable to add query. Schema definition mode must be ${SchemaMode.CODE} Received: ${this.mode}`);
+      throw new Error(`Unable to add query. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this.mode}`);
     }
     if (!this.query) {
       this.query = new ObjectType('Query', { definition: {} });
       this.addType(this.query);
     };
-    this.query.addField(fieldName, field);
+    this.query.addField({ fieldName, field });
     return this.query;
   }
 
   /**
-   * Add a mutation field to the schema's Mutation. If one isn't set by
-   * the user, CDK will create an Object Type called 'Mutation'. For example,
+   * Add a mutation field to the schema's Mutation. CDK will create an
+   * Object Type called 'Mutation'. For example,
    *
    * type Mutation {
    *   fieldName: Field.returnType
@@ -136,14 +144,41 @@ export class Schema {
    */
   public addMutation(fieldName: string, field: ResolvableField): ObjectType {
     if (this.mode !== SchemaMode.CODE) {
-      throw new Error(`Unable to add mutation. Schema definition mode must be ${SchemaMode.CODE} Received: ${this.mode}`);
+      throw new Error(`Unable to add mutation. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this.mode}`);
     }
     if (!this.mutation) {
       this.mutation = new ObjectType('Mutation', { definition: {} });
       this.addType(this.mutation);
     };
-    this.mutation.addField(fieldName, field);
+    this.mutation.addField({ fieldName, field });
     return this.mutation;
+  }
+
+  /**
+   * Add a subscription field to the schema's Subscription. CDK will create an
+   * Object Type called 'Subscription'. For example,
+   *
+   * type Subscription {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the Subscription
+   * @param field the resolvable field to for this Subscription
+   */
+  public addSubscription(fieldName: string, field: ResolvableField): ObjectType {
+    if (this.mode !== SchemaMode.CODE) {
+      throw new Error(`Unable to add subscription. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this.mode}`);
+    }
+    if (!this.subscription) {
+      this.subscription = new ObjectType('Subscription', { definition: {} });
+      this.addType(this.subscription);
+    }
+    const directives = field.fieldOptions?.directives?.filter((directive) => directive.mutationFields);
+    if (directives && directives.length > 1) {
+      throw new Error(`Subscription fields must not have more than one @aws_subscribe directives. Received: ${directives.length}`);
+    }
+    this.subscription.addField({ fieldName, field });
+    return this.subscription;
   }
 
   /**
@@ -157,7 +192,7 @@ export class Schema {
     if (this.mode !== SchemaMode.CODE) {
       throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
     }
-    this.addToSchema(Lazy.stringValue({ produce: () => type.toString() }));
+    this.types.push(type);
     return type;
   }
 

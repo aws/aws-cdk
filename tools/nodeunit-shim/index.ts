@@ -27,15 +27,19 @@ export class Test {
     expect(a).toEqual(b);
   }
 
-  public ok(a: any) {
+  public ok(a: any, _message?: string) {
     expect(a).toBeTruthy();
   }
 
-  public throws(block: () => any, error?: string | RegExp | ErrorConstructor) {
+  public same(a: any, b: any) {
+    expect(a).toBe(b);
+  }
+
+  public throws(block: () => any, error?: string | RegExp | ErrorConstructor, _message?: string) {
     expect(block).toThrow(error);
   }
 
-  public doesNotThrow(block: () => any, error?: string | RegExp | ErrorConstructor) {
+  public doesNotThrow(block: () => any, error?: string | RegExp | ErrorConstructor, _message?: string) {
     expect(block).not.toThrow(error);
   }
 

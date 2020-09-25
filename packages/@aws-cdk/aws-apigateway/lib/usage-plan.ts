@@ -248,8 +248,8 @@ export class UsagePlan extends Resource {
       validateInteger(rateLimit, 'Throttle rate limit');
 
       ret = {
-        burstLimit: burstLimit ? burstLimit : undefined,
-        rateLimit: rateLimit ? rateLimit : undefined,
+        burstLimit: burstLimit,
+        rateLimit: rateLimit,
       };
     }
     return ret!;

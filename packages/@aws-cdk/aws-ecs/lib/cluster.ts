@@ -51,6 +51,20 @@ export interface ClusterProps {
 }
 
 /**
+ * The machine image type
+ */
+export enum MachineImageType {
+  /**
+   * Amazon ECS-optimized Amazon Linux 2 AMI
+   */
+  AMAZON_LINUX_2,
+  /**
+   * Bottlerocket AMI
+   */
+  BOTTLEROCKET
+}
+
+/**
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export class Cluster extends Resource implements ICluster {
@@ -173,15 +187,24 @@ export class Cluster extends Resource implements ICluster {
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
    */
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
+    if (options.machineImage && options.machineImageType) {
+      throw new Error('You can only specify either machineImage or machineImageType, not both.');
+    }
+
+    const machineImage = options.machineImage ?? options.machineImageType === MachineImageType.BOTTLEROCKET ?
+      new BottleRocketImage() : new EcsOptimizedAmi();
+
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
-      ...options,
       vpc: this.vpc,
-      machineImage: options.machineImage || new EcsOptimizedAmi(),
+      machineImage,
       updateType: options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
-      instanceType: options.instanceType,
+      ...options,
     });
 
-    this.addAutoScalingGroup(autoScalingGroup, options);
+    this.addAutoScalingGroup(autoScalingGroup, {
+      machineImageType: options.machineImageType,
+      ...options,
+    });
 
     return autoScalingGroup;
   }
@@ -198,19 +221,37 @@ export class Cluster extends Resource implements ICluster {
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
 
     // Tie instances to cluster
-    autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
+    switch (options.machineImageType) {
+      // Bottlerocket AMI
+      case MachineImageType.BOTTLEROCKET: {
+        autoScalingGroup.addUserData(
+          // Connect to the cluster
+          // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#connecting-to-your-cluster
+          '[settings.ecs]',
+          `cluster = "${this.clusterName}"`,
+        );
+        // Enabling SSM
+        // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#enabling-ssm
+        autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
+        // required managed policy
+        autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'));
+        break;
+      }
+      default:
+        // Amazon ECS-optimized AMI for Amazon Linux 2
+        autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
+        if (!options.canContainersAccessInstanceRole) {
+          // Deny containers access to instance metadata service
+          // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
+          autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+          autoScalingGroup.addUserData('sudo service iptables save');
+          // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
+          autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+        }
 
-    if (!options.canContainersAccessInstanceRole) {
-      // Deny containers access to instance metadata service
-      // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-      autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-      autoScalingGroup.addUserData('sudo service iptables save');
-      // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
-      autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
-    }
-
-    if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
-      autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
+        if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
+          autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
+        }
     }
 
     // ECS instances must be able to do these things
@@ -490,6 +531,63 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
 }
 
 /**
+ * Amazon ECS variant
+ */
+export enum BottlerocketEcsVariant {
+  /**
+   * aws-ecs-1 variant
+   */
+  AWS_ECS_1 = 'aws-ecs-1'
+
+}
+
+/**
+ * Properties for BottleRocketImage
+ */
+export interface BottleRocketImageProps {
+  /**
+   * The Amazon ECS variant to use.
+   * Only `aws-ecs-1` is currently available
+   *
+   * @default - BottlerocketEcsVariant.AWS_ECS_1
+   */
+  readonly variant?: BottlerocketEcsVariant;
+}
+
+/**
+ * Construct an Bottlerocket image from the latest AMI published in SSM
+ */
+export class BottleRocketImage implements ec2.IMachineImage {
+  private readonly amiParameterName: string;
+  /**
+   * Amazon ECS variant for Bottlerocket AMI
+   */
+  private readonly variant: string;
+
+  /**
+   * Constructs a new instance of the BottleRocketImage class.
+   */
+  public constructor(props: BottleRocketImageProps = {}) {
+    this.variant = props.variant ?? BottlerocketEcsVariant.AWS_ECS_1;
+
+    // set the SSM parameter name
+    this.amiParameterName = `/aws/service/bottlerocket/${this.variant}/x86_64/latest/image_id`;
+  }
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImageConfig {
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.LINUX,
+      userData: ec2.UserData.custom(''),
+    };
+  }
+}
+
+/**
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export interface ICluster extends IResource {
@@ -680,6 +778,14 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @default The SNS Topic will not be encrypted.
    */
   readonly topicEncryptionKey?: kms.IKey;
+
+
+  /**
+   * Specify the machine image type.
+   *
+   * @default MachineImageType.AMAZON_LINUX_2
+   */
+  readonly machineImageType?: MachineImageType;
 }
 
 /**
@@ -694,6 +800,7 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
   /**
    * The ECS-optimized AMI variant to use. For more information, see
    * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
+   * You must define either `machineImage` or `machineImageType`, not both.
    *
    * @default - Amazon Linux 2
    */

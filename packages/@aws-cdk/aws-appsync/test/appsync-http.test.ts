@@ -5,11 +5,11 @@ import * as appsync from '../lib';
 
 // GLOBAL GIVEN
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 let endpoint: string;
 beforeEach(() => {
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'baseApi', {
+  api = new appsync.GraphqlApi(stack, 'baseApi', {
     name: 'api',
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
@@ -57,19 +57,48 @@ describe('Http Data Source configuration', () => {
     });
   });
 
+  test('appsync configures name, authorizationConfig correctly', () => {
+    // WHEN
+    api.addHttpDataSource('ds', endpoint, {
+      name: 'custom',
+      description: 'custom description',
+      authorizationConfig: {
+        signingRegion: 'us-east-1',
+        signingServiceName: 'states',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+      Type: 'HTTP',
+      Name: 'custom',
+      Description: 'custom description',
+      HttpConfig: {
+        Endpoint: endpoint,
+        AuthorizationConfig: {
+          AuthorizationType: 'AWS_IAM',
+          AwsIamConfig: {
+            SigningRegion: 'us-east-1',
+            SigningServiceName: 'states',
+          },
+        },
+      },
+    });
+  });
+
   test('appsync errors when creating multiple http data sources with no configuration', () => {
     // THEN
     expect(() => {
       api.addHttpDataSource('ds', endpoint);
       api.addHttpDataSource('ds', endpoint);
-    }).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
+    }).toThrow("There is already a Construct with name 'ds' in GraphqlApi [baseApi]");
   });
 });
 
 describe('adding http data source from imported api', () => {
   test('imported api can add HttpDataSource from id', () => {
     // WHEN
-    const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
     });
     importedApi.addHttpDataSource('ds', endpoint);
@@ -83,7 +112,7 @@ describe('adding http data source from imported api', () => {
 
   test('imported api can add HttpDataSource from attributes', () => {
     // WHEN
-    const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
       graphqlApiArn: api.arn,
     });
@@ -96,5 +125,4 @@ describe('adding http data source from imported api', () => {
     });
   });
 });
-
 

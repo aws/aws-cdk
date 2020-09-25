@@ -98,7 +98,10 @@ describe('given an AutoScalingGroup', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::SNS::Topic', {
       KmsMasterKeyId: {
-        Ref: 'keyFEDD6EC0',
+        'Fn::GetAtt': [
+          'keyFEDD6EC0',
+          'Arn',
+        ],
       },
     });
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {

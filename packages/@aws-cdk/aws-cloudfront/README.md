@@ -225,6 +225,24 @@ myDistribution.addBehavior('images/*', myOrigin, {
 });
 ```
 
+Adding an existing Lambda@Edge function created in a different stack to a CloudFront distribution.
+
+```ts
+const functionVersion = lambda.Version.fromVersionArn(this, 'Version', 'arn:aws:lambda:us-east-1:123456789012:function:functionName:1');
+
+new cloudfront.Distribution(this, 'distro', {
+  defaultBehavior: {
+    origin: new origins.S3Origin(s3Bucket),
+    edgeLambdas: [
+       {
+         functionVersion,
+         eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST
+       },
+    ],
+  },
+});
+```
+
 ### Logging
 
 You can configure CloudFront to create log files that contain detailed information about every user request that CloudFront receives.

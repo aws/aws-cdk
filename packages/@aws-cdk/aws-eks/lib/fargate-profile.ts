@@ -140,14 +140,16 @@ export class FargateProfile extends Construct implements ITaggable {
   constructor(scope: Construct, id: string, props: FargateProfileProps) {
     super(scope, id);
 
-    const provider = ClusterResourceProvider.getOrCreate(this);
+    const provider = ClusterResourceProvider.getOrCreate(this, {
+      adminRole: props.cluster.adminRole,
+    });
 
     this.podExecutionRole = props.podExecutionRole ?? new iam.Role(this, 'PodExecutionRole', {
       assumedBy: new iam.ServicePrincipal('eks-fargate-pods.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy')],
     });
 
-    this.podExecutionRole.grantPassRole(props.cluster._kubectlCreationRole);
+    this.podExecutionRole.grantPassRole(props.cluster.adminRole);
 
     let subnets: string[] | undefined;
     if (props.vpc) {
@@ -169,7 +171,7 @@ export class FargateProfile extends Construct implements ITaggable {
       serviceToken: provider.serviceToken,
       resourceType: FARGATE_PROFILE_RESOURCE_TYPE,
       properties: {
-        AssumeRoleArn: props.cluster._kubectlCreationRole.roleArn,
+        AssumeRoleArn: props.cluster.adminRole.roleArn,
         Config: {
           clusterName: props.cluster.clusterName,
           fargateProfileName: props.fargateProfileName,

@@ -149,7 +149,7 @@ export interface DeployStackOptions {
    *
    * If not set, all parameters must be specified for every deployment.
    *
-   * @default true
+   * @default false
    */
   usePreviousParameters?: boolean;
 

@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-codebuild",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS CodeBuild",
+  "description": "The CDK Construct Library for AWS::CodeBuild",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {

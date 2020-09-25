@@ -1,4 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert';
+import { ResourcePart, arrayWith } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -100,6 +100,28 @@ describe('tests', () => {
     });
   });
 
+  test('Deletion protection false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      deletionProtection: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      LoadBalancerAttributes: arrayWith(
+        {
+          Key: 'deletion_protection.enabled',
+          Value: 'false',
+        },
+      ),
+    });
+  });
+
   test('Access logging', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
@@ -114,7 +136,7 @@ describe('tests', () => {
 
     // verify that the LB attributes reference the bucket
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      LoadBalancerAttributes: [
+      LoadBalancerAttributes: arrayWith(
         {
           Key: 'access_logs.s3.enabled',
           Value: 'true',
@@ -123,7 +145,7 @@ describe('tests', () => {
           Key: 'access_logs.s3.bucket',
           Value: { Ref: 'AccessLoggingBucketA6D88F29' },
         },
-      ],
+      ),
     });
 
     // verify the bucket policy allows the ALB to put objects in the bucket
@@ -163,7 +185,7 @@ describe('tests', () => {
     // THEN
     // verify that the LB attributes reference the bucket
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      LoadBalancerAttributes: [
+      LoadBalancerAttributes: arrayWith(
         {
           Key: 'access_logs.s3.enabled',
           Value: 'true',
@@ -176,7 +198,7 @@ describe('tests', () => {
           Key: 'access_logs.s3.prefix',
           Value: 'prefix-of-access-logs',
         },
-      ],
+      ),
     });
 
     // verify the bucket policy allows the ALB to put objects in the bucket
@@ -291,5 +313,25 @@ describe('tests', () => {
     // WHEN
     const listener = alb.addListener('Listener', { port: 80 });
     expect(() => listener.addTargets('Targets', { port: 8080 })).not.toThrow();
+  });
+
+  test.only('can add secondary security groups', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', { vpc }),
+    });
+    alb.addSecurityGroup(new ec2.SecurityGroup(stack, 'SecurityGroup2', { vpc }));
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      SecurityGroups: [
+        { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
+        { 'Fn::GetAtt': ['SecurityGroup23BE86BB7', 'GroupId'] },
+      ],
+      Type: 'application',
+    });
   });
 });

@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { IConstruct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents } from './arn';
@@ -10,9 +11,10 @@ import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { Construct, IConstruct, ISynthesisSession } from './construct-compat';
+import { Construct, ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
+import { FeatureFlags } from './feature-flags';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
@@ -168,11 +170,12 @@ export class Stack extends Construct implements ITaggable {
         return c;
       }
 
-      if (!c.node.scope) {
-        throw new Error(`No stack could be identified for the construct at path ${construct.node.path}`);
+      const _scope = Node.of(c).scope;
+      if (Stage.isStage(c) || !_scope) {
+        throw new Error(`${construct.constructor?.name ?? 'Construct'} at '${Node.of(construct).path}' should be created in the scope of a Stack, but no Stack found`);
       }
 
-      return _lookup(c.node.scope);
+      return _lookup(_scope);
     }
   }
 
@@ -358,14 +361,16 @@ export class Stack extends Construct implements ITaggable {
     //
     // Also use the new behavior if we are using the new CI/CD-ready synthesizer; that way
     // people only have to flip one flag.
-    // eslint-disable-next-line max-len
-    this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT) || this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+    const featureFlags = FeatureFlags.of(this);
+    const stackNameDupeContext = featureFlags.isEnabled(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT);
+    const newStyleSynthesisContext = featureFlags.isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
+    this.artifactId = (stackNameDupeContext || newStyleSynthesisContext)
       ? this.generateStackArtifactId()
       : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
 
-    this.synthesizer = props.synthesizer ?? (this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+    this.synthesizer = props.synthesizer ?? (newStyleSynthesisContext
       ? new DefaultStackSynthesizer()
       : new LegacyStackSynthesizer());
     this.synthesizer.bind(this);
@@ -615,7 +620,7 @@ export class Stack extends Construct implements ITaggable {
    * Register a file asset on this Stack
    *
    * @deprecated Use `stack.synthesizer.addFileAsset()` if you are calling,
-   * and a different IDeploymentEnvironment class if you are implementing.
+   * and a different IStackSynthesizer class if you are implementing.
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     return this.synthesizer.addFileAsset(asset);
@@ -625,7 +630,7 @@ export class Stack extends Construct implements ITaggable {
    * Register a docker image asset on this Stack
    *
    * @deprecated Use `stack.synthesizer.addDockerImageAsset()` if you are calling,
-   * and a different `IDeploymentEnvironment` class if you are implementing.
+   * and a different `IStackSynthesizer` class if you are implementing.
    */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     return this.synthesizer.addDockerImageAsset(asset);
@@ -725,9 +730,6 @@ export class Stack extends Construct implements ITaggable {
     for (const ctx of this._missingContext) {
       builder.addMissing(ctx);
     }
-
-    // Delegate adding artifacts to the Synthesizer
-    this.synthesizer.synthesizeStackArtifacts(session);
   }
 
   /**
@@ -934,7 +936,7 @@ export class Stack extends Construct implements ITaggable {
    */
   private generateStackId(container: IConstruct | undefined) {
     const rootPath = rootPathTo(this, container);
-    const ids = rootPath.map(c => c.node.id);
+    const ids = rootPath.map(c => Node.of(c).id);
 
     // In unit tests our Stack (which is the only component) may not have an
     // id, so in that case just pretend it's "Stack".
@@ -1051,7 +1053,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
     into.push(node);
   }
 
-  for (const child of node.node.children) {
+  for (const child of Node.of(node).children) {
     // Don't recurse into a substack
     if (Stack.isStack(child)) { continue; }
 
@@ -1067,7 +1069,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
  * If no ancestor is given or the ancestor is not found, return the entire root path.
  */
 export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConstruct[] {
-  const scopes = construct.node.scopes;
+  const scopes = Node.of(construct).scopes;
   for (let i = scopes.length - 2; i >= 0; i--) {
     if (scopes[i] === ancestor) {
       return scopes.slice(i + 1);

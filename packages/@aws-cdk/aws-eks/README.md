@@ -47,6 +47,8 @@ cluster.addManifest('mypod', {
 });
 ```
 
+> **NOTE: You can only create 1 cluster per stack.** If you have a use-case for multiple clusters per stack, > or would like to understand more about this limitation, see https://github.com/aws/aws-cdk/issues/10073.
+
 In order to interact with your cluster through `kubectl`, you can use the `aws
 eks update-kubeconfig` [AWS CLI command](https://docs.aws.amazon.com/cli/latest/reference/eks/update-kubeconfig.html)
 to configure your local kubeconfig.
@@ -98,7 +100,8 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 });
 ```
 
-The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, and worker node traffic to the endpoint will stay within your VPC.
+The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, but worker node traffic as well as `kubectl` commands
+to the endpoint will stay within your VPC.
 
 ### Capacity
 
@@ -139,16 +142,12 @@ new eks.Cluster(this, 'cluster-with-no-capacity', {
 });
 ```
 
-The `cluster.defaultCapacity` property will reference the `AutoScalingGroup`
-resource for the default capacity. It will be `undefined` if `defaultCapacity`
-is set to `0` or `defaultCapacityType` is either `NODEGROUP` or undefined.
+When creating a cluster with default capacity (i.e `defaultCapacity !== 0` or is undefined), you can access the allocated capacity using:
 
-And the `cluster.defaultNodegroup` property will reference the `Nodegroup`
-resource for the default capacity. It will be `undefined` if `defaultCapacity`
-is set to `0` or `defaultCapacityType` is `EC2`.
+- `cluster.defaultCapacity` will reference the `AutoScalingGroup` resource in case `defaultCapacityType` is set to `EC2` or is undefined.
+- `cluster.defaultNodegroup` will reference the `Nodegroup` resource in case `defaultCapacityType` is set to `NODEGROUP`.
 
-You can add `AutoScalingGroup` resource as customized capacity through `cluster.addCapacity()` or
-`cluster.addAutoScalingGroup()`:
+You can add customized capacity in the form of an `AutoScalingGroup` resource through `cluster.addCapacity()` or `cluster.addAutoScalingGroup()`:
 
 ```ts
 cluster.addCapacity('frontend-nodes', {
@@ -167,7 +166,7 @@ for Amazon EKS Kubernetes clusters. By default, `eks.Nodegroup` create a nodegro
 new eks.Nodegroup(stack, 'nodegroup', { cluster });
 ```
 
-You can add customized node group through `cluster.addNodegroup()`:
+You can add customized node groups through `cluster.addNodegroup()`:
 
 ```ts
 cluster.addNodegroup('nodegroup', {
@@ -176,6 +175,58 @@ cluster.addNodegroup('nodegroup', {
 });
 ```
 
+#### Custom AMI and Launch Template support
+
+Specify the launch template for the nodegroup with your custom AMI. When using a custom AMI,
+Amazon EKS doesn't merge any user data. Rather, You are responsible for supplying the required
+bootstrap commands for nodes to join the cluster. In the following sample, `/ect/eks/bootstrap.sh` from the AMI will be used to bootstrap the node. See [Using a custom AMI](https://docs.aws.amazon.com/en_ca/eks/latest/userguide/launch-templates.html) for more details.
+
+```ts
+const userData = ec2.UserData.forLinux();
+userData.addCommands(
+  'set -o xtrace',
+  `/etc/eks/bootstrap.sh ${this.cluster.clusterName}`,
+);
+const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+  launchTemplateData: {
+    // specify your custom AMI below
+    imageId,
+    instanceType: new ec2.InstanceType('t3.small').toString(),
+    userData: Fn.base64(userData.render()),
+  },
+});
+this.cluster.addNodegroup('extra-ng', {
+  launchTemplate: {
+    id: lt.ref,
+    version: lt.attrDefaultVersionNumber,
+  },
+});
+```
+
+### ARM64 Support
+
+Instance types with `ARM64` architecture are supported in both managed nodegroup and self-managed capacity. Simply specify an ARM64 `instanceType` (such as `m6g.medium`), and the latest
+Amazon Linux 2 AMI for ARM64 will be automatically selected.
+
+```ts
+// create a cluster with a default managed nodegroup
+cluster = new eks.Cluster(this, 'Cluster', {
+  vpc,
+  version: eks.KubernetesVersion.V1_17,
+});
+
+// add a managed ARM64 nodegroup
+cluster.addNodegroup('extra-ng-arm', {
+  instanceType: new ec2.InstanceType('m6g.medium'),
+  minSize: 2,
+});
+
+// add a self-managed ARM64 nodegroup
+cluster.addCapacity('self-ng-arm', {
+  instanceType: new ec2.InstanceType('m6g.medium'),
+  minCapacity: 2,
+})
+```
 
 ### Fargate
 
@@ -239,8 +290,15 @@ Spot instance nodes will be labeled with `lifecycle=Ec2Spot` and tainted with `P
 The [AWS Node Termination Handler](https://github.com/aws/aws-node-termination-handler)
 DaemonSet will be installed from [
 Amazon EKS Helm chart repository
-](https://github.com/aws/eks-charts/tree/master/stable/aws-node-termination-handler) on these nodes. The termination handler ensures that the Kubernetes control plane responds appropriately to events that can cause your EC2 instance to become unavailable, such as [EC2 maintenance events](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-instances-status-check_sched.html) and [EC2 Spot interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html) and helps gracefully stop all pods running on spot nodes that are about to be
+](https://github.com/aws/eks-charts/tree/master/stable/aws-node-termination-handler) on these nodes.
+The termination handler ensures that the Kubernetes control plane responds appropriately to events that
+can cause your EC2 instance to become unavailable, such as [EC2 maintenance events](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-instances-status-check_sched.html)
+and [EC2 Spot interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html) and helps gracefully stop all pods running on spot nodes that are about to be
 terminated.
+
+> Handler Version: [1.7.0](https://github.com/aws/aws-node-termination-handler/releases/tag/v1.7.0)
+>
+> Chart Version: [0.9.5](https://github.com/aws/eks-charts/blob/v0.0.28/stable/aws-node-termination-handler/Chart.yaml)
 
 ### Bootstrapping
 
@@ -264,10 +322,14 @@ cluster.addCapacity('spot', {
 To disable bootstrapping altogether (i.e. to fully customize user-data), set `bootstrapEnabled` to `false` when you add
 the capacity.
 
-### Kubernetes Resources
+### Kubernetes Manifests
 
 The `KubernetesManifest` construct or `cluster.addManifest` method can be used
 to apply Kubernetes resource manifests to this cluster.
+
+> When using `cluster.addManifest`, the manifest construct is defined within the cluster's stack scope. If the manifest contains
+> attributes from a different stack which depend on the cluster stack, a circular dependency will be created and you will get a synth time error.
+> To avoid this, directly use `new KubernetesManifest` to create the manifest in the scope of the other stack.
 
 The following examples will deploy the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes)
 service on the cluster:
@@ -318,9 +380,9 @@ new KubernetesManifest(this, 'hello-kub', {
 cluster.addManifest('hello-kub', service, deployment);
 ```
 
-##### Kubectl Environment
+#### Kubectl Layer and Environment
 
-The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can useful in order to configure an http proxy:
+The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```typescript
 const cluster = new eks.Cluster(this, 'hello-eks', {
@@ -329,8 +391,46 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
     'http_proxy': 'http://proxy.myproxy.com'
   }
 });
-
 ```
+
+By default, the `kubectl`, `helm` and `aws` commands used to operate the cluster
+are provided by an AWS Lambda Layer from the AWS Serverless Application
+in [aws-lambda-layer-kubectl]. In most cases this should be sufficient.
+
+You can provide a custom layer in case the default layer does not meet your
+needs or if the SAR app is not available in your region.
+
+```ts
+// custom build:
+const layer = new lambda.LayerVersion(this, 'KubectlLayer', {
+  code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
+  compatibleRuntimes: [lambda.Runtime.PROVIDED]
+});
+
+// or, a specific version or appid of aws-lambda-layer-kubectl:
+const layer = new eks.KubectlLayer(this, 'KubectlLayer', {
+  version: '2.0.0',    // optional
+  applicationId: '...' // optional
+});
+```
+
+Pass it to `kubectlLayer` when you create or import a cluster:
+
+```ts
+const cluster = new eks.Cluster(this, 'MyCluster', {
+  kubectlLayer: layer,
+});
+
+// or
+const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
+  kubectlLayer: layer,
+});
+```
+
+> Instructions on how to build `layer.zip` can be found
+> [here](https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md).
+
+[aws-lambda-layer-kubectl]: https://github.com/aws-samples/aws-lambda-layer-kubectl
 
 #### Adding resources from a URL
 
@@ -345,10 +445,14 @@ const manifest = yaml.safeLoadAll(request('GET', manifestUrl).getBody());
 cluster.addManifest('my-resource', ...manifest);
 ```
 
-Since Kubernetes resources are implemented as CloudFormation resources in the
-CDK. This means that if the resource is deleted from your code (or the stack is
+Since Kubernetes manifests are implemented as CloudFormation resources in the
+CDK. This means that if the manifest is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `kubectl delete` command and the
-Kubernetes resources will be deleted.
+Kubernetes resources in that manifest will be deleted.
+
+#### Caveat
+
+If you have multiple resources in a single `KubernetesManifest`, and one of those **resources** is removed from the manifest, it will not be deleted and will remain orphan. See [Support Object pruning](https://github.com/aws/aws-cdk/issues/10495) for more details.
 
 #### Dependencies
 
@@ -377,9 +481,9 @@ const service = cluster.addManifest('my-service', {
 service.node.addDependency(namespace); // will apply `my-namespace` before `my-service`.
 ```
 
-NOTE: when a `KubernetesManifest` includes multiple resources (either directly
+**NOTE:** when a `KubernetesManifest` includes multiple resources (either directly
 or through `cluster.addManifest()`) (e.g. `cluster.addManifest('foo', r1, r2,
-r3,...))`), these resources will be applied as a single manifest via `kubectl`
+r3,...)`), these resources will be applied as a single manifest via `kubectl`
 and will be applied sequentially (the standard behavior in `kubectl`).
 
 ### Patching Kubernetes Resources
@@ -428,6 +532,59 @@ Specifically, since the above use-case is quite common, there is an easier way t
 const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
 ```
 
+### Kubernetes Resources in Existing Clusters
+
+The Amazon EKS library allows defining Kubernetes resources such as [Kubernetes
+manifests](#kubernetes-resources) and [Helm charts](#helm-charts) on clusters
+that are not defined as part of your CDK app.
+
+First, you'll need to "import" a cluster to your CDK app. To do that, use the
+`eks.Cluster.fromClusterAttributes()` static method:
+
+```ts
+const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
+  clusterName: 'my-cluster-name',
+  kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+});
+```
+
+Then, you can use `addManifest` or `addHelmChart` to define resources inside
+your Kubernetes cluster. For example:
+
+```ts
+cluster.addManifest('Test', {
+  apiVersion: 'v1',
+  kind: 'ConfigMap',
+  metadata: {
+    name: 'myconfigmap',
+  },
+  data: {
+    Key: 'value',
+    Another: '123454',
+  },
+});
+```
+
+At the minimum, when importing clusters for `kubectl` management, you will need
+to specify:
+
+- `clusterName` - the name of the cluster.
+- `kubectlRoleArn` - the ARN of an IAM role mapped to the `system:masters` RBAC
+  role. If the cluster you are importing was created using the AWS CDK, the
+  CloudFormation stack has an output that includes an IAM role that can be used.
+  Otherwise, you can create an IAM role and map it to `system:masters` manually.
+  The trust policy of this role should include the the
+  `arn:aws::iam::${accountId}:root` principal in order to allow the execution
+  role of the kubectl resource to assume it.
+
+If the cluster is configured with private-only or private and restricted public
+Kubernetes [endpoint access](#endpoint-access), you must also specify:
+
+- `kubectlSecurityGroupId` - the ID of an EC2 security group that is allowed
+  connections to the cluster's control security group. For example, the EKS managed [cluster security group](#cluster-security-group).
+- `kubectlPrivateSubnetIds` - a list of private VPC subnets IDs that will be used
+  to access the Kubernetes endpoint.
+
 ### AWS IAM Mapping
 
 As described in the [Amazon EKS User Guide](https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html),
@@ -440,7 +597,7 @@ users, roles and accounts.
 Furthermore, when auto-scaling capacity is added to the cluster (through
 `cluster.addCapacity` or `cluster.addAutoScalingGroup`), the IAM instance role
 of the auto-scaling group will be automatically mapped to RBAC so nodes can
-connect to the cluster. No manual mapping is required any longer.
+connect to the cluster. No manual mapping is required.
 
 For example, let's say you want to grant an IAM user administrative privileges
 on your cluster:
@@ -477,7 +634,7 @@ Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled
 on [creating a cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
 can provide more details about the customer master key (CMK) that can be used for the encryption.
 
-You can use the `secretsEncryptionKey` to configure which key the cluster will use to encrypt Kubernetes secrets. By default, an AWS Managed key will be used. 
+You can use the `secretsEncryptionKey` to configure which key the cluster will use to encrypt Kubernetes secrets. By default, an AWS Managed key will be used.
 
 > This setting can only be specified when the cluster is created and cannot be updated.
 
@@ -499,11 +656,10 @@ const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
 ### Node ssh Access
 
 If you want to be able to SSH into your worker nodes, you must already
-have an SSH key in the region you're connecting to and pass it, and you must
-be able to connect to the hosts (meaning they must have a public IP and you
+have an SSH key in the region you're connecting to and pass it when you add capacity to the cluster. You must also be able to connect to the hosts (meaning they must have a public IP and you
 should be allowed to connect to them on port 22):
 
-[ssh into nodes example](test/example.ssh-into-nodes.lit.ts)
+See [SSH into nodes](test/example.ssh-into-nodes.lit.ts) for a code example.
 
 If you want to SSH into nodes in a private subnet, you should set up a
 bastion host in a public subnet. That setup is recommended, but is
@@ -513,6 +669,10 @@ unfortunately beyond the scope of this documentation.
 
 The `HelmChart` construct or `cluster.addChart` method can be used
 to add Kubernetes resources to this cluster using Helm.
+
+> When using `cluster.addChart`, the manifest construct is defined within the cluster's stack scope. If the manifest contains
+> attributes from a different stack which depend on the cluster stack, a circular dependency will be created and you will get a synth time error.
+> To avoid this, directly use `new HelmChart` to create the chart in the scope of the other stack.
 
 The following example will install the [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)
 to your cluster using Helm.
@@ -537,7 +697,7 @@ cluster.addChart('NginxIngress', {
 Helm charts will be installed and updated using `helm upgrade --install`, where a few parameters
 are being passed down (such as `repo`, `values`, `version`, `namespace`, `wait`, `timeout`, etc).
 This means that if the chart is added to CDK with the same release name, it will try to update
-the chart in the cluster. The chart will exists as CloudFormation resource.
+the chart in the cluster.
 
 Helm charts are implemented as CloudFormation resources in CDK.
 This means that if the chart is deleted from your code (or the stack is
@@ -564,7 +724,7 @@ chart2.node.addDependency(chart1);
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts. At this moment the managed nodegroup only supports Amazon EKS-optimized AMI but it's possible to create a capacity of self-managed `AutoScalingGroup` running with bottlerocket Linux AMI.
 
-> **NOTICE**: Bottlerocket is in public preview and only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART.md#finding-an-ami).
+> **NOTICE**: Bottlerocket is only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-EKS.md#finding-an-ami).
 
 The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `t3.small` Linux instances running with `Bottlerocket` AMI.
 
@@ -576,6 +736,10 @@ cluster.addCapacity('BottlerocketNodes', {
   machineImageType: eks.MachineImageType.BOTTLEROCKET
 });
 ```
+
+The Bottlerocket AMI will be auto selected with the variant of different k8s version for the `x86_64` architecture.
+For example, if the Amazon EKS cluster version is `1.17`, the Bottlerocket AMI variant will be auto selected as
+`aws-k8s-1.17` behind the scene. See [Variants](https://github.com/bottlerocket-os/bottlerocket/blob/develop/README.md#variants) for more details.
 
 To define only Bottlerocket capacity in your cluster, set `defaultCapacity` to `0` when you define the cluster as described above.
 
@@ -609,13 +773,11 @@ const mypod = cluster.addManifest('mypod', {
   }
 });
 
-// create the resource after the service account
+// create the resource after the service account.
+// note that using `sa.serviceAccountName` above **does not** translate into a dependency.
+// this is why an explicit dependency is needed. See https://github.com/aws/aws-cdk/issues/9910 for more details.
 mypod.node.addDependency(sa);
 
 // print the IAM role arn for this service account
 new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
 ```
-
-### Roadmap
-
-- [ ] AutoScaling (combine EC2 and Kubernetes scaling)

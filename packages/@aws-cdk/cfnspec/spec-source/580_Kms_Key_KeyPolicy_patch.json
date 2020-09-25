@@ -1,0 +1,16 @@
+{
+  "ResourceTypes": {
+      "AWS::KMS::Key": {
+          "patch": {
+            "description": "Primitive type does not exist at all for some reason and it should be Json",
+            "operations": [
+              {
+                "path": "/Properties/KeyPolicy/PrimitiveType",
+                "op": "add",
+                "value": "Json"
+              }
+            ]
+          }
+      }
+  }
+}

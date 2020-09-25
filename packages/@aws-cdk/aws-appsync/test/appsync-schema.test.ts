@@ -36,7 +36,7 @@ describe('basic testing schema definition mode `code`', () => {
 
   test('definition mode `code` produces empty schema definition', () => {
     // WHEN
-    new appsync.GraphQLApi(stack, 'API', {
+    new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
     });
 
@@ -48,7 +48,7 @@ describe('basic testing schema definition mode `code`', () => {
 
   test('definition mode `code` generates correct schema with addToSchema', () => {
     // WHEN
-    const api = new appsync.GraphQLApi(stack, 'API', {
+    const api = new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
     });
     api.addType(type);
@@ -63,7 +63,7 @@ describe('basic testing schema definition mode `code`', () => {
 
   test('definition mode `code` allows for api to addQuery', () => {
     // WHEN
-    const api = new appsync.GraphQLApi(stack, 'API', {
+    const api = new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
     });
     api.addQuery('test', new appsync.ResolvableField({
@@ -79,7 +79,7 @@ describe('basic testing schema definition mode `code`', () => {
   test('definition mode `code` allows for schema to addQuery', () => {
     // WHEN
     const schema = new appsync.Schema();
-    new appsync.GraphQLApi(stack, 'API', {
+    new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
       schema,
     });
@@ -95,7 +95,7 @@ describe('basic testing schema definition mode `code`', () => {
 
   test('definition mode `code` allows for api to addMutation', () => {
     // WHEN
-    const api = new appsync.GraphQLApi(stack, 'API', {
+    const api = new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
     });
     api.addMutation('test', new appsync.ResolvableField({
@@ -111,7 +111,7 @@ describe('basic testing schema definition mode `code`', () => {
   test('definition mode `code` allows for schema to addMutation', () => {
     // WHEN
     const schema = new appsync.Schema();
-    new appsync.GraphQLApi(stack, 'API', {
+    new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
       schema,
     });
@@ -124,13 +124,63 @@ describe('basic testing schema definition mode `code`', () => {
       Definition: 'schema {\n  mutation: Mutation\n}\ntype Mutation {\n  test: String\n}\n',
     });
   });
+
+  test('definition mode `code` allows for api to addSubscription', () => {
+    // WHEN
+    const api = new appsync.GraphqlApi(stack, 'API', {
+      name: 'demo',
+    });
+    api.addSubscription('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n}\n',
+    });
+  });
+
+  test('definition mode `code` allows for schema to addSubscription', () => {
+    // WHEN
+    const schema = new appsync.Schema();
+    new appsync.GraphqlApi(stack, 'API', {
+      name: 'demo',
+      schema,
+    });
+    schema.addSubscription('test', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n}\n',
+    });
+  });
+
+  test('definition mode `code` addSubscription w/ @aws_subscribe', () => {
+    // WHE
+    const api = new appsync.GraphqlApi(stack, 'API', {
+      name: 'demo',
+    });
+    api.addSubscription('test', new appsync.ResolvableField({
+      returnType: t.string,
+      directives: [appsync.Directive.subscribe('test1')],
+    }));
+
+    const out = 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n  @aws_subscribe(mutations: ["test1"])\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: out,
+    });
+  });
 });
 
 describe('testing schema definition mode `file`', () => {
 
   test('definition mode `file` produces correct output', () => {
     // WHEN
-    new appsync.GraphQLApi(stack, 'API', {
+    new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
       schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     });
@@ -143,7 +193,7 @@ describe('testing schema definition mode `file`', () => {
 
   test('definition mode `file` errors when addType for object is called', () => {
     // WHEN
-    const api = new appsync.GraphQLApi(stack, 'API', {
+    const api = new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
       schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     });
@@ -158,7 +208,7 @@ describe('testing schema definition mode `file`', () => {
 
   test('definition mode `file` errors when addType for interface is called', () => {
     // WHEN
-    const api = new appsync.GraphQLApi(stack, 'API', {
+    const api = new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
       schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     });
@@ -173,7 +223,7 @@ describe('testing schema definition mode `file`', () => {
 
   test('definition mode `file` errors when addToSchema is called', () => {
     // WHEN
-    const api = new appsync.GraphQLApi(stack, 'API', {
+    const api = new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
       schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     });
@@ -186,7 +236,7 @@ describe('testing schema definition mode `file`', () => {
 
   test('definition mode `file` errors when addQuery is called', () => {
     // WHEN
-    const api = new appsync.GraphQLApi(stack, 'API', {
+    const api = new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
       schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     });
@@ -194,12 +244,12 @@ describe('testing schema definition mode `file`', () => {
     // THEN
     expect(() => {
       api.addQuery('blah', new appsync.ResolvableField({ returnType: t.string }));
-    }).toThrowError('Unable to add query. Schema definition mode must be CODE Received: FILE');
+    }).toThrowError('Unable to add query. Schema definition mode must be CODE. Received: FILE');
   });
 
   test('definition mode `file` errors when addMutation is called', () => {
     // WHEN
-    const api = new appsync.GraphQLApi(stack, 'API', {
+    const api = new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
       schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
     });
@@ -207,6 +257,19 @@ describe('testing schema definition mode `file`', () => {
     // THEN
     expect(() => {
       api.addMutation('blah', new appsync.ResolvableField({ returnType: t.string }));
-    }).toThrowError('Unable to add mutation. Schema definition mode must be CODE Received: FILE');
+    }).toThrowError('Unable to add mutation. Schema definition mode must be CODE. Received: FILE');
+  });
+
+  test('definition mode `file` errors when addSubscription is called', () => {
+    // WHEN
+    const api = new appsync.GraphqlApi(stack, 'API', {
+      name: 'demo',
+      schema: appsync.Schema.fromAsset(join(__dirname, 'appsync.test.graphql')),
+    });
+
+    // THEN
+    expect(() => {
+      api.addSubscription('blah', new appsync.ResolvableField({ returnType: t.string }));
+    }).toThrowError('Unable to add subscription. Schema definition mode must be CODE. Received: FILE');
   });
 });
