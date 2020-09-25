@@ -441,10 +441,8 @@ export interface ICfnResourceOptions {
 
   /**
    * The description of this resource.
-   * Used for informational purposes only,
-   * is not processed in any way
-   * (and stays with the CloudFormation template,
-   * is not passed to the udnerlying resource,
+   * Used for informational purposes only, is not processed in any way
+   * (and stays with the CloudFormation template, is not passed to the underlying resource,
    * even if it does have a 'description' property).
    */
   description?: string;
