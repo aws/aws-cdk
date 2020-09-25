@@ -180,7 +180,7 @@ export class TestFixture {
 
   public async cdk(args: string[], options: CdkCliOptions = {}) {
     if (options.verbose) {
-      args.push('-v');       
+      args.push('-v');
     }
 
     return this.shell(['cdk', ...args], {
