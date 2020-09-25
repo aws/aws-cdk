@@ -590,7 +590,7 @@ export class CfnInclude extends core.CfnElement {
     // fail early for resource attributes we don't support yet
     const knownAttributes = [
       'Condition', 'DependsOn', 'Description', 'Metadata', 'Properties', 'Type', 'Version',
-      'CreationPolicy', 'DeletionPolicy', 'UpdatePolicy', 'UpdateReplacePolicy'
+      'CreationPolicy', 'DeletionPolicy', 'UpdatePolicy', 'UpdateReplacePolicy',
     ];
     for (const attribute of Object.keys(resourceAttributes)) {
       if (!knownAttributes.includes(attribute)) {
