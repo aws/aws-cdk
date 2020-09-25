@@ -27,9 +27,10 @@ async function main() {
     .argv;
 
   const options = cdkBuildOptions();
+  const env = options.env;
 
   if (options.pre) {
-    await shell(options.pre, { timers });
+    await shell(options.pre, { timers, env });
   }
 
   // See if we need to call cfn2ts
@@ -38,15 +39,15 @@ async function main() {
       // There can be multiple scopes, ensuring it's always an array.
       options.cloudformation = [options.cloudformation];
     }
-    await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], { timers });
+    await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], { timers, env });
   }
 
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
-  await compileCurrentPackage(timers, overrides);
+  await compileCurrentPackage(options, timers, overrides);
   await lintCurrentPackage(options, overrides);
 
   if (options.post) {
-    await shell(options.post, { timers });
+    await shell(options.post, { timers, env });
   }
 }
 
