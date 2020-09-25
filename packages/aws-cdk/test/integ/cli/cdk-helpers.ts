@@ -179,11 +179,9 @@ export class TestFixture {
   }
 
   public async cdk(args: string[], options: CdkCliOptions = {}) {
-    if (options.verbose) {
-      args.push('-v');
-    }
+    const verbose = options.verbose ?? true;
 
-    return this.shell(['cdk', ...args], {
+    return this.shell(['cdk', ...(verbose ? ['-v'] : []), ...args], {
       ...options,
       modEnv: {
         AWS_REGION: this.aws.region,
