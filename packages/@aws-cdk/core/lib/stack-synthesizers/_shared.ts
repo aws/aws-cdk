@@ -21,7 +21,6 @@ export function addStackArtifactToAssembly(
 
   // nested stack tags are applied at the AWS::CloudFormation::Stack resource
   // level and are not needed in the cloud assembly.
-  // TODO: move these to the cloud assembly artifact properties instead of metadata
   if (stack.tags.hasTags()) {
     stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, stack.tags.renderTags());
   }
@@ -46,6 +45,7 @@ export function addStackArtifactToAssembly(
   const properties: cxschema.AwsCloudFormationStackProperties = {
     templateFile: stack.templateFile,
     terminationProtection: stack.terminationProtection,
+    tags: stack.tags.tagValues(),
     ...stackProps,
     ...stackNameProperty,
   };

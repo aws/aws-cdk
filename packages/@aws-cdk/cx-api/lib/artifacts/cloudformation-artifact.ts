@@ -27,6 +27,11 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly parameters: { [id: string]: string };
 
   /**
+   * CloudFormation tags to pass to the stack.
+   */
+  public readonly tags: { [id: string]: string };
+
+  /**
    * The physical name of this stack.
    */
   public readonly stackName: string;
@@ -96,7 +101,8 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     }
     this.environment = EnvironmentUtils.parse(artifact.environment);
     this.templateFile = properties.templateFile;
-    this.parameters = properties.parameters || { };
+    this.parameters = properties.parameters ?? {};
+    this.tags = properties.tags ?? {};
     this.assumeRoleArn = properties.assumeRoleArn;
     this.cloudFormationExecutionRoleArn = properties.cloudFormationExecutionRoleArn;
     this.stackTemplateAssetObjectUrl = properties.stackTemplateAssetObjectUrl;
