@@ -1,4 +1,4 @@
-import { Duration } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 
 /**
  * Enum of supported AppMesh protocols
@@ -27,7 +27,7 @@ export interface HealthCheck {
    *
    * @default 5 seconds
    */
-  readonly interval?: Duration;
+  readonly interval?: cdk.Duration;
   /**
    * The path where the application expects any health-checks, this can also be the application path.
    *
@@ -52,7 +52,7 @@ export interface HealthCheck {
    *
    * @default 2 seconds
    */
-  readonly timeout?: Duration;
+  readonly timeout?: cdk.Duration;
   /**
    * Number of failed attempts before considering the node DOWN.
    *
@@ -92,7 +92,7 @@ export interface VirtualNodeListener {
   readonly portMapping?: PortMapping;
 
   /**
-   * Array of HealthCheckProps for the node(s)
+   * Health checking strategy upstream nodes should use when communicating with the listener
    *
    * @default - no healthcheck
    */
@@ -100,11 +100,57 @@ export interface VirtualNodeListener {
 }
 
 /**
- * Configuration for Envoy Access logs for mesh endpoints
+ * All Properties for Envoy Access logs for mesh endpoints
  */
-export interface AccessLog {
+export interface AccessLogConfig {
   /**
    * Path to a file to write access logs to
+   *
+   * @default - no file based access logging
    */
-  readonly filePath: string;
+  readonly filePath?: string;
+}
+
+/**
+ * Configuration for Envoy Access logs for mesh endpoints
+ */
+export abstract class AccessLog {
+  /**
+   * Path to a file to write access logs to
+   *
+   * @default - no file based access logging
+   */
+  public static fromFilePath(filePath: string): AccessLog {
+    return new FileAccessLog(filePath);
+  }
+
+  /**
+   * Called when the AccessLog type is initialized. Can be used to enforce
+   * mutual exclusivity with future properties
+   *
+   */
+  public abstract bind(scope: cdk.Construct): AccessLogConfig;
+}
+
+/**
+ * Configuration for Envoy Access logs for mesh endpoints
+ */
+export class FileAccessLog extends AccessLog {
+  /**
+   * Path to a file to write access logs to
+   *
+   * @default - no file based access logging
+   */
+  public readonly filePath: string;
+
+  constructor(filePath: string) {
+    super();
+    this.filePath = filePath;
+  }
+
+  public bind(_scope: cdk.Construct): AccessLogConfig {
+    return {
+      filePath: this.filePath,
+    };
+  }
 }

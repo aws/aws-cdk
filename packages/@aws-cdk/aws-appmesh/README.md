@@ -191,7 +191,7 @@ const node = new VirtualNode(this, 'node', {
 cdk.Tag.add(node, 'Environment', 'Dev');
 ```
 
-The listeners property can be left blank dded later with the `mesh.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
+The listeners property can be left blank and added later with the `mesh.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
 
 ## Adding a Route
 

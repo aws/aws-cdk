@@ -259,6 +259,7 @@ export class VirtualNode extends VirtualNodeBase {
 
     this.addBackends(...props.backends || []);
     this.addListeners(...props.listener ? [props.listener] : []);
+    const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
@@ -274,11 +275,11 @@ export class VirtualNode extends VirtualNodeBase {
             attributes: renderAttributes(props.cloudMapServiceInstanceAttributes),
           } : undefined,
         },
-        logging: props.accessLog !== undefined ? {
+        logging: accessLogging !== undefined ? {
           accessLog: {
-            file: {
-              path: props.accessLog.filePath,
-            },
+            file: accessLogging.filePath != undefined ? {
+              path: accessLogging.filePath,
+            } : undefined,
           },
         } : undefined,
       },
