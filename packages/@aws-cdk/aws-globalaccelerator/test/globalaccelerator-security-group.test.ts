@@ -58,6 +58,7 @@ test('custom resource exists', () => {
       InstallLatestAwsSdk: true,
     },
     DependsOn: [
+      'GlobalAcceleratorSGCustomResourceCustomResourcePolicyF3294553',
       'GroupC77FDACD',
     ],
   }, ResourcePart.CompleteDefinition));

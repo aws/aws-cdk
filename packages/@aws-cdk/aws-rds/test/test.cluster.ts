@@ -6,7 +6,10 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseCluster, DatabaseClusterEngine, ParameterGroup, PerformanceInsightRetention } from '../lib';
+import {
+  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, DatabaseCluster, DatabaseClusterEngine,
+  DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
+} from '../lib';
 
 export = {
   'creating a Cluster also creates 2 DB Instances'(test: Test) {
@@ -17,7 +20,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -58,7 +61,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -92,7 +95,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -130,7 +133,7 @@ export = {
     });
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -154,7 +157,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
     new DatabaseCluster(stack, 'Cluster', {
-      masterUser: { username: 'admin' },
+      credentials: { username: 'admin' },
       engine: DatabaseClusterEngine.AURORA,
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
@@ -179,7 +182,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -236,7 +239,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -273,7 +276,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -302,7 +305,7 @@ export = {
       // WHEN
       new DatabaseCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA,
-        masterUser: {
+        credentials: {
           username: 'admin',
         },
         instanceProps: {
@@ -330,7 +333,7 @@ export = {
       // WHEN
       new DatabaseCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA,
-        masterUser: {
+        credentials: {
           username: 'admin',
         },
         instanceProps: {
@@ -355,7 +358,7 @@ export = {
       test.throws(() => {
         new DatabaseCluster(stack, 'Database', {
           engine: DatabaseClusterEngine.AURORA,
-          masterUser: {
+          credentials: {
             username: 'admin',
           },
           instanceProps: {
@@ -370,6 +373,69 @@ export = {
     },
   },
 
+  'cluster with disable automatic upgrade of minor version'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        autoMinorVersionUpgrade: false,
+        vpc,
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      AutoMinorVersionUpgrade: false,
+    }));
+
+    test.done();
+  },
+
+  'cluster with allow upgrade of major version'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        allowMajorVersionUpgrade: true,
+        vpc,
+      },
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      AllowMajorVersionUpgrade: true,
+    }));
+
+    test.done();
+  },
+
+  'cluster with disallow remove backups'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        deleteAutomatedBackups: false,
+        vpc,
+      },
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      DeleteAutomatedBackups: false,
+    }));
+
+    test.done();
+  },
+
   'create a cluster using a specific version of MySQL'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -380,7 +446,7 @@ export = {
       engine: DatabaseClusterEngine.auroraMysql({
         version: AuroraMysqlEngineVersion.VER_2_04_4,
       }),
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -408,7 +474,7 @@ export = {
       engine: DatabaseClusterEngine.auroraPostgres({
         version: AuroraPostgresEngineVersion.VER_10_7,
       }),
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -434,7 +500,7 @@ export = {
     // WHEN
     const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -479,6 +545,84 @@ export = {
     test.done();
   },
 
+  'can import a cluster with minimal attributes'(test: Test) {
+    const stack = testStack();
+
+    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      clusterIdentifier: 'identifier',
+    });
+
+    test.equals(cluster.clusterIdentifier, 'identifier');
+
+    test.done();
+  },
+
+  'minimal imported cluster throws on accessing attributes for unprovided parameters'(test: Test) {
+    const stack = testStack();
+
+    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      clusterIdentifier: 'identifier',
+    });
+
+    test.throws(() => cluster.clusterEndpoint, /Cannot access `clusterEndpoint` of an imported cluster/);
+    test.throws(() => cluster.clusterReadEndpoint, /Cannot access `clusterReadEndpoint` of an imported cluster/);
+    test.throws(() => cluster.instanceIdentifiers, /Cannot access `instanceIdentifiers` of an imported cluster/);
+    test.throws(() => cluster.instanceEndpoints, /Cannot access `instanceEndpoints` of an imported cluster/);
+
+    test.done();
+  },
+
+  'imported cluster can access properties if attributes are provided'(test: Test) {
+    const stack = testStack();
+
+    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      clusterEndpointAddress: 'addr',
+      clusterIdentifier: 'identifier',
+      instanceEndpointAddresses: ['instance-addr'],
+      instanceIdentifiers: ['identifier'],
+      port: 3306,
+      readerEndpointAddress: 'reader-address',
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false,
+      })],
+    });
+
+    test.equals(cluster.clusterEndpoint.socketAddress, 'addr:3306');
+    test.equals(cluster.clusterReadEndpoint.socketAddress, 'reader-address:3306');
+    test.deepEqual(cluster.instanceIdentifiers, ['identifier']);
+    test.deepEqual(cluster.instanceEndpoints.map(endpoint => endpoint.socketAddress), ['instance-addr:3306']);
+
+    test.done();
+  },
+
+  'cluster supports metrics'(test: Test) {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_5_7_12 }),
+      credentials: {
+        username: 'admin',
+        password: cdk.SecretValue.plainText('tooshort'),
+      },
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    test.deepEqual(stack.resolve(cluster.metricCPUUtilization()), {
+      dimensions: { DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' } },
+      namespace: 'AWS/RDS',
+      metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+      account: '12345',
+      region: 'us-test-1',
+    });
+
+    test.done();
+  },
+
   'cluster with enabled monitoring'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -488,7 +632,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -554,7 +698,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -584,7 +728,7 @@ export = {
     // WHEN
     const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -606,7 +750,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: { username: 'admin' },
+      credentials: { username: 'admin' },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
@@ -635,7 +779,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -683,7 +827,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -758,6 +902,129 @@ export = {
     test.done();
   },
 
+  'cluster with s3 import bucket adds supported feature name to IAM role'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_10_12,
+      }),
+      instances: 1,
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      s3ImportBuckets: [bucket],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      AssociatedRoles: [{
+        RoleArn: {
+          'Fn::GetAtt': [
+            'DatabaseS3ImportRole377BC9C0',
+            'Arn',
+          ],
+        },
+        FeatureName: 's3Import',
+      }],
+    }));
+
+    test.done();
+  },
+
+  'throws when s3 import bucket or s3 export bucket is supplied for a Postgres version that does not support it'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN / THEN
+    test.throws(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_10_4,
+        }),
+        instances: 1,
+        credentials: {
+          username: 'admin',
+        },
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        },
+        s3ImportBuckets: [bucket],
+      });
+    }, /s3Import is not supported for Postgres version: 10.4. Use a version that supports the s3Import feature./);
+
+    test.throws(() => {
+      new DatabaseCluster(stack, 'AnotherDatabase', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_10_4,
+        }),
+        instances: 1,
+        credentials: {
+          username: 'admin',
+        },
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        },
+        s3ExportBuckets: [bucket],
+      });
+    }, /s3Export is not supported for Postgres version: 10.4. Use a version that supports the s3Export feature./);
+
+    test.done();
+  },
+
+  'cluster with s3 export bucket adds supported feature name to IAM role'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_10_12,
+      }),
+      instances: 1,
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      s3ExportBuckets: [bucket],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      AssociatedRoles: [{
+        RoleArn: {
+          'Fn::GetAtt': [
+            'DatabaseS3ExportRole9E328562',
+            'Arn',
+          ],
+        },
+        FeatureName: 's3Export',
+      }],
+    }));
+
+    test.done();
+  },
+
   'create a cluster with s3 export role'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -771,7 +1038,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -819,7 +1086,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -909,7 +1176,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -980,7 +1247,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1044,10 +1311,10 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.auroraPostgres({
-        version: AuroraPostgresEngineVersion.VER_11_4,
+        version: AuroraPostgresEngineVersion.VER_11_6,
       }),
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1076,6 +1343,56 @@ export = {
     test.done();
   },
 
+  'unversioned PostgreSQL cluster can be used with s3 import and s3 export buckets'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      instances: 1,
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
+      s3ImportBuckets: [bucket],
+      s3ExportBuckets: [bucket],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      AssociatedRoles: [
+        {
+          FeatureName: 's3Import',
+          RoleArn: {
+            'Fn::GetAtt': [
+              'DatabaseS3ImportRole377BC9C0',
+              'Arn',
+            ],
+          },
+        },
+        {
+          FeatureName: 's3Export',
+          RoleArn: {
+            'Fn::GetAtt': [
+              'DatabaseS3ExportRole9E328562',
+              'Arn',
+            ],
+          },
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
   'MySQL cluster without S3 exports or imports references the correct default ParameterGroup'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -1085,7 +1402,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1118,7 +1435,7 @@ export = {
     test.throws(() => new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1146,7 +1463,7 @@ export = {
     test.throws(() => new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1168,7 +1485,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -1195,7 +1512,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -1240,7 +1557,7 @@ export = {
     test.throws(() => {
       new DatabaseCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA,
-        masterUser: {
+        credentials: {
           username: 'admin',
           password: cdk.SecretValue.plainText('tooshort'),
         },
@@ -1263,7 +1580,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -1291,7 +1608,7 @@ export = {
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       instanceProps: {
@@ -1307,6 +1624,85 @@ export = {
     const art = SynthUtils.synthesize(stack);
     const meta = art.findMetadataByType('aws:cdk:error');
     test.equal(meta[0].data, 'Cluster requires at least 2 subnets, got 0');
+
+    test.done();
+  },
+
+  'create a cluster from a snapshot'(test: Test) {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      Properties: {
+        Engine: 'aurora',
+        EngineVersion: '5.6.mysql_aurora.1.22.2',
+        DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+        SnapshotIdentifier: 'mySnapshot',
+      },
+      DeletionPolicy: ABSENT,
+      UpdateReplacePolicy: 'Snapshot',
+    }, ResourcePart.CompleteDefinition));
+
+    expect(stack).to(countResources('AWS::RDS::DBInstance', 2));
+
+    test.done();
+  },
+
+  'reuse an existing subnet group'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        vpc,
+      },
+      subnetGroup: SubnetGroup.fromSubnetGroupName(stack, 'SubnetGroup', 'my-subnet-group'),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+      DBSubnetGroupName: 'my-subnet-group',
+    }));
+    expect(stack).to(countResources('AWS::RDS::DBSubnetGroup', 0));
+
+    test.done();
+  },
+
+  'defaultChild returns the DB Cluster'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    test.ok(cluster.node.defaultChild instanceof CfnDBCluster);
 
     test.done();
   },

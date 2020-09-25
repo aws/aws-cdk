@@ -150,7 +150,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
  * const pipeline = new Pipeline(this, 'Pipeline');
  *
  * // add a stage
- * const sourceStage = pipeline.addStage({ name: 'Source' });
+ * const sourceStage = pipeline.addStage({ stageName: 'Source' });
  *
  * // add a source action to the stage
  * sourceStage.addAction(new codepipeline_actions.CodeCommitSourceAction({
@@ -334,6 +334,18 @@ export class Pipeline extends PipelineBase {
    */
   public get stages(): IStage[] {
     return this._stages.slice();
+  }
+
+  /**
+   * Access one of the pipeline's stages by stage name
+   */
+  public stage(stageName: string): IStage {
+    for (const stage of this._stages) {
+      if (stage.stageName === stageName) {
+        return stage;
+      }
+    }
+    throw new Error(`Pipeline does not contain a stage named '${stageName}'. Available stages: ${this._stages.map(s => s.stageName).join(', ')}`);
   }
 
   /**

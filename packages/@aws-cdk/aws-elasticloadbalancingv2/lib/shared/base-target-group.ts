@@ -315,7 +315,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     const ret = super.validate();
 
     if (this.targetType === undefined && this.targetsJson.length === 0) {
-      this.node.addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
+      cdk.Annotations.of(this).addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
     }
 
     if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {

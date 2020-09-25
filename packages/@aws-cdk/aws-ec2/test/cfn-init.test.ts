@@ -1,10 +1,12 @@
+import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { arrayWith, ResourcePart, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { App, Aws, CfnResource, Stack } from '@aws-cdk/core';
+import { Asset } from '@aws-cdk/aws-s3-assets';
+import { App, Aws, CfnResource, Stack, DefaultStackSynthesizer, IStackSynthesizer, FileAssetSource, FileAssetLocation } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
 let app: App;
@@ -13,10 +15,15 @@ let instanceRole: iam.Role;
 let resource: CfnResource;
 let linuxUserData: ec2.UserData;
 
-beforeEach(() => {
+function resetState() {
+  resetStateWithSynthesizer();
+}
+
+function resetStateWithSynthesizer(customSynthesizer?: IStackSynthesizer) {
   app = new App();
   stack = new Stack(app, 'Stack', {
     env: { account: '1234', region: 'testregion' },
+    synthesizer: customSynthesizer,
   });
   instanceRole = new iam.Role(stack, 'InstanceRole', {
     assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
@@ -25,7 +32,9 @@ beforeEach(() => {
     type: 'CDK::Test::Resource',
   });
   linuxUserData = ec2.UserData.forLinux();
-});
+};
+
+beforeEach(resetState);
 
 test('whole config with restart handles', () => {
   // WHEN
@@ -238,7 +247,7 @@ describe('assets n buckets', () => {
     [''],
   ])('InitFile.from%sAsset', (existing: string) => {
     // GIVEN
-    const asset = new s3_assets.Asset(stack, 'Asset', { path: __filename });
+    const asset = new Asset(stack, 'Asset', { path: __filename });
     const init = ec2.CloudFormationInit.fromElements(
       existing
         ? ec2.InitFile.fromExistingAsset('/etc/fun.js', asset)
@@ -292,7 +301,7 @@ describe('assets n buckets', () => {
     [''],
   ])('InitSource.from%sAsset', (existing: string) => {
     // GIVEN
-    const asset = new s3_assets.Asset(stack, 'Asset', { path: path.join(__dirname, 'asset-fixture') });
+    const asset = new Asset(stack, 'Asset', { path: path.join(__dirname, 'asset-fixture') });
     const init = ec2.CloudFormationInit.fromElements(
       existing
         ? ec2.InitSource.fromExistingAsset('/etc/fun', asset)
@@ -472,6 +481,64 @@ describe('assets n buckets', () => {
       },
     });
   });
+
+  test('fingerprint data changes on asset hash update', () => {
+    function calculateFingerprint(assetFilePath: string): string | undefined {
+      resetState(); // Needed so the same resources/assets/filenames can be used.
+      const init = ec2.CloudFormationInit.fromElements(
+        ec2.InitFile.fromAsset('/etc/myFile', assetFilePath),
+      );
+      init._attach(resource, linuxOptions());
+
+      return linuxUserData.render().split('\n').find(line => line.match(/# fingerprint:/));
+    }
+
+    // Setup initial asset file
+    const assetFileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cfn-init-test'));
+    const assetFilePath = path.join(assetFileDir, 'fingerprint-test');
+    fs.writeFileSync(assetFilePath, 'hello');
+
+    const fingerprintOne = calculateFingerprint(assetFilePath);
+    const fingerprintOneAgain = calculateFingerprint(assetFilePath);
+    // Consistent without changes.
+    expect(fingerprintOneAgain).toEqual(fingerprintOne);
+
+    // Change asset file content/hash
+    fs.writeFileSync(assetFilePath, ' world');
+
+    const fingerprintTwo = calculateFingerprint(assetFilePath);
+
+    expect(fingerprintTwo).not.toEqual(fingerprintOne);
+  });
+
+  test('fingerprint data changes on existing asset update, even for assets with unchanging URLs', () => {
+    function calculateFingerprint(assetFilePath: string): string | undefined {
+      resetStateWithSynthesizer(new SingletonLocationSythesizer());
+      const init = ec2.CloudFormationInit.fromElements(
+        ec2.InitFile.fromExistingAsset('/etc/myFile', new Asset(stack, 'FileAsset', { path: assetFilePath })),
+      );
+      init._attach(resource, linuxOptions());
+
+      return linuxUserData.render().split('\n').find(line => line.match(/# fingerprint:/));
+    }
+
+    // Setup initial asset file
+    const assetFileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cfn-init-test'));
+    const assetFilePath = path.join(assetFileDir, 'fingerprint-test');
+    fs.writeFileSync(assetFilePath, 'hello');
+
+    const fingerprintOne = calculateFingerprint(assetFilePath);
+    const fingerprintOneAgain = calculateFingerprint(assetFilePath);
+    // Consistent without changes.
+    expect(fingerprintOneAgain).toEqual(fingerprintOne);
+
+    // Change asset file content/hash
+    fs.writeFileSync(assetFilePath, ' world');
+
+    const fingerprintTwo = calculateFingerprint(assetFilePath);
+
+    expect(fingerprintTwo).not.toEqual(fingerprintOne);
+  });
 });
 
 function linuxOptions() {
@@ -511,4 +578,18 @@ function cmdArg(command: string, argument: string) {
 
 function escapeRegex(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+/** Creates file assets that have a hard-coded asset url, rather than the default based on asset hash */
+class SingletonLocationSythesizer extends DefaultStackSynthesizer {
+  public addFileAsset(_asset: FileAssetSource): FileAssetLocation {
+    const httpUrl = 'https://MyBucket.s3.amazonaws.com/MyAsset';
+    return {
+      bucketName: 'MyAssetBucket',
+      objectKey: 'MyAssetFile',
+      httpUrl,
+      s3ObjectUrl: httpUrl,
+      s3Url: httpUrl,
+    };
+  }
 }

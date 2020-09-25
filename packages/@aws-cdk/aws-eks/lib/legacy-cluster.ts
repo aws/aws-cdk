@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, Construct, Resource, Stack, Token, Tags } from '@aws-cdk/core';
+import { Annotations, CfnOutput, Construct, Resource, Stack, Token, Tags } from '@aws-cdk/core';
 import { ICluster, ClusterAttributes, KubernetesVersion, NodeType, DefaultCapacityType, EksOptimizedImage, CapacityOptions, MachineImageType, AutoScalingGroupOptions, CommonClusterOptions } from './cluster';
 import { clusterArnComponents } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -385,7 +385,7 @@ export class LegacyCluster extends Resource implements ICluster {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
-          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          Annotations.of(this).addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
 

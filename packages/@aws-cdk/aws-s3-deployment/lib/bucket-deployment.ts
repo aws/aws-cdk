@@ -8,7 +8,6 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { ISource, SourceConfig } from './source';
 
-const now = Date.now();
 const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
 const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
 
@@ -129,7 +128,7 @@ export interface BucketDeploymentProps {
    * @default - The objects in the distribution will not expire.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly expires?: Expires;
+  readonly expires?: cdk.Expiration;
   /**
    * System-defined x-amz-server-side-encryption metadata to be set on all objects in the deployment.
    * @default - Server side encryption is not used.
@@ -271,7 +270,7 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   const res: { [key: string]: string } = {};
 
   if (metadata.cacheControl) { res['cache-control'] = metadata.cacheControl.map(c => c.value).join(', '); }
-  if (metadata.expires) { res.expires = metadata.expires.value; }
+  if (metadata.expires) { res.expires = metadata.expires.date.toUTCString(); }
   if (metadata.contentDisposition) { res['content-disposition'] = metadata.contentDisposition; }
   if (metadata.contentEncoding) { res['content-encoding'] = metadata.contentEncoding; }
   if (metadata.contentLanguage) { res['content-language'] = metadata.contentLanguage; }
@@ -330,6 +329,8 @@ export enum StorageClass {
 /**
  * Used for HTTP expires header, which influences downstream caches. Does NOT influence deletion of the object.
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ *
+ * @deprecated use core.Expiration
  */
 export class Expires {
   /**
@@ -348,7 +349,7 @@ export class Expires {
    * Expire once the specified duration has passed since deployment time
    * @param t the duration to wait before expiring
    */
-  public static after(t: cdk.Duration) { return Expires.atDate(new Date(now + t.toMilliseconds())); }
+  public static after(t: cdk.Duration) { return Expires.atDate(new Date(Date.now() + t.toMilliseconds())); }
 
   public static fromString(s: string) { return new Expires(s); }
 

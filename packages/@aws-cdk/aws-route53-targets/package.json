@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-route53-targets",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS Route53 Alias Targets",
+  "description": "The CDK Construct Library for AWS Route53 Alias Targets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -65,7 +65,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.4.2",
     "pkglint": "0.0.0"
   },
   "dependencies": {

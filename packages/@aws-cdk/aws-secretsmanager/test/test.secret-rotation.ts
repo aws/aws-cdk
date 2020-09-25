@@ -14,6 +14,7 @@ export = {
       defaultPort: ec2.Port.tcp(3306),
       securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
     });
+    const excludeCharacters = ' ;+%{}' + '@\'"`/\\#'; // DMS and BASH problem chars
 
     // WHEN
     new secretsmanager.SecretRotation(stack, 'SecretRotation', {
@@ -21,6 +22,7 @@ export = {
       secret,
       target,
       vpc,
+      excludeCharacters: excludeCharacters,
     });
 
     // THEN
@@ -65,7 +67,7 @@ export = {
     expect(stack).to(haveResource('AWS::Serverless::Application', {
       Location: {
         ApplicationId: 'arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMySQLRotationSingleUser',
-        SemanticVersion: '1.1.3',
+        SemanticVersion: '1.1.60',
       },
       Parameters: {
         endpoint: {
@@ -84,6 +86,7 @@ export = {
           ],
         },
         functionName: 'SecretRotation',
+        excludeCharacters: excludeCharacters,
         vpcSecurityGroupIds: {
           'Fn::GetAtt': [
             'SecretRotationSecurityGroup9985012B',

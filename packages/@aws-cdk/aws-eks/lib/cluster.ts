@@ -6,17 +6,19 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
+import { Annotations, CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
+import { INSTANCE_TYPES } from './instance-types';
 import { KubernetesManifest } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
@@ -460,6 +462,11 @@ export class EndpointAccess {
    * @param cidr CIDR blocks.
    */
   public onlyFrom(...cidr: string[]) {
+    if (!this._config.privateAccess) {
+      // when private access is disabled, we can't restric public
+      // access since it will render the kubectl provider unusable.
+      throw new Error('Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
+    }
     return new EndpointAccess({
       ...this._config,
       // override CIDR
@@ -841,11 +848,6 @@ export class Cluster extends ClusterBase {
       description: 'EKS Control Plane Security Group',
     });
 
-    this.connections = new ec2.Connections({
-      securityGroups: [securityGroup],
-      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
-    });
-
     this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
 
     // Get subnetIds for all selected subnets
@@ -856,20 +858,23 @@ export class Cluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlLayer = props.kubectlLayer;
 
-    if (this.endpointAccess._config.privateAccess && this.vpc instanceof ec2.Vpc) {
-      // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
-      if (!this.vpc.dnsHostnamesEnabled || !this.vpc.dnsSupportEnabled) {
-        throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
-      }
+    const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+    const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
+    const publicAccessRestricted = !publicAccessDisabled
+        && this.endpointAccess._config.publicCidrs
+        && this.endpointAccess._config.publicCidrs.length !== 0;
+
+    // validate endpoint access configuration
+
+    if (privateSubents.length === 0 && publicAccessDisabled) {
+      // no private subnets and no public access at all, no good.
+      throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
     }
 
-    this.kubectlSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
-      vpc: this.vpc,
-      description: 'Comminication between KubectlProvider and EKS Control Plane',
-    });
-
-    // grant the kubectl provider access to the cluster control plane.
-    this.connections.allowFrom(this.kubectlSecurityGroup, this.connections.defaultPort!);
+    if (privateSubents.length === 0 && publicAccessRestricted) {
+      // no private subents and public access is restricted, no good.
+      throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
+    }
 
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
@@ -894,11 +899,24 @@ export class Cluster extends ClusterBase {
       vpc: this.vpc,
     });
 
-    this.adminRole = resource.adminRole;
+    if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
 
-    // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
-    // this ensures that.
-    this._clusterResource.node.addDependency(this.kubectlSecurityGroup, this.vpc);
+      // when private access is enabled and the vpc has private subnets, lets connect
+      // the provider to the vpc so that it will work even when restricting public access.
+
+      // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
+      if (this.vpc instanceof ec2.Vpc && !(this.vpc.dnsHostnamesEnabled && this.vpc.dnsSupportEnabled)) {
+        throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
+      }
+
+      this.kubectlPrivateSubnets = privateSubents;
+
+      // the vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
+      // this ensures that.
+      this._clusterResource.node.addDependency(this.vpc);
+    }
+
+    this.adminRole = resource.adminRole;
 
     // we use an SSM parameter as a barrier because it's free and fast.
     this._kubectlReadyBarrier = new CfnResource(this, 'KubectlReadyBarrier', {
@@ -920,17 +938,20 @@ export class Cluster extends ClusterBase {
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
+    const clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+
+    this.connections = new ec2.Connections({
+      securityGroups: [clusterSecurityGroup, securityGroup],
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
+    });
+
+    // we can use the cluster security group since its already attached to the cluster
+    // and configured to allow connections from itself.
+    this.kubectlSecurityGroup = clusterSecurityGroup;
+
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
     this.kubectlRole = this.adminRole;
-
-    // specify private subnets for kubectl only if we don't have public k8s endpoint access
-    if (!this.endpointAccess._config.publicAccess) {
-      this.kubectlPrivateSubnets = this.selectPrivateSubnets().slice(0, 16);
-      if (this.kubectlPrivateSubnets.length === 0) {
-        throw new Error('Vpc must contain private subnets to configure private endpoint access');
-      }
-    }
 
     this._kubectlResourceProvider = this.defineKubectlProvider();
 
@@ -1023,9 +1044,12 @@ export class Cluster extends ClusterBase {
       ...options,
       vpc: this.vpc,
       machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        new BottleRocketImage() :
+        new BottleRocketImage({
+          kubernetesVersion: this.version.version,
+        }) :
         new EksOptimizedImage({
           nodeType: nodeTypeForInstanceType(options.instanceType),
+          cpuArch: cpuArchForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
         }),
       updateType: options.updateType,
@@ -1311,7 +1335,7 @@ export class Cluster extends ClusterBase {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.7.3',
+        version: '0.9.5',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
@@ -1352,7 +1376,7 @@ export class Cluster extends ClusterBase {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
-          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          Annotations.of(this).addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
 
@@ -1561,13 +1585,17 @@ class ImportedCluster extends ClusterBase implements ICluster {
     this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
     this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
-    this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map(subnetid => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${subnetid}`, subnetid)) : undefined;
+    this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
       this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgid));
       i++;
+    }
+
+    if (props.clusterSecurityGroupId) {
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', props.clusterSecurityGroupId));
     }
   }
 
@@ -1619,6 +1647,13 @@ export interface EksOptimizedImageProps {
   readonly nodeType?: NodeType;
 
   /**
+   * What cpu architecture to retrieve the image for (arm64 or x86_64)
+   *
+   * @default CpuArch.X86_64
+   */
+  readonly cpuArch?: CpuArch;
+
+  /**
    * The Kubernetes version to use
    *
    * @default - The latest version
@@ -1631,8 +1666,8 @@ export interface EksOptimizedImageProps {
  */
 export class EksOptimizedImage implements ec2.IMachineImage {
   private readonly nodeType?: NodeType;
+  private readonly cpuArch?: CpuArch;
   private readonly kubernetesVersion?: string;
-
   private readonly amiParameterName: string;
 
   /**
@@ -1640,11 +1675,13 @@ export class EksOptimizedImage implements ec2.IMachineImage {
    */
   public constructor(props: EksOptimizedImageProps = {}) {
     this.nodeType = props.nodeType ?? NodeType.STANDARD;
+    this.cpuArch = props.cpuArch ?? CpuArch.X86_64;
     this.kubernetesVersion = props.kubernetesVersion ?? LATEST_KUBERNETES_VERSION;
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
-      + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
+      + ( this.nodeType === NodeType.STANDARD ? this.cpuArch === CpuArch.X86_64 ?
+        'amazon-linux-2/' : 'amazon-linux-2-arm64/' :'' )
       + ( this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '' )
       + (this.nodeType === NodeType.INFERENTIA ? 'amazon-linux-2-gpu/' : '')
       + 'recommended/image_id';
@@ -1659,38 +1696,6 @@ export class EksOptimizedImage implements ec2.IMachineImage {
       imageId: ami,
       osType: ec2.OperatingSystemType.LINUX,
       userData: ec2.UserData.forLinux(),
-    };
-  }
-}
-
-/**
- * Construct an Bottlerocket image from the latest AMI published in SSM
- */
-class BottleRocketImage implements ec2.IMachineImage {
-  private readonly kubernetesVersion?: string;
-
-  private readonly amiParameterName: string;
-
-  /**
-   * Constructs a new instance of the BottleRocketImage class.
-   */
-  public constructor() {
-    // only 1.15 is currently available
-    this.kubernetesVersion = '1.15';
-
-    // set the SSM parameter name
-    this.amiParameterName = `/aws/service/bottlerocket/aws-k8s-${this.kubernetesVersion}/x86_64/latest/image_id`;
-  }
-
-  /**
-   * Return the correct image
-   */
-  public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
-    return {
-      imageId: ami,
-      osType: ec2.OperatingSystemType.LINUX,
-      userData: ec2.UserData.custom(''),
     };
   }
 }
@@ -1716,6 +1721,21 @@ export enum NodeType {
    * Inferentia instances
    */
   INFERENTIA = 'INFERENTIA',
+}
+
+/**
+ * CPU architecture
+ */
+export enum CpuArch {
+  /**
+   * arm64 CPU type
+   */
+  ARM_64 = 'arm64',
+
+  /**
+   * x86_64 CPU type
+   */
+  X86_64 = 'x86_64',
 }
 
 /**
@@ -1761,12 +1781,15 @@ export enum MachineImageType {
   BOTTLEROCKET
 }
 
-const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
-const INFERENTIA_INSTANCETYPES = ['inf1'];
-
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
-  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
-    INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
+  return INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
+    INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
       NodeType.STANDARD;
+}
+
+function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
+  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
+    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
+      CpuArch.X86_64;
 }
 
