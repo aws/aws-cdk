@@ -145,6 +145,9 @@ export class User extends Resource implements IIdentity, IUser {
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
       public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(arn).policyFragment;
       private defaultPolicy?: Policy;
+      private readonly groups = new Array<any>();
+      private readonly managedPolicies = new Array<IManagedPolicy>();
+      private readonly attachedPolicies = new AttachedPolicies();
 
       public addToPolicy(statement: PolicyStatement): boolean {
         return this.addToPrincipalPolicy(statement).statementAdded;
@@ -159,16 +162,18 @@ export class User extends Resource implements IIdentity, IUser {
         return { statementAdded: true, policyDependable: this.defaultPolicy };
       }
 
-      public addToGroup(_group: IGroup): void {
-        throw new Error('Cannot add imported User to Group');
+      public addToGroup(group: IGroup): void {
+        this.groups.push(group.groupName);
       }
 
-      public attachInlinePolicy(_policy: Policy): void {
-        throw new Error('Cannot add inline policy to imported User');
+      public attachInlinePolicy(policy: Policy): void {
+        this.attachedPolicies.attach(policy);
+        policy.attachToUser(this);
       }
 
-      public addManagedPolicy(_policy: IManagedPolicy): void {
-        throw new Error('Cannot add managed policy to imported User');
+      public addManagedPolicy(policy: IManagedPolicy): void {
+        if (this.managedPolicies.find(mp => mp === policy)) { return; }
+        this.managedPolicies.push(policy);
       }
     }
 
