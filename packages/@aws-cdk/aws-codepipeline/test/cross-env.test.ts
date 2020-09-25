@@ -49,7 +49,7 @@ describe('crossAccountKeys=false', () => {
   });
 
   describe('prevents adding a cross-account action', () => {
-    const expectedError = 'Pipeline must be created with \'crossAccountKeys: true\' to add cross-account action';
+    const expectedError = 'crossAccountKeys: true';
 
     let stage: codepipeline.IStage;
     beforeEach(() => {

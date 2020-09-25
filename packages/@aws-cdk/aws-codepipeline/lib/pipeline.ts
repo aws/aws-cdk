@@ -4,7 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
   App, BootstraplessSynthesizer, Construct, DefaultStackSynthesizer,
-  IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token, TokenComparison,
+  IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, ResourceEnvironment, Stack, Token, TokenComparison,
 } from '@aws-cdk/core';
 import { ActionCategory, IAction, IPipeline, IStage } from './action';
 import { CfnPipeline } from './codepipeline.generated';
@@ -434,22 +434,18 @@ export class Pipeline extends PipelineBase {
   }
 
   private ensureReplicationResourcesExistFor(action: IAction): CrossRegionInfo {
-    const actionEnv = new RichAction(action).env;
+    const region = new RichAction(action).env.region;
 
-    // Whether the action seems to care about its account/region (or is happy
-    // to inherit from the pipeline)
-    const hasRegion = !Token.isUnresolved(actionEnv.region);
+    const anyRegion = Token.isUnresolved(region);
 
-    // if actionRegion is undefined or the same as the pipeline region,
-    // it means the action is in the same region as the pipeline - so, just
-    // return the artifactBucket
-    if (!hasRegion || sameEnvDimension(this.env.region, actionEnv.region)) {
+    if (anyRegion || sameEnvDimension(this.env.region, region)) {
       return {
         artifactBucket: this.artifactBucket,
       };
     }
-    // We're in a cross-region scenario, require the pipeline to have a known region.
-    // (This implicitly requires the action to have a known region as well)
+
+    // The action has a region and it's not the pipeline's, require the pipeline
+    // to have a known region as well.
     this.requireRegion();
 
     // source actions have to be in the same region as the pipeline
@@ -459,7 +455,7 @@ export class Pipeline extends PipelineBase {
 
     // check whether we already have a bucket in that region,
     // either passed from the outside or previously created
-    const crossRegionSupport = this.obtainCrossRegionSupportFor(action, actionEnv.region);
+    const crossRegionSupport = this.obtainCrossRegionSupportFor(action, region);
 
     // the stack containing the replication bucket must be deployed before the pipeline
     Stack.of(this).addDependency(crossRegionSupport.stack);
@@ -468,7 +464,7 @@ export class Pipeline extends PipelineBase {
 
     return {
       artifactBucket: crossRegionSupport.replicationBucket,
-      region: actionEnv.region,
+      region,
     };
   }
 
@@ -496,17 +492,13 @@ export class Pipeline extends PipelineBase {
    * for imported ones).
    */
   private scopeForCrossRegionSupportConstruct(action: IAction): Stack | undefined {
-    // The resource this action is targeting (if any). Might be owned, might be imported.
     const actionResource = action.actionProperties.resource;
     if (!actionResource) { return undefined; }
 
-    const actionResourceStack = Stack.of(actionResource);
+    const stack = Stack.of(actionResource);
+    const stackEnv = { region: stack.region, account: stack.account };
 
-    const stackHasCorrectEnvironment =
-      sameEnvDimension(actionResource.env.region, actionResourceStack.region)
-      && sameEnvDimension(actionResource.env.account, actionResourceStack.account);
-
-    return stackHasCorrectEnvironment ? actionResourceStack : undefined;
+    return sameEnv(actionResource.env, stackEnv) ? stack : undefined;
   }
 
   private createSupportResourcesForRegion(otherStack: Stack | undefined, actionRegion: string):
@@ -615,15 +607,6 @@ export class Pipeline extends PipelineBase {
     const pipelineStack = Stack.of(this);
     const actionEnv = new RichAction(action).env;
 
-    // Do a check on whether the cross-account acccess is possible given the
-    // current pipeline configuration. This has bearing on whether
-    // `artifactBucket.grantRead(action.role)` (which is going to occur down the
-    // line) can even work.
-    const hasAccount = !Token.isUnresolved(actionEnv.account);
-    if (hasAccount && !sameEnvDimension(this.env.account, actionEnv.account) && !this.crossAccountKeys) {
-      throw new Error(`Pipeline must be created with 'crossAccountKeys: true' to add cross-account action '${action.actionProperties.actionName}'. Pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(actionEnv.account)}'`);
-    }
-
     // if a Role has been passed explicitly, always use it
     // (even if the backing resource is from a different account -
     // this is how the user can override our default support logic)
@@ -657,11 +640,13 @@ export class Pipeline extends PipelineBase {
     }
 
     // if we have a cross-account action, the pipeline's bucket must have a KMS key
+    // (otherwise we can't configure cross-account trust policies)
     if (!this.artifactBucket.encryptionKey) {
-      throw new Error('The Pipeline is being used in a cross-account manner, ' +
-        'but its artifact bucket does not have a KMS key defined. ' +
-        'A KMS key is required for a cross-account Pipeline. ' +
-        'Make sure to pass a Bucket with a Key when creating the Pipeline');
+      throw new Error([
+        `Artifact Bucket must have a KMS Key to add cross-account action '${action.actionProperties.actionName}' `,
+        `(pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(actionEnv.account)}').`,
+        'Create Pipeline with \'crossAccountKeys: true\' (or pass an existing Bucket with a key)',
+      ].join(''));
     }
 
     // generate a role in the other stack, that the Pipeline will assume for executing this action
@@ -1017,4 +1002,12 @@ function sameEnvDimension(a: string, b: string) {
  */
 function renderEnvDimension(s: string) {
   return Token.isUnresolved(s) ? '(current)' : s;
+}
+
+/**
+ * Whether the two envs represent the same environment
+ */
+function sameEnv(env1: ResourceEnvironment, env2: ResourceEnvironment) {
+  return sameEnvDimension(env1.region, env2.region)
+    && sameEnvDimension(env1.account, env2.account);
 }
