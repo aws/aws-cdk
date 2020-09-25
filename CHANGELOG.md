@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **eks:** `KubernetesPatch` and `FargateCluster` creates a circular dependency and breaks deployment ([#10536](https://github.com/aws/aws-cdk/issues/10536)) ([f0f8a63](https://github.com/aws/aws-cdk/commit/f0f8a63c98e8a7ff5bedcf271a78fcb417988378)), closes [40aws-cdk/aws-eks/lib/k8s-manifest.ts#L58](https://github.com/40aws-cdk/aws-eks/lib/k8s-manifest.ts/issues/L58) [40aws-cdk/aws-eks/lib/k8s-object-value.ts#L64](https://github.com/40aws-cdk/aws-eks/lib/k8s-object-value.ts/issues/L64) [40aws-cdk/aws-eks/lib/k8s-patch.ts#L74](https://github.com/40aws-cdk/aws-eks/lib/k8s-patch.ts/issues/L74)
+* **eks:** `KubernetesPatch` and `FargateCluster` creates a circular dependency and breaks deployment ([#10536](https://github.com/aws/aws-cdk/issues/10536)) ([f0f8a63](https://github.com/aws/aws-cdk/commit/f0f8a63c98e8a7ff5bedcf271a78fcb417988378)), closes [#10528](https://github.com/aws/aws-cdk/issues/10528)
 
 ## [1.64.0](https://github.com/aws/aws-cdk/compare/v1.63.0...v1.64.0) (2020-09-22)
 
