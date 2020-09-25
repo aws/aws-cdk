@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.64.1](https://github.com/aws/aws-cdk/compare/v1.64.0...v1.64.1) (2020-09-25)
+
+
+### Bug Fixes
+
+* **eks:** `KubernetesPatch` and `FargateCluster` creates a circular dependency and breaks deployment ([#10536](https://github.com/aws/aws-cdk/issues/10536)) ([f0f8a63](https://github.com/aws/aws-cdk/commit/f0f8a63c98e8a7ff5bedcf271a78fcb417988378)), closes [#10528](https://github.com/aws/aws-cdk/issues/10528)
+
 ## [1.64.0](https://github.com/aws/aws-cdk/compare/v1.63.0...v1.64.0) (2020-09-22)
 
 
