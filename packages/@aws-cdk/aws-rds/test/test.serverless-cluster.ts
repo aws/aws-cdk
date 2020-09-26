@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AuroraPostgresEngineVersion, ServerlessDatabaseCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit } from '../../lib';
+import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit } from '../lib';
 
 export = {
   'can create a Serverless Cluster with Aurora Postgres database engine'(test: Test) {
@@ -12,7 +12,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new ServerlessDatabaseCluster(stack, 'ServerlessDatabase', {
+    new ServerlessCluster(stack, 'ServerlessDatabase', {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       masterUser: {
         username: 'admin',
@@ -57,7 +57,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new ServerlessDatabaseCluster(stack, 'ServerlessDatabase', {
+    new ServerlessCluster(stack, 'ServerlessDatabase', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin',
@@ -103,7 +103,7 @@ export = {
     const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'SecurityGroupId12345');
 
     // WHEN
-    new ServerlessDatabaseCluster(stack, 'Database', {
+    new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       masterUser: {
         username: 'admin',
@@ -133,7 +133,7 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
-    new ServerlessDatabaseCluster(stack, 'Cluster', {
+    new ServerlessCluster(stack, 'Cluster', {
       masterUser: { username: 'admin' },
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
@@ -154,7 +154,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new ServerlessDatabaseCluster(stack, 'Database', {
+    new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin',
@@ -208,7 +208,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new ServerlessDatabaseCluster(stack, 'Database', {
+    new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin',
@@ -236,7 +236,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new ServerlessDatabaseCluster(stack, 'Database', {
+    new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.auroraPostgres({
         version: AuroraPostgresEngineVersion.VER_10_7,
       }),
@@ -262,7 +262,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    const cluster = new ServerlessDatabaseCluster(stack, 'Database', {
+    const cluster = new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
@@ -283,7 +283,7 @@ export = {
     // GIVEN
     const stack = testStack();
 
-    const cluster = ServerlessDatabaseCluster.fromServerlessDatabaseClusterAttributes(stack, 'Database', {
+    const cluster = ServerlessCluster.fromServerlessClusterAttributes(stack, 'Database', {
       clusterEndpointAddress: 'addr',
       clusterIdentifier: 'identifier',
       port: 3306,
@@ -307,7 +307,7 @@ export = {
   'can import a serverless cluster with minimal attributes'(test: Test) {
     const stack = testStack();
 
-    const cluster = ServerlessDatabaseCluster.fromServerlessDatabaseClusterAttributes(stack, 'Database', {
+    const cluster = ServerlessCluster.fromServerlessClusterAttributes(stack, 'Database', {
       clusterIdentifier: 'identifier',
     });
 
@@ -319,7 +319,7 @@ export = {
   'minimal imported cluster throws on accessing attributes for missing parameters'(test: Test) {
     const stack = testStack();
 
-    const cluster = ServerlessDatabaseCluster.fromServerlessDatabaseClusterAttributes(stack, 'Database', {
+    const cluster = ServerlessCluster.fromServerlessClusterAttributes(stack, 'Database', {
       clusterIdentifier: 'identifier',
     });
 
@@ -332,7 +332,7 @@ export = {
   'imported cluster can access properties if attributes are provided'(test: Test) {
     const stack = testStack();
 
-    const cluster = ServerlessDatabaseCluster.fromServerlessDatabaseClusterAttributes(stack, 'Database', {
+    const cluster = ServerlessCluster.fromServerlessClusterAttributes(stack, 'Database', {
       clusterEndpointAddress: 'addr',
       clusterIdentifier: 'identifier',
       port: 3306,
@@ -354,7 +354,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    const cluster = new ServerlessDatabaseCluster(stack, 'Database', {
+    const cluster = new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin',
@@ -373,7 +373,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ServerlessDatabaseCluster(stack, 'Database', {
+    const cluster = new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: { username: 'admin' },
       vpc,
@@ -394,7 +394,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new ServerlessDatabaseCluster(stack, 'Database', {
+    new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin',
@@ -418,7 +418,7 @@ export = {
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
 
     // WHEN
-    new ServerlessDatabaseCluster(stack, 'Database', {
+    new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin',
@@ -443,7 +443,7 @@ export = {
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
 
     // WHEN
-    new ServerlessDatabaseCluster(stack, 'Database', {
+    new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin',
@@ -477,7 +477,7 @@ export = {
 
     // WHEN
     test.throws(() =>
-      new ServerlessDatabaseCluster(stack, 'Database', {
+      new ServerlessCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         masterUser: {
           username: 'admin',

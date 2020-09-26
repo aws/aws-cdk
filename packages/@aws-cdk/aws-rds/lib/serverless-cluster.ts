@@ -1,20 +1,18 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Resource, Construct, Duration, Token, Annotations, RemovalPolicy, CfnDeletionPolicy } from '@aws-cdk/core';
-import { IClusterEngine } from '../cluster-engine';
-import { IServerlessDatabaseCluster, ServerlessDatabaseClusterAttributes } from '../cluster-ref';
-import { DatabaseSecret } from '../database-secret';
-import { Endpoint } from '../endpoint';
-import { IParameterGroup } from '../parameter-group';
-import { Login, RotationMultiUserOptions } from '../props';
-import { CfnDBCluster, CfnDBSubnetGroup } from '../rds.generated';
+import { Resource, Construct, Duration, Token, Annotations, RemovalPolicy, CfnDeletionPolicy, IResource } from '@aws-cdk/core';
+import { IClusterEngine } from './cluster-engine';
+import { DatabaseSecret } from './database-secret';
+import { Endpoint } from './endpoint';
+import { IParameterGroup } from './parameter-group';
+import { Login, RotationMultiUserOptions } from './props';
+import { CfnDBCluster, CfnDBSubnetGroup } from './rds.generated';
 
 /**
- * Properties to configure a Serverless Cluster
+ *  Properties to configure an Aurora Serverless Cluster
  */
-export interface ServerlessClusterBaseProps {
-
+export interface ServerlessClusterProps {
   /**
    * What kind of database to start
    */
@@ -50,7 +48,7 @@ export interface ServerlessClusterBaseProps {
   /**
    * Indicates whether the DB cluster should have deletion protection enabled.
    *
-   * @default false
+   * @default - true if removalPolicy is RETAIN, false otherwise
    */
   readonly deletionProtection?: boolean;
 
@@ -64,7 +62,6 @@ export interface ServerlessClusterBaseProps {
   /**
    * The VPC that this Aurora Serverless cluster has been created in.
    *
-   * @default - VPC is created with 2 availability zones (AZs)
    */
   readonly vpc: ec2.IVpc;
 
@@ -99,9 +96,8 @@ export interface ServerlessClusterBaseProps {
 
   /**
    * The KMS key for storage encryption.
-   * If specified, {@link storageEncrypted} will be set to `true`.
    *
-   * @default - if storageEncrypted is true then the default master key, no key otherwise
+   * @default - the default master key will be used for storage encryption
    */
   readonly storageEncryptionKey?: kms.IKey;
 
@@ -111,6 +107,66 @@ export interface ServerlessClusterBaseProps {
    * @default - no parameter group.
    */
   readonly parameterGroup?: IParameterGroup;
+}
+
+/**
+ * Create a clustered database with a given number of instances.
+ */
+export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+  /**
+   * Identifier of the cluster
+   */
+  readonly clusterIdentifier: string;
+
+  /**
+   * The endpoint to use for read/write operations
+   * @attribute EndpointAddress,EndpointPort
+   */
+  readonly clusterEndpoint: Endpoint;
+
+  /**
+   * Endpoint to use for load-balanced read-only operations.
+   * @attribute ReadEndpointAddress
+   */
+  readonly clusterReadEndpoint: Endpoint;
+}
+
+/**
+ * Properties that describe an existing cluster instance
+ */
+export interface ServerlessClusterAttributes {
+  /**
+   * Identifier for the cluster
+   */
+  readonly clusterIdentifier: string;
+
+  /**
+   * The database port
+   *
+   * @default - none
+   */
+  readonly port?: number;
+
+  /**
+   * The security groups of the database cluster
+   *
+   * @default - no security groups
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Cluster endpoint address
+   *
+   * @default - no endpoint address
+   */
+  readonly clusterEndpointAddress?: string;
+
+  /**
+   * Reader endpoint address
+   *
+   * @default - no reader address
+   */
+  readonly readerEndpointAddress?: string;
 }
 
 /**
@@ -173,12 +229,6 @@ export enum AuroraCapacityUnit {
 }
 
 /**
- * Properties to configure an Aurora Serverless Cluster
- */
-export interface ServerlessDatabaseClusterProps extends ServerlessClusterBaseProps {
-}
-
-/**
  * Options for configuring scaling on an Aurora Serverless cluster
  */
 export interface ServerlessScalingOptions {
@@ -214,7 +264,7 @@ export interface ServerlessScalingOptions {
 /**
  * New or imported Serverless Cluster
  */
-abstract class ServerlessClusterBase extends Resource implements IServerlessDatabaseCluster {
+abstract class ServerlessClusterBase extends Resource implements IServerlessCluster {
   /**
    * Identifier of the cluster
    */
@@ -251,15 +301,15 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessData
  *
  * @resource AWS::RDS::DBCluster
  */
-export class ServerlessDatabaseCluster extends ServerlessClusterBase {
+export class ServerlessCluster extends ServerlessClusterBase {
 
   /**
    * Import an existing DatabaseCluster from properties
    */
-  public static fromServerlessDatabaseClusterAttributes(scope: Construct, id: string,
-    attrs: ServerlessDatabaseClusterAttributes): IServerlessDatabaseCluster {
+  public static fromServerlessClusterAttributes(scope: Construct, id: string,
+    attrs: ServerlessClusterAttributes): IServerlessCluster {
 
-    return new ImportedServerlessDatabaseCluster(scope, id, attrs);
+    return new ImportedServerlessCluster(scope, id, attrs);
   }
 
   public readonly clusterIdentifier: string;
@@ -280,7 +330,7 @@ export class ServerlessDatabaseCluster extends ServerlessClusterBase {
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  constructor(scope:Construct, id: string, props: ServerlessDatabaseClusterProps) {
+  constructor(scope:Construct, id: string, props: ServerlessClusterProps) {
     super(scope, id);
 
     this.vpc = props.vpc ?? new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
@@ -456,14 +506,14 @@ export class ServerlessDatabaseCluster extends ServerlessClusterBase {
 /**
  * Represents an imported database cluster.
  */
-class ImportedServerlessDatabaseCluster extends ServerlessClusterBase implements IServerlessDatabaseCluster {
+class ImportedServerlessCluster extends ServerlessClusterBase implements IServerlessCluster {
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
 
   private readonly _clusterEndpoint?: Endpoint;
   private readonly _clusterReadEndpoint?: Endpoint;
 
-  constructor(scope: Construct, id: string, attrs: ServerlessDatabaseClusterAttributes) {
+  constructor(scope: Construct, id: string, attrs: ServerlessClusterAttributes) {
     super(scope, id);
 
     this.clusterIdentifier = attrs.clusterIdentifier;

@@ -419,6 +419,7 @@ Aurora Serverless Clusters do not support the following features:
 * IAM database authentication
 * Restoring a snapshot from MySQL DB instance
 * Performance Insights
+* RDS Proxy
 
 Read more about the [limitations of Aurora Serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html#aurora-serverless.limitations)
 
