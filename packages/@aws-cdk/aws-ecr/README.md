@@ -37,6 +37,13 @@ repository.onImageScanCompleted('ImageScanComplete')
   .addTarget(...)
 ```
 
+### Image tag immutability
+
+You can set tag immutability on images in our repository using the `imageTagMutability` construct prop.
+
+```ts
+new ecr.Repository(stack, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
+```
 
 ### Automatically clean up repositories
 
