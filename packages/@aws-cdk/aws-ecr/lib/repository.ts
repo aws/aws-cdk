@@ -427,7 +427,6 @@ export class Repository extends RepositoryBase {
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: Lazy.anyValue({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.anyValue({ produce: () => this.renderLifecyclePolicy() }),
-      imageTagMutability: props.imageTagMutability || TagMutability.MUTABLE,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -445,8 +444,10 @@ export class Repository extends RepositoryBase {
     });
 
     // repository image tag mutability
-
-    this.imageTagMutability = props.imageTagMutability || TagMutability.MUTABLE;
+    if (props.imageTagMutability !== undefined) {
+      this.imageTagMutability = props.imageTagMutability;
+      resource.imageTagMutability = props.imageTagMutability;
+    }
 
     // image scanOnPush
     if (props.imageScanOnPush) {

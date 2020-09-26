@@ -19,9 +19,6 @@ export = {
       Resources: {
         Repo02AC86CF: {
           Type: 'AWS::ECR::Repository',
-          Properties: {
-            ImageTagMutability: 'MUTABLE',
-          },
           DeletionPolicy: 'Retain',
           UpdateReplacePolicy: 'Retain',
         },
@@ -71,19 +68,6 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       ImageTagMutability: 'IMMUTABLE',
-    }));
-
-    test.done();
-  },
-
-  'default tag mutability is set to MUTABLE'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    new ecr.Repository(stack, 'Repo');
-
-    // THEN
-    expect(stack).to(haveResource('AWS::ECR::Repository', {
-      ImageTagMutability: 'MUTABLE',
     }));
 
     test.done();
