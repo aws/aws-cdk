@@ -285,6 +285,7 @@ export class CfnParser {
     cfnOptions.deletionPolicy = this.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
     cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
     cfnOptions.version = this.parseValue(resourceAttributes.Version);
+    cfnOptions.description = this.parseValue(resourceAttributes.Description);
     cfnOptions.metadata = this.parseValue(resourceAttributes.Metadata);
 
     // handle Condition
