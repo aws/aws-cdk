@@ -19,6 +19,9 @@ export = {
       Resources: {
         Repo02AC86CF: {
           Type: 'AWS::ECR::Repository',
+          Properties: {
+            ImageTagMutability: 'MUTABLE',
+          },
           DeletionPolicy: 'Retain',
           UpdateReplacePolicy: 'Retain',
         },
@@ -54,6 +57,33 @@ export = {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
       },
+    }));
+
+    test.done();
+  },
+
+
+  'image tag mutability can be set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    new ecr.Repository(stack, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      ImageTagMutability: 'IMMUTABLE',
+    }));
+
+    test.done();
+  },
+
+  'default tag mutability is set to MUTABLE'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    new ecr.Repository(stack, 'Repo');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      ImageTagMutability: 'MUTABLE',
     }));
 
     test.done();

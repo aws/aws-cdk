@@ -5,7 +5,8 @@
       "Properties": {
         "LifecyclePolicy": {
           "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
-        }
+        },
+        "ImageTagMutability": "MUTABLE"
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"

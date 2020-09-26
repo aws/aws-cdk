@@ -2,6 +2,9 @@
   "Resources": {
     "Repo02AC86CF": {
       "Type": "AWS::ECR::Repository",
+      "Properties": {
+          "ImageTagMutability": "MUTABLE"
+      },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },

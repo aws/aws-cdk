@@ -324,6 +324,13 @@ export interface RepositoryProps {
    *  @default false
    */
   readonly imageScanOnPush?: boolean;
+
+  /**
+   * The tag mutability setting for the repository. If this parameter is omitted, the default setting of MUTABLE will be used which will allow image tags to be overwritten.
+   *
+   *  @default TagMutability.MUTABLE
+   */
+  readonly imageTagMutability?: TagMutability;
 }
 
 export interface RepositoryAttributes {
@@ -407,6 +414,7 @@ export class Repository extends RepositoryBase {
   public readonly repositoryArn: string;
   private readonly lifecycleRules = new Array<LifecycleRule>();
   private readonly registryId?: string;
+  public readonly imageTagMutability?: string
   private policyDocument?: iam.PolicyDocument;
 
   constructor(scope: Construct, id: string, props: RepositoryProps = {}) {
@@ -419,6 +427,7 @@ export class Repository extends RepositoryBase {
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: Lazy.anyValue({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.anyValue({ produce: () => this.renderLifecyclePolicy() }),
+      imageTagMutability: props.imageTagMutability || TagMutability.MUTABLE,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -434,6 +443,10 @@ export class Repository extends RepositoryBase {
       resource: 'repository',
       resourceName: this.physicalName,
     });
+
+    // repository image tag mutability
+
+    this.imageTagMutability = props.imageTagMutability || TagMutability.MUTABLE;
 
     // image scanOnPush
     if (props.imageScanOnPush) {
@@ -606,4 +619,20 @@ const enum CountType {
    * Set an age limit on the images in your repository
    */
   SINCE_IMAGE_PUSHED = 'sinceImagePushed',
+}
+
+/**
+ * The tag mutability setting for your repository.
+ */
+export enum TagMutability {
+  /**
+   * allow image tags to be overwritten.
+   */
+  MUTABLE = 'MUTABLE',
+
+  /**
+   * all image tags within the repository will be immutable which will prevent them from being overwritten.
+   */
+  IMMUTABLE = 'IMMUTABLE',
+
 }
