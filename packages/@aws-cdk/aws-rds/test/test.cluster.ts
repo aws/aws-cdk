@@ -373,6 +373,69 @@ export = {
     },
   },
 
+  'cluster with disable automatic upgrade of minor version'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        autoMinorVersionUpgrade: false,
+        vpc,
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      AutoMinorVersionUpgrade: false,
+    }));
+
+    test.done();
+  },
+
+  'cluster with allow upgrade of major version'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        allowMajorVersionUpgrade: true,
+        vpc,
+      },
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      AllowMajorVersionUpgrade: true,
+    }));
+
+    test.done();
+  },
+
+  'cluster with disallow remove backups'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        deleteAutomatedBackups: false,
+        vpc,
+      },
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      DeleteAutomatedBackups: false,
+    }));
+
+    test.done();
+  },
+
   'create a cluster using a specific version of MySQL'(test: Test) {
     // GIVEN
     const stack = testStack();
