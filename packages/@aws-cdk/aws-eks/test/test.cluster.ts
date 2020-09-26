@@ -595,6 +595,29 @@ export = {
     test.done();
   },
 
+  'import cluster with new kubectl private subnets'(test: Test) {
+
+    const { stack, vpc } = testFixture();
+
+    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster',
+      kubectlPrivateSubnetIds: vpc.privateSubnets.map(s => s.subnetId),
+    });
+
+    test.deepEqual(cluster.kubectlPrivateSubnets?.map(s => stack.resolve(s.subnetId)), [
+      { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+      { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+    ]);
+
+    test.deepEqual(cluster.kubectlPrivateSubnets?.map(s => s.node.id), [
+      'KubectlSubnet0',
+      'KubectlSubnet1',
+    ]);
+
+    test.done();
+
+  },
+
   'exercise export/import'(test: Test) {
     // GIVEN
     const { stack: stack1, vpc, app } = testFixture();

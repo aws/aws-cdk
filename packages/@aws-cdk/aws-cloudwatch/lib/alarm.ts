@@ -69,7 +69,7 @@ const OPERATOR_SYMBOLS: {[key: string]: string} = {
   GreaterThanOrEqualToThreshold: '>=',
   GreaterThanThreshold: '>',
   LessThanThreshold: '<',
-  LessThanOrEqualToThreshold: '>=',
+  LessThanOrEqualToThreshold: '<=',
 };
 
 /**
