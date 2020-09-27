@@ -20,9 +20,9 @@ In addition, the library also supports defining Kubernetes resource manifests wi
 * [Overview](#overview)
 * [Provisioning clusters](#provisioning-clusters)
     * [Capacity](#capacity)
-      * [Managed Node Groups](#managed-node-groups)
-      * [Fargate Profiles](#fargate-profiles)
-      * [Self Managed Auto Scaling Groups](#self-managed-auto-scaling-groups)
+      * [Managed Node Groups](#1-managed-node-groups)
+      * [Fargate Profiles](#2-fargate-profiles)
+      * [Self Managed Auto Scaling Groups](#3-self-managed-auto-scaling-groups)
     * [VPC Support](#vpc-support)
     * [Endpoint Access](#endpoint-access)
     * [Permissions](#permissions)
@@ -85,6 +85,8 @@ new eks.FargateCluster(this, 'HelloEKS', {
 });
 ```
 
+> **NOTE: You can only create 1 cluster per stack.** If you have a use-case for multiple clusters per stack, or would like to understand more about this limitation, see https://github.com/aws/aws-cdk/issues/10073.
+
 There are various ways to customize to cluster. The first important concept to understand is **capacity**.
 
 ### Capacity
@@ -98,7 +100,9 @@ With Amazon EKS managed node groups, you don’t need to separately provision or
 
 > For more details visit [Amazon EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html).
 
-Managed Node Groups are the recommended way to allocate cluster capacity. By default, this library will allocate a managed node group with 2 **m5.large** instances (this instance type suits most common use-cases, and is good value for money).
+**Managed Node Groups are the recommended way to allocate cluster capacity.**
+
+By default, this library will allocate a managed node group with 2 *m5.large* instances (this instance type suits most common use-cases, and is good value for money).
 
 At cluster instatiation time, you can customize the number of instances and their type:
 
@@ -110,7 +114,7 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
-Additional customizations are available post instatiation. To apply them, set the default capacity to 0, and use the `cluster.addNodegroup` method:
+Additional customizations are available post instatiation. To apply them, set the default capacity to 0, and use the `cluster.addNodegroupCapacity` method:
 
 ```typescript
 const cluster = new eks.Cluster(this, 'HelloEKS', {
@@ -127,7 +131,7 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
-> For a complete API reference visit [`NodegroupOptions`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.NodegroupOptions.html)
+> For a complete API reference visit [`NodegroupOptions`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.NodegroupOptions.html).
 
 You can also directly use the `eks.Nodegroup` construct to create node groups under different scopes:
 
@@ -138,7 +142,7 @@ new eks.Nodegroup(scope, 'NodeGroup', {
 });
 ```
 
-> For a complete API reference visit [`NodegroupProps`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.NodegroupProps.html)
+> For a complete API reference visit [`NodegroupProps`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.NodegroupProps.html).
 
 ##### Launch Template Support
 
@@ -167,7 +171,7 @@ cluster.addNodegroupCapacity('extra-ng', {
 });
 ```
 
-> For more details visit [Using a custom AMI](https://docs.aws.amazon.com/en_ca/eks/latest/userguide/launch-templates.html).
+> For more details visit [Launch Template Support](https://docs.aws.amazon.com/en_ca/eks/latest/userguide/launch-templates.html).
 
 #### 2) Fargate Profiles
 

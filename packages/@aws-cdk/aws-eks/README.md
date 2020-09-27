@@ -1,27 +1,5 @@
-## Amazon EKS Construct Library
-<!--BEGIN STABILITY BANNER-->
----
-
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they become stable. We will only make breaking changes to address unforeseen API issues. Therefore, these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes will be announced in release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
-
----
-<!--END STABILITY BANNER-->
-
-
-This construct library allows you to define [Amazon Elastic Container Service
-for Kubernetes (EKS)](https://aws.amazon.com/eks/) clusters programmatically.
-This library also supports programmatically defining Kubernetes resource
-manifests within EKS clusters.
-
 This example defines an Amazon EKS cluster with the following configuration:
 
-- Managed nodegroup with 2x **m5.large** instances (this instance type suits most common use-cases, and is good value for money)
 - Dedicated VPC with default configuration (see [ec2.Vpc](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-ec2-readme.html#vpc))
 - A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
@@ -46,8 +24,6 @@ cluster.addManifest('mypod', {
   }
 });
 ```
-
-> **NOTE: You can only create 1 cluster per stack.** If you have a use-case for multiple clusters per stack, > or would like to understand more about this limitation, see https://github.com/aws/aws-cdk/issues/10073.
 
 In order to interact with your cluster through `kubectl`, you can use the `aws
 eks update-kubeconfig` [AWS CLI command](https://docs.aws.amazon.com/cli/latest/reference/eks/update-kubeconfig.html)
@@ -88,20 +64,6 @@ pod/coredns-5cb4fb54c7-q222j   1/1     Running   0          23m
 pod/coredns-5cb4fb54c7-v9nxx   1/1     Running   0          23m
 ...
 ```
-
-### Endpoint Access
-
-You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html) by using the `endpointAccess` property:
-
-```typescript
-const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_16,
-  endpointAccess: eks.EndpointAccess.PRIVATE // No access outside of your VPC.
-});
-```
-
-The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, but worker node traffic as well as `kubectl` commands
-to the endpoint will stay within your VPC.
 
 ### Capacity
 
@@ -154,52 +116,6 @@ cluster.addAutoScalingGroupCapacity('frontend-nodes', {
   instanceType: new ec2.InstanceType('t2.medium'),
   minCapacity: 3,
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
-});
-```
-
-### Managed Node Groups
-
-Amazon EKS managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances)
-for Amazon EKS Kubernetes clusters. By default, `eks.Nodegroup` create a nodegroup with x2 `t3.medium` instances.
-
-```ts
-new eks.Nodegroup(stack, 'nodegroup', { cluster });
-```
-
-You can add customized node groups through `cluster.addNodegroup()`:
-
-```ts
-cluster.addNodegroup('nodegroup', {
-  instanceType: new ec2.InstanceType('m5.large'),
-  minSize: 4,
-});
-```
-
-#### Custom AMI and Launch Template support
-
-Specify the launch template for the nodegroup with your custom AMI. When using a custom AMI,
-Amazon EKS doesn't merge any user data. Rather, You are responsible for supplying the required
-bootstrap commands for nodes to join the cluster. In the following sample, `/ect/eks/bootstrap.sh` from the AMI will be used to bootstrap the node. See [Using a custom AMI](https://docs.aws.amazon.com/en_ca/eks/latest/userguide/launch-templates.html) for more details.
-
-```ts
-const userData = ec2.UserData.forLinux();
-userData.addCommands(
-  'set -o xtrace',
-  `/etc/eks/bootstrap.sh ${this.cluster.clusterName}`,
-);
-const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
-  launchTemplateData: {
-    // specify your custom AMI below
-    imageId,
-    instanceType: new ec2.InstanceType('t3.small').toString(),
-    userData: Fn.base64(userData.render()),
-  },
-});
-this.cluster.addNodegroup('extra-ng', {
-  launchTemplateSpec: {
-    id: lt.ref,
-    version: lt.attrDefaultVersionNumber,
-  },
 });
 ```
 
