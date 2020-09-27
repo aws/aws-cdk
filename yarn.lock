@@ -4481,9 +4481,10 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-"cdk8s@file:../../awslabs/cdk8s/packages/cdk8s/dist/js/cdk8s-0.28.0.jsii.tgz":
-  version "0.28.0"
-  resolved "file:../../awslabs/cdk8s/packages/cdk8s/dist/js/cdk8s-0.28.0.jsii.tgz#48102ed10a9367ba5e77fd687d3fd0dd27920ba5"
+cdk8s@^0.29.0:
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/cdk8s/-/cdk8s-0.29.0.tgz#3bf7861aef22c6401e5800a3c5b4d680f31d3eeb"
+  integrity sha512-MV/6qzdSqLjDRW1dEE2tCtgp4OxirqbagY04JOhW7z8rnveQA9p24iWXkupf4uebs3SmBuVVeDgupuH/MZZX8w==
   dependencies:
     follow-redirects "^1.11.0"
     json-stable-stringify "^1.0.1"
