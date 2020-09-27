@@ -91,12 +91,12 @@ There are various ways to customize to cluster. The first important concept to u
 
 Capacity is the amount and the type of worker nodes that are available to the cluster for deploying resources. Amazon EKS offers 3 ways of configuring capacity:
 
-#### Managed Node Groups
+#### 1) Managed Node Groups
 
 Amazon EKS managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) for Amazon EKS Kubernetes clusters.
 With Amazon EKS managed node groups, you don’t need to separately provision or register the Amazon EC2 instances that provide compute capacity to run your Kubernetes applications. You can create, update, or terminate nodes for your cluster with a single operation. Nodes run using the latest Amazon EKS optimized AMIs in your AWS account while node updates and terminations gracefully drain nodes to ensure that your applications stay available.
 
-> For more details: [Amazon EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html)
+> For more details visit [Amazon EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html).
 
 Managed Node Groups are the recommended way to allocate cluster capacity. By default, this library will allocate a managed node group with 2 **m5.large** instances (this instance type suits most common use-cases, and is good value for money).
 
@@ -110,11 +110,68 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
+Additional customizations are available post instatiation. To apply them, set the default capacity to 0, and use the `cluster.addNodegroup` method:
 
+```typescript
+const cluster = new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_17,
+  defaultCapacity: 0,
+});
 
-#### Fargate Profiles
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceType: new ec2.InstanceType('m5.large'),
+  minSize: 4,
+  diskSize: 100,
+  amiType: eks.NodegroupAmiType.AL2_X86_64_GPU,
+  ...
+});
+```
 
-#### Self Managed Auto Scaling Groups
+> For a complete API reference visit [`NodegroupOptions`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.NodegroupOptions.html)
+
+You can also directly use the `eks.Nodegroup` construct to create node groups under different scopes:
+
+```typescript
+new eks.Nodegroup(scope, 'NodeGroup', {
+  cluster: cluster,
+  ...
+});
+```
+
+> For a complete API reference visit [`NodegroupProps`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.NodegroupProps.html)
+
+##### Launch Template Support
+
+You can specify a launch template that the node group will use.. Note that when using a custom AMI, Amazon EKS doesn't merge any user data.
+Rather, You are responsible for supplying the required bootstrap commands for nodes to join the cluster.
+In the following example, `/ect/eks/bootstrap.sh` from the AMI will be used to bootstrap the node.
+
+```ts
+const userData = ec2.UserData.forLinux();
+userData.addCommands(
+  'set -o xtrace',
+  `/etc/eks/bootstrap.sh ${cluster.clusterName}`,
+);
+const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+  launchTemplateData: {
+    imageId: 'some-ami-id', // custom AMI
+    instanceType: new ec2.InstanceType('t3.small').toString(),
+    userData: Fn.base64(userData.render()),
+  },
+});
+cluster.addNodegroupCapacity('extra-ng', {
+  launchTemplateSpec: {
+    id: lt.ref,
+    version: lt.attrDefaultVersionNumber,
+  },
+});
+```
+
+> For more details visit [Using a custom AMI](https://docs.aws.amazon.com/en_ca/eks/latest/userguide/launch-templates.html).
+
+#### 2) Fargate Profiles
+
+#### 3) Self Managed Auto Scaling Groups
 
 
 
