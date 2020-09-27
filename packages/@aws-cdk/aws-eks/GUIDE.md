@@ -16,33 +16,24 @@
 This construct library allows you to define [Amazon Elastic Container Service for Kubernetes (EKS)](https://aws.amazon.com/eks/) clusters.
 In addition, the library also supports defining Kubernetes resource manifests within EKS clusters.
 
-1. [Overview](#overview)
-2. [Quick Start](#quick-start)
-3. [Provisioning clusters](#provisioning-clusters)
-
+* [Overview](#overview)
+* [Quick Start](#quick-start)
+* [Provisioning clusters](#provisioning-clusters)
     - [Capacity](#capacity)
-
       - [Managed Node Groups](#managed-node-groups)
       - [Fargate Profiles](#fargate-profiles)
       - [Self Managed Auto Scaling Groups](#self-managed-auto-scaling-groups)
-
     - [VPC Support](#vpc-support)
-
     - [Endpoint Access](#endpoint-access)
-
     - [Permissions](#permissions)
-
-4. [Using existing clusters](#using-existing-clusters)
-5. [Managing Objects](#managing-objects)
-
+* [Using existing clusters](#using-existing-clusters)
+* [Managing Objects](#managing-objects)
     - [Applying](#applying)
-
       - [Kubernetes Manifests](#kubernetes-manifests)
       - [Helm Charts](#helm-charts)
-
     - [Patching](#patching)
     - [Querying](#querying)
-6. [Known Issues](#known-issues)
+* [Known Issues](#known-issues)
 
 ## Overview
 
