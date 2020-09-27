@@ -1,5 +1,7 @@
-import { Connections, IConnectable, ISecurityGroup, IVpc, Peer, Port,
-  SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
+import {
+  Connections, IConnectable, ISecurityGroup, IVpc, Peer, Port,
+  SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
+} from '@aws-cdk/aws-ec2';
 import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
@@ -240,7 +242,7 @@ export class LoadBalancer extends Resource implements IConnectable {
     const selectedSubnets: SelectedSubnets = loadBalancerSubnets(props);
 
     this.elb = new CfnLoadBalancer(this, 'Resource', {
-      securityGroups: [ this.securityGroup.securityGroupId ],
+      securityGroups: [this.securityGroup.securityGroupId],
       subnets: selectedSubnets.subnetIds,
       listeners: Lazy.anyValue({ produce: () => this.listeners }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',

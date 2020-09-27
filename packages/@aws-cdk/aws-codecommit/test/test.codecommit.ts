@@ -29,7 +29,7 @@ export = {
                     'all',
                   ],
                   DestinationArn: 'arn:aws:sns:*:123456789012:my_topic',
-                  Name: 'MyRepository/arn:aws:sns:*:123456789012:my_topic',
+                  Name: 'Default/MyRepository/arn:aws:sns:*:123456789012:my_topic',
                 },
               ],
             },

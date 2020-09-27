@@ -87,7 +87,7 @@ export interface TreeArtifactProperties {
 /**
  * Artifact properties for nested cloud assemblies
  */
-export interface NestedCloudAssemblyProperties  {
+export interface NestedCloudAssemblyProperties {
   /**
    * Relative path to the nested cloud assembly
    */

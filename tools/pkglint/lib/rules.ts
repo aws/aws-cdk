@@ -1,7 +1,7 @@
-import * as caseUtils from 'case';
 import * as fs from 'fs';
-import * as glob from 'glob';
 import * as path from 'path';
+import * as caseUtils from 'case';
+import * as glob from 'glob';
 import * as semver from 'semver';
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
@@ -14,8 +14,7 @@ import {
   monoRepoRoot,
 } from './util';
 
-// tslint:disable-next-line: no-var-requires
-const AWS_SERVICE_NAMES = require('./aws-service-official-names.json');
+const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
 
 /**
  * Verify that the package name matches the directory name
@@ -27,8 +26,8 @@ export class PackageNameMatchesDirectoryName extends ValidationRule {
     const parts = pkg.packageRoot.split(path.sep);
 
     const expectedName = parts[parts.length - 2].startsWith('@')
-               ? parts.slice(parts.length - 2).join('/')
-               : parts[parts.length - 1];
+      ? parts.slice(parts.length - 2).join('/')
+      : parts[parts.length - 1];
 
     expectJSON(this.name, pkg, 'name', expectedName);
   }
@@ -45,6 +44,37 @@ export class DescriptionIsRequired extends ValidationRule {
       pkg.report({ ruleName: this.name, message: 'Description is required' });
     }
   }
+}
+
+/**
+ * Verify cdk.out directory is included in npmignore since we should not be
+ * publihsing it.
+ */
+export class CdkOutMustBeNpmIgnored extends ValidationRule {
+
+  public readonly name = 'package-info/npm-ignore-cdk-out';
+
+  public validate(pkg: PackageJson): void {
+
+    const npmIgnorePath = path.join(pkg.packageRoot, '.npmignore');
+
+    if (fs.existsSync(npmIgnorePath)) {
+
+      const npmIgnore = fs.readFileSync(npmIgnorePath);
+
+      if (!npmIgnore.includes('**/cdk.out')) {
+        pkg.report({
+          ruleName: this.name,
+          message: `${npmIgnorePath}: Must exclude **/cdk.out`,
+          fix: () => fs.writeFileSync(
+            npmIgnorePath,
+            `${npmIgnore}\n# exclude cdk artifacts\n**/cdk.out`,
+          ),
+        });
+      }
+    }
+  }
+
 }
 
 /**
@@ -147,9 +177,9 @@ export class ReadmeFile extends ValidationRule {
           readmeFile,
           [
             `## ${headline || pkg.json.description}`,
-            'This module is part of the[AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.'
-          ].join('\n')
-        )
+            'This module is part of the[AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
+          ].join('\n'),
+        ),
       });
     } else if (headline) {
       const requiredFirstLine = `## ${headline}`;
@@ -390,7 +420,7 @@ export class FeatureStabilityRule extends ValidationRule {
       notices.push('');
     }
 
-    const noticeOrder = [ 'Experimental', 'Developer Preview', 'Stable' ];
+    const noticeOrder = ['Experimental', 'Developer Preview', 'Stable'];
     const stabilities = pkg.json.features.map((f: { [k: string]: string }) => f.stability);
     const filteredNotices = noticeOrder.filter(v => stabilities.includes(v));
     filteredNotices.map((notice) => {
@@ -413,7 +443,7 @@ export class CDKKeywords extends ValidationRule {
       pkg.report({
         ruleName: this.name,
         message: 'Must have keywords',
-        fix: () => { pkg.json.keywords = []; }
+        fix: () => { pkg.json.keywords = []; },
       });
     }
 
@@ -423,7 +453,7 @@ export class CDKKeywords extends ValidationRule {
       pkg.report({
         ruleName: this.name,
         message: 'Keywords must mention CDK',
-        fix: () => { pkg.json.keywords.splice(0, 0, 'cdk'); }
+        fix: () => { pkg.json.keywords.splice(0, 0, 'cdk'); },
       });
     }
 
@@ -431,9 +461,29 @@ export class CDKKeywords extends ValidationRule {
       pkg.report({
         ruleName: this.name,
         message: 'Keywords must mention AWS',
-        fix: () => { pkg.json.keywords.splice(0, 0, 'aws'); }
+        fix: () => { pkg.json.keywords.splice(0, 0, 'aws'); },
       });
     }
+  }
+}
+
+/**
+ * Requires projectReferences to be set in the jsii configuration.
+ */
+export class JSIIProjectReferences extends ValidationRule {
+  public readonly name = 'jsii/project-references';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) {
+      return;
+    }
+
+    expectJSON(
+      this.name,
+      pkg,
+      'jsii.projectReferences',
+      pkg.json.name !== 'monocdk-experiment' && pkg.json.name !== 'aws-cdk-lib',
+    );
   }
 }
 
@@ -460,7 +510,7 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
         pkg.report({
           ruleName: this.name,
           message: `JSII "java" package must share the first 3 elements of the expected one: ${expectedPrefix} vs ${actualPrefix}`,
-          fix: () => deepSet(pkg.json, ['jsii', 'targets', 'java', 'package'], moduleName.javaPackage)
+          fix: () => deepSet(pkg.json, ['jsii', 'targets', 'java', 'package'], moduleName.javaPackage),
         });
       }
     }
@@ -489,6 +539,7 @@ export class CDKPackage extends ValidationRule {
 
     const merkleMarker = '.LAST_PACKAGE';
 
+    if (!shouldUseCDKBuildTools(pkg)) { return; }
     expectJSON(this.name, pkg, 'scripts.package', 'cdk-package');
 
     const outdir = 'dist';
@@ -560,7 +611,7 @@ export class NoJsiiDep extends ValidationRule {
       pkg.report({
         ruleName: this.name,
         message: 'packages should not have a devDep on jsii since it is defined at the repo level',
-        fix: () => pkg.removeDevDependency(predicate)
+        fix: () => pkg.removeDevDependency(predicate),
       });
     }
   }
@@ -578,7 +629,7 @@ export class NodeCompatibility extends ValidationRule {
       pkg.report({
         ruleName: this.name,
         message: `packages must support node version 10 and up, but ${atTypesNode} is declared`,
-        fix: () => pkg.addDevDependency('@types/node', '^10.17.5')
+        fix: () => pkg.addDevDependency('@types/node', '^10.17.5'),
       });
     }
   }
@@ -599,7 +650,7 @@ export class NoAtTypesInDependencies extends ValidationRule {
         fix: () => {
           pkg.addDevDependency(dependency.name, dependency.version);
           pkg.removeDependency(predicate);
-        }
+        },
       });
     }
   }
@@ -623,7 +674,7 @@ function cdkModuleName(name: string) {
     .map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s))
     .join('.');
 
-  const pythonName = name.replace(/^@/g, "").replace(/\//g, ".").split(".").map(caseUtils.kebab).join(".");
+  const pythonName = name.replace(/^@/g, '').replace(/\//g, '.').split('.').map(caseUtils.kebab).join('.');
 
   return {
     javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
@@ -636,7 +687,7 @@ function cdkModuleName(name: string) {
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
-      module: `aws_cdk.${pythonName.replace(/-/g, "_")}`,
+      module: `aws_cdk.${pythonName.replace(/-/g, '_')}`,
     },
   };
 }
@@ -665,7 +716,7 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
         pkg.report({
           ruleName: this.name,
           message: `.NET namespace must share the first two segments of the default namespace, '${expectedPrefix}' vs '${actualPrefix}'`,
-          fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace'], moduleName.dotnetNamespace)
+          fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace'], moduleName.dotnetNamespace),
         });
       }
     }
@@ -704,18 +755,18 @@ export class JSIIDotNetStrongNameIsRequired extends ValidationRule {
     if (signAssembly !== signAssemblyExpected) {
       pkg.report({
         ruleName: this.name,
-        message: `.NET packages must have strong-name signing enabled.`,
-        fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'signAssembly'], signAssemblyExpected)
+        message: '.NET packages must have strong-name signing enabled.',
+        fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'signAssembly'], signAssemblyExpected),
       });
     }
 
     const assemblyOriginatorKeyFile = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'assemblyOriginatorKeyFile']) as string | undefined;
-    const assemblyOriginatorKeyFileExpected = "../../key.snk";
+    const assemblyOriginatorKeyFileExpected = '../../key.snk';
     if (assemblyOriginatorKeyFile !== assemblyOriginatorKeyFileExpected) {
       pkg.report({
         ruleName: this.name,
-        message: `.NET packages must use the strong name key fetched by fetch-dotnet-snk.sh`,
-        fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'assemblyOriginatorKeyFile'], assemblyOriginatorKeyFileExpected)
+        message: '.NET packages must use the strong name key fetched by fetch-dotnet-snk.sh',
+        fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'assemblyOriginatorKeyFile'], assemblyOriginatorKeyFileExpected),
       });
     }
   }
@@ -733,7 +784,7 @@ export class MustDependOnBuildTools extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-build-tools',
-      `${require('../../cdk-build-tools/package.json').version}`);
+      `${require('../../cdk-build-tools/package.json').version}`); // eslint-disable-line @typescript-eslint/no-require-imports
   }
 }
 
@@ -784,7 +835,7 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
         pkg.report({
           ruleName: this.name,
           message: `dependency ${depName}: concrete version ${depVersion} does not match peer version '${peerVersion}'`,
-          fix: () => pkg.addPeerDependency(depName, depVersion)
+          fix: () => pkg.addPeerDependency(depName, depVersion),
         });
       }
     }
@@ -804,13 +855,14 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
     // across the repo: in local builds, this should be 0.0.0 and in CI builds
     // this would be the actual version of the repo after it's been aligned
     // using scripts/align-version.sh
-    const expectedVersion = require('../../../package.json').version;
+    const expectedVersion = require('../../../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
     const ignore = [
       '@aws-cdk/cloudformation-diff',
       '@aws-cdk/cfnspec',
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
-      '@aws-cdk/region-info'
+      '@aws-cdk/region-info',
+      '@aws-cdk/yaml-cfn',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
@@ -823,7 +875,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
         pkg.report({
           ruleName: this.name,
           message: `dependency ${depName} must also appear in peerDependencies`,
-          fix: () => pkg.addPeerDependency(depName, expectedVersion)
+          fix: () => pkg.addPeerDependency(depName, expectedVersion),
         });
       }
 
@@ -831,7 +883,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
         pkg.report({
           ruleName: this.name,
           message: `peer dependency ${depName} should have the version ${expectedVersion}`,
-          fix: () => pkg.addPeerDependency(depName, expectedVersion)
+          fix: () => pkg.addPeerDependency(depName, expectedVersion),
         });
       }
 
@@ -839,7 +891,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
         pkg.report({
           ruleName: this.name,
           message: `dependency ${depName}: dependency version must be ${expectedVersion}`,
-          fix: () => pkg.addDependency(depName, expectedVersion)
+          fix: () => pkg.addDependency(depName, expectedVersion),
         });
       }
     }
@@ -852,6 +904,15 @@ export class MustIgnoreSNK extends ValidationRule {
   public validate(pkg: PackageJson): void {
     fileShouldContain(this.name, pkg, '.npmignore', '*.snk');
     fileShouldContain(this.name, pkg, '.gitignore', '*.snk');
+  }
+}
+
+export class MustIgnoreJunitXml extends ValidationRule {
+  public readonly name = 'ignore/junit';
+
+  public validate(pkg: PackageJson): void {
+    fileShouldContain(this.name, pkg, '.npmignore', 'junit.xml');
+    fileShouldContain(this.name, pkg, '.gitignore', 'junit.xml');
   }
 }
 
@@ -931,7 +992,7 @@ export class MustHaveIntegCommand extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-integ-tools',
-      `${require('../../cdk-integ-tools/package.json').version}`);
+      `${require('../../cdk-integ-tools/package.json').version}`); // eslint-disable-line @typescript-eslint/no-require-imports
   }
 }
 
@@ -954,13 +1015,13 @@ export class PkgLintAsScript extends ValidationRule {
   public validate(pkg: PackageJson): void {
     const script = 'pkglint -f';
 
-    expectDevDependency(this.name, pkg, 'pkglint', `${require('../package.json').version}`);
+    expectDevDependency(this.name, pkg, 'pkglint', `${require('../package.json').version}`); // eslint-disable-line @typescript-eslint/no-require-imports
 
     if (!pkg.npmScript('pkglint')) {
       pkg.report({
         ruleName: this.name,
         message: 'a script called "pkglint" must be included to allow fixing package linting issues',
-        fix: () => pkg.changeNpmScript('pkglint', () => script)
+        fix: () => pkg.changeNpmScript('pkglint', () => script),
       });
     }
 
@@ -968,7 +1029,7 @@ export class PkgLintAsScript extends ValidationRule {
       pkg.report({
         ruleName: this.name,
         message: 'the pkglint script should be: ' + script,
-        fix: () => pkg.changeNpmScript('pkglint', () => script)
+        fix: () => pkg.changeNpmScript('pkglint', () => script),
       });
     }
   }
@@ -987,7 +1048,7 @@ export class NoStarDeps extends ValidationRule {
         if (deps[d] === '*') {
           pkg.report({
             ruleName,
-            message: `star dependency not allowed for ${d}`
+            message: `star dependency not allowed for ${d}`,
           });
         }
       });
@@ -1120,7 +1181,7 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
       if (Object.keys(innerPkg.dependencies).length > 0) {
         pkg.report({
           ruleName: `${this.name}:1`,
-          message: `NPM Package '${innerPkg.packageName}' inside jsii package can only have devDepencencies`
+          message: `NPM Package '${innerPkg.packageName}' inside jsii package can only have devDepencencies`,
         });
       }
 
@@ -1160,7 +1221,7 @@ export class YarnNohoistBundledDependencies extends ValidationRule {
 
     const repoPackageJson = path.resolve(__dirname, '../../../package.json');
 
-    const nohoist: string[] = require(repoPackageJson).workspaces.nohoist;
+    const nohoist: string[] = require(repoPackageJson).workspaces.nohoist; // eslint-disable-line @typescript-eslint/no-require-imports
 
     const missing = new Array<string>();
     for (const dep of bundled) {
@@ -1175,7 +1236,7 @@ export class YarnNohoistBundledDependencies extends ValidationRule {
         ruleName: this.name,
         message: `Repository-level 'workspaces.nohoist' directive is missing: ${missing.join(', ')}`,
         fix: () => {
-          const packageJson = require(repoPackageJson);
+          const packageJson = require(repoPackageJson); // eslint-disable-line @typescript-eslint/no-require-imports
           packageJson.workspaces.nohoist = [...packageJson.workspaces.nohoist, ...missing].sort();
           fs.writeFileSync(repoPackageJson, `${JSON.stringify(packageJson, null, 2)}\n`, { encoding: 'utf8' });
         },
@@ -1188,7 +1249,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^3.0.2';
+    const REQUIRED_VERSION = '^3.0.4';
 
     if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
       pkg.report({
@@ -1196,7 +1257,7 @@ export class ConstructsDependency extends ValidationRule {
         message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
         fix: () => {
           pkg.addDevDependency('constructs', REQUIRED_VERSION);
-        }
+        },
       });
     }
 
@@ -1206,7 +1267,7 @@ export class ConstructsDependency extends ValidationRule {
         message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
         fix: () => {
           pkg.addDependency('constructs', REQUIRED_VERSION);
-        }
+        },
       });
 
       if (!pkg.peerDependencies.constructs || pkg.peerDependencies.constructs !== REQUIRED_VERSION) {
@@ -1215,7 +1276,7 @@ export class ConstructsDependency extends ValidationRule {
           message: `"constructs" must have a version requirement ${REQUIRED_VERSION} in peerDependencies`,
           fix: () => {
             pkg.addPeerDependency('constructs', REQUIRED_VERSION);
-          }
+          },
         });
       }
     }
@@ -1238,11 +1299,11 @@ export class DoNotAnnounceInCatalog extends ValidationRule {
     if (pkg.json.awscdkio?.announce !== false) {
       pkg.report({
         ruleName: this.name,
-        message:  `missing "awscdkio.announce: false" in package.json`,
+        message: 'missing "awscdkio.announce: false" in package.json',
         fix: () => {
           pkg.json.awscdkio = pkg.json.awscdkio ?? { };
           pkg.json.awscdkio.announce = false;
-        }
+        },
       });
     }
   }
@@ -1264,10 +1325,10 @@ export class EslintSetup extends ValidationRule {
             [
               `const baseConfig = require('${rootRelative}/tools/cdk-build-tools/config/eslintrc');`,
               "baseConfig.parserOptions.project = __dirname + '/tsconfig.json';",
-              'module.exports = baseConfig;'
-            ].join('\n') + '\n'
+              'module.exports = baseConfig;',
+            ].join('\n') + '\n',
           );
-        }
+        },
       });
     }
     fileShouldContain(this.name, pkg, '.gitignore', '!.eslintrc.js');
@@ -1366,7 +1427,7 @@ function hasIntegTests(pkg: PackageJson) {
 function shouldUseCDKBuildTools(pkg: PackageJson) {
   // The packages that DON'T use CDKBuildTools are the package itself
   // and the packages used by it.
-  return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build';
+  return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build' && pkg.packageName !== 'awslint';
 }
 
 function repoRoot(dir: string) {

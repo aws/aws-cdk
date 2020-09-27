@@ -131,7 +131,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
         policy: AwsCustomResourcePolicy.fromSdkCalls({
           // DescribeUserPoolDomain only supports access level '*'
           // https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazoncognitouserpools.html#amazoncognitouserpools-actions-as-permissions
-          resources: [ '*' ],
+          resources: ['*'],
         }),
       });
     }

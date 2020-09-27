@@ -48,7 +48,7 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceUpdateEvent
   // is empty, we will grab it from the server like we do in CREATE
   const oldThumbprints = (event.OldResourceProperties.ThumbprintList || []).sort();
   if (JSON.stringify(oldThumbprints) !== JSON.stringify(thumbprints)) {
-    const thumbprintList = thumbprints.length > 0 ? thumbprints : [ await external.downloadThumbprint(issuerUrl) ];
+    const thumbprintList = thumbprints.length > 0 ? thumbprints : [await external.downloadThumbprint(issuerUrl)];
     external.log('updating thumbprint list from', oldThumbprints, 'to', thumbprints);
     await external.updateOpenIDConnectProviderThumbprint({
       OpenIDConnectProviderArn: providerArn,

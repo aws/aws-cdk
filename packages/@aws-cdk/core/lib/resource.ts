@@ -1,10 +1,35 @@
+import { Construct } from 'constructs';
 import { ArnComponents } from './arn';
-import { Construct, IConstruct } from './construct-compat';
+import { IConstruct, Construct as CoreConstruct } from './construct-compat';
 import { Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token } from './token';
+
+/**
+ * Represents the environment a given resource lives in.
+ * Used as the return value for the {@link IResource.env} property.
+ */
+export interface ResourceEnvironment {
+  /**
+   * The AWS account ID that this resource belongs to.
+   * Since this can be a Token
+   * (for example, when the account is CloudFormation's AWS::AccountId intrinsic),
+   * make sure to use Token.compareStrings()
+   * instead of just comparing the values for equality.
+   */
+  readonly account: string;
+
+  /**
+   * The AWS region that this resource belongs to.
+   * Since this can be a Token
+   * (for example, when the region is CloudFormation's AWS::Region intrinsic),
+   * make sure to use Token.compareStrings()
+   * instead of just comparing the values for equality.
+   */
+  readonly region: string;
+}
 
 /**
  * Interface for the Resource construct.
@@ -14,6 +39,17 @@ export interface IResource extends IConstruct {
    * The stack in which this resource is defined.
    */
   readonly stack: Stack;
+
+  /**
+   * The environment this resource belongs to.
+   * For resources that are created and managed by the CDK
+   * (generally, those created by creating new class instances like Role, Bucket, etc.),
+   * this is always the same as the environment of the stack they belong to;
+   * however, for imported resources
+   * (those obtained from static methods like fromRoleArn, fromBucketName, etc.),
+   * that might be different than the stack they were imported into.
+   */
+  readonly env: ResourceEnvironment;
 }
 
 /**
@@ -32,13 +68,28 @@ export interface ResourceProps {
    * @default - The physical name will be allocated by CloudFormation at deployment time
    */
   readonly physicalName?: string;
+
+  /**
+   * The AWS account ID this resource belongs to.
+   *
+   * @default - the resource is in the same account as the stack it belongs to
+   */
+  readonly account?: string;
+
+  /**
+   * The AWS region this resource belongs to.
+   *
+   * @default - the resource is in the same region as the stack it belongs to
+   */
+  readonly region?: string;
 }
 
 /**
  * A construct which represents an AWS resource.
  */
-export abstract class Resource extends Construct implements IResource {
+export abstract class Resource extends CoreConstruct implements IResource {
   public readonly stack: Stack;
+  public readonly env: ResourceEnvironment;
 
   /**
    * Returns a string-encoded token that resolves to the physical name that
@@ -59,7 +110,12 @@ export abstract class Resource extends Construct implements IResource {
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id);
+
     this.stack = Stack.of(this);
+    this.env = {
+      account: props.account ?? this.stack.account,
+      region: props.region ?? this.stack.region,
+    };
 
     let physicalName = props.physicalName;
 

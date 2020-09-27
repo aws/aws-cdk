@@ -1,5 +1,5 @@
-// tslint:disable: max-line-length
-// tslint:disable: no-console
+/* eslint-disable max-len */
+/* eslint-disable no-console */
 import * as url from 'url';
 import { httpRequest } from './outbound';
 import { log } from './util';

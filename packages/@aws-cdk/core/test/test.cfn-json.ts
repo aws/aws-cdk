@@ -26,7 +26,7 @@ export = {
     test.deepEqual(template.Resources.MyCfnJson248769BB.Properties.Value, '{"hello":1234,"world":{"bar":1234}}');
 
     // output is basically an Fn::GetAtt
-    test.deepEqual(stack.resolve(json), { 'Fn::GetAtt': [ 'MyCfnJson248769BB', 'Value' ] });
+    test.deepEqual(stack.resolve(json), { 'Fn::GetAtt': ['MyCfnJson248769BB', 'Value'] });
 
     test.done();
   },
@@ -51,7 +51,7 @@ export = {
     const template = app.synth().getStackArtifact(stack.artifactId).template;
 
     test.deepEqual(template.Resources.MyCfnJson248769BB.Properties.Value, {
-      'Fn::Join': [ '', [ '{"', { Ref: 'Other' }, '":1234,"world":{"bar":"this is a I am lazy"}}' ] ],
+      'Fn::Join': ['', ['{"', { Ref: 'Other' }, '":1234,"world":{"bar":"this is a I am lazy"}}']],
     });
     test.done();
   },
@@ -72,7 +72,7 @@ export = {
     // THEN
     test.ok(typeof(str) === 'string');
     test.deepEqual(stack.resolve(str), {
-      'Fn::Join': [ '', [ '"{"ref=', { Ref: 'MyResource' }, '":"this is a I am lazy"}"' ] ],
+      'Fn::Join': ['', ['"{"ref=', { Ref: 'MyResource' }, '":"this is a I am lazy"}"']],
     });
 
     test.done();

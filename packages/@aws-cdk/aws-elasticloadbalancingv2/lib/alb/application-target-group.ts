@@ -1,6 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Duration, IConstruct } from '@aws-cdk/core';
+import { Annotations, Construct, Duration, IConstruct } from '@aws-cdk/core';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
@@ -310,7 +310,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     });
   }
 
-  protected validate(): string[]  {
+  protected validate(): string[] {
     const ret = super.validate();
 
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
@@ -374,11 +374,11 @@ export interface IApplicationTargetGroup extends ITargetGroup {
 class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
   public registerListener(_listener: IApplicationListener, _associatingConstruct?: IConstruct) {
     // Nothing to do, we know nothing of our members
-    this.node.addWarning('Cannot register listener on imported target group -- security groups might need to be updated manually');
+    Annotations.of(this).addWarning('Cannot register listener on imported target group -- security groups might need to be updated manually');
   }
 
   public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
-    this.node.addWarning('Cannot register connectable on imported target group -- security groups might need to be updated manually');
+    Annotations.of(this).addWarning('Cannot register connectable on imported target group -- security groups might need to be updated manually');
   }
 
   public addTarget(...targets: IApplicationLoadBalancerTarget[]) {

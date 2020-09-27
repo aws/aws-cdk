@@ -1,4 +1,4 @@
-import { Construct, Lazy, Resource } from '@aws-cdk/core';
+import { Construct, Lazy, Resource, IResolvable } from '@aws-cdk/core';
 import { CfnDomain } from './amplify.generated';
 import { IApp } from './app';
 import { IBranch } from './branch';
@@ -72,6 +72,27 @@ export class Domain extends Resource {
    */
   public readonly statusReason: string;
 
+  /**
+   * Branch patterns for the automatically created subdomain.
+   *
+   * @attribute
+   */
+  public readonly domainAutoSubDomainCreationPatterns: string[];
+
+  /**
+   * The IAM service role for the subdomain.
+   *
+   * @attribute
+   */
+  public readonly domainAutoSubDomainIamRole: string;
+
+  /**
+   * Specifies whether the automated creation of subdomains for branches is enabled.
+   *
+   * @attribute
+   */
+  public readonly domainEnableAutoSubDomain: IResolvable;
+
   private readonly subDomains: SubDomain[];
 
   constructor(scope: Construct, id: string, props: DomainProps) {
@@ -91,6 +112,9 @@ export class Domain extends Resource {
     this.domainName = domain.attrDomainName;
     this.domainStatus = domain.attrDomainStatus;
     this.statusReason = domain.attrStatusReason;
+    this.domainAutoSubDomainCreationPatterns = domain.attrAutoSubDomainCreationPatterns;
+    this.domainAutoSubDomainIamRole = domain.attrAutoSubDomainIamRole;
+    this.domainEnableAutoSubDomain = domain.attrEnableAutoSubDomain;
   }
 
   /**

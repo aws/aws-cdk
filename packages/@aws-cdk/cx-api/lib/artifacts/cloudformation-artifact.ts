@@ -1,6 +1,6 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
 import { CloudAssembly } from '../cloud-assembly';
 import { Environment, EnvironmentUtils } from '../environment';
@@ -115,11 +115,18 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   }
 
   /**
+   * Full path to the template file
+   */
+  public get templateFullPath() {
+    return path.join(this.assembly.directory, this.templateFile);
+  }
+
+  /**
    * The CloudFormation template for this stack.
    */
   public get template(): any {
     if (this._template === undefined) {
-      this._template = JSON.parse(fs.readFileSync(path.join(this.assembly.directory, this.templateFile), 'utf-8'));
+      this._template = JSON.parse(fs.readFileSync(this.templateFullPath, 'utf-8'));
     }
     return this._template;
   }

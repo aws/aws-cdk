@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, IResource, RemovalPolicy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { Construct, IConstruct, IResource, RemovalPolicy, Resource, SecretValue, Stack } from '@aws-cdk/core';
 import { ResourcePolicy } from './policy';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
@@ -20,6 +20,11 @@ export interface ISecret extends IResource {
    * @attribute
    */
   readonly secretArn: string;
+
+  /**
+   * The name of the secret
+   */
+  readonly secretName: string;
 
   /**
    * Retrieve the value of the stored secret as a `SecretValue`.
@@ -42,7 +47,7 @@ export interface ISecret extends IResource {
   grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant;
 
   /**
-   * Grants writing the secret value to some role.
+   * Grants writing and updating the secret value to some role.
    *
    * @param grantee       the principal being granted permission.
    */
@@ -132,18 +137,19 @@ export interface SecretAttributes {
 abstract class SecretBase extends Resource implements ISecret {
   public abstract readonly encryptionKey?: kms.IKey;
   public abstract readonly secretArn: string;
+  public abstract readonly secretName: string;
 
   protected abstract readonly autoCreatePolicy: boolean;
 
   private policy?: ResourcePolicy;
 
   public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
-    // @see https://docs.aws.amazon.com/fr_fr/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
+    // @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
 
     const result = iam.Grant.addToPrincipal({
       grantee,
       actions: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-      resourceArns: [this.secretArn],
+      resourceArns: [this.arnForPolicies],
       scope: this,
     });
     if (versionStages != null && result.principalStatement) {
@@ -153,7 +159,7 @@ abstract class SecretBase extends Resource implements ISecret {
     }
 
     if (this.encryptionKey) {
-      // @see https://docs.aws.amazon.com/fr_fr/kms/latest/developerguide/services-secrets-manager.html
+      // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.grantDecrypt(
         new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
       );
@@ -166,8 +172,8 @@ abstract class SecretBase extends Resource implements ISecret {
     // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
     const result = iam.Grant.addToPrincipal({
       grantee,
-      actions: ['secretsmanager:PutSecretValue'],
-      resourceArns: [this.secretArn],
+      actions: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
+      resourceArns: [this.arnForPolicies],
       scope: this,
     });
 
@@ -208,6 +214,12 @@ abstract class SecretBase extends Resource implements ISecret {
     return { statementAdded: false };
   }
 
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
+  }
+
   public denyAccountRootDelete() {
     this.addToResourcePolicy(new iam.PolicyStatement({
       actions: ['secretsmanager:DeleteSecret'],
@@ -216,6 +228,12 @@ abstract class SecretBase extends Resource implements ISecret {
       principals: [new iam.AccountRootPrincipal()],
     }));
   }
+
+  /**
+   * Provides an identifier for this secret for use in IAM policies. Typically, this is just the secret ARN.
+   * However, secrets imported by name require a different format.
+   */
+  protected get arnForPolicies() { return this.secretArn; }
 }
 
 /**
@@ -225,6 +243,29 @@ export class Secret extends SecretBase {
 
   public static fromSecretArn(scope: Construct, id: string, secretArn: string): ISecret {
     return Secret.fromSecretAttributes(scope, id, { secretArn });
+  }
+
+  /**
+   * Imports a secret by secret name; the ARN of the Secret will be set to the secret name.
+   * A secret with this name must exist in the same account & region.
+   */
+  public static fromSecretName(scope: Construct, id: string, secretName: string): ISecret {
+    return new class extends SecretBase {
+      public readonly encryptionKey = undefined;
+      public readonly secretArn = secretName;
+      public readonly secretName = secretName;
+      protected readonly autoCreatePolicy = false;
+      // Overrides the secretArn for grant* methods, where the secretArn must be in ARN format.
+      // Also adds a wildcard to the resource name to support the SecretsManager-provided suffix.
+      protected get arnForPolicies() {
+        return Stack.of(this).formatArn({
+          service: 'secretsmanager',
+          resource: 'secret',
+          resourceName: this.secretName + '*',
+          sep: ':',
+        });
+      }
+    }(scope, id);
   }
 
   /**
@@ -238,6 +279,7 @@ export class Secret extends SecretBase {
     class Import extends SecretBase {
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly secretArn = attrs.secretArn;
+      public readonly secretName = parseSecretName(scope, attrs.secretArn);
       protected readonly autoCreatePolicy = false;
     }
 
@@ -246,6 +288,7 @@ export class Secret extends SecretBase {
 
   public readonly encryptionKey?: kms.IKey;
   public readonly secretArn: string;
+  public readonly secretName: string;
 
   protected readonly autoCreatePolicy = true;
 
@@ -279,12 +322,13 @@ export class Secret extends SecretBase {
     });
 
     this.encryptionKey = props.encryptionKey;
+    this.secretName = this.physicalName;
 
     // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
-    const principle =
+    const principal =
        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
-    this.encryptionKey?.grantEncryptDecrypt(principle);
-    this.encryptionKey?.grant(principle, 'kms:CreateGrant', 'kms:DescribeKey');
+    this.encryptionKey?.grantEncryptDecrypt(principal);
+    this.encryptionKey?.grant(principal, 'kms:CreateGrant', 'kms:DescribeKey');
   }
 
   /**
@@ -361,6 +405,11 @@ export enum AttachmentTargetType {
   RDS_DB_CLUSTER = 'AWS::RDS::DBCluster',
 
   /**
+   * AWS::RDS::DBProxy
+   */
+  RDS_DB_PROXY = 'AWS::RDS::DBProxy',
+
+  /**
    * AWS::Redshift::Cluster
    */
   REDSHIFT_CLUSTER = 'AWS::Redshift::Cluster',
@@ -432,6 +481,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
       public encryptionKey?: kms.IKey | undefined;
       public secretArn = secretTargetAttachmentSecretArn;
       public secretTargetAttachmentSecretArn = secretTargetAttachmentSecretArn;
+      public secretName = parseSecretName(scope, secretTargetAttachmentSecretArn);
       protected readonly autoCreatePolicy = false;
     }
 
@@ -440,6 +490,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
 
   public readonly encryptionKey?: kms.IKey;
   public readonly secretArn: string;
+  public readonly secretName: string;
 
   /**
    * @attribute
@@ -458,6 +509,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     });
 
     this.encryptionKey = props.secret.encryptionKey;
+    this.secretName = props.secret.secretName;
 
     // This allows to reference the secret after attachment (dependency).
     this.secretArn = attachment.ref;
@@ -540,4 +592,15 @@ export interface SecretStringGenerator {
    * must be also be specified.
    */
   readonly generateStringKey?: string;
+}
+
+/** Parses the secret name from the ARN. */
+function parseSecretName(construct: IConstruct, secretArn: string) {
+  const resourceName = Stack.of(construct).parseArn(secretArn).resourceName;
+  if (resourceName) {
+    // Secret resource names are in the format `${secretName}-${SecretsManager suffix}`
+    const secretNameFromArn = resourceName.substr(0, resourceName.lastIndexOf('-'));
+    if (secretNameFromArn) { return secretNameFromArn; }
+  }
+  throw new Error('invalid ARN format; no secret name provided');
 }

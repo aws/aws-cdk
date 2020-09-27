@@ -62,7 +62,10 @@ export class EmrModifyInstanceFleetByName extends sfn.TaskStateBase {
     ];
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'modifyInstanceFleetByName',
         sfn.IntegrationPattern.REQUEST_RESPONSE),

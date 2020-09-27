@@ -24,7 +24,7 @@ export interface IServerDeploymentGroup extends cdk.IResource {
    */
   readonly deploymentGroupArn: string;
   readonly deploymentConfig: IServerDeploymentConfig;
-  readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
+  readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
 }
 
 /**
@@ -69,7 +69,7 @@ abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServer
   public abstract readonly deploymentGroupName: string;
   public abstract readonly deploymentGroupArn: string;
   public readonly deploymentConfig: IServerDeploymentConfig;
-  public abstract readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
+  public abstract readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
 
   constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
     super(scope, id, props);
@@ -171,7 +171,7 @@ export interface ServerDeploymentGroupProps {
    *
    * @default []
    */
-  readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
+  readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
 
   /**
    * If you've provided any auto-scaling groups with the {@link #autoScalingGroups} property,
@@ -258,7 +258,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly deploymentGroupArn: string;
   public readonly deploymentGroupName: string;
 
-  private readonly _autoScalingGroups: autoscaling.AutoScalingGroup[];
+  private readonly _autoScalingGroups: autoscaling.IAutoScalingGroup[];
   private readonly installAgent: boolean;
   private readonly codeDeployBucket: s3.IBucket;
   private readonly alarms: cloudwatch.IAlarm[];
@@ -333,16 +333,16 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     this.alarms.push(alarm);
   }
 
-  public get autoScalingGroups(): autoscaling.AutoScalingGroup[] | undefined {
+  public get autoScalingGroups(): autoscaling.IAutoScalingGroup[] | undefined {
     return this._autoScalingGroups.slice();
   }
 
-  private addCodeDeployAgentInstallUserData(asg: autoscaling.AutoScalingGroup): void {
+  private addCodeDeployAgentInstallUserData(asg: autoscaling.IAutoScalingGroup): void {
     if (!this.installAgent) {
       return;
     }
 
-    this.codeDeployBucket.grantRead(asg.role, 'latest/*');
+    this.codeDeployBucket.grantRead(asg, 'latest/*');
 
     switch (asg.osType) {
       case ec2.OperatingSystemType.LINUX:

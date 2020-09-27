@@ -6,6 +6,8 @@ import { Duration } from '@aws-cdk/core';
 export enum Protocol {
   HTTP = 'http',
   TCP = 'tcp',
+  HTTP2 = 'http2',
+  GRPC = 'grpc',
 }
 
 /**
@@ -71,7 +73,7 @@ export interface PortMapping {
   readonly port: number;
 
   /**
-   * Protocol for the VirtualNode / Route, only TCP or HTTP supported
+   * Protocol for the VirtualNode / Route, only GRPC, HTTP, HTTP2, or TCP is supported
    *
    * @default HTTP
    */

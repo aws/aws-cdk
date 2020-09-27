@@ -81,6 +81,18 @@ export interface ApiKeyProps extends ApiKeyOptions {
  * for Method resources that require an Api Key.
  */
 export class ApiKey extends Resource implements IApiKey {
+
+  /**
+   * Import an ApiKey by its Id
+   */
+  public static fromApiKeyId(scope: Construct, id: string, apiKeyId: string): IApiKey {
+    class Import extends Resource implements IApiKey {
+      public keyId = apiKeyId;
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly keyId: string;
 
   constructor(scope: Construct, id: string, props: ApiKeyProps = { }) {

@@ -88,7 +88,7 @@ const twoArbitraryRules = fc.record({
   rule2: arbitraryRule,
   copyIp: fc.boolean(),
   copyFromPort: fc.boolean(),
-  copyToPort : fc.boolean(),
+  copyToPort: fc.boolean(),
   copyCidrIp: fc.boolean(),
   copySecurityGroupId: fc.boolean(),
   copyPrefixListId: fc.boolean(),

@@ -38,7 +38,6 @@ class TaskDefinition {
    *
    * @internal
    */
-  // tslint:disable-next-line: no-empty
   public _linkContainer() {}
 
   /**

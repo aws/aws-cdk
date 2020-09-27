@@ -4,7 +4,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import { LambdaInvocationType, LambdaInvoke } from '../../lib';
 
-// tslint:disable: object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('LambdaInvoke', () => {
 
@@ -52,6 +52,18 @@ describe('LambdaInvoke', () => {
         },
         'Payload.$': '$',
       },
+      Retry: [
+        {
+          ErrorEquals: [
+            'Lambda.ServiceException',
+            'Lambda.AWSLambdaException',
+            'Lambda.SdkClientException',
+          ],
+          IntervalSeconds: 2,
+          MaxAttempts: 6,
+          BackoffRate: 2,
+        },
+      ],
     });
   });
 
@@ -68,7 +80,7 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
       Type: 'Task',
       Resource: {
         'Fn::Join': [
@@ -97,7 +109,7 @@ describe('LambdaInvoke', () => {
         ClientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
         Qualifier: '1',
       },
-    });
+    }));
   });
 
   test('invoke Lambda function and wait for task token', () => {
@@ -112,7 +124,7 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
       Type: 'Task',
       Resource: {
         'Fn::Join': [
@@ -139,7 +151,7 @@ describe('LambdaInvoke', () => {
         },
         Qualifier: 'my-alias',
       },
-    });
+    }));
   });
 
   test('pass part of state input as input to Lambda function ', () => {
@@ -150,7 +162,7 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
       Type: 'Task',
       Resource: {
         'Fn::Join': [
@@ -174,7 +186,140 @@ describe('LambdaInvoke', () => {
         },
         'Payload.$': '$.foo',
       },
+    }));
+  });
+
+  test('Invoke lambda with payloadResponseOnly', () => {
+    // WHEN
+    const task = new LambdaInvoke(stack, 'Task', {
+      lambdaFunction,
+      payloadResponseOnly: true,
     });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
+      End: true,
+      Type: 'Task',
+      Resource: {
+        'Fn::GetAtt': [
+          'Fn9270CBC0',
+          'Arn',
+        ],
+      },
+    }));
+  });
+
+  test('Invoke lambda with payloadResponseOnly with payload', () => {
+    // WHEN
+    const task = new LambdaInvoke(stack, 'Task', {
+      lambdaFunction,
+      payloadResponseOnly: true,
+      payload: sfn.TaskInput.fromObject({
+        foo: 'bar',
+      }),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
+      End: true,
+      Type: 'Task',
+      Resource: {
+        'Fn::GetAtt': [
+          'Fn9270CBC0',
+          'Arn',
+        ],
+      },
+      Parameters: {
+        foo: 'bar',
+      },
+    }));
+  });
+
+  test('with retryOnServiceExceptions set to false', () => {
+    // WHEN
+    const task = new LambdaInvoke(stack, 'Task', {
+      lambdaFunction,
+      retryOnServiceExceptions: false,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      End: true,
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::lambda:invoke',
+          ],
+        ],
+      },
+      Parameters: {
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Fn9270CBC0',
+            'Arn',
+          ],
+        },
+        'Payload.$': '$',
+      },
+    });
+  });
+
+  test('fails when integrationPattern used with payloadResponseOnly', () => {
+    expect(() => {
+      new LambdaInvoke(stack, 'Task', {
+        lambdaFunction,
+        payloadResponseOnly: true,
+        integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+        payload: sfn.TaskInput.fromObject({
+          token: sfn.JsonPath.taskToken,
+        }),
+      });
+    }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
+  });
+
+  test('fails when invocationType used with payloadResponseOnly', () => {
+    expect(() => {
+      new LambdaInvoke(stack, 'Task', {
+        lambdaFunction,
+        payloadResponseOnly: true,
+        payload: sfn.TaskInput.fromObject({
+          foo: 'bar',
+        }),
+        invocationType: LambdaInvocationType.REQUEST_RESPONSE,
+      });
+    }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
+  });
+
+  test('fails when clientContext used with payloadResponseOnly', () => {
+    expect(() => {
+      new LambdaInvoke(stack, 'Task', {
+        lambdaFunction,
+        payloadResponseOnly: true,
+        payload: sfn.TaskInput.fromObject({
+          foo: 'bar',
+        }),
+        clientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
+      });
+    }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
+  });
+
+  test('fails when qualifier used with payloadResponseOnly', () => {
+    expect(() => {
+      new LambdaInvoke(stack, 'Task', {
+        lambdaFunction,
+        payloadResponseOnly: true,
+        payload: sfn.TaskInput.fromObject({
+          foo: 'bar',
+        }),
+        qualifier: '1',
+      });
+    }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
   });
 
   test('fails when WAIT_FOR_TASK_TOKEN integration pattern is used without supplying a task token in payload', () => {

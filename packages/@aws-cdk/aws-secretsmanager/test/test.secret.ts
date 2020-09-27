@@ -344,7 +344,10 @@ export = {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
-          Action: 'secretsmanager:PutSecretValue',
+          Action: [
+            'secretsmanager:PutSecretValue',
+            'secretsmanager:UpdateSecret',
+          ],
           Effect: 'Allow',
           Resource: { Ref: 'SecretA720EF05' },
         }],
@@ -369,7 +372,10 @@ export = {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
-          Action: 'secretsmanager:PutSecretValue',
+          Action: [
+            'secretsmanager:PutSecretValue',
+            'secretsmanager:UpdateSecret',
+          ],
           Effect: 'Allow',
           Resource: { Ref: 'SecretA720EF05' },
         }],
@@ -447,11 +453,40 @@ export = {
     test.done();
   },
 
-  'import'(test: Test) {
+  'import by secretArn'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+
+    // WHEN
+    const secret = secretsmanager.Secret.fromSecretArn(stack, 'Secret', secretArn);
+
+    // THEN
+    test.equals(secret.secretArn, secretArn);
+    test.equals(secret.secretName, 'MySecret');
+    test.same(secret.encryptionKey, undefined);
+    test.deepEqual(stack.resolve(secret.secretValue), `{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
+    test.deepEqual(stack.resolve(secret.secretValueFromJson('password')), `{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
+    test.done();
+  },
+
+  'import by secretArn throws if ARN is malformed'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const arnWithoutResourceName = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret';
+    const arnWithoutSecretsManagerSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
+
+    // WHEN
+    test.throws(() => secretsmanager.Secret.fromSecretArn(stack, 'Secret1', arnWithoutResourceName), /invalid ARN format/);
+    test.throws(() => secretsmanager.Secret.fromSecretArn(stack, 'Secret2', arnWithoutSecretsManagerSuffix), /invalid ARN format/);
+    test.done();
+  },
+
+  'import by attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const encryptionKey = new kms.Key(stack, 'KMS');
-    const secretArn = 'arn::of::a::secret';
+    const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
 
     // WHEN
     const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
@@ -460,9 +495,73 @@ export = {
 
     // THEN
     test.equals(secret.secretArn, secretArn);
+    test.equals(secret.secretName, 'MySecret');
     test.same(secret.encryptionKey, encryptionKey);
-    test.deepEqual(stack.resolve(secret.secretValue), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:::}}');
-    test.deepEqual(stack.resolve(secret.secretValueFromJson('password')), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:password::}}');
+    test.deepEqual(stack.resolve(secret.secretValue), `{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
+    test.deepEqual(stack.resolve(secret.secretValueFromJson('password')), `{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
+    test.done();
+  },
+
+  'import by secret name'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const secretName = 'MySecret';
+
+    // WHEN
+    const secret = secretsmanager.Secret.fromSecretName(stack, 'Secret', secretName);
+
+    // THEN
+    test.equals(secret.secretArn, secretName);
+    test.equals(secret.secretName, secretName);
+    test.deepEqual(stack.resolve(secret.secretValue), `{{resolve:secretsmanager:${secretName}:SecretString:::}}`);
+    test.deepEqual(stack.resolve(secret.secretValueFromJson('password')), `{{resolve:secretsmanager:${secretName}:SecretString:password::}}`);
+    test.done();
+  },
+
+  'import by secret name with grants'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+    const secret = secretsmanager.Secret.fromSecretName(stack, 'Secret', 'MySecret');
+
+    // WHEN
+    secret.grantRead(role);
+    secret.grantWrite(role);
+
+    // THEN
+    const expectedSecretReference = {
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':secretsmanager:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':secret:MySecret*',
+      ]],
+    };
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
+          Effect: 'Allow',
+          Resource: expectedSecretReference,
+        },
+        {
+          Action: [
+            'secretsmanager:PutSecretValue',
+            'secretsmanager:UpdateSecret',
+          ],
+          Effect: 'Allow',
+          Resource: expectedSecretReference,
+        }],
+      },
+    }));
+
     test.done();
   },
 
@@ -571,10 +670,11 @@ export = {
   'equivalence of SecretValue and Secret.fromSecretAttributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
+    const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
 
     // WHEN
-    const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretValueFromJson('password');
-    const value = cdk.SecretValue.secretsManager('my-secret-arn', { jsonField: 'password' });
+    const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: secretArn }).secretValueFromJson('password');
+    const value = cdk.SecretValue.secretsManager(secretArn, { jsonField: 'password' });
 
     // THEN
     test.deepEqual(stack.resolve(imported), stack.resolve(value));
@@ -613,6 +713,40 @@ export = {
       },
     }));
 
+    test.done();
+  },
+
+  'fails if secret policy has no actions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+
+    // WHEN
+    secret.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    test.done();
+  },
+
+  'fails if secret policy has no IAM principals'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+
+    // WHEN
+    secret.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['secretsmanager:*'],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
     test.done();
   },
 };

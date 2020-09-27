@@ -68,7 +68,7 @@ export interface LoadBalancer {
 /**
  * EC2 Instance interface
  */
-export interface Ec2Instance  {
+export interface Ec2Instance {
   /**
    * The id of the instance resource
    */
@@ -130,7 +130,7 @@ export class EndpointConfiguration extends cdk.Construct {
     return {
       clientIpPreservationEnabled: this.props.clientIpReservation,
       endpointId: this.props.endpointId,
-      weight:  this.props.weight,
+      weight: this.props.weight,
     };
   }
 }

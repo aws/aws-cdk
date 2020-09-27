@@ -207,7 +207,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
 
     let securityGroups;
     if (props.securityGroup !== undefined) {
-      securityGroups = [ props.securityGroup ];
+      securityGroups = [props.securityGroup];
     } else if (props.securityGroups !== undefined) {
       securityGroups = props.securityGroups;
     }

@@ -1,6 +1,7 @@
-import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, Stack } from '@aws-cdk/core';
 import * as path from 'path';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
+import { Duration, Stack } from '@aws-cdk/core';
 import * as cr from '../../lib';
 import * as util from '../../lib/provider-framework/util';
 
@@ -24,7 +25,7 @@ test('minimal setup', () => {
   // framework "onEvent" handler
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: 'framework.onEvent',
-    Environment: { Variables: { USER_ON_EVENT_FUNCTION_ARN: { 'Fn::GetAtt': [ 'MyHandler6B74D312', 'Arn' ] } } },
+    Environment: { Variables: { USER_ON_EVENT_FUNCTION_ARN: { 'Fn::GetAtt': ['MyHandler6B74D312', 'Arn'] } } },
     Timeout: 900,
   });
 
@@ -61,8 +62,8 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
   // framework "onEvent" handler
   const expectedEnv = {
     Variables: {
-      USER_ON_EVENT_FUNCTION_ARN: { 'Fn::GetAtt': ['MyHandler6B74D312', 'Arn' ] },
-      USER_IS_COMPLETE_FUNCTION_ARN: { 'Fn::GetAtt': [ 'MyHandler6B74D312', 'Arn' ] },
+      USER_ON_EVENT_FUNCTION_ARN: { 'Fn::GetAtt': ['MyHandler6B74D312', 'Arn'] },
+      USER_IS_COMPLETE_FUNCTION_ARN: { 'Fn::GetAtt': ['MyHandler6B74D312', 'Arn'] },
     },
   };
 
@@ -164,5 +165,55 @@ describe('retry policy', () => {
       totalTimeout: Duration.seconds(5),
       queryInterval: Duration.seconds(10),
     })).toThrow(/Cannot determine retry count since totalTimeout=5s is not integrally dividable by queryInterval=10s/);
+  });
+});
+
+describe('log retention', () => {
+  it('includes a log rotation lambda when present', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      }),
+      logRetention: logs.RetentionDays.ONE_WEEK,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('Custom::LogRetention', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyProviderframeworkonEvent9AF5C387',
+            },
+          ],
+        ],
+      },
+      RetentionInDays: 7,
+    });
+  });
+
+  it('does not include the log rotation lambda otherwise', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      }),
+    });
+
+    // THEN
+    expect(stack).not.toHaveResource('Custom::LogRetention');
   });
 });

@@ -61,7 +61,10 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     this.taskPolicies = this.createScopedAccessPolicy();
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     // suffix of ':2' indicates that the output of the nested state machine should be JSON
     // suffix is only applicable when waiting for a nested state machine to complete (RUN_JOB)
     // https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html

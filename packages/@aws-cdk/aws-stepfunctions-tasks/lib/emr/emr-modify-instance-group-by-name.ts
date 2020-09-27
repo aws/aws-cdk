@@ -50,7 +50,10 @@ export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
     ];
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'modifyInstanceGroupByName', sfn.IntegrationPattern.REQUEST_RESPONSE),
       Parameters: sfn.FieldUtils.renderObject({

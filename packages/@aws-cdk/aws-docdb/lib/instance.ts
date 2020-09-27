@@ -145,7 +145,6 @@ export interface DatabaseInstanceProps {
    */
   readonly autoMinorVersionUpgrade?: boolean;
 
-  // tslint:disable:max-line-length
   /**
    * The weekly time range (in UTC) during which system maintenance can occur.
    *
@@ -156,7 +155,6 @@ export interface DatabaseInstanceProps {
    * time for each AWS Region, occurring on a random day of the week. To see
    * the time blocks available, see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-instance-maintain.html#maintenance-window
    */
-  // tslint:enable:max-line-length
   readonly preferredMaintenanceWindow?: string;
 
   /**
@@ -205,7 +203,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
     const instance = new CfnDBInstance(this, 'Resource', {
       dbClusterIdentifier: props.cluster.clusterIdentifier,
       dbInstanceClass: `db.${props.instanceClass}`,
-      autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
+      autoMinorVersionUpgrade: props.autoMinorVersionUpgrade ?? true,
       availabilityZone: props.availabilityZone,
       dbInstanceIdentifier: props.dbInstanceName,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,

@@ -1,14 +1,27 @@
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnStage } from '../apigatewayv2.generated';
-import { CommonStageOptions, IStage } from '../common';
+import { CommonStageOptions, IDomainName, IStage } from '../common';
 import { IHttpApi } from './api';
+import { HttpApiMapping } from './api-mapping';
 
 const DEFAULT_STAGE_NAME = '$default';
+
+/**
+ * Represents the HttpStage
+ */
+export interface IHttpStage extends IStage {
+}
 
 /**
  * Options to create a new stage for an HTTP API.
  */
 export interface HttpStageOptions extends CommonStageOptions {
+  /**
+   * The options for custom domain and api mapping
+   *
+   * @default - no custom domain and api mapping configuration
+   */
+  readonly domainMapping?: DomainMappingOptions;
 }
 
 /**
@@ -19,6 +32,35 @@ export interface HttpStageProps extends HttpStageOptions {
    * The HTTP API to which this stage is associated.
    */
   readonly httpApi: IHttpApi;
+}
+
+/**
+ * Options for defaultDomainMapping
+ */
+export interface DefaultDomainMappingOptions {
+  /**
+   * The domain name for the mapping
+   *
+   */
+  readonly domainName: IDomainName;
+
+  /**
+   * The API mapping key. Leave it undefined for the root path mapping.
+   * @default - empty key for the root path mapping
+   */
+  readonly mappingKey?: string;
+}
+
+/**
+ * Options for DomainMapping
+ */
+export interface DomainMappingOptions extends DefaultDomainMappingOptions {
+  /**
+   * The API Stage
+   *
+   * @default - the $default stage
+   */
+  readonly stage?: IStage;
 }
 
 /**
@@ -52,6 +94,18 @@ export class HttpStage extends Resource implements IStage {
 
     this.stageName = this.physicalName;
     this.httpApi = props.httpApi;
+
+    if (props.domainMapping) {
+      new HttpApiMapping(this, `${props.domainMapping.domainName}${props.domainMapping.mappingKey}`, {
+        api: props.httpApi,
+        domainName: props.domainMapping.domainName,
+        stage: this,
+        apiMappingKey: props.domainMapping.mappingKey,
+      });
+      // ensure the dependency
+      this.node.addDependency(props.domainMapping.domainName);
+    }
+
   }
 
   /**

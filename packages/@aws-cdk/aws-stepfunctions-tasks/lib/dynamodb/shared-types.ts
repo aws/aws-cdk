@@ -1,4 +1,4 @@
-import { transformAttributeValueMap } from './private/utils';
+import { transformAttributeValueMap, validateJsonPath } from './private/utils';
 
 /**
  * Determines the level of detail about provisioned throughput consumption that is returned.
@@ -205,9 +205,7 @@ export class DynamoAttributeValue {
    * @param value Json path that specifies state input to be used
    */
   public static mapFromJsonPath(value: string) {
-    if (!value.startsWith('$')) {
-      throw new Error("Data JSON path values must either be exactly equal to '$' or start with '$.'");
-    }
+    validateJsonPath(value);
     return new DynamoAttributeValue({ 'M.$': value });
   }
 
@@ -230,6 +228,17 @@ export class DynamoAttributeValue {
    */
   public static fromBoolean(value: boolean) {
     return new DynamoAttributeValue({ BOOL: value });
+  }
+
+  /**
+   * Sets an attribute of type Boolean from state input through Json path.
+   * For example:  "BOOL": true
+   *
+   * @param value Json path that specifies state input to be used
+   */
+  public static booleanFromJsonPath(value: string) {
+    validateJsonPath(value);
+    return new DynamoAttributeValue({ BOOL: value.toString() });
   }
 
   /**

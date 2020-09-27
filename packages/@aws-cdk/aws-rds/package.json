@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-rds",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS RDS",
+  "description": "The CDK Construct Library for AWS::RDS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-rds",
         "module": "aws_cdk.aws_rds"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -64,6 +65,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
@@ -77,12 +79,11 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -91,27 +92,27 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
+      "attribute-tag:@aws-cdk/aws-rds.DatabaseSecret.secretName",
       "props-physical-name:@aws-cdk/aws-rds.ParameterGroupProps",
-      "props-physical-name:@aws-cdk/aws-rds.ClusterParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterProps",
+      "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterFromSnapshotProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshotProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceReadReplicaProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseSecretProps",
       "props-physical-name:@aws-cdk/aws-rds.OptionGroupProps",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_SE2",
+      "props-physical-name:@aws-cdk/aws-rds.SubnetGroupProps",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.semanticVersion",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.applicationId",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER",
@@ -123,24 +124,11 @@
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseClusterEngine.AURORA",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseClusterEngine.AURORA_MYSQL",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseClusterEngine.AURORA_POSTGRESQL",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.MARIADB",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.MYSQL",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_EE",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_SE",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_SE1",
-      "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.POSTGRES",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_EE",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_EX",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_SE",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_WEB"
+      "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER"
     ]
   },
   "stability": "experimental",
-  "maturity": "experimental",
+  "maturity": "developer-preview",
   "awscdkio": {
     "announce": false
   }

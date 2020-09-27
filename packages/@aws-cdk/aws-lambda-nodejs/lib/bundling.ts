@@ -1,137 +1,232 @@
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
-import { findPkgPath } from './util';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import { DockerBundler, Installer, LocalBundler, LockFile } from './bundlers';
+import { PackageJsonManager } from './package-json-manager';
+import { findUp } from './util';
+
+/**
+ * Base options for Parcel bundling
+ */
+export interface ParcelBaseOptions {
+  /**
+   * Whether to minify files when bundling.
+   *
+   * @default false
+   */
+  readonly minify?: boolean;
+
+  /**
+   * Whether to include source maps when bundling.
+   *
+   * @default false
+   */
+  readonly sourceMaps?: boolean;
+
+  /**
+   * The cache directory (relative to the project root)
+   *
+   * Parcel uses a filesystem cache for fast rebuilds.
+   *
+   * @default - `.parcel-cache` in the working directory
+   */
+  readonly cacheDir?: string;
+
+  /**
+   * The root of the project. This will be used as the source for the volume
+   * mounted in the Docker container. If you specify this prop, ensure that
+   * this path includes `entry` and any module/dependencies used by your
+   * function otherwise bundling will not be possible.
+   *
+   * @default - the closest path containing a .git folder
+   */
+  readonly projectRoot?: string;
+
+  /**
+   * Environment variables defined when Parcel runs.
+   *
+   * @default - no environment variables are defined.
+   */
+  readonly parcelEnvironment?: { [key: string]: string; };
+
+  /**
+   * A list of modules that should be considered as externals (already available
+   * in the runtime).
+   *
+   * @default ['aws-sdk']
+   */
+  readonly externalModules?: string[];
+
+  /**
+   * A list of modules that should be installed instead of bundled. Modules are
+   * installed in a Lambda compatible environnment.
+   *
+   * @default - all modules are bundled
+   */
+  readonly nodeModules?: string[];
+
+  /**
+   * The version of Parcel to use when running in a Docker container.
+   *
+   * @default - 2.0.0-beta.1
+   */
+  readonly parcelVersion?: string;
+
+  /**
+   * Build arguments to pass when building the bundling image.
+   *
+   * @default - no build arguments are passed
+   */
+  readonly buildArgs?: { [key:string] : string };
+
+  /**
+   * Force bundling in a Docker container even if local bundling is
+   * possible.This  is useful if your function relies on node modules
+   * that should be installed (`nodeModules`) in a Lambda compatible
+   * environment.
+   *
+   * @default false
+   */
+  readonly forceDockerBundling?: boolean;
+
+  /**
+   * A custom bundling Docker image.
+   *
+   * This image should have Parcel installed at `/`. If you plan to use `nodeModules`
+   * it should also have `npm` or `yarn` depending on the lock file you're using.
+   *
+   * See https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/parcel/Dockerfile
+   * for the default image provided by @aws-cdk/aws-lambda-nodejs.
+   *
+   * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
+   */
+  readonly bundlingDockerImage?: cdk.BundlingDockerImage;
+}
 
 /**
  * Options for Parcel bundling
  */
-export interface ParcelOptions {
+export interface ParcelOptions extends ParcelBaseOptions {
   /**
    * Entry file
    */
   readonly entry: string;
 
   /**
-   * Expose modules as UMD under this name
+   * The runtime of the lambda function
    */
-  readonly global: string;
-
-  /**
-   * Minify
-   */
-  readonly minify?: boolean;
-
-  /**
-   * Include source maps
-   */
-  readonly sourceMaps?: boolean;
-
-  /**
-   * The cache directory
-   */
-  readonly cacheDir?: string;
-
-  /**
-   * The node version to use as target for Babel
-   */
-  readonly nodeVersion: string;
-
-  /**
-   * The docker tag of the node base image to use in the parcel-bundler docker image
-   *
-   * @see https://hub.docker.com/_/node/?tab=tags
-   */
-  readonly nodeDockerTag: string;
-
-  /**
-   * The root of the project. This will be used as the source for the volume
-   * mounted in the Docker container.
-   */
-  readonly projectRoot: string;
-
-  /**
-   * The environment variables to pass to the container running Parcel.
-   *
-   * @default - no environment variables are passed to the container
-   */
-  readonly environment?: { [key: string]: string; };
+  readonly runtime: lambda.Runtime;
 }
 
 /**
- * Parcel code
+ * Bundling
  */
 export class Bundling {
+  /**
+   * Parcel bundled Lambda asset code
+   */
   public static parcel(options: ParcelOptions): lambda.AssetCode {
-    // Original package.json path and content
-    let pkgPath = findPkgPath();
-    if (!pkgPath) {
-      throw new Error('Cannot find a `package.json` in this project.');
+    // Find project root
+    const projectRoot = options.projectRoot
+      ?? findUp(`.git${path.sep}`)
+      ?? findUp(LockFile.YARN)
+      ?? findUp(LockFile.NPM)
+      ?? findUp('package.json');
+    if (!projectRoot) {
+      throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }
-    pkgPath = path.join(pkgPath, 'package.json');
-    const originalPkg = fs.readFileSync(pkgPath);
-    const originalPkgJson = JSON.parse(originalPkg.toString());
+    const relativeEntryPath = path.relative(projectRoot, path.resolve(options.entry));
 
-    // Update engines.node in package.json to set the right Babel target
-    setEngines(options.nodeVersion, pkgPath, originalPkgJson);
+    const packageJsonManager = new PackageJsonManager(path.dirname(options.entry));
 
-    // Entry file path relative to container path
-    const containerEntryPath = path.join(cdk.AssetStaging.BUNDLING_INPUT_DIR, path.relative(options.projectRoot, path.resolve(options.entry)));
+    // Collect external and install modules
+    let includeNodeModules: { [key: string]: boolean } | undefined;
+    let dependencies: { [key: string]: string } | undefined;
+    const externalModules = options.externalModules ?? ['aws-sdk'];
+    if (externalModules || options.nodeModules) {
+      const modules = [...externalModules, ...options.nodeModules ?? []];
+      includeNodeModules = {};
+      for (const mod of modules) {
+        includeNodeModules[mod] = false;
+      }
+      if (options.nodeModules) {
+        dependencies = packageJsonManager.getVersions(options.nodeModules);
+      }
+    }
 
-    try {
-      const command = [
-        'parcel', 'build', containerEntryPath.replace(/\\/g, '/'), // Always use POSIX paths in the container
-        '--out-dir', cdk.AssetStaging.BUNDLING_OUTPUT_DIR,
-        '--out-file', 'index.js',
-        '--global', options.global,
-        '--target', 'node',
-        '--bundle-node-modules',
-        '--log-level', '2',
-        !options.minify && '--no-minify',
-        !options.sourceMaps && '--no-source-maps',
-        ...(options.cacheDir ? ['--cache-dir', '/parcel-cache'] : []),
-      ].filter(Boolean) as string[];
+    let installer = Installer.NPM;
+    let lockFile: LockFile | undefined;
+    if (dependencies) {
+      // Use npm unless we have a yarn.lock.
+      if (fs.existsSync(path.join(projectRoot, LockFile.YARN))) {
+        installer = Installer.YARN;
+        lockFile = LockFile.YARN;
+      } else if (fs.existsSync(path.join(projectRoot, LockFile.NPM))) {
+        lockFile = LockFile.NPM;
+      }
+    }
 
-      return lambda.Code.fromAsset(options.projectRoot, {
-        assetHashType: cdk.AssetHashType.BUNDLE,
-        bundling: {
-          image: cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel-bundler'), {
-            buildArgs: {
-              NODE_TAG: options.nodeDockerTag ?? `${process.versions.node}-alpine`,
-            },
-          }),
-          environment: options.environment,
-          volumes: options.cacheDir
-            ? [{ containerPath: '/parcel-cache', hostPath: options.cacheDir }]
-            : [],
-          workingDirectory: path.dirname(containerEntryPath).replace(/\\/g, '/'), // Always use POSIX paths in the container
-          command,
+    // Configure target in package.json for Parcel
+    packageJsonManager.update({
+      targets: {
+        'cdk-lambda': {
+          context: 'node',
+          includeNodeModules: includeNodeModules ?? true,
+          sourceMap: options.sourceMaps ?? false,
+          minify: options.minify ?? false,
+          engines: {
+            node: `>= ${runtimeVersion(options.runtime)}`,
+          },
         },
+      },
+    });
+
+    // Local
+    let localBundler: cdk.ILocalBundling | undefined;
+    if (!options.forceDockerBundling) {
+      localBundler = new LocalBundler({
+        projectRoot,
+        relativeEntryPath,
+        cacheDir: options.cacheDir,
+        environment: options.parcelEnvironment,
+        dependencies,
+        installer,
+        lockFile,
       });
-    } finally {
-      restorePkg(pkgPath, originalPkg);
     }
+
+    // Docker
+    const dockerBundler = new DockerBundler({
+      runtime: options.runtime,
+      relativeEntryPath,
+      cacheDir: options.cacheDir,
+      environment: options.parcelEnvironment,
+      bundlingDockerImage: options.bundlingDockerImage,
+      buildImage: !LocalBundler.runsLocally(projectRoot) || options.forceDockerBundling, // build image only if we can't run locally
+      buildArgs: options.buildArgs,
+      parcelVersion: options.parcelVersion,
+      dependencies,
+      installer,
+      lockFile,
+    });
+
+    return lambda.Code.fromAsset(projectRoot, {
+      assetHashType: cdk.AssetHashType.OUTPUT,
+      bundling: {
+        local: localBundler,
+        ...dockerBundler.bundlingOptions,
+      },
+    });
   }
 }
 
-function setEngines(nodeVersion: string, pkgPath: string, originalPkgJson: any): void {
-  // Update engines.node (Babel target)
-  const updateData = {
-    engines: {
-      node: `>= ${nodeVersion}`,
-    },
-  };
+function runtimeVersion(runtime: lambda.Runtime): string {
+  const match = runtime.name.match(/nodejs(\d+)/);
 
-  // Write new package.json
-  if (Object.keys(updateData).length !== 0) {
-    fs.writeFileSync(pkgPath, JSON.stringify({
-      ...originalPkgJson,
-      ...updateData,
-    }, null, 2));
+  if (!match) {
+    throw new Error('Cannot extract version from runtime.');
   }
-}
 
-function restorePkg(pkgPath: string, originalPkg: Buffer): void {
-  fs.writeFileSync(pkgPath, originalPkg);
+  return match[1];
 }

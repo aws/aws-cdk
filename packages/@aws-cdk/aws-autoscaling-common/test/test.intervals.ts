@@ -106,7 +106,7 @@ export = {
 
 function realisticRelativeIntervals(): appscaling.ScalingInterval[] {
   // Function so we don't have to worry about cloning
-  return  [
+  return [
     { upper: 10, change: -2 },
     { upper: 20, change: -1 },
     { lower: 80, change: +1 },

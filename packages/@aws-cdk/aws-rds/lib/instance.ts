@@ -2,16 +2,20 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { CfnDeletionPolicy, Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
+import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { DatabaseClusterEngine, RotationMultiUserOptions } from './props';
-import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
+import { applyRemovalPolicy, defaultDeletionProtection, engineDescription, setupS3ImportExport } from './private/util';
+import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, SnapshotCredentials } from './props';
+import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
+import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
+import { ISubnetGroup, SubnetGroup } from './subnet-group';
 
 /**
  * A database instance
@@ -47,6 +51,23 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
   readonly instanceEndpoint: Endpoint;
 
   /**
+   * The engine of this database Instance.
+   * May be not known for imported Instances if it wasn't provided explicitly,
+   * or for read replicas.
+   */
+  readonly engine?: IInstanceEngine;
+
+  /**
+   * Add a new db proxy to this instance.
+   */
+  addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy;
+
+  /**
+   * Grant the given identity connection access to the database.
+   */
+  grantConnect(grantee: iam.IGrantable): iam.Grant;
+
+  /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
@@ -76,6 +97,13 @@ export interface DatabaseInstanceAttributes {
    * The security groups of the instance.
    */
   readonly securityGroups: ec2.ISecurityGroup[];
+
+  /**
+   * The engine of the existing database Instance.
+   *
+   * @default - the imported Instance's engine is unknown
+   */
+  readonly engine?: IInstanceEngine;
 }
 
 /**
@@ -96,6 +124,8 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
       public readonly dbInstanceEndpointPort = attrs.port.toString();
       public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
+      public readonly engine = attrs.engine;
+      protected enableIamAuthentication = true;
     }
 
     return new Import(scope, id);
@@ -105,11 +135,37 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public abstract readonly dbInstanceEndpointAddress: string;
   public abstract readonly dbInstanceEndpointPort: string;
   public abstract readonly instanceEndpoint: Endpoint;
+  // only required because of JSII bug: https://github.com/aws/jsii/issues/2040
+  public abstract readonly engine?: IInstanceEngine;
+  protected abstract enableIamAuthentication?: boolean;
 
   /**
    * Access to network connections.
    */
   public abstract readonly connections: ec2.Connections;
+
+  /**
+   * Add a new db proxy to this instance.
+   */
+  public addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy {
+    return new DatabaseProxy(this, id, {
+      proxyTarget: ProxyTarget.fromInstance(this),
+      ...options,
+    });
+  }
+
+  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+    if (this.enableIamAuthentication === false) {
+      throw new Error('Cannot grant connect when IAM authentication is disabled');
+    }
+
+    this.enableIamAuthentication = true;
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['rds-db:connect'],
+      resourceArns: [this.instanceArn],
+    });
+  }
 
   /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
@@ -146,90 +202,6 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       targetType: secretsmanager.AttachmentTargetType.RDS_DB_INSTANCE,
     };
   }
-}
-
-/**
- * A database instance engine. Provides mapping to DatabaseEngine used for
- * secret rotation.
- */
-export class DatabaseInstanceEngine extends DatabaseClusterEngine {
-  /* tslint:disable max-line-length */
-  public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '10.0', parameterGroupFamily: 'mariadb10.0' },
-    { engineMajorVersion: '10.1', parameterGroupFamily: 'mariadb10.1' },
-    { engineMajorVersion: '10.2', parameterGroupFamily: 'mariadb10.2' },
-    { engineMajorVersion: '10.3', parameterGroupFamily: 'mariadb10.3' },
-  ]);
-
-  public static readonly MYSQL = new DatabaseInstanceEngine('mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '5.6', parameterGroupFamily: 'mysql5.6' },
-    { engineMajorVersion: '5.7', parameterGroupFamily: 'mysql5.7' },
-    { engineMajorVersion: '8.0', parameterGroupFamily: 'mysql8.0' },
-  ]);
-
-  public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-ee-11.2' },
-    { engineMajorVersion: '12.1', parameterGroupFamily: 'oracle-ee-12.1' },
-    { engineMajorVersion: '12.2', parameterGroupFamily: 'oracle-ee-12.2' },
-    { engineMajorVersion: '18', parameterGroupFamily: 'oracle-ee-18' },
-    { engineMajorVersion: '19', parameterGroupFamily: 'oracle-ee-19' },
-  ]);
-
-  public static readonly ORACLE_SE2 = new DatabaseInstanceEngine('oracle-se2', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '12.1', parameterGroupFamily: 'oracle-se2-12.1' },
-    { engineMajorVersion: '12.2', parameterGroupFamily: 'oracle-se2-12.2' },
-    { engineMajorVersion: '18', parameterGroupFamily: 'oracle-se2-18' },
-    { engineMajorVersion: '19', parameterGroupFamily: 'oracle-se2-19' },
-  ]);
-
-  public static readonly ORACLE_SE1 = new DatabaseInstanceEngine('oracle-se1', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se1-11.2' },
-  ]);
-
-  public static readonly ORACLE_SE = new DatabaseInstanceEngine('oracle-se', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se-11.2' },
-  ]);
-
-  public static readonly POSTGRES = new DatabaseInstanceEngine('postgres', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '9.3', parameterGroupFamily: 'postgres9.3' },
-    { engineMajorVersion: '9.4', parameterGroupFamily: 'postgres9.4' },
-    { engineMajorVersion: '9.5', parameterGroupFamily: 'postgres9.5' },
-    { engineMajorVersion: '9.6', parameterGroupFamily: 'postgres9.6' },
-    { engineMajorVersion: '10', parameterGroupFamily: 'postgres10' },
-    { engineMajorVersion: '11', parameterGroupFamily: 'postgres11' },
-  ]);
-
-  public static readonly SQL_SERVER_EE = new DatabaseInstanceEngine('sqlserver-ee', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-ee-11.0' },
-    { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-ee-12.0' },
-    { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-ee-13.0' },
-    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ee-14.0' },
-  ]);
-
-  public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-se-11.0' },
-    { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-se-12.0' },
-    { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-se-13.0' },
-    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-se-14.0' },
-  ]);
-
-  public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-ex-11.0' },
-    { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-ex-12.0' },
-    { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-ex-13.0' },
-    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ex-14.0' },
-  ]);
-
-  public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-web-11.0' },
-    { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-web-12.0' },
-    { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-web-13.0' },
-    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-web-14.0' },
-  ]);
-  /* tslint:enable max-line-length */
-
-  /** To make it a compile-time error to pass a DatabaseClusterEngine where a DatabaseInstanceEngine is expected. */
-  public readonly isDatabaseInstanceEngine = true;
 }
 
 /**
@@ -292,29 +264,9 @@ export enum StorageType {
 }
 
 /**
- * The retention period for Performance Insight.
- */
-export enum PerformanceInsightRetention {
-  /**
-   * Default retention period of 7 days.
-   */
-  DEFAULT = 7,
-
-  /**
-   * Long term retention period of 2 years.
-   */
-  LONG_TERM = 731
-}
-
-/**
  * Construction properties for a DatabaseInstanceNew
  */
 export interface DatabaseInstanceNewProps {
-  /**
-   * The name of the compute and memory capacity classes.
-   */
-  readonly instanceType: ec2.InstanceType;
-
   /**
    * Specifies if the database instance is a multiple Availability Zone deployment.
    *
@@ -370,9 +322,17 @@ export interface DatabaseInstanceNewProps {
   /**
    * The type of subnets to add to the created DB subnet group.
    *
+   * @deprecated use `vpcSubnets`
    * @default - private subnets
    */
   readonly vpcPlacement?: ec2.SubnetSelection;
+
+  /**
+   * The type of subnets to add to the created DB subnet group.
+   *
+   * @default - private subnets
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * The security groups to assign to the DB instance.
@@ -460,7 +420,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * Whether to enable Performance Insights for the DB instance.
    *
-   * @default false
+   * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
    */
   readonly enablePerformanceInsights?: boolean;
 
@@ -511,7 +471,6 @@ export interface DatabaseInstanceNewProps {
    */
   readonly autoMinorVersionUpgrade?: boolean;
 
-  // tslint:disable:max-line-length
   /**
    * The weekly time range (in UTC) during which system maintenance can occur.
    *
@@ -522,13 +481,12 @@ export interface DatabaseInstanceNewProps {
    * time for each AWS Region, occurring on a random day of the week. To see
    * the time blocks available, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
    */
-  // tslint:enable:max-line-length
   readonly preferredMaintenanceWindow?: string;
 
   /**
    * Indicates whether the DB instance should have deletion protection enabled.
    *
-   * @default true
+   * @default - true if ``removalPolicy`` is RETAIN, false otherwise
    */
   readonly deletionProtection?: boolean;
 
@@ -546,6 +504,92 @@ export interface DatabaseInstanceNewProps {
    * @default - No autoscaling of RDS instance
    */
   readonly maxAllocatedStorage?: number;
+
+  /**
+   * The Active Directory directory ID to create the DB instance in.
+   *
+   * @default - Do not join domain
+   */
+  readonly domain?: string;
+
+  /**
+   * The IAM role to be used when making API calls to the Directory Service. The role needs the AWS-managed policy
+   * AmazonRDSDirectoryServiceAccess or equivalent.
+   *
+   * @default - The role will be created for you if {@link DatabaseInstanceNewProps#domain} is specified
+   */
+  readonly domainRole?: iam.IRole;
+
+  /**
+   * Existing subnet group for the instance.
+   *
+   * @default - a new subnet group will be created.
+   */
+  readonly subnetGroup?: ISubnetGroup;
+
+  /**
+   * Role that will be associated with this DB instance to enable S3 import.
+   * This feature is only supported by the Microsoft SQL Server, Oracle, and PostgreSQL engines.
+   *
+   * This property must not be used if `s3ImportBuckets` is used.
+   *
+   * For Microsoft SQL Server:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html
+   * For Oracle:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.html
+   *
+   * @default - New role is created if `s3ImportBuckets` is set, no role is defined otherwise
+   */
+  readonly s3ImportRole?: iam.IRole;
+
+  /**
+   * S3 buckets that you want to load data from.
+   * This feature is only supported by the Microsoft SQL Server, Oracle, and PostgreSQL engines.
+   *
+   * This property must not be used if `s3ImportRole` is used.
+   *
+   * For Microsoft SQL Server:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html
+   * For Oracle:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.html
+   *
+   * @default - None
+   */
+  readonly s3ImportBuckets?: s3.IBucket[];
+
+  /**
+   * Role that will be associated with this DB instance to enable S3 export.
+   * This feature is only supported by the Microsoft SQL Server and Oracle engines.
+   *
+   * This property must not be used if `s3ExportBuckets` is used.
+   *
+   * For Microsoft SQL Server:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html
+   * For Oracle:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html
+   *
+   * @default - New role is created if `s3ExportBuckets` is set, no role is defined otherwise
+   */
+  readonly s3ExportRole?: iam.IRole;
+
+  /**
+   * S3 buckets that you want to load data into.
+   * This feature is only supported by the Microsoft SQL Server and Oracle engines.
+   *
+   * This property must not be used if `s3ExportRole` is used.
+   *
+   * For Microsoft SQL Server:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html
+   * For Oracle:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html
+   *
+   * @default - None
+   */
+  readonly s3ExportBuckets?: s3.IBucket[];
 }
 
 /**
@@ -559,6 +603,8 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   public readonly connections: ec2.Connections;
 
+  protected abstract readonly instanceType: ec2.InstanceType;
+
   protected readonly vpcPlacement?: ec2.SubnetSelection;
   protected readonly newCfnProps: CfnDBInstanceProps;
 
@@ -566,17 +612,25 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   private readonly cloudwatchLogsRetention?: logs.RetentionDays;
   private readonly cloudwatchLogsRetentionRole?: iam.IRole;
 
+  private readonly domainId?: string;
+  private readonly domainRole?: iam.IRole;
+
+  protected enableIamAuthentication?: boolean;
+
   constructor(scope: Construct, id: string, props: DatabaseInstanceNewProps) {
     super(scope, id);
 
     this.vpc = props.vpc;
-    this.vpcPlacement = props.vpcPlacement;
+    if (props.vpcSubnets && props.vpcPlacement) {
+      throw new Error('Only one of `vpcSubnets` or `vpcPlacement` can be specified');
+    }
+    this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcPlacement);
-
-    const subnetGroup = new CfnDBSubnetGroup(this, 'SubnetGroup', {
-      dbSubnetGroupDescription: `Subnet group for ${this.node.id} database`,
-      subnetIds,
+    const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'SubnetGroup', {
+      description: `Subnet group for ${this.node.id} database`,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcPlacement,
+      removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
     });
 
     const securityGroups = props.securityGroups || [new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -597,53 +651,69 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       });
     }
 
-    const deletionProtection = props.deletionProtection !== undefined ? props.deletionProtection : true;
     const storageType = props.storageType || StorageType.GP2;
     const iops = storageType === StorageType.IO1 ? (props.iops || 1000) : undefined;
 
     this.cloudwatchLogsExports = props.cloudwatchLogsExports;
     this.cloudwatchLogsRetention = props.cloudwatchLogsRetention;
     this.cloudwatchLogsRetentionRole = props.cloudwatchLogsRetentionRole;
+    this.enableIamAuthentication = props.iamAuthentication;
+
+    const enablePerformanceInsights = props.enablePerformanceInsights
+      || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
+    if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
+      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+    }
+
+    if (props.domain) {
+      this.domainId = props.domain;
+      this.domainRole = props.domainRole || new iam.Role(this, 'RDSDirectoryServiceRole', {
+        assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
+        ],
+      });
+    }
 
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
       backupRetentionPeriod: props.backupRetention ? props.backupRetention.toDays() : undefined,
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
-      dbInstanceClass: `db.${props.instanceType}`,
+      dbInstanceClass: Lazy.stringValue({ produce: () => `db.${this.instanceType}` }),
       dbInstanceIdentifier: props.instanceIdentifier,
-      dbSubnetGroupName: subnetGroup.ref,
+      dbSubnetGroupName: subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
-      deletionProtection,
+      deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
-      enableIamDatabaseAuthentication: props.iamAuthentication,
-      enablePerformanceInsights: props.enablePerformanceInsights,
+      enableIamDatabaseAuthentication: Lazy.anyValue({ produce: () => this.enableIamAuthentication }),
+      enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
       iops,
       monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
       monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
       multiAz: props.multiAz,
-      optionGroupName: props.optionGroup && props.optionGroup.optionGroupName,
-      performanceInsightsKmsKeyId: props.enablePerformanceInsights
-        ? props.performanceInsightEncryptionKey && props.performanceInsightEncryptionKey.keyArn
-        : undefined,
-      performanceInsightsRetentionPeriod: props.enablePerformanceInsights
+      optionGroupName: props.optionGroup?.optionGroupName,
+      performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
+      performanceInsightsRetentionPeriod: enablePerformanceInsights
         ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
         : undefined,
       port: props.port ? props.port.toString() : undefined,
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
+      publiclyAccessible: this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
       storageType,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
+      domain: this.domainId,
+      domainIamRoleName: this.domainRole?.roleName,
     };
   }
 
   protected setLogRetention() {
     if (this.cloudwatchLogsExports && this.cloudwatchLogsRetention) {
       for (const log of this.cloudwatchLogsExports) {
-        new lambda.LogRetention(this, `LogRetention${log}`, {
+        new logs.LogRetention(this, `LogRetention${log}`, {
           logGroupName: `/aws/rds/instance/${this.instanceIdentifier}/${log}`,
           retention: this.cloudwatchLogsRetention,
           role: this.cloudwatchLogsRetentionRole,
@@ -660,7 +730,14 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   /**
    * The database engine.
    */
-  readonly engine: DatabaseInstanceEngine;
+  readonly engine: IInstanceEngine;
+
+  /**
+   * The name of the compute and memory capacity for the instance.
+   *
+   * @default - m5.large (or, more specifically, db.m5.large)
+   */
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * The license model.
@@ -668,14 +745,6 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
    * @default - RDS default license model
    */
   readonly licenseModel?: LicenseModel;
-
-  /**
-   * The engine version. To prevent automatic upgrades, be sure to specify the
-   * full version number.
-   *
-   * @default - RDS default engine version
-   */
-  readonly engineVersion?: string;
 
   /**
    * Whether to allow major version upgrades.
@@ -699,20 +768,6 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   readonly allocatedStorage?: number;
 
   /**
-   * The master user password.
-   *
-   * @default - a Secrets Manager generated password
-   */
-  readonly masterUserPassword?: SecretValue;
-
-  /**
-   * The KMS key used to encrypt the secret for the master user password.
-   *
-   * @default - default master key
-   */
-  readonly masterUserPasswordEncryptionKey?: kms.IKey;
-
-  /**
    * The name of the database.
    *
    * @default - no name
@@ -731,12 +786,14 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
  * A new source database instance (not a read replica)
  */
 abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDatabaseInstance {
+  public readonly engine?: IInstanceEngine;
   /**
    * The AWS Secrets Manager secret attached to the instance.
    */
   public abstract readonly secret?: secretsmanager.ISecret;
 
   protected readonly sourceCfnProps: CfnDBInstanceProps;
+  protected readonly instanceType: ec2.InstanceType;
 
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
@@ -746,21 +803,46 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
+    this.engine = props.engine;
 
-    const timezoneSupport = [ DatabaseInstanceEngine.SQL_SERVER_EE, DatabaseInstanceEngine.SQL_SERVER_EX,
-      DatabaseInstanceEngine.SQL_SERVER_SE, DatabaseInstanceEngine.SQL_SERVER_WEB ];
-    if (props.timezone && !timezoneSupport.includes(props.engine)) {
-      throw new Error(`timezone property can be configured only for Microsoft SQL Server, not ${props.engine.name}`);
+    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, true);
+    const engineConfig = props.engine.bindToInstance(this, {
+      ...props,
+      s3ImportRole,
+      s3ExportRole,
+    });
+
+    const instanceAssociatedRoles: CfnDBInstance.DBInstanceRoleProperty[] = [];
+    const engineFeatures = engineConfig.features;
+    if (s3ImportRole) {
+      if (!engineFeatures?.s3Import) {
+        throw new Error(`Engine '${engineDescription(props.engine)}' does not support S3 import`);
+      }
+      instanceAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: engineFeatures?.s3Import });
+    }
+    if (s3ExportRole) {
+      if (!engineFeatures?.s3Export) {
+        throw new Error(`Engine '${engineDescription(props.engine)}' does not support S3 export`);
+      }
+      // Only add the export role and feature if they are different from the import role & feature.
+      if (s3ImportRole !== s3ExportRole || engineFeatures.s3Import !== engineFeatures?.s3Export) {
+        instanceAssociatedRoles.push({ roleArn: s3ExportRole.roleArn, featureName: engineFeatures?.s3Export });
+      }
     }
 
+    this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
+
+    const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
     this.sourceCfnProps = {
       ...this.newCfnProps,
+      associatedRoles: instanceAssociatedRoles.length > 0 ? instanceAssociatedRoles : undefined,
+      optionGroupName: engineConfig.optionGroup?.optionGroupName,
       allocatedStorage: props.allocatedStorage ? props.allocatedStorage.toString() : '100',
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
-      dbParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
-      engine: props.engine.name,
-      engineVersion: props.engineVersion,
+      dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
+      engine: props.engine.engineType,
+      engineVersion: props.engine.engineVersion?.fullVersion,
       licenseModel: props.licenseModel,
       timezone: props.timezone,
     };
@@ -817,9 +899,11 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
  */
 export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
   /**
-   * The master user name.
+   * Credentials for the administrative user
+   *
+   * @default - A username of 'admin' and SecretsManager-generated password
    */
-  readonly masterUsername: string;
+  readonly credentials?: Credentials;
 
   /**
    * For supported engines, specifies the character set to associate with the
@@ -859,22 +943,21 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
-    let secret: DatabaseSecret | undefined;
-    if (!props.masterUserPassword) {
-      secret = new DatabaseSecret(this, 'Secret', {
-        username: props.masterUsername,
-        encryptionKey: props.masterUserPasswordEncryptionKey,
-      });
+    let credentials = props.credentials ?? Credentials.fromUsername('admin');
+    if (!credentials.secret && !credentials.password) {
+      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
+        username: credentials.username,
+        encryptionKey: credentials.encryptionKey,
+      }));
     }
+    const secret = credentials.secret;
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUsername,
-      masterUserPassword: secret
-        ? secret.secretValueFromJson('password').toString()
-        : props.masterUserPassword && props.masterUserPassword.toString(),
+      masterUsername: credentials.username,
+      masterUserPassword: credentials.password?.toString(),
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
@@ -886,7 +969,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    applyInstanceDeletionPolicy(instance, props.removalPolicy);
+    applyRemovalPolicy(instance, props.removalPolicy);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -908,26 +991,14 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
   readonly snapshotIdentifier: string;
 
   /**
-   * The master user name.
+   * Master user credentials.
    *
-   * Specify this prop with the **current** master user name of the snapshot
-   * only when generating a new master user password with `generateMasterUserPassword`.
-   * The value will be set in the generated secret attached to the instance.
+   * Note - It is not possible to change the master username for a snapshot;
+   * however, it is possible to provide (or generate) a new password.
    *
-   * It is not possible to change the master user name of a RDS instance.
-   *
-   * @default - inherited from the snapshot
+   * @default - The existing username and password from the snapshot will be used.
    */
-  readonly masterUsername?: string;
-
-  /**
-   * Whether to generate a new master user password and store it in
-   * Secrets Manager. `masterUsername` must be specified with the **current**
-   * master user name of the snapshot when this property is set to true.
-   *
-   * @default false
-   */
-  readonly generateMasterUserPassword?: boolean;
+  readonly credentials?: SnapshotCredentials;
 }
 
 /**
@@ -945,25 +1016,17 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
 
-    let secret: DatabaseSecret | undefined;
-
-    if (props.generateMasterUserPassword) {
-      if (!props.masterUsername) { // We need the master username to include it in the generated secret
-        throw new Error('`masterUsername` must be specified when `generateMasterUserPassword` is set to true.');
-      }
-
-      if (props.masterUserPassword) {
-        throw new Error('Cannot specify `masterUserPassword` when `generateMasterUserPassword` is set to true.');
+    let credentials = props.credentials;
+    let secret = credentials?.secret;
+    if (!secret && credentials?.generatePassword) {
+      if (!credentials.username) {
+        throw new Error('`credentials` `username` must be specified when `generatePassword` is set to true');
       }
 
       secret = new DatabaseSecret(this, 'Secret', {
-        username: props.masterUsername,
-        encryptionKey: props.masterUserPasswordEncryptionKey,
+        username: credentials.username,
+        encryptionKey: credentials.encryptionKey,
       });
-    } else {
-      if (props.masterUsername) { // It's not possible to change the master username of a RDS instance
-        throw new Error('Cannot specify `masterUsername` when `generateMasterUserPassword` is set to false.');
-      }
     }
 
     const instance = new CfnDBInstance(this, 'Resource', {
@@ -971,7 +1034,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
       dbSnapshotIdentifier: props.snapshotIdentifier,
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').toString()
-        : props.masterUserPassword && props.masterUserPassword.toString(),
+        : credentials?.password?.toString(),
     });
 
     this.instanceIdentifier = instance.ref;
@@ -982,7 +1045,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    applyInstanceDeletionPolicy(instance, props.removalPolicy);
+    applyRemovalPolicy(instance, props.removalPolicy);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -996,6 +1059,11 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
  * Construction properties for a DatabaseInstanceReadReplica.
  */
 export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewProps {
+  /**
+   * The name of the compute and memory capacity classes.
+   */
+  readonly instanceType: ec2.InstanceType;
+
   /**
    * The source database instance.
    *
@@ -1030,6 +1098,8 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
+  public readonly engine?: IInstanceEngine = undefined;
+  protected readonly instanceType: ec2.InstanceType;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
@@ -1042,6 +1112,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
+    this.instanceType = props.instanceType;
     this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
@@ -1050,7 +1121,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    applyInstanceDeletionPolicy(instance, props.removalPolicy);
+    applyRemovalPolicy(instance, props.removalPolicy);
 
     this.setLogRetention();
   }
@@ -1065,15 +1136,4 @@ function renderProcessorFeatures(features: ProcessorFeatures): CfnDBInstance.Pro
   const featuresList = Object.entries(features).map(([name, value]) => ({ name, value: value.toString() }));
 
   return featuresList.length === 0 ? undefined : featuresList;
-}
-
-function applyInstanceDeletionPolicy(cfnDbInstance: CfnDBInstance, removalPolicy: RemovalPolicy | undefined): void {
-  if (!removalPolicy) {
-    // the default DeletionPolicy is 'Snapshot', which is fine,
-    // but we should also make it 'Snapshot' for UpdateReplace policy
-    cfnDbInstance.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
-  } else {
-    // just apply whatever removal policy the customer explicitly provided
-    cfnDbInstance.applyRemovalPolicy(removalPolicy);
-  }
 }

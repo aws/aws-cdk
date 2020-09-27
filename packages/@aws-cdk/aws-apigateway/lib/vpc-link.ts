@@ -87,7 +87,7 @@ export class VpcLink extends Resource implements IVpcLink {
 
   protected validate(): string[] {
     if (this.targets.length === 0) {
-      return [ 'No targets added to vpc link' ];
+      return ['No targets added to vpc link'];
     }
     return [];
   }

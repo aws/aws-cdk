@@ -139,6 +139,11 @@ export class AccessPoint extends Resource implements IAccessPoint {
    */
   public readonly accessPointId: string;
 
+  /**
+   * The filesystem of the access point
+   */
+  public readonly fileSystem: IFileSystem;
+
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id);
 
@@ -165,5 +170,6 @@ export class AccessPoint extends Resource implements IAccessPoint {
       resource: 'access-point',
       resourceName: this.accessPointId,
     });
+    this.fileSystem = props.fileSystem;
   }
 }

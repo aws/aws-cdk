@@ -83,7 +83,7 @@ test('throws when multiple VPCs are found', async () => {
 
   AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
     expect(params.Filters).toEqual([{ Name: 'foo', Values: ['bar'] }]);
-    return cb(null, { Vpcs: [{ VpcId: 'vpc-1' }, { VpcId: 'vpc-2' }]});
+    return cb(null, { Vpcs: [{ VpcId: 'vpc-1' }, { VpcId: 'vpc-2' }] });
   });
 
   // WHEN
@@ -226,9 +226,9 @@ function mockVpcLookup(options: VpcLookupOptions) {
 
   AWS.mock('EC2', 'describeVpnGateways', (params: aws.EC2.DescribeVpnGatewaysRequest, cb: AwsCallback<aws.EC2.DescribeVpnGatewaysResult>) => {
     expect(params.Filters).toEqual([
-      { Name: 'attachment.vpc-id', Values: [ VpcId ] },
-      { Name: 'attachment.state', Values: [ 'attached' ] },
-      { Name: 'state', Values: [ 'available' ] },
+      { Name: 'attachment.vpc-id', Values: [VpcId] },
+      { Name: 'attachment.state', Values: ['attached'] },
+      { Name: 'state', Values: ['available'] },
     ]);
     return cb(null, { VpnGateways: options.vpnGateways });
   });

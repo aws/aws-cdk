@@ -1,3 +1,4 @@
+import * as route53 from '@aws-cdk/aws-route53';
 import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
@@ -40,6 +41,7 @@ export interface CertificateProps {
    * Has to be a superdomain of the requested domain.
    *
    * @default - Apex domain is used for every domain that's not overridden.
+   * @deprecated use `validation` instead.
    */
   readonly validationDomains?: {[domainName: string]: string};
 
@@ -47,26 +49,124 @@ export interface CertificateProps {
    * Validation method used to assert domain ownership
    *
    * @default ValidationMethod.EMAIL
+   * @deprecated use `validation` instead.
    */
   readonly validationMethod?: ValidationMethod;
+
+  /**
+   * How to validate this certifcate
+   *
+   * @default CertificateValidation.fromEmail()
+   */
+  readonly validation?: CertificateValidation;
+}
+
+/**
+ * Properties for certificate validation
+ */
+export interface CertificationValidationProps {
+  /**
+   * Validation method
+   *
+   * @default ValidationMethod.EMAIL
+   */
+  readonly method?: ValidationMethod;
+
+  /**
+   * Hosted zone to use for DNS validation
+   *
+   * @default - use email validation
+   */
+  readonly hostedZone?: route53.IHostedZone;
+
+  /**
+   * A map of hosted zones to use for DNS validation
+   *
+   * @default - use `hostedZone`
+   */
+  readonly hostedZones?: { [domainName: string]: route53.IHostedZone };
+
+  /**
+   * Validation domains to use for email validation
+   *
+   * @default - Apex domain
+   */
+  readonly validationDomains?: { [domainName: string]: string };
+}
+
+/**
+ * How to validate a certificate
+ */
+export class CertificateValidation {
+  /**
+   * Validate the certifcate with DNS
+   *
+   * IMPORTANT: If `hostedZone` is not specified, DNS records must be added
+   * manually and the stack will not complete creating until the records are
+   * added.
+   *
+   * @param hostedZone the hosted zone where DNS records must be created
+   */
+  public static fromDns(hostedZone?: route53.IHostedZone) {
+    return new CertificateValidation({
+      method: ValidationMethod.DNS,
+      hostedZone,
+    });
+  }
+
+  /**
+   * Validate the certifcate with automatically created DNS records in multiple
+   * Amazon Route 53 hosted zones.
+   *
+   * @param hostedZones a map of hosted zones where DNS records must be created
+   * for the domains in the certificate
+   */
+  public static fromDnsMultiZone(hostedZones: { [domainName: string]: route53.IHostedZone }) {
+    return new CertificateValidation({
+      method: ValidationMethod.DNS,
+      hostedZones,
+    });
+  }
+
+  /**
+   * Validate the certifcate with Email
+   *
+   * IMPORTANT: if you are creating a certificate as part of your stack, the stack
+   * will not complete creating until you read and follow the instructions in the
+   * email that you will receive.
+   *
+   * ACM will send validation emails to the following addresses:
+   *
+   *  admin@domain.com
+   *  administrator@domain.com
+   *  hostmaster@domain.com
+   *  postmaster@domain.com
+   *  webmaster@domain.com
+   *
+   * For every domain that you register.
+   *
+   * @param validationDomains a map of validation domains to use for domains in the certificate
+   */
+  public static fromEmail(validationDomains?: { [domainName: string]: string }) {
+    return new CertificateValidation({
+      method: ValidationMethod.EMAIL,
+      validationDomains,
+    });
+  }
+
+  /**
+   * The validation method
+   */
+  public readonly method: ValidationMethod;
+
+  /** @param props Certification validation properties */
+  private constructor(public readonly props: CertificationValidationProps) {
+    this.method = props.method ?? ValidationMethod.EMAIL;
+  }
 }
 
 /**
  * A certificate managed by AWS Certificate Manager
- *
- * IMPORTANT: if you are creating a certificate as part of your stack, the stack
- * will not complete creating until you read and follow the instructions in the
- * email that you will receive.
- *
- * ACM will send validation emails to the following addresses:
- *
- *  admin@domain.com
- *  administrator@domain.com
- *  hostmaster@domain.com
- *  postmaster@domain.com
- *  webmaster@domain.com
- *
- * For every domain that you register.
  */
 export class Certificate extends Resource implements ICertificate {
 
@@ -89,33 +189,27 @@ export class Certificate extends Resource implements ICertificate {
   constructor(scope: Construct, id: string, props: CertificateProps) {
     super(scope, id);
 
+    let validation: CertificateValidation;
+    if (props.validation) {
+      validation = props.validation;
+    } else { // Deprecated props
+      if (props.validationMethod === ValidationMethod.DNS) {
+        validation = CertificateValidation.fromDns();
+      } else {
+        validation = CertificateValidation.fromEmail(props.validationDomains);
+      }
+    }
+
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
-      domainValidationOptions: allDomainNames.map(domainValidationOption),
-      validationMethod: props.validationMethod,
+      domainValidationOptions: renderDomainValidation(validation, allDomainNames),
+      validationMethod: validation.method,
     });
 
     this.certificateArn = cert.ref;
-
-    /**
-     * Return the domain validation options for the given domain
-     *
-     * Closes over props.
-     */
-    function domainValidationOption(domainName: string): CfnCertificate.DomainValidationOptionProperty {
-      let validationDomain = props.validationDomains && props.validationDomains[domainName];
-      if (validationDomain === undefined) {
-        if (Token.isUnresolved(domainName)) {
-          throw new Error('When using Tokens for domain names, \'validationDomains\' needs to be supplied');
-        }
-        validationDomain = apexDomain(domainName);
-      }
-
-      return { domainName, validationDomain };
-    }
   }
 }
 
@@ -136,4 +230,44 @@ export enum ValidationMethod {
    * @see https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html
    */
   DNS = 'DNS',
+}
+
+// eslint-disable-next-line max-len
+function renderDomainValidation(validation: CertificateValidation, domainNames: string[]): CfnCertificate.DomainValidationOptionProperty[] | undefined {
+  const domainValidation: CfnCertificate.DomainValidationOptionProperty[] = [];
+
+  switch (validation.method) {
+    case ValidationMethod.DNS:
+      for (const domainName of getUniqueDnsDomainNames(domainNames)) {
+        const hostedZone = validation.props.hostedZones?.[domainName] ?? validation.props.hostedZone;
+        if (hostedZone) {
+          domainValidation.push({ domainName, hostedZoneId: hostedZone.hostedZoneId });
+        }
+      }
+      break;
+    case ValidationMethod.EMAIL:
+      for (const domainName of domainNames) {
+        const validationDomain = validation.props.validationDomains?.[domainName];
+        if (!validationDomain && Token.isUnresolved(domainName)) {
+          throw new Error('When using Tokens for domain names, \'validationDomains\' needs to be supplied');
+        }
+        domainValidation.push({ domainName, validationDomain: validationDomain ?? apexDomain(domainName) });
+      }
+      break;
+    default:
+      throw new Error(`Unknown validation method ${validation.method}`);
+  }
+
+  return domainValidation.length !== 0 ? domainValidation : undefined;
+}
+
+/**
+ * Removes wildcard domains (*.example.com) where the base domain (example.com) is present.
+ * This is because the DNS validation treats them as the same thing, and the automated CloudFormation
+ * DNS validation errors out with the duplicate records.
+ */
+function getUniqueDnsDomainNames(domainNames: string[]) {
+  return domainNames.filter(domain => {
+    return Token.isUnresolved(domain) || !domain.startsWith('*.') || !domainNames.includes(domain.replace('*.', ''));
+  });
 }

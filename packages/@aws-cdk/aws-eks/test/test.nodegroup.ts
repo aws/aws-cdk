@@ -5,7 +5,9 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { testFixture } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
+
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
   'create nodegroup correctly'(test: Test) {
@@ -13,7 +15,12 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 
     // THEN
@@ -45,17 +52,79 @@ export = {
     ));
     test.done();
   },
+  'aws-auth will be updated'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', { cluster });
+
+    // THEN
+    // THEN
+    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      Manifest: {
+        'Fn::Join': [
+          '',
+          [
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'NodegroupNodeGroupRole038A128B',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+          ],
+        ],
+      },
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      RoleArn: {
+        'Fn::GetAtt': [
+          'ClusterCreationRole360249B6',
+          'Arn',
+        ],
+      },
+    }));
+    test.done();
+  },
   'create nodegroup correctly with security groups provided'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       remoteAccess: {
         sshKeyName: 'foo',
-        sourceSecurityGroups: [ new ec2.SecurityGroup(stack, 'SG', { vpc }) ],
+        sourceSecurityGroups: [new ec2.SecurityGroup(stack, 'SG', { vpc })],
       },
     });
     // THEN
@@ -80,7 +149,12 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     new eks.Nodegroup(stack, 'Nodegroup', { cluster, forceUpdate: false });
 
     // THEN
@@ -95,7 +169,11 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 2 });
+    const cluster = new eks.LegacyCluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 2,
+      version: CLUSTER_VERSION,
+    });
     // add a extra nodegroup
     cluster.addNodegroup('extra-ng');
     // THEN
@@ -107,7 +185,12 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       instanceType: new ec2.InstanceType('m5.large'),
@@ -127,7 +210,11 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       remoteAccess: {
@@ -149,7 +236,11 @@ export = {
     // GIVEN
     const { stack: stack1, vpc, app } = testFixture();
     const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
-    const cluster = new eks.Cluster(stack1, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack1, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     // WHEN
     // const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
@@ -172,7 +263,12 @@ export = {
   'addNodegroup correctly'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     // WHEN
     cluster.addNodegroup('ng');
@@ -209,7 +305,12 @@ export = {
   'throws when desiredSize > maxSize'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     // THEN
     test.throws(() => cluster.addNodegroup('ng', { desiredSize: 3, maxSize: 2 }), /Desired capacity 3 can't be greater than max size 2/);
     test.done();
@@ -217,9 +318,129 @@ export = {
   'throws when desiredSize < minSize'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     // THEN
     test.throws(() => cluster.addNodegroup('ng', { desiredSize: 2, minSize: 3 }), /Minimum capacity 3 can't be greater than desired size 2/);
+    test.done();
+  },
+  'create nodegroup correctly with launch template'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    const userData = ec2.UserData.forLinux();
+    userData.addCommands(
+      'set -o xtrace',
+      `/etc/eks/bootstrap.sh ${cluster.clusterName}`,
+    );
+    const lt = new ec2.CfnLaunchTemplate(stack, 'LaunchTemplate', {
+      launchTemplateData: {
+        imageId: new eks.EksOptimizedImage().getImage(stack).imageId,
+        instanceType: new ec2.InstanceType('t3.small').toString(),
+        userData: cdk.Fn.base64(userData.render()),
+      },
+    });
+    cluster.addNodegroup('ng-lt', {
+      launchTemplate: {
+        id: lt.ref,
+        version: lt.attrDefaultVersionNumber,
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      LaunchTemplate: {
+        Id: {
+          Ref: 'LaunchTemplate',
+        },
+        Version: {
+          'Fn::GetAtt': [
+            'LaunchTemplate',
+            'DefaultVersionNumber',
+          ],
+        },
+      },
+    },
+    ));
+    test.done();
+  },
+  'throws when both diskSize and launch template specified'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    const userData = ec2.UserData.forLinux();
+    userData.addCommands(
+      'set -o xtrace',
+      `/etc/eks/bootstrap.sh ${cluster.clusterName}`,
+    );
+    const lt = new ec2.CfnLaunchTemplate(stack, 'LaunchTemplate', {
+      launchTemplateData: {
+        imageId: new eks.EksOptimizedImage().getImage(stack).imageId,
+        instanceType: new ec2.InstanceType('t3.small').toString(),
+        userData: cdk.Fn.base64(userData.render()),
+      },
+    });
+    // THEN
+    test.throws(() =>
+      cluster.addNodegroup('ng-lt', {
+        diskSize: 100,
+        launchTemplate: {
+          id: lt.ref,
+          version: lt.attrDefaultVersionNumber,
+        },
+      }), /diskSize must be specified within the launch template/);
+    test.done();
+  },
+  'throws when both instanceType and launch template specified'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    const userData = ec2.UserData.forLinux();
+    userData.addCommands(
+      'set -o xtrace',
+      `/etc/eks/bootstrap.sh ${cluster.clusterName}`,
+    );
+    const lt = new ec2.CfnLaunchTemplate(stack, 'LaunchTemplate', {
+      launchTemplateData: {
+        imageId: new eks.EksOptimizedImage().getImage(stack).imageId,
+        instanceType: new ec2.InstanceType('t3.small').toString(),
+        userData: cdk.Fn.base64(userData.render()),
+      },
+    });
+    // THEN
+    test.throws(() =>
+      cluster.addNodegroup('ng-lt', {
+        instanceType: new ec2.InstanceType('c5.large'),
+        launchTemplate: {
+          id: lt.ref,
+          version: lt.attrDefaultVersionNumber,
+        },
+      }), /Instance types must be specified within the launch template/);
     test.done();
   },
 };

@@ -230,7 +230,10 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     return this._autoScalingRole;
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'createCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({

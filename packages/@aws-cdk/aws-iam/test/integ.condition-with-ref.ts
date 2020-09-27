@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import { App, CfnJson, CfnParameter, Construct, Stack } from '@aws-cdk/core';
 import { AccountRootPrincipal, Role } from '../lib';
 

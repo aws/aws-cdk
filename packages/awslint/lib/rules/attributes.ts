@@ -24,7 +24,7 @@ attributesLinter.add({
   message: 'attribute property must be readonly',
   eval: e => {
     e.assert(e.ctx.attr.property.immutable, e.ctx.fqn);
-  }
+  },
 });
 
 attributesLinter.add({
@@ -33,5 +33,5 @@ attributesLinter.add({
   eval: e => {
     const tag = e.ctx.attr.property.docs.customTag('attribute');
     e.assert(tag, e.ctx.fqn, `${e.ctx.attr.property.parentType.fqn}.${e.ctx.attr.property.name}`);
-  }
+  },
 });

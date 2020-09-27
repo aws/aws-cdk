@@ -1,6 +1,6 @@
+import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import { App, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
 import { evaluateCFN } from '../evaluate-cfn';
@@ -35,7 +35,10 @@ export = {
 
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack');
-    test.equals(stackArtifact.stackTemplateAssetObjectUrl, 's3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4bdae6e3b1b15f08c889d6c9133f24731ee14827a9a9ab9b6b6a9b42b6d34910');
+
+    const templateHash = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
+
+    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateHash}`);
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -49,11 +52,51 @@ export = {
       destinations: {
         'current_account-current_region': {
           bucketName: 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
-          objectKey: '4bdae6e3b1b15f08c889d6c9133f24731ee14827a9a9ab9b6b6a9b42b6d34910',
+          objectKey: templateHash,
           assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}',
         },
       },
     });
+
+    test.done();
+  },
+
+  'version check is added to template'(test: Test) {
+    // GIVEN
+    new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // THEN
+    const template = app.synth().getStackByName('Stack').template;
+    test.deepEqual(template?.Parameters?.BootstrapVersion?.Type, 'AWS::SSM::Parameter::Value<String>');
+    test.deepEqual(template?.Parameters?.BootstrapVersion?.Default, '/cdk-bootstrap/hnb659fds/version');
+
+    const assertions = template?.Rules?.CheckBootstrapVersion?.Assertions ?? [];
+    test.deepEqual(assertions.length, 1);
+    test.deepEqual(assertions[0].Assert, {
+      'Fn::Not': [
+        { 'Fn::Contains': [['1', '2', '3'], { Ref: 'BootstrapVersion' }] },
+      ],
+    });
+
+    test.done();
+  },
+
+  'version check is not added to template if disabled'(test: Test) {
+    // GIVEN
+    stack = new Stack(app, 'Stack2', {
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false,
+      }),
+    });
+    new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // THEN
+    const template = app.synth().getStackByName('Stack2').template;
+    test.equal(template?.Rules?.CheckBootstrapVersion, undefined);
 
     test.done();
   },
@@ -166,7 +209,7 @@ export = {
       assumeRoleExternalId: 'file-external-id',
     });
 
-    test.deepEqual(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'] , {
+    test.deepEqual(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'], {
       repositoryName: 'image-ecr-repository',
       imageTag: 'docker-asset-hash',
       assumeRoleArn: 'image:role:arn',
@@ -195,4 +238,8 @@ function readAssetManifest(asm: cxapi.CloudAssembly): cxschema.AssetManifest {
   if (!manifestArtifact) { throw new Error('no asset manifest in assembly'); }
 
   return JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+}
+
+function last<A>(xs?: A[]): A | undefined {
+  return xs ? xs[xs.length - 1] : undefined;
 }

@@ -1,8 +1,8 @@
-import {Connections, ISecurityGroup, ISubnet, Port, SecurityGroup} from '@aws-cdk/aws-ec2';
-import {Aws, Construct, Token} from '@aws-cdk/core';
-import {FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem} from './file-system';
-import {CfnFileSystem} from './fsx.generated';
-import {LustreMaintenanceTime} from './maintenance-time';
+import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '@aws-cdk/aws-ec2';
+import { Aws, Construct, Token } from '@aws-cdk/core';
+import { FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem } from './file-system';
+import { CfnFileSystem } from './fsx.generated';
+import { LustreMaintenanceTime } from './maintenance-time';
 
 /**
  * The different kinds of file system deployments used by Lustre.
@@ -126,7 +126,7 @@ export class LustreFileSystem extends FileSystemBase {
   /**
    * The default ports the file system listens on. Actual port list is: [988, 1021, 1022, 1023]
    */
-  private static readonly DEFAULT_PORT_RANGE = {startPort: 988, endPort: 1023};
+  private static readonly DEFAULT_PORT_RANGE = { startPort: 988, endPort: 1023 };
 
   /**
    * Configures a Connections object with all the ports required by FSx for Lustre

@@ -1,7 +1,7 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '../lib';
 
 test('cloud assembly builder', () => {
@@ -16,7 +16,7 @@ test('cloud assembly builder', () => {
     environment: 'aws://1222344/us-east-1',
     dependencies: ['minimal-artifact'],
     metadata: {
-      foo: [ { data: '123', type: 'foo', trace: [] } ],
+      foo: [{ data: '123', type: 'foo', trace: [] }],
     },
     properties: {
       templateFile,
@@ -93,7 +93,7 @@ test('cloud assembly builder', () => {
         type: 'aws:cloudformation:stack',
         environment: 'aws://1222344/us-east-1',
         dependencies: ['minimal-artifact'],
-        metadata: { foo: [ { data: '123', type: 'foo', trace: [] } ] },
+        metadata: { foo: [{ data: '123', type: 'foo', trace: [] }] },
         properties: {
           templateFile: 'foo.template.json',
           parameters: {

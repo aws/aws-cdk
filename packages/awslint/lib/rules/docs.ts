@@ -6,10 +6,10 @@ type DocsLinterContext = {
   readonly assembly: reflect.Assembly;
   readonly errorKey: string;
 } & ({ readonly kind: 'type'; documentable: reflect.Type }
-  | { readonly kind: 'interface-property'; containingType: reflect.InterfaceType; documentable: reflect.Property }
-  | { readonly kind: 'class-property'; containingType: reflect.ClassType; documentable: reflect.Property }
-  | { readonly kind: 'method'; containingType: reflect.ReferenceType; documentable: reflect.Method }
-  | { readonly kind: 'enum-member'; containingType: reflect.EnumType; documentable: reflect.EnumMember }
+| { readonly kind: 'interface-property'; containingType: reflect.InterfaceType; documentable: reflect.Property }
+| { readonly kind: 'class-property'; containingType: reflect.ClassType; documentable: reflect.Property }
+| { readonly kind: 'method'; containingType: reflect.ReferenceType; documentable: reflect.Method }
+| { readonly kind: 'enum-member'; containingType: reflect.EnumType; documentable: reflect.EnumMember }
 );
 
 export const docsLinter = new Linter<DocsLinterContext>(assembly => {
@@ -21,13 +21,12 @@ export const docsLinter = new Linter<DocsLinterContext>(assembly => {
     ]),
     ...flatMap(assembly.interfaces, interfaceType => [
       { assembly, kind: 'type', documentable: interfaceType, errorKey: interfaceType.fqn },
-      // tslint:disable-next-line:max-line-length
       ...interfaceType.ownProperties.map(property => ({ assembly, kind: 'interface-property', containingType: interfaceType, documentable: property, errorKey: `${interfaceType.fqn}.${property.name}` })),
       ...interfaceType.ownMethods.map(method => ({ assembly, kind: 'method', containingType: interfaceType, documentable: method, errorKey: `${interfaceType.fqn}.${method.name}` })),
     ]),
     ...flatMap(assembly.enums, enumType => [
       { assembly, kind: 'type', documentable: enumType, errorKey: enumType.fqn },
-      ...enumType.members.map(member => ({ assembly, kind: 'enum-member', containingType: enumType, documentable: member, errorKey: `${enumType.fqn}.${member.name}` }))
+      ...enumType.members.map(member => ({ assembly, kind: 'enum-member', containingType: enumType, documentable: member, errorKey: `${enumType.fqn}.${member.name}` })),
     ]),
   ] as DocsLinterContext[];
 });
@@ -43,7 +42,7 @@ docsLinter.add({
     if (!e.ctx.documentable.docs.summary) {
       e.assert(e.ctx.documentable.docs.summary, e.ctx.errorKey);
     }
-  }
+  },
 });
 
 docsLinter.add({
@@ -57,43 +56,43 @@ docsLinter.add({
 
     const property = e.ctx.documentable;
     e.assert(!property.optional || property.docs.docs.default !== undefined, e.ctx.errorKey);
-  }
+  },
 });
 
 docsLinter.add({
   code: 'props-no-undefined-default',
-  message: `'@default undefined' is not helpful. Users will know the VALUE is literally 'undefined' if they don't specify it, but what is the BEHAVIOR if they do so?`,
+  message: '\'@default undefined\' is not helpful. Users will know the VALUE is literally \'undefined\' if they don\'t specify it, but what is the BEHAVIOR if they do so?',
   eval: e => {
     if (e.ctx.kind !== 'interface-property') { return; }
     if (!e.ctx.containingType.isDataType()) { return; }
 
     const property = e.ctx.documentable;
     e.assert(property.docs.docs.default !== 'undefined', e.ctx.errorKey);
-  }
+  },
 });
 
 function isPublic(ctx: DocsLinterContext) {
   switch (ctx.kind) {
-    case "class-property":
-    case "interface-property":
-    case "method":
+    case 'class-property':
+    case 'interface-property':
+    case 'method':
       return !ctx.documentable.protected;
 
-    case "enum-member":
-    case "type":
+    case 'enum-member':
+    case 'type':
       return true;
   }
 }
 
 function isCfnType(ctx: DocsLinterContext) {
   switch (ctx.kind) {
-    case "class-property":
-    case "interface-property":
-    case "method":
-    case "enum-member":
+    case 'class-property':
+    case 'interface-property':
+    case 'method':
+    case 'enum-member':
       return CoreTypes.isCfnType(ctx.containingType);
 
-    case "type":
+    case 'type':
       return CoreTypes.isCfnType(ctx.documentable);
   }
 }

@@ -4,11 +4,7 @@
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -21,7 +17,7 @@ to call other AWS services.
 Defining a workflow looks like this (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
-### TypeScript example
+### Example
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -141,7 +137,7 @@ will be passed as the state's output.
 ```ts
 // Makes the current JSON state { ..., "subObject": { "hello": "world" } }
 const pass = new stepfunctions.Pass(this, 'Add Hello World', {
-  result: { hello: 'world' },
+  result: stepfunctions.Result.fromObject({ hello: 'world' }),
   resultPath: '$.subObject',
 });
 
@@ -158,7 +154,7 @@ and also injects a field called `otherData`.
 ```ts
 const pass = new stepfunctions.Pass(this, 'Filter input and inject data', {
   parameters: { // input to the pass state
-    input: stepfunctions.DataAt('$.input.greeting')
+    input: stepfunctions.JsonPath.stringAt('$.input.greeting'),
     otherData: 'some-extra-stuff'
   },
 });
@@ -220,6 +216,54 @@ choice.afterwards().next(shipTheItem);
 If your `Choice` doesn't have an `otherwise()` and none of the conditions match
 the JSON state, a `NoChoiceMatched` error will be thrown. Wrap the state machine
 in a `Parallel` state if you want to catch and recover from this.
+
+#### Available Conditions: 
+see [step function comparison operators](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-choice-state.html#amazon-states-language-choice-state-rules)
+* `Condition.isPresent` - matches if a json path is present
+* `Condition.isNotPresent` - matches if a json path is not present
+* `Condition.isString` - matches if a json path contains a string
+* `Condition.isNotString` - matches if a json path is not a string
+* `Condition.isNumeric` - matches if a json path is numeric
+* `Condition.isNotNumeric` - matches if a json path is not numeric
+* `Condition.isBoolean` - matches if a json path is boolean
+* `Condition.isNotBoolean` - matches if a json path is not boolean
+* `Condition.isTimestamp` - matches if a json path is a timestamp
+* `Condition.isNotTimestamp` - matches if a json path is not a timestamp
+* `Condition.isNotNull` - matches if a json path is not null
+* `Condition.isNull` - matches if a json path is null
+* `Condition.booleanEquals` - matches if a boolean field has a given value
+* `Condition.booleanEqualsJsonPath` - matches if a boolean field equals a value in a given mapping path
+* `Condition.stringEqualsJsonPath` - matches if a string field equals a given mapping path
+* `Condition.stringEquals` - matches if a field equals a string value
+* `Condition.stringLessThan` - matches if a string field sorts before a given value
+* `Condition.stringLessThanJsonPath` - matches if a string field sorts before a value at given mapping path
+* `Condition.stringLessThanEquals` - matches if a string field sorts equal to or before a given value
+* `Condition.stringLessThanEqualsJsonPath` - matches if a string field sorts equal to or before a given mapping
+* `Condition.stringGreaterThan` - matches if a string field sorts after a given value
+* `Condition.stringGreaterThanJsonPath` - matches if a string field sorts after a value at a given mapping path
+* `Condition.stringGreaterThanEqualsJsonPath` - matches if a string field sorts after or equal to value at a given mapping path
+* `Condition.stringGreaterThanEquals` - matches if a string field sorts after or equal to a given value
+* `Condition.numberEquals` - matches if a numeric field has the given value
+* `Condition.numberEqualsJsonPath` - matches if a numeric field has the value in a given mapping path
+* `Condition.numberLessThan` - matches if a numeric field is less than the given value
+* `Condition.numberLessThanJsonPath` - matches if a numeric field is less than the value at the given mapping path
+* `Condition.numberLessThanEquals` - matches if a numeric field is less than or equal to the given value
+* `Condition.numberLessThanEqualsJsonPath` - matches if a numeric field is less than or equal to the numeric value at given mapping path
+* `Condition.numberGreaterThan` - matches if a numeric field is greater than the given value
+* `Condition.numberGreaterThanJsonPath` - matches if a numeric field is greater than the value at a given mapping path
+* `Condition.numberGreaterThanEquals` - matches if a numeric field is greater than or equal to the given value
+* `Condition.numberGreaterThanEqualsJsonPath` - matches if a numeric field is greater than or equal to the value at a given mapping path
+* `Condition.timestampEquals` - matches if a timestamp field is the same time as the given timestamp
+* `Condition.timestampEqualsJsonPath` - matches if a timestamp field is the same time as the timestamp at a given mapping path
+* `Condition.timestampLessThan` - matches if a timestamp field is before the given timestamp
+* `Condition.timestampLessThanJsonPath` - matches if a timestamp field is before the timestamp at a given mapping path
+* `Condition.timestampLessThanEquals` - matches if a timestamp field is before or equal to the given timestamp
+* `Condition.timestampLessThanEqualsJsonPath` - matches if a timestamp field is before or equal to the timestamp at a given mapping path
+* `Condition.timestampGreaterThan` - matches if a timestamp field is after the timestamp at a given mapping path
+* `Condition.timestampGreaterThanJsonPath` - matches if a timestamp field is after the timestamp at a given mapping path
+* `Condition.timestampGreaterThanEquals` - matches if a timestamp field is after or equal to the given timestamp
+* `Condition.timestampGreaterThanEqualsJsonPath` - matches if a timestamp field is after or equal to the timestamp at a given mapping path
+* `Condition.stringMatches` - matches if a field matches a string pattern that can contain a wild card (\*) e.g: log-\*.txt or \*LATEST\*. No other characters other than "\*" have any special meaning - \* can be escaped: \\\\*
 
 ### Parallel
 
@@ -524,6 +568,22 @@ new stepfunctions.StateMachine(stack, 'MyStateMachine', {
 });
 ```
 
+## X-Ray tracing
+
+Enable X-Ray tracing for StateMachine:
+
+```ts
+const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+
+new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+    definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+    tracingEnabled: true
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-xray-tracing.html)
+to learn more about AWS Step Functions's X-Ray support.
+
 ## State Machine Permission Grants
 
 IAM roles, users, or groups which need to be able to work with a State Machine should be granted IAM permissions.
@@ -656,12 +716,3 @@ sfn.StateMachine.fromStateMachineArn(
   'ImportedStateMachine',
   'arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ');
 ```
-
-## Future work
-
-Contributions welcome:
-
-- [ ] A single `LambdaTask` class that is both a `Lambda` and a `Task` in one
-  might make for a nice API.
-- [ ] Expression parser for Conditions.
-- [ ] Simulate state machines in unit tests.

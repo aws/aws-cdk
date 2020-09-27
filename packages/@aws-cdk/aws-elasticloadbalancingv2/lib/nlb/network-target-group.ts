@@ -1,6 +1,8 @@
 import * as cdk from '@aws-cdk/core';
-import { BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
+import {
+  BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
+  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
+} from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { validateNetworkProtocol } from '../shared/util';
@@ -111,7 +113,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
 
-  protected validate(): string[]  {
+  protected validate(): string[] {
     const ret = super.validate();
 
     const healthCheck: HealthCheck = this.healthCheck || {};
@@ -122,6 +124,28 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
       if (!cdk.Token.isUnresolved(seconds) && !allowedIntervals.includes(seconds)) {
         ret.push(`Health check interval '${seconds}' not supported. Must be one of the following values '${allowedIntervals.join(',')}'.`);
       }
+    }
+
+    if (healthCheck.healthyThresholdCount) {
+      const thresholdCount = healthCheck.healthyThresholdCount;
+      if (thresholdCount < 2 || thresholdCount > 10) {
+        ret.push(`Healthy Threshold Count '${thresholdCount}' not supported. Must be a number between 2 and 10.`);
+      }
+    }
+
+    if (healthCheck.unhealthyThresholdCount) {
+      const thresholdCount = healthCheck.unhealthyThresholdCount;
+      if (thresholdCount < 2 || thresholdCount > 10) {
+        ret.push(`Unhealthy Threshold Count '${thresholdCount}' not supported. Must be a number between 2 and 10.`);
+      }
+    }
+
+    if (healthCheck.healthyThresholdCount && healthCheck.unhealthyThresholdCount &&
+        healthCheck.healthyThresholdCount !== healthCheck.unhealthyThresholdCount) {
+      ret.push([
+        `Healthy and Unhealthy Threshold Counts must be the same: ${healthCheck.healthyThresholdCount}`,
+        `is not equal to ${healthCheck.unhealthyThresholdCount}.`,
+      ].join(' '));
     }
 
     if (!healthCheck.protocol) {
@@ -151,7 +175,6 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 /**
  * A network target group
  */
-// tslint:disable-next-line:no-empty-interface
 export interface INetworkTargetGroup extends ITargetGroup {
   /**
    * Register a listener that is load balancing to this target group.
@@ -199,7 +222,7 @@ export interface INetworkLoadBalancerTarget {
 
 const NLB_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS, Protocol.TCP];
 const NLB_PATH_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS];
-const NLB_HEALTH_CHECK_TIMEOUTS: {[protocol in Protocol]?: number} =  {
+const NLB_HEALTH_CHECK_TIMEOUTS: {[protocol in Protocol]?: number} = {
   [Protocol.HTTP]: 6,
   [Protocol.HTTPS]: 10,
   [Protocol.TCP]: 10,

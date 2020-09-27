@@ -35,7 +35,7 @@ export class Row implements IWidget {
         x = 0;
       }
 
-      this.offsets.push({x, y});
+      this.offsets.push({ x, y });
       this.width = Math.max(this.width, x + widget.width);
       this.height = Math.max(this.height, y + widget.height);
 

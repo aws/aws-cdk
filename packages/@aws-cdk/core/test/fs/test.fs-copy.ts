@@ -1,7 +1,7 @@
 import * as fs from 'fs';
-import { Test } from 'nodeunit';
 import * as os from 'os';
 import * as path from 'path';
+import { Test } from 'nodeunit';
 import { FileSystem, SymlinkFollowMode } from '../../lib/fs';
 
 export = {

@@ -149,7 +149,7 @@ export class CustomResourceProvider extends Construct {
       properties: {
         AssumeRolePolicyDocument: {
           Version: '2012-10-17',
-          Statement: [ { Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } } ],
+          Statement: [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }],
         },
         ManagedPolicyArns: [
           { 'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },

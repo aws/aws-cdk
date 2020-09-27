@@ -26,7 +26,7 @@ describe('Batch Job Definition', () => {
     jobDefProps = {
       jobDefinitionName: 'test-job',
       container: {
-        command: [ 'echo "Hello World"' ],
+        command: ['echo "Hello World"'],
         environment: {
           foo: 'bar',
         },
@@ -78,7 +78,7 @@ describe('Batch Job Definition', () => {
         MountPoints: [],
         Privileged: jobDefProps.container.privileged,
         ReadonlyRootFilesystem: jobDefProps.container.readOnly,
-        ResourceRequirements: [{ Type: 'GPU', Value: String(jobDefProps.container.gpuCount)}],
+        ResourceRequirements: [{ Type: 'GPU', Value: String(jobDefProps.container.gpuCount) }],
         Ulimits: [],
         User: jobDefProps.container.user,
         Vcpus: jobDefProps.container.vcpus,

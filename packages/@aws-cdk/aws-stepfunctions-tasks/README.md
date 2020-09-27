@@ -2,9 +2,7 @@
 <!--BEGIN STABILITY BANNER-->
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -30,6 +28,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [Evaluate Expression](#evaluate-expression)
 - [Batch](#batch)
   - [SubmitJob](#submitjob)
+- [CodeBuild](#codebuild)
+  - [StartBuild](#startbuild)
 - [DynamoDB](#dynamodb)
   - [GetItem](#getitem)
   - [PutItem](#putitem)
@@ -37,6 +37,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [UpdateItem](#updateitem)
 - [ECS](#ecs)
   - [RunTask](#runtask)
+    - [EC2](#ec2)
+    - [Fargate](#fargate)
 - [EMR](#emr)
   - [Create Cluster](#create-cluster)
   - [Termination Protection](#termination-protection)
@@ -52,13 +54,14 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Create Transform Job](#create-transform-job)
 - [SNS](#sns)
 - [Step Functions](#step-functions)
+  - [Start Execution](#start-execution)
+  - [Invoke Activity Worker](#invoke-activity)
 - [SQS](#sqs)
 
 ## Task
 
 A Task state represents a single unit of work performed by a state machine. In the
-CDK, the exact work to be In the CDK, the exact work to be done is determined by
-a class that implements `IStepFunctionsTask`.
+CDK, the exact work to be done is determined by a class that implements `IStepFunctionsTask`.
 
 AWS Step Functions [integrates](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) with some AWS services so that you can call API
 actions, and coordinate executions directly from the Amazon States Language in
@@ -164,25 +167,22 @@ Use the `EvaluateExpression` to perform simple operations referencing state path
 Example: convert a wait time from milliseconds to seconds, concat this in a message and wait:
 
 ```ts
-const convertToSeconds = new sfn.Task(this, 'Convert to seconds', {
-  task: new tasks.EvaluateExpression({ expression: '$.waitMilliseconds / 1000' }),
-  resultPath: '$.waitSeconds'
+const convertToSeconds = new tasks.EvaluateExpression(this, 'Convert to seconds', {
+  expression: '$.waitMilliseconds / 1000',
+  resultPath: '$.waitSeconds',
 });
 
-const createMessage = new sfn.Task(this, 'Create message', {
+const createMessage = new tasks.EvaluateExpression(this, 'Create message', {
   // Note: this is a string inside a string.
-  task: new tasks.EvaluateExpression({
     expression: '`Now waiting ${$.waitSeconds} seconds...`',
     runtime: lambda.Runtime.NODEJS_10_X,
-  }),
-  resultPath: '$.message'
+  resultPath: '$.message',
 });
 
-const publishMessage = new sfn.Task(this, 'Publish message', {
-  task: new tasks.PublishToTopic(topic, {
-    message: sfn.TaskInput.fromDataAt('$.message'),
-  }),
-  resultPath: '$.sns'
+const publishMessage = new tasks.SnsPublish(this, 'Publish message', {
+  topic,
+  message: sfn.TaskInput.fromDataAt('$.message'),
+  resultPath: '$.sns',
 });
 
 const wait = new sfn.Wait(this, 'Wait', {
@@ -234,6 +234,45 @@ const task = new tasks.BatchSubmitJob(this, 'Submit Job', {
   jobDefinition: batchJobDefinition,
   jobName: 'MyJob',
   jobQueue: batchQueue,
+});
+```
+
+## CodeBuild
+
+Step Functions supports [CodeBuild](https://docs.aws.amazon.com/step-functions/latest/dg/connect-codebuild.html) through the service integration pattern.
+
+### StartBuild
+
+[StartBuild](https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuild.html) starts a CodeBuild Project by Project Name.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+
+const codebuildProject = new codebuild.Project(stack, 'Project', {
+  projectName: 'MyTestProject',
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      build: {
+        commands: [
+          'echo "Hello, CodeBuild!"',
+        ],
+      },
+    },
+  }),
+});
+
+const task = new tasks.CodeBuildStartBuild(stack, 'Task', {
+  project: codebuildProject,
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  environmentVariablesOverride: {
+    ZONE: {
+      type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+      value: sfn.JsonPath.stringAt('$.envVariables.zone'),
+    },
+  },
 });
 ```
 
@@ -308,31 +347,105 @@ Step Functions supports [ECS/Fargate](https://docs.aws.amazon.com/step-functions
 
 [RunTask](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) starts a new task using the specified task definition.
 
+#### EC2
+
+The EC2 launch type allows you to run your containerized applications on a cluster
+of Amazon EC2 instances that you manage.
+
+When a task that uses the EC2 launch type is launched, Amazon ECS must determine where
+to place the task based on the requirements specified in the task definition, such as
+CPU and memory. Similarly, when you scale down the task count, Amazon ECS must determine
+which tasks to terminate. You can apply task placement strategies and constraints to
+customize how Amazon ECS places and terminates tasks. Learn more about [task placement](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement.html)
+
+The following example runs a job from a task definition on EC2
+
 ```ts
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 
-// See examples in ECS library for initialization of 'cluster' and 'taskDefinition'
-
-new ecs.RunEcsFargateTask({
-  cluster,
-  taskDefinition,
-  containerOverrides: [
-    {
-      containerName: 'TheContainer',
-      environment: [
-        {
-          name: 'CONTAINER_INPUT',
-          value: JsonPath.stringAt('$.valueFromStateData'),
-        }
-      ]
-    }
-  ]
+const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+  isDefault: true,
 });
 
-fargateTask.connections.allowToDefaultPort(rdsCluster, 'Read the database');
+const cluster = new ecs.Cluster(stack, 'Ec2Cluster', { vpc });
+cluster.addCapacity('DefaultAutoScalingGroup', {
+  instanceType: new ec2.InstanceType('t2.micro'),
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+});
 
-new sfn.Task(this, 'CallFargate', {
-  task: fargateTask
+const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+  compatibility: ecs.Compatibility.EC2,
+});
+
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+  memoryLimitMiB: 256,
+});
+
+const runTask = new tasks.EcsRunTask(stack, 'Run', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    cluster,
+    taskDefinition,
+    launchTarget: new tasks.EcsEc2LaunchTarget({
+      placementStrategies: [
+        ecs.PlacementStrategy.spreadAcrossInstances(),
+        ecs.PlacementStrategy.packedByCpu(),
+        ecs.PlacementStrategy.randomly(),
+      ],
+      placementConstraints: [
+        ecs.PlacementConstraint.memberOf('blieptuut')
+      ],
+    }),
+  });
+```
+
+#### Fargate
+
+AWS Fargate is a serverless compute engine for containers that works with Amazon
+Elastic Container Service (ECS). Fargate makes it easy for you to focus on building
+your applications. Fargate removes the need to provision and manage servers, lets you
+specify and pay for resources per application, and improves security through application
+isolation by design. Learn more about [Fargate](https://aws.amazon.com/fargate/)
+
+The Fargate launch type allows you to run your containerized applications without the need
+to provision and manage the backend infrastructure. Just register your task definition and
+Fargate launches the container for you.
+
+The following example runs a job from a task definition on Fargate
+
+```ts
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+
+const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+  isDefault: true,
+});
+
+const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
+
+const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+  memoryMiB: '512',
+  cpu: '256',
+  compatibility: ecs.Compatibility.FARGATE,
+});
+
+const containerDefinition = taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+  memoryLimitMiB: 256,
+});
+
+const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  containerOverrides: [{
+    containerDefinition,
+    environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+  }],
+  launchTarget: new tasks.EcsFargateLaunchTarget(),
 });
 ```
 
@@ -550,6 +663,19 @@ new tasks.LambdaInvoke(this, 'Invoke and set function response as task output', 
 });
 ```
 
+If you want to combine the input and the Lambda function response you can use
+the `payloadResponseOnly` property and specify the `resultPath`. This will put the
+Lambda function ARN directly in the "Resource" string, but it conflicts with the
+integrationPattern, invocationType, clientContext, and qualifier properties.
+
+```ts
+new tasks.LambdaInvoke(this, 'Invoke and combine function response with task input', {
+  lambdaFunction: myLambda,
+  payloadResponseOnly: true,
+  resultPath: '$.myLambda',
+});
+```
+
 You can have Step Functions pause a task, and wait for an external process to
 return a task token. Read more about the [callback pattern](https://docs.aws.amazon.com/step-functions/latest/dg/callback-task-sample-sqs.html#call-back-lambda-example)
 
@@ -574,6 +700,12 @@ new tasks.LambdaInvoke(stack, 'Invoke with callback', {
 ⚠️ The task will pause until it receives that task token back with a `SendTaskSuccess` or `SendTaskFailure`
 call. Learn more about [Callback with the Task
 Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token).
+
+AWS Lambda can occasionally experience transient service errors. In this case, invoking Lambda
+results in a 500 error, such as `ServiceException`, `AWSLambdaException`, or `SdkClientException`.
+As a best practive, the `LambdaInvoke` task will retry on those errors with an interval of 2 seconds,
+a back-off rate of 2 and 6 maximum attempts. Set the `retryOnServiceExceptions` prop to `false` to
+disable this behavior.
 
 ## SageMaker
 
@@ -677,6 +809,8 @@ const task2 = new tasks.SnsPublish(this, 'Publish2', {
 
 ## Step Functions
 
+### Start Execution
+
 You can manage [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html) executions.
 
 AWS Step Functions supports it's own [`StartExecution`](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html) API as a service integration.
@@ -701,6 +835,33 @@ const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
 // Define a second state machine with the Task state above
 new sfn.StateMachine(stack, 'ParentStateMachine', {
   definition: task
+});
+```
+
+### Invoke Activity
+
+You can invoke a [Step Functions Activity](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-activities.html) which enables you to have
+a task in your state machine where the work is performed by a *worker* that can
+be hosted on Amazon EC2, Amazon ECS, AWS Lambda, basically anywhere. Activities
+are a way to associate code running somewhere (known as an activity worker) with
+a specific task in a state machine.
+
+When Step Functions reaches an activity task state, the workflow waits for an
+activity worker to poll for a task. An activity worker polls Step Functions by
+using GetActivityTask, and sending the ARN for the related activity.  
+
+After the activity worker completes its work, it can provide a report of its
+success or failure by using `SendTaskSuccess` or `SendTaskFailure`. These two
+calls use the taskToken provided by GetActivityTask to associate the result
+with that task.
+
+The following example creates an activity and creates a task that invokes the activity.
+
+```ts
+const submitJobActivity = new sfn.Activity(this, 'SubmitJob');
+
+new tasks.StepFunctionsInvokeActivity(this, 'Submit Job', {
+  activity: submitJobActivity,
 });
 ```
 

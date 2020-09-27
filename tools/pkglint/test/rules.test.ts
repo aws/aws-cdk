@@ -1,6 +1,6 @@
-import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { PackageJson } from '../lib/packagejson';
 import * as rules from '../lib/rules';
 
@@ -12,7 +12,7 @@ describe('FeatureStabilityRule', () => {
         { name: 'Stable Feature', stability: 'Stable' },
         { name: 'Dev Preview Feature', stability: 'Developer Preview' },
         { name: 'Not Implemented Feature', stability: 'Not Implemented' },
-      ]
+      ],
     });
     const rule = new rules.FeatureStabilityRule();
 
@@ -65,7 +65,7 @@ describe('FeatureStabilityRule', () => {
       const dirPath = await fakeModuleDir({
         features: [
           { name: 'Feature', stability: 'Experimental' },
-        ]
+        ],
       });
       const rule = new rules.FeatureStabilityRule();
 
@@ -83,7 +83,7 @@ describe('FeatureStabilityRule', () => {
       const dirPath = await fakeModuleDir({
         features: [
           { name: 'Feature', stability: 'Developer Preview' },
-        ]
+        ],
       });
       const rule = new rules.FeatureStabilityRule();
 
@@ -101,7 +101,7 @@ describe('FeatureStabilityRule', () => {
       const dirPath = await fakeModuleDir({
         features: [
           { name: 'Feature', stability: 'Stable' },
-        ]
+        ],
       });
       const rule = new rules.FeatureStabilityRule();
 
@@ -121,7 +121,7 @@ describe('FeatureStabilityRule', () => {
       private: true,
       features: [
         { name: 'Experimental Feature', stability: 'Experimental' },
-      ]
+      ],
     });
     const rule = new rules.FeatureStabilityRule();
 
@@ -145,7 +145,7 @@ describe('FeatureStabilityRule', () => {
     const dirPath = await fakeModuleDir({
       features: [
         { name: 'Experimental Feature', stability: 'Experimental' },
-      ]
+      ],
     }, false);
     const rule = new rules.FeatureStabilityRule();
 

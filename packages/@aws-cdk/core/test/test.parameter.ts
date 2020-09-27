@@ -20,11 +20,16 @@ export = {
         ChildMyParam3161BF5D: {
           Default: 10,
           Type: 'Integer',
-          Description: 'My first parameter' } },
+          Description: 'My first parameter',
+        },
+      },
       Resources: {
         Resource: {
           Type: 'Type',
-          Properties: { ReferenceToParam: { Ref: 'ChildMyParam3161BF5D' } } } } });
+          Properties: { ReferenceToParam: { Ref: 'ChildMyParam3161BF5D' } },
+        },
+      },
+    });
 
     test.done();
   },

@@ -107,6 +107,11 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   private readonly loadBalancer: INetworkLoadBalancer;
 
+  /**
+   * the protocol of the listener
+   */
+  private readonly protocol: Protocol;
+
   constructor(scope: Construct, id: string, props: NetworkListenerProps) {
     const certs = props.certificates || [];
     const proto = props.protocol || (certs.length > 0 ? Protocol.TLS : Protocol.TCP);
@@ -130,6 +135,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     });
 
     this.loadBalancer = props.loadBalancer;
+    this.protocol = proto;
 
     if (props.defaultAction && props.defaultTargetGroups) {
       throw new Error('Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'');
@@ -181,7 +187,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   public addTargets(id: string, props: AddNetworkTargetsProps): NetworkTargetGroup {
     if (!this.loadBalancer.vpc) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error('Can only call addTargets() when using a constructed Load Balancer or imported Load Balancer with specified VPC; construct a new TargetGroup and use addTargetGroup');
     }
 
@@ -189,6 +195,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
       port: props.port,
+      protocol: props.protocol ?? this.protocol,
       proxyProtocolV2: props.proxyProtocolV2,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
@@ -240,6 +247,13 @@ export interface AddNetworkTargetsProps {
    * @default Determined from protocol if known
    */
   readonly port: number;
+
+  /**
+   * Protocol for target group, expects TCP, TLS, UDP, or TCP_UDP.
+   *
+   * @default - inherits the protocol of the listener
+   */
+  readonly protocol?: Protocol;
 
   /**
    * The targets to add to this target group.

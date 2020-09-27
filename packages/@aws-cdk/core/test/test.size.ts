@@ -103,9 +103,9 @@ export = {
     test.equals(size.toTebibytes({ rounding: SizeRoundingBehavior.FLOOR }), 0);
     floatEqual(test, size.toKibibytes({ rounding: SizeRoundingBehavior.FLOOR }), 5_324_800);
 
-    test.equals(size.toGibibytes({ rounding: SizeRoundingBehavior.NONE}), 5.078125);
-    test.equals(size.toTebibytes({ rounding: SizeRoundingBehavior.NONE}), 5200 / (1024 * 1024));
-    test.equals(size.toKibibytes({ rounding: SizeRoundingBehavior.NONE}), 5_324_800);
+    test.equals(size.toGibibytes({ rounding: SizeRoundingBehavior.NONE }), 5.078125);
+    test.equals(size.toTebibytes({ rounding: SizeRoundingBehavior.NONE }), 5200 / (1024 * 1024));
+    test.equals(size.toKibibytes({ rounding: SizeRoundingBehavior.NONE }), 5_324_800);
 
     test.done();
   },

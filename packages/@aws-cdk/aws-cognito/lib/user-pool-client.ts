@@ -57,6 +57,12 @@ export interface OAuthSettings {
   readonly callbackUrls?: string[];
 
   /**
+   * List of allowed logout URLs for the identity providers.
+   * @default - no logout URLs
+   */
+  readonly logoutUrls?: string[];
+
+  /**
    * OAuth scopes that are allowed with this client.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-idp-settings.html
    * @default [OAuthScope.PHONE,OAuthScope.EMAIL,OAuthScope.OPENID,OAuthScope.PROFILE,OAuthScope.COGNITO_ADMIN]
@@ -132,12 +138,10 @@ export class OAuthScope {
     return new OAuthScope(name);
   }
 
-  // tslint:disable:max-line-length
   /**
    * The name of this scope as recognized by CloudFormation.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-allowedoauthscopes
    */
-  // tslint:enable:max-line-length
   public readonly scopeName: string;
 
   private constructor(scopeName: string) {
@@ -303,7 +307,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     let callbackUrls: string[] | undefined = props.oAuth?.callbackUrls;
     if (this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) {
       if (callbackUrls === undefined) {
-        callbackUrls = [ 'https://example.com' ];
+        callbackUrls = ['https://example.com'];
       } else if (callbackUrls.length === 0) {
         throw new Error('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.');
       }
@@ -317,6 +321,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
       allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
       callbackUrLs: callbackUrls && callbackUrls.length > 0 ? callbackUrls : undefined,
+      logoutUrLs: props.oAuth?.logoutUrls,
       allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
       supportedIdentityProviders: this.configureIdentityProviders(props),
@@ -367,10 +372,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureOAuthScopes(oAuth?: OAuthSettings): string[] {
-    const scopes = oAuth?.scopes ?? [ OAuthScope.PROFILE, OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID,
-      OAuthScope.COGNITO_ADMIN ];
+    const scopes = oAuth?.scopes ?? [OAuthScope.PROFILE, OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID,
+      OAuthScope.COGNITO_ADMIN];
     const scopeNames = new Set(scopes.map((x) => x.scopeName));
-    const autoOpenIdScopes = [ OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.PROFILE ];
+    const autoOpenIdScopes = [OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.PROFILE];
     if (autoOpenIdScopes.reduce((agg, s) => agg || scopeNames.has(s.scopeName), false)) {
       scopeNames.add(OAuthScope.OPENID.scopeName);
     }

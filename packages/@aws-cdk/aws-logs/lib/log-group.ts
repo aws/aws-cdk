@@ -200,7 +200,7 @@ export enum RetentionDays {
   /**
    * 2 weeks
    */
-  TWO_WEEKS =  14,
+  TWO_WEEKS = 14,
 
   /**
    * 1 month

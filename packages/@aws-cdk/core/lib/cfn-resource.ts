@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
-// tslint:disable-next-line:ordered-imports
+/* eslint-disable import/order */
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { Construct, IConstruct } from './construct-compat';
@@ -93,9 +93,7 @@ export class CfnResource extends CfnRefElement {
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
     if (this.node.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
-      this.cfnOptions.metadata = {
-        [cxapi.PATH_METADATA_KEY]: this.node.path,
-      };
+      this.addMetadata(cxapi.PATH_METADATA_KEY, this.node.path);
     }
   }
 
@@ -235,7 +233,28 @@ export class CfnResource extends CfnRefElement {
    * and the dependency will automatically be transferred to the relevant scope.
    */
   public addDependsOn(target: CfnResource) {
+    // skip this dependency if the target is not part of the output
+    if (!target.shouldSynthesize()) {
+      return;
+    }
+
     addDependency(this, target, `"${this.node.path}" depends on "${target.node.path}"`);
+  }
+
+  /**
+   * Add a value to the CloudFormation Resource Metadata
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
+   *
+   * Note that this is a different set of metadata from CDK node metadata; this
+   * metadata ends up in the stack template under the resource, whereas CDK
+   * node metadata ends up in the Cloud Assembly.
+   */
+  public addMetadata(key: string, value: any) {
+    if (!this.cfnOptions.metadata) {
+      this.cfnOptions.metadata = {};
+    }
+
+    this.cfnOptions.metadata[key] = value;
   }
 
   /**
@@ -264,6 +283,10 @@ export class CfnResource extends CfnRefElement {
    * @internal
    */
   public _toCloudFormation(): object {
+    if (!this.shouldSynthesize()) {
+      return { };
+    }
+
     try {
       const ret = {
         Resources: {
@@ -273,10 +296,12 @@ export class CfnResource extends CfnRefElement {
             Type: this.cfnResourceType,
             Properties: ignoreEmpty(this.cfnProperties),
             DependsOn: ignoreEmpty(renderDependsOn(this.dependsOn)),
-            CreationPolicy:  capitalizePropertyNames(this, renderCreationPolicy(this.cfnOptions.creationPolicy)),
+            CreationPolicy: capitalizePropertyNames(this, renderCreationPolicy(this.cfnOptions.creationPolicy)),
             UpdatePolicy: capitalizePropertyNames(this, this.cfnOptions.updatePolicy),
             UpdateReplacePolicy: capitalizePropertyNames(this, this.cfnOptions.updateReplacePolicy),
             DeletionPolicy: capitalizePropertyNames(this, this.cfnOptions.deletionPolicy),
+            Version: this.cfnOptions.version,
+            Description: this.cfnOptions.description,
             Metadata: ignoreEmpty(this.cfnOptions.metadata),
             Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId,
           }, props => {
@@ -348,6 +373,17 @@ export class CfnResource extends CfnRefElement {
   protected validateProperties(_properties: any) {
     // Nothing
   }
+
+  /**
+   * Can be overridden by subclasses to determine if this resource will be rendered
+   * into the cloudformation template.
+   *
+   * @returns `true` if the resource should be included or `false` is the resource
+   * should be omitted.
+   */
+  protected shouldSynthesize() {
+    return true;
+  }
 }
 
 export enum TagType {
@@ -394,6 +430,22 @@ export interface ICfnResourceOptions {
    * when it is replaced during a stack update operation.
    */
   updateReplacePolicy?: CfnDeletionPolicy;
+
+  /**
+   * The version of this resource.
+   * Used only for custom CloudFormation resources.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html
+   */
+  version?: string;
+
+  /**
+   * The description of this resource.
+   * Used for informational purposes only, is not processed in any way
+   * (and stays with the CloudFormation template, is not passed to the underlying resource,
+   * even if it does have a 'description' property).
+   */
+  description?: string;
 
   /**
    * Metadata associated with the CloudFormation resource. This is not the same as the construct metadata which can be added

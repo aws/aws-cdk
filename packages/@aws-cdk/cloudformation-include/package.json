@@ -25,7 +25,8 @@
         "distName": "aws-cdk.cloudformation-include",
         "module": "aws_cdk.cloudformation_include"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
+    "integ": "cdk-integ",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -66,6 +68,7 @@
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
+    "@aws-cdk/aws-applicationinsights": "0.0.0",
     "@aws-cdk/aws-appmesh": "0.0.0",
     "@aws-cdk/aws-appstream": "0.0.0",
     "@aws-cdk/aws-appsync": "0.0.0",
@@ -87,6 +90,7 @@
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codedeploy": "0.0.0",
     "@aws-cdk/aws-codeguruprofiler": "0.0.0",
+    "@aws-cdk/aws-codegurureviewer": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-codestar": "0.0.0",
     "@aws-cdk/aws-codestarconnections": "0.0.0",
@@ -132,6 +136,7 @@
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
     "@aws-cdk/aws-kinesisfirehose": "0.0.0",
+    "@aws-cdk/aws-kendra": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lakeformation": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -168,6 +173,7 @@
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
+    "@aws-cdk/aws-sso": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-synthetics": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
@@ -176,7 +182,7 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "yaml": "1.10.0"
+    "@aws-cdk/yaml-cfn": "0.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
@@ -188,6 +194,7 @@
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
+    "@aws-cdk/aws-applicationinsights": "0.0.0",
     "@aws-cdk/aws-appmesh": "0.0.0",
     "@aws-cdk/aws-appstream": "0.0.0",
     "@aws-cdk/aws-appsync": "0.0.0",
@@ -209,6 +216,7 @@
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codedeploy": "0.0.0",
     "@aws-cdk/aws-codeguruprofiler": "0.0.0",
+    "@aws-cdk/aws-codegurureviewer": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-codestar": "0.0.0",
     "@aws-cdk/aws-codestarconnections": "0.0.0",
@@ -251,6 +259,7 @@
     "@aws-cdk/aws-iotanalytics": "0.0.0",
     "@aws-cdk/aws-iotevents": "0.0.0",
     "@aws-cdk/aws-iotthingsgraph": "0.0.0",
+    "@aws-cdk/aws-kendra": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
     "@aws-cdk/aws-kinesisfirehose": "0.0.0",
@@ -290,6 +299,7 @@
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
+    "@aws-cdk/aws-sso": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-synthetics": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
@@ -298,20 +308,18 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "@aws-cdk/yaml-cfn": "0.0.0",
+    "constructs": "^3.0.4"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.3",
-    "@types/yaml": "1.2.0",
+    "@types/jest": "^26.0.14",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.4.0",
+    "cdk-integ-tools": "0.0.0",
+    "jest": "^26.4.2",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.1.1"
+    "ts-jest": "^26.3.0"
   },
-  "bundledDependencies": [
-    "yaml"
-  ],
   "keywords": [
     "aws",
     "cdk",
@@ -327,8 +335,13 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
+  "awslint": {
+    "exclude": [
+      "props-no-cfn-types:@aws-cdk/cloudformation-include.CfnIncludeProps.loadNestedStacks"
+    ]
+  },
   "stability": "experimental",
-  "maturity": "experimental",
+  "maturity": "developer-preview",
   "awscdkio": {
     "announce": false
   }

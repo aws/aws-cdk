@@ -1,9 +1,10 @@
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
+/* eslint-disable no-console */
 import * as child_process from 'child_process';
+import * as path from 'path';
 import * as colors from 'colors';
 import * as fs from 'fs-extra';
 import * as reflect from 'jsii-reflect';
-import * as path from 'path';
 import * as yargs from 'yargs';
 import { ALL_RULES_LINTER, DiagnosticLevel } from '../lib';
 
@@ -14,17 +15,17 @@ async function main() {
     .env('AWSLINT')
     .usage('awslint [options] [command]')
     .showHelpOnFail(true)
-    .command('', 'lint the current module (default)')
+    .command('$0', 'lint the current module (default)')
     .command('list', 'list all available rules')
-    .option('include', { alias: 'i', type: 'array', desc: 'evaluate only this rule(s)', default: [ '*' ] })
-    .option('exclude', { alias: 'x', type: 'array', desc: 'do not evaludate these rules (takes priority over --include)', default: [ ] })
+    .option('include', { alias: 'i', type: 'array', desc: 'evaluate only this rule(s)', default: ['*'] })
+    .option('exclude', { alias: 'x', type: 'array', desc: 'do not evaludate these rules (takes priority over --include)', default: [] })
     .option('save', { type: 'boolean', desc: 'updates package.json with "exclude" statements for all failing rules', default: false })
     .option('verbose', { alias: 'v', type: 'boolean', desc: 'verbose output (prints all assertions)', default: false })
     .option('quiet', { alias: 'q', type: 'boolean', desc: 'quiet mode - shows only errors', default: false })
     .option('force', { type: 'boolean', desc: 'succeed silently if this is not a jsii module', default: true })
     .option('config', { type: 'boolean', desc: 'reads options from the "awslint" section in package.json', default: true })
     .option('debug', { type: 'boolean', desc: 'debug output', default: false })
-    .option('compile', { alias: 'c', type: 'boolean',  desc: 'always run the jsii compiler (use "--no-compile" to never run the compiler, even if .jsii doesn\'t exist)' })
+    .option('compile', { alias: 'c', type: 'boolean', desc: 'always run the jsii compiler (use "--no-compile" to never run the compiler, even if .jsii doesn\'t exist)' })
     .group('include', 'Filtering')
     .group('exclude', 'Filtering')
     .group('config', 'Configuration')
@@ -196,7 +197,7 @@ async function main() {
 
     // we don't have a .jsii file, and --no-compile is explicily set, then it's an error
     if (args.compile === false) {
-      throw new Error(`No .jsii file and --no-compile is set`);
+      throw new Error('No .jsii file and --no-compile is set');
     }
 
     // compile!
@@ -219,7 +220,7 @@ async function loadModule(dir: string) {
   // We run 'awslint' during build time, assemblies are guaranteed to be ok.
 
   if (ts.roots.length !== 1) {
-    throw new Error(`Expecting only a single root assembly`);
+    throw new Error('Expecting only a single root assembly');
   }
 
   return ts.roots[0];
@@ -232,7 +233,7 @@ function mergeOptions(dest: any, pkg?: any) {
 
     // if this is an array option, then add values to destination
     if (Array.isArray(value)) {
-      const arr = dest[key] || [ ];
+      const arr = dest[key] || [];
       arr.push(...value);
       dest[key] = arr;
       continue;
@@ -251,7 +252,7 @@ function mergeOptions(dest: any, pkg?: any) {
 }
 
 async function shell(command: string) {
-  const child = child_process.spawn(command, [], { stdio: [ 'inherit', 'inherit', 'inherit' ]});
+  const child = child_process.spawn(command, [], { stdio: ['inherit', 'inherit', 'inherit'] });
   return new Promise((ok, ko) => {
     child.once('exit', (status: any) => {
       if (status === 0) {

@@ -1,11 +1,11 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { renderJsonPath, State } from './state';
 
-import * as cdk from '@aws-cdk/core';
 
 /**
  * Props that are common to all tasks
@@ -140,7 +140,7 @@ export abstract class TaskStateBase extends State implements INextable {
       ...this.renderNextEnd(),
       ...this.renderRetryCatch(),
       ...this.renderTaskBase(),
-      ...this.renderTask(),
+      ...this._renderTask(),
     };
   }
 
@@ -247,7 +247,10 @@ export abstract class TaskStateBase extends State implements INextable {
     }
   }
 
-  protected abstract renderTask(): any;
+  /**
+   * @internal
+   */
+  protected abstract _renderTask(): any;
 
   private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (prefix === undefined) {

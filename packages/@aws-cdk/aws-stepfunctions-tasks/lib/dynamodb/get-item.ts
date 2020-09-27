@@ -87,7 +87,10 @@ export class DynamoGetItem extends sfn.TaskStateBase {
     ];
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: getDynamoResourceArn(DynamoMethod.GET),
       Parameters: sfn.FieldUtils.renderObject({

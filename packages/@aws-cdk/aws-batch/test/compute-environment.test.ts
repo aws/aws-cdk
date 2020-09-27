@@ -1,10 +1,10 @@
-import {expect, haveResource, haveResourceLike, ResourcePart} from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import {throws} from 'assert';
+import { throws } from 'assert';
 import * as batch from '../lib';
 
 describe('Batch Compute Evironment', () => {
@@ -104,11 +104,11 @@ describe('Batch Compute Evironment', () => {
             'Fn::Join': [
               '',
               [
-                'arn',
+                'arn:',
                 {
                   Ref: 'AWS::Partition',
                 },
-                'iam::',
+                ':iam::',
                 {
                   Ref: 'AWS::AccountId',
                 },
@@ -161,15 +161,18 @@ describe('Batch Compute Evironment', () => {
         computeResources: {
           allocationStrategy: batch.AllocationStrategy.BEST_FIT,
           vpc,
-          computeResourcesTags: new cdk.Tag('foo', 'bar'),
+          computeResourcesTags: {
+            'Name': 'AWS Batch Instance - C4OnDemand',
+            'Tag Other': 'Has other value',
+          },
           desiredvCpus: 1,
           ec2KeyPair: 'my-key-pair',
           image: new ecs.EcsOptimizedAmi({
             generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
             hardwareType: ecs.AmiHardwareType.STANDARD,
           }),
-          instanceRole:  new iam.CfnInstanceProfile(stack, 'Instance-Profile', {
-            roles: [ new iam.Role(stack, 'Ecs-Instance-Role', {
+          instanceRole: new iam.CfnInstanceProfile(stack, 'Instance-Profile', {
+            roles: [new iam.Role(stack, 'Ecs-Instance-Role', {
               assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
               managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'),
@@ -244,10 +247,8 @@ describe('Batch Compute Evironment', () => {
             },
           ],
           Tags: {
-            key: 'foo',
-            props: {},
-            defaultPriority: 100,
-            value: 'bar',
+            'Name': 'AWS Batch Instance - C4OnDemand',
+            'Tag Other': 'Has other value',
           },
           Type: 'EC2',
         },
@@ -374,7 +375,7 @@ describe('Batch Compute Evironment', () => {
         // THEN
         expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
           ...expectedManagedDefaultComputeProps({
-            InstanceTypes: [ 'optimal' ],
+            InstanceTypes: ['optimal'],
           }),
         }, ResourcePart.Properties));
       });

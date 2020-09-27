@@ -76,7 +76,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    * Import an existing VirtualService given an ARN
    */
   public static fromVirtualServiceArn(scope: cdk.Construct, id: string, virtualServiceArn: string): IVirtualService {
-    return new ImportedVirtualService(scope, id,  {
+    return new ImportedVirtualService(scope, id, {
       virtualServiceArn,
     });
   }

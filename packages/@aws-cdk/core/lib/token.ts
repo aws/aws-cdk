@@ -8,6 +8,33 @@ import { IResolvable, ITokenResolver } from './resolvable';
 import { TokenizedStringFragments } from './string-fragments';
 
 /**
+ * An enum-like class that represents the result of comparing two Tokens.
+ * The return type of {@link Token.compareStrings}.
+ */
+export class TokenComparison {
+  /**
+   * This means we're certain the two components are NOT
+   * Tokens, and identical.
+   */
+  public static readonly SAME = new TokenComparison();
+
+  /**
+   * This means we're certain the two components are NOT
+   * Tokens, and different.
+   */
+  public static readonly DIFFERENT = new TokenComparison();
+
+  /** This means exactly one of the components is a Token. */
+  public static readonly ONE_UNRESOLVED = new TokenComparison();
+
+  /** This means both components are Tokens. */
+  public static readonly BOTH_UNRESOLVED = new TokenComparison();
+
+  private constructor() {
+  }
+}
+
+/**
  * Represents a special or lazily-evaluated value.
  *
  * Can be used to delay evaluation of a certain value in case, for example,
@@ -75,6 +102,21 @@ export class Token {
     return isResolvableObject(value) ? value : new Intrinsic(value);
   }
 
+  /** Compare two strings that might contain Tokens with each other. */
+  public static compareStrings(possibleToken1: string, possibleToken2: string): TokenComparison {
+    const firstIsUnresolved = Token.isUnresolved(possibleToken1);
+    const secondIsUnresolved = Token.isUnresolved(possibleToken2);
+
+    if (firstIsUnresolved && secondIsUnresolved) {
+      return TokenComparison.BOTH_UNRESOLVED;
+    }
+    if (firstIsUnresolved || secondIsUnresolved) {
+      return TokenComparison.ONE_UNRESOLVED;
+    }
+
+    return possibleToken1 === possibleToken2 ? TokenComparison.SAME : TokenComparison.DIFFERENT;
+  }
+
   private constructor() {
   }
 }
@@ -137,10 +179,12 @@ export class Tokenization {
     // only convert numbers to strings so that Refs, conditions, and other things don't end up synthesizing as [object object]
 
     if (Token.isUnresolved(x)) {
-      return Lazy.stringValue({ produce: context => {
-        const resolved = context.resolve(x);
-        return typeof resolved !== 'number' ? resolved : `${resolved}`;
-      } });
+      return Lazy.stringValue({
+        produce: context => {
+          const resolved = context.resolve(x);
+          return typeof resolved !== 'number' ? resolved : `${resolved}`;
+        },
+      });
     } else {
       return typeof x !== 'number' ? x : `${x}`;
     }

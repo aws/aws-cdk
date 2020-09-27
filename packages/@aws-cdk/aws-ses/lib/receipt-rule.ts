@@ -154,7 +154,6 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   }
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface DropSpamReceiptRuleProps extends ReceiptRuleProps {
 
 }
@@ -201,7 +200,7 @@ export class DropSpamReceiptRule extends Construct {
 }
 
 // Adapted from https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html
-// tslint:disable:no-console
+/* eslint-disable no-console */
 function dropSpamCode(event: any, _: any, callback: any) {
   console.log('Spam filter');
 
@@ -216,7 +215,7 @@ function dropSpamCode(event: any, _: any, callback: any) {
     console.log('Dropping spam');
 
     // Stop processing rule set, dropping message
-    callback(null, { disposition : 'STOP_RULE_SET' });
+    callback(null, { disposition: 'STOP_RULE_SET' });
   } else {
     callback(null, null);
   }

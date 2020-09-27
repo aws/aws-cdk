@@ -191,7 +191,6 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     });
 
     // validate timeout
-    // tslint:disable-next-line:no-unused-expression
     props.timeout !== undefined && withResolved(props.timeout.toSeconds(), (timeout) => {
       if (timeout < 60) {
         throw new Error(`attempt duration must be greater than 60 seconds. Received ${timeout} seconds.`);
@@ -213,7 +212,10 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     this.taskPolicies = this.configurePolicyStatements();
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('batch', 'submitJob', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({

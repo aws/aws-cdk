@@ -113,13 +113,30 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
 }
 
 /**
+ * Options to the HttpRouteIntegration during its bind operation.
+ */
+export interface HttpRouteIntegrationBindOptions {
+  /**
+   * The route to which this is being bound.
+   */
+  readonly route: IHttpRoute;
+
+  /**
+   * The current scope in which the bind is occurring.
+   * If the `HttpRouteIntegration` being bound creates additional constructs,
+   * this will be used as their parent scope.
+   */
+  readonly scope: Construct;
+}
+
+/**
  * The interface that various route integration classes will inherit.
  */
 export interface IHttpRouteIntegration {
   /**
    * Bind this integration to the route.
    */
-  bind(route: IHttpRoute): HttpRouteIntegrationConfig;
+  bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig;
 }
 
 /**

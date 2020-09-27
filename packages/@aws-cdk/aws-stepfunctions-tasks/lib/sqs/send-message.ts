@@ -88,7 +88,10 @@ export class SqsSendMessage extends sfn.TaskStateBase {
   /**
    * Provides the SQS SendMessage service integration task configuration
    */
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('sqs', 'sendMessage', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({

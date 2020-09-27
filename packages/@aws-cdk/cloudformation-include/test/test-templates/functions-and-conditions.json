@@ -147,7 +147,7 @@
                 "Parameters": {
                   "Location": "location",
                   "AnotherParameter": {
-                    "Fn:Base64": "AnotherValue"
+                    "Fn::Base64": "AnotherValue"
                   }
                 }
               }

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-networkmanager",
         "module": "aws_cdk.aws_networkmanager"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

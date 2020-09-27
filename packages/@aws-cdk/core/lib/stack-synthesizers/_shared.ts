@@ -1,5 +1,5 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as crypto from 'crypto';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ConstructNode, IConstruct, ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 

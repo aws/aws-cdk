@@ -1,0 +1,115 @@
+{
+  "Resources": {
+    "mytestbucket8DC16178": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "MyCanaryServiceRole593F9DD9": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "s3:ListAllMyBuckets",
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:GetBucketLocation"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "mytestbucket8DC16178",
+                            "Arn"
+                          ]
+                        },
+                        "/integ/*"
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "Action": "cloudwatch:PutMetricData",
+                  "Condition": {
+                    "StringEquals": {
+                      "cloudwatch:namespace": "CloudWatchSynthetics"
+                    }
+                  },
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup",
+                    "logs:PutLogEvents"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:logs:::*"
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "canaryPolicy"
+          }
+        ]
+      }
+    },
+    "MyCanary1A94CAFA": {
+      "Type": "AWS::Synthetics::Canary",
+      "Properties": {
+        "ArtifactS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "mytestbucket8DC16178"
+              },
+              "/integ"
+            ]
+          ]
+        },
+        "Code": {
+          "Handler": "index.handler",
+          "Script": "\n      exports.handler = async () => {\n        console.log('hello world');\n      };"
+        },
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "MyCanaryServiceRole593F9DD9",
+            "Arn"
+          ]
+        },
+        "Name": "canary-integ",
+        "RuntimeVersion": "syn-1.0",
+        "Schedule": {
+          "DurationInSeconds": "0",
+          "Expression": "rate(1 minute)"
+        },
+        "StartCanaryAfterCreation": true
+      }
+    }
+  }
+}

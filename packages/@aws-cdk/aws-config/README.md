@@ -19,7 +19,7 @@ Supported:
 * Config rules
 
 Not supported
-* Configuration recoder
+* Configuration recorder
 * Delivery channel
 * Aggregation
 

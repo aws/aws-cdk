@@ -472,6 +472,13 @@ export interface UserPoolProps {
   readonly smsRoleExternalId?: string;
 
   /**
+   * Setting this would explicitly enable or disable SMS role creation.
+   * When left unspecified, CDK will determine based on other properties if a role is needed or not.
+   * @default - CDK will determine based on other properties of the user pool if an SMS role should be created or not.
+   */
+  readonly enableSmsRole?: boolean;
+
+  /**
    * Methods in which a user registers or signs in to a user pool.
    * Allows either username with aliases OR sign in with email, phone, or both.
    *
@@ -835,41 +842,56 @@ export class UserPool extends UserPoolBase {
     return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
   }
 
-  private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty {
+  private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty | undefined {
+    if (props.enableSmsRole === false && props.smsRole) {
+      throw new Error('enableSmsRole cannot be disabled when smsRole is specified');
+    }
+
     if (props.smsRole) {
       return {
         snsCallerArn: props.smsRole.roleArn,
         externalId: props.smsRoleExternalId,
       };
-    } else {
-      const smsRoleExternalId = this.node.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
-      const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
-        assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
-          conditions: {
-            StringEquals: { 'sts:ExternalId': smsRoleExternalId },
-          },
-        }),
-        inlinePolicies: {
-          /*
-           * The UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
-           * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but the UserPool deployment fails validation.
-           * Seems like a case of being excessively strict.
-           */
-          'sns-publish': new PolicyDocument({
-            statements: [
-              new PolicyStatement({
-                actions: [ 'sns:Publish' ],
-                resources: [ '*' ],
-              }),
-            ],
-          }),
-        },
-      });
-      return {
-        externalId: smsRoleExternalId,
-        snsCallerArn: smsRole.roleArn,
-      };
     }
+
+    if (props.enableSmsRole === false) {
+      return undefined;
+    }
+
+    const mfaConfiguration = this.mfaConfiguration(props);
+    const phoneVerification = props.signInAliases?.phone === true || props.autoVerify?.phone === true;
+    const roleRequired = mfaConfiguration?.includes('SMS_MFA') || phoneVerification;
+    if (!roleRequired && props.enableSmsRole === undefined) {
+      return undefined;
+    }
+
+    const smsRoleExternalId = this.node.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
+    const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
+      assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
+        conditions: {
+          StringEquals: { 'sts:ExternalId': smsRoleExternalId },
+        },
+      }),
+      inlinePolicies: {
+        /*
+          * The UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
+          * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but the UserPool deployment fails validation.
+          * Seems like a case of being excessively strict.
+          */
+        'sns-publish': new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              actions: ['sns:Publish'],
+              resources: ['*'],
+            }),
+          ],
+        }),
+      },
+    });
+    return {
+      externalId: smsRoleExternalId,
+      snsCallerArn: smsRole.roleArn,
+    };
   }
 
   private mfaConfiguration(props: UserPoolProps): string[] | undefined {
@@ -878,7 +900,7 @@ export class UserPool extends UserPoolBase {
       return undefined;
     } else if (props.mfaSecondFactor === undefined &&
       (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)) {
-      return [ 'SMS_MFA' ];
+      return ['SMS_MFA'];
     } else {
       const enabledMfas = [];
       if (props.mfaSecondFactor!.sms) {

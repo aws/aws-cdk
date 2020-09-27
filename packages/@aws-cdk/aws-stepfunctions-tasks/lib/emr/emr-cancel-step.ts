@@ -40,7 +40,10 @@ export class EmrCancelStep extends sfn.TaskStateBase {
     ];
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'cancelStep', sfn.IntegrationPattern.REQUEST_RESPONSE),
       Parameters: sfn.FieldUtils.renderObject({
