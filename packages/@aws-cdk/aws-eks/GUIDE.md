@@ -77,19 +77,40 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
-This will provision an Amazon EKS cluster with the following configuration:
-
-- Managed Node Group with 2 **m5.large** instances (this instance type suits most common use-cases, and is good value for money)
-- Dedicated VPC with [default configuration](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-ec2-readme.html#vpc).
-
-There are various way to customize the cluster capacity, i.e, the amount and type of worker nodes in the cluster.
-
 You can also use `eks.FargateCluster` to provision a managed cluster that uses fargate workers.
+
+```typescript
+new eks.FargateCluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_17,
+});
+```
+
+There are various ways to customize to cluster. The first important concept to understand is **capacity**.
 
 ### Capacity
 
+Capacity is the amount and the type of worker nodes that are available to the cluster for deploying resources. Amazon EKS offers 3 ways of configuring capacity:
 
 #### Managed Node Groups
+
+Amazon EKS managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) for Amazon EKS Kubernetes clusters.
+With Amazon EKS managed node groups, you don’t need to separately provision or register the Amazon EC2 instances that provide compute capacity to run your Kubernetes applications. You can create, update, or terminate nodes for your cluster with a single operation. Nodes run using the latest Amazon EKS optimized AMIs in your AWS account while node updates and terminations gracefully drain nodes to ensure that your applications stay available.
+
+> For more details: [Amazon EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html)
+
+Managed Node Groups are the recommended way to allocate cluster capacity. By default, this library will allocate a managed node group with 2 **m5.large** instances (this instance type suits most common use-cases, and is good value for money).
+
+At cluster instatiation time, you can customize the number of instances and their type:
+
+```typescript
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_17,
+  defaultCapacity: 5,
+  defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
+});
+```
+
+
 
 #### Fargate Profiles
 
