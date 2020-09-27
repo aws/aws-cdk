@@ -90,9 +90,9 @@
   "dependencies": {
     "case": "1.6.3",
     "fs-extra": "^9.0.1",
-    "jsonschema": "^1.2.5",
+    "jsonschema": "^1.2.6",
     "minimatch": "^3.0.4",
-    "semver": "^7.2.2",
+    "semver": "^7.3.2",
     "yaml": "1.10.0"
   },
   "devDependencies": {
@@ -252,13 +252,14 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
+    "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.1",
-    "@types/node": "^10.17.28",
+    "@types/node": "^10.17.35",
     "cdk-build-tools": "0.0.0",
     "constructs": "^3.0.4",
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
-    "ts-node": "^8.10.2",
+    "ts-node": "^9.0.0",
     "typescript": "~3.8.3",
     "ubergen": "0.0.0"
   },
