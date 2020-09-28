@@ -116,6 +116,8 @@ export interface DeployCdkStackActionProps extends DeployCdkStackActionOptions {
 
   /**
    * Template configuration path relative to the input artifact
+   *
+   * @default - No template configuration
    */
   readonly templateConfigurationPath?: string;
 }
