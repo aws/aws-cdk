@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-accessanalyzer",
-        "module": "aws_cdk.aws_accessanalyzer"
+        "module": "aws_cdk.aws_accessanalyzer",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

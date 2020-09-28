@@ -10,6 +10,7 @@ export * from './network-acl';
 export * from './network-acl-types';
 export * from './port';
 export * from './security-group';
+export * from './subnet';
 export * from './peer';
 export * from './volume';
 export * from './vpc';
