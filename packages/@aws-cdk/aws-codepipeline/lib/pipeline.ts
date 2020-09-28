@@ -168,7 +168,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
  * const pipeline = new Pipeline(this, 'Pipeline');
  *
  * // add a stage
- * const sourceStage = pipeline.addStage({ name: 'Source' });
+ * const sourceStage = pipeline.addStage({ stageName: 'Source' });
  *
  * // add a source action to the stage
  * sourceStage.addAction(new codepipeline_actions.CodeCommitSourceAction({

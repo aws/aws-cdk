@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-cloudfront",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS CloudFront",
+  "description": "The CDK Construct Library for AWS::CloudFront",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cloudfront",
-        "module": "aws_cdk.aws_cloudfront"
+        "module": "aws_cdk.aws_cloudfront",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -95,6 +99,7 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "features": [
     {
       "name": "Higher level constructs for Distribution",

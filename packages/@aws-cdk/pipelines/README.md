@@ -155,6 +155,9 @@ class MyPipelineStack extends Stack {
         sourceArtifact,
         cloudAssemblyArtifact,
 
+        // Optionally specify a VPC in which the action runs
+        vpc: new ec2.Vpc(this, 'NpmSynthVpc'),
+
         // Use this if you need a build step (if you're not using ts-node
         // or if you have TypeScript Lambdas that need to be compiled).
         buildCommand: 'npm run build',
@@ -348,6 +351,8 @@ const stage = pipeline.addApplicationStage(new MyApplication(/* ... */));
 stage.addActions(new ShellScriptAction({
   actionName: 'MyValidation',
   commands: ['curl -Ssf https://my.webservice.com/'],
+  // Optionally specify a VPC if, for example, the service is deployed with a private load balancer
+  vpc,
   // ... more configuration ...
 }));
 ```
