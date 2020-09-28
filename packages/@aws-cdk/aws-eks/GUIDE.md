@@ -37,9 +37,64 @@ In addition, the library also supports defining Kubernetes resource manifests wi
 
 ## Quick Start
 
+This example defines an Amazon EKS cluster with the following configuration:
 
+- Dedicated VPC with default configuration (see [ec2.Vpc](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-ec2-readme.html#vpc))
+- A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
-## Overview
+```ts
+// provisiong a cluster
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_16,
+});
+
+// apply a kubernetes manifest to the cluster
+cluster.addManifest('mypod', {
+  apiVersion: 'v1',
+  kind: 'Pod',
+  metadata: { name: 'mypod' },
+  spec: {
+    containers: [
+      {
+        name: 'hello',
+        image: 'paulbouwer/hello-kubernetes:1.5',
+        ports: [ { containerPort: 8080 } ]
+      }
+    ]
+  }
+});
+```
+
+In order to interact with your cluster through `kubectl`, you can use the `aws eks update-kubeconfig` [AWS CLI command](https://docs.aws.amazon.com/cli/latest/reference/eks/update-kubeconfig.html)
+to configure your local kubeconfig. The EKS module will define a CloudFormation output in your stack which contains the command to run. For example:
+
+```
+Outputs:
+ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
+```
+
+Execute the `aws eks update-kubeconfig ... ` command in your terminal to create or update a local kubeconfig context:
+
+```console
+$ aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
+Added new context arn:aws:eks:rrrrr:112233445566:cluster/cluster-xxxxx to /home/boom/.kube/config
+```
+
+And now you can simply use `kubectl`:
+
+```console
+$ kubectl get all -n kube-system
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/aws-node-fpmwv             1/1     Running   0          21m
+pod/aws-node-m9htf             1/1     Running   0          21m
+pod/coredns-5cb4fb54c7-q222j   1/1     Running   0          23m
+pod/coredns-5cb4fb54c7-v9nxx   1/1     Running   0          23m
+...
+```
+
+## Architectural Overview
+
+The following is a qualitative diagram of the various possible components involved in the cluster deployment.
 
 ```text
  +-----------------------------------------------+               +-----------------+
@@ -66,6 +121,16 @@ In addition, the library also supports defining Kubernetes resource manifests wi
  +--------------------+
 ```
 
+In a nutshell:
+
+- `EKS Cluster` - The cluster endpoint created by EKS.
+- `Managed Node Group` - EC2 worker nodes managed by EKS.
+- `Fargate Profile` - Fargate worker nodes managed by EKS.
+- `Auto Scaling Group` - EC2 worker nodes managed by the user.
+- `KubectlHandler` - Lambda function for invoking `kubectl` commands on the cluster - created by CDK.
+- `ClusterHandler` - Lambda function for interacting with EKS API to manage the cluster lifecycle - created by CDK.
+
+A more detailed breakdown of each is provided further down this README.
 
 ## Provisioning clusters
 
@@ -91,7 +156,7 @@ Below you'll find a few important cluster configuration options.
 
 ### Capacity
 
-Capacity is the amount and the type of worker nodes that are available to the cluster for deploying resources. Amazon EKS offers 3 ways of configuring capacity:
+Capacity is the amount and the type of worker nodes that are available to the cluster for deploying resources. Amazon EKS offers 3 ways of configuring capacity, which you can combine as you like:
 
 #### 1) Managed Node Groups
 
@@ -299,7 +364,49 @@ terminated.
 >
 > Chart Version: [0.9.5](https://github.com/aws/eks-charts/blob/v0.0.28/stable/aws-node-termination-handler/Chart.yaml)
 
-##### BottleRocket
+##### Bottlerocket
+
+[Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts.
+At this moment, `Bottlerocket` is only supported when using self-managed auto-scaling-groups.
+
+> **NOTICE**: Bottlerocket is only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-EKS.md#finding-an-ami).
+
+The following example will create an auto-scaling-group of 2 `t3.small` Linux instances running with the `Bottlerocket` AMI.
+
+```ts
+cluster.addAutoScalingGroupCapacity('BottlerocketNodes', {
+  instanceType: new ec2.InstanceType('t3.small'),
+  minCapacity:  2,
+  machineImageType: eks.MachineImageType.BOTTLEROCKET
+});
+```
+
+The specific Bottlerocket AMI variant will be auto selected according to the k8s version for the `x86_64` architecture.
+For example, if the Amazon EKS cluster version is `1.17`, the Bottlerocket AMI variant will be auto selected as
+`aws-k8s-1.17` behind the scene.
+
+> See [Variants](https://github.com/bottlerocket-os/bottlerocket/blob/develop/README.md#variants) for more details.
+
+Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity.
+
+### ARM64 Support
+
+Instance types with `ARM64` architecture are supported in both managed nodegroup and self-managed capacity. Simply specify an ARM64 `instanceType` (such as `m6g.medium`), and the latest
+Amazon Linux 2 AMI for ARM64 will be automatically selected.
+
+```ts
+// add a managed ARM64 nodegroup
+cluster.addNodegroup('extra-ng-arm', {
+  instanceType: new ec2.InstanceType('m6g.medium'),
+  minSize: 2,
+});
+
+// add a self-managed ARM64 nodegroup
+cluster.addAutoScalingGroupCapacity('self-ng-arm', {
+  instanceType: new ec2.InstanceType('m6g.medium'),
+  minCapacity: 2,
+})
+```
 
 ### VPC Support
 
@@ -321,6 +428,14 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, but worker node traffic and `kubectl` commands issued by this library stay within your VPC.
 
 ### Permissions
+
+> The IAM role specified in this command is called the "**masters role**". This is
+> an IAM role that is associated with the `system:masters` [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)
+> group and has super-user access to the cluster.
+>
+> You can specify this role using the `mastersRole` option, or otherwise a role will be
+> automatically created for you. This role can be assumed by anyone in the account with
+> `sts:AssumeRole` permissions for this role.
 
 ## Using existing clusters
 
