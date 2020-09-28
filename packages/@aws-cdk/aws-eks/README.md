@@ -24,6 +24,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
       * [Fargate Profiles](#2-fargate-profiles)
       * [Self Managed Auto Scaling Groups](#3-self-managed-auto-scaling-groups)
     * [ARM64 Support](#arm64-support)
+    * [Kubectl Support](#kubectl-support)
     * [VPC Support](#vpc-support)
     * [Endpoint Access](#endpoint-access)
     * [Permissions and Access](#permissions-and-access)
