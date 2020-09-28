@@ -1,5 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, IConstruct } from './construct-compat';
+import { IConstruct, Node } from 'constructs';
+import { Construct } from './construct-compat';
 import { Environment } from './environment';
 import { synthesize } from './private/synthesis';
 
@@ -72,7 +73,7 @@ export class Stage extends Construct {
    * @experimental
    */
   public static of(construct: IConstruct): Stage | undefined {
-    return construct.node.scopes.reverse().slice(1).find(Stage.isStage);
+    return Node.of(construct).scopes.reverse().slice(1).find(Stage.isStage);
   }
 
   /**

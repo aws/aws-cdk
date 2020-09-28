@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-applicationautoscaling",
-        "module": "aws_cdk.aws_applicationautoscaling"
+        "module": "aws_cdk.aws_applicationautoscaling",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -67,7 +71,7 @@
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "fast-check": "^1.26.0",
+    "fast-check": "^2.3.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },

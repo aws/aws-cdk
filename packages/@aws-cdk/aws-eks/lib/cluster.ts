@@ -18,6 +18,7 @@ import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
@@ -847,11 +848,6 @@ export class Cluster extends ClusterBase {
       description: 'EKS Control Plane Security Group',
     });
 
-    this.connections = new ec2.Connections({
-      securityGroups: [securityGroup],
-      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
-    });
-
     this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
 
     // Get subnetIds for all selected subnets
@@ -915,17 +911,9 @@ export class Cluster extends ClusterBase {
 
       this.kubectlPrivateSubnets = privateSubents;
 
-      this.kubectlSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
-        vpc: this.vpc,
-        description: 'Comminication between KubectlProvider and EKS Control Plane',
-      });
-
-      // grant the kubectl provider access to the cluster control plane.
-      this.connections.allowFrom(this.kubectlSecurityGroup, this.connections.defaultPort!);
-
-      // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
+      // the vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
       // this ensures that.
-      this._clusterResource.node.addDependency(this.kubectlSecurityGroup, this.vpc);
+      this._clusterResource.node.addDependency(this.vpc);
     }
 
     this.adminRole = resource.adminRole;
@@ -949,6 +937,17 @@ export class Cluster extends ClusterBase {
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
+
+    const clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+
+    this.connections = new ec2.Connections({
+      securityGroups: [clusterSecurityGroup, securityGroup],
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
+    });
+
+    // we can use the cluster security group since its already attached to the cluster
+    // and configured to allow connections from itself.
+    this.kubectlSecurityGroup = clusterSecurityGroup;
 
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
@@ -1045,7 +1044,9 @@ export class Cluster extends ClusterBase {
       ...options,
       vpc: this.vpc,
       machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        new BottleRocketImage() :
+        new BottleRocketImage({
+          kubernetesVersion: this.version.version,
+        }) :
         new EksOptimizedImage({
           nodeType: nodeTypeForInstanceType(options.instanceType),
           cpuArch: cpuArchForInstanceType(options.instanceType),
@@ -1334,7 +1335,7 @@ export class Cluster extends ClusterBase {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.7.3',
+        version: '0.9.5',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
@@ -1584,13 +1585,17 @@ class ImportedCluster extends ClusterBase implements ICluster {
     this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
     this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
-    this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map(subnetid => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${subnetid}`, subnetid)) : undefined;
+    this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
       this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgid));
       i++;
+    }
+
+    if (props.clusterSecurityGroupId) {
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', props.clusterSecurityGroupId));
     }
   }
 
@@ -1691,38 +1696,6 @@ export class EksOptimizedImage implements ec2.IMachineImage {
       imageId: ami,
       osType: ec2.OperatingSystemType.LINUX,
       userData: ec2.UserData.forLinux(),
-    };
-  }
-}
-
-/**
- * Construct an Bottlerocket image from the latest AMI published in SSM
- */
-class BottleRocketImage implements ec2.IMachineImage {
-  private readonly kubernetesVersion?: string;
-
-  private readonly amiParameterName: string;
-
-  /**
-   * Constructs a new instance of the BottleRocketImage class.
-   */
-  public constructor() {
-    // only 1.15 is currently available
-    this.kubernetesVersion = '1.15';
-
-    // set the SSM parameter name
-    this.amiParameterName = `/aws/service/bottlerocket/aws-k8s-${this.kubernetesVersion}/x86_64/latest/image_id`;
-  }
-
-  /**
-   * Return the correct image
-   */
-  public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
-    return {
-      imageId: ami,
-      osType: ec2.OperatingSystemType.LINUX,
-      userData: ec2.UserData.custom(''),
     };
   }
 }

@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-secretsmanager",
-        "module": "aws_cdk.aws_secretsmanager"
+        "module": "aws_cdk.aws_secretsmanager",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -95,6 +99,7 @@
   },
   "awslint": {
     "exclude": [
+      "attribute-tag:@aws-cdk/aws-secretsmanager.Secret.secretName",
       "from-signature:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn",
       "from-attributes:fromSecretTargetAttachmentAttributes",
       "props-physical-name:@aws-cdk/aws-secretsmanager.RotationScheduleProps",

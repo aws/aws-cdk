@@ -897,7 +897,7 @@ export = {
     test.done();
   },
 
-  'stack tags are reflected in the stack cloud assembly artifact'(test: Test) {
+  'stack tags are reflected in the stack cloud assembly artifact metadata'(test: Test) {
     // GIVEN
     const app = new App({ stackTraces: false });
     const stack1 = new Stack(app, 'stack1');
@@ -917,6 +917,24 @@ export = {
 
     test.deepEqual(asm.getStackArtifact(stack1.artifactId).manifest.metadata, { '/stack1': expected });
     test.deepEqual(asm.getStackArtifact(stack2.artifactId).manifest.metadata, { '/stack1/stack2': expected });
+    test.done();
+  },
+
+  'stack tags are reflected in the stack artifact properties'(test: Test) {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack1 = new Stack(app, 'stack1');
+    const stack2 = new Stack(stack1, 'stack2');
+
+    // WHEN
+    Tags.of(app).add('foo', 'bar');
+
+    // THEN
+    const asm = app.synth();
+    const expected = { foo: 'bar' };
+
+    test.deepEqual(asm.getStackArtifact(stack1.artifactId).tags, expected);
+    test.deepEqual(asm.getStackArtifact(stack2.artifactId).tags, expected);
     test.done();
   },
 

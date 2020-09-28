@@ -289,13 +289,13 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
       return copyOrTransformFiles(source, destination, libraries);
     }
     if (name.endsWith('.ts')) {
-      return await fs.writeFile(
+      return fs.writeFile(
         destination,
         await rewriteImports(source, to, libraries),
         { encoding: 'utf8' },
       );
     } else {
-      return await fs.copyFile(source, destination);
+      return fs.copyFile(source, destination);
     }
   });
 

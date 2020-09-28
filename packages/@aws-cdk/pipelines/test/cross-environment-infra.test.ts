@@ -45,6 +45,24 @@ test('in a cross-account/cross-region setup, artifact bucket can be read by depl
       })),
     },
   });
+
+  // And the key to go along with it
+  expect(supportStack).toHaveResourceLike('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: arrayWith(objectLike({
+        Action: arrayWith('kms:Decrypt', 'kms:DescribeKey'),
+        Principal: {
+          AWS: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              stringLike('*-deploy-role-*'),
+            ]],
+          },
+        },
+      })),
+    },
+  });
 });
 
 test('in a cross-account/same-region setup, artifact bucket can be read by deploy role', () => {

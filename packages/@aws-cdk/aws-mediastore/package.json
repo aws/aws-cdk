@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-mediastore",
-        "module": "aws_cdk.aws_mediastore"
+        "module": "aws_cdk.aws_mediastore",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

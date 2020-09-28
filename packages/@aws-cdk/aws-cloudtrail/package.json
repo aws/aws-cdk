@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-cloudtrail",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS CloudTrail",
+  "description": "The CDK Construct Library for AWS::CloudTrail",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cloudtrail",
-        "module": "aws_cdk.aws_cloudtrail"
+        "module": "aws_cdk.aws_cloudtrail",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -70,7 +74,7 @@
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "colors": "^1.4.0",
-    "jest": "^25.5.4",
+    "jest": "^26.4.2",
     "pkglint": "0.0.0"
   },
   "dependencies": {
