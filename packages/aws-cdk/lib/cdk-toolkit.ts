@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { format } from 'util';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
