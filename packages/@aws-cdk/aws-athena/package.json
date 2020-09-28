@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-athena",
-        "module": "aws_cdk.aws_athena"
+        "module": "aws_cdk.aws_athena",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

@@ -13,6 +13,7 @@
     "CustomBucket": {
       "Type": "AWS::MyService::Custom",
       "Condition": "AlwaysFalseCond",
+      "Version": "1.0",
       "Metadata": {
         "Object1": "Value1",
         "Object2": "Value2"
@@ -26,9 +27,10 @@
       "DependsOn": [ "CustomResource" ]
     },
     "CustomResource": {
-      "Type": "AWS::MyService::AnotherCustom",
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Description": "some random custom resource",
       "Properties": {
-        "CustomProp": "CustomValue",
+        "ServiceToken": "CustomValue",
         "CustomFuncProp": {
           "Ref": "AWS::NoValue"
         }

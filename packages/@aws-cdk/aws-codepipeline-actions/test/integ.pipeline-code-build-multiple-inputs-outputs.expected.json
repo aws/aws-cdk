@@ -614,7 +614,8 @@
         },
         "Source": {
           "Type": "CODEPIPELINE"
-        }
+        },
+        "EncryptionKey": "alias/aws/s3"
       }
     }
   }

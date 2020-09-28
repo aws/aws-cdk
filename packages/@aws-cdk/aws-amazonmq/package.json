@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-amazonmq",
-        "module": "aws_cdk.aws_amazonmq"
+        "module": "aws_cdk.aws_amazonmq",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

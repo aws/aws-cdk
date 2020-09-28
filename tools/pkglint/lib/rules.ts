@@ -525,8 +525,11 @@ export class JSIIPythonTarget extends ValidationRule {
 
     const moduleName = cdkModuleName(pkg.json.name);
 
+    // See: https://github.com/aws/jsii/blob/master/docs/configuration.md#configuring-python
+
     expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
     expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
+    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', 'Framework :: AWS CDK :: 1']);
   }
 }
 
@@ -862,6 +865,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info',
+      '@aws-cdk/yaml-cfn',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {

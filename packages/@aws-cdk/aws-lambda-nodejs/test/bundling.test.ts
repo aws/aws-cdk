@@ -18,6 +18,7 @@ const fromAssetMock = jest.spyOn(BundlingDockerImage, 'fromAsset');
 let findUpMock: jest.SpyInstance;
 beforeEach(() => {
   jest.clearAllMocks();
+  LocalBundler.clearRunsLocallyCache();
   findUpMock = jest.spyOn(util, 'findUp').mockImplementation((name: string, directory) => {
     if (name === 'package.json') {
       return path.join(__dirname, '..');
@@ -39,7 +40,7 @@ test('Parcel bundling', () => {
 
   // Correctly bundles with parcel
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.BUNDLE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       local: {
         props: expect.objectContaining({
@@ -53,7 +54,7 @@ test('Parcel bundling', () => {
       command: [
         'bash', '-c',
         [
-          '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist --cache-dir /asset-input/cache-dir',
+          '$(node -p "require.resolve(\'parcel\', { paths: [\'/\'] })") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist --cache-dir /asset-input/cache-dir',
           'mv /asset-output/entry.js /asset-output/index.js',
         ].join(' && '),
       ],
@@ -92,11 +93,11 @@ test('Parcel bundling with handler named index.ts', () => {
 
   // Correctly bundles with parcel
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.BUNDLE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/index.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
+        '$(node -p "require.resolve(\'parcel\', { paths: [\'/\'] })") build /asset-input/folder/index.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
       ],
     }),
   });
@@ -111,12 +112,12 @@ test('Parcel bundling with tsx handler', () => {
 
   // Correctly bundles with parcel
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.BUNDLE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
         [
-          '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/handler.tsx --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
+          '$(node -p "require.resolve(\'parcel\', { paths: [\'/\'] })") build /asset-input/folder/handler.tsx --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
           'mv /asset-output/handler.js /asset-output/index.js',
         ].join(' && '),
       ],
@@ -151,12 +152,12 @@ test('Parcel bundling with externals and dependencies', () => {
 
   // Correctly bundles with parcel
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.BUNDLE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
         [
-          '$(node -p "require.resolve(\'parcel\')") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
+          '$(node -p "require.resolve(\'parcel\', { paths: [\'/\'] })") build /asset-input/folder/entry.ts --target cdk-lambda --dist-dir /asset-output --no-autoinstall --no-scope-hoist',
           'mv /asset-output/entry.js /asset-output/index.js',
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > /asset-output/package.json`,
           'cd /asset-output',
@@ -198,7 +199,7 @@ test('Detects yarn.lock', () => {
 
   // Correctly bundles with parcel
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.BUNDLE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
         expect.stringMatching(/yarn\.lock.+yarn install/),
@@ -229,7 +230,7 @@ test('Local bundling', () => {
   const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     status: 0,
     stderr: Buffer.from('stderr'),
-    stdout: Buffer.from('stdout'),
+    stdout: Buffer.from('2.0.0-beta.1'),
     pid: 123,
     output: ['stdout', 'stderr'],
     signal: null,
@@ -237,7 +238,7 @@ test('Local bundling', () => {
 
   const bundler = new LocalBundler({
     installer: Installer.NPM,
-    projectRoot: '/project',
+    projectRoot: __dirname,
     relativeEntryPath: 'folder/entry.ts',
     dependencies: {
       dep: 'version',
@@ -251,20 +252,11 @@ test('Local bundling', () => {
   bundler.tryBundle('/outdir');
 
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    'bash', [
-      '-c',
-      [
-        '$(node -p \"require.resolve(\'parcel\')\") build /project/folder/entry.ts --target cdk-lambda --dist-dir /outdir --no-autoinstall --no-scope-hoist',
-        'mv /outdir/entry.js /outdir/index.js',
-        'echo \'{\"dependencies\":{\"dep\":\"version\"}}\' > /outdir/package.json',
-        'cp /project/package-lock.json /outdir/package-lock.json',
-        'cd /outdir',
-        'npm install',
-      ].join(' && '),
-    ],
+    'bash',
+    expect.arrayContaining(['-c', expect.stringContaining(__dirname)]),
     expect.objectContaining({
       env: expect.objectContaining({ KEY: 'value' }),
-      cwd: '/project/folder',
+      cwd: expect.stringContaining(path.join(__dirname, 'folder')),
     }),
   );
 
@@ -273,8 +265,6 @@ test('Local bundling', () => {
 });
 
 test('LocalBundler.runsLocally checks parcel version and caches results', () => {
-  LocalBundler._runsLocally = undefined;
-
   const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     status: 0,
     stderr: Buffer.from('stderr'),
@@ -284,15 +274,13 @@ test('LocalBundler.runsLocally checks parcel version and caches results', () => 
     signal: null,
   });
 
-  expect(LocalBundler.runsLocally).toBe(true);
-  expect(LocalBundler.runsLocally).toBe(true);
+  expect(LocalBundler.runsLocally(__dirname)).toBe(true);
+  expect(LocalBundler.runsLocally(__dirname)).toBe(true);
   expect(spawnSyncMock).toHaveBeenCalledTimes(1);
   expect(spawnSyncMock).toHaveBeenCalledWith(expect.stringContaining('parcel'), ['--version']);
 });
 
 test('LocalBundler.runsLocally with incorrect parcel version', () => {
-  LocalBundler._runsLocally = undefined;
-
   jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     status: 0,
     stderr: Buffer.from('stderr'),
@@ -302,7 +290,7 @@ test('LocalBundler.runsLocally with incorrect parcel version', () => {
     signal: null,
   });
 
-  expect(LocalBundler.runsLocally).toBe(false);
+  expect(LocalBundler.runsLocally(__dirname)).toBe(false);
 });
 
 test('Project root detection', () => {
@@ -328,7 +316,7 @@ test('Custom bundling docker image', () => {
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.BUNDLE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       image: { image: 'my-custom-image' },
     }),

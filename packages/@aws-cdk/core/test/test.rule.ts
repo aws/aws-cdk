@@ -19,7 +19,7 @@ export = {
               AssertDescription: 'lhs equals rhs',
             },
             {
-              Assert: { 'Fn::Not': [{ 'Fn::And': [{ 'Fn::Contains': [['hello', 'world'], 'world'] }] }] },
+              Assert: { 'Fn::Not': [{ 'Fn::Contains': [['hello', 'world'], 'world'] }] },
               AssertDescription: 'some assertion',
             },
           ],

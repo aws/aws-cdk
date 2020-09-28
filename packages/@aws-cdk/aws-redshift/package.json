@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-redshift",
-        "module": "aws_cdk.aws_redshift"
+        "module": "aws_cdk.aws_redshift",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -67,7 +71,7 @@
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^25.5.3",
+    "jest": "^26.4.2",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -98,6 +102,7 @@
       "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterName",
       "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterValue",
       "props-physical-name:@aws-cdk/aws-redshift.ClusterParameterGroupProps",
+      "props-physical-name:@aws-cdk/aws-redshift.ClusterSubnetGroupProps",
       "props-physical-name:@aws-cdk/aws-redshift.DatabaseSecretProps"
     ]
   },

@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-lakeformation",
-        "module": "aws_cdk.aws_lakeformation"
+        "module": "aws_cdk.aws_lakeformation",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

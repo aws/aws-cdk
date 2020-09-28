@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-sam",
-        "module": "aws_cdk.aws_sam"
+        "module": "aws_cdk.aws_sam",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -66,12 +70,12 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^26.0.14",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.4.2",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.2.0"
+    "ts-jest": "^26.3.0"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",

@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-securityhub",
-        "module": "aws_cdk.aws_securityhub"
+        "module": "aws_cdk.aws_securityhub",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

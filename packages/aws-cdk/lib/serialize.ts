@@ -1,36 +1,19 @@
+import * as yaml_cfn from '@aws-cdk/yaml-cfn';
 import * as fs from 'fs-extra';
-import * as YAML from 'yaml';
-
-/* eslint-disable @typescript-eslint/no-require-imports */
-const yamlTypes = require('yaml/types');
-/* eslint-enable */
 
 /**
  * Stringify to YAML
  */
 export function toYAML(obj: any): string {
-  const oldFold = yamlTypes.strOptions.fold.lineWidth;
-  try {
-    yamlTypes.strOptions.fold.lineWidth = 0;
-    return YAML.stringify(obj, { schema: 'yaml-1.1' });
-  } finally {
-    yamlTypes.strOptions.fold.lineWidth = oldFold;
-  }
-}
-
-/**
- * Parse YAML
- */
-export function fromYAML(str: string): any {
-  return YAML.parse(str, { schema: 'yaml-1.1' });
+  return yaml_cfn.serialize(obj);
 }
 
 /**
  * Parse either YAML or JSON
  */
-export function deserializeStructure(str: string) {
+export function deserializeStructure(str: string): any {
   try {
-    return fromYAML(str);
+    return yaml_cfn.deserialize(str);
   } catch (e) {
     // This shouldn't really ever happen I think, but it's the code we had so I'm leaving it.
     return JSON.parse(str);

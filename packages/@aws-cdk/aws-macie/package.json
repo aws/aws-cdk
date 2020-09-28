@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-macie",
-        "module": "aws_cdk.aws_macie"
+        "module": "aws_cdk.aws_macie",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

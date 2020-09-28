@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-imagebuilder",
-        "module": "aws_cdk.aws_imagebuilder"
+        "module": "aws_cdk.aws_imagebuilder",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

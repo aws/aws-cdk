@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-codecommit",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS CodeCommit",
+  "description": "The CDK Construct Library for AWS::CodeCommit",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codecommit",
-        "module": "aws_cdk.aws_codecommit"
+        "module": "aws_cdk.aws_codecommit",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

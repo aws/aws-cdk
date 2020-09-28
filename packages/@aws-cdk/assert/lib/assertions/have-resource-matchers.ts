@@ -318,6 +318,7 @@ export class Capture<T=any> {
   /**
    * A Capture object that captures a custom type
    */
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   public static a<T>(validator: TypeValidator<T>): Capture<T> {
     return new Capture(validator);
   }

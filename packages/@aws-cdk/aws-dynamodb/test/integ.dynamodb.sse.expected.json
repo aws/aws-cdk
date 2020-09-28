@@ -507,6 +507,9 @@
         "ProvisionedThroughput": {
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
+        },
+        "SSESpecification": {
+          "SSEEnabled": false
         }
       },
       "UpdateReplacePolicy": "Delete",

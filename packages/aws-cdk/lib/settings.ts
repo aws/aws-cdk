@@ -18,7 +18,33 @@ export const TRANSIENT_CONTEXT_KEY = '$dontSaveContext';
 
 const CONTEXT_KEY = 'context';
 
-export type Arguments = { readonly [name: string]: unknown };
+export enum Command {
+  LS = 'ls',
+  LIST = 'list',
+  DIFF = 'diff',
+  BOOTSTRAP = 'bootstrap',
+  DEPLOY = 'deploy',
+  DESTROY = 'destroy',
+  SYNTHESIZE = 'synthesize',
+  SYNTH = 'synth',
+  METADATA = 'metadata',
+  INIT = 'init',
+  VERSION = 'version',
+}
+
+const BUNDLING_COMMANDS = [
+  Command.DEPLOY,
+  Command.DIFF,
+  Command.SYNTH,
+  Command.SYNTHESIZE,
+];
+
+export type Arguments = {
+  readonly _: [Command, ...string[]];
+  readonly exclusively?: boolean;
+  readonly STACKS?: string[];
+  readonly [name: string]: unknown;
+};
 
 /**
  * All sources of settings combined
@@ -28,7 +54,7 @@ export class Configuration {
   public context = new Context();
 
   public readonly defaultConfig = new Settings({
-    versionReporting: true,
+    analyticsReporting: true,
     pathMetadata: true,
     output: 'cdk.out',
   });
@@ -185,6 +211,18 @@ export class Settings {
     const context = this.parseStringContextListToObject(argv);
     const tags = this.parseStringTagsListToObject(expectStringList(argv.tags));
 
+    // Determine bundling stacks
+    let bundlingStacks: string[];
+    if (BUNDLING_COMMANDS.includes(argv._[0])) {
+    // If we deploy, diff or synth a list of stacks exclusively we skip
+    // bundling for all other stacks.
+      bundlingStacks = argv.exclusively
+        ? argv.STACKS ?? ['*']
+        : ['*'];
+    } else { // Skip bundling for all stacks
+      bundlingStacks = [];
+    }
+
     return new Settings({
       app: argv.app,
       browser: argv.browser,
@@ -201,10 +239,11 @@ export class Settings {
         bucketName: argv.bootstrapBucketName,
         kmsKeyId: argv.bootstrapKmsKeyId,
       },
-      versionReporting: argv.versionReporting,
+      analyticsReporting: argv.versionReporting,
       staging: argv.staging,
       output: argv.output,
       progress: argv.progress,
+      bundlingStacks,
     });
   }
 

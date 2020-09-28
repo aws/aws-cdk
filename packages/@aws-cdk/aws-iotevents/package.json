@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-iotevents",
-        "module": "aws_cdk.aws_iotevents"
+        "module": "aws_cdk.aws_iotevents",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

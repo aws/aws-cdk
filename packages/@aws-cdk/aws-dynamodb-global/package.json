@@ -27,7 +27,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-dynamodb-global",
-        "module": "aws_cdk.aws_dynamodb_global"
+        "module": "aws_cdk.aws_dynamodb_global",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.DynamoDB.Global",

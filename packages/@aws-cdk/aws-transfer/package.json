@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-transfer",
-        "module": "aws_cdk.aws_transfer"
+        "module": "aws_cdk.aws_transfer",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

@@ -3,6 +3,7 @@ import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as ssm from '@aws-cdk/aws-ssm';
 import * as core from '@aws-cdk/core';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
@@ -213,11 +214,29 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can correctly ingest a resource with a property of type: Map of Lists of primitive types', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'ssm-association.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('ssm-association.json'),
+    );
+    const association = cfnTemplate.getResource('Association') as ssm.CfnAssociation;
+    expect(Object.keys(association.parameters as any)).toHaveLength(2);
+  });
+
   test('can ingest a template with intrinsic functions and conditions, and output it unchanged', () => {
     includeTestTemplate(stack, 'functions-and-conditions.json');
 
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('functions-and-conditions.json'),
+    );
+  });
+
+  test('can ingest a JSON template with string-form Fn::GetAtt, and output it unchanged', () => {
+    includeTestTemplate(stack, 'get-att-string-form.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('get-att-string-form.json'),
     );
   });
 
