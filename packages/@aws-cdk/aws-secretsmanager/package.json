@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-secretsmanager",
-        "module": "aws_cdk.aws_secretsmanager"
+        "module": "aws_cdk.aws_secretsmanager",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

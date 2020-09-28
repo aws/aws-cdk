@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-sns",
-        "module": "aws_cdk.aws_sns"
+        "module": "aws_cdk.aws_sns",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "excludeTypescript": [

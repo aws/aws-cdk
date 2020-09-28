@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codebuild",
-        "module": "aws_cdk.aws_codebuild"
+        "module": "aws_cdk.aws_codebuild",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

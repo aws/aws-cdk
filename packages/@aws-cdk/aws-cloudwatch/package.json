@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cloudwatch",
-        "module": "aws_cdk.aws_cloudwatch"
+        "module": "aws_cdk.aws_cloudwatch",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

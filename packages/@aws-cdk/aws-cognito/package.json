@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cognito",
-        "module": "aws_cdk.aws_cognito"
+        "module": "aws_cdk.aws_cognito",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-workspaces",
-        "module": "aws_cdk.aws_workspaces"
+        "module": "aws_cdk.aws_workspaces",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

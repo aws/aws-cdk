@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-elasticsearch",
-        "module": "aws_cdk.aws_elasticsearch"
+        "module": "aws_cdk.aws_elasticsearch",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

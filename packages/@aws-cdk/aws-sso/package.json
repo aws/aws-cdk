@@ -24,7 +24,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-sso",
-        "module": "aws_cdk.aws_sso"
+        "module": "aws_cdk.aws_sso",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     }
   },

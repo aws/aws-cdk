@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-medialive",
-        "module": "aws_cdk.aws_medialive"
+        "module": "aws_cdk.aws_medialive",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

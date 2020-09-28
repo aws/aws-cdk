@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-neptune",
-        "module": "aws_cdk.aws_neptune"
+        "module": "aws_cdk.aws_neptune",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

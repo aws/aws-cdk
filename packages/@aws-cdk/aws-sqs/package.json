@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-sqs",
-        "module": "aws_cdk.aws_sqs"
+        "module": "aws_cdk.aws_sqs",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

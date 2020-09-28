@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codeguruprofiler",
-        "module": "aws_cdk.aws_codeguruprofiler"
+        "module": "aws_cdk.aws_codeguruprofiler",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
