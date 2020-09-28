@@ -26,9 +26,9 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   }
 
   const versionReporting: boolean = config.settings.get(['versionReporting']) ?? true;
-  if (versionReporting) { context[cxapi.VERSION_REPORTING_ENABLED_CONTEXT] = true; }
+  if (versionReporting) { context[cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT] = true; }
   // We need to keep on doing this for framework version from before this flag was deprecated.
-  if (!versionReporting) { context[cxapi.DISABLE_VERSION_REPORTING] = true; }
+  if (!versionReporting) { context['aws:cdk:disable-version-reporting'] = true; }
 
   const stagingEnabled = config.settings.get(['staging']) ?? true;
   if (!stagingEnabled) {

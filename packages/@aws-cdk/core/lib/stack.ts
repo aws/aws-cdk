@@ -130,10 +130,10 @@ export interface StackProps {
   /**
    * Include runtime versioning information in this Stack
    *
-   * @default `versionReporting` setting of containing `App`, or value of
+   * @default `analyticsReporting` setting of containing `App`, or value of
    * 'aws:cdk:version-reporting' context key
    */
-  readonly versionReporting?: boolean;
+  readonly analyticsReporting?: boolean;
 }
 
 /**
@@ -386,7 +386,7 @@ export class Stack extends Construct implements ITaggable {
     this.templateFile = `${this.artifactId}.template.json`;
 
     // Not for nested stacks
-    this._versionReportingEnabled = (props.versionReporting ?? this.node.tryGetContext(cxapi.VERSION_REPORTING_ENABLED_CONTEXT))
+    this._versionReportingEnabled = (props.analyticsReporting ?? this.node.tryGetContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT))
       && !this.nestedStackParent;
 
     this.synthesizer = props.synthesizer ?? (newStyleSynthesisContext

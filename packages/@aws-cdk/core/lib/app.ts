@@ -47,7 +47,7 @@ export interface AppProps {
    *
    * @default Value of 'aws:cdk:version-reporting' context key
    */
-  readonly versionReporting?: boolean;
+  readonly analyticsReporting?: boolean;
 
   /**
    * Additional context values for the application.
@@ -110,10 +110,10 @@ export class App extends Stage {
       this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
     }
 
-    const versionReporting = props.versionReporting ?? props.runtimeInfo;
+    const analyticsReporting = props.analyticsReporting ?? props.runtimeInfo;
 
-    if (versionReporting !== undefined) {
-      this.node.setContext(cxapi.VERSION_REPORTING_ENABLED_CONTEXT, versionReporting);
+    if (analyticsReporting !== undefined) {
+      this.node.setContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT, analyticsReporting);
     }
 
     const autoSynth = props.autoSynth !== undefined ? props.autoSynth : cxapi.OUTDIR_ENV in process.env;
