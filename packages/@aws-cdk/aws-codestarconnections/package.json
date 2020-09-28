@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codestarconnections",
-        "module": "aws_cdk.aws_codestarconnections"
+        "module": "aws_cdk.aws_codestarconnections",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
