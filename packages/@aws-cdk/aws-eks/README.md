@@ -921,10 +921,10 @@ Kubernetes [endpoint access](#endpoint-access), you must also specify:
 
 ## Known Issues and Limitations
 
-- [One cluster per stack]().
-- [Object pruning]().
-- [Service Account dependencies]().
-- [Cluster Handler VPC]().
+- [One cluster per stack](https://github.com/aws/aws-cdk/issues/10073)
+- [Object pruning](https://github.com/aws/aws-cdk/issues/10495)
+- [Service Account dependencies](https://github.com/aws/aws-cdk/issues/9910)
+- [Attach all Lambda Functions to VPC](https://github.com/aws/aws-cdk/issues/9509)
 
 ## RoadMap
 
