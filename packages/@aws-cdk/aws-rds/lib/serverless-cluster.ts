@@ -25,7 +25,7 @@ export interface ServerlessClusterProps {
    *
    * @default - A username of 'admin' and SecretsManager-generated password
    */
-  readonly credentials: Credentials;
+  readonly credentials?: Credentials;
 
   /**
    * An optional identifier for the cluster
@@ -76,9 +76,11 @@ export interface ServerlessClusterProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * Scaling configuration
+   * Scaling configuration of an Aurora Serverless database cluster.
    *
-   * @default - None
+   * @default - Serverless cluster is automatically paused after 5 minutes of being idle.
+   *   minimum capacity: 2 ACU
+   *   maximum capacity: 16 ACU
    */
   readonly scaling?: ServerlessScalingOptions;
 
