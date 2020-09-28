@@ -323,7 +323,6 @@ export class ServerlessCluster extends ServerlessClusterBase {
    */
   public readonly secret?: secretsmanager.ISecret;
 
-  private readonly securityGroups: ec2.ISecurityGroup[];
   protected readonly subnetGroup: ISubnetGroup;
   private readonly vpc: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
@@ -354,13 +353,6 @@ export class ServerlessCluster extends ServerlessClusterBase {
       removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
     });
 
-    this.securityGroups = props.securityGroups ?? [
-      new ec2.SecurityGroup(this, 'SecurityGroup', {
-        description: 'RDS security group',
-        vpc: this.vpc,
-      }),
-    ];
-
     let credentials = props.credentials ?? Credentials.fromUsername('admin');
     if (!credentials.secret && !credentials.password) {
       credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
@@ -376,6 +368,13 @@ export class ServerlessCluster extends ServerlessClusterBase {
     });
     const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
+
+    const securityGroups = props.securityGroups ?? [
+      new ec2.SecurityGroup(this, 'SecurityGroup', {
+        description: 'RDS security group',
+        vpc: this.vpc,
+      }),
+    ];
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       backupRetentionPeriod: props.backupRetention?.toDays(),
@@ -393,7 +392,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       masterUserPassword: credentials.password?.toString(),
       scalingConfiguration: props.scaling ? this.renderScalingConfiguration(props.scaling) : undefined,
       storageEncrypted: true,
-      vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
+      vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     });
 
     this.clusterIdentifier = cluster.ref;
@@ -403,7 +402,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
     this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
     this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
     this.connections = new ec2.Connections({
-      securityGroups: this.securityGroups,
+      securityGroups,
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
