@@ -329,7 +329,7 @@ export class Distribution extends Resource implements IDistribution {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
-        const originGroupId = Node.of(new Construct(this, `OriginGroup${groupIndex}`)).uniqueId;
+        const originGroupId = Node.of(new CoreConstruct(this, `OriginGroup${groupIndex}`)).uniqueId;
         this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
