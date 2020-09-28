@@ -48,7 +48,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::ServiceDiscovery"
+    "cloudformation": "AWS::ServiceDiscovery",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "nyc": {
     "statements": 75
