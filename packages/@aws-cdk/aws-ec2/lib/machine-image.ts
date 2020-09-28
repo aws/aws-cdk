@@ -1,8 +1,7 @@
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { ContextProvider, Stack, Token } from '@aws-cdk/core';
+import { Construct, ContextProvider, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
 import { UserData } from './user-data';
 import { WindowsVersion } from './windows-versions';
 
