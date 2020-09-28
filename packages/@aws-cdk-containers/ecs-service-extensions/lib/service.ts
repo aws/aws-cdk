@@ -28,7 +28,7 @@ export class Service extends cdk.Construct {
   /**
    * The underlying ECS service that was created
    */
-  public service!: ecs.Ec2Service | ecs.FargateService;
+  public ecsService!: ecs.Ec2Service | ecs.FargateService;
 
   /**
    * The name of this service
@@ -194,9 +194,9 @@ export class Service extends cdk.Construct {
     // Now that the service props are determined we can create
     // the service
     if (this.capacityType === EnvironmentCapacityType.EC2) {
-      this.service = new ecs.Ec2Service(this.scope, `${this.id}-service`, serviceProps);
+      this.ecsService = new ecs.Ec2Service(this.scope, `${this.id}-service`, serviceProps);
     } else if (this.capacityType === EnvironmentCapacityType.FARGATE) {
-      this.service = new ecs.FargateService(this.scope, `${this.id}-service`, serviceProps);
+      this.ecsService = new ecs.FargateService(this.scope, `${this.id}-service`, serviceProps);
     } else {
       throw new Error(`Unknown capacity type for service ${this.id}`);
     }
@@ -204,7 +204,7 @@ export class Service extends cdk.Construct {
     // Now give all extensions a chance to use the service
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
-        this.serviceDescription.extensions[extensions].useService(this.service);
+        this.serviceDescription.extensions[extensions].useService(this.ecsService);
       }
     }
   }

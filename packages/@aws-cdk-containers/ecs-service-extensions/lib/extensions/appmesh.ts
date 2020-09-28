@@ -320,8 +320,8 @@ export class AppMeshExtension extends ServiceExtension {
     // First allow this service to talk to the other service
     // at a network level. This opens the security groups so that
     // the security groups of these two services to each other
-    this.parentService.service.connections.allowTo(
-      otherService.service,
+    this.parentService.ecsService.connections.allowTo(
+      otherService.ecsService,
       ec2.Port.tcp(otherContainer.trafficPort),
       `Accept inbound traffic from ${this.parentService.id}`,
     );
