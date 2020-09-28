@@ -127,6 +127,14 @@ export interface StackProps {
    * @default false
    */
   readonly terminationProtection?: boolean;
+
+  /**
+   * Include runtime versioning information in this Stack
+   *
+   * @default `analyticsReporting` setting of containing `App`, or value of
+   * 'aws:cdk:version-reporting' context key
+   */
+  readonly analyticsReporting?: boolean;
 }
 
 /**
@@ -282,6 +290,15 @@ export class Stack extends Construct implements ITaggable {
   public readonly synthesizer: IStackSynthesizer;
 
   /**
+   * Whether version reporting is enabled for this stack
+   *
+   * Controls whether the CDK Metadata resource is injected
+   *
+   * @internal
+   */
+  public readonly _versionReportingEnabled: boolean;
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -369,6 +386,10 @@ export class Stack extends Construct implements ITaggable {
       : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
+
+    // Not for nested stacks
+    this._versionReportingEnabled = (props.analyticsReporting ?? this.node.tryGetContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT))
+      && !this.nestedStackParent;
 
     this.synthesizer = props.synthesizer ?? (newStyleSynthesisContext
       ? new DefaultStackSynthesizer()
@@ -722,10 +743,11 @@ export class Stack extends Construct implements ITaggable {
     // this right now, so some parts still happen here.
     const builder = session.assembly;
 
+    const template = this._toCloudFormation();
+
     // write the CloudFormation template as a JSON file
     const outPath = path.join(builder.outdir, this.templateFile);
-    const text = JSON.stringify(this._toCloudFormation(), undefined, 2);
-    fs.writeFileSync(outPath, text);
+    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
 
     for (const ctx of this._missingContext) {
       builder.addMissing(ctx);
