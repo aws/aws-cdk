@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-directoryservice",
-        "module": "aws_cdk.aws_directoryservice"
+        "module": "aws_cdk.aws_directoryservice",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
