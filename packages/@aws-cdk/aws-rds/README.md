@@ -422,7 +422,6 @@ const vpc = new ec2.Vpc(this, 'myrdsvpc');
 
 const cluster = new rds.ServerlessDatabaseCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
-  masterUser: { username: 'shiv'},
   parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
   vpc,
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },

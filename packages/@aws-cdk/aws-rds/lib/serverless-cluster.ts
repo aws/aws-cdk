@@ -389,12 +389,8 @@ export class ServerlessCluster extends ServerlessClusterBase {
       engineMode: 'serverless',
       enableHttpEndpoint: props.enableHttpEndpoint ?? false,
       kmsKeyId: props.storageEncryptionKey?.keyArn,
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.credentials.username,
-      masterUserPassword: secret
-        ? secret.secretValueFromJson('password').toString()
-        : (props.credentials.password
-          ? props.credentials.password.toString()
-          : undefined),
+      masterUsername: credentials.username,
+      masterUserPassword: credentials.password?.toString(),
       scalingConfiguration: props.scaling ? this.renderScalingConfiguration(props.scaling) : undefined,
       storageEncrypted: true,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
