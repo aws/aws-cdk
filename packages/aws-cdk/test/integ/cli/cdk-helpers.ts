@@ -37,7 +37,7 @@ export function withAws<A extends TestContext>(block: (context: A & AwsContext) 
  * Requires an AWS client to be passed in.
  *
  * For backwards compatibility with existing tests (so we don't have to change
- * too much) the inner block is expecte to take a `TestFixture` object.
+ * too much) the inner block is expected to take a `TestFixture` object.
  */
 export function withCdkApp<A extends TestContext & AwsContext>(block: (context: TestFixture) => Promise<void>) {
   return async (context: A) => {
@@ -123,6 +123,7 @@ export interface ShellOptions extends child_process.SpawnOptions {
 export interface CdkCliOptions extends ShellOptions {
   options?: string[];
   neverRequireApproval?: boolean;
+  verbose?: boolean;
 }
 
 /**
@@ -178,7 +179,9 @@ export class TestFixture {
   }
 
   public async cdk(args: string[], options: CdkCliOptions = {}) {
-    return this.shell(['cdk', '-v', ...args], {
+    const verbose = options.verbose ?? true;
+
+    return this.shell(['cdk', ...(verbose ? ['-v'] : []), ...args], {
       ...options,
       modEnv: {
         AWS_REGION: this.aws.region,
