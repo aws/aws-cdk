@@ -55,9 +55,19 @@ export interface BootstrappingParameters {
   /**
    * The ID of an existing KMS key to be used for encrypting items in the bucket.
    *
-   * @default - the default KMS key for S3 will be used.
+   * @default - use the default KMS key or create a custom one
    */
   readonly kmsKeyId?: string;
+
+  /**
+   * Whether or not to create a new customer master key (CMK)
+   *
+   * Only applies to modern bootstrapping. Legacy bootstrapping will never create
+   * a CMK, only use the default S3 key.
+   *
+   * @default false
+   */
+  readonly createCustomerMasterKey?: boolean;
 
   /**
    * The list of AWS account IDs that are trusted to deploy into the environment being bootstrapped.

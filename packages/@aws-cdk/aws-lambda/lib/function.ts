@@ -382,7 +382,7 @@ export class Function extends FunctionBase {
       public readonly role = role;
       public readonly permissionsNode = this.node;
 
-      protected readonly canCreatePermissions = false;
+      protected readonly canCreatePermissions = this._isStackAccount();
 
       constructor(s: Construct, i: string) {
         super(s, i);
