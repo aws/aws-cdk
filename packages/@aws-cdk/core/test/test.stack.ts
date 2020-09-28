@@ -977,7 +977,7 @@ export = {
   },
 
   'version reporting can be configured on the app'(test: Test) {
-    const app = new App({ versionReporting: true });
+    const app = new App({ analyticsReporting: true });
     test.ok(new Stack(app, 'Stack')._versionReportingEnabled);
     test.done();
   },
@@ -990,7 +990,7 @@ export = {
 
   'version reporting can be configured on the stack'(test: Test) {
     const app = new App();
-    test.ok(new Stack(app, 'Stack', { versionReporting: true })._versionReportingEnabled);
+    test.ok(new Stack(app, 'Stack', { analyticsReporting: true })._versionReportingEnabled);
     test.done();
   },
 };

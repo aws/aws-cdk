@@ -251,7 +251,7 @@ export = {
    * The are not emitted into Cloud Assembly metadata anymore
    */
   'runtime library versions are not emitted in asm anymore'(test: Test) {
-    const assembly = withApp({ versionReporting: true }, app => {
+    const assembly = withApp({ analyticsReporting: true }, app => {
       const stack = new Stack(app, 'stack1');
       new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
@@ -263,7 +263,7 @@ export = {
   'runtime library versions'(test: Test) {
     MetadataResource.clearModulesCache();
 
-    const response = withApp({ versionReporting: true }, app => {
+    const response = withApp({ analyticsReporting: true }, app => {
       const stack = new Stack(app, 'stack1');
       new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
@@ -284,7 +284,7 @@ export = {
     MetadataResource.clearModulesCache();
 
     withCliVersion(() => {
-      const response = withApp({ versionReporting: true }, app => {
+      const response = withApp({ analyticsReporting: true }, app => {
         const stack = new Stack(app, 'stack1');
         new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
       });
@@ -304,7 +304,7 @@ export = {
     MetadataResource.clearModulesCache();
 
     withCliVersion(() => {
-      const response = withApp({ versionReporting: true }, app => {
+      const response = withApp({ analyticsReporting: true }, app => {
         const stack = new Stack(app, 'stack1');
         new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
       });
@@ -322,7 +322,7 @@ export = {
   'version reporting includes only @aws-cdk, aws-cdk and jsii libraries'(test: Test) {
     MetadataResource.clearModulesCache();
 
-    const response = withApp({ versionReporting: true }, app => {
+    const response = withApp({ analyticsReporting: true }, app => {
       const stack = new Stack(app, 'stack1');
       new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
