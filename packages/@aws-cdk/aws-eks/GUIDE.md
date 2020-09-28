@@ -69,7 +69,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
 
 ## Provisioning clusters
 
-Creating a new cluster is done using the `eks.Cluster` or `eks.FargateCluster` constructs. The only required property is the kubernetes version.
+Creating a new cluster is done using the `Cluster` or `FargateCluster` constructs. The only required property is the kubernetes `version`.
 
 ```typescript
 new eks.Cluster(this, 'HelloEKS', {
@@ -77,7 +77,7 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
-You can also use `eks.FargateCluster` to provision a managed cluster that uses fargate workers.
+You can also use `FargateCluster` to provision a cluster that uses only fargate workers.
 
 ```typescript
 new eks.FargateCluster(this, 'HelloEKS', {
@@ -85,9 +85,9 @@ new eks.FargateCluster(this, 'HelloEKS', {
 });
 ```
 
-> **NOTE: You can only create 1 cluster per stack.** If you have a use-case for multiple clusters per stack, or would like to understand more about this limitation, see https://github.com/aws/aws-cdk/issues/10073.
+> **NOTE: Only 1 cluster per stack is supported.** If you have a use-case for multiple clusters per stack, or would like to understand more about this limitation, see https://github.com/aws/aws-cdk/issues/10073.
 
-There are various ways to customize to cluster. The first important concept to understand is **capacity**.
+Below you'll find a few important cluster configuration options.
 
 ### Capacity
 
@@ -104,7 +104,7 @@ With Amazon EKS managed node groups, you don’t need to separately provision or
 
 By default, this library will allocate a managed node group with 2 *m5.large* instances (this instance type suits most common use-cases, and is good value for money).
 
-At cluster instatiation time, you can customize the number of instances and their type:
+At cluster instantiation time, you can customize the number of instances and their type:
 
 ```typescript
 new eks.Cluster(this, 'HelloEKS', {
@@ -114,7 +114,9 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
-Additional customizations are available post instatiation. To apply them, set the default capacity to 0, and use the `cluster.addNodegroupCapacity` method:
+To access the node group that was created on your behalf, you can use `cluster.defaultNodegroup`.
+
+Additional customizations are available post instantiation. To apply them, set the default capacity to 0, and use the `cluster.addNodegroupCapacity` method:
 
 ```typescript
 const cluster = new eks.Cluster(this, 'HelloEKS', {
@@ -133,20 +135,9 @@ cluster.addNodegroupCapacity('custom-node-group', {
 
 > For a complete API reference visit [`NodegroupOptions`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.NodegroupOptions.html).
 
-You can also directly use the `eks.Nodegroup` construct to create node groups under different scopes:
-
-```typescript
-new eks.Nodegroup(scope, 'NodeGroup', {
-  cluster: cluster,
-  ...
-});
-```
-
-> For a complete API reference visit [`NodegroupProps`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.NodegroupProps.html).
-
 ##### Launch Template Support
 
-You can specify a launch template that the node group will use.. Note that when using a custom AMI, Amazon EKS doesn't merge any user data.
+You can specify a launch template that the node group will use. Note that when using a custom AMI, Amazon EKS doesn't merge any user data.
 Rather, You are responsible for supplying the required bootstrap commands for nodes to join the cluster.
 In the following example, `/ect/eks/bootstrap.sh` from the AMI will be used to bootstrap the node.
 
@@ -175,9 +166,140 @@ cluster.addNodegroupCapacity('extra-ng', {
 
 #### 2) Fargate Profiles
 
+AWS Fargate is a technology that provides on-demand, right-sized compute
+capacity for containers. With AWS Fargate, you no longer have to provision,
+configure, or scale groups of virtual machines to run containers. This removes
+the need to choose server types, decide when to scale your node groups, or
+optimize cluster packing.
+
+You can control which pods start on Fargate and how they run with Fargate
+Profiles, which are defined as part of your Amazon EKS cluster.
+
+See [Fargate Considerations](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html#fargate-considerations) in the AWS EKS User Guide.
+
+You can add Fargate Profiles to any EKS cluster defined in your CDK app
+through the `addFargateProfile()` method. The following example adds a profile
+that will match all pods from the "default" namespace:
+
+```ts
+cluster.addFargateProfile('MyProfile', {
+  selectors: [ { namespace: 'default' } ]
+});
+```
+
+> For a complete API reference visit [`FargateProfileOptions`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.FargateProfileOptions.html)
+
+You can also directly use the `FargateProfile` construct to create profiles under different scopes:
+
+```ts
+new eks.FargateProfile(scope, 'MyProfile', {
+  cluster,
+  ...
+});
+```
+
+> For a complete API reference visit [`FargateProfileProps`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.FargateProfileProps.html)
+
+To create an EKS cluster that **only** uses Fargate capacity, you can use `FargateCluster`.
+The following code defines an Amazon EKS cluster with a default Fargate Profile that matches all pods from the "kube-system" and "default" namespaces. It is also configured to [run CoreDNS on Fargate](https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html#fargate-gs-coredns).
+
+```ts
+const cluster = new eks.FargateCluster(this, 'MyCluster', {
+  version: eks.KubernetesVersion.V1_16,
+});
+```
+
+**NOTE**: Classic Load Balancers and Network Load Balancers are not supported on
+pods running on Fargate. For ingress, we recommend that you use the [ALB Ingress
+Controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
+on Amazon EKS (minimum version v1.1.4).
+
 #### 3) Self Managed Auto Scaling Groups
 
+Another way of allocating capacity to an EKS cluster is by using self-managed Auto Scaling Groups.
+EC2 instances that are part of the auto-scaling-group will serve as worker nodes for the cluster.
+This type of capacity is also commonly referred to as *EC2 Capacity** or *EC2 Nodes*.
 
+For a detailed overview please visit [Self Managed Nodes](https://docs.aws.amazon.com/eks/latest/userguide/worker.html).
+
+These self-managed auto-scaling-groups provide some additional capabilities over the managed node group, as detailed below.
+However, as they incur an extra maintenance overhead, they are usually not considered a best practice.
+
+Creating an auto-scaling-group and connecting it to the cluster is done using the `cluster.addAutoScalingGroupCapacity` method:
+
+```ts
+cluster.addAutoScalingGroupCapacity('frontend-nodes', {
+  instanceType: new ec2.InstanceType('t2.medium'),
+  minCapacity: 3,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+});
+```
+
+You can customize the [/etc/eks/boostrap.sh](https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh) script, which is responsible
+for bootstrapping the node to the EKS cluster. For example, you can use `kubeletExtraArgs` to add custom node labels or taints.
+
+```ts
+cluster.addAutoScalingGroupCapacity('spot', {
+  instanceType: new ec2.InstanceType('t3.large'),
+  minCapacity: 2,
+  bootstrapOptions: {
+    kubeletExtraArgs: '--node-labels foo=bar,goo=far',
+    awsApiRetryAttempts: 5
+  }
+});
+```
+
+To disable bootstrapping altogether (i.e. to fully customize user-data), set `bootstrapEnabled` to `false`.
+
+> For a complete API reference please visit [`AutoScalingGroupCapacityOptions`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.CapacityOptions.html)
+
+You can also configure the cluster to use an auto-scaling-group as the default capacity:
+
+```ts
+cluster = new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_17,
+  defaultCapacityType: eks.DefaultCapacityType.EC2,
+});
+```
+
+This will allocate an auto-scaling-group with 2 *m5.large* instances (this instance type suits most common use-cases, and is good value for money).
+To access the `AutoScalingGroup` that was created on your behalf, you can use `cluster.defaultCapacity`.
+You can also independently create an `AutoScalingGroup` and connect it to the cluster using the `cluster.connectAutoScalingGroupCapacity` method:
+
+```ts
+const asg = new ec2.AutoScalingGroup(...)
+cluster.connectAutoScalingGroupCapacity(asg);
+```
+
+This will add the necessary user-data and configure all connections, roles, and tags needed for the instances in the auto-scaling-group to properly join the cluster.
+
+##### Spot Instances
+
+When using self-managed nodes, you can configure the capacity to use spot instances, greatly reducing capacity cost.
+To enable spot capacity, use the `spotPrice` property:
+
+```ts
+cluster.addAutoScalingGroupCapacity('spot', {
+  spotPrice: '0.1094',
+  instanceType: new ec2.InstanceType('t3.large'),
+  maxCapacity: 10
+});
+```
+
+> Spot instance nodes will be labeled with `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
+
+The [AWS Node Termination Handler](https://github.com/aws/aws-node-termination-handler) `DaemonSet` will be
+installed from [Amazon EKS Helm chart repository](https://github.com/aws/eks-charts/tree/master/stable/aws-node-termination-handler) on these nodes.
+The termination handler ensures that the Kubernetes control plane responds appropriately to events that
+can cause your EC2 instance to become unavailable, such as [EC2 maintenance events](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-instances-status-check_sched.html)
+and [EC2 Spot interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html) and helps gracefully stop all pods running on spot nodes that are about to be
+terminated.
+
+> Handler Version: [1.7.0](https://github.com/aws/aws-node-termination-handler/releases/tag/v1.7.0)
+>
+> Chart Version: [0.9.5](https://github.com/aws/eks-charts/blob/v0.0.28/stable/aws-node-termination-handler/Chart.yaml)
+
+##### BottleRocket
 
 ### VPC Support
 
@@ -201,6 +323,17 @@ The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cl
 ### Permissions
 
 ## Using existing clusters
+
+You can also directly use the `Nodegroup` construct to create node groups under different scopes:
+
+```typescript
+new eks.Nodegroup(scope, 'NodeGroup', {
+  cluster: cluster,
+  ...
+});
+```
+
+> For a complete API reference visit [`NodegroupProps`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.NodegroupProps.html).
 
 ## Managing Objects
 

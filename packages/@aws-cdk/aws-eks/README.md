@@ -65,60 +65,6 @@ pod/coredns-5cb4fb54c7-v9nxx   1/1     Running   0          23m
 ...
 ```
 
-### Capacity
-
-By default, `eks.Cluster` is created with a managed nodegroup with x2 `m5.large` instances. You must specify the kubernetes version for the cluster with the `version` property.
-
-```ts
-new eks.Cluster(this, 'cluster-two-m5-large', {
-  version: eks.KubernetesVersion.V1_16,
-});
-```
-
-To use the traditional self-managed Amazon EC2 instances instead, set `defaultCapacityType` to `DefaultCapacityType.EC2`
-
-```ts
-const cluster = new eks.Cluster(this, 'cluster-self-managed-ec2', {
-  defaultCapacityType: eks.DefaultCapacityType.EC2,
-  version: eks.KubernetesVersion.V1_16,
-});
-```
-
-The quantity and instance type for the default capacity can be specified through
-the `defaultCapacity` and `defaultCapacityInstance` props:
-
-```ts
-new eks.Cluster(this, 'cluster', {
-  defaultCapacity: 10,
-  defaultCapacityInstance: new ec2.InstanceType('m2.xlarge'),
-  version: eks.KubernetesVersion.V1_16,
-});
-```
-
-To disable the default capacity, simply set `defaultCapacity` to `0`:
-
-```ts
-new eks.Cluster(this, 'cluster-with-no-capacity', {
-  defaultCapacity: 0,
-  version: eks.KubernetesVersion.V1_16,
-});
-```
-
-When creating a cluster with default capacity (i.e `defaultCapacity !== 0` or is undefined), you can access the allocated capacity using:
-
-- `cluster.defaultCapacity` will reference the `AutoScalingGroup` resource in case `defaultCapacityType` is set to `EC2` or is undefined.
-- `cluster.defaultNodegroup` will reference the `Nodegroup` resource in case `defaultCapacityType` is set to `NODEGROUP`.
-
-You can add customized capacity in the form of an `AutoScalingGroup` resource through `cluster.addAutoScalingGroupCapacity()`:
-
-```ts
-cluster.addAutoScalingGroupCapacity('frontend-nodes', {
-  instanceType: new ec2.InstanceType('t2.medium'),
-  minCapacity: 3,
-  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
-});
-```
-
 ### ARM64 Support
 
 Instance types with `ARM64` architecture are supported in both managed nodegroup and self-managed capacity. Simply specify an ARM64 `instanceType` (such as `m6g.medium`), and the latest
@@ -145,76 +91,6 @@ cluster.addAutoScalingGroupCapacity('self-ng-arm', {
 ```
 
 ### Fargate
-
-AWS Fargate is a technology that provides on-demand, right-sized compute
-capacity for containers. With AWS Fargate, you no longer have to provision,
-configure, or scale groups of virtual machines to run containers. This removes
-the need to choose server types, decide when to scale your node groups, or
-optimize cluster packing.
-
-You can control which pods start on Fargate and how they run with Fargate
-Profiles, which are defined as part of your Amazon EKS cluster.
-
-See [Fargate
-Considerations](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html#fargate-considerations)
-in the AWS EKS User Guide.
-
-You can add Fargate Profiles to any EKS cluster defined in your CDK app
-through the `addFargateProfile()` method. The following example adds a profile
-that will match all pods from the "default" namespace:
-
-```ts
-cluster.addFargateProfile('MyProfile', {
-  selectors: [ { namespace: 'default' } ]
-});
-```
-
-To create an EKS cluster that **only** uses Fargate capacity, you can use
-`FargateCluster`.
-
-The following code defines an Amazon EKS cluster without EC2 capacity and a default
-Fargate Profile that matches all pods from the "kube-system" and "default" namespaces. It is also configured to [run CoreDNS on Fargate](https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html#fargate-gs-coredns) through the `coreDnsComputeType` cluster option.
-
-```ts
-const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_16,
-});
-
- // apply k8s resources on this cluster
-cluster.addManifest(...);
-```
-
-**NOTE**: Classic Load Balancers and Network Load Balancers are not supported on
-pods running on Fargate. For ingress, we recommend that you use the [ALB Ingress
-Controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
-on Amazon EKS (minimum version v1.1.4).
-
-### Spot Capacity
-
-If `spotPrice` is specified, the capacity will be purchased from spot instances:
-
-```ts
-cluster.addAutoScalingGroupCapacity('spot', {
-  spotPrice: '0.1094',
-  instanceType: new ec2.InstanceType('t3.large'),
-  maxCapacity: 10
-});
-```
-
-Spot instance nodes will be labeled with `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
-
-The [AWS Node Termination Handler](https://github.com/aws/aws-node-termination-handler)
-DaemonSet will be installed from [
-Amazon EKS Helm chart repository
-](https://github.com/aws/eks-charts/tree/master/stable/aws-node-termination-handler) on these nodes.
-The termination handler ensures that the Kubernetes control plane responds appropriately to events that
-can cause your EC2 instance to become unavailable, such as [EC2 maintenance events](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-instances-status-check_sched.html)
-and [EC2 Spot interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html) and helps gracefully stop all pods running on spot nodes that are about to be
-terminated.
-
-> Handler Version: [1.7.0](https://github.com/aws/aws-node-termination-handler/releases/tag/v1.7.0)
->
-> Chart Version: [0.9.5](https://github.com/aws/eks-charts/blob/v0.0.28/stable/aws-node-termination-handler/Chart.yaml)
 
 ### Bootstrapping
 
