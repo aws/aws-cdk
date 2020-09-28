@@ -460,6 +460,46 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
 
 ### VPC Support
 
+You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properties:
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_17,
+  vpc,
+  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]
+});
+```
+
+If you do not specify a VPC, one will be created on your behalf, which you can then access via `cluster.vpc`. The cluster VPC will be associated to any EKS managed capacity (i.e Managed Node Groups and Fargate Profiles).
+
+If you allocate self managed capacity, you can specify which subnets should the auto-scaling group use:
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+cluster.addAutoScalingGroupCapacity('nodes', {
+  vpcSubnets: { subnets: vpc.privateSubnets }
+});
+```
+
+In addition to the cluster and the capacity, there are two additional components you might want to
+provision within a VPC.
+
+#### Kubectl Handler
+
+The `KubectlHandler` is a Lambda function responsible to issuing `kubectl` and `helm` commands against the cluster when you add resource manifests to the cluster.
+
+The handler association to the VPC is derived from the `endpointAccess` configuration. The rule of thumb is: *If the cluster VPC can be associated, it will be*.
+
+Breaking this down, it means that if the endpoint exposes private access (via `EndpointAccess.PRIVATE` or `EndpointAccess.PUBLIC_AND_PRIVATE`), and the VPC contains **private** subnets, the Lambda function will be provisioned inside the VPC and use the private subnets to interact with the cluster. This is the common use-case.
+
+If the endpoint does not expose private access (via `EndpointAccess.PUBLIC`) **or** the VPC does not contain private subnets, the function will not be provisioned within the VPC.
+
+#### Cluster Handler
+
+The `ClusterHandler` is a Lambda function responsible to interact the EKS API in order to control the cluster lifecycle. At the moment, this function cannot be provisioned inside the VPC. See [Attach all Lambda Function to a VPC](https://github.com/aws/aws-cdk/issues/9509) for more details.
+
 ### Encryption
 
 When you create an Amazon EKS cluster, envelope encryption of Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled.
@@ -884,6 +924,7 @@ Kubernetes [endpoint access](#endpoint-access), you must also specify:
 - [One cluster per stack]().
 - [Object pruning]().
 - [Service Account dependencies]().
+- [Cluster Handler VPC]().
 
 ## RoadMap
 
@@ -892,7 +933,7 @@ We manage the road map via a GitHub project: [EKS Construct Library](https://git
 - *Needs Triage*: Issue has been submitted but needs triage to determine validity.
 - *To Do*: Issue has been accepted and assigned labels.
 - *Planned*: Issue is planned for implementation. You won't find any concrete dates here, but it usually reflects a quarterly timeline.
-- *In Progress**: Issue is actively being worked on.
+- *In Progress*: Issue is actively being worked on.
 - *Review*: Issue has a PR submitted and is under review.
 - *Done*: Issue has been implemented and is either released or will be released in the next version.
 
