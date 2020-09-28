@@ -849,10 +849,15 @@ The CLI is only used to import the core kubernetes api objects, and is not neces
 cdk8s import k8s@{kubernetes-cluster-version} -l typescript
 ```
 
-This will create an `imports` directory that contains the entire k8s object API as constructs.
-We recommend you commit this directory as part of your source code.
+For example, for `eks.KubernetesVersion.V1_17` you would run:
 
-Now, in your application code:
+```console
+cdk8s import k8s@1.17.0 -l typescript
+```
+
+This will create an `imports` directory that contains the entire k8s object API, as typescript constructs. We recommend you commit this directory as part of your source code.
+
+In your application code:
 
 ```ts
 import * as eks from '@aws-cdk/aws-eks';
@@ -886,7 +891,7 @@ cluster.addCdk8sChart('proxy', proxy);
 Note that at this moment, you cannot use AWS CDK constructs as scopes for CDK8s constructs.
 That is, make sure that the cdk8s chart (`proxy` in our case) is an ancestor of every cdk8s construct you define.
 
-In addition to `cdk8s`, you can also use a library called [`cdk8s+`](https://github.com/awslabs/cdk8s/tree/master/packages/cdk8s-plus). It is build on top of `cdk8s` and provide higher level abstraction for the core kubernetes api objects.
+In addition to `cdk8s`, you can also use [`cdk8s+`](https://github.com/awslabs/cdk8s/tree/master/packages/cdk8s-plus), which is also part of the cdk8s toolchain, and is built on top of the core `cdk8s` API. It provides higher level abstraction for kubernetes api objects.
 You can think of it like the `L2` constructs for Kubernetes.
 
 To learn more about it, checkout this [example](https://github.com/awslabs/cdk8s/tree/master/examples/typescript/cdk8s-plus-elasticsearch-query) and blog post: [Introducing cdk8s+: Intent-driven APIs for Kubernetes objects](https://aws.amazon.com/blogs/containers/introducing-cdk8s-intent-driven-apis-for-kubernetes-objects/)
