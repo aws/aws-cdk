@@ -1,6 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
+import { Duration, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType, ApplicationProtocol } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
