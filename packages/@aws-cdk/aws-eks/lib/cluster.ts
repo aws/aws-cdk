@@ -127,7 +127,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @param options options of this chart.
    * @returns a `HelmChart` construct
    */
-  addChart(id: string, options: HelmChartOptions): HelmChart;
+  addHelmChart(id: string, options: HelmChartOptions): HelmChart;
 
   /**
    * Defines a CDK8s chart in this cluster.
@@ -137,6 +137,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @returns a `KubernetesManifest` construct representing the chart.
    */
   addCdk8sChart(id: string, chart: cdk8s.Chart): KubernetesManifest;
+
 }
 
 /**
@@ -517,7 +518,7 @@ export interface ClusterProps extends ClusterOptions {
    * Instance type can be configured through `defaultCapacityInstanceType`,
    * which defaults to `m5.large`.
    *
-   * Use `cluster.addCapacity` to add additional customized capacity. Set this
+   * Use `cluster.addAutoScalingGroupCapacity` to add additional customized capacity. Set this
    * to `0` is you wish to avoid the initial capacity allocation.
    *
    * @default 2
@@ -619,7 +620,7 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @param options options of this chart.
    * @returns a `HelmChart` construct
    */
-  public addChart(id: string, options: HelmChartOptions): HelmChart {
+  public addHelmChart(id: string, options: HelmChartOptions): HelmChart {
     return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
   }
 
@@ -1005,10 +1006,10 @@ export class Cluster extends ClusterBase {
     if (minCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
       this.defaultCapacity = props.defaultCapacityType === DefaultCapacityType.EC2 ?
-        this.addCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
+        this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
 
       this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
-        this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity }) : undefined;
+        this.addNodegroupCapacity('DefaultCapacity', { instanceType, minSize: minCapacity }) : undefined;
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
@@ -1057,7 +1058,7 @@ export class Cluster extends ClusterBase {
    * daemon will be installed on all spot instances to handle
    * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
-  public addCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
+  public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined ) {
       throw new Error('bootstrapOptions is not supported for Bottlerocket');
     }
@@ -1077,7 +1078,7 @@ export class Cluster extends ClusterBase {
       instanceType: options.instanceType,
     });
 
-    this.addAutoScalingGroup(asg, {
+    this.connectAutoScalingGroupCapacity(asg, {
       mapRole: options.mapRole,
       bootstrapOptions: options.bootstrapOptions,
       bootstrapEnabled: options.bootstrapEnabled,
@@ -1100,7 +1101,7 @@ export class Cluster extends ClusterBase {
    * @param id The ID of the nodegroup
    * @param options options for creating a new nodegroup
    */
-  public addNodegroup(id: string, options?: NodegroupOptions): Nodegroup {
+  public addNodegroupCapacity(id: string, options?: NodegroupOptions): Nodegroup {
     return new Nodegroup(this, `Nodegroup${id}`, {
       cluster: this,
       ...options,
@@ -1108,7 +1109,7 @@ export class Cluster extends ClusterBase {
   }
 
   /**
-   * Add compute capacity to this EKS cluster in the form of an AutoScalingGroup
+   * Connect capacity in the form of an existing AutoScalingGroup to the EKS cluster.
    *
    * The AutoScalingGroup must be running an EKS-optimized AMI containing the
    * /etc/eks/bootstrap.sh script. This method will configure Security Groups,
@@ -1121,13 +1122,13 @@ export class Cluster extends ClusterBase {
    * daemon will be installed on all spot instances to handle
    * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    *
-   * Prefer to use `addCapacity` if possible.
+   * Prefer to use `addAutoScalingGroupCapacity` if possible.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
    * @param autoScalingGroup [disable-awslint:ref-via-interface]
    * @param options options for adding auto scaling groups, like customizing the bootstrap script
    */
-  public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AutoScalingGroupOptions) {
+  public connectAutoScalingGroupCapacity(autoScalingGroup: autoscaling.AutoScalingGroup, options: AutoScalingGroupOptions) {
     // self rules
     autoScalingGroup.connections.allowInternally(ec2.Port.allTraffic());
 
@@ -1354,7 +1355,7 @@ export class Cluster extends ClusterBase {
    */
   private addSpotInterruptHandler() {
     if (!this._spotInterruptHandler) {
-      this._spotInterruptHandler = this.addChart('spot-interrupt-handler', {
+      this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
         version: '0.9.5',
         repository: 'https://aws.github.io/eks-charts',
@@ -1451,7 +1452,7 @@ export class Cluster extends ClusterBase {
 /**
  * Options for adding worker nodes
  */
-export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps {
+export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoScalingGroupProps {
   /**
    * Instance type of the instances to start
    */
