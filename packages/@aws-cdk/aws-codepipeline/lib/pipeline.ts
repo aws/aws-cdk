@@ -3,8 +3,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
-  App, Aws, BootstraplessSynthesizer, Construct, DefaultStackSynthesizer,
-  IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, ResourceEnvironment, Stack, Token, TokenComparison,
+  App, BootstraplessSynthesizer, Construct, DefaultStackSynthesizer,
+  IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { ActionCategory, IAction, IPipeline, IStage } from './action';
 import { CfnPipeline } from './codepipeline.generated';
@@ -393,22 +393,28 @@ export class Pipeline extends PipelineBase {
 
   /** @internal */
   public _attachActionToPipeline(stage: Stage, action: IAction, actionScope: Construct): FullActionDescriptor {
-    // handle cross-region actions here
-    const crossRegionInfo = this.ensureReplicationResourcesExistFor(action);
+    const richAction = new RichAction(action, this);
 
-    // get the role for the given action
-    const actionRole = this.getRoleForAction(stage, action, actionScope);
+    // handle cross-region actions here
+    const crossRegionInfo = this.ensureReplicationResourcesExistFor(richAction);
+
+    // get the role for the given action, handling if it's cross-account
+    const actionRole = this.getRoleForAction(stage, richAction, actionScope);
 
     // // CodePipeline Variables
-    validateNamespaceName(action.actionProperties.variablesNamespace);
+    validateNamespaceName(richAction.actionProperties.variablesNamespace);
 
     // bind the Action
-    const actionConfig = action.bind(actionScope, stage, {
+    const actionConfig = richAction.bind(actionScope, stage, {
       role: actionRole ? actionRole : this.role,
       bucket: crossRegionInfo.artifactBucket,
     });
 
     return new FullActionDescriptor({
+      // must be 'action', not 'richAction',
+      // as those are returned by the IStage.actions property,
+      // and it's important customers of Pipeline get the same instance
+      // back as they added to the pipeline
       action,
       actionConfig,
       actionRole,
@@ -433,17 +439,15 @@ export class Pipeline extends PipelineBase {
     ];
   }
 
-  private ensureReplicationResourcesExistFor(action: IAction): CrossRegionInfo {
-    const region = new RichAction(action).region ?? Aws.REGION;
-
-    if (Token.isUnresolved(region) || sameEnvDimension(this.env.region, region)) {
+  private ensureReplicationResourcesExistFor(action: RichAction): CrossRegionInfo {
+    if (!action.isCrossRegion) {
       return {
         artifactBucket: this.artifactBucket,
       };
     }
 
-    // The action has a region and it's not the pipeline's, require the pipeline
-    // to have a known region as well.
+    // The action has a specific region,
+    // require the pipeline to have a known region as well.
     this.requireRegion();
 
     // source actions have to be in the same region as the pipeline
@@ -453,7 +457,7 @@ export class Pipeline extends PipelineBase {
 
     // check whether we already have a bucket in that region,
     // either passed from the outside or previously created
-    const crossRegionSupport = this.obtainCrossRegionSupportFor(action, region);
+    const crossRegionSupport = this.obtainCrossRegionSupportFor(action);
 
     // the stack containing the replication bucket must be deployed before the pipeline
     Stack.of(this).addDependency(crossRegionSupport.stack);
@@ -462,41 +466,24 @@ export class Pipeline extends PipelineBase {
 
     return {
       artifactBucket: crossRegionSupport.replicationBucket,
-      region,
+      region: action.effectiveRegion,
     };
   }
 
   /**
    * Get or create the cross-region support construct for the given action
    */
-  private obtainCrossRegionSupportFor(action: IAction, actionRegion: string) {
+  private obtainCrossRegionSupportFor(action: RichAction) {
+    // this method is never called for non cross-region actions
+    const actionRegion = action.effectiveRegion!;
     let crossRegionSupport = this._crossRegionSupport[actionRegion];
     if (!crossRegionSupport) {
       // we need to create scaffolding resources for this region
-      const otherStack = this.scopeForCrossRegionSupportConstruct(action);
+      const otherStack = action.resourceStack;
       crossRegionSupport = this.createSupportResourcesForRegion(otherStack, actionRegion);
       this._crossRegionSupport[actionRegion] = crossRegionSupport;
     }
     return crossRegionSupport;
-  }
-
-  /**
-   * Return the correct scope to create the cross-region construct in
-   *
-   * As an optimization, we reuse the action resource's stack if the stack has
-   * the same environment as the action.
-   *
-   * (Always true for owned action resources but not necessarily true
-   * for imported ones).
-   */
-  private scopeForCrossRegionSupportConstruct(action: IAction): Stack | undefined {
-    const actionResource = action.actionProperties.resource;
-    if (!actionResource) { return undefined; }
-
-    const actionResourceStack = Stack.of(actionResource);
-    const actionResourceStackEnv = { region: actionResourceStack.region, account: actionResourceStack.account };
-
-    return sameEnv(actionResource.env, actionResourceStackEnv) ? actionResourceStack : undefined;
   }
 
   private createSupportResourcesForRegion(otherStack: Stack | undefined, actionRegion: string):
@@ -578,7 +565,7 @@ export class Pipeline extends PipelineBase {
    * @param action the action to return/create a role for
    * @param actionScope the scope, unique to the action, to create new resources in
    */
-  private getRoleForAction(stage: Stage, action: IAction, actionScope: Construct): iam.IRole | undefined {
+  private getRoleForAction(stage: Stage, action: RichAction, actionScope: Construct): iam.IRole | undefined {
     const pipelineStack = Stack.of(this);
 
     let actionRole = this.getRoleFromActionPropsOrGenerateIfCrossAccount(stage, action);
@@ -601,19 +588,20 @@ export class Pipeline extends PipelineBase {
     return actionRole;
   }
 
-  private getRoleFromActionPropsOrGenerateIfCrossAccount(stage: Stage, action: IAction): iam.IRole | undefined {
+  private getRoleFromActionPropsOrGenerateIfCrossAccount(stage: Stage, action: RichAction): iam.IRole | undefined {
     const pipelineStack = Stack.of(this);
 
     // if we have a cross-account action, the pipeline's bucket must have a KMS key
     // (otherwise we can't configure cross-account trust policies)
-    const crossRegionInfo = this.ensureReplicationResourcesExistFor(action);
-    const actionAccount = new RichAction(action).account ?? Aws.ACCOUNT_ID;
-    if (!Token.isUnresolved(actionAccount) && !sameEnvDimension(this.env.account, actionAccount) && !crossRegionInfo.artifactBucket.encryptionKey) {
-      throw new Error([
-        `Artifact Bucket must have a KMS Key to add cross-account action '${action.actionProperties.actionName}' `,
-        `(pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(actionAccount)}').`,
-        'Create Pipeline with \'crossAccountKeys: true\' (or pass an existing Bucket with a key)',
-      ].join(''));
+    if (action.isCrossAccount) {
+      const artifactBucket = this.ensureReplicationResourcesExistFor(action).artifactBucket;
+      if (!artifactBucket.encryptionKey) {
+        throw new Error(
+          `Artifact Bucket must have a KMS Key to add cross-account action '${action.actionProperties.actionName}' ` +
+          `(pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(action.effectiveAccount)}'). ` +
+          'Create Pipeline with \'crossAccountKeys: true\' (or pass an existing Bucket with a key)',
+        );
+      }
     }
 
     // if a Role has been passed explicitly, always use it
@@ -987,26 +975,8 @@ class PipelineLocation {
 }
 
 /**
- * Whether two string probably contain the same environment dimension (region or account)
- *
- * Used to compare either accounts or regions, and also returns true if both
- * are unresolved (in which case both are expted to be "current region" or "current account").
- */
-function sameEnvDimension(a: string, b: string) {
-  return [TokenComparison.SAME, TokenComparison.BOTH_UNRESOLVED].includes(Token.compareStrings(a, b));
-}
-
-/**
  * Render an env dimension without showing the ugly stringified tokens
  */
-function renderEnvDimension(s: string) {
+function renderEnvDimension(s: string | undefined) {
   return Token.isUnresolved(s) ? '(current)' : s;
-}
-
-/**
- * Whether the two envs represent the same environment
- */
-function sameEnv(env1: ResourceEnvironment, env2: ResourceEnvironment) {
-  return sameEnvDimension(env1.region, env2.region)
-    && sameEnvDimension(env1.account, env2.account);
 }
