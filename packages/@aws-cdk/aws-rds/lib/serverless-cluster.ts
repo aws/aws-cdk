@@ -6,8 +6,9 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { Login, RotationMultiUserOptions } from './props';
-import { CfnDBCluster, CfnDBSubnetGroup } from './rds.generated';
+import { Credentials, RotationMultiUserOptions } from './props';
+import { CfnDBCluster } from './rds.generated';
+import { ISubnetGroup, SubnetGroup } from './subnet-group';
 
 /**
  *  Properties to configure an Aurora Serverless Cluster
@@ -19,9 +20,11 @@ export interface ServerlessClusterProps {
   readonly engine: IClusterEngine;
 
   /**
-   * Username and password for the administrative user
+   * Credentials for the administrative user
+   *
+   * @default - A username of 'admin' and SecretsManager-generated password
    */
-  readonly masterUser: Login;
+  readonly credentials: Credentials;
 
   /**
    * An optional identifier for the cluster
@@ -61,7 +64,6 @@ export interface ServerlessClusterProps {
 
   /**
    * The VPC that this Aurora Serverless cluster has been created in.
-   *
    */
   readonly vpc: ec2.IVpc;
 
@@ -107,10 +109,17 @@ export interface ServerlessClusterProps {
    * @default - no parameter group.
    */
   readonly parameterGroup?: IParameterGroup;
+
+  /**
+   * Existing subnet group for the cluster.
+   *
+   * @default - a new subnet group will be created.
+   */
+  readonly subnetGroup?: ISubnetGroup;
 }
 
 /**
- * Create a clustered database with a given number of instances.
+  * Interface representing a serverless database cluster.
  */
 export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
@@ -181,47 +190,38 @@ export enum AuroraCapacityUnit {
    * 1 Aurora Capacity Unit
    */
   ACU_1 = 1,
-
   /**
    * 2 Aurora Capacity Units
    */
   ACU_2 = 2,
-
   /**
    * 8 Aurora Capacity Units
    */
   ACU_8 = 8,
-
   /**
    * 16 Aurora Capacity Units
    */
   ACU_16 = 16,
-
   /**
    * 32 Aurora Capacity Units
    */
   ACU_32 = 32,
-
   /**
    * 64 Aurora Capacity Units
    */
   ACU_64 = 64,
-
   /**
    * 128 Aurora Capacity Units
    */
   ACU_128 = 128,
-
   /**
    * 192 Aurora Capacity Units
    */
   ACU_192 = 192,
-
   /**
    * 256 Aurora Capacity Units
    */
   ACU_256 = 256,
-
   /**
    * 384 Aurora Capacity Units
    */
@@ -233,21 +233,21 @@ export enum AuroraCapacityUnit {
  */
 export interface ServerlessScalingOptions {
   /**
-   * The minimum capacity for an Aurora serverless database cluster.
+   * The minimum capacity for an Aurora Serverless database cluster.
    *
    * @default - determined by Aurora based on database engine
    */
   readonly minCapacity?: AuroraCapacityUnit;
 
   /**
-   * The maximum capacity for an Aurora serverless database cluster.
+   * The maximum capacity for an Aurora Serverless database cluster.
    *
    * @default - determined by Aurora based on database engine
    */
   readonly maxCapacity?: AuroraCapacityUnit;
 
   /**
-   * The time before an Aurora serverless database cluster is paused.
+   * The time before an Aurora Serverless database cluster is paused.
    * A database cluster can be paused only when it is idle (it has no connections).
    *
    * If a DB cluster is paused for more than seven days, the DB cluster might be
@@ -323,7 +323,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
   public readonly secret?: secretsmanager.ISecret;
 
   private readonly securityGroups: ec2.ISecurityGroup[];
-  private readonly subnetGroup: CfnDBSubnetGroup;
+  protected readonly subnetGroup: ISubnetGroup;
   private readonly vpc: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -333,7 +333,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
   constructor(scope:Construct, id: string, props: ServerlessClusterProps) {
     super(scope, id);
 
-    this.vpc = props.vpc ?? new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
+    this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets;
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
@@ -346,14 +346,12 @@ export class ServerlessCluster extends ServerlessClusterBase {
       Annotations.of(this).addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
-    this.subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
-      dbSubnetGroupDescription: `Subnets for ${id} database`,
-      subnetIds,
+    this.subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
+      description: `Subnets for ${id} database`,
+      vpc: props.vpc,
+      vpcSubnets: props.vpcSubnets,
+      removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
     });
-
-    if (props.removalPolicy === RemovalPolicy.RETAIN) {
-      this.subnetGroup.applyRemovalPolicy(RemovalPolicy.RETAIN);
-    }
 
     this.securityGroups = props.securityGroups ?? [
       new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -362,13 +360,14 @@ export class ServerlessCluster extends ServerlessClusterBase {
       }),
     ];
 
-    let secret: DatabaseSecret | undefined;
-    if (!props.masterUser.password) {
-      secret = new DatabaseSecret(this, 'Secret', {
-        username: props.masterUser.username,
-        encryptionKey: props.masterUser.encryptionKey,
-      });
+    let credentials = props.credentials ?? Credentials.fromUsername('admin');
+    if (!credentials.secret && !credentials.password) {
+      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
+        username: credentials.username,
+        encryptionKey: credentials.encryptionKey,
+      }));
     }
+    const secret = credentials.secret;
 
     // bind the engine to the Cluster
     const clusterEngineBindConfig = props.engine.bindToCluster(this, {
@@ -382,18 +381,18 @@ export class ServerlessCluster extends ServerlessClusterBase {
       databaseName: props.defaultDatabaseName,
       dbClusterIdentifier: props.clusterIdentifier,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
-      dbSubnetGroupName: this.subnetGroup.ref,
+      dbSubnetGroupName: this.subnetGroup.subnetGroupName,
       deletionProtection: props.deletionProtection,
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       engineMode: 'serverless',
       enableHttpEndpoint: props.enableHttpEndpoint ?? false,
       kmsKeyId: props.storageEncryptionKey?.keyArn,
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
+      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.credentials.username,
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').toString()
-        : (props.masterUser.password
-          ? props.masterUser.password.toString()
+        : (props.credentials.password
+          ? props.credentials.password.toString()
           : undefined),
       scalingConfiguration: props.scaling ? this.renderScalingConfiguration(props.scaling) : undefined,
       storageEncrypted: true,
@@ -416,16 +415,6 @@ export class ServerlessCluster extends ServerlessClusterBase {
     if (secret) {
       this.secret = secret.attach(this);
     }
-  }
-
-  /**
-   * Renders the secret attachment target specifications.
-   */
-  public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
-    return {
-      targetId: this.clusterIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.RDS_DB_CLUSTER,
-    };
   }
 
   /**

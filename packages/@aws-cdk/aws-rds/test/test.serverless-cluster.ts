@@ -14,7 +14,7 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'ServerlessDatabase', {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -59,7 +59,7 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'ServerlessDatabase', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -105,7 +105,7 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -134,7 +134,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
     new ServerlessCluster(stack, 'Cluster', {
-      masterUser: { username: 'admin' },
+      credentials: { username: 'admin' },
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
@@ -156,7 +156,7 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       vpc,
@@ -210,7 +210,7 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       vpc,
@@ -240,7 +240,7 @@ export = {
       engine: DatabaseClusterEngine.auroraPostgres({
         version: AuroraPostgresEngineVersion.VER_10_7,
       }),
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       vpc,
@@ -264,7 +264,7 @@ export = {
     // WHEN
     const cluster = new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       vpc,
@@ -356,7 +356,7 @@ export = {
     // WHEN
     const cluster = new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -375,7 +375,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: { username: 'admin' },
+      credentials: { username: 'admin' },
       vpc,
     });
 
@@ -396,7 +396,7 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -420,7 +420,7 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
       },
       vpc,
@@ -445,7 +445,7 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      masterUser: {
+      credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
@@ -479,7 +479,7 @@ export = {
     test.throws(() =>
       new ServerlessCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
-        masterUser: {
+        credentials: {
           username: 'admin',
           password: cdk.SecretValue.plainText('tooshort'),
         },

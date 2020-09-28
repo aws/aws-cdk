@@ -11,7 +11,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 
 const cluster = new ServerlessCluster(stack, 'Serverless Database', {
   engine: DatabaseClusterEngine.AURORA_MYSQL,
-  masterUser: {
+  credentials: {
     username: 'admin',
     password: cdk.SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6'),
   },
