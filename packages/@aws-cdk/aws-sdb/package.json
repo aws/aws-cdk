@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-sdb",
-        "module": "aws_cdk.aws_sdb"
+        "module": "aws_cdk.aws_sdb",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

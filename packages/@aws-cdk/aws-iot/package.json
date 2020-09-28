@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-iot",
-        "module": "aws_cdk.aws_iot"
+        "module": "aws_cdk.aws_iot",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

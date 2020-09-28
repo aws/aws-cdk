@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.custom-resources",
-        "module": "aws_cdk.custom_resources"
+        "module": "aws_cdk.custom_resources",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

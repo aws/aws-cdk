@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-emr",
-        "module": "aws_cdk.aws_emr"
+        "module": "aws_cdk.aws_emr",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

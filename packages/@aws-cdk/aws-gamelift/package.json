@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-gamelift",
-        "module": "aws_cdk.aws_gamelift"
+        "module": "aws_cdk.aws_gamelift",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

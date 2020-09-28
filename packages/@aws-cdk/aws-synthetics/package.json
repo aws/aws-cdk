@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-synthetics",
-        "module": "aws_cdk.aws_synthetics"
+        "module": "aws_cdk.aws_synthetics",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-stepfunctions",
-        "module": "aws_cdk.aws_stepfunctions"
+        "module": "aws_cdk.aws_stepfunctions",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

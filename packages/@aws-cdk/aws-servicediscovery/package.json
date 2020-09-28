@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-servicediscovery",
-        "module": "aws_cdk.aws_servicediscovery"
+        "module": "aws_cdk.aws_servicediscovery",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

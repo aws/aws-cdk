@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cloudfront",
-        "module": "aws_cdk.aws_cloudfront"
+        "module": "aws_cdk.aws_cloudfront",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

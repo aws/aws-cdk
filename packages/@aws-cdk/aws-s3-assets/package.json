@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-s3-assets",
-        "module": "aws_cdk.aws_s3_assets"
+        "module": "aws_cdk.aws_s3_assets",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

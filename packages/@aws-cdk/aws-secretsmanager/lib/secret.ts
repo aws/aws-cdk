@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { IResource, RemovalPolicy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
@@ -597,8 +597,13 @@ export interface SecretStringGenerator {
 
 /** Parses the secret name from the ARN. */
 function parseSecretName(construct: IConstruct, secretArn: string) {
-  const resourceName = Stack.of(construct).parseArn(secretArn).resourceName;
+  const resourceName = Stack.of(construct).parseArn(secretArn, ':').resourceName;
   if (resourceName) {
+    // Can't operate on the token to remove the SecretsManager suffix, so just return the full secret name
+    if (Token.isUnresolved(resourceName)) {
+      return resourceName;
+    }
+
     // Secret resource names are in the format `${secretName}-${SecretsManager suffix}`
     const secretNameFromArn = resourceName.substr(0, resourceName.lastIndexOf('-'));
     if (secretNameFromArn) { return secretNameFromArn; }
