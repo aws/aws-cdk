@@ -280,5 +280,5 @@ frontend.connectTo(backend);
 
 The above code uses the well known service discovery name for each
 service, and passes it as an environment variable to the container so
-that the container knows what address to use when communicating to to
+that the container knows what address to use when communicating to
 the other service.
