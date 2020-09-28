@@ -412,7 +412,7 @@ export class Distribution extends Resource implements IDistribution {
 
     const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket');
     return {
-      bucket: bucket.bucketRegionalDomainName,
+      bucket: bucket.bucketDomainName,
       includeCookies: props.logIncludesCookies,
       prefix: props.logFilePrefix,
     };

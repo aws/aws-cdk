@@ -898,7 +898,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       distributionConfig = {
         ...distributionConfig,
         logging: {
-          bucket: this.loggingBucket.bucketRegionalDomainName,
+          bucket: this.loggingBucket.bucketDomainName,
           includeCookies: props.loggingConfig.includeCookies || false,
           prefix: props.loggingConfig.prefix,
         },
