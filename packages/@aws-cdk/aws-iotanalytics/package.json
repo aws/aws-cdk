@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-iotanalytics",
-        "module": "aws_cdk.aws_iotanalytics"
+        "module": "aws_cdk.aws_iotanalytics",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

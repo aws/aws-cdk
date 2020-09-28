@@ -4,7 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { CfnResource, Construct, Duration, Fn, Lazy, Stack } from '@aws-cdk/core';
+import { Annotations, CfnResource, Construct, Duration, Fn, Lazy, Stack } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
@@ -382,7 +382,7 @@ export class Function extends FunctionBase {
       public readonly role = role;
       public readonly permissionsNode = this.node;
 
-      protected readonly canCreatePermissions = false;
+      protected readonly canCreatePermissions = this._isStackAccount();
 
       constructor(s: Construct, i: string) {
         super(s, i);
@@ -775,7 +775,7 @@ export class Function extends FunctionBase {
     for (const [key, config] of envEntries) {
       if (config.removeInEdge) {
         delete this.environment[key];
-        this.node.addInfo(`Removed ${key} environment variable for Lambda@Edge compatibility`);
+        Annotations.of(this).addInfo(`Removed ${key} environment variable for Lambda@Edge compatibility`);
       }
     }
     const envKeys = Object.keys(this.environment);

@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../lib';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, PhysicalResourceIdReference } from '../../lib';
 
 /* eslint-disable quote-props */
 
@@ -224,6 +224,63 @@ test('encodes booleans', () => {
   });
 });
 
+test('fails PhysicalResourceIdReference is passed to onCreate parameters', () => {
+  const stack = new cdk.Stack();
+  expect(() => new AwsCustomResource(stack, 'AwsSdk', {
+    resourceType: 'Custom::ServiceAction',
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      parameters: {
+        physicalResourceIdReference: new PhysicalResourceIdReference(),
+      },
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  })).toThrow('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
+});
+
+test('encodes physical resource id reference', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    resourceType: 'Custom::ServiceAction',
+    onUpdate: {
+      service: 'service',
+      action: 'action',
+      parameters: {
+        trueBoolean: true,
+        trueString: 'true',
+        falseBoolean: false,
+        falseString: 'false',
+        physicalResourceIdReference: new PhysicalResourceIdReference(),
+      },
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  expect(stack).toHaveResource('Custom::ServiceAction', {
+    'Create': {
+      'service': 'service',
+      'action': 'action',
+      'parameters': {
+        'trueBoolean': 'TRUE:BOOLEAN',
+        'trueString': 'true',
+        'falseBoolean': 'FALSE:BOOLEAN',
+        'falseString': 'false',
+        'physicalResourceIdReference': 'PHYSICAL:RESOURCEID:',
+      },
+      'physicalResourceId': {
+        'id': 'id',
+      },
+    },
+  });
+});
+
 test('timeout defaults to 2 minutes', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -286,11 +343,6 @@ test('implements IGrantable', () => {
   expect(stack).toHaveResource('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
-        {
-          Action: 'service:Action',
-          Effect: 'Allow',
-          Resource: '*',
-        },
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
@@ -606,5 +658,54 @@ test('can specify function name', () => {
   // THEN
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     FunctionName: 'my-cool-function',
+  });
+});
+
+test('separate policies per custom resource', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'Custom1', {
+    onCreate: {
+      service: 'service1',
+      action: 'action1',
+      physicalResourceId: PhysicalResourceId.of('id1'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+  new AwsCustomResource(stack, 'Custom2', {
+    onCreate: {
+      service: 'service2',
+      action: 'action2',
+      physicalResourceId: PhysicalResourceId.of('id2'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'service1:Action1',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'service2:Action2',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
   });
 });

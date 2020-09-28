@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags,
+  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -747,7 +747,7 @@ export = {
   'Stack.of() throws when there is no parent Stack'(test: Test) {
     const root = new Construct(undefined as any, 'Root');
     const construct = new Construct(root, 'Construct');
-    test.throws(() => Stack.of(construct), /No stack could be identified for the construct at path/);
+    test.throws(() => Stack.of(construct), /should be created in the scope of a Stack, but no Stack found/);
     test.done();
   },
 
@@ -897,7 +897,7 @@ export = {
     test.done();
   },
 
-  'stack tags are reflected in the stack cloud assembly artifact'(test: Test) {
+  'stack tags are reflected in the stack cloud assembly artifact metadata'(test: Test) {
     // GIVEN
     const app = new App({ stackTraces: false });
     const stack1 = new Stack(app, 'stack1');
@@ -917,6 +917,24 @@ export = {
 
     test.deepEqual(asm.getStackArtifact(stack1.artifactId).manifest.metadata, { '/stack1': expected });
     test.deepEqual(asm.getStackArtifact(stack2.artifactId).manifest.metadata, { '/stack1/stack2': expected });
+    test.done();
+  },
+
+  'stack tags are reflected in the stack artifact properties'(test: Test) {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack1 = new Stack(app, 'stack1');
+    const stack2 = new Stack(stack1, 'stack2');
+
+    // WHEN
+    Tags.of(app).add('foo', 'bar');
+
+    // THEN
+    const asm = app.synth();
+    const expected = { foo: 'bar' };
+
+    test.deepEqual(asm.getStackArtifact(stack1.artifactId).tags, expected);
+    test.deepEqual(asm.getStackArtifact(stack2.artifactId).tags, expected);
     test.done();
   },
 
@@ -949,6 +967,48 @@ export = {
 
     app.synth();
     test.ok(called, 'synthesize() not called for Stack');
+    test.done();
+  },
+
+  'context can be set on a stack using a LegacySynthesizer'(test: Test) {
+    // WHEN
+    const stack = new Stack(undefined, undefined, {
+      synthesizer: new LegacyStackSynthesizer(),
+    });
+    stack.node.setContext('something', 'value');
+
+    // THEN: no exception
+
+    test.done();
+  },
+
+  'context can be set on a stack using a DefaultSynthesizer'(test: Test) {
+    // WHEN
+    const stack = new Stack(undefined, undefined, {
+      synthesizer: new DefaultStackSynthesizer(),
+    });
+    stack.node.setContext('something', 'value');
+
+    // THEN: no exception
+
+    test.done();
+  },
+
+  'version reporting can be configured on the app'(test: Test) {
+    const app = new App({ analyticsReporting: true });
+    test.ok(new Stack(app, 'Stack')._versionReportingEnabled);
+    test.done();
+  },
+
+  'version reporting can be configured with context'(test: Test) {
+    const app = new App({ context: { 'aws:cdk:version-reporting': true } });
+    test.ok(new Stack(app, 'Stack')._versionReportingEnabled);
+    test.done();
+  },
+
+  'version reporting can be configured on the stack'(test: Test) {
+    const app = new App();
+    test.ok(new Stack(app, 'Stack', { analyticsReporting: true })._versionReportingEnabled);
     test.done();
   },
 };

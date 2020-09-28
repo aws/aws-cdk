@@ -2,16 +2,17 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, CfnOutput, Duration, Token } from '@aws-cdk/core';
+import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { Pinger } from './pinger/pinger';
 import { TestStack } from './util';
 
+
 class EksClusterStack extends TestStack {
 
   private cluster: eks.Cluster;
-  private vpc: ec2.Vpc;
+  private vpc: ec2.IVpc;
 
   constructor(scope: App, id: string) {
     super(scope, id);
@@ -31,13 +32,15 @@ class EksClusterStack extends TestStack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_16,
+      version: eks.KubernetesVersion.V1_17,
       secretsEncryptionKey,
     });
 
     this.assertFargateProfile();
 
-    this.assertCapacity();
+    this.assertCapacityX86();
+
+    this.assertCapacityArm();
 
     this.assertBottlerocket();
 
@@ -45,7 +48,11 @@ class EksClusterStack extends TestStack {
 
     this.assertInferenceInstances();
 
-    this.assertNodeGroup();
+    this.assertNodeGroupX86();
+
+    this.assertNodeGroupArm();
+
+    this.assertNodeGroupCustomAmi();
 
     this.assertSimpleManifest();
 
@@ -105,10 +112,43 @@ class EksClusterStack extends TestStack {
     // apply a kubernetes manifest
     this.cluster.addManifest('HelloApp', ...hello.resources);
   }
-  private assertNodeGroup() {
+  private assertNodeGroupX86() {
     // add a extra nodegroup
     this.cluster.addNodegroup('extra-ng', {
       instanceType: new ec2.InstanceType('t3.small'),
+      minSize: 1,
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+    });
+  }
+  private assertNodeGroupCustomAmi() {
+    // add a extra nodegroup
+    const userData = ec2.UserData.forLinux();
+    userData.addCommands(
+      'set -o xtrace',
+      `/etc/eks/bootstrap.sh ${this.cluster.clusterName}`,
+    );
+    const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+      launchTemplateData: {
+        imageId: new eks.EksOptimizedImage().getImage(this).imageId,
+        instanceType: new ec2.InstanceType('t3.small').toString(),
+        userData: Fn.base64(userData.render()),
+      },
+    });
+    this.cluster.addNodegroup('extra-ng2', {
+      minSize: 1,
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: this.cluster.defaultNodegroup?.role || this.cluster.defaultCapacity?.role,
+      launchTemplate: {
+        id: lt.ref,
+        version: lt.attrDefaultVersionNumber,
+      },
+    });
+  }
+  private assertNodeGroupArm() {
+    // add a extra nodegroup
+    this.cluster.addNodegroup('extra-ng-arm', {
+      instanceType: new ec2.InstanceType('m6g.medium'),
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
@@ -142,14 +182,24 @@ class EksClusterStack extends TestStack {
     });
 
   }
-  private assertCapacity() {
-    // add some capacity to the cluster. The IAM instance role will
+  private assertCapacityX86() {
+    // add some x86_64 capacity to the cluster. The IAM instance role will
     // automatically be mapped via aws-auth to allow nodes to join the cluster.
     this.cluster.addCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
       minCapacity: 3,
     });
   }
+
+  private assertCapacityArm() {
+    // add some arm64 capacity to the cluster. The IAM instance role will
+    // automatically be mapped via aws-auth to allow nodes to join the cluster.
+    this.cluster.addCapacity('NodesArm', {
+      instanceType: new ec2.InstanceType('m6g.medium'),
+      minCapacity: 1,
+    });
+  }
+
   private assertFargateProfile() {
     // fargate profile for resources in the "default" namespace
     this.cluster.addFargateProfile('default', {

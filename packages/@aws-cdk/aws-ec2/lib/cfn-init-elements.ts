@@ -432,6 +432,7 @@ export abstract class InitFile extends InitElement {
             source: asset.httpUrl,
           }),
           authentication: standardS3Auth(bindOptions.instanceRole, asset.s3BucketName),
+          assetHash: asset.assetHash,
         };
       }
     }(targetFileName, options);
@@ -449,6 +450,7 @@ export abstract class InitFile extends InitElement {
             source: asset.httpUrl,
           }),
           authentication: standardS3Auth(bindOptions.instanceRole, asset.s3BucketName),
+          assetHash: asset.assetHash,
         };
       }
     }(targetFileName, options);
@@ -487,7 +489,9 @@ export abstract class InitFile extends InitElement {
       if (fileOptions.group || fileOptions.owner || fileOptions.mode) {
         throw new Error('Owner, group, and mode options not supported for Windows.');
       }
-      return {};
+      return {
+        [this.fileName]: { ...contentVars },
+      };
     }
 
     return {
@@ -899,6 +903,7 @@ export abstract class InitSource extends InitElement {
         return {
           config: { [this.targetDirectory]: asset.httpUrl },
           authentication: standardS3Auth(bindOptions.instanceRole, asset.s3BucketName),
+          assetHash: asset.assetHash,
         };
       }
     }(targetDirectory, options.serviceRestartHandles);
@@ -915,6 +920,7 @@ export abstract class InitSource extends InitElement {
         return {
           config: { [this.targetDirectory]: asset.httpUrl },
           authentication: standardS3Auth(bindOptions.instanceRole, asset.s3BucketName),
+          assetHash: asset.assetHash,
         };
       }
     }(targetDirectory, options.serviceRestartHandles);

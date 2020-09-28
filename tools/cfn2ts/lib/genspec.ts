@@ -43,7 +43,7 @@ export class CodeName {
     return new CodeName('', '', primitiveName);
   }
 
-  /* eslint-disable no-shadow */
+  /* eslint-disable @typescript-eslint/no-shadow */
   constructor(
     readonly packageName: string,
     readonly namespace: string,
@@ -51,7 +51,7 @@ export class CodeName {
     readonly specName?: SpecName,
     readonly methodName?: string) {
   }
-  /* eslint-enable no-shadow */
+  /* eslint-enable @typescript-eslint/no-shadow */
 
   /**
    * Alias for className
@@ -262,6 +262,10 @@ export function isPrimitive(type: CodeName): boolean {
 }
 
 function specTypeToCodeType(resourceContext: CodeName, type: string): CodeName {
+  if (type.endsWith('[]')) {
+    const itemType = specTypeToCodeType(resourceContext, type.substr(0, type.length - 2));
+    return CodeName.forPrimitive(`${itemType.className}[]`);
+  }
   if (schema.isPrimitiveType(type)) {
     return specPrimitiveToCodePrimitive(type);
   } else if (type === 'Tag') {
@@ -314,6 +318,11 @@ export interface PropertyVisitor<T> {
   visitUnionMap(itemTypes: CodeName[]): T;
 
   /**
+   * Map of lists
+   */
+  visitMapOfLists(itemType: CodeName): T;
+
+  /**
    * Union of list type and atom type
    */
   visitListOrAtom(scalarTypes: CodeName[], itemTypes: CodeName[]): any;
@@ -337,6 +346,12 @@ export function typeDispatch<T>(resourceContext: CodeName, spec: schema.Property
   if (schema.isCollectionProperty(spec)) {
     // List or map, of either atoms or unions
     if (schema.isMapProperty(spec)) {
+      if (schema.isMapOfListsOfPrimitivesProperty(spec)) {
+        // remove the '[]' from the type
+        const baseType = itemTypes[0].className;
+        const itemType = CodeName.forPrimitive(baseType.substr(0, baseType.length - 2));
+        return visitor.visitMapOfLists(itemType);
+      }
       if (itemTypes.length > 1) {
         return visitor.visitUnionMap(itemTypes);
       } else {

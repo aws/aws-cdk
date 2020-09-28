@@ -3,9 +3,9 @@
 <!--BEGIN STABILITY BANNER-->
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they become stable. We will only make breaking changes to address unforeseen API issues. Therefore, these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes will be announced in release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -61,8 +61,21 @@ const cfnTemplate = new cfn_inc.CfnInclude(this, 'Template', {
 });
 ```
 
+**Note**: different YAML parsers sometimes don't agree on what exactly constitutes valid YAML.
+If you get a YAML exception when including your template,
+try converting it to JSON, and including that file instead.
+If you're downloading your template from the CloudFormation AWS Console,
+you can easily get it in JSON format by clicking the 'View in Designer'
+button on the 'Template' tab -
+once in Designer, select JSON in the "Choose template language"
+radio buttons on the bottom pane.
+
 This will add all resources from `my-template.json` / `my-template.yaml` into the CDK application,
 preserving their original logical IDs from the template file.
+
+Note that this including process will _not_ execute any
+[CloudFormation transforms](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-macros.html) -
+including the [Serverless transform](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-aws-serverless.html).
 
 Any resource from the included template can be retrieved by referring to it by its logical ID from the template.
 If you know the class of the CDK object that corresponds to that resource,
@@ -113,25 +126,84 @@ const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
 
-## Parameters
+## Non-resource template elements
 
-If your template uses [CloudFormation Parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html),
-you can retrieve them from your template:
+In addition to resources,
+you can also retrieve and mutate all other template elements:
 
-```typescript
-import * as core from '@aws-cdk/core';
+* [Parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html):
 
-const param: core.CfnParameter = cfnTemplate.getParameter('MyParameter');
-```
+    ```typescript
+    import * as core from '@aws-cdk/core';
+    
+    const param: core.CfnParameter = cfnTemplate.getParameter('MyParameter');
+    
+    // mutating the parameter
+    param.default = 'MyDefault';
+    ```
 
-The `CfnParameter` object is mutable,
-and any changes you make to it will be reflected in the resulting template:
+* [Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html):
 
-```typescript
-param.default = 'MyDefault';
-```
+    ```typescript
+    import * as core from '@aws-cdk/core';
+    
+    const condition: core.CfnCondition = cfnTemplate.getCondition('MyCondition');
+    
+    // mutating the condition
+    condition.expression = core.Fn.conditionEquals(1, 2);
+    ```
 
-You can also provide values for them when including the template:
+* [Mappings](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html):
+
+    ```typescript
+    import * as core from '@aws-cdk/core';
+    
+    const mapping: core.CfnMapping = cfnTemplate.getMapping('MyMapping');
+    
+    // mutating the mapping
+    mapping.setValue('my-region', 'AMI', 'ami-04681a1dbd79675a5');
+    ```
+
+* [Service Catalog template Rules](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html):
+
+    ```typescript
+    import * as core from '@aws-cdk/core';
+    
+    const rule: core.CfnRule = cfnTemplate.getRule('MyRule');
+    
+    // mutating the rule
+    rule.addAssertion(core.Fn.conditionContains(['m1.small'], myParameter.value),
+      'MyParameter has to be m1.small');
+    ```
+
+* [Outputs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html):
+
+    ```typescript
+    import * as core from '@aws-cdk/core';
+    
+    const output: core.CfnOutput = cfnTemplate.getOutput('MyOutput');
+    
+    // mutating the output
+    output.value = cfnBucket.attrArn;
+    ```
+
+* [Hooks for blue-green deployments](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/blue-green.html):
+
+    ```typescript
+    import * as core from '@aws-cdk/core';
+    
+    const hook: core.CfnHook = cfnTemplate.getHook('MyOutput');
+    
+    // mutating the hook
+    const codeDeployHook = hook as core.CfnCodeDeployBlueGreenHook;
+    codeDeployHook.serviceRole = myRole.roleArn;
+    ```
+
+## Parameter replacement
+
+If your existing template uses CloudFormation Parameters,
+you may want to remove them in favor of build-time values.
+You can do that using the `parameters` property:
 
 ```typescript
 new inc.CfnInclude(this, 'includeTemplate', {
@@ -142,104 +214,12 @@ new inc.CfnInclude(this, 'includeTemplate', {
 });
 ```
 
-This will replace all references to `MyParam` with the string 'my-value',
-and `MyParam` will be removed from the Parameters section of the template.
-
-## Conditions
-
-If your template uses [CloudFormation Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html),
-you can retrieve them from your template:
-
-```typescript
-import * as core from '@aws-cdk/core';
-
-const condition: core.CfnCondition = cfnTemplate.getCondition('MyCondition');
-```
-
-The `CfnCondition` object is mutable,
-and any changes you make to it will be reflected in the resulting template:
-
-```typescript
-condition.expression = core.Fn.conditionEquals(1, 2);
-```
-
-## Mappings
-
-If your template uses [CloudFormation Mappings](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html),
-you can retrieve them from your template:
-
-```typescript
-import * as core from '@aws-cdk/core';
-
-const mapping: core.CfnMapping = cfnTemplate.getMapping('MyMapping');
-```
-
-The `CfnMapping` object is mutable,
-and any changes you make to it will be reflected in the resulting template:
-
-```typescript
-mapping.setValue('my-region', 'AMI', 'ami-04681a1dbd79675a5');
-```
-
-## Rules
-
-If your template uses [Service Catalog template Rules](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html),
-you can retrieve them from your template:
-
-```typescript
-import * as core from '@aws-cdk/core';
-
-const rule: core.CfnRule = cfnTemplate.getRule('MyRule');
-```
-
-The `CfnRule` object is mutable,
-and any changes you make to it will be reflected in the resulting template:
-
-```typescript
-rule.addAssertion(core.Fn.conditionContains(['m1.small'], myParameter.value),
-  'MyParameter has to be m1.small');
-```
-
-## Outputs
-
-If your template uses [CloudFormation Outputs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html),
-you can retrieve them from your template:
-
-```typescript
-import * as core from '@aws-cdk/core';
-
-const output: core.CfnOutput = cfnTemplate.getOutput('MyOutput');
-```
-
-The `CfnOutput` object is mutable,
-and any changes you make to it will be reflected in the resulting template:
-
-```typescript
-output.value = cfnBucket.attrArn;
-```
-
-## Hooks
-
-If your template uses [Hooks for blue-green deployments](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/blue-green.html),
-you can retrieve them from your template:
-
-```typescript
-import * as core from '@aws-cdk/core';
-
-const hook: core.CfnHook = cfnTemplate.getHook('MyOutput');
-```
-
-The `CfnHook` object can be mutated,
-and any changes you make to it will be reflected in the resulting template:
-
-```typescript
-const codeDeployHook = hook as core.CfnCodeDeployBlueGreenHook;
-codeDeployHook.serviceRole = myRole.roleArn;
-```
+This will replace all references to `MyParam` with the string `'my-value'`,
+and `MyParam` will be removed from the 'Parameters' section of the template.
 
 ## Nested Stacks
 
-This module also support templates that use [nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html).
+This module also supports templates that use [nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html).
 
 For example, if you have the following parent template:
 
@@ -274,13 +254,21 @@ and the nested stack in your CDK application as follows:
 ```typescript
 const parentTemplate = new inc.CfnInclude(this, 'ParentStack', {
   templateFile: 'path/to/my-parent-template.json',
-  nestedStacks: {
+  loadNestedStacks: {
     'ChildStack': {
       templateFile: 'path/to/my-nested-template.json',
     },
   },
 });
 ```
+
+Here, `path/to/my-nested-template.json`
+represents the path on disk to the downloaded template file from the original template URL of the nested stack
+(`https://my-s3-template-source.s3.amazonaws.com/child-stack.json`).
+In the CDK application,
+this file will be turned into an [Asset](https://docs.aws.amazon.com/cdk/latest/guide/assets.html),
+and the `TemplateURL` property of the nested stack resource
+will be modified to point to that asset.
 
 The included nested stack can be accessed with the `getNestedStack` method:
 
@@ -309,6 +297,15 @@ role.addToPolicy(new iam.PolicyStatement({
   ],
   resources: [cfnBucket.attrArn],
 }));
+```
+
+You can also include the nested stack after the `CfnInclude` object was created,
+instead of doing it on construction:
+
+```ts
+const includedChildStack = parentTemplate.loadNestedStack('ChildTemplate', {
+  templateFile: 'path/to/my-nested-template.json',
+});
 ```
 
 ## Vending CloudFormation templates as Constructs
