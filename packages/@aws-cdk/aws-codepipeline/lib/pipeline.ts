@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
-  App, BootstraplessSynthesizer, Construct, DefaultStackSynthesizer,
+  App, Aws, BootstraplessSynthesizer, Construct, DefaultStackSynthesizer,
   IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, ResourceEnvironment, Stack, Token, TokenComparison,
 } from '@aws-cdk/core';
 import { ActionCategory, IAction, IPipeline, IStage } from './action';
@@ -434,11 +434,9 @@ export class Pipeline extends PipelineBase {
   }
 
   private ensureReplicationResourcesExistFor(action: IAction): CrossRegionInfo {
-    const region = new RichAction(action).env.region;
+    const region = new RichAction(action).region ?? Aws.REGION;
 
-    const anyRegion = Token.isUnresolved(region);
-
-    if (anyRegion || sameEnvDimension(this.env.region, region)) {
+    if (Token.isUnresolved(region) || sameEnvDimension(this.env.region, region)) {
       return {
         artifactBucket: this.artifactBucket,
       };
@@ -495,10 +493,10 @@ export class Pipeline extends PipelineBase {
     const actionResource = action.actionProperties.resource;
     if (!actionResource) { return undefined; }
 
-    const stack = Stack.of(actionResource);
-    const stackEnv = { region: stack.region, account: stack.account };
+    const actionResourceStack = Stack.of(actionResource);
+    const actionResourceStackEnv = { region: actionResourceStack.region, account: actionResourceStack.account };
 
-    return sameEnv(actionResource.env, stackEnv) ? stack : undefined;
+    return sameEnv(actionResource.env, actionResourceStackEnv) ? actionResourceStack : undefined;
   }
 
   private createSupportResourcesForRegion(otherStack: Stack | undefined, actionRegion: string):
@@ -605,7 +603,18 @@ export class Pipeline extends PipelineBase {
 
   private getRoleFromActionPropsOrGenerateIfCrossAccount(stage: Stage, action: IAction): iam.IRole | undefined {
     const pipelineStack = Stack.of(this);
-    const actionEnv = new RichAction(action).env;
+
+    // if we have a cross-account action, the pipeline's bucket must have a KMS key
+    // (otherwise we can't configure cross-account trust policies)
+    const crossRegionInfo = this.ensureReplicationResourcesExistFor(action);
+    const actionAccount = new RichAction(action).account ?? Aws.ACCOUNT_ID;
+    if (!Token.isUnresolved(actionAccount) && !sameEnvDimension(this.env.account, actionAccount) && !crossRegionInfo.artifactBucket.encryptionKey) {
+      throw new Error([
+        `Artifact Bucket must have a KMS Key to add cross-account action '${action.actionProperties.actionName}' `,
+        `(pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(actionAccount)}').`,
+        'Create Pipeline with \'crossAccountKeys: true\' (or pass an existing Bucket with a key)',
+      ].join(''));
+    }
 
     // if a Role has been passed explicitly, always use it
     // (even if the backing resource is from a different account -
@@ -637,16 +646,6 @@ export class Pipeline extends PipelineBase {
     const otherAccountStack = this.getOtherStackIfActionIsCrossAccount(action);
     if (!otherAccountStack) {
       return undefined;
-    }
-
-    // if we have a cross-account action, the pipeline's bucket must have a KMS key
-    // (otherwise we can't configure cross-account trust policies)
-    if (!this.artifactBucket.encryptionKey) {
-      throw new Error([
-        `Artifact Bucket must have a KMS Key to add cross-account action '${action.actionProperties.actionName}' `,
-        `(pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(actionEnv.account)}').`,
-        'Create Pipeline with \'crossAccountKeys: true\' (or pass an existing Bucket with a key)',
-      ].join(''));
     }
 
     // generate a role in the other stack, that the Pipeline will assume for executing this action

@@ -1,4 +1,3 @@
-import { Aws, ResourceEnvironment } from '@aws-cdk/core';
 import { IAction } from '../action';
 
 /**
@@ -19,18 +18,23 @@ export class RichAction {
   }
 
   /**
-   * The environment this action runs in
+   * The account this action wants to run in
+   *
+   * `undefined` if no sources of accounts have been configured.
    */
-  public get env(): ResourceEnvironment {
-    return {
-      account: (this.action.actionProperties.role?.env.account
-        ?? this.action.actionProperties?.resource?.env.account
-        ?? this.action.actionProperties.account
-        ?? Aws.ACCOUNT_ID),
-      region: (this.action.actionProperties.resource?.env.region
-        ?? this.action.actionProperties.region
-        ?? Aws.REGION),
-    };
+  public get account(): string | undefined {
+    return this.action.actionProperties.role?.env.account
+      ?? this.action.actionProperties?.resource?.env.account
+      ?? this.action.actionProperties.account;
   }
 
-};
+  /**
+   * The region this action wants to run in
+   *
+   * `undefined` if no sources of regions have been configured.
+   */
+  public get region(): string | undefined {
+    return this.action.actionProperties.resource?.env.region
+      ?? this.action.actionProperties.region;
+  }
+}
