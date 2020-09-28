@@ -482,6 +482,30 @@ export = {
     test.done();
   },
 
+  'import by secretArn supports tokens for ARNs'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stackA = new cdk.Stack(app, 'StackA');
+    const stackB = new cdk.Stack(app, 'StackB');
+    const secretA = new secretsmanager.Secret(stackA, 'SecretA');
+
+    // WHEN
+    const secretB = secretsmanager.Secret.fromSecretArn(stackB, 'SecretB', secretA.secretArn);
+    new cdk.CfnOutput(stackB, 'secretBSecretName', { value: secretB.secretName });
+
+    // THEN
+    test.equals(secretB.secretArn, secretA.secretArn);
+    expect(stackB).toMatch({
+      Outputs: {
+        secretBSecretName: {
+          Value: { 'Fn::Select': [6, { 'Fn::Split': [':', { 'Fn::ImportValue': 'StackA:ExportsOutputRefSecretA188F281703FC8A52' }] }] },
+        },
+      },
+    });
+
+    test.done();
+  },
+
   'import by attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
