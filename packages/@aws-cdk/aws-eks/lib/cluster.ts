@@ -1036,7 +1036,7 @@ export class Cluster extends ClusterBase {
    * daemon will be installed on all spot instances to handle
    * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
-  public addAutoScalingGroupCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
+  public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined ) {
       throw new Error('bootstrapOptions is not supported for Bottlerocket');
     }
@@ -1430,7 +1430,7 @@ export class Cluster extends ClusterBase {
 /**
  * Options for adding worker nodes
  */
-export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps {
+export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoScalingGroupProps {
   /**
    * Instance type of the instances to start
    */

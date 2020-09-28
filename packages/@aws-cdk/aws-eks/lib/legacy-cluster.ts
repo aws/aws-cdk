@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Annotations, CfnOutput, Construct, Resource, Stack, Token, Tags } from '@aws-cdk/core';
-import { ICluster, ClusterAttributes, KubernetesVersion, NodeType, DefaultCapacityType, EksOptimizedImage, CapacityOptions, MachineImageType, AutoScalingGroupOptions, CommonClusterOptions } from './cluster';
+import { ICluster, ClusterAttributes, KubernetesVersion, NodeType, DefaultCapacityType, EksOptimizedImage, AutoScalingGroupCapacityOptions, MachineImageType, AutoScalingGroupOptions, CommonClusterOptions } from './cluster';
 import { clusterArnComponents } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { HelmChartOptions, HelmChart } from './helm-chart';
@@ -251,7 +251,7 @@ export class LegacyCluster extends Resource implements ICluster {
    *
    * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
    */
-  public addCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
+  public addCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined ) {
       throw new Error('bootstrapOptions is not supported for Bottlerocket');
     }
