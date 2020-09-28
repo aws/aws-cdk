@@ -78,6 +78,14 @@ export class Runtime {
   public static readonly SYNTHETICS_1_0 = new Runtime('syn-1.0');
 
   /**
+   * `syn-nodejs-2.0` includes the following:
+   * - Lambda runtime Node.js 10.x
+   * - Puppeteer-core version 3.3.0
+   * - Chromium version 81.0.4044.0
+   */
+  public static readonly SYNTHETICS_NODEJS_2_0 = new Runtime('syn-nodejs-2.0');
+
+  /**
    * @param name The name of the runtime version
    */
   public constructor(public readonly name: string) {
