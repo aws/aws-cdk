@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-appmesh",
-        "module": "aws_cdk.aws_appmesh"
+        "module": "aws_cdk.aws_appmesh",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

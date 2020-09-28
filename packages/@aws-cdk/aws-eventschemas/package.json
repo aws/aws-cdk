@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-eventschemas",
-        "module": "aws_cdk.aws_eventschemas"
+        "module": "aws_cdk.aws_eventschemas",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

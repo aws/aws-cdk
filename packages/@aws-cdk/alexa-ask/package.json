@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.alexa-ask",
-        "module": "aws_cdk.alexa_ask"
+        "module": "aws_cdk.alexa_ask",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

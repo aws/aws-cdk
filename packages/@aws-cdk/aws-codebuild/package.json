@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-codebuild",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS CodeBuild",
+  "description": "The CDK Construct Library for AWS::CodeBuild",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codebuild",
-        "module": "aws_cdk.aws_codebuild"
+        "module": "aws_cdk.aws_codebuild",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
