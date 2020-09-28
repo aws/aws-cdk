@@ -1,11 +1,12 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Resource, Construct, Duration, Token, Annotations, RemovalPolicy, CfnDeletionPolicy, IResource } from '@aws-cdk/core';
+import { Resource, Construct, Duration, Token, Annotations, RemovalPolicy, IResource } from '@aws-cdk/core';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
+import { applyRemovalPolicy } from './private/util';
 import { Credentials, RotationMultiUserOptions } from './props';
 import { CfnDBCluster } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -410,7 +411,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    this.setRemovalPolicy(cluster, props.removalPolicy);
+    applyRemovalPolicy(cluster, props.removalPolicy);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -460,19 +461,6 @@ export class ServerlessCluster extends ServerlessClusterBase {
       vpcSubnets: this.vpcSubnets,
       target: this,
     });
-  }
-
-  private setRemovalPolicy(cluster: CfnDBCluster, removalPolicy?: RemovalPolicy) {
-    // if removalPolicy was not specified,
-    // leave it as the default, which is Snapshot
-    if (removalPolicy) {
-      cluster.applyRemovalPolicy(removalPolicy);
-    } else {
-      // The CFN default makes sense for DeletionPolicy,
-      // but doesn't cover UpdateReplacePolicy.
-      // Fix that here.
-      cluster.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
-    }
   }
 
   private renderScalingConfiguration(options: ServerlessScalingOptions): CfnDBCluster.ScalingConfigurationProperty {
