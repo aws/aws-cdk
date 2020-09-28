@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-dax",
-        "module": "aws_cdk.aws_dax"
+        "module": "aws_cdk.aws_dax",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
