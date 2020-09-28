@@ -113,21 +113,21 @@ export class AssetStaging extends Construct {
         this.relativePath = renderAssetFilename(this.assetHash);
         this.stagedPath = this.relativePath;
       } else { // Bundling is skipped
-        this.assetHash = props.assetHashType === AssetHashType.BUNDLE
+        this.assetHash = props.assetHashType === AssetHashType.BUNDLE || props.assetHashType === AssetHashType.OUTPUT
           ? this.calculateHash(AssetHashType.CUSTOM, this.node.path) // Use node path as dummy hash because we're not bundling
           : this.calculateHash(hashType, props.assetHash);
         this.stagedPath = this.sourcePath;
       }
     } else {
       this.assetHash = this.calculateHash(hashType, props.assetHash);
+      this.relativePath = renderAssetFilename(this.assetHash, path.extname(this.sourcePath));
+      this.stagedPath = this.relativePath;
+    }
 
-      const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
-      if (stagingDisabled) {
-        this.stagedPath = this.sourcePath;
-      } else {
-        this.relativePath = renderAssetFilename(this.assetHash, path.extname(this.sourcePath));
-        this.stagedPath = this.relativePath;
-      }
+    const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
+    if (stagingDisabled) {
+      this.relativePath = undefined;
+      this.stagedPath = this.bundleDir ?? this.sourcePath;
     }
 
     this.sourceHash = this.assetHash;
@@ -295,8 +295,9 @@ export class AssetStaging extends Construct {
       case AssetHashType.SOURCE:
         return FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
       case AssetHashType.BUNDLE:
+      case AssetHashType.OUTPUT:
         if (!this.bundleDir) {
-          throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
+          throw new Error(`Cannot use \`${hashType}\` hash type when \`bundling\` is not specified.`);
         }
         return FileSystem.fingerprint(this.bundleDir, this.fingerprintOptions);
       default:
