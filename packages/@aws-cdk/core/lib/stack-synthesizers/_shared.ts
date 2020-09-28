@@ -45,7 +45,7 @@ export function addStackArtifactToAssembly(
   const properties: cxschema.AwsCloudFormationStackProperties = {
     templateFile: stack.templateFile,
     terminationProtection: stack.terminationProtection,
-    tags: stack.tags.tagValues(),
+    tags: nonEmptyDict(stack.tags.tagValues()),
     ...stackProps,
     ...stackNameProperty,
   };
@@ -116,4 +116,8 @@ export function assertBound<A>(x: A | undefined): asserts x is NonNullable<A> {
   if (x === null && x === undefined) {
     throw new Error('You must call bindStack() first');
   }
+}
+
+function nonEmptyDict<A>(xs: Record<string, A>) {
+  return Object.keys(xs).length > 0 ? xs : undefined;
 }

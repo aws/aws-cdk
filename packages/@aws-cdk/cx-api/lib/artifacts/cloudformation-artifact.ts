@@ -102,7 +102,10 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.environment = EnvironmentUtils.parse(artifact.environment);
     this.templateFile = properties.templateFile;
     this.parameters = properties.parameters ?? {};
-    this.tags = properties.tags ?? {};
+
+    // We get the tags from 'properties' if available (cloud assembly format >= 6.0.0), otherwise
+    // from the stack metadata
+    this.tags = properties.tags ?? this.tagsFromMetadata();
     this.assumeRoleArn = properties.assumeRoleArn;
     this.cloudFormationExecutionRoleArn = properties.cloudFormationExecutionRoleArn;
     this.stackTemplateAssetObjectUrl = properties.stackTemplateAssetObjectUrl;
@@ -135,5 +138,15 @@ export class CloudFormationStackArtifact extends CloudArtifact {
       this._template = JSON.parse(fs.readFileSync(this.templateFullPath, 'utf-8'));
     }
     return this._template;
+  }
+
+  private tagsFromMetadata() {
+    const ret: Record<string, string> = {};
+    for (const metadataEntry of this.findMetadataByType(cxschema.ArtifactMetadataEntryType.STACK_TAGS)) {
+      for (const tag of (metadataEntry.data ?? []) as cxschema.StackTagsMetadataEntry) {
+        ret[tag.key] = tag.value;
+      }
+    }
+    return ret;
   }
 }
