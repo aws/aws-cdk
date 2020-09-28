@@ -34,7 +34,8 @@ In addition, the library also supports defining Kubernetes resource manifests wi
     * [Patching Resources](#patching-resources)
     * [Querying Resources](#querying-resources)
 * [Using existing clusters](#using-existing-clusters)
-* [Known Issues](#known-issues)
+* [Known Issues and Limitations](#known-issues-and-limitations)
+* [RoadMap](#roadmap)
 
 ## Quick Start
 
@@ -409,7 +410,7 @@ cluster.addAutoScalingGroupCapacity('self-ng-arm', {
 })
 ```
 
-#### Kubectl Support
+### Kubectl Support
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
