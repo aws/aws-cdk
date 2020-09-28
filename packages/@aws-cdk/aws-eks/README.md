@@ -17,7 +17,7 @@ This construct library allows you to define [Amazon Elastic Container Service fo
 In addition, the library also supports defining Kubernetes resource manifests within EKS clusters.
 
 * [Quick Start](#quick-start)
-* [Overview](#overview)
+* [Architectural Overview](#architectural-overview)
 * [Provisioning clusters](#provisioning-clusters)
     * [Capacity Types](#capacity-types)
       * [Managed Node Groups](#1-managed-node-groups)
@@ -26,14 +26,13 @@ In addition, the library also supports defining Kubernetes resource manifests wi
     * [ARM64 Support](#arm64-support)
     * [Kubectl Support](#kubectl-support)
     * [VPC Support](#vpc-support)
-    * [Endpoint Access](#endpoint-access)
     * [Permissions and Access](#permissions-and-access)
 * [Managing Kubernetes Resources](#managing-kubernetes-resources)
-    * [Applying](#applying)
+    * [Applying Resources](#applying-resources)
       * [Kubernetes Manifests](#kubernetes-manifests)
       * [Helm Charts](#helm-charts)
-    * [Patching](#patching)
-    * [Querying](#querying)
+    * [Patching Resources](#patching-resources)
+    * [Querying Resources](#querying-resources)
 * [Using existing clusters](#using-existing-clusters)
 * [Known Issues](#known-issues)
 
@@ -646,7 +645,7 @@ This is why an explicit dependency is needed. See https://github.com/aws/aws-cdk
 
 In addition to provisioning the clusters themselves, you can also use this library to manage the kubernetes resources inside those clusters. This enables a unified workflow for both your infrastructure and application needs.
 
-### Applying
+### Applying Resources
 
 The library supports several popular resource deployment mechanisms, among which are:
 
@@ -820,7 +819,7 @@ const chart2 = cluster.addHelmChart(...);
 chart2.node.addDependency(chart1);
 ```
 
-### Patching
+### Patching Resources
 
 The `KubernetesPatch` construct can be used to update existing kubernetes
 resources. The following example can be used to patch the `hello-kubernetes`
@@ -835,7 +834,7 @@ new KubernetesPatch(this, 'hello-kub-deployment-label', {
 })
 ```
 
-### Querying
+### Querying Resources
 
 The `KubernetesObjectValue` construct can be used to query for information about kubernetes objects,
 and use that as part of your CDK application.
